@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>PrcGetStatusWorkflow</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GDCibGrantingTickets</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">PRCGetStatusWorkflow_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Llamada el servicio que consulta el estado en el que se encuentra un workflow_id</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;Accept&quot;:&quot;application/json&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;id&quot;:&quot;b74260d7-9bbe-4569-9&quot;,&quot;operations&quot;:[{&quot;currency&quot;:&quot;EUR&quot;,&quot;isFundingCalculatedByTerm&quot;:false,&quot;order&quot;:0.0,&quot;paymentType&quot;:&quot;FIXED&quot;,&quot;booking&quot;:&quot;ARGENTINA&quot;,&quot;amortization&quot;:{&quot;fee&quot;:{&quot;accrual&quot;:0.0,&quot;nonAccrual&quot;:0.0},&quot;margin&quot;:{&quot;onBalance&quot;:0.0,&quot;offBalance&quot;:10.0},&quot;amortizationType&quot;:&quot;LINEAR&quot;,&quot;notional&quot;:{&quot;onBalance&quot;:0.0,&quot;offBalance&quot;:100.0}},&quot;productType&quot;:{&quot;id&quot;:&quot;AUTOMOTIVE_RENTING&quot;},&quot;rating&quot;:{&quot;longScaleValue&quot;:&quot;A-&quot;,&quot;shortScaleValue&quot;:&quot;NA&quot;},&quot;mitigants&quot;:[],&quot;funding&quot;:{&quot;fundingType&quot;:&quot;BBVA_FUND&quot;},&quot;ratingModalityType&quot;:&quot;GROUP&quot;,&quot;financingType&quot;:&quot;STANDARD_FUNDING&quot;,&quot;underlyingOperationsNumber&quot;:0.0,&quot;isCommited&quot;:true,&quot;productModality&quot;:&quot;PRODUCT&quot;,&quot;countryRisk&quot;:&quot;NORUEGA&quot;}],&quot;status&quot;:{&quot;id&quot;:&quot;CREATED&quot;},&quot;hasCalculationMatched&quot;:false,&quot;workflowCode&quot;:&quot;15385&quot;,&quot;participant&quot;:{&quot;id&quot;:&quot;051031536&quot;,&quot;economicGroupRating&quot;:&quot;BBB+1&quot;,&quot;groupType&quot;:&quot;CORPORATE&quot;,&quot;rating&quot;:&quot;AAA&quot;},&quot;crossSellAmounts&quot;:[{&quot;id&quot;:&quot;CROSS_SELL_AMOUNT&quot;,&quot;currency&quot;:&quot;EUR&quot;,&quot;amount&quot;:0.0}],&quot;webPricingCode&quot;:&quot;273254&quot;}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#investmentBankingProposalId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

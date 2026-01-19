@@ -1,0 +1,54 @@
+<template>
+    <div class="slds-card slds-p-around_medium" style="padding-bottom: 0px;padding-top: 0px;">
+       <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <lightning-input
+                    label=""
+                    style=""
+                    class="inputClass"
+                    onchange={search}
+                    type={typeInput}
+                    value={selectedValue}
+                    read-only={readOnlyUser}
+                    disabled={readOnlyUser}
+                    variant = "label-hidden"
+                    oncommit={handleClear}
+                >
+                </lightning-input>
+                <template lwc:if={showResults}> 
+                    <div 
+                    class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                    role="listbox"
+                    >
+                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                        <template for:each={searchResults} for:item="searchResult">
+                            <li 
+                                key={searchResult.value} 
+                                id={searchResult.value} 
+                                data-value={searchResult.value} 
+                                role="presentation" 
+                                onclick={selectSearchResult} 
+                                class="slds-listbox__item"
+                            >
+                                <div 
+                                    class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" 
+                                    role="option"
+                                >
+                                    <span class="slds-media__body">
+                                        <span 
+                                            class="slds-truncate" 
+                                            title={searchResult.label}
+                                        >
+                                            {searchResult.label}
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div> 
+                </template>      
+            </div>
+        </div>
+    </div>
+</template>

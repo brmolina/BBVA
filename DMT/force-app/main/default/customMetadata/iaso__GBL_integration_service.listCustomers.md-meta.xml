@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>listCustomers</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevMx</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">listCustomers</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;id&quot;: &quot;ES0182100068850C&quot;,
+        &quot;firstName&quot;: &quot;TestName&quot;,
+        &quot;middleName&quot;: &quot;MO&quot;,
+        &quot;lastName&quot;: &quot;TestLastName&quot;,
+        &quot;birthData&quot;: {
+            &quot;city&quot;: &quot;LUGAR&quot;,
+            &quot;state&quot;: {
+                &quot;name&quot;: &quot;MADRID&quot;
+            },
+            &quot;country&quot;: {
+                &quot;id&quot;: &quot;ES&quot;,
+                &quot;name&quot;: &quot;ESPAÑA&quot;
+            },
+            &quot;birthDate&quot;: &quot;1982-01-01&quot;
+        },
+        &quot;nationalities&quot;: [
+            {
+                &quot;id&quot;: &quot;ES&quot;,
+                &quot;description&quot;: &quot;ESPAÑA&quot;
+            }
+        ],
+        &quot;identityDocuments&quot;: [
+            {
+                &quot;documentType&quot;: {
+                    &quot;id&quot;: &quot;NIF&quot;
+                },
+                &quot;documentNumber&quot;: &quot;333333333T&quot;
+            }
+        ],
+        &quot;maritalStatus&quot;: {
+            &quot;id&quot;: &quot;SINGLE&quot;
+        },
+        &quot;gender&quot;: {
+            &quot;id&quot;: &quot;FEMALE&quot;
+        },
+        &quot;bank&quot;: {
+            &quot;id&quot;: &quot;1234&quot;,
+            &quot;branch&quot;: {
+                &quot;id&quot;: &quot;7066&quot;
+            }
+        },
+        &quot;contactDetails&quot;: [
+            {
+                &quot;id&quot;: &quot;02847682&quot;,
+                &quot;contact&quot;: {
+                    &quot;email&quot;: {
+                        &quot;contactDetailType&quot;: &quot;EMAIL&quot;,
+                        &quot;address&quot;: &quot;TEST@HOTMAIL.COM&quot;,
+                        &quot;receivesNotifications&quot;: false
+                    }
+                },
+                &quot;isPreferential&quot;: true
+            },
+            {
+                &quot;id&quot;: &quot;74131439&quot;,
+                &quot;contact&quot;: {
+                    &quot;email&quot;: {
+                        &quot;contactDetailType&quot;: &quot;EMAIL&quot;,
+                        &quot;address&quot;: &quot;TEST@BBVA.COM&quot;,
+                        &quot;receivesNotifications&quot;: false
+                    }
+                },
+                &quot;isPreferential&quot;: true
+            },
+            {
+                &quot;id&quot;: &quot;74920536&quot;,
+                &quot;contact&quot;: {
+                    &quot;mobile&quot;: {
+                        &quot;contactDetailType&quot;: &quot;MOBILE&quot;,
+                        &quot;number&quot;: &quot;11111111&quot;,
+                        &quot;receivesNotifications&quot;: false
+                    }
+                },
+                &quot;isPreferential&quot;: true
+            },
+            {
+                &quot;id&quot;: &quot;03099437&quot;,
+                &quot;contact&quot;: {
+                    &quot;mobile&quot;: {
+                        &quot;contactDetailType&quot;: &quot;MOBILE&quot;,
+                        &quot;number&quot;: &quot;11111111&quot;,
+                        &quot;receivesNotifications&quot;: true
+                    }
+                },
+                &quot;isPreferential&quot;: true
+            },
+            {
+                &quot;id&quot;: &quot;06111244&quot;,
+                &quot;contact&quot;: {
+                    &quot;landline&quot;: {
+                        &quot;contactDetailType&quot;: &quot;LANDLINE&quot;,
+                        &quot;number&quot;: &quot;11111111&quot;
+                    }
+                },
+                &quot;isPreferential&quot;: true
+            }
+        ],
+        &quot;economicData&quot;: {
+            &quot;occupationType&quot;: {
+                &quot;id&quot;: &quot;0006&quot;
+            },
+            &quot;workPlace&quot;: {
+                &quot;name&quot;: &quot;TEST EMP SA&quot;,
+                &quot;workStartDate&quot;: &quot;2015-01-01&quot;,
+                &quot;economicActivity&quot;: {
+                    &quot;id&quot;: &quot;6209&quot;
+                },
+                &quot;professionPosition&quot;: {
+                    &quot;id&quot;: &quot;0001&quot;
+                }
+            },
+            &quot;economicActivity&quot;: {
+                &quot;id&quot;: &quot;0000&quot;
+            }
+        },
+        &quot;classifications&quot;: [
+            {
+                &quot;classificationId&quot;: &quot;ID classification&quot;,
+                &quot;segments&quot;: [
+                    {
+                        &quot;id&quot;: &quot;24&quot;,
+                        &quot;name&quot;: &quot;GB-ESTANDAR&quot;
+                    }
+                ],
+                &quot;sector&quot;: {
+                    &quot;id&quot;: &quot;10&quot;
+                }
+            }
+        ]
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#customerId#?expand=economic-data</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

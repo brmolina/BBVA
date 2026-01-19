@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GDT_BlockStudiesProposal</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">GDT_BlockStudiesProposal</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;proposalId&quot;: &quot;PF00000000&quot;,
+      &quot;participant&quot;: [
+        {
+          &quot;id&quot;: &quot;ES0000000000000&quot;,
+          &quot;name&quot;: &quot;Ypf S.A.&quot;,
+          &quot;finalCeiling&quot;: &quot;218000000&quot;,
+          &quot;entityType&quot;: {
+            &quot;id&quot;: &quot;PARENT_GROUP&quot;
+          },
+          &quot;rating&quot;: [
+            {
+              &quot;id&quot;: &quot;1100001234&quot;
+            },
+            {
+              &quot;id&quot;: &quot;1100005678&quot;
+            }
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;ES1111111111111&quot;,
+           &quot;name&quot;: &quot;EDIZIONE S.R.L.&quot;,
+          &quot;finalCeiling&quot;: &quot;455000000&quot;,
+          &quot;entityType&quot;: {
+            &quot;id&quot;: &quot;PARENT_SUBGROUP&quot;
+          },
+          &quot;rating&quot;: [
+            {
+              &quot;id&quot;: &quot;1100005678&quot;
+            }
+          ]
+        }
+      ],
+      &quot;proposalDate&quot;: &quot;2021-01-29&quot;,
+      &quot;approvalDate&quot;: &quot;2022-10-05&quot;,
+      &quot;validityDate&quot;: &quot;2022-11-18&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;unit&quot;: &quot;MILLIONS&quot;,
+      &quot;group&quot;: {
+        &quot;id&quot;: &quot;G00000000000000&quot;
+      },
+      &quot;proposeUser&quot;: &quot;XEA1542&quot;,
+      &quot;contrastedUser&quot;: &quot;XEA1542&quot;,
+      &quot;sanctionCommittee&quot;: &quot;GCRMR&quot;
+    },
+    {
+      &quot;proposalId&quot;: &quot;PF00000001&quot;,
+      &quot;participant&quot;: [
+        {
+          &quot;id&quot;: &quot;ES0000000000000&quot;,
+          &quot;finalCeiling&quot;: &quot;218000000&quot;,
+          &quot;entityType&quot;: {
+            &quot;id&quot;: &quot;PARENT_GROUP&quot;
+          },
+          &quot;rating&quot;: [
+            {
+              &quot;id&quot;: &quot;1100001234&quot;
+            }
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;ES1111111111111&quot;,
+          &quot;finalCeiling&quot;: &quot;455000000&quot;,
+          &quot;entityType&quot;: {
+            &quot;id&quot;: &quot;PARENT_SUBGROUP&quot;
+          },
+          &quot;rating&quot;: [
+            {
+              &quot;id&quot;: &quot;1100006678&quot;
+            }
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;ES1111111111133&quot;,
+          &quot;finalCeiling&quot;: &quot;455000000&quot;,
+          &quot;entityType&quot;: {
+            &quot;id&quot;: &quot;PARENT_SUBGROUP&quot;
+          },
+          &quot;rating&quot;: [
+            {
+              &quot;id&quot;: &quot;1100007678&quot;
+            }
+          ]
+        }
+      ],
+      &quot;proposalDate&quot;: &quot;2021-01-29&quot;,
+      &quot;approvalDate&quot;: &quot;2022-10-05&quot;,
+      &quot;validityDate&quot;: &quot;2022-11-18&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;unit&quot;: &quot;MILLIONS&quot;,
+      &quot;group&quot;: {
+        &quot;id&quot;: &quot;G00000000000000&quot;
+      },
+      &quot;proposeUser&quot;: &quot;XEA1542&quot;,
+      &quot;contrastedUser&quot;: &quot;XEA1542&quot;,
+      &quot;sanctionCommittee&quot;: &quot;GCRMR&quot;
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/risk-proposals?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

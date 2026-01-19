@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ARCE_GetConsumptionSummary</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">ARCE_GetConsumption</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;10200-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Buyer Mortgage&quot;,
+          &quot;authorizedRiskAmount&quot;: 21284.22,
+          &quot;committedContractsDisposedAmount&quot;: 49442.68,
+          &quot;uncommittedContractsDisposedAmount&quot;: 16415.19,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 27388.81,
+          &quot;unauthorizedCount&quot;: 38,
+          &quot;unavailableRiskAmount&quot;: 61109.68,
+          &quot;committedContractsNonDisposedAmount&quot;: 91689.15,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 74336.08,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 12345.67
+        },
+        {
+          &quot;globalProductId&quot;: &quot;10200-2&quot;,
+          &quot;productTypeDesc&quot;: &quot;Pending&quot;,
+          &quot;authorizedRiskAmount&quot;: 48527.8,
+          &quot;committedContractsDisposedAmount&quot;: 30120.94,
+          &quot;uncommittedContractsDisposedAmount&quot;: 5761.19,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 45876.34,
+          &quot;unauthorizedCount&quot;: 95,
+          &quot;unavailableRiskAmount&quot;: 11826.0,
+          &quot;committedContractsNonDisposedAmount&quot;: 68818.08,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 64327.7,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 23456.78
+        },
+        {
+          &quot;globalProductId&quot;: &quot;10200-3&quot;,
+          &quot;productTypeDesc&quot;: &quot;Business Mortgage&quot;,
+          &quot;authorizedRiskAmount&quot;: 44686.07,
+          &quot;committedContractsDisposedAmount&quot;: 70078.94,
+          &quot;uncommittedContractsDisposedAmount&quot;: 92406.68,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 50514.25,
+          &quot;unauthorizedCount&quot;: 98,
+          &quot;unavailableRiskAmount&quot;: 43422.96,
+          &quot;committedContractsNonDisposedAmount&quot;: 5227.32,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 63608.0,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 34567.89
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;20200&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;20200-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Buyer Mortgage&quot;,
+          &quot;authorizedRiskAmount&quot;: 21284.22,
+          &quot;committedContractsDisposedAmount&quot;: 49442.68,
+          &quot;uncommittedContractsDisposedAmount&quot;: 16415.19,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 27388.81,
+          &quot;unauthorizedCount&quot;: 38,
+          &quot;unavailableRiskAmount&quot;: 61109.68,
+          &quot;committedContractsNonDisposedAmount&quot;: 91689.15,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 74336.08,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 45678.91
+        },
+        {
+          &quot;globalProductId&quot;: &quot;20200-2&quot;,
+          &quot;productTypeDesc&quot;: &quot;Real estate leasing&quot;,
+          &quot;authorizedRiskAmount&quot;: 87001.74,
+          &quot;committedContractsDisposedAmount&quot;: 16065.49,
+          &quot;uncommittedContractsDisposedAmount&quot;: 51005.74,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 45527.27,
+          &quot;unauthorizedCount&quot;: 98,
+          &quot;unavailableRiskAmount&quot;: 70531.92,
+          &quot;committedContractsNonDisposedAmount&quot;: 8368.95,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 86009.08,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 56789.12
+        },
+        {
+          &quot;globalProductId&quot;: &quot;20200-3&quot;,
+          &quot;productTypeDesc&quot;: &quot;Other Non Subsidized Leasing&quot;,
+          &quot;authorizedRiskAmount&quot;: 49471.41,
+          &quot;committedContractsDisposedAmount&quot;: 44271.53,
+          &quot;uncommittedContractsDisposedAmount&quot;: 78546.09,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 10613.46,
+          &quot;unauthorizedCount&quot;: 96,
+          &quot;unavailableRiskAmount&quot;: 17248.68,
+          &quot;committedContractsNonDisposedAmount&quot;: 74517.9,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 74252.48,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 67891.23
+        },
+        {
+          &quot;globalProductId&quot;: &quot;20200-4&quot;,
+          &quot;productTypeDesc&quot;: &quot;Movable Assets Subsidized Leasing&quot;,
+          &quot;authorizedRiskAmount&quot;: 18617.2,
+          &quot;committedContractsDisposedAmount&quot;: 86045.15,
+          &quot;uncommittedContractsDisposedAmount&quot;: 65339.84,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 34957.26,
+          &quot;unauthorizedCount&quot;: 84,
+          &quot;unavailableRiskAmount&quot;: 53386.97,
+          &quot;committedContractsNonDisposedAmount&quot;: 96160.43,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 65151.06,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 78912.34
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;20100&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;20100-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Import Financing&quot;,
+          &quot;authorizedRiskAmount&quot;: 35791.96,
+          &quot;committedContractsDisposedAmount&quot;: 67660.13,
+          &quot;uncommittedContractsDisposedAmount&quot;: 16014.55,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 64603.58,
+          &quot;unauthorizedCount&quot;: 98,
+          &quot;unavailableRiskAmount&quot;: 32998.4,
+          &quot;committedContractsNonDisposedAmount&quot;: 42804.38,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 16310.5,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 89123.45
+        },
+        {
+          &quot;globalProductId&quot;: &quot;20100-2&quot;,
+          &quot;productTypeDesc&quot;: &quot;Confirmg&quot;,
+          &quot;authorizedRiskAmount&quot;: 62982.17,
+          &quot;committedContractsDisposedAmount&quot;: 28027.39,
+          &quot;uncommittedContractsDisposedAmount&quot;: 68912.11,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 54645.55,
+          &quot;unauthorizedCount&quot;: 37,
+          &quot;unavailableRiskAmount&quot;: 24856.76,
+          &quot;committedContractsNonDisposedAmount&quot;: 14672.83,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 93823.64,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 91234.56
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;10100&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;10100-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Structured Trade and Export Credit Finance&quot;,
+          &quot;authorizedRiskAmount&quot;: 96520.25,
+          &quot;committedContractsDisposedAmount&quot;: 36057.44,
+          &quot;uncommittedContractsDisposedAmount&quot;: 64392.91,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 62912.95,
+          &quot;unauthorizedCount&quot;: 38,
+          &quot;unavailableRiskAmount&quot;: 38783.84,
+          &quot;committedContractsNonDisposedAmount&quot;: 48730.22,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 42441.04,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 23456.78
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;30000&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;30000-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Developer Guarantees&quot;,
+          &quot;authorizedRiskAmount&quot;: 89822.99,
+          &quot;committedContractsDisposedAmount&quot;: 67422.05,
+          &quot;uncommittedContractsDisposedAmount&quot;: 95020.79,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 41943.37,
+          &quot;unauthorizedCount&quot;: 44,
+          &quot;unavailableRiskAmount&quot;: 87782.01,
+          &quot;committedContractsNonDisposedAmount&quot;: 16592.54,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 63766.16,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 34567.89
+        },
+        {
+          &quot;globalProductId&quot;: &quot;30000-2&quot;,
+          &quot;productTypeDesc&quot;: &quot;Other Developer Guarantees&quot;,
+          &quot;authorizedRiskAmount&quot;: 25833.87,
+          &quot;committedContractsDisposedAmount&quot;: 52543.75,
+          &quot;uncommittedContractsDisposedAmount&quot;: 17849.93,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 59516.33,
+          &quot;unauthorizedCount&quot;: 53,
+          &quot;unavailableRiskAmount&quot;: 6969.36,
+          &quot;committedContractsNonDisposedAmount&quot;: 98603.01,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 28884.88,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 45678.91
+        },
+        {
+          &quot;globalProductId&quot;: &quot;30000-3&quot;,
+          &quot;productTypeDesc&quot;: &quot;Tender (Bid or tender bond)&quot;,
+          &quot;authorizedRiskAmount&quot;: 96663.8,
+          &quot;committedContractsDisposedAmount&quot;: 72781.96,
+          &quot;uncommittedContractsDisposedAmount&quot;: 46220.3,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 79878.83,
+          &quot;unauthorizedCount&quot;: 57,
+          &quot;unavailableRiskAmount&quot;: 12015.51,
+          &quot;committedContractsNonDisposedAmount&quot;: 80028.35,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 90161.39,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 56789.12
+        },
+        {
+          &quot;globalProductId&quot;: &quot;30000-4&quot;,
+          &quot;productTypeDesc&quot;: &quot;Technical Guarantee&quot;,
+          &quot;authorizedRiskAmount&quot;: 96566.81,
+          &quot;committedContractsDisposedAmount&quot;: 19127.44,
+          &quot;uncommittedContractsDisposedAmount&quot;: 10964.51,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 85614.16,
+          &quot;unauthorizedCount&quot;: 1,
+          &quot;unavailableRiskAmount&quot;: 96218.86,
+          &quot;committedContractsNonDisposedAmount&quot;: 12338.09,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 90157.26,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 67891.23
+        },
+        {
+          &quot;globalProductId&quot;: &quot;30000-5&quot;,
+          &quot;productTypeDesc&quot;: &quot;Faithful compliance (Performance Bond)&quot;,
+          &quot;authorizedRiskAmount&quot;: 79504.91,
+          &quot;committedContractsDisposedAmount&quot;: 34323.79,
+          &quot;uncommittedContractsDisposedAmount&quot;: 21147.93,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 49625.59,
+          &quot;unauthorizedCount&quot;: 53,
+          &quot;unavailableRiskAmount&quot;: 59323.25,
+          &quot;committedContractsNonDisposedAmount&quot;: 71254.37,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 28168.87,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 78912.34
+        },
+        {
+          &quot;globalProductId&quot;: &quot;30000-6&quot;,
+          &quot;productTypeDesc&quot;: &quot;Other Technical&quot;,
+          &quot;authorizedRiskAmount&quot;: 48580.87,
+          &quot;committedContractsDisposedAmount&quot;: 12334.64,
+          &quot;uncommittedContractsDisposedAmount&quot;: 84042.31,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 43613.29,
+          &quot;unauthorizedCount&quot;: 1,
+          &quot;unavailableRiskAmount&quot;: 15185.21,
+          &quot;committedContractsNonDisposedAmount&quot;: 4891.34,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 20953.29,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 89123.45
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;20000&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;20000-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Buyer Mortgage&quot;,
+          &quot;authorizedRiskAmount&quot;: 10000,
+          &quot;committedContractsDisposedAmount&quot;: 20000,
+          &quot;uncommittedContractsDisposedAmount&quot;: 3000,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 4000,
+          &quot;unauthorizedCount&quot;: 5,
+          &quot;unavailableRiskAmount&quot;: 6000,
+          &quot;committedContractsNonDisposedAmount&quot;: 7000,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 8000,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 9000
+        }
+      ]
+    },
+    {
+      &quot;consumptionLastLevelId&quot;: &quot;40000&quot;,
+      &quot;catalogs&quot;: [
+        {
+          &quot;globalProductId&quot;: &quot;40000-1&quot;,
+          &quot;productTypeDesc&quot;: &quot;Buyer Mortgage&quot;,
+          &quot;authorizedRiskAmount&quot;: 11000,
+          &quot;committedContractsDisposedAmount&quot;: 21000,
+          &quot;uncommittedContractsDisposedAmount&quot;: 3100,
+          &quot;uncommittedContractsNonDisposedAmount&quot;: 4100,
+          &quot;unauthorizedCount&quot;: 6,
+          &quot;unavailableRiskAmount&quot;: 6100,
+          &quot;committedContractsNonDisposedAmount&quot;: 7100,
+          &quot;cutoffDate&quot;: &quot;2024-01-26&quot;,
+          &quot;cNotSignedTrConsumptionAmount&quot;: 8100,
+          &quot;consAggregationLevel&quot;: 0,
+          &quot;pendingUnauthorizedAmount&quot;: 9100
+        }
+      ]
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;links&quot;: {
+      &quot;first&quot;: &quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;amp;amp;amp;searchDate=2023-08-31&quot;,
+      &quot;last&quot;: &quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;amp;amp;amp;searchDate=2023-08-31&amp;amp;amp;amp;paginationKey=LAST&quot;,
+      &quot;previous&quot;: &quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;amp;amp;amp;searchDate=2023-08-31&amp;amp;amp;amp;paginationKey=0&amp;amp;amp;amp;pageSize=300&quot;,
+      &quot;next&quot;: &quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;amp;amp;amp;searchDate=2023-08-31&amp;amp;amp;amp;paginationKey=2&amp;amp;amp;amp;pageSize=300&quot;
+    },
+    &quot;page&quot;: 1,
+    &quot;totalPages&quot;: 1,
+    &quot;totalElements&quot;: 70,
+    &quot;pageSize&quot;: 300
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/grouped-summaries?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

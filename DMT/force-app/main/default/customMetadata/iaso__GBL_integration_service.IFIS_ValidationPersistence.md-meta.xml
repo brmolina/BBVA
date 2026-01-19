@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IFIS_ValidationPersistence</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">overRating</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;calculationRequest&quot;:{&quot;eventType&quot;:{&quot;id&quot;:&quot;#eventType#&quot;,&quot;subEventType&quot;:{&quot;id&quot;:&quot;#subEventType#&quot;}},&quot;businessAgent&quot;:{&quot;id&quot;:&quot;#businessAgentId#&quot;},&quot;bank&quot;:{&quot;id&quot;:&quot;#bankId#&quot;,&quot;branch&quot;:{&quot;id&quot;:&quot;#branchId#&quot;,&quot;level&quot;:{&quot;id&quot;:&quot;#branchLevel#&quot;}}},&quot;participantType&quot;:{&quot;id&quot;:&quot;#participantType#&quot;},&quot;riskSegment&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;riskSubsegment&quot;:&quot;#clientType#&quot;},&quot;calculation&quot;:{&quot;evaluationDate&quot;:&quot;#evaluationDate#&quot;}}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;ratingCalculation&quot;:{&quot;countries&quot;:[{&quot;id&quot;:&quot;ES&quot;,&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182009071367&quot;,&quot;rating&quot;:{&quot;id&quot;:&quot;1100010312&quot;}},{&quot;id&quot;:&quot;ES0182009071343&quot;,&quot;rating&quot;:{&quot;id&quot;:&quot;1100010313&quot;}}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#riskAssessmentId#/participants/#participantId#/rating-calculations/#ratingid#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

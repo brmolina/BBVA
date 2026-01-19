@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CIB</label>
+    <protected>false</protected>
+    <values>
+        <field>Min_days_to_renew__c</field>
+        <value xsi:type="xsd:double">30.0</value>
+    </values>
+    <values>
+        <field>cuco__active_type__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cuco__available_actions_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoAvailableActionsCIB</value>
+    </values>
+    <values>
+        <field>cuco__condition_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoConditionsCIB</value>
+    </values>
+    <values>
+        <field>cuco__description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>cuco__dynamic_pricing__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cuco__fast_track_renewals_max_previous_term__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>cuco__participants_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoParticipantCIB</value>
+    </values>
+    <values>
+        <field>cuco__permissions_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoPermissionsCIB</value>
+    </values>
+    <values>
+        <field>cuco__picasso_assigned_backoffice__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>cuco__picasso_channel_id__c</field>
+        <value xsi:type="xsd:string">08</value>
+    </values>
+    <values>
+        <field>cuco__picasso_dispatcher_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoPicassoResponseDispatcherCIB</value>
+    </values>
+    <values>
+        <field>cuco__picasso_formalization_id__c</field>
+        <value xsi:type="xsd:string">05</value>
+    </values>
+    <values>
+        <field>cuco__picasso_notification_id__c</field>
+        <value xsi:type="xsd:string">10</value>
+    </values>
+    <values>
+        <field>cuco__picasso_request_type__c</field>
+        <value xsi:type="xsd:string">p0002_1</value>
+    </values>
+    <values>
+        <field>cuco__price_approval_decision_id__c</field>
+        <value xsi:type="xsd:string">B</value>
+    </values>
+    <values>
+        <field>cuco__price_approval_type__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>cuco__price_auth_max_validity_term__c</field>
+        <value xsi:type="xsd:double">30.0</value>
+    </values>
+    <values>
+        <field>cuco__price_classification_name__c</field>
+        <value xsi:type="xsd:string">00022</value>
+    </values>
+    <values>
+        <field>cuco__price_dismissal_decision_id__c</field>
+        <value xsi:type="xsd:string">C</value>
+    </values>
+    <values>
+        <field>cuco__price_first_level_name__c</field>
+        <value xsi:type="xsd:string">00084</value>
+    </values>
+    <values>
+        <field>cuco__price_init_form_decision_id__c</field>
+        <value xsi:type="xsd:string">I</value>
+    </values>
+    <values>
+        <field>cuco__price_restudy_decision_id__c</field>
+        <value xsi:type="xsd:string">M</value>
+    </values>
+    <values>
+        <field>cuco__price_second_level_name__c</field>
+        <value xsi:type="xsd:string">00085</value>
+    </values>
+    <values>
+        <field>cuco__prof_analysis_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoProfitabilityAnalysisCIB</value>
+    </values>
+    <values>
+        <field>cuco__prof_sheet_itf_name__c</field>
+        <value xsi:type="xsd:string">CucoProfitabilitySheetCIB</value>
+    </values>
+    <values>
+        <field>cuco__renewals_form_max_due_term__c</field>
+        <value xsi:type="xsd:double">180.0</value>
+    </values>
+    <values>
+        <field>cuco__renewals_max_due_term__c</field>
+        <value xsi:type="xsd:double">60.0</value>
+    </values>
+    <values>
+        <field>cuco__retrieve_delegated_values_type__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cuco__retrieve_ps_from_backend_type__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cuco__retrieve_standard_values_type__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cuco__segment_type__c</field>
+        <value xsi:type="xsd:string">CIB</value>
+    </values>
+    <values>
+        <field>validate_participants_group__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

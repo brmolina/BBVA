@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GDrivePRO</label>
+    <protected>false</protected>
+    <values>
+        <field>igoogle__Base_Url__c</field>
+        <value xsi:type="xsd:string">https://bbva-gateway.appspot.com/</value>
+    </values>
+    <values>
+        <field>igoogle__Bot_User_Email__c</field>
+        <value xsi:type="xsd:string">factoring-manager@bbva.com</value>
+    </values>
+    <values>
+        <field>igoogle__Cache_Partition__c</field>
+        <value xsi:type="xsd:string">GoogleService</value>
+    </values>
+    <values>
+        <field>igoogle__Google_Oauth2_Url__c</field>
+        <value xsi:type="xsd:string">https://accounts.google.com/o/oauth2/token</value>
+    </values>
+    <values>
+        <field>igoogle__Mail_Domain_Alias__c</field>
+        <value xsi:type="xsd:string">bbva.com</value>
+    </values>
+    <values>
+        <field>igoogle__Mail_Domain__c</field>
+        <value xsi:type="xsd:string">bbva.com</value>
+    </values>
+    <values>
+        <field>igoogle__Pkcs8_Key__c</field>
+        <value xsi:type="xsd:string">MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDLvHTxmPIKm7eafMTN6f/rtF+PQCXRCEtI56ayNRy1KaJR/kY0bluqA0v72p6Q+8fcXJLn5tH879Ly28eNMio3Z2syQNJIrl8e0ZXIIDFX+GlAkH3vVCf6e6zozua1DGNrTozDCeiLpAVr2DvMDZiXZ0nweUJLahvxFCw9BSLGY1Gvz6+BJZpZ2Ix7GO+R8W76vkf5OxWD85BrmlecWIW0CsE6TAHn3kmbjoYHi0Wgg+VKcAQmgEH5QDpKfdBwN5f+IXf9RQ7KrB8zUqknRV4xD9CgG2q/KrOsrcAlnr2QNJBx91OzcKqezQo+wRWEOlfbz2ustavsw3pokad+cmn/AgMBAAECggEAX+XVJeNYCqZBRfZ0rHf4fnnogQUwx7OfvDFNxZQ6bwup2+5UHVnUy7HBkkrVWGkrKg5pF78OGIDKSoYo5801Ed8cFgts78kj/N2qIwkEMOQ8pqdcn8p9Buov+WVqMs4h/eB7YVLIovIRmzGs899yc9GqfAaXrefEPzW/nPlN5RMDNqQ+p+i7kXet+jj8TjfAN4oXK7rR6rFlgpg+Wl7ijt05vdas0LUW/devIR72mDKIhOTI9O1No2k0Y/CBOuEYNQEGs4gqnBw35m5/FQ8KqWRJbHyQwVp/TlCOWXpW3K9rVLMSG9UoKRk7PEOXlnUdR6QUAHEHcz6zFrmH+gQAAQKBgQD3E8C/QNNb3/7NI+EaSnJnDC0/3soczPxkvNLq4SUlZbpEjTL3GYbCHTq7Z9znmKBdwC5xD/kbWRHbgsYJxt4i5VNGEpcQ9k81AF6ENjeCn6Jcq2Lyyjp5YfEreveMBTzxp8UScK3ld50wYAjlI5KBYnfkxO9gkEyOowMdbySU/wKBgQDTGANXuAcPyRfkothPYI7YRQ25DQOUjYK4h36nQ/yyP/nXzeQbeZzGziOeEcFKc+Vh5tOEiMy008aasArae+tba3Not5GXjarSzsjP7s/8B3pPK2BTU6ZlgU92kzYx4gTU7g9o+Jv3F8XbSPQKc6uoSx+Hqh91BMdVSW96wrkrAQKBgGkrR0ghV9YrqlG3jAGc3sVuMXSWaIGJ34UhusWvwBgDDR5Q2/jCLNJDjtRmiWkrVleRjjMiEW7KowdEyvcuZy+DXcbd8t+NeHmfBpxQV6CKQpofeabO3cT9I6LWXLiFIkPandATlnGuUIJe3mpqkdnxCAegrCP2SCAO0yycOn4RAoGAQuPmE0LGQhNH1fRgNO709MUU7yGXk9gvpweQc7JQfa9WHTMp6CbmLf0ePjWEGXKWKiq5tdKfg2FkGppUJh2EW+i1nmYk5XBHxBsweOtEzqkT8chd8qmcHagXJQzK7I2hWFPDYFD/IxJOaQk6A6HZsC9140heRXdpLrZhc/YGNQECgYEAx6UKTBkjo8GbOeYlGnJIJAfnWGdtJcgKr5zMDOaNy90PprSTygKzhUVfX0pBYDum0v6jHVkZ72jY8C4fCgBja1GBTQnOSqOAbXz4rtLAgVJ7I2a1z7kOGf3QK/BtP+TwN9h2VglTQSM+YMTRqjCkEVhMg6h+kagLMQPM+s94LVg=</value>
+    </values>
+    <values>
+        <field>igoogle__Scope__c</field>
+        <value xsi:type="xsd:string">email</value>
+    </values>
+    <values>
+        <field>igoogle__Service_Type__c</field>
+        <value xsi:type="xsd:string">GDrive</value>
+    </values>
+    <values>
+        <field>igoogle__Service_User_Email__c</field>
+        <value xsi:type="xsd:string">calculadora-factoring@bbva-global-desktop-factor.iam.gserviceaccount.com</value>
+    </values>
+    <values>
+        <field>igoogle__Session_Duration__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>igoogle__Use_Cache__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>igoogle__Use_Service_User_Token__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

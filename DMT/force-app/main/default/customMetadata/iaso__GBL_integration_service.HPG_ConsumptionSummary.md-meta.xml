@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>HPG_ConsumptionSummary</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">HPG_GrantingTicketPRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CommonEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+         &quot;catalogs&quot;:[
+            {
+               &quot;productTypeDesc&quot;:&quot;Commercial Credit Cards&quot;,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:16652.5,
+               &quot;uncommittedContractsDisposedAmount&quot;:20.02,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:30.30,
+               &quot;unauthorizedCount&quot;:42,
+               &quot;unavailableRiskAmount&quot;:16652.5,
+               &quot;committedContractsNonDisposedAmount&quot;:40.40,
+               &quot;cutoffDate&quot;:&quot;2024-01-26&quot;,
+               &quot;cNotSignedTrConsumptionAmount&quot;:50.05
+            },
+            {
+               &quot;productTypeDesc&quot;:&quot;Commercial Lending&quot;,
+               &quot;authorizedRiskAmount&quot;:10.01,
+               &quot;committedContractsDisposedAmount&quot;:20.02,
+               &quot;uncommittedContractsDisposedAmount&quot;:30.03,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:40.04,
+               &quot;unauthorizedCount&quot;:2,
+               &quot;unavailableRiskAmount&quot;:50.05,
+               &quot;committedContractsNonDisposedAmount&quot;:60.06,
+               &quot;cutoffDate&quot;:&quot;2024-01-26&quot;,
+               &quot;cNotSignedTrConsumptionAmount&quot;:70.07
+            }
+         ]
+      },
+      {
+         &quot;consumptionLastLevelId&quot;:&quot;20200&quot;,
+         &quot;catalogs&quot;:[
+            {
+               &quot;productTypeDesc&quot;:&quot;Confirming&quot;,
+               &quot;authorizedRiskAmount&quot;:10.01,
+               &quot;committedContractsDisposedAmount&quot;:14605.52,
+               &quot;uncommittedContractsDisposedAmount&quot;:20.02,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:30.03,
+               &quot;unauthorizedCount&quot;:30,
+               &quot;unavailableRiskAmount&quot;:146055.54,
+               &quot;committedContractsNonDisposedAmount&quot;:40.04,
+               &quot;cutoffDate&quot;:&quot;2024-01-26&quot;,
+               &quot;cNotSignedTrConsumptionAmount&quot;:50.05
+            },
+            {
+               &quot;productTypeDesc&quot;:&quot;Overdrawns&quot;,
+               &quot;authorizedRiskAmount&quot;:110.01,
+               &quot;committedContractsDisposedAmount&quot;:118603.24,
+               &quot;uncommittedContractsDisposedAmount&quot;:120.02,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:130.03,
+               &quot;unauthorizedCount&quot;:2,
+               &quot;unavailableRiskAmount&quot;:1186103.26,
+               &quot;committedContractsNonDisposedAmount&quot;:140.04,
+               &quot;cutoffDate&quot;:&quot;2024-01-26&quot;,
+               &quot;cNotSignedTrConsumptionAmount&quot;:150.50
+            }
+         ]
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;searchDate=2023-08-31&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;searchDate=2023-08-31&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;searchDate=2023-08-31&amp;paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/consumption-summary?customerId=ES0182012851355&amp;searchDate=2023-08-31&amp;paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:4,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/consumption-summary#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

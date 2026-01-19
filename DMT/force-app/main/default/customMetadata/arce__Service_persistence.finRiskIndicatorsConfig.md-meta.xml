@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>finRiskIndicatorsConfig</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__JSON_input__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__api_field_Name__c</field>
+        <value xsi:type="xsd:string">{&quot;arce__equity_total_asset_20_type__c&quot;:&quot;EQUITY_TOTAL_ASSET_LESS_20%&quot;, &quot;arce__significant_variables_type__c&quot;:&quot;EXTRAORDINARY_ITEMS&quot;, &quot;arce__off_balance_treasury_type__c&quot;:&quot;TREASURY&quot;, &quot;arce__oper_guarantee_given_type__c&quot;:&quot;GUARANTEES&quot;, &quot;arce__off_balance_rlvnt_info_type__c&quot;:&quot;RELEVANT_INFORMATION&quot;, &quot;arce__cust_evolution_cyr_ind_type__c&quot;:&quot;ADVANCE_OF_THE_YEAR&quot;, &quot;arce__AFAS_projection_type__c&quot;:&quot;NEXT_2_3_YEARS_PROJECTION&quot;}</value>
+    </values>
+    <values>
+        <field>arce__iasoVariables__c</field>
+        <value xsi:type="xsd:string">{&quot;arce__AFAS_projection_type__c&quot;:&quot;arce__cust_proj_2yr_3yr_desc__c&quot;, &quot;arce__cust_evolution_cyr_ind_type__c&quot;:&quot;arce__cust_evolution_cyr_desc__c&quot;, &quot;arce__off_balance_treasury_type__c&quot;:&quot;arce__off_balance_treasury_desc__c&quot;, &quot;arce__oper_guarantee_given_type__c&quot;:&quot;arce__guarantee_given_desc__c&quot;, &quot;arce__off_balance_rlvnt_info_type__c&quot;:&quot;arce__off_balance_rlvnt_info_desc__c&quot;, &quot;arce__Syn_equity_type__c&quot;:&quot;arce__equity_desc__c&quot;,&quot;arce__significant_variables_type__c&quot;:&quot;arce__significant_variables_desc__c&quot;,&quot;arce__equity_total_asset_20_type__c&quot;:&quot;arce__equity_desc__c&quot;}</value>
+    </values>
+</CustomMetadata>

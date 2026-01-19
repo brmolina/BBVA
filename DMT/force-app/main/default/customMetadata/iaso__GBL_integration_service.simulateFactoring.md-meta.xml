@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>simulateFactoring</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsRPP_DEV</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">simulateFactoring</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONinput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:{
+      &quot;assignor&quot;:{
+         &quot;averagePD&quot;:12.55,
+         &quot;debtRating&quot;:&quot;AAA&quot;,
+         &quot;ead&quot;:421186.7,
+         &quot;expectedLoss&quot;:32.22,
+         &quot;internalRating&quot;:&quot;AAA&quot;,
+         &quot;ratingStandardAndPoors&quot;:&quot;A&quot;,
+         &quot;totalLimit&quot;:{
+            &quot;amount&quot;:233232.31,
+            &quot;currency&quot;:&quot;EUR&quot;
+         }
+      },
+      &quot;configuration&quot;:{
+         &quot;applyInssurance&quot;:true,
+         &quot;assignorRating&quot;:&quot;AAA&quot;,
+         &quot;averageDilution&quot;:9,
+         &quot;deviationDilution&quot;:4,
+         &quot;equivalencePDNonRated&quot;:&quot;CC-&quot;,
+         &quot;firstLossLevel&quot;:68.54,
+         &quot;goal&quot;:&quot;CALCULATE_FIRST_LOSS&quot;,
+         &quot;isInssuranceLiability&quot;:10,
+         &quot;lgdCapital&quot;:40.29,
+         &quot;maturity&quot;:2,
+         &quot;maxLimitNonRated&quot;:99.8,
+         &quot;numberSimulations&quot;:1000,
+         &quot;ratingSimLosses&quot;:&quot;A-&quot;,
+         &quot;sellerRating&quot;:&quot;B-&quot;
+      },
+      &quot;debtorsList&quot;:[
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;FR00000001&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;959800N60CEGKTATBG12&quot;,
+            &quot;name&quot;:&quot;TECH DATA CORPORATION&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;FR00000002&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;FR12345678&quot;,
+            &quot;name&quot;:&quot;DROEGE GROUP AG&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;FR00000003&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;959800N60CEGKTATBG16&quot;,
+            &quot;name&quot;:&quot;DCC PLC&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;&quot;,
+            &quot;name&quot;:&quot;Others&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;MX111122233&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;959800N60CEGKTATBG14&quot;,
+            &quot;name&quot;:&quot;WESTCOAST (HOLDINGS) LTD&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;FR33344321&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;959800N60CEGKTATBG20&quot;,
+            &quot;name&quot;:&quot;SHENGTANG DEVELOPMENT (YANGPU) CO., LTD&quot;
+         },
+         {
+            &quot;amountLimit&quot;:{
+               &quot;amount&quot;:233232.31,
+               &quot;currency&quot;:&quot;EUR&quot;
+            },
+            &quot;averagePD&quot;:2.22,
+            &quot;calculatedRating&quot;:&quot;BBB-1&quot;,
+            &quot;calculatedRatingStandardAndPoors&quot;:&quot;A&quot;,
+            &quot;document&quot;:&quot;DE43456545&quot;,
+            &quot;ead&quot;:1000000.25,
+            &quot;expectedLoss&quot;:323223.34,
+            &quot;internalRating&quot;:&quot;AAA&quot;,
+            &quot;kirb&quot;:2.22,
+            &quot;lei&quot;:&quot;DE43456545&quot;,
+            &quot;name&quot;:&quot;SYNNEX CORPORATION&quot;
+         }
+      ],
+      &quot;ratingStandardAndPoors&quot;:&quot;AA+&quot;,
+      &quot;resultsDilution&quot;:{
+         &quot;dilution&quot;:{
+            &quot;percentage&quot;:23.22,
+            &quot;value&quot;:32123
+         },
+         &quot;maximumInsuranceAmount&quot;:{
+            &quot;percentage&quot;:23.22,
+            &quot;value&quot;:32123
+         },
+         &quot;maximumLiability&quot;:{
+            &quot;percentage&quot;:23.22,
+            &quot;value&quot;:32123
+         },
+         &quot;riskRetention&quot;:{
+            &quot;percentage&quot;:23.22,
+            &quot;value&quot;:32123
+         },
+         &quot;seniorTranche&quot;:{
+            &quot;percentage&quot;:23.22,
+            &quot;value&quot;:32123
+         }
+      },
+      &quot;resultsStandardAndPoors&quot;:[
+         {
+            &quot;firstLoss&quot;:34.3,
+            &quot;objectiveRating&quot;:&quot;AA&quot;,
+            &quot;ratingLoss&quot;:&quot;CCC&quot;
+         },
+         {
+            &quot;firstLoss&quot;:34.3,
+            &quot;objectiveRating&quot;:&quot;AA&quot;,
+            &quot;ratingLoss&quot;:&quot;CCC&quot;
+         },
+         {
+            &quot;firstLoss&quot;:34.3,
+            &quot;objectiveRating&quot;:&quot;AA&quot;,
+            &quot;ratingLoss&quot;:&quot;CCC&quot;
+         }
+      ],
+      &quot;simulationResults&quot;:{
+         &quot;firstLoss&quot;:70.22,
+         &quot;lowerRating&quot;:&quot;BBB&quot;,
+         &quot;maxOrFixed&quot;:65.22,
+         &quot;ratingSenior&quot;:&quot;AAA&quot;,
+         &quot;simulatedRating&quot;:21.51,
+         &quot;totalLimit&quot;:324324.34
+      },
+      &quot;totalSimulation&quot;:{
+         &quot;ce&quot;:33.33,
+         &quot;equivalentRating&quot;:&quot;AAA&quot;,
+         &quot;rwa&quot;:122.22,
+         &quot;totalExpectedLoss&quot;:31231232,
+         &quot;totalKIRB&quot;:342.22
+      }
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

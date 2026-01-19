@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>economicGpParticipantPersist</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevMx</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">economicGpParticipantPersist</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#dynJSON#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:[{&quot;id&quot;:&quot;34321&quot;,&quot;legalName&quot;:&quot;GRUPO TESTBUS SA&quot;,&quot;businessDocument&quot;:{&quot;businessDocumentType&quot;:{&quot;id&quot;:&quot;RFC&quot;,&quot;name&quot;:&quot;Federal taxpayer registration.&quot;},&quot;country&quot;:{&quot;id&quot;:&quot;ESP&quot;},&quot;documentNumber&quot;:&quot;CFVB8911111&quot;},&quot;relation&quot;:{&quot;level&quot;:&quot;0&quot;,&quot;relationType&quot;:{&quot;id&quot;:&quot;patrimonial&quot;,&quot;name&quot;:&quot;PATRIMONIAL&quot;},&quot;startDate&quot;:&quot;2019-01-20&quot;,&quot;parentEconomicGroup&quot;:{&quot;id&quot;:&quot;1234&quot;}},&quot;isHolding&quot;:true,&quot;participantType&quot;:{&quot;id&quot;:&quot;SUBGROUP&quot;},&quot;vision&quot;:&quot;RISKS&quot;,&quot;participation&quot;:{&quot;directPercentage&quot;:20,&quot;indirectPercentage&quot;:70,&quot;computableRisk&quot;:12,&quot;totalPercentage&quot;:90},&quot;isConsolidated&quot;:true,&quot;hasFinancialSponsor&quot;:true}]}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#riskId#/participants/#participantId#/economic-groups/#economicGpId#/economic-group-participants</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

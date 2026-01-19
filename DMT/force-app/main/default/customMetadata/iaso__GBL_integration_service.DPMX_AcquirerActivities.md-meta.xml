@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DPMX_AcquirerActivities</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevDPMX</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DPMX_EndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;consumeruuid&quot;:&quot;#customerId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:[{&quot;id&quot;:&quot;17121335&quot;,&quot;businessInformation&quot;:{&quot;companyName&quot;:&quot;AVON COSMETICS MANUF ACTURING S DE RL DE CV&quot;,&quot;groupName&quot;:&quot;AVON PRODUCTS INC&quot;,&quot;familyAcquirer&quot;:&quot;Ventas_al_menudeo&quot;},&quot;discount&quot;:{&quot;debit&quot;:{&quot;itemizeType&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:1.75,&quot;currency&quot;:&quot;MXN&quot;}},&quot;percentage&quot;:{&quot;credit&quot;:2.38,&quot;international&quot;:3.0},&quot;monetaryCeiling&quot;:{&quot;amount&quot;:9.9999999E+14,&quot;currency&quot;:&quot;MXN&quot;},&quot;totalAmount&quot;:{&quot;amount&quot;:312842.62,&quot;currency&quot;:&quot;MXN&quot;}},&quot;ratesResult&quot;:&quot;NA&quot;,&quot;expenses&quot;:{&quot;totalAmount&quot;:{&quot;amount&quot;:-10213.27,&quot;currency&quot;:&quot;MXN&quot;},&quot;mit&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;}},&quot;yieldPercentage&quot;:0.7,&quot;taxAcquirer&quot;:{&quot;amount&quot;:129029.99,&quot;currency&quot;:&quot;MXN&quot;},&quot;transaction&quot;:{&quot;debit&quot;:{&quot;own&quot;:2677.0,&quot;thirdParty&quot;:4560.0},&quot;credit&quot;:{&quot;own&quot;:964.0,&quot;thirdParty&quot;:3243.0},&quot;international&quot;:22.0,&quot;acquirerAffiliation&quot;:11466.0},&quot;billing&quot;:{&quot;debit&quot;:{&quot;own&quot;:{&quot;amount&quot;:3647577.5,&quot;currency&quot;:&quot;MXN&quot;},&quot;thirdParty&quot;:{&quot;amount&quot;:5908805.5,&quot;currency&quot;:&quot;MXN&quot;}},&quot;credit&quot;:{&quot;own&quot;:{&quot;amount&quot;:1316010.2,&quot;currency&quot;:&quot;MXN&quot;},&quot;thirdParty&quot;:{&quot;amount&quot;:4749751.0,&quot;currency&quot;:&quot;MXN&quot;}},&quot;international&quot;:{&quot;amount&quot;:41360.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;totalAmount&quot;:{&quot;amount&quot;:15663504,&quot;currency&quot;:&quot;MXN&quot;}},&quot;tickets&quot;:{&quot;debit&quot;:{&quot;own&quot;:{&quot;amount&quot;:1362.56,&quot;currency&quot;:&quot;MXN&quot;},&quot;thirdParty&quot;:{&quot;amount&quot;:1295.79,&quot;currency&quot;:&quot;MXN&quot;}},&quot;credit&quot;:{&quot;own&quot;:{&quot;amount&quot;:1365.16,&quot;currency&quot;:&quot;MXN&quot;},&quot;thirdParty&quot;:{&quot;amount&quot;:1464.62,&quot;currency&quot;:&quot;MXN&quot;}},&quot;international&quot;:{&quot;amount&quot;:1880.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;totalAmount&quot;:{&quot;amount&quot;:1366.08,&quot;currency&quot;:&quot;MXN&quot;}},&quot;terminal&quot;:{&quot;id&quot;:2},&quot;percentage&quot;:{&quot;debit&quot;:{&quot;mixOwn&quot;:0.23,&quot;mixExternal&quot;:0.38},&quot;credit&quot;:{&quot;mixOwn&quot;:0.08,&quot;mixExternal&quot;:0.3},&quot;mixInternational&quot;:0.0,&quot;total&quot;:1.0},&quot;devices&quot;:{&quot;devicesNumber&quot;:2,&quot;pinPads&quot;:{&quot;pinPadsNumber&quot;:0}},&quot;ecommerce&quot;:&quot;S&quot;,&quot;informationDate&quot;:&quot;marzo-2023&quot;,&quot;commission&quot;:{&quot;billing&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;extraBilling&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;cellnet&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;opportunity&quot;:{&quot;lowBilling&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;posExtra&quot;:{&quot;amount&quot;:174.0,&quot;currency&quot;:&quot;MXN&quot;},&quot;cellnet&quot;:{&quot;amount&quot;:0.0,&quot;currency&quot;:&quot;MXN&quot;}}}}]}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">stores/v1/acquirer-activities/?category=#familia#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

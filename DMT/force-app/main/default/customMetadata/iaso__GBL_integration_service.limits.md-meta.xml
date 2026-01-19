@@ -1,0 +1,2658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>limits</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevMx</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">limits</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;memberId&quot;: &quot;ES0182100155201C&quot;,
+        &quot;memberType&quot;: &quot;SUBSIDIARY&quot;,
+        &quot;owners&quot;: [
+            {
+                &quot;id&quot;: &quot;ES0182100155201C&quot;,
+                &quot;ownerType&quot;: &quot;SUBSIDIARY&quot;,
+                &quot;riskSegment&quot;: &quot;SMALL_BUSSINESS&quot;,
+                &quot;limits&quot;: [
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100030001&quot;,
+                            &quot;name&quot;: &quot;AVALES ECO/FINAN&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 20000.0
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 20000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 20000.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 20000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100030002&quot;,
+                            &quot;name&quot;: &quot;AVALES TECNICOS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 30000.0
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 10000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 30000.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100030006&quot;,
+                            &quot;name&quot;: &quot;CREDITO DOCUMENTARIO / CARTAS DE CREDITO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 10000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 20000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100030012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100030018&quot;,
+                            &quot;name&quot;: &quot;SBLC&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000100039999&quot;,
+                            &quot;name&quot;: &quot;TOTAL FIRMA&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 5000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 5000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000199999999&quot;,
+                            &quot;name&quot;: &quot;TOTAL FIRMA&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200010003&quot;,
+                            &quot;name&quot;: &quot;CARTERA/DESCUENTO (NACIONAL/EXPORTACION)&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200010007&quot;,
+                            &quot;name&quot;: &quot;FACTORING CEDENTE&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200010012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200010019&quot;,
+                            &quot;name&quot;: &quot;SEPA&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200019999&quot;,
+                            &quot;name&quot;: &quot;TOTAL COMERCIAL&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 5500000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 5500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 5000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020004&quot;,
+                            &quot;name&quot;: &quot;CONFIRMING&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020005&quot;,
+                            &quot;name&quot;: &quot;CREDITO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 300.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020008&quot;,
+                            &quot;name&quot;: &quot;FACTORING DEUDOR / AGENCIA / RECURSO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020009&quot;,
+                            &quot;name&quot;: &quot;FINANCIACION IMPORTACION&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 6500000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 6500000.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020014&quot;,
+                            &quot;name&quot;: &quot;PRESTAMO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020016&quot;,
+                            &quot;name&quot;: &quot;TDC&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200020017&quot;,
+                            &quot;name&quot;: &quot;DESCUBIERTO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000200029999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO FINANCIERO C/P&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5500000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 6500000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 6500000.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 5000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 5500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 300.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000299999999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO FINANCIERO C/P Y COMERCIAL&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 6000000.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 6500000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 6500000.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 6500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 6000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 300.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040005&quot;,
+                            &quot;name&quot;: &quot;CREDITO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040011&quot;,
+                            &quot;name&quot;: &quot;LEASING INMOBILIARIO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040013&quot;,
+                            &quot;name&quot;: &quot;OTROS LEASING&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040014&quot;,
+                            &quot;name&quot;: &quot;PRESTAMO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300040015&quot;,
+                            &quot;name&quot;: &quot;RENTING&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 25000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 20000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 30000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300049999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO FINANCIERO L/P CON GARANTIA REAL&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 5500000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 5500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 5500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300050005&quot;,
+                            &quot;name&quot;: &quot;CREDITO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300050012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300050014&quot;,
+                            &quot;name&quot;: &quot;PRESTAMO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000300059999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO FINANCIERO L/P SIN GARANTIA REAL&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 5000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 5500000
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 5500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 5000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000399999999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO FINANCIERO L/P&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 5000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 7000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 7500000
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 7500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 7000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000400060010&quot;,
+                            &quot;name&quot;: &quot;IRS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000400060012&quot;,
+                            &quot;name&quot;: &quot;OTROS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000400060020&quot;,
+                            &quot;name&quot;: &quot;CCS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000400060021&quot;,
+                            &quot;name&quot;: &quot;FX/SEGURO CAMBIO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000400069999&quot;,
+                            &quot;name&quot;: &quot;TOTAL TESORERIA&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 0.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000499999999&quot;,
+                            &quot;name&quot;: &quot;TOTAL TESORERIA&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 1000000.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 1000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 1000000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 1000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 1000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000599999999&quot;,
+                            &quot;name&quot;: &quot;PROJECT FINANCE&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 7000000
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 7000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 7000000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 7000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 7000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;000699999999&quot;,
+                            &quot;name&quot;: &quot;OTROS RIESGOS&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 6000000,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 6000000
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 6000000
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 6000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 6000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0
+                            }
+                        }
+                    },
+                    {
+                        &quot;line&quot;: {
+                            &quot;id&quot;: &quot;999999999999&quot;,
+                            &quot;name&quot;: &quot;TOTAL RIESGO DE CREDITO CLIENTE/GRUPO&quot;,
+                            &quot;level&quot;: {}
+                        },
+                        &quot;authorizedLimit&quot;: {
+                            &quot;amount&quot;: 10000000.0,
+                            &quot;currency&quot;: &quot;EUR&quot;
+                        },
+                        &quot;proposedLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;digitalLimit&quot;: {
+                            &quot;amount&quot;: 0.0
+                        },
+                        &quot;directRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 7000000.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 7500000.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedUncommitted&quot;: {
+                                &quot;amount&quot;: 7500000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;disposed&quot;: {
+                                &quot;amount&quot;: 7000000,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 300.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        },
+                        &quot;indirectRisk&quot;: {
+                            &quot;formalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalFormalized&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;approvedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0
+                            },
+                            &quot;digitalApprovedCommitted&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;transitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            },
+                            &quot;digitalTransitory&quot;: {
+                                &quot;amount&quot;: 0.0,
+                                &quot;currency&quot;: &quot;EUR&quot;
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">?owner.ownerType=#ownerType#&amp;owner.id=#ownerId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

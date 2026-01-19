@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>parentSubsidiaryQualitativesMock</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">parentSubsidiaryQualitatives</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;relations&quot;: [
+            {
+                &quot;id&quot;: &quot;461&quot;,
+                &quot;riskSegment&quot;: &quot;LARGE_ENTERPRISES&quot;,
+                &quot;creationDate&quot;: &quot;2023-09-29T16:07:03.000+0200&quot;,
+                &quot;evaluationDate&quot;: &quot;2023-09-29T16:07:21.000+0200&quot;,
+                &quot;validationDate&quot;: &quot;2023-09-29T16:07:21.000+0200&quot;,
+                &quot;expirationDate&quot;: &quot;2025-03-18T02:00:00.000+0200&quot;,
+                &quot;participant&quot;: {
+                    &quot;name&quot;: &quot;DRAGADOS&quot;,
+                    &quot;country&quot;: &quot;ES&quot;
+                },
+                &quot;matrix&quot;: {
+                    &quot;id&quot;: &quot;ES0182009687897&quot;,
+                    &quot;name&quot;: &quot;ACS&quot;
+                },
+                &quot;status&quot;: {
+                    &quot;id&quot;: &quot;VALIDATED&quot;
+                },
+                &quot;businessAgent&quot;: {
+                    &quot;id&quot;: &quot;XE0000XX&quot;,
+                    &quot;fullName&quot;: &quot;Pato Donald&quot;
+                },
+                &quot;insulated&quot;: true,
+                &quot;relationParentSubsidiary&quot;: {
+                    &quot;id&quot;: &quot;4&quot;,
+                    &quot;description&quot;: &quot;Moderately Strategic&quot;
+                },
+                &quot;qualitativeVariables&quot;: [
+                    {
+                        &quot;id&quot;: &quot;06&quot;,
+                        &quot;value&quot;: &quot;2&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;07&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;11&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;12&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;13&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;14&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;15&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;16&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;17&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;18&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;19&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;20&quot;,
+                        &quot;value&quot;: &quot;1&quot;
+                    }
+                ]
+            }
+        ]
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#participantId#/parent-subsidiary?isValid=true</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

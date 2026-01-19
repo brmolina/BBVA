@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>servEngineSales</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">parentSubsidiaryQualitatives</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Persistence service engine sales</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot; : {
+    &quot;calculationResult&quot; : true,
+    &quot;country&quot; : &quot;ES&quot;,
+    &quot;unit&quot; : &quot;UNITS&quot;,
+&quot;currencyX&quot; : &quot;EUR&quot;,
+    &quot;model&quot; : {
+      &quot;id&quot; : &quot;2012P1IRP&quot;
+    },
+    &quot;riskSegment&quot; : &quot;LARGE_ENTERPRISES&quot;,
+    &quot;exchangeRate&quot; : {
+&quot;dateX&quot; : &quot;2023-12-01&quot;,
+      &quot;base&quot; : {
+&quot;currencyX&quot; : &quot;EUR&quot;
+      },
+      &quot;targets&quot; : [ {
+&quot;currencyX&quot; : &quot;EUR&quot;,
+        &quot;ratio&quot; : {
+          &quot;exchangeType&quot; : {
+            &quot;value&quot; : 1
+          }
+        }
+      } ]
+    },
+    &quot;relationParentSubsidiary&quot; : {
+      &quot;id&quot; : &quot;1&quot;,
+      &quot;description&quot; : &quot;Core&quot;
+    },
+    &quot;ratingType&quot; : {
+      &quot;id&quot; : &quot;RATING&quot;
+    },
+    &quot;entityType&quot; : {
+      &quot;id&quot; : &quot;ENTITY&quot;
+    },
+    &quot;bank&quot; : {
+      &quot;id&quot; : &quot;9011&quot;,
+      &quot;country&quot; : &quot;ES&quot;,
+      &quot;branch&quot; : {
+        &quot;id&quot; : &quot;&quot;
+      }
+    },
+    &quot;sales&quot; : [ {
+      &quot;sales&quot; : 3.604E+10,
+      &quot;year&quot; : &quot;2023&quot;,
+&quot;currencyX&quot; : &quot;EUR&quot;,
+      &quot;unit&quot; : &quot;UNITS&quot;,
+      &quot;financialStatement&quot; : {
+        &quot;id&quot; : &quot;0000000000000000488473&quot;,
+        &quot;adjustedIndicator&quot; : false,
+        &quot;financialStatementType&quot; : {
+          &quot;id&quot; : &quot;CONSOLIDATED&quot;
+        }
+      },
+      &quot;isAnchor&quot; : true,
+      &quot;exchangeRate&quot; : {
+&quot;dateX&quot; : &quot;2023-12-01&quot;,
+        &quot;base&quot; : {
+&quot;currencyX&quot; : &quot;EUR&quot;
+        },
+        &quot;targets&quot; : [ {
+&quot;currencyX&quot; : &quot;EUR&quot;,
+          &quot;ratio&quot; : {
+            &quot;exchangeType&quot; : {
+              &quot;value&quot; : 1
+            }
+          }
+        } ]
+      }
+    } ]
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#participantId#/engine-sales</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

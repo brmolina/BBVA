@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ModifyTicketRemedy_2</label>
+    <protected>false</protected>
+    <values>
+        <field>Authentication_Service__c</field>
+        <value xsi:type="xsd:string">cibGrantingTickets</value>
+    </values>
+    <values>
+        <field>Custom_Setting__c</field>
+        <value xsi:type="xsd:string">ModifyTicketRemedy_2</value>
+    </values>
+    <values>
+        <field>Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;actionType&quot;:&quot;creation&quot;,&quot;consumerId&quot;:&quot;#consumerId#&quot;,&quot;workLogs&quot;:[{&quot;description&quot;:&quot;#workLogs-description#&quot;,&quot;type&quot;:&quot;#workLogs-type#&quot;}]}</value>
+    </values>
+    <values>
+        <field>Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;foo&quot;:&quot;bar&quot;}</value>
+    </values>
+    <values>
+        <field>Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#consumerId#/workLog</value>
+    </values>
+    <values>
+        <field>Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

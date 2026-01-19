@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ValidateCustomer_SectionsDyfr</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__Config_Name__c</field>
+        <value xsi:type="xsd:string">ValidateCustomer_SectionsDyfr</value>
+    </values>
+    <values>
+        <field>arce__Custom_Permissions__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__Value1__c</field>
+        <value xsi:type="xsd:string">{&quot;s-01-500,s-02-500,t-01-500,t-02-500,t-03-500,g-01-500,o-01-500&quot;: [&quot;Proposal&quot;,&quot;Risk request&quot;,&quot;Policies&quot;]}</value>
+    </values>
+</CustomMetadata>

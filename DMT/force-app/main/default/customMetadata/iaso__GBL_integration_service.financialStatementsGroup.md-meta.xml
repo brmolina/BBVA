@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>financialStatementsGroup</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">financialStatementsGroup</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: &quot;70202018129&quot;,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;status&quot;: {
+                &quot;id&quot;: &quot;VALIDATED&quot;
+            },
+            &quot;financialStatementType&quot;: {
+                &quot;id&quot;: &quot;CONSOLIDATED&quot;
+            },
+            &quot;adjustedIndicator&quot;: false,
+            &quot;comments&quot;: &quot;N&quot;,
+            &quot;certification&quot;: {
+                &quot;certificationType&quot;: &quot;OF_MANAGEMENT&quot;
+            },
+            &quot;period&quot;: {
+                &quot;unit&quot;: &quot;MONTHS&quot;,
+                &quot;number&quot;: 12,
+                &quot;periodType&quot;: {
+                    &quot;id&quot;: &quot;ANNUAL&quot;
+                },
+                &quot;startDate&quot;: &quot;2020-01-01&quot;,
+                &quot;endDate&quot;: &quot;2020-12-31&quot;
+            },
+            &quot;segments&quot;: [
+                {
+                    &quot;id&quot;: &quot;EMPRESARIAL COMERCIO&quot;
+                }
+            ],
+            &quot;riskStudyModel&quot;: {
+                &quot;id&quot;: &quot;7007&quot;
+            },
+            &quot;finalizationDate&quot;: &quot;2020-03-26&quot;,
+            &quot;audit&quot;: {
+                &quot;auditor&quot;: {
+                    &quot;opinion&quot;: &quot;N&quot;
+                },
+                &quot;quality&quot;: &quot;LOW_MEDIUM_QUALITY&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;70202018069&quot;,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;status&quot;: {
+                &quot;id&quot;: &quot;FINALIZED&quot;
+            },
+            &quot;financialStatementType&quot;: {
+                &quot;id&quot;: &quot;CONSOLIDATED&quot;
+            },
+            &quot;adjustedIndicator&quot;: true,
+            &quot;comments&quot;: &quot;N&quot;,
+            &quot;certification&quot;: {
+                &quot;certificationType&quot;: &quot;OF_MANAGEMENT&quot;
+            },
+            &quot;period&quot;: {
+                &quot;unit&quot;: &quot;MONTHS&quot;,
+                &quot;number&quot;: 12,
+                &quot;periodType&quot;: {
+                    &quot;id&quot;: &quot;ANNUAL&quot;
+                },
+                &quot;startDate&quot;: &quot;2020-01-01&quot;,
+                &quot;endDate&quot;: &quot;2020-12-31&quot;
+            },
+            &quot;segments&quot;: [
+                {
+                    &quot;id&quot;: &quot;EMPRESARIAL COMERCIO&quot;
+                }
+            ],
+            &quot;riskStudyModel&quot;: {
+                &quot;id&quot;: &quot;7007&quot;
+            },
+            &quot;finalizationDate&quot;: &quot;2020-03-26&quot;,
+            &quot;audit&quot;: {
+                &quot;auditor&quot;: {
+                    &quot;opinion&quot;: &quot;N&quot;
+                },
+                &quot;quality&quot;: &quot;LOW_MEDIUM_QUALITY&quot;
+            }
+        },
+        {
+            &quot;id&quot;: &quot;70202017129&quot;,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;status&quot;: {
+                &quot;id&quot;: &quot;VALIDATED&quot;
+            },
+            &quot;financialStatementType&quot;: {
+                &quot;id&quot;: &quot;CONSOLIDATED&quot;
+            },
+            &quot;adjustedIndicator&quot;: false,
+            &quot;comments&quot;: &quot;N&quot;,
+            &quot;certification&quot;: {
+                &quot;certificationType&quot;: &quot;AUDITED&quot;
+            },
+            &quot;period&quot;: {
+                &quot;unit&quot;: &quot;MONTHS&quot;,
+                &quot;number&quot;: 12,
+                &quot;periodType&quot;: {
+                    &quot;id&quot;: &quot;ANNUAL&quot;
+                },
+                &quot;startDate&quot;: &quot;2020-01-01&quot;,
+                &quot;endDate&quot;: &quot;2020-12-31&quot;
+            },
+            &quot;segments&quot;: [
+                {
+                    &quot;id&quot;: &quot;EMPRESARIAL COMERCIO S2&quot;
+                }
+            ],
+            &quot;riskStudyModel&quot;: {
+                &quot;id&quot;: &quot;7023&quot;
+            },
+            &quot;finalizationDate&quot;: &quot;2020-08-10&quot;,
+            &quot;audit&quot;: {
+                &quot;auditor&quot;: {
+                    &quot;opinion&quot;: &quot;N&quot;,
+                    &quot;name&quot;: &quot;PAOLA ROJAS&quot;
+                },
+                &quot;auditDate&quot;: &quot;2020-07-18&quot;,
+                &quot;quality&quot;: &quot;HIGH_QUALITY&quot;
+            }
+        }
+    ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#customerId#/economic-data/financial-statements?pageSize=#pageSize#&amp;paginationKey=#paginationKey#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

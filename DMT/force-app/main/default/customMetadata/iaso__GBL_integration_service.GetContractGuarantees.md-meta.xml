@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetContractGuarantees</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000001&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2023-09-22&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2053-08-31&quot;,
+         &quot;guaranteeType&quot;:&quot;00100201&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;REAL HIPOTECARIA INMUEBLE GARAJE - TRASTERO (1)&quot;,
+         &quot;tradeCollateralType&quot;:&quot;I&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;Other Properties&quot;,
+         &quot;currentGuaranteedAmount&quot;:15951.75,
+         &quot;guaranteeCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;lastAppraisalDate&quot;:&quot;2023-09-08&quot;,
+         &quot;insuranceCoverPer&quot;:0.0,
+         &quot;guaranteeCurrentYearId&quot;:&quot;GNOF&quot;,
+         &quot;recordTypeName&quot;:&quot;Guarantee&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000002&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2022-09-20&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2032-09-30&quot;,
+         &quot;guaranteeType&quot;:&quot;00100200&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;REAL HIPOTECARIA INMUEBLE PRIMERA VIVIENDA (1)&quot;,
+         &quot;tradeCollateralType&quot;:&quot;P&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;First home&quot;,
+         &quot;currentGuaranteedAmount&quot;:153706.53,
+         &quot;guaranteeCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;lastAppraisalDate&quot;:&quot;2022-06-16&quot;,
+         &quot;insuranceCoverPer&quot;:0.0,
+         &quot;guaranteeCurrentYearId&quot;:&quot;GNOF&quot;,
+         &quot;recordTypeName&quot;:&quot;Guarantee&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000003&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2015-06-17&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2035-06-30&quot;,
+         &quot;guaranteeType&quot;:&quot;00100200&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;REAL HIPOTECARIA INMUEBLE SEGUNDA VIVIENDA (1)&quot;,
+         &quot;tradeCollateralType&quot;:&quot;S&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;Second house&quot;,
+         &quot;currentGuaranteedAmount&quot;:393255.0,
+         &quot;guaranteeCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;lastAppraisalDate&quot;:&quot;2015-05-22&quot;,
+         &quot;insuranceCoverPer&quot;:0.0,
+         &quot;guaranteeCurrentYearId&quot;:&quot;GNOF&quot;,
+         &quot;recordTypeName&quot;:&quot;Guarantee&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000004&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2023-01-31&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2030-01-31&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;(1)&quot;,
+         &quot;guarantorCustomerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;guarantorAmount&quot;:39263.39,
+         &quot;guarantorCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;guarantorMitigationPer&quot;:1.09464,
+         &quot;recordTypeName&quot;:&quot;Guarantor&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000005&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2021-02-23&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2022-04-27&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;(1)&quot;,
+         &quot;guarantorCustomerId&quot;:&quot;ES0000000000002&quot;,
+         &quot;guarantorCustomerNameDesc&quot;:&quot;TEST GUARANTOR CUSTOMER NAME 1&quot;,
+         &quot;guarantorAmount&quot;:80727.48,
+         &quot;guarantorCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;guarantorMitigationPer&quot;:1.865513,
+         &quot;recordTypeName&quot;:&quot;Guarantor&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;0000000000000000006&quot;,
+         &quot;contractId&quot;:&quot;ES0000000000000000000000000000000001XXXXXXXXX&quot;,
+         &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_0000000000000000001&quot;,
+         &quot;cutoffDate&quot;:&quot;2024-11-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2015-06-17&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2035-06-30&quot;,
+         &quot;guaranteeType&quot;:&quot;00100600&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;REAL VALORES CON COTIZACIÓN RENTA FIJA (1)&quot;,
+         &quot;tradeCollateralType&quot;:&quot;G&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;Financial Guarantee With Active Market&quot;,
+         &quot;currentGuaranteedAmount&quot;:99977.0,
+         &quot;guaranteeCurrencyId&quot;:&quot;EUR&quot;,
+         &quot;expirationSecuritiesDate&quot;:&quot;2099-12-31&quot;,
+         &quot;insuranceCoverPer&quot;:0.0,
+         &quot;guaranteeCurrentYearId&quot;:&quot;GF&quot;,
+         &quot;recordTypeName&quot;:&quot;Guarantee&quot;
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/contract-guarantees/?internalContractCodeDesc=00000000000000000000000001_0000000000000000001&amp;searchDate=2024-11-20&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/contract-guarantees/?internalContractCodeDesc=00000000000000000000000001_0000000000000000001&amp;searchDate=2024-11-20&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/contract-guarantees/?internalContractCodeDesc=00000000000000000000000001_0000000000000000001&amp;searchDate=2024-11-20&amp;paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/contract-guarantees/?internalContractCodeDesc=00000000000000000000000001_0000000000000000001&amp;searchDate=2024-11-20&amp;paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:6,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/contract-guarantees?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IFIS_financialStatementsGroup</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">financialStatementsGroup</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;0000000000000000410969&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2023-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2023-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 10907,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2023-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2024-08-03T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;deloitte&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;MariaJesusOrtega&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2024-08-03T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;MariaJesusOrtega&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2024-08-03T00:00:00.0+0200&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000410652&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2022-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2022-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 10907,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2022-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2023-08-05T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;deloitte&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;U516569&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2023-08-05T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;U506326&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2023-01-13T00:00:00.0+0100&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000410395&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2021-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2021-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 10907,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2021-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2023-01-13T00:00:00.0+0100&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;deloitte&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;U506326&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2023-01-13T00:00:00.0+0100&quot;
+        },
+        {
+          &quot;id&quot;: &quot;U506326&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2023-01-13T00:00:00.0+0100&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000072100&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2017-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2017-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 13023,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2017-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;DELOITTE SL&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;U509038&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;E021588&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2018-04-20T00:00:00.0+0200&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000072099&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2016-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2016-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 13472,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2016-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;DELOITTE SL&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;U509038&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;E031623&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2017-04-21T00:00:00.0+0200&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000072097&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2015-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2015-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 11810,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2015-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;DELOITTE SL&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;U509038&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2018-06-19T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;E021514&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2016-04-24T00:00:00.0+0200&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000072096&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2014-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2014-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 12559,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2014-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2017-04-21T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;DELOITTE SL&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;E031623&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2017-04-21T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;U509038&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2015-05-09T00:00:00.0+0200&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;0000000000000000072094&quot;,
+      &quot;source&quot;: &quot;EXTERNAL_DATABASE&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;status&quot;: { &quot;id&quot;: &quot;VALIDATED&quot; },
+      &quot;segments&quot;: [{ &quot;id&quot;: &quot;3 - Hold Sales&quot; }],
+      &quot;period&quot;: {
+        &quot;number&quot;: 12,
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;endDate&quot;: &quot;2013-12-31T00:00:00.0+0100&quot;,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2013-01-01T00:00:00.0+0100&quot;
+      },
+      &quot;employeesNumber&quot;: 4708,
+      &quot;productiveStructure&quot;: &quot;WHOLESALES&quot;,
+      &quot;factoredDate&quot;: &quot;2013-12-31T00:00:00.0+0100&quot;,
+      &quot;confidentialityIndicator&quot;: &quot;NO&quot;,
+      &quot;accountPlan&quot;: &quot;IFRS&quot;,
+      &quot;riskStudyModel&quot;: { &quot;id&quot;: &quot;BBVAIFT&quot; },
+      &quot;finalizationDate&quot;: &quot;2015-05-07T00:00:00.0+0200&quot;,
+      &quot;financialStatementAmounts&quot;: [],
+      &quot;adjustedIndicator&quot;: false,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;SINGLE&quot; },
+      &quot;audit&quot;: {
+        &quot;auditor&quot;: {
+          &quot;name&quot;: &quot;DELOITTE&quot;,
+          &quot;hasQualification&quot;: false,
+          &quot;opinion&quot;: &quot;Unqualif&apos;d&quot;
+        }
+      },
+      &quot;projection&quot;: { &quot;id&quot;: &quot;ACTUAL&quot; },
+      &quot;comments&quot;: &quot;n.d.&quot;,
+      &quot;taxModel&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;taxTemplate&quot;: { &quot;id&quot;: &quot;IS - Corporate Income Tax&quot; },
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;AUDITED&quot; },
+      &quot;perimeter&quot;: &quot;Unqualif&apos;d&quot;,
+      &quot;businessAgents&quot;: [
+        {
+          &quot;id&quot;: &quot;E021585&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CONFIRMED&quot; },
+          &quot;updateDate&quot;: &quot;2015-05-07T00:00:00.0+0200&quot;
+        },
+        {
+          &quot;id&quot;: &quot;U509038&quot;,
+          &quot;actionType&quot;: { &quot;id&quot;: &quot;CLOSED&quot; },
+          &quot;updateDate&quot;: &quot;2015-03-11T00:00:00.0+0100&quot;
+        }
+      ]
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#customerId#/economic-data/financial-statements?pageSize=#pageSize#&amp;paginationKey=#paginationKey#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

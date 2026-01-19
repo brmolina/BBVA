@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Dev Initiatives</label>
+    <protected>false</protected>
+    <values>
+        <field>intt__ClassName_CientFilter__c</field>
+        <value xsi:type="xsd:string">GBL_BookingInitiativeGroup</value>
+    </values>
+    <values>
+        <field>intt__ClassName_UserFilter__c</field>
+        <value xsi:type="xsd:string">GBL_TeamInitiative</value>
+    </values>
+    <values>
+        <field>intt__Custom_FilterClient__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>intt__Enable_TaskNotification__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>intt__InitialState_Initiative__c</field>
+        <value xsi:type="xsd:string">Draft</value>
+    </values>
+</CustomMetadata>

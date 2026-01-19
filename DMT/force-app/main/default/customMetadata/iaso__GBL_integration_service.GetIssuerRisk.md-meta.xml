@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetIssuerRisk</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: [{
+        &quot;originDataDate&quot;: &quot;2023-08-31&quot;,
+        &quot;glLocalAccountingEx1Id&quot;: &quot;Hold to Collect &amp; Sell&quot;,
+        &quot;groupName&quot;: &quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;: &quot;GTEST0000000001&quot;,
+        &quot;subGroupName&quot;: &quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;: &quot;-1000&quot;,
+        &quot;customerId&quot;: &quot;ES0000000000001&quot;,
+        &quot;customerName&quot;: &quot;Test - Customer Came 1&quot;,
+        &quot;taxpayerId&quot;: &quot;B00000001&quot;,
+        &quot;countryIfoId&quot;: &quot;ES&quot;,
+        &quot;residenceCountryId&quot;: &quot;ES&quot;,
+        &quot;countryId&quot;: &quot;ES&quot;,
+        &quot;issueId&quot;: &quot;Test - Issue Id 1&quot;,
+        &quot;portfolioCountryId&quot;: &quot;ES&quot;,
+        &quot;instrumentTypeCodeId&quot;: &quot;ISIN&quot;,
+        &quot;currencyPositionId&quot;: &quot;EUR&quot;,
+        &quot;assetTypeId&quot;: &quot;DEBT&quot;,
+        &quot;ibondSectorDesc&quot;: &quot;Corporates&quot;,
+        &quot;seniorityTextDesc&quot;: &quot;Sr Preferred&quot;,
+        &quot;pfolioFwkInvstPlcyDesc&quot;: &quot;BBVA SA COAP&quot;,
+        &quot;currencyId&quot;: &quot;EUR&quot;,
+        &quot;businessAreaName&quot;: &quot;COAP EUR&quot;,
+        &quot;totalNominalEurAmount&quot;: 5500000.0,
+        &quot;securMaturityDate&quot;: &quot;2025-06-16&quot;,
+        &quot;pfolioFrmWkInvstPlcyDesc&quot;: &quot;COAP e Inversiones&quot;,
+        &quot;cutoffDate&quot;: &quot;2023-09-11&quot;
+    }, {
+        &quot;originDataDate&quot;: &quot;2023-08-31&quot;,
+        &quot;glLocalAccountingEx1Id&quot;: &quot;Hold to Collect &amp; Sell&quot;,
+        &quot;groupName&quot;: &quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;: &quot;GTEST0000000001&quot;,
+        &quot;subGroupName&quot;: &quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;: &quot;-1000&quot;,
+        &quot;customerId&quot;: &quot;ES0000000000001&quot;,
+        &quot;customerName&quot;: &quot;Test - Customer Came 1&quot;,
+        &quot;taxpayerId&quot;: &quot;B00000001&quot;,
+        &quot;countryIfoId&quot;: &quot;ES&quot;,
+        &quot;residenceCountryId&quot;: &quot;ES&quot;,
+        &quot;countryId&quot;: &quot;ES&quot;,
+        &quot;issueId&quot;: &quot;Test - Issue Id 2&quot;,
+        &quot;portfolioCountryId&quot;: &quot;ES&quot;,
+        &quot;instrumentTypeCodeId&quot;: &quot;ISIN&quot;,
+        &quot;currencyPositionId&quot;: &quot;EUR&quot;,
+        &quot;assetTypeId&quot;: &quot;DEBT&quot;,
+        &quot;ibondSectorDesc&quot;: &quot;Corporates&quot;,
+        &quot;seniorityTextDesc&quot;: &quot;Sr Preferred&quot;,
+        &quot;pfolioFwkInvstPlcyDesc&quot;: &quot;BBVA SA Seguros&quot;,
+        &quot;currencyId&quot;: &quot;EUR&quot;,
+        &quot;businessAreaName&quot;: &quot;EyP+RE&quot;,
+        &quot;totalNominalEurAmount&quot;: 1.21E+7,
+        &quot;securMaturityDate&quot;: &quot;2023-12-04&quot;,
+        &quot;pfolioFrmWkInvstPlcyDesc&quot;: &quot;Seguros y Pensiones&quot;,
+        &quot;cutoffDate&quot;: &quot;2023-09-11&quot;
+    }, {
+        &quot;originDataDate&quot;: &quot;2023-08-31&quot;,
+        &quot;glLocalAccountingEx1Id&quot;: &quot;Hold to Collect &amp; Sell&quot;,
+        &quot;groupName&quot;: &quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;: &quot;GTEST0000000001&quot;,
+        &quot;subGroupName&quot;: &quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;: &quot;-1000&quot;,
+        &quot;customerId&quot;: &quot;ES0000000000001&quot;,
+        &quot;customerName&quot;: &quot;Test - Customer Came 1&quot;,
+        &quot;taxpayerId&quot;: &quot;B00000001&quot;,
+        &quot;countryIfoId&quot;: &quot;ES&quot;,
+        &quot;residenceCountryId&quot;: &quot;ES&quot;,
+        &quot;countryId&quot;: &quot;ES&quot;,
+        &quot;issueId&quot;: &quot;Test - Issue Id 3&quot;,
+        &quot;portfolioCountryId&quot;: &quot;ES&quot;,
+        &quot;instrumentTypeCodeId&quot;: &quot;ISIN&quot;,
+        &quot;currencyPositionId&quot;: &quot;EUR&quot;,
+        &quot;assetTypeId&quot;: &quot;DEBT&quot;,
+        &quot;ibondSectorDesc&quot;: &quot;Corporates&quot;,
+        &quot;seniorityTextDesc&quot;: &quot;Sr Preferred&quot;,
+        &quot;pfolioFwkInvstPlcyDesc&quot;: &quot;BBVA SA Seguros&quot;,
+        &quot;currencyId&quot;: &quot;EUR&quot;,
+        &quot;businessAreaName&quot;: &quot;EyP+RE&quot;,
+        &quot;totalNominalEurAmount&quot;: 1.12E+7,
+        &quot;securMaturityDate&quot;: &quot;2024-02-20&quot;,
+        &quot;pfolioFrmWkInvstPlcyDesc&quot;: &quot;Seguros y Pensiones&quot;,
+        &quot;cutoffDate&quot;: &quot;2023-09-11&quot;
+    }, {
+        &quot;originDataDate&quot;: &quot;2023-08-31&quot;,
+        &quot;glLocalAccountingEx1Id&quot;: &quot;Hold to Collect &amp; Sell&quot;,
+        &quot;groupName&quot;: &quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;: &quot;GTEST0000000001&quot;,
+        &quot;subGroupName&quot;: &quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;: &quot;-1000&quot;,
+        &quot;customerId&quot;: &quot;ES0000000000001&quot;,
+        &quot;customerName&quot;: &quot;Test - Customer Came 1&quot;,
+        &quot;taxpayerId&quot;: &quot;B00000001&quot;,
+        &quot;countryIfoId&quot;: &quot;ES&quot;,
+        &quot;residenceCountryId&quot;: &quot;ES&quot;,
+        &quot;countryId&quot;: &quot;ES&quot;,
+        &quot;issueId&quot;: &quot;Test - Issue Id 1&quot;,
+        &quot;portfolioCountryId&quot;: &quot;ES&quot;,
+        &quot;instrumentTypeCodeId&quot;: &quot;ISIN&quot;,
+        &quot;currencyPositionId&quot;: &quot;EUR&quot;,
+        &quot;assetTypeId&quot;: &quot;DEBT&quot;,
+        &quot;ibondSectorDesc&quot;: &quot;Corporates&quot;,
+        &quot;seniorityTextDesc&quot;: &quot;Sr Preferred&quot;,
+        &quot;pfolioFwkInvstPlcyDesc&quot;: &quot;BBVA SA Seguros&quot;,
+        &quot;currencyId&quot;: &quot;EUR&quot;,
+        &quot;businessAreaName&quot;: &quot;EyP+RE&quot;,
+        &quot;totalNominalEurAmount&quot;: 6000000.0,
+        &quot;securMaturityDate&quot;: &quot;2025-06-16&quot;,
+        &quot;pfolioFrmWkInvstPlcyDesc&quot;: &quot;Seguros y Pensiones&quot;,
+        &quot;cutoffDate&quot;: &quot;2023-09-11&quot;
+    }, {
+        &quot;originDataDate&quot;: &quot;2023-09-08&quot;,
+        &quot;glLocalAccountingEx1Id&quot;: &quot;Held for Trading&quot;,
+        &quot;groupName&quot;: &quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;: &quot;GTEST0000000001&quot;,
+        &quot;subGroupName&quot;: &quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;: &quot;-1000&quot;,
+        &quot;customerId&quot;: &quot;ES0000000000001&quot;,
+        &quot;customerName&quot;: &quot;Test - Customer Came 1&quot;,
+        &quot;taxpayerId&quot;: &quot;B00000001&quot;,
+        &quot;countryIfoId&quot;: &quot;ES&quot;,
+        &quot;residenceCountryId&quot;: &quot;ES&quot;,
+        &quot;countryId&quot;: &quot;ES&quot;,
+        &quot;issueId&quot;: &quot;Test - Issue Id 2&quot;,
+        &quot;portfolioCountryId&quot;: &quot;ES&quot;,
+        &quot;instrumentTypeCodeId&quot;: &quot;-&quot;,
+        &quot;currencyPositionId&quot;: &quot;EUR&quot;,
+        &quot;assetTypeId&quot;: &quot;DEBT&quot;,
+        &quot;ibondSectorDesc&quot;: &quot;Corporates&quot;,
+        &quot;seniorityTextDesc&quot;: &quot;Sr Preferred&quot;,
+        &quot;pfolioFwkInvstPlcyDesc&quot;: &quot;BBVA SA Trading&quot;,
+        &quot;currencyId&quot;: &quot;EUR&quot;,
+        &quot;businessAreaName&quot;: &quot;CIB S.A&quot;,
+        &quot;totalNominalEurAmount&quot;: 1000000.0,
+        &quot;securMaturityDate&quot;: &quot;2023-12-04&quot;,
+        &quot;pfolioFrmWkInvstPlcyDesc&quot;: &quot;Trading&quot;,
+        &quot;cutoffDate&quot;: &quot;2023-09-11&quot;
+    }],
+    &quot;pagination&quot;: {
+        &quot;links&quot;: {
+            &quot;first&quot;: &quot;/risk-position/v0/issuer-risk?customerId=ES0000000000001&amp;searchDate=2023-09-11&quot;,
+            &quot;last&quot;: &quot;/risk-position/v0/issuer-risk?customerId=ES0000000000001&amp;searchDate=2023-09-11&amp;paginationKey=LAST&quot;,
+            &quot;previous&quot;: &quot;/risk-position/v0/issuer-risk?customerId=ES0000000000001&amp;searchDate=2023-09-11&amp;paginationKey=0&amp;pageSize=300&quot;,
+            &quot;next&quot;: &quot;/risk-position/v0/issuer-risk?customerId=ES0000000000001&amp;searchDate=2023-09-11&amp;paginationKey=2&amp;pageSize=300&quot;
+        },
+        &quot;page&quot;: 1,
+        &quot;totalPages&quot;: 1,
+        &quot;totalElements&quot;: 5,
+        &quot;pageSize&quot;: 300
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/issuer-risk?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

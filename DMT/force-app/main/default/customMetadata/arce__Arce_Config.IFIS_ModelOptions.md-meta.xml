@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IFIS_ModelOptions</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__Config_Name__c</field>
+        <value xsi:type="xsd:string">IFIS_ModelOptions</value>
+    </values>
+    <values>
+        <field>arce__Custom_Permissions__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__Value1__c</field>
+        <value xsi:type="xsd:string">IFIS-RTC-BAN:Banks;IFIS-RTC-FNB:Non Banking Financial institution (NBF);IFIS-RTC-INS:Insurance companies;IFIS-RTC-INV:Investment managers, others;IFIS-RTC-ALT:Alternative Investment funds</value>
+    </values>
+</CustomMetadata>

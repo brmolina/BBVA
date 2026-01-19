@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>KPI_getCatalogIdRecords</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">KPI_GrantingTicket_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">KPI_EnterpriseSustainability_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {&quot;id&quot;: &quot;ESGKPI01&quot;, &quot;description&quot;: &quot;Emisiones de Carbono&quot;},
+    {&quot;id&quot;: &quot;ESGKPI02&quot;, &quot;description&quot;: &quot;Agua&quot;},
+    {&quot;id&quot;: &quot;ESGKPI03&quot;, &quot;description&quot;: &quot;Biodiversidad&quot;},
+    {&quot;id&quot;: &quot;ESGKPI04&quot;, &quot;description&quot;: &quot;Contaminación&quot;},
+    {&quot;id&quot;: &quot;ESGKPI05&quot;, &quot;description&quot;: &quot;Desperdicio&quot;},
+    {&quot;id&quot;: &quot;ESGKPI06&quot;, &quot;description&quot;: &quot;Cadena de Suministro&quot;},
+    {&quot;id&quot;: &quot;ESGKPI07&quot;, &quot;description&quot;: &quot;Productos o Servicios Sostenibles&quot;},
+    {&quot;id&quot;: &quot;ESGKPI08&quot;, &quot;description&quot;: &quot;Rating ESG&quot;},
+    {&quot;id&quot;: &quot;ESGKPI09&quot;, &quot;description&quot;: &quot;Salud y Seguridad&quot;},
+    {&quot;id&quot;: &quot;ESGKPI10&quot;, &quot;description&quot;: &quot;Diversidad&quot;},
+    {&quot;id&quot;: &quot;ESGKPI11&quot;, &quot;description&quot;: &quot;Embalaje&quot;},
+    {&quot;id&quot;: &quot;ESGKPI12&quot;, &quot;description&quot;: &quot;Consumo de Energia&quot;},
+    {&quot;id&quot;: &quot;ESGKPI13&quot;, &quot;description&quot;: &quot;Otro no materiales&quot;},
+    {&quot;id&quot;: &quot;ESGKPI14&quot;, &quot;description&quot;: &quot;Otros&quot;}
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/catalogs/#catalogId#/records</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

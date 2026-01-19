@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>eSalesButtons</label>
+    <protected>false</protected>
+    <values>
+        <field>dwp_dbpn__button_collection_unique_id__c</field>
+        <value xsi:type="xsd:string">eSalesButtons</value>
+    </values>
+    <values>
+        <field>dwp_dbpn__buttons_status_apex_class_name__c</field>
+        <value xsi:type="xsd:string">EsalesDynamicButtonsHandler</value>
+    </values>
+    <values>
+        <field>dwp_dbpn__no_buttons_message_custom_label_api_name__c</field>
+        <value xsi:type="xsd:string">Button_Collection_No_Actions</value>
+    </values>
+    <values>
+        <field>dwp_dbpn__use_new_interface__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

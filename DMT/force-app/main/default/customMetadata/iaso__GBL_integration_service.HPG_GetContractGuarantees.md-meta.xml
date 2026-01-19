@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>HPG_GetContractGuarantees</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">HPG_GrantingTicketPRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CommonEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;guaranteeId&quot;:&quot;Test - guaranteeId 1&quot;,
+         &quot;contractId&quot;:&quot;Test - contractId 1&quot;,
+         &quot;localContractNumberId&quot;:&quot;Test - localContractNumberId 1&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;Test_internalContractCodeDesc&quot;,
+         &quot;cutoffDate&quot;:&quot;2023-02-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2023-02-20&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2023-03-20&quot;,
+         &quot;guaranteeType&quot;:&quot;Test - guaranteeType 1&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;Test - guaranteeTypeDesc 1&quot;,
+         &quot;tradeCollateralType&quot;:&quot;Test - tradeCollateralType 1&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;Test - tradeGuarranteeCollateralTypeDesc 1&quot;,
+         &quot;guarantorCustomerId&quot;:&quot;Test - guarantorCustomerId 1&quot;,
+         &quot;guarantorCustomerNameDesc&quot;:&quot;Test - guarantorCustomerNameDesc 1&quot;,
+         &quot;guarantorAmount&quot;:10,
+         &quot;currentGuaranteedAmount&quot;:20,
+         &quot;guaranteeCurrencyId&quot;:&quot;Test - guaranteeCurrencyId 1&quot;,
+         &quot;guarantorCurrencyId&quot;:&quot;Test - guarantorCurrencyId 1&quot;,
+         &quot;guarantorMitigationPer&quot;:30,
+         &quot;lastAppraisalDate&quot;:&quot;2023-03-20&quot;,
+         &quot;assetId&quot;:&quot;Test - assetId 1&quot;,
+         &quot;expirationSecuritiesDate&quot;:&quot;2023-03-20&quot;,
+         &quot;insuranceCoverPer&quot;:40,
+         &quot;guaranteeCurrentYearId&quot;:&quot;Test - guaranteeCurrentYearId 1&quot;,
+         &quot;recordTypeName&quot;:&quot;Test - recordTypeName 1&quot;
+      },
+      {
+         &quot;guaranteeId&quot;:&quot;Test - guaranteeId 2&quot;,
+         &quot;contractId&quot;:&quot;Test - contractId 2&quot;,
+         &quot;localContractNumberId&quot;:&quot;Test - localContractNumberId 2&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;Test_internalContractCodeDesc&quot;,
+         &quot;cutoffDate&quot;:&quot;2023-04-20&quot;,
+         &quot;beginningGuaranteeDate&quot;:&quot;2023-04-20&quot;,
+         &quot;endGuaranteeDate&quot;:&quot;2023-05-20&quot;,
+         &quot;guaranteeType&quot;:&quot;Test - guaranteeType 2&quot;,
+         &quot;guaranteeTypeDesc&quot;:&quot;Test - guaranteeTypeDesc 2&quot;,
+         &quot;tradeCollateralType&quot;:&quot;Test - tradeCollateralType 2&quot;,
+         &quot;tradeGuarranteeCollateralTypeDesc&quot;:&quot;Test - tradeGuarranteeCollateralTypeDesc 2&quot;,
+         &quot;guarantorCustomerId&quot;:&quot;Test - guarantorCustomerId 2&quot;,
+         &quot;guarantorCustomerNameDesc&quot;:&quot;Test - guarantorCustomerNameDesc 2&quot;,
+         &quot;guarantorAmount&quot;:10,
+         &quot;currentGuaranteedAmount&quot;:20,
+         &quot;guaranteeCurrencyId&quot;:&quot;Test - guaranteeCurrencyId 2&quot;,
+         &quot;guarantorCurrencyId&quot;:&quot;Test - guarantorCurrencyId 2&quot;,
+         &quot;guarantorMitigationPer&quot;:30,
+         &quot;lastAppraisalDate&quot;:&quot;2023-05-20&quot;,
+         &quot;assetId&quot;:&quot;Test - assetId 2&quot;,
+         &quot;expirationSecuritiesDate&quot;:&quot;2023-05-20&quot;,
+         &quot;insuranceCoverPer&quot;:40,
+         &quot;guaranteeCurrentYearId&quot;:&quot;Test - guaranteeCurrentYearId 2&quot;,
+         &quot;recordTypeName&quot;:&quot;Test - recordTypeName 2&quot;
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/contract-guarantees?internalContractCodeDesc=Test_internalContractCodeDesc&amp;searchDate=2024-01-26&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/contract-guarantees?internalContractCodeDesc=Test_internalContractCodeDesc&amp;searchDate=2024-01-26&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/contract-guarantees?internalContractCodeDesc=Test_internalContractCodeDesc&amp;searchDate=2024-01-26&amp;paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/contract-guarantees?internalContractCodeDesc=Test_internalContractCodeDesc&amp;searchDate=2024-01-26&amp;paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:2,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/contract-guarantees?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

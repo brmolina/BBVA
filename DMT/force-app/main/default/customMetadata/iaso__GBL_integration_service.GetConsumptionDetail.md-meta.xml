@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetConsumptionDetail</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CommonEndPoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;B00000001&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;detailConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;contractRegisterDate&quot;:&quot;2020-10-09&quot;,
+               &quot;currentExpirationDate&quot;:&quot;2024-03-01&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;branchId&quot;:&quot;003994&quot;,
+               &quot;activityRefinancedType&quot;:&quot;N&quot;,
+               &quot;contractDayDefault&quot;:0,
+               &quot;contractId&quot;:&quot;00000000000000000000000001_1&quot;,
+               &quot;localContractNumberId&quot;:&quot;00000000000000000000000001&quot;,
+               &quot;holdingProductId&quot;:&quot;0002&quot;,
+               &quot;globalProductId&quot;:&quot;0002&quot;,
+               &quot;entityId&quot;:&quot;0182&quot;,
+               &quot;productTypeDesc&quot;:&quot;Confirming&quot;,
+               &quot;capitalCalculationMtType&quot;:&quot;A&quot;,
+               &quot;finalStageType&quot;:&quot;1&quot;,
+               &quot;individualizedCustType&quot;:&quot;N&quot;,
+               &quot;individualizedContType&quot;:&quot;N&quot;,
+               &quot;maturityTermNumber&quot;:0.0,
+               &quot;currentGuaranteedAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:961705.71,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:0.0,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;pendingUnauthorizedAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:961705.71,
+               &quot;eadAmount&quot;:961705.71,
+               &quot;finalProvisionAmount&quot;:402.85,
+               &quot;regyCapitalEadAmount&quot;:961705.71,
+               &quot;capitalRegyAmount&quot;:23033.03,
+               &quot;regyCapitalAprAmount&quot;:287912.88,
+               &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+               &quot;economicCapitalEad1Amount&quot;:213423.23,
+               &quot;economicCapitalAprAmount&quot;:112882.97,
+               &quot;economicCapitalAmount&quot;:193595.57,
+               &quot;cNotSignedTrConsumptionAmount&quot;:821376.36,
+               &quot;lineConsumptionExclusionIndType&quot;:&quot;emanree6&quot;,
+               &quot;majorityShareholderRiskIndType&quot;:&quot;sz3lgtnk&quot;,
+               &quot;directIndirectRiskType&quot;:&quot;owrikujmqb&quot;,
+               &quot;sustainabilityMarkId&quot;:&quot;mrlk2flvta&quot;,
+               &quot;sustCategoryTradePerDesc&quot;:&quot;Test - sustCategoryTradePerDesc 1&quot;,
+               &quot;originatesDataGeographyId&quot;:&quot;Test - originatesDataGeographyId 1&quot;,
+               &quot;frequencyType&quot;:&quot;daily&quot;,
+               &quot;cibSegmentType&quot;:&quot;Test - cibSegmentType 1&quot;,
+               &quot;bulletIndType&quot;:&quot;z&quot;,
+               &quot;collateralTypeName&quot;:&quot;Test - collateralTypeName 1&quot;,
+               &quot;nonRealCollateralDesc&quot;:&quot;Test - nonRealCollateralDesc 1&quot;,
+               &quot;expertCriteriaRiskType&quot;:&quot;ay6u1r&quot;
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;contractRegisterDate&quot;:&quot;2023-10-18&quot;,
+               &quot;currentExpirationDate&quot;:&quot;9999-12-31&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;branchId&quot;:&quot;003994&quot;,
+               &quot;activityRefinancedType&quot;:&quot;N&quot;,
+               &quot;contractDayDefault&quot;:0,
+               &quot;contractId&quot;:&quot;00000000000000000000000002_1&quot;,
+               &quot;localContractNumberId&quot;:&quot;00000000000000000000000002&quot;,
+               &quot;holdingProductId&quot;:&quot;0012&quot;,
+               &quot;globalProductId&quot;:&quot;0012&quot;,
+               &quot;entityId&quot;:&quot;0182&quot;,
+               &quot;productTypeDesc&quot;:&quot;Commercial Credit Cards&quot;,
+               &quot;capitalCalculationMtType&quot;:&quot;A&quot;,
+               &quot;finalStageType&quot;:&quot;1&quot;,
+               &quot;individualizedCustType&quot;:&quot;N&quot;,
+               &quot;individualizedContType&quot;:&quot;N&quot;,
+               &quot;maturityTermNumber&quot;:0.0,
+               &quot;currentGuaranteedAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:649.11,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:1750.89,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;pendingUnauthorizedAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:2400.0,
+               &quot;eadAmount&quot;:851.82,
+               &quot;finalProvisionAmount&quot;:0.83,
+               &quot;regyCapitalEadAmount&quot;:811.69,
+               &quot;capitalRegyAmount&quot;:35.03,
+               &quot;regyCapitalAprAmount&quot;:437.88,
+               &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+               &quot;economicCapitalEad1Amount&quot;:64343.64,
+               &quot;economicCapitalAprAmount&quot;:11288.29,
+               &quot;economicCapitalAmount&quot;:193595.57,
+               &quot;cNotSignedTrConsumptionAmount&quot;:821376.36,
+               &quot;lineConsumptionExclusionIndType&quot;:&quot;emanree6&quot;,
+               &quot;majorityShareholderRiskIndType&quot;:&quot;sz3lgtnk&quot;,
+               &quot;directIndirectRiskType&quot;:&quot;owrikujmqb&quot;,
+               &quot;sustainabilityMarkId&quot;:&quot;mrlk2flvta&quot;,
+               &quot;sustCategoryTradePerDesc&quot;:&quot;Test - sustCategoryTradePerDesc 2&quot;,
+               &quot;originatesDataGeographyId&quot;:&quot;Test - originatesDataGeographyId 2&quot;,
+               &quot;frequencyType&quot;:&quot;daily&quot;,
+               &quot;cibSegmentType&quot;:&quot;Test - cibSegmentType 2&quot;,
+               &quot;bulletIndType&quot;:&quot;z&quot;,
+               &quot;collateralTypeName&quot;:&quot;Test - collateralTypeName 2&quot;,
+               &quot;nonRealCollateralDesc&quot;:&quot;Test - nonRealCollateralDesc 2&quot;,
+               &quot;expertCriteriaRiskType&quot;:&quot;ay6u1r&quot;
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;contractRegisterDate&quot;:&quot;2023-11-15&quot;,
+               &quot;currentExpirationDate&quot;:&quot;9999-12-31&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;branchId&quot;:&quot;003994&quot;,
+               &quot;activityRefinancedType&quot;:&quot;N&quot;,
+               &quot;contractDayDefault&quot;:0,
+               &quot;contractId&quot;:&quot;00000000000000000000000003_1&quot;,
+               &quot;localContractNumberId&quot;:&quot;00000000000000000000000003&quot;,
+               &quot;holdingProductId&quot;:&quot;0012&quot;,
+               &quot;globalProductId&quot;:&quot;0012&quot;,
+               &quot;entityId&quot;:&quot;0182&quot;,
+               &quot;productTypeDesc&quot;:&quot;Commercial Credit Cards&quot;,
+               &quot;capitalCalculationMtType&quot;:&quot;A&quot;,
+               &quot;finalStageType&quot;:&quot;1&quot;,
+               &quot;individualizedCustType&quot;:&quot;N&quot;,
+               &quot;individualizedContType&quot;:&quot;N&quot;,
+               &quot;maturityTermNumber&quot;:0.0,
+               &quot;currentGuaranteedAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:1375.55,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:1024.45,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;pendingUnauthorizedAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:2400.0,
+               &quot;eadAmount&quot;:1375.55,
+               &quot;finalProvisionAmount&quot;:1.35,
+               &quot;regyCapitalEadAmount&quot;:1375.55,
+               &quot;capitalRegyAmount&quot;:59.37,
+               &quot;regyCapitalAprAmount&quot;:742.13,
+               &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+               &quot;economicCapitalEad1Amount&quot;:64343.64,
+               &quot;economicCapitalAprAmount&quot;:112882.97,
+               &quot;economicCapitalAmount&quot;:193595.57,
+               &quot;cNotSignedTrConsumptionAmount&quot;:82137.63,
+               &quot;lineConsumptionExclusionIndType&quot;:&quot;emanree6&quot;,
+               &quot;majorityShareholderRiskIndType&quot;:&quot;sz3lgtnk&quot;,
+               &quot;directIndirectRiskType&quot;:&quot;owrikujmqb&quot;,
+               &quot;sustainabilityMarkId&quot;:&quot;mrlk2flvta&quot;,
+               &quot;sustCategoryTradePerDesc&quot;:&quot;Test - sustCategoryTradePerDesc 3&quot;,
+               &quot;originatesDataGeographyId&quot;:&quot;Test - originatesDataGeographyId 3&quot;,
+               &quot;frequencyType&quot;:&quot;daily&quot;,
+               &quot;cibSegmentType&quot;:&quot;Test - cibSegmentType 3&quot;,
+               &quot;bulletIndType&quot;:&quot;z&quot;,
+               &quot;collateralTypeName&quot;:&quot;Test - collateralTypeName 3&quot;,
+               &quot;nonRealCollateralDesc&quot;:&quot;Test - nonRealCollateralDesc 3&quot;,
+               &quot;expertCriteriaRiskType&quot;:&quot;ay6u1r&quot;
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;contractRegisterDate&quot;:&quot;2023-11-15&quot;,
+               &quot;currentExpirationDate&quot;:&quot;9999-12-31&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;branchId&quot;:&quot;003994&quot;,
+               &quot;activityRefinancedType&quot;:&quot;N&quot;,
+               &quot;contractDayDefault&quot;:0,
+               &quot;contractId&quot;:&quot;00000000000000000000000004_1&quot;,
+               &quot;localContractNumberId&quot;:&quot;00000000000000000000000004&quot;,
+               &quot;holdingProductId&quot;:&quot;0012&quot;,
+               &quot;globalProductId&quot;:&quot;0012&quot;,
+               &quot;entityId&quot;:&quot;0182&quot;,
+               &quot;productTypeDesc&quot;:&quot;Commercial Credit Cards&quot;,
+               &quot;capitalCalculationMtType&quot;:&quot;A&quot;,
+               &quot;finalStageType&quot;:&quot;1&quot;,
+               &quot;individualizedCustType&quot;:&quot;N&quot;,
+               &quot;individualizedContType&quot;:&quot;N&quot;,
+               &quot;maturityTermNumber&quot;:0.0,
+               &quot;currentGuaranteedAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:312.5,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:2087.5,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;pendingUnauthorizedAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:2400.0,
+               &quot;eadAmount&quot;:614.04,
+               &quot;finalProvisionAmount&quot;:0.6,
+               &quot;regyCapitalEadAmount&quot;:506.34,
+               &quot;capitalRegyAmount&quot;:21.85,
+               &quot;regyCapitalAprAmount&quot;:273.13,
+               &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+               &quot;economicCapitalEad1Amount&quot;:64343.64,
+               &quot;economicCapitalAprAmount&quot;:112882.97,
+               &quot;economicCapitalAmount&quot;:19359.55,
+               &quot;cNotSignedTrConsumptionAmount&quot;:821376.36,
+               &quot;lineConsumptionExclusionIndType&quot;:&quot;emanree6&quot;,
+               &quot;majorityShareholderRiskIndType&quot;:&quot;sz3lgtnk&quot;,
+               &quot;directIndirectRiskType&quot;:&quot;owrikujmqb&quot;,
+               &quot;sustainabilityMarkId&quot;:&quot;mrlk2flvta&quot;,
+               &quot;sustCategoryTradePerDesc&quot;:&quot;Test - sustCategoryTradePerDesc 4&quot;,
+               &quot;originatesDataGeographyId&quot;:&quot;Test - originatesDataGeographyId 4&quot;,
+               &quot;frequencyType&quot;:&quot;daily&quot;,
+               &quot;cibSegmentType&quot;:&quot;Test - cibSegmentType 4&quot;,
+               &quot;bulletIndType&quot;:&quot;z&quot;,
+               &quot;collateralTypeName&quot;:&quot;Test - collateralTypeName 4&quot;,
+               &quot;nonRealCollateralDesc&quot;:&quot;Test - nonRealCollateralDesc 4&quot;,
+               &quot;expertCriteriaRiskType&quot;:&quot;ay6u1r&quot;
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;contractRegisterDate&quot;:&quot;2023-11-15&quot;,
+               &quot;currentExpirationDate&quot;:&quot;9999-12-31&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;branchId&quot;:&quot;003994&quot;,
+               &quot;activityRefinancedType&quot;:&quot;N&quot;,
+               &quot;contractDayDefault&quot;:0,
+               &quot;contractId&quot;:&quot;00000000000000000000000005_1&quot;,
+               &quot;localContractNumberId&quot;:&quot;00000000000000000000000005&quot;,
+               &quot;holdingProductId&quot;:&quot;0012&quot;,
+               &quot;globalProductId&quot;:&quot;0012&quot;,
+               &quot;entityId&quot;:&quot;0182&quot;,
+               &quot;productTypeDesc&quot;:&quot;Commercial Credit Cards&quot;,
+               &quot;capitalCalculationMtType&quot;:&quot;A&quot;,
+               &quot;finalStageType&quot;:&quot;1&quot;,
+               &quot;individualizedCustType&quot;:&quot;N&quot;,
+               &quot;individualizedContType&quot;:&quot;N&quot;,
+               &quot;maturityTermNumber&quot;:0.0,
+               &quot;currentGuaranteedAmount&quot;:0.0,
+               &quot;committedContractsDisposedAmount&quot;:160.5,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:2239.5,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;pendingUnauthorizedAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:2400.0,
+               &quot;eadAmount&quot;:483.99,
+               &quot;finalProvisionAmount&quot;:0.47,
+               &quot;regyCapitalEadAmount&quot;:612.07,
+               &quot;capitalRegyAmount&quot;:26.42,
+               &quot;regyCapitalAprAmount&quot;:330.25,
+               &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+               &quot;economicCapitalEad1Amount&quot;:64343.64,
+               &quot;economicCapitalAprAmount&quot;:11288.29,
+               &quot;economicCapitalAmount&quot;:19359.55,
+               &quot;cNotSignedTrConsumptionAmount&quot;:82137.63,
+               &quot;lineConsumptionExclusionIndType&quot;:&quot;emanree6&quot;,
+               &quot;majorityShareholderRiskIndType&quot;:&quot;sz3lgtnk&quot;,
+               &quot;directIndirectRiskType&quot;:&quot;owrikujmqb&quot;,
+               &quot;sustainabilityMarkId&quot;:&quot;mrlk2flvta&quot;,
+               &quot;sustCategoryTradePerDesc&quot;:&quot;Test - sustCategoryTradePerDesc 5&quot;,
+               &quot;originatesDataGeographyId&quot;:&quot;Test - originatesDataGeographyId 5&quot;,
+               &quot;frequencyType&quot;:&quot;daily&quot;,
+               &quot;cibSegmentType&quot;:&quot;Test - cibSegmentType 5&quot;,
+               &quot;bulletIndType&quot;:&quot;z&quot;,
+               &quot;collateralTypeName&quot;:&quot;Test - collateralTypeName 5&quot;,
+               &quot;nonRealCollateralDesc&quot;:&quot;Test - nonRealCollateralDesc 5&quot;,
+               &quot;expertCriteriaRiskType&quot;:&quot;ay6u1r&quot;
+            }
+         ]
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/detail-consumption?classConsumptions=10100&amp;customerId=ES0000000000001&amp;searchDate=2024-03-05&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/detail-consumption?classConsumptions=10100&amp;customerId=ES0000000000001&amp;searchDate=2024-03-05&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/detail-consumption?classConsumptions=10100&amp;customerId=ES0000000000001&amp;searchDate=2024-03-05&amp;paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/detail-consumption?classConsumptions=10100&amp;customerId=ES0000000000001&amp;searchDate=2024-03-05&amp;paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:1,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/detail-consumption?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMTO_RiskPositionLine</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMTO_Endpoint_RISKPOSITION_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Risk Position Service TCM</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#payload#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;opportunityId&quot;: &quot;JGO000001&quot;,
+  &quot;status&quot;: &quot;CW&quot;,
+  &quot;templateType&quot;: &quot;TL&quot;,
+  &quot;initDate&quot;: &quot;2025-07-12&quot;,
+  &quot;endDate&quot;: &quot;2025-07-12&quot;,
+  &quot;entificId&quot;: &quot;ES&quot;,
+  &quot;entityId&quot;: &quot;ES0182&quot;,
+  &quot;branchId&quot;: &quot;GL&quot;,
+  &quot;originApplicationType&quot;: &quot;04&quot;,
+  &quot;client&quot;: {
+    &quot;customerId&quot;: &quot;G200000000055&quot;,
+    &quot;groupId&quot;: &quot;G201207010055&quot;,
+    &quot;groupName&quot;: &quot;GNAME&quot;,
+    &quot;multiholder&quot;: {
+      &quot;id&quot;: &quot;AMT_1230001055&quot;,
+      &quot;groupId&quot;: &quot;GRID&quot;,
+      &quot;groupName&quot;: &quot;GNAME&quot;,
+      &quot;customers&quot;: [
+       
+
+{           &quot;id&quot;: &quot;CSID&quot;         }
+      ]
+    },
+    &quot;goldenCustomerId&quot;: &quot;GC_12W43D1055&quot;
+  },
+  &quot;products&quot;: [
+    {
+      &quot;id&quot;: &quot;02&quot;,
+      &quot;familyId&quot;: &quot;1000000000&quot;,
+      &quot;subfamilyId&quot;: &quot;1010000000&quot;,
+      &quot;categoryId&quot;: &quot;1010100000&quot;,
+      &quot;subcategoryId&quot;: &quot;1010101000&quot;,
+      &quot;globalId&quot;: &quot;1010101010&quot;,
+      &quot;guaranteeIndType&quot;: &quot;N&quot;,
+      &quot;bulletIndType&quot;: &quot;Y&quot;,
+      &quot;internalRatingType&quot;: &quot;AA&quot;,
+      &quot;initTermDaysNumber&quot;: 12,
+      &quot;endTermDaysNumber&quot;: 24,
+      &quot;limitSindsAstSctrId&quot;: &quot;N&quot;,
+      &quot;limitSindsAstSubsecId&quot;: &quot;NA&quot;,
+      &quot;expertCriteriaRiskType&quot;: &quot;FOEX&quot;,
+      &quot;amountLimitIndType&quot;: &quot;Y&quot;,
+      &quot;amount&quot;: 10000000,
+      &quot;currencyId&quot;: &quot;EUR&quot;,
+      &quot;corporateUserId&quot;: &quot;XP62525&quot;,
+      &quot;comments&quot;: &quot;---&quot;,
+      &quot;breakClauseNumber&quot;: 12,
+      &quot;breakClauseDate&quot;: &quot;2025-07-12&quot;,
+      &quot;clearingHouseType&quot;: &quot;-&quot;,
+      &quot;classificationType&quot;: &quot;N&quot;,
+      &quot;lastLevelId&quot;: &quot;100100&quot;,
+      &quot;monthsGraceNumber&quot;: 14,
+      &quot;loanValuePercentage&quot;: 11,
+      &quot;notaryCrtfnIndType&quot;: &quot;Y&quot;,
+      &quot;gteePublicAdmIndType&quot;: &quot;Y&quot;,
+      &quot;loanEcaContribPercentage&quot;: 1,
+      &quot;minRaroEcFgPercentage&quot;: 12,
+      &quot;minRaroEcWoFgPercentage&quot;: 56,
+      &quot;minRorcFcgPercentage&quot;: 15,
+      &quot;minRorWocFcgPercentage&quot;: 47,
+      &quot;isdaWaiverIndType&quot;: &quot;N&quot;,
+      &quot;prevRenewalId&quot;: &quot;-&quot;,
+      &quot;revolvencePdDaysNumber&quot;: 5,
+      &quot;breakClauseDaysNumber&quot;: 12,
+      &quot;multiOperationIndType&quot;: &quot;N&quot;,
+      &quot;currencies&quot;: [
+       
+
+{           &quot;id&quot;: &quot;EUR&quot;         }
+      ],
+      &quot;guarantees&quot;: [
+       
+
+{           &quot;guaranteeIndType&quot;: &quot;N&quot;         }
+      ]
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">lines</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

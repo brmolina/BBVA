@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_HPG_GetUsedTables</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;data&quot;:[
+            {
+               &quot;tableDesc&quot;:&quot;/data/master/risk/kdar/data/t_kdar_contracts_ifrs9&quot;,
+               &quot;entificId&quot;:&quot;AR&quot;,
+               &quot;cutoffDate&quot;:&quot;2024-03-04&quot;,
+               &quot;tableUpdateDateDesc&quot;:&quot;20240131&quot;,
+               &quot;originDataDesc&quot;:&quot;Datos de salida de proyecto IFRS9&quot;,
+               &quot;tblMeEngineNameConcatenationDesc&quot;:&quot;GCE - t_hpgr_ingest_datio_test_t_kdar_contracts_ifrs9&quot;
+            },
+            {
+               &quot;tableDesc&quot;:&quot;/data/master/risk/kdar/data/t_kdar_contracts_ifrs9&quot;,
+               &quot;entificId&quot;:&quot;ES&quot;,
+               &quot;cutoffDate&quot;:&quot;2024-03-04&quot;,
+               &quot;tableUpdateDateDesc&quot;:&quot;20240131&quot;,
+               &quot;originDataDesc&quot;:&quot;Datos de salida de proyecto IFRS9&quot;,
+               &quot;tblMeEngineNameConcatenationDesc&quot;:&quot;GCE - t_hpgr_ingest_datio_test_t_kdar_contracts_ifrs9&quot;
+            },
+            {
+               &quot;tableDesc&quot;:&quot;/data/master/risk/xctk/data/t_xctk_risk_consumption&quot;,
+               &quot;entificId&quot;:&quot;HO&quot;,
+               &quot;cutoffDate&quot;:&quot;2024-03-04&quot;,
+               &quot;tableUpdateDateDesc&quot;:&quot;2024-03-01&quot;,
+               &quot;originDataDesc&quot;:&quot;Consumos riesgo de contrapartida de derivados&quot;,
+               &quot;tblMeEngineNameConcatenationDesc&quot;:&quot;GCE - t_hpgr_ingest_datio_test_t_xctk_risk_consumption&quot;
+            }
+         ],
+         &quot;dateRangeTables&quot;:[
+            {
+               &quot;date&quot;:&quot;2023-09-11&quot;
+            },
+            {
+               &quot;date&quot;:&quot;2024-01-26&quot;
+            },
+ {
+               &quot;date&quot;:&quot;2024-07-23&quot;
+            }
+         ]
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/used-tables?searchDate=2024-01-26&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/used-tables?searchDate=2024-01-26&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/used-tables?searchDate=2024-01-26&amp;paginationKey=0&amp;pageSize=100&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/used-tables?searchDate=2024-01-26&amp;paginationKey=2&amp;pageSize=100&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:3,
+      &quot;pageSize&quot;:100
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/used-tables?tblMeEngineNameConcatenationDesc=#tblMeEngineNameConcatenationDesc#&amp;searchDate=#searchDate#&amp;pageSize=#pageSize#&amp;paginationKey=#paginationKey#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

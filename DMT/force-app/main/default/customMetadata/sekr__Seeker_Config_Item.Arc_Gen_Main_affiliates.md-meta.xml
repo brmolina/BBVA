@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Main_Affiliates</label>
+    <protected>false</protected>
+    <values>
+        <field>sekr__Custom_Service_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__Entity_Name__c</field>
+        <value xsi:type="xsd:string">arce__Third_Participant__c</value>
+    </values>
+    <values>
+        <field>sekr__Icon__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__Name_Field__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__Primary_Field__c</field>
+        <value xsi:type="xsd:string">Name</value>
+    </values>
+    <values>
+        <field>sekr__Priority__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__RecordTypeName__c</field>
+        <value xsi:type="xsd:string">Main_affiliates</value>
+    </values>
+    <values>
+        <field>sekr__Secondary_Fields__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__Seeker_Config__c</field>
+        <value xsi:type="xsd:string">Arc_Gen_Main_affiliates</value>
+    </values>
+    <values>
+        <field>sekr__Use_New_Interface__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>sekr__sObject_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

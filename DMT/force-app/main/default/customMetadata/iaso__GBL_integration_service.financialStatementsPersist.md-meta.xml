@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>financialStatementsPersist</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">financialStatementsPersist</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONIN#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+          &quot;id&quot;: &quot;ARCE_ID1&quot;,
+          &quot;audit&quot;: {
+          &quot;auditor&quot;: {
+                        &quot;opinion&quot;: &quot;The Financial Statement is validated for the auditor.&quot;,
+                        &quot;fullName&quot;: &quot;George Smith&quot;
+            },
+          &quot;quality&quot;: &quot;HIGH_QUALITY&quot;,
+          &quot;businessAgentComments&quot;: &quot;no additional comments&quot;
+            },
+          &quot;financialStatementType&quot;: {
+                                      &quot;id&quot;: &quot;CONSOLIDATED&quot;
+                                    },
+          &quot;perimeter&quot;: &quot;Financial status belonging to a group&quot;,
+          &quot;currency&quot;: &quot;MXN&quot;,
+          &quot;financialStatementAmountsUnit&quot;: &quot;THOUSANDS&quot;,
+          &quot;maturityTable&quot;: {
+                            &quot;hasMaturityTable&quot;: true,
+                            &quot;comments&quot;: &quot;No comments added&quot;,
+                            &quot;banksNumberRange&quot;: &quot;Over 10 banks&quot;,
+                            &quot;overDueDebts&quot;: [
+                                              {
+                                                &quot;id&quot;: &quot;01&quot;,
+                                                &quot;description&quot;: &quot;Loans&quot;,
+                                                &quot;debtAmount&quot;: {
+                                                              &quot;amount&quot;: 1500000,
+                                                              &quot;currency&quot;: &quot;USD&quot;
+                                                              },
+                                                &quot;year&quot;: 2018
+                                                }
+                                            ]
+                            },
+                            &quot;budget&quot;: {
+                            &quot;hasBudget&quot;: true,
+                            &quot;isIncluded&quot;: true,
+                            &quot;comments&quot;: &quot;No comments added&quot;
+                            },
+                        &quot;indicators&quot;: [
+                                      {
+                                        &quot;id&quot;: &quot;TREASURY&quot;,
+                                        &quot;isActive&quot;: true,
+                                        &quot;comments&quot;: &quot;No comments added&quot;
+                                      }
+                                      ],
+                        &quot;variations&quot;: [
+                                        {
+                                          &quot;id&quot;: &quot;SALES_EVOLUTION&quot;,
+                                          &quot;comments&quot;: &quot;No comments added&quot;
+                                        }
+                                      ],
+                        &quot;variables&quot;: [
+                                      {
+                                        &quot;id&quot;: &quot;CLIENT_SITUATION&quot;,
+                                        &quot;variableType&quot;: &quot;01&quot;,
+                                        &quot;comments&quot;: &quot;No comments added&quot;
+                                      }
+                                      ]
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#risk-assessment-id#/participants/#participant-id#/financial-statements/#risk-assessment-id#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

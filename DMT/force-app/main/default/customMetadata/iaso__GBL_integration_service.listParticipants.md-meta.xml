@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>listParticipants</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">listParticipants</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;messages&quot;: [
+  ],
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;IV019470&quot;,
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;02&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;174916181111&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;85936670&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;20880420&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;66182888&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;17258838&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;48525566&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;17524495&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;40823029&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;81238033&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;15737564&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;53590226&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;65639483&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;03037538&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;39868029&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;95917223&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;64228538&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;BANQUE&quot;,
+        &quot;middleName&quot;: &quot;NATIONALE MAS&quot;,
+        &quot;lastName&quot;: &quot;Skylynde&quot;,
+        &quot;secondLastName&quot;: &quot;Anya&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    },
+    {
+      &quot;id&quot;: &quot;33729762&quot;,
+      &quot;participantName&quot;: {
+        &quot;firstName&quot;: &quot;I&quot;,
+        &quot;middleName&quot;: &quot;L SERVICIOS, S.A.&quot;,
+        &quot;lastName&quot;: &quot;DE C.V.&quot;,
+        &quot;secondLastName&quot;: &quot;&quot;
+      },
+      &quot;relation&quot;: {
+        &quot;level&quot;: &quot;03&quot;,
+        &quot;relationType&quot;: {
+          &quot;id&quot;: &quot;IG&quot;
+        },
+        &quot;parentEconomicGroup&quot;: {
+          &quot;id&quot;: &quot;IV019470&quot;
+        }
+      }
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#groupId#/participants?paginationKey=#paginationKey#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

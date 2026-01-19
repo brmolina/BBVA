@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>getUserUuaaInfoExtended</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">PRFGrantingTickets_PRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">PRFUserUuaaInfoExtended_PRO</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+    &quot;userCode&quot;: &quot;#federationIdentifier#&quot;,
+    &quot;uuaa&quot;: &quot;ESCD&quot;
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;data&quot;: {
+&quot;userCode&quot;: &quot;T037117&quot;,
+&quot;name&quot;: &quot;Test&quot;,
+&quot;surname&quot;: &quot;User&quot;,
+&quot;secondSurname&quot;: &quot;DE GAVIRIA&quot;,
+&quot;workCountry&quot;: &quot;ESP&quot;,
+&quot;email&quot;: &quot;Test.user@bbvatest.com&quot;,
+&quot;organizationalUnit&quot;: {
+&quot;unitCode&quot;: &quot;00080138&quot;,
+&quot;unitName&quot;: &quot;Role Prueba 9&quot;,
+&quot;parentCode1&quot;: &quot;00003906&quot;,
+&quot;parentCode2&quot;: &quot;00080130&quot;,
+&quot;parentCode3&quot;: &quot;00080131&quot;,
+&quot;parentCode4&quot;: &quot;00080132&quot;,
+&quot;parentCode5&quot;: &quot;00080133&quot;,
+&quot;parentCode6&quot;: &quot;00080134&quot;,
+&quot;parentCode7&quot;: &quot;00080135&quot;,
+&quot;parentCode8&quot;: &quot;00080136&quot;,
+&quot;parentCode9&quot;: &quot;00080137&quot;,
+&quot;parentCode10&quot;: &quot;00080138&quot;,
+&quot;parentName1&quot;: &quot;CORPORATE &amp; INVESTMENT BANKING&quot;,
+&quot;parentName2&quot;: &quot;Role Prueba 1&quot;,
+&quot;parentName3&quot;: &quot;Role Prueba 2&quot;,
+&quot;parentName4&quot;: &quot;Role Prueba 3&quot;,
+&quot;parentName5&quot;: &quot;Role Prueba 4&quot;,
+&quot;parentName6&quot;: &quot;Role Prueba 5&quot;,
+&quot;parentName7&quot;: &quot;Role Prueba 6&quot;,
+&quot;parentName8&quot;: &quot;Role Prueba 7&quot;,
+&quot;parentName9&quot;: &quot;Role Prueba 8&quot;,
+&quot;parentName10&quot;: &quot;Role Prueba 9&quot;
+},
+&quot;roles&quot;: [
+{
+&quot;name&quot;: &quot;Salesforce_basico&quot;,
+&quot;uuaa&quot;: &quot;ESCD&quot;,
+&quot;resources&quot;: [
+{
+&quot;resourceCode&quot;: &quot;208145&quot;,
+&quot;name&quot;: &quot;GTB_Tier&quot;,
+&quot;resourceType&quot;: &quot;Etiqueta&quot;,
+&quot;value&quot;: &quot;GTB_Tier&quot;
+},
+{
+&quot;resourceCode&quot;: &quot;215922&quot;,
+&quot;name&quot;: &quot;sAdmin&quot;,
+&quot;resourceType&quot;: &quot;Etiqueta&quot;,
+&quot;value&quot;: &quot;sAdmin&quot;
+},
+{&quot;resourceCode&quot;:&quot;115420&quot;,
+&quot;name&quot;:&quot;Basic_Configuration&quot;,
+&quot;resourceType&quot;:&quot;Etiqueta&quot;,
+&quot;value&quot;:&quot;Basic_Configuration&quot;
+},
+{&quot;resourceCode&quot;:&quot;115421&quot;,
+&quot;name&quot;:&quot;Service_GTB&quot;,
+&quot;resourceType&quot;:&quot;Etiqueta&quot;,
+&quot;value&quot;:&quot;Service_GTB&quot;
+},
+{&quot;resourceCode&quot;:&quot;116401&quot;,
+&quot;name&quot;:&quot;NBCAdmin&quot;,
+&quot;resourceType&quot;:&quot;Etiqueta&quot;,
+&quot;value&quot;:&quot;NBCAdmin&quot;
+}
+]
+}
+],
+&quot;attributeSet&quot;: [
+{
+&quot;setCode&quot;: &quot;6359&quot;,
+&quot;attributes&quot;: [
+{
+&quot;attributeName&quot;: &quot;PricingGTB&quot;,
+&quot;attributeValue&quot;: &quot;TRUE&quot;
+},
+{
+&quot;attributeName&quot;: &quot;ManageCuCo&quot;,
+&quot;attributeValue&quot;: &quot;TRUE&quot;
+},
+{
+&quot;attributeName&quot;: &quot;Basic_Configuration&quot;,
+&quot;attributeValue&quot;: &quot;&quot;
+}
+]
+}
+]
+}
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/user-profiling/v0/user-uuaa-info-extendeds</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

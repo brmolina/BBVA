@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>PrcRegisterInAmiweb</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GDCibGrantingTickets</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">PRCRegisterInAmiweb_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Llamada el servicio que da de alta la oportunidad Pricing en Amiweb y devuelve el Id_amiweb</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;Accept&quot;:&quot;application/json&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;userCode&quot;:&quot;#userCode#&quot;,
+    &quot;riskProfitabilitiesCalculation&quot;: {
+        &quot;id&quot;: &quot;#riskProfitabilitiesCalculation#&quot;,
+        &quot;scenario&quot;: {
+            &quot;id&quot;: &quot;#scenario-id#&quot;
+        }
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+	&quot;data&quot;: {
+		&quot;id&quot;: &quot;652d90b9-103a-4d92-a&quot;,
+		&quot;operations&quot;: [{
+				&quot;currency&quot;: &quot;EUR&quot;,
+				&quot;funding&quot;: {
+					&quot;fundingType&quot;: &quot;BBVA_FUND&quot;
+				},
+				&quot;order&quot;: 0.0,
+				&quot;isFundingCalculatedByTerm&quot;: false,
+				&quot;countryRisk&quot;: &quot;NORUEGA&quot;,
+				&quot;financingType&quot;: &quot;STANDARD_FUNDING&quot;,
+				&quot;underlyingOperationsNumber&quot;: 0.0,
+				&quot;isCommited&quot;: true,
+				&quot;rating&quot;: {
+					&quot;shortScaleValue&quot;: &quot;NA&quot;,
+					&quot;longScaleValue&quot;: &quot;BBB+1&quot;
+				},
+				&quot;productType&quot;: {
+					&quot;id&quot;: &quot;LOANS&quot;
+				},
+				&quot;paymentType&quot;: &quot;EURIBOR&quot;,
+				&quot;mitigants&quot;: [],
+				&quot;booking&quot;: &quot;BBVA S.A. - ESPAÑA&quot;,
+				&quot;costToIncome&quot;: 0.16,
+				&quot;amortization&quot;: {
+					&quot;fee&quot;: {
+						&quot;accrual&quot;: 100000.0,
+						&quot;nonAccrual&quot;: 100000.0
+					},
+					&quot;margin&quot;: {
+						&quot;onBalance&quot;: 0.0,
+						&quot;offBalance&quot;: 35.0
+					},
+					&quot;amortizationType&quot;: &quot;LINEAR&quot;,
+					&quot;notional&quot;: {
+						&quot;onBalance&quot;: 0.0,
+						&quot;offBalance&quot;: 100.0
+					}
+				},
+				&quot;taxRate&quot;: 0.1,
+				&quot;ratingModalityType&quot;: &quot;GROUP&quot;,
+				&quot;productModality&quot;: &quot;PRODUCT&quot;
+			}
+		],
+		&quot;status&quot;: {
+			&quot;id&quot;: &quot;CREATED&quot;
+		},
+		&quot;crossSellAmounts&quot;: [{
+				&quot;id&quot;: &quot;CROSS_SELL_AMOUNT&quot;,
+				&quot;currency&quot;: &quot;EUR&quot;,
+				&quot;amount&quot;: 0.0
+			}
+		],
+		&quot;participant&quot;: {
+			&quot;id&quot;: &quot;051031536&quot;,
+			&quot;rating&quot;: &quot;AAA&quot;,
+			&quot;groupType&quot;: &quot;BANK&quot;,
+			&quot;economicGroupRating&quot;: &quot;AAA&quot;
+		},
+		&quot;hasCalculationMatched&quot;: false,
+		&quot;webPricingCode&quot;: &quot;273269&quot;
+	}
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

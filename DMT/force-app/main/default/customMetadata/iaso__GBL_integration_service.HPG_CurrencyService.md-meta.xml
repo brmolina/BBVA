@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>HPG_CurrencyService</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GDCibPRWGrantingTickets</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CurrencyService</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;baseCurrency&quot;: {
+        &quot;id&quot;: &quot;EUR&quot;,
+        &quot;name&quot;: &quot;Euro&quot;
+      },
+      &quot;targetCurrencies&quot;: [
+        {
+          &quot;id&quot;: &quot;USD&quot;,
+          &quot;name&quot;: &quot;American dollar&quot;,
+          &quot;ratios&quot;: [
+            {
+              &quot;id&quot;: &quot;MONTH_END_EXCHANGE_RATE&quot;,
+              &quot;description&quot;: &quot;Month end exchange rate&quot;,
+              &quot;value&quot;: 1.10578
+            },
+            {
+              &quot;id&quot;: &quot;AVERAGE_ANNUAL_RATE&quot;,
+              &quot;description&quot;: &quot;Average annual rate&quot;,
+              &quot;value&quot;: 0.92367
+            }
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;EUR&quot;,
+          &quot;name&quot;: &quot;Euros&quot;,
+          &quot;ratios&quot;: [
+            {
+              &quot;id&quot;: &quot;MONTH_END_EXCHANGE_RATE&quot;,
+              &quot;description&quot;: &quot;Month end exchange rate&quot;,
+              &quot;value&quot;: 2.05
+            },
+            {
+              &quot;id&quot;: &quot;AVERAGE_ANNUAL_RATE&quot;,
+              &quot;description&quot;: &quot;Average annual rate&quot;,
+              &quot;value&quot;: 0.92367
+            }
+          ]
+        }
+      ],
+      &quot;exchangeRateOrigin&quot;: &quot;IRISK&quot;,
+      &quot;exchangeRateDate&quot;: &quot;2018-06-20&quot;
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/historical-exchange-rates?baseCurrency.id=#baseCurrencyId#&amp;targetCurrencies.id=#targetCurrenciesId#&amp;exchangeRateOrigin=#exchangeRateOrigin#&amp;exchangeRateDate=#exchangeRateDate#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

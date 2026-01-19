@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>transactionalityPrw</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GDCibPRWGrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">transactionalityPrw</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONinput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;petitionBy&quot;:{
+            &quot;petitionType&quot;:&quot;CUSTOMER&quot;,
+            &quot;id&quot;:[         
+&quot;DTestCuco1&quot;,
+&quot;DTestCuco2&quot;,
+&quot;DTestCuco3&quot;
+            ]
+         },
+         &quot;transaction&quot;:{
+            &quot;classification&quot;:{
+               &quot;id&quot;:&quot;test&quot;,
+               &quot;name&quot;:&quot;test&quot;
+            },
+            &quot;categorization&quot;:{
+               &quot;id&quot;:&quot;Product1&quot;,
+               &quot;name&quot;:&quot;test1&quot;
+            },
+            &quot;specificType&quot;:{
+               &quot;id&quot;:&quot;test1&quot;,
+               &quot;name&quot;:&quot;test1&quot;
+            },
+            &quot;destinationBankType&quot;:&quot;destination1&quot;
+         },
+         &quot;channels&quot;:[
+            {
+               &quot;id&quot;:&quot;Manual&quot;,
+               &quot;description&quot;:&quot;&quot;
+            }
+         ],
+         &quot;participant&quot;:{
+            &quot;id&quot;:&quot;36970&quot;,
+            &quot;fullName&quot;:&quot;Name of the client&quot;
+         },
+         &quot;dateRangeBlocks&quot;:[
+            {
+               &quot;month&quot;:{
+                  &quot;id&quot;:&quot;JUNE&quot;,
+                  &quot;year&quot;:1995
+               },
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:12,
+                  &quot;variation&quot;:8
+               }
+            }
+         ],
+         &quot;acumulativeBlocks&quot;:[
+            {
+               &quot;frequency&quot;:&quot;ACCUMULATED_PERIOD&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:200,
+                  &quot;variation&quot;:8
+               }
+            },
+            {
+               &quot;frequency&quot;:&quot;YEAR_TO_DATE&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:18,
+                  &quot;variation&quot;:3
+               }
+            },
+            {
+               &quot;frequency&quot;:&quot;LAST_TWELVE_MONTHS&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:15,
+                  &quot;variation&quot;:1
+               }
+            }
+         ]
+      },
+      {
+         &quot;petitionBy&quot;:{
+            &quot;petitionType&quot;:&quot;CUSTOMER&quot;,
+            &quot;id&quot;:[
+               &quot;12346&quot;
+            ]
+         },
+         &quot;transaction&quot;:{
+            &quot;classification&quot;:{
+               &quot;id&quot;:&quot;test2&quot;,
+               &quot;name&quot;:&quot;test2&quot;
+            },
+            &quot;categorization&quot;:{
+               &quot;id&quot;:&quot;Product2&quot;,
+               &quot;name&quot;:&quot;test2&quot;
+            },
+            &quot;specificType&quot;:{
+               &quot;id&quot;:&quot;test2&quot;,
+               &quot;name&quot;:&quot;test2&quot;
+            },
+            &quot;destinationBankType&quot;:&quot;destination2&quot;
+         },
+         &quot;channels&quot;:[
+            {
+               &quot;id&quot;:&quot;Digital&quot;,
+               &quot;description&quot;:&quot;&quot;
+            }
+         ],
+         &quot;participant&quot;:{
+            &quot;id&quot;:&quot;36970&quot;,
+            &quot;fullName&quot;:&quot;Name of the client&quot;
+         },
+         &quot;dateRangeBlocks&quot;:[
+            {
+               &quot;month&quot;:{
+                  &quot;id&quot;:&quot;JUNE&quot;,
+                  &quot;year&quot;:1995
+               },
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:12,
+                  &quot;variation&quot;:8
+               }
+            }
+         ],
+         &quot;acumulativeBlocks&quot;:[
+            {
+               &quot;frequency&quot;:&quot;ACCUMULATED_PERIOD&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:120,
+                  &quot;variation&quot;:8
+               }
+            },
+            {
+               &quot;frequency&quot;:&quot;YEAR_TO_DATE&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:19,
+                  &quot;variation&quot;:4
+               }
+            },
+            {
+               &quot;frequency&quot;:&quot;LAST_TWELVE_MONTHS&quot;,
+               &quot;dataValue&quot;:{
+                  &quot;value&quot;:25,
+                  &quot;variation&quot;:8
+               }
+            }
+         ]
+      }
+   ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>LimitAdvisor</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">LimitAdvisor</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;limits&quot;:[{&quot;id&quot;:&quot;090000EC&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:15.00}]}]},{&quot;id&quot;:&quot;2&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:0.00}]}]},{&quot;id&quot;:&quot;010100&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:259}]}]},{&quot;id&quot;:&quot;010200&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:259}]}]},{&quot;id&quot;:&quot;030000&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:194}]}]},{&quot;id&quot;:&quot;6&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:126}]}]},{&quot;id&quot;:&quot;7&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:315}]}]},{&quot;id&quot;:&quot;090000EAD&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:440.33}]}]},{&quot;id&quot;:&quot;090000MAXEC&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:0.00}]}]},{&quot;id&quot;:&quot;10&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:0.285714286}]}]},{&quot;id&quot;:&quot;11&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:0.714285714}]}]},{&quot;id&quot;:&quot;020000&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:647}]}]},{&quot;id&quot;:&quot;090000&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:647.28}]}]},{&quot;id&quot;:&quot;040000&quot;,&quot;riskAmounts&quot;:[{&quot;amountType&quot;:&quot;LIMIT_ADVISOR&quot;,&quot;amounts&quot;:[{&quot;amount&quot;:97}]}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">risk-assessments/#riskAssessmentId#/participants/#participantId#/calculate-limits</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_GetSnapshotEvaluationVersions</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMTO_Endpoint_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+    &quot;opportunityId&quot;: &quot;KDCO24OPP00000001ES&quot;,
+    &quot;versions&quot;: [
+      {
+        &quot;id&quot;: &quot;V000X&quot;,
+        &quot;auditId&quot;: 12345,
+        &quot;user&quot;: &quot;O004244&quot;,
+        &quot;eventDate&quot;: &quot;2026-12-31&quot;,
+        &quot;description&quot;: &quot;comment&quot;,
+        &quot;categoryId&quot;: &quot;category&quot;,
+        &quot;body&quot;: &quot;text&quot;
+      },
+      {
+        &quot;id&quot;: &quot;V000Y&quot;,
+        &quot;auditId&quot;: 12346,
+        &quot;user&quot;: &quot;O004245&quot;,
+        &quot;eventDate&quot;: &quot;2027-01-15&quot;,
+        &quot;description&quot;: &quot;new comment&quot;,
+        &quot;categoryId&quot;: &quot;new category&quot;,
+        &quot;body&quot;: &quot;new text&quot;
+      },
+      {
+        &quot;id&quot;: &quot;V000Z&quot;,
+        &quot;auditId&quot;: 12347,
+        &quot;user&quot;: &quot;O004246&quot;,
+        &quot;eventDate&quot;: &quot;2027-02-20&quot;,
+        &quot;description&quot;: &quot;another comment&quot;,
+        &quot;categoryId&quot;: &quot;another category&quot;,
+        &quot;body&quot;: &quot;another text&quot;
+      }
+    ]
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">snapshot-evaluation-versions?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

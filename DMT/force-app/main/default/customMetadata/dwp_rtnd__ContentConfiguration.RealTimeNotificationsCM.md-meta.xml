@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Master Case</label>
+    <protected>false</protected>
+    <values>
+        <field>dwp_rtnd__Hide_Arrow_Buttons__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Link_First_Column__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Master_Profile_Filtering__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dwp_rtnd__Rows_per_page__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dwp_rtnd__SObjectType__c</field>
+        <value xsi:type="xsd:string">Case</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__SelectedFields__c</field>
+        <value xsi:type="xsd:string">CASENUMBER, SUBJECT,STATUS,PRODUCT</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_APIname__c</field>
+        <value xsi:type="xsd:string">CaseNumber,Subject,Status,SER_Product__c</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_Query__c</field>
+        <value xsi:type="xsd:string">((SER_Is_Master_Case__c = true AND Status != &apos;Closed&apos;) OR (SER_Is_Master_Case__c = true AND Status = &apos;Closed&apos; AND ClosedDate &gt; YESTERDAY)) AND SER_Business_Case_Type__c =&apos;STE&apos;  ORDER BY LastModifiedDate DESC</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_Types__c</field>
+        <value xsi:type="xsd:string">link,Text,Text,Text</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Show_Row_Index__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__View__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__channels__c</field>
+        <value xsi:type="xsd:string">IsMasterCaseUpdateMCOff,MasterCasesNotifications,IsMasterCaseUpdate</value>
+    </values>
+</CustomMetadata>

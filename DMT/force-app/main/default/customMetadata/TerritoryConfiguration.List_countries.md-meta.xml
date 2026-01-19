@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>List countries</label>
+    <protected>false</protected>
+    <values>
+        <field>Business_Area__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Confidential__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Countries_available__c</field>
+        <value xsi:type="xsd:string">NY;Compass;MX;AR;BR;CL;CO;PE;UY;VE;CN;HK;IN;ID;JP;SG;TW;AE;ES;FR;PT;IT;GB;DE</value>
+    </values>
+    <values>
+        <field>Country__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>SObject__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Segment__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

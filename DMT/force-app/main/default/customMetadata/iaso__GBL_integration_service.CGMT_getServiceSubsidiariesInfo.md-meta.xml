@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CGMT_getServiceSubsidiariesInfo</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_HPG_GrantingTicket_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">GetSubsidiariesInfo</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;data&quot;:[
+            {
+               &quot;subsidiaryName&quot;:&quot;c1DypaUeSjC4tGTCi78AcphH9jKYJmcZh6sZ62Vu1qhEGJsPIKN3opdnbqB9ZQZS MX0074018957927&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX0074018957927&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Global Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Institutions&quot;,
+               &quot;portfolio&quot;:&quot;null&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;null&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;afYywvfSa/rIhxlO346Vp1irZU1TbmfLddoFVlz0VW4= MX0074021153615&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX0074021153615&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Institutions&quot;,
+               &quot;portfolio&quot;:&quot;null&quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;null&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;bFj/+z/+aGyU0nObYWJ2GlZshKrFBpY80n2SVhJCiTaEXBSEsjvdUhCWUYKl/Eab MX0074051157442&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX0074051157442&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;INFRA &amp; CONSTRUCTION&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Telecoms, Technology &amp; Media&quot;,
+               &quot;portfolio&quot;:&quot;FINANCIAL INSTITUTIONS GTB&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;TmDE8VwRpjbKIFSjzMuPzd2Z5UrPDmcE0mROfJKGGUPyZueqS0pYclP2eAjIkoZZ3elkTJTCIu4k52u0tsLmKA== MX0074066988258&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX0074066988258&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Global Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;FINANCIAL INSTITUTIONS GTB&quot;,
+               &quot;coverage&quot;:&quot;Single&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;null&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;null MX0074068418710&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX0074068418710&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Institutions&quot;,
+               &quot;portfolio&quot;:&quot;TRANSACTIONAL BANKING MEXICO DF &quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;null MX00740A2950250&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740A2950250&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Institutions&quot;,
+               &quot;portfolio&quot;:&quot;FINANCIAL INSTITUTIONS GTB&quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;WvrPtEPZ6a6Eqz1a7kDmzx5fT/saFNz3FLYKZ5JbEH8= MX00740A3455214&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740A3455214&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;INFRA &amp; CONSTRUCTION&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;TRANSACTIONAL BANKING MEXICO DF &quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;9ipNEn7i+Z25EibOnotKUVEZ2Y78TiWuBpZmOI8erIs= MX00740A5446916&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740A5446916&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;TMT, OIL &amp; GAS&quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;null&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;duDwWsim++7e9byYXBJVSaBJjh+YxxY5HqHvWhm3a4F/ta2D7gkDqVVHdst5kToR MX00740A7264456&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740A7264456&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Institutions&quot;,
+               &quot;portfolio&quot;:&quot;null&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;duDwWsim++7e9byYXBJVSaBJjh+YxxY5HqHvWhm3a4F/ta2D7gkDqVVHdst5kToR MX00740B2339288&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740B2339288&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Global Banker&quot;,
+               &quot;industryName&quot;:&quot;TMT&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;null&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;DANIEL GUERRA VILCHIS&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;psMnNM0pENwpG6LabGqons4IYFJhdOHHmpFCeKaQ56pIoafgbxzpzd/2pyAWIL9SUmwsWSD0OrzQuW+wmFvZ1w== MX00740B6702245&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740B6702245&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Global Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;FINANCIAL INSTITUTIONS GTB&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;null&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;29whzjAQrub+VOKrSaHxCg== MX00740D1123116&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740D1123116&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Financial Services&quot;,
+               &quot;portfolio&quot;:&quot;null&quot;,
+               &quot;coverage&quot;:&quot;&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;IVETTE MARIN CRUZ&quot;
+            },
+            {
+               &quot;subsidiaryName&quot;:&quot;j20k/QTw2TFXEnHrNxUfNGOK+M0qoFSLxZ5hxgKJpUxxAxSNDvTZ+3q5yDLZiU5eOi8Q2GOk522p3jCHAhTp2Q== MX00740D2956933&quot;,
+               &quot;subsidiaryId&quot;:&quot;MX00740D2956933&quot;,
+               &quot;internalRating&quot;:&quot;&quot;,
+               &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+               &quot;industryName&quot;:&quot;CONSUMER &amp; RETAIL&quot;,
+               &quot;holdingSectorDesc&quot;:&quot;Transportation&quot;,
+               &quot;portfolio&quot;:&quot;TMT, OIL &amp; GAS&quot;,
+               &quot;coverage&quot;:&quot;Dual&quot;,
+               &quot;globalTransactionBanking&quot;:&quot;IVETTE MARIN CRUZ&quot;
+            }
+         ],
+         &quot;groupGl&quot;:{
+            &quot;id&quot;:&quot;15661&quot;,
+            &quot;mainParent&quot;:&quot;eyMErUsNU2+5Ux0S19semQ== G20040920161014&quot;,
+            &quot;localGroupName&quot;:&quot;ACTINVER_MX&quot;,
+            &quot;localGroupId&quot;:&quot;G20040920161014&quot;,
+            &quot;roleDesc&quot;:&quot;Transaction Banker&quot;,
+            &quot;industryName&quot;:&quot;CONSUMER &amp; RETAIL&quot;,
+            &quot;holdingSectorDesc&quot;:&quot;Transportation&quot;,
+            &quot;internalRating&quot;:&quot;&quot;,
+            &quot;portfolio&quot;:&quot;TMT, OIL &amp; GAS&quot;,
+            &quot;coverage&quot;:&quot;Dual&quot;,
+            &quot;globalTransactionBanking&quot;:&quot;&quot;
+         }
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;last&quot;:&quot;1&quot;,
+         &quot;previous&quot;:&quot;0&quot;,
+         &quot;next&quot;:&quot;1&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:13,
+      &quot;pageSize&quot;:100
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">subsidiaries/list-subsidiaries?holdingGroupId=#holdingGroupId#&amp;subsidiaryId=#subsidiaryId#&amp;pageSize=#pageSize#&amp;paginationKey=#paginationKey#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

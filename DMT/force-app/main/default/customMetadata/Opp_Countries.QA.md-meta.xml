@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Qatar</label>
+    <protected>false</protected>
+    <values>
+        <field>Booking_country__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Country_User__c</field>
+        <value xsi:type="xsd:string">QAT</value>
+    </values>
+    <values>
+        <field>Currency_ISO3__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>NBC_Region__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Opp_Region__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Template_Name_Region__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>5_7</label>
+    <protected>false</protected>
+    <values>
+        <field>question__c</field>
+        <value xsi:type="xsd:string">If investors knew all current data associated with the deal, would it enable them to draw a conclusion to invest/disinvest?</value>
+    </values>
+</CustomMetadata>

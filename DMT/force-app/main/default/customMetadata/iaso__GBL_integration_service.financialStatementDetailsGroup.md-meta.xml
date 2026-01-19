@@ -1,0 +1,1320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>financialStatementDetailsGroup</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">financialStatementDetailsGroup</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;:
+    {
+        &quot;id&quot;: &quot;70202017129&quot;,
+        &quot;currency&quot;: &quot;MXN&quot;,
+        &quot;status&quot;: {
+            &quot;id&quot;: &quot;INITIALIZED&quot;
+        },
+        &quot;financialStatementType&quot;: {
+            &quot;id&quot;: &quot;CONSOLIDATED&quot;
+        },
+        &quot;adjustedIndicator&quot;: false,
+        &quot;comments&quot;: &quot;N&quot;,
+        &quot;certification&quot;: {
+            &quot;certificationType&quot;: &quot;AUDITED&quot;
+        },
+        &quot;period&quot;: {
+            &quot;unit&quot;: &quot;MONTHS&quot;,
+            &quot;number&quot;: 12,
+            &quot;periodType&quot;: {
+                &quot;id&quot;: &quot;ANNUAL&quot;
+            },
+            &quot;startDate&quot;: &quot;2018-01-01&quot;,
+            &quot;endDate&quot;: &quot;2018-12-31&quot;
+        },
+        &quot;segments&quot;: [
+            {
+                &quot;id&quot;: &quot;EMPRESARIAL SERVICIOS S2&quot;
+            }
+        ],
+        &quot;riskStudyModel&quot;: {
+            &quot;id&quot;: &quot;7027&quot;
+        },
+        &quot;finalizationDate&quot;: &quot;0001-01-01&quot;,
+        &quot;audit&quot;: {
+            &quot;auditor&quot;: {
+                &quot;opinion&quot;: &quot;N&quot;,
+                &quot;name&quot;: &quot;CNN                                                                            N&quot;
+            },
+            &quot;auditDate&quot;: &quot;2019-06-28&quot;,
+            &quot;quality&quot;: &quot;HIGH_QUALITY&quot;
+        },
+        &quot;accountingAccounts&quot;: [
+            {
+                &quot;id&quot;: &quot;1010&quot;,
+                &quot;name&quot;: &quot;UTILIDAD NETA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: -67614000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101010&quot;,
+                &quot;name&quot;: &quot;PERDIDA (UTILIDAD) EXTRAORDINA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101020&quot;,
+                &quot;name&quot;: &quot;PERDIDA (UTILIDAD) SUBS/AFILIA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030&quot;,
+                &quot;name&quot;: &quot;UTILIDAD ANTES DE PART. EXTRAO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: -67614000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103010&quot;,
+                &quot;name&quot;: &quot;ISR CAUSADO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 1510000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103020&quot;,
+                &quot;name&quot;: &quot;PTU CAUSADO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103030&quot;,
+                &quot;name&quot;: &quot;IMPAC CAUSADO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103040&quot;,
+                &quot;name&quot;: &quot;IMPUESTOS Y PTU DIFERIDO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103050&quot;,
+                &quot;name&quot;: &quot;UTILIDAD ANTES DE ISR Y PTU&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: -66104000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;1010305010&quot;,
+                &quot;name&quot;: &quot;OTROS GASTOS (INGRESOS)&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 47406000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;1010305020&quot;,
+                &quot;name&quot;: &quot;COSTO INTEGRAL DE FINANCIAMIEN&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 34883000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030502010&quot;,
+                &quot;name&quot;: &quot;GASTOS FINANCIEROS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 34883000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030502020&quot;,
+                &quot;name&quot;: &quot;PRODUCTOS FINANCIEROS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030502030&quot;,
+                &quot;name&quot;: &quot;PERD (UTILIDAD) MONETARIA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030502040&quot;,
+                &quot;name&quot;: &quot;PERDIDA (UTILIDAD) CAMBIARIA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;1010305030&quot;,
+                &quot;name&quot;: &quot;UAFIR&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 16185000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030503010&quot;,
+                &quot;name&quot;: &quot;GASTOS DE VENTA Y ADMINISTRACI&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 139664000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030503020&quot;,
+                &quot;name&quot;: &quot;DEPRECIACION&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 1522000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030503030&quot;,
+                &quot;name&quot;: &quot;AMORTIZACION&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;101030503040&quot;,
+                &quot;name&quot;: &quot;UTILIDAD BRUTA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 157371000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103050304010&quot;,
+                &quot;name&quot;: &quot;COSTO DE VENTAS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 206851000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;10103050304020&quot;,
+                &quot;name&quot;: &quot;VENTAS NETAS TOTALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 364222000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;1010305030402010&quot;,
+                &quot;name&quot;: &quot;VENTAS NETAS NACIONALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 364222000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;1010305030402020&quot;,
+                &quot;name&quot;: &quot;VENTAS NETAS EXPORTACION&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;UTILIDAD NETA&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;2010&quot;,
+                &quot;name&quot;: &quot;ACTIVO CIRCULANTE&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 424783000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201010&quot;,
+                &quot;name&quot;: &quot;CAJA Y BANCOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 4372000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201020&quot;,
+                &quot;name&quot;: &quot;INVERSIONES TEMPORALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201030&quot;,
+                &quot;name&quot;: &quot;CLIENTES Y DOCTOS X COB.&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 143905000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201040&quot;,
+                &quot;name&quot;: &quot;INVENTARIOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 152961000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201050&quot;,
+                &quot;name&quot;: &quot;CUENTAS POR COBRAR A FILIALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201060&quot;,
+                &quot;name&quot;: &quot;PAGOS ANTICIPADOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201070&quot;,
+                &quot;name&quot;: &quot;OTROS ACTIVOS CIRC. OPERATIVOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 122293000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201080&quot;,
+                &quot;name&quot;: &quot;DEUDORES DIVERSOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 1252000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;201090&quot;,
+                &quot;name&quot;: &quot;OTROS ACTIVOS CIRC. NO OPERATIVOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO CIRCULANTE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;3010&quot;,
+                &quot;name&quot;: &quot;ACTIVO FIJO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 3547000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO FIJO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;301010&quot;,
+                &quot;name&quot;: &quot;PROPIEDAD PLANTA Y EQUIPO NETO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 3547000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO FIJO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;301020&quot;,
+                &quot;name&quot;: &quot;INVERSION EN SUBSIDIARIAS/AFILIADO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO FIJO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;301030&quot;,
+                &quot;name&quot;: &quot;CUENTAS POR COBRAR A FILIALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO FIJO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;301040&quot;,
+                &quot;name&quot;: &quot;OTROS ACTIVOS FIJOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;ACTIVO FIJO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;4010&quot;,
+                &quot;name&quot;: &quot;OTROS ACTIVOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 185937000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;OTROS ACTIVOS&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;401010&quot;,
+                &quot;name&quot;: &quot;ACTIVO POR IMPUESTO DIFERIDO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 10685000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;OTROS ACTIVOS&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;401020&quot;,
+                &quot;name&quot;: &quot;PATENTES LICENCIAS Y MARCAS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 171701000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;OTROS ACTIVOS&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;401030&quot;,
+                &quot;name&quot;: &quot;CREDITO MERCANTIL&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;OTROS ACTIVOS&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;401040&quot;,
+                &quot;name&quot;: &quot;CARGOS DIFERIDOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 3551000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;OTROS ACTIVOS&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;5010&quot;,
+                &quot;name&quot;: &quot;PASIVO CORTO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 384644000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501010&quot;,
+                &quot;name&quot;: &quot;BANCOMER CORTO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501020&quot;,
+                &quot;name&quot;: &quot;OTROS BANCOS CORTO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 31058000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501030&quot;,
+                &quot;name&quot;: &quot;EMISIONES DE DEUDA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501040&quot;,
+                &quot;name&quot;: &quot;PORC. CIRC. LARGO PLAZO BANCOM&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 4199000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501050&quot;,
+                &quot;name&quot;: &quot;PORC. CIRC. LARGO PLAZO OTRO B&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 2678000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501060&quot;,
+                &quot;name&quot;: &quot;PROVEEDORES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 120618000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501070&quot;,
+                &quot;name&quot;: &quot;IMPUESTOS POR PAGAR&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 6020000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501080&quot;,
+                &quot;name&quot;: &quot;CUENTAS POR PAGAR FILIALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 175737000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501085&quot;,
+                &quot;name&quot;: &quot;GASTOS ACUMULADOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501090&quot;,
+                &quot;name&quot;: &quot;OTROS PASIVOS CIRC. OPERATIVOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 31601000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;501095&quot;,
+                &quot;name&quot;: &quot;OTROS PASIVOS CIRC. NO OPERATI&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 12733000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO CORTO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;6010&quot;,
+                &quot;name&quot;: &quot;PASIVO LARGO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 3295000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601010&quot;,
+                &quot;name&quot;: &quot;BANCOMER LARGO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 3000000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601020&quot;,
+                &quot;name&quot;: &quot;OTROS BANCOS LARGO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 295000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601030&quot;,
+                &quot;name&quot;: &quot;EMISIONES DE DEUDA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601040&quot;,
+                &quot;name&quot;: &quot;CUENTAS POR PAGAR FILIALES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601050&quot;,
+                &quot;name&quot;: &quot;OTROS PASIVOS LARGO PLAZO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601060&quot;,
+                &quot;name&quot;: &quot;PRIMAS DE ANTIGUEDAD&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601070&quot;,
+                &quot;name&quot;: &quot;PASIVOS DIFERIDOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;601080&quot;,
+                &quot;name&quot;: &quot;PASIVO POR IMPUESTOS DIFERIDOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;PASIVO LARGO PLAZO&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;7010&quot;,
+                &quot;name&quot;: &quot;CAPITAL CONTABLE&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 226328000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701010&quot;,
+                &quot;name&quot;: &quot;CAPITAL SOCIAL ACTUALIZADO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 314580000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701020&quot;,
+                &quot;name&quot;: &quot;APORTACIONES PENDIENTE CAPITAL&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701030&quot;,
+                &quot;name&quot;: &quot;PRIMA EN EMISION DE ACCIONES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701040&quot;,
+                &quot;name&quot;: &quot;INTERES MINORITARIO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701050&quot;,
+                &quot;name&quot;: &quot;EXC(INSUF) ACTUALIZACION CAP.C&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701060&quot;,
+                &quot;name&quot;: &quot;IMPAC I.S.R. DIFERIDO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701070&quot;,
+                &quot;name&quot;: &quot;RESERVAS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701080&quot;,
+                &quot;name&quot;: &quot;UTILIDADES RETENIDAS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: -20638000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;701090&quot;,
+                &quot;name&quot;: &quot;UTILIDAD DEL EJERCICIO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: -67614000.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CAPITAL CONTABLE&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8005&quot;,
+                &quot;name&quot;: &quot;INVERSION NETA EN INVENTARIOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8010&quot;,
+                &quot;name&quot;: &quot;INVERSION SUBS/AF&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8015&quot;,
+                &quot;name&quot;: &quot;DIVIDENDOS SUBS/AF&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8020&quot;,
+                &quot;name&quot;: &quot;INV. NETA EN PROP PTA EQUIPO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8025&quot;,
+                &quot;name&quot;: &quot;APORTACION ACCIONISTAS EN EFECTIVO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8030&quot;,
+                &quot;name&quot;: &quot;DIVIDENDOS PAGADOS EN EFECTIVO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8035&quot;,
+                &quot;name&quot;: &quot;PERD(UT)CAMBIARIA CP&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8040&quot;,
+                &quot;name&quot;: &quot;PERD(UT)CAMBIARIA LP&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8045&quot;,
+                &quot;name&quot;: &quot;PERD(UT)CAMBIARIA EN CLIENTES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8050&quot;,
+                &quot;name&quot;: &quot;PERD(UT)CAMBIARIA EN INVENTARIOS&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8055&quot;,
+                &quot;name&quot;: &quot;PERD(UT)CAMBIARIA EN PROVEEDORES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8060&quot;,
+                &quot;name&quot;: &quot;EXPORTACIONES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8065&quot;,
+                &quot;name&quot;: &quot;IMPORTACIONES&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8070&quot;,
+                &quot;name&quot;: &quot;PORC.CIRC.LP.OTRA DIVISA&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8075&quot;,
+                &quot;name&quot;: &quot;OTROS GASTOS(ING) EN EFECTIVO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            },
+            {
+                &quot;id&quot;: &quot;8080&quot;,
+                &quot;name&quot;: &quot;PERD(UT) EXTRAORD. EN EFECTIVO&quot;,
+                &quot;amount&quot;: {
+                    &quot;amount&quot;: 0.000000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                &quot;accountsCategory&quot;: {
+                    &quot;accountsType&quot;: {
+                        &quot;id&quot;: &quot;CONCILIACIONES&quot;
+                    }
+                }
+            }
+        ],
+        &quot;financialStatementAmountsUnit&quot;: &quot;THOUSANDS&quot;,
+        &quot;exchangeRates&quot;: {
+            &quot;base&quot;: {
+                &quot;currency&quot;: &quot;MXN&quot;
+            },
+            &quot;targets&quot;: [
+                {
+                    &quot;currency&quot;: &quot;EUR&quot;,
+                    &quot;ratio&quot;: {
+                        &quot;exchangeType&quot;: {
+                            &quot;value&quot;: 22.5500
+                        }
+                    }
+                }
+            ]
+        },
+        &quot;score&quot;: 0.000,
+        &quot;employeesNumber&quot;: 300
+    },
+    &quot;messages&quot;: []
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#accountNumber#/economic-data/financial-statements/#fsServiceId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

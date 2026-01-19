@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Name</label>
+    <protected>false</protected>
+    <values>
+        <field>DMT_Catalog__c</field>
+        <value xsi:type="xsd:string">C375</value>
+    </values>
+    <values>
+        <field>DMT_ExternalId__c</field>
+        <value xsi:type="xsd:string">DES_External_ID__c</value>
+    </values>
+    <values>
+        <field>DMT_ObjectField__c</field>
+        <value xsi:type="xsd:string">Name</value>
+    </values>
+    <values>
+        <field>DMT_Object__c</field>
+        <value xsi:type="xsd:string">Product2</value>
+    </values>
+    <values>
+        <field>DMT_Operation_Type__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>DMT_ValueTaxonomy__c</field>
+        <value xsi:type="xsd:string">DMT_Name_EN__c</value>
+    </values>
+</CustomMetadata>

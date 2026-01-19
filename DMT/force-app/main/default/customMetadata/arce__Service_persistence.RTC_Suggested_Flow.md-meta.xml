@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>RTC Suggested Flow</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__JSON_input__c</field>
+        <value xsi:type="xsd:string">[
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__group_corporative__c,arce__filial_Core__c,arce__matrizIg__c,arce__legal_EEFF__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__explicit_guarantee__c,arce__group_treasury_subsidiary__c,arce__level_Shell__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_NFI&quot;
+    },
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__level_Shell__c,arce__group_corporative__c,arce__filial_Core__c,arce__explicit_guarantee__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__group_treasury_subsidiary__c,arce__matrizIg__c,arce__legal_EEFF__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_IEG&quot;
+    },
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__level_Shell__c,arce__group_corporative__c,arce__filial_Core__c,arce__group_treasury_subsidiary__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__explicit_guarantee__c,arce__matrizIg__c,arce__legal_EEFF__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_FS&quot;
+    },
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__group_corporative__c,arce__filial_Core__c,arce__group_treasury_subsidiary__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__level_Shell__c,arce__explicit_guarantee__c,arce__matrizIg__c,arce__legal_EEFF__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_FS&quot;
+    },
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__group_corporative__c,arce__filial_Core__c,arce__explicit_guarantee__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__level_Shell__c,arce__group_treasury_subsidiary__c,arce__matrizIg__c,arce__legal_EEFF__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_EG&quot;
+    },
+    {
+        &quot;fieldsTrue&quot;: &quot;arce__level_Shell__c&quot;,
+        &quot;fieldsFalse&quot;: &quot;arce__group_corporative__c,arce__filial_Core__c,arce__matrizIg__c,arce__legal_EEFF__c,arce__explicit_guarantee__c,arce__group_treasury_subsidiary__c&quot;,
+        &quot;flow&quot;: &quot;2021RTC_GEN&quot;
+    }
+]</value>
+    </values>
+    <values>
+        <field>arce__api_field_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__iasoVariables__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Tasks PG</label>
+    <protected>false</protected>
+    <values>
+        <field>dwp_rtnd__Hide_Arrow_Buttons__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Link_First_Column__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Master_Profile_Filtering__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dwp_rtnd__Rows_per_page__c</field>
+        <value xsi:type="xsd:double">20.0</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__SObjectType__c</field>
+        <value xsi:type="xsd:string">task</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__SelectedFields__c</field>
+        <value xsi:type="xsd:string">Task Number,Subject,Priority,Description,Assigned,Last Mod. Date,Status</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_APIname__c</field>
+        <value xsi:type="xsd:string">gf_task_id__c,Subject,Priority,task_desc__c,Owner_Name__c,AuxLastModDate__c,Status</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_Query__c</field>
+        <value xsi:type="xsd:string">gf_task_execution_team_name__c = &apos;Global Param&apos; and 
+status &lt;&gt; &apos;Completed&apos;  and
+recordtype.name in (&apos;SER Close Task EGS&apos;,&apos;SER Task EGS&apos;)
+ORDER BY LastModifiedDate DESC</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Selected_Types__c</field>
+        <value xsi:type="xsd:string">Text,Text,Text,Text,Lookup,Date,Text</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__Show_Row_Index__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__View__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_rtnd__channels__c</field>
+        <value xsi:type="xsd:string">TaskNotificationsPG</value>
+    </values>
+</CustomMetadata>

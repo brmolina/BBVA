@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>NewTicketRemedy</label>
+    <protected>false</protected>
+    <values>
+        <field>Authentication_Service__c</field>
+        <value xsi:type="xsd:string">cibGrantingTickets</value>
+    </values>
+    <values>
+        <field>Custom_Setting__c</field>
+        <value xsi:type="xsd:string">NewTicketRemedy</value>
+    </values>
+    <values>
+        <field>Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;actionType&quot;:&quot;creation&quot;,&quot;consumerId&quot;:&quot;#consumerId#&quot;,&quot;impact&quot;:&quot;#impact#&quot;,&quot;priority&quot;:&quot;#priority#&quot;,&quot;summary&quot;:&quot;#summary#&quot;,&quot;environment&quot;:&quot;Produccion&quot;,&quot;area&quot;:&quot;Europa-España&quot;,&quot;description&quot;:&quot;#description#&quot;,&quot;level&quot;: {&quot;level1&quot;:&quot;INCIDENCIA SALESFORCE&quot;},&quot;assignee&quot;:{&quot;id&quot;:&quot;#assignee-id#&quot;,&quot;company&quot;:&quot;BBVA EUROPA&quot;},&quot;inputChannel&quot;:&quot;BBVA NET CASH&quot;,&quot;openingDate&quot;:&quot;#openingDate#&quot;,&quot;employee&quot;: {&quot;branch&quot;: {&quot;id&quot;:&quot;SS.TT.&quot;,&quot;workStation&quot;:&quot;BBVA&quot;},&quot;code&quot;:&quot;#employee-code#&quot;},&quot;url&quot;:&quot;https://bbvacibsales.my.salesforce.com?un=integrationuser@bbva.com&amp;pw=xArtY69032017!bbva&amp;startURL=https://bbvacibsales.my.salesforce.com/apex/SER_CaseConsult?case=&quot;}</value>
+    </values>
+    <values>
+        <field>Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;foo&quot;:&quot;bar&quot;}</value>
+    </values>
+    <values>
+        <field>Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>getProposalConditionsNotebook</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">getProposalConditionsNotebook</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;status&quot;:{&quot;id&quot;:&quot;ACTIVE&quot;},&quot;branch&quot;:{&quot;id&quot;:&quot;1129&quot;},&quot;language&quot;:&quot;ES&quot;,&quot;name&quot;:&quot;MOCK CC&quot;,&quot;notebookType&quot;:{&quot;id&quot;:&quot;INDIVIDUAL&quot;},&quot;segmentType&quot;:{&quot;id&quot;:&quot;CIB&quot;},&quot;creationDate&quot;:&quot;2021-01-28&quot;,&quot;lastNotebookRenovationDate&quot;:&quot;2021-01-28&quot;,&quot;conditionsStartDate&quot;:&quot;2021-01-29&quot;,&quot;endDate&quot;:&quot;2025-12-25&quot;,&quot;sanction&quot;:{&quot;id&quot;:&quot; &quot;},&quot;businessAgent&quot;:{&quot;id&quot;:&quot;XE42455&quot;},&quot;isSpecificContractsScope&quot;:false,&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182001183970&quot;,&quot;interventionStartDate&quot;:&quot;2021-01-29T00:00:00.0+0100&quot;,&quot;interventionEndDate&quot;:&quot;9999-12-31T00:00:00.0+0100&quot;}],&quot;conditions&quot;:[{&quot;id&quot;:&quot;np.dom.pay.BBVA.amount&quot;,&quot;status&quot;:{&quot;id&quot;:&quot;ACTIVE&quot;},&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;origin&quot;:{&quot;id&quot;:&quot;&quot;},&quot;isAutomaticManagement&quot;:true,&quot;formats&quot;:[{&quot;format&quot;:{&quot;formatType&quot;:&quot;AMOUNT&quot;,&quot;rateUnit&quot;:null,&quot;value&quot;:null,&quot;amount&quot;:{&quot;amount&quot;:1,&quot;currency&quot;:&quot;EUR&quot;},&quot;text&quot;:null,&quot;termUnit&quot;:null,&quot;termValue&quot;:null,&quot;date&quot;:null}}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#profSheetCode#?expand=participants</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

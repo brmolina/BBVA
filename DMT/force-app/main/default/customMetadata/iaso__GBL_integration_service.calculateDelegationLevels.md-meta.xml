@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>calculateDelegationLevels</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">calculateDelegationLevels</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;classification&quot;: {
+&quot;classificationType&quot;: {
+&quot;id&quot;: &quot;#classification#&quot;
+},
+&quot;firstLevel&quot;: {
+&quot;id&quot;: &quot;#firstLevel#&quot;
+},
+&quot;secondLevel&quot;: {
+&quot;id&quot;: &quot;#secondLevel#&quot;
+}
+},
+&quot;branch&quot;: {
+&quot;id&quot;: &quot;#branchCode#&quot;
+},
+&quot;conditions&quot;: #conditionsList#,
+&quot;participants&quot;: [
+{
+&quot;id&quot;: &quot;#participantIntegrationId#&quot;,
+&quot;participantType&quot;: {
+&quot;id&quot;: &quot;HOLDER&quot;
+},
+&quot;order&quot;: 1,
+&quot;isCustomer&quot;: true
+}
+]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;conditions&quot;:[{&quot;id&quot;:&quot;np.nat.transfer.EEE.ob.branch.type&quot;,&quot;description&quot;:&quot;Tipo Transferencia Nacional y EEE Otros Bancos - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;rate&quot;:{&quot;formatType&quot;:&quot;RATE&quot;,&quot;rateUnit&quot;:&quot;PER_THOUSAND&quot;,&quot;value&quot;:0,&quot;minimumRate&quot;:0,&quot;maximumRate&quot;:0}}}]},{&quot;id&quot;:&quot;np.nat.transfer.EEE.ob.branch.min&quot;,&quot;description&quot;:&quot;Minimo Transferencia Nacional y EEE Otros Bancos - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;amount&quot;:{&quot;formatType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;minimumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;maximumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;}}}}]},{&quot;id&quot;:&quot;rounding.indicator&quot;,&quot;isNegotiable&quot;:true,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;isDefault&quot;:false,&quot;format&quot;:{&quot;formatType&quot;:&quot;TEXT&quot;,&quot;text&quot;:&quot;A&quot;}}]},{&quot;id&quot;:&quot;FX.issued.order.pay.days&quot;,&quot;description&quot;:&quot;Dias bonificacion fecha valor - ordenes de pago emitidas&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;term&quot;:{&quot;formatType&quot;:&quot;TERM&quot;,&quot;termUnit&quot;:&quot;DAYS&quot;,&quot;termValue&quot;:0,&quot;minimumTermValue&quot;:0,&quot;maximumTermValue&quot;:0}}}]},{&quot;id&quot;:&quot;review.period&quot;,&quot;isNegotiable&quot;:true,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;isDefault&quot;:false,&quot;format&quot;:{&quot;formatType&quot;:&quot;TEXT&quot;,&quot;text&quot;:&quot;E&quot;}}]},{&quot;id&quot;:&quot;np.nat.transfer.BBVA.branch.type&quot;,&quot;description&quot;:&quot;Tipo Transferencia Nacional BBVA - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;rate&quot;:{&quot;formatType&quot;:&quot;RATE&quot;,&quot;rateUnit&quot;:&quot;PER_THOUSAND&quot;,&quot;value&quot;:0,&quot;minimumRate&quot;:0,&quot;maximumRate&quot;:0}}}]},{&quot;id&quot;:&quot;np.SEPA.day.transfer.eur.branch.amount&quot;,&quot;description&quot;:&quot;Imp Fijo Transferencia SEPA valor dia EUR - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;amount&quot;:{&quot;formatType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;minimumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;maximumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;}}}}]},{&quot;id&quot;:&quot;cheque.rate99.bonus.term&quot;,&quot;description&quot;:&quot;Dias Bonificacion Tarifa Cheque&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;term&quot;:{&quot;formatType&quot;:&quot;TERM&quot;,&quot;termUnit&quot;:&quot;DAYS&quot;,&quot;termValue&quot;:0,&quot;minimumTermValue&quot;:0,&quot;maximumTermValue&quot;:0}}}]},{&quot;id&quot;:&quot;np.SEPA.day.payroll.eur.branch.type&quot;,&quot;description&quot;:&quot;Tipo SEPA VALOR DIA nóminas en eur - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;rate&quot;:{&quot;formatType&quot;:&quot;RATE&quot;,&quot;rateUnit&quot;:&quot;PER_THOUSAND&quot;,&quot;value&quot;:0,&quot;minimumRate&quot;:0.1,&quot;maximumRate&quot;:99.9}}}]},{&quot;id&quot;:&quot;np.SEPA.day.payroll.eur.branch.min&quot;,&quot;description&quot;:&quot;Mínimo SEPA VALOR DIA nóminas en eur - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;amount&quot;:{&quot;formatType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;minimumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;},&quot;maximumAmount&quot;:{&quot;amount&quot;:0,&quot;currency&quot;:&quot;EUR&quot;}}}}]},{&quot;id&quot;:&quot;np.SEPA.day.payroll.eur.branch.amount&quot;,&quot;description&quot;:&quot;Fijo SEPA VALOR DIA nóminas en eur - Oficina&quot;,&quot;conditionType&quot;:&quot;SIMPLE&quot;,&quot;formats&quot;:[{&quot;format&quot;:{&quot;amount&quot;:{&quot;formatType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:{&quot;amount&quot;:4,&quot;currency&quot;:&quot;EUR&quot;},&quot;minimumAmount&quot;:{&quot;amount&quot;:1,&quot;currency&quot;:&quot;EUR&quot;},&quot;maximumAmount&quot;:{&quot;amount&quot;:100,&quot;currency&quot;:&quot;EUR&quot;}}}}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

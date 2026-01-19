@@ -1,0 +1,1311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CIB</label>
+    <protected>false</protected>
+    <values>
+        <field>cstk__Alert_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Alert</value>
+    </values>
+    <values>
+        <field>cstk__Chart_Sector_Field__c</field>
+        <value xsi:type="xsd:string">DES_AGGR_Sector__c</value>
+    </values>
+    <values>
+        <field>cstk__Chart_Subsegment_Field__c</field>
+        <value xsi:type="xsd:string">DES_Subsegment__c</value>
+    </values>
+    <values>
+        <field>cstk__Chart_Tier_Field__c</field>
+        <value xsi:type="xsd:string">DES_Tier__c</value>
+    </values>
+    <values>
+        <field>cstk__Controversies_Data__c</field>
+        <value xsi:type="xsd:string">{
+&quot;EventTypes&quot;: [
+{
+&quot;Event&quot;: &quot;Access to Basic Services&quot;,
+&quot;Code&quot;: &quot;24&quot;
+},
+{
+&quot;Event&quot;: &quot;Accounting and Taxation&quot;,
+&quot;Code&quot;: &quot;23&quot;
+},
+{
+&quot;Event&quot;: &quot;Animal Welfare&quot;,
+&quot;Code&quot;: &quot;14&quot;
+},
+{
+&quot;Event&quot;: &quot;Animal Welfare - SC&quot;,
+&quot;Code&quot;: &quot;19&quot;
+},
+{
+&quot;Event&quot;: &quot;Anti-Competitive Practices&quot;,
+&quot;Code&quot;: &quot;26&quot;
+},
+{
+&quot;Event&quot;: &quot;Bribery and Corruption&quot;,
+&quot;Code&quot;: &quot;22&quot;
+},
+{
+&quot;Event&quot;: &quot;Bribery and Corruption - SC&quot;,
+&quot;Code&quot;: &quot;27&quot;
+},
+{
+&quot;Event&quot;: &quot;Business Ethics&quot;,
+&quot;Code&quot;: &quot;15&quot;
+},
+{
+&quot;Event&quot;: &quot;Business Ethics - SC&quot;,
+&quot;Code&quot;: &quot;20&quot;
+},
+{
+&quot;Event&quot;: &quot;Community Relations&quot;,
+&quot;Code&quot;: &quot;19&quot;
+},
+{
+&quot;Event&quot;: &quot;Community Relations - SC&quot;,
+&quot;Code&quot;: &quot;24&quot;
+},
+{
+&quot;Event&quot;: &quot;Corporate Governance&quot;,
+&quot;Code&quot;: &quot;20&quot;
+},
+{
+&quot;Event&quot;: &quot;Emissions, Effluents and Waste&quot;,
+&quot;Code&quot;: &quot;30&quot;
+},
+{
+&quot;Event&quot;: &quot;Emissions, Effluents and Waste - SC&quot;,
+&quot;Code&quot;: &quot;35&quot;
+},
+{
+&quot;Event&quot;: &quot;Energy Use and GHG Emissions&quot;,
+&quot;Code&quot;: &quot;28&quot;
+},
+{
+&quot;Event&quot;: &quot;Energy Use and GHG Emissions - SC&quot;,
+&quot;Code&quot;: &quot;33&quot;
+},
+{
+&quot;Event&quot;: &quot;Environmental Impact of Products&quot;,
+&quot;Code&quot;: &quot;32&quot;
+},
+{
+&quot;Event&quot;: &quot;Intellectual Property&quot;,
+&quot;Code&quot;: &quot;21&quot;
+},
+{
+&quot;Event&quot;: &quot;Labour Relations&quot;,
+&quot;Code&quot;: &quot;16&quot;
+},
+{
+&quot;Event&quot;: &quot;Labour Relations - SC&quot;,
+&quot;Code&quot;: &quot;21&quot;
+},
+{
+&quot;Event&quot;: &quot;Land Use and Biodiversity&quot;,
+&quot;Code&quot;: &quot;25&quot;
+},
+{
+&quot;Event&quot;: &quot;Land Use and Biodiversity - SC&quot;,
+&quot;Code&quot;: &quot;30&quot;
+},
+{
+&quot;Event&quot;: &quot;Lobbying and Public Policy&quot;,
+&quot;Code&quot;: &quot;26&quot;
+},
+{
+&quot;Event&quot;: &quot;Marketing Practices&quot;,
+&quot;Code&quot;: &quot;19&quot;
+},
+{
+&quot;Event&quot;: &quot;Media Ethics&quot;,
+&quot;Code&quot;: &quot;12&quot;
+},
+{
+&quot;Event&quot;: &quot;Occupational Health and Safety&quot;,
+&quot;Code&quot;: &quot;30&quot;
+},
+{
+&quot;Event&quot;: &quot;Occupational Health and Safety - SC&quot;,
+&quot;Code&quot;: &quot;35&quot;
+},
+{
+&quot;Event&quot;: &quot;Data Privacy and Security&quot;,
+&quot;Code&quot;: &quot;25&quot;
+},
+{
+&quot;Event&quot;: &quot;Quality and Safety&quot;,
+&quot;Code&quot;: &quot;18&quot;
+},
+{
+&quot;Event&quot;: &quot;Resilience&quot;,
+&quot;Code&quot;: &quot;10&quot;
+},
+{
+&quot;Event&quot;: &quot;Sanctions&quot;,
+&quot;Code&quot;: &quot;9&quot;
+},
+{
+&quot;Event&quot;: &quot;Social Impact of Products&quot;,
+&quot;Code&quot;: &quot;25&quot;
+},
+{
+&quot;Event&quot;: &quot;Water Use&quot;,
+&quot;Code&quot;: &quot;9&quot;
+},
+{
+&quot;Event&quot;: &quot;Water Use - SC&quot;,
+&quot;Code&quot;: &quot;14&quot;
+},
+{
+&quot;Event&quot;: &quot;Weapons&quot;,
+&quot;Code&quot;: &quot;7&quot;
+},
+{
+&quot;Event&quot;: &quot;Carbon Impact of Products&quot;,
+&quot;Code&quot;: &quot;25&quot;
+},
+{
+&quot;Event&quot;: &quot;Employees - Human Rights&quot;,
+&quot;Code&quot;: &quot;24&quot;
+},
+{
+&quot;Event&quot;: &quot;Employees - Human Rights - SC&quot;,
+&quot;Code&quot;: &quot;29&quot;
+},
+{
+&quot;Event&quot;: &quot;Society - Human Rights&quot;,
+&quot;Code&quot;: &quot;22&quot;
+},
+{
+&quot;Event&quot;: &quot;Society - Human Rights - SC&quot;,
+&quot;Code&quot;: &quot;27&quot;
+}
+],
+&quot;Outlooks&quot;: [
+{
+&quot;Outlook&quot;: &quot;Positive&quot;,
+&quot;Code&quot;: &quot;1&quot;
+},
+{
+&quot;Outlook&quot;: &quot;Negative&quot;,
+&quot;Code&quot;: &quot;-1&quot;
+},
+{
+&quot;Outlook&quot;: &quot;Neutral&quot;,
+&quot;Code&quot;: &quot;0&quot;
+},
+{
+&quot;Outlook&quot;: &quot;N/A&quot;,
+&quot;Code&quot;: &quot;NA&quot;
+}
+]
+}</value>
+    </values>
+    <values>
+        <field>cstk__Generic_Activities__c</field>
+        <value xsi:type="xsd:string">{&quot;Activities&quot;: [
+{
+  &quot;Code&quot;: &quot;HBB&quot;,
+  &quot;Value&quot;: &quot;Accommodation, holiday resorts and cruises&quot;
+},
+{
+  &quot;Code&quot;: &quot;LBB&quot;,
+  &quot;Value&quot;: &quot;Advertising&quot;
+},
+{
+  &quot;Code&quot;: &quot;BFA&quot;,
+  &quot;Value&quot;: &quot;Aerospace&quot;
+},
+{
+  &quot;Code&quot;: &quot;BGA&quot;,
+  &quot;Value&quot;: &quot;Agricultural and forestry machinery&quot;
+},
+{
+  &quot;Code&quot;: &quot;FGA&quot;,
+  &quot;Value&quot;: &quot;Agriculture&quot;
+},
+{
+  &quot;Code&quot;: &quot;IDB&quot;,
+  &quot;Value&quot;: &quot;Agrochemicals&quot;
+},
+{
+  &quot;Code&quot;: &quot;MBA&quot;,
+  &quot;Value&quot;: &quot;Airport services&quot;
+},
+{
+  &quot;Code&quot;: &quot;IGC&quot;,
+  &quot;Value&quot;: &quot;Aluminium production&quot;
+},
+{
+  &quot;Code&quot;: &quot;EBA&quot;,
+  &quot;Value&quot;: &quot;Asset managers&quot;
+},
+{
+  &quot;Code&quot;: &quot;LBE&quot;,
+  &quot;Value&quot;: &quot;Audiovisual Production&quot;
+},
+{
+  &quot;Code&quot;: &quot;AEA&quot;,
+  &quot;Value&quot;: &quot;Auto dealers&quot;
+},
+{
+  &quot;Code&quot;: &quot;AAA&quot;,
+  &quot;Value&quot;: &quot;Auto manufacturers&quot;
+},
+{
+  &quot;Code&quot;: &quot;AAB&quot;,
+  &quot;Value&quot;: &quot;Auto parts suppliers&quot;
+},
+{
+  &quot;Code&quot;: &quot;EFA&quot;,
+  &quot;Value&quot;: &quot;Auxiliary activities related to financial services&quot;
+},
+{
+  &quot;Code&quot;: &quot;IDC&quot;,
+  &quot;Value&quot;: &quot;Base chemicals&quot;
+},
+{
+  &quot;Code&quot;: &quot;IFB&quot;,
+  &quot;Value&quot;: &quot;Base metals&quot;
+},
+{
+  &quot;Code&quot;: &quot;DCE&quot;,
+  &quot;Value&quot;: &quot;Bio and low-emission fuels.&quot;
+},
+{
+  &quot;Code&quot;: &quot;LCD&quot;,
+  &quot;Value&quot;: &quot;Cable telecommunications services&quot;
+},
+{
+  &quot;Code&quot;: &quot;FGB&quot;,
+  &quot;Value&quot;: &quot;Cattle Raising&quot;
+},
+{
+  &quot;Code&quot;: &quot;CBC&quot;,
+  &quot;Value&quot;: &quot;Cement-based products and materials&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAA&quot;,
+  &quot;Value&quot;: &quot;Central bank&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAD&quot;,
+  &quot;Value&quot;: &quot;Central government&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAG&quot;,
+  &quot;Value&quot;: &quot;Central-government state-owned enterprises (DO NOT USE)&quot;
+},
+{
+  &quot;Code&quot;: &quot;BHD&quot;,
+  &quot;Value&quot;: &quot;Clean Energies Equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;EDA&quot;,
+  &quot;Value&quot;: &quot;Clearing houses&quot;
+},
+{
+  &quot;Code&quot;: &quot;IFA&quot;,
+  &quot;Value&quot;: &quot;Coal Mining&quot;
+},
+{
+  &quot;Code&quot;: &quot;BEB&quot;,
+  &quot;Value&quot;: &quot;Commercial services&quot;
+},
+{
+  &quot;Code&quot;: &quot;LAB&quot;,
+  &quot;Value&quot;: &quot;Communications equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;LAD&quot;,
+  &quot;Value&quot;: &quot;Computer &amp; peripherals&quot;
+},
+{
+  &quot;Code&quot;: &quot;JDA&quot;,
+  &quot;Value&quot;: &quot;Construction and real estate development&quot;
+},
+{
+  &quot;Code&quot;: &quot;BGC&quot;,
+  &quot;Value&quot;: &quot;Construction machinery&quot;
+},
+{
+  &quot;Code&quot;: &quot;OAA&quot;,
+  &quot;Value&quot;: &quot;Credit institutions (banks, savings banks and credit unions)&quot;
+},
+{
+  &quot;Code&quot;: &quot;LFC&quot;,
+  &quot;Value&quot;: &quot;Datacenters&quot;
+},
+{
+  &quot;Code&quot;: &quot;BFB&quot;,
+  &quot;Value&quot;: &quot;Defense&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBF&quot;,
+  &quot;Value&quot;: &quot;Diversified CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;EEA&quot;,
+  &quot;Value&quot;: &quot;Diversified financial services (brokers, factoring, leasing, etc.)&quot;
+},
+{
+  &quot;Code&quot;: &quot;HCA&quot;,
+  &quot;Value&quot;: &quot;Education&quot;
+},
+{
+  &quot;Code&quot;: &quot;NCA&quot;,
+  &quot;Value&quot;: &quot;Electric Power Supply&quot;
+},
+{
+  &quot;Code&quot;: &quot;NCF&quot;,
+  &quot;Value&quot;: &quot;Electric Power T&amp;D&quot;
+},
+{
+  &quot;Code&quot;: &quot;LAC&quot;,
+  &quot;Value&quot;: &quot;Electronic equipment &amp; instruments&quot;
+},
+{
+  &quot;Code&quot;: &quot;LFB&quot;,
+  &quot;Value&quot;: &quot;Fibre&quot;
+},
+{
+  &quot;Code&quot;: &quot;FGC&quot;,
+  &quot;Value&quot;: &quot;Fishing&quot;
+},
+{
+  &quot;Code&quot;: &quot;KAA&quot;,
+  &quot;Value&quot;: &quot;Food &amp; staples retail&quot;
+},
+{
+  &quot;Code&quot;: &quot;ICA&quot;,
+  &quot;Value&quot;: &quot;Forestry&quot;
+},
+{
+  &quot;Code&quot;: &quot;IGB&quot;,
+  &quot;Value&quot;: &quot;Forming&amp;finishing of steel&quot;
+},
+{
+  &quot;Code&quot;: &quot;MCB&quot;,
+  &quot;Value&quot;: &quot;Freight Air transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;MEB&quot;,
+  &quot;Value&quot;: &quot;Freight Maritime transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;MFC&quot;,
+  &quot;Value&quot;: &quot;Freight Rail transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;MFF&quot;,
+  &quot;Value&quot;: &quot;Freight Road transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;HBC&quot;,
+  &quot;Value&quot;: &quot;Gaming, Entertainment and Amusement Parks&quot;
+},
+{
+  &quot;Code&quot;: &quot;NCB&quot;,
+  &quot;Value&quot;: &quot;Gas Supply&quot;
+},
+{
+  &quot;Code&quot;: &quot;NCG&quot;,
+  &quot;Value&quot;: &quot;Gas T&amp;D&quot;
+},
+{
+  &quot;Code&quot;: &quot;IEC&quot;,
+  &quot;Value&quot;: &quot;Glass packaging&quot;
+},
+{
+  &quot;Code&quot;: &quot;BGD&quot;,
+  &quot;Value&quot;: &quot;Heavy transport equipment (exc trucks and planes) (exc trucks and planes)&quot;
+},
+{
+  &quot;Code&quot;: &quot;ECC&quot;,
+  &quot;Value&quot;: &quot;Hedge funds&quot;
+},
+{
+  &quot;Code&quot;: &quot;EGB&quot;,
+  &quot;Value&quot;: &quot;Holding companies&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBB&quot;,
+  &quot;Value&quot;: &quot;Hospitals&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBD&quot;,
+  &quot;Value&quot;: &quot;Hotel/Hospital CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;ABA&quot;,
+  &quot;Value&quot;: &quot;Household durables&quot;
+},
+{
+  &quot;Code&quot;: &quot;FCA&quot;,
+  &quot;Value&quot;: &quot;Household products&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBE&quot;,
+  &quot;Value&quot;: &quot;Industrial CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;BEA&quot;,
+  &quot;Value&quot;: &quot;Industrial Engineering&quot;
+},
+{
+  &quot;Code&quot;: &quot;IDE&quot;,
+  &quot;Value&quot;: &quot;Industrial Gases&quot;
+},
+{
+  &quot;Code&quot;: &quot;BGB&quot;,
+  &quot;Value&quot;: &quot;Industrial machinery and others&quot;
+},
+{
+  &quot;Code&quot;: &quot;LDA&quot;,
+  &quot;Value&quot;: &quot;Information technology services&quot;
+},
+{
+  &quot;Code&quot;: &quot;CAB&quot;,
+  &quot;Value&quot;: &quot;Infrastructure construction - Civil engineering&quot;
+},
+{
+  &quot;Code&quot;: &quot;EAA&quot;,
+  &quot;Value&quot;: &quot;Insurance companies&quot;
+},
+{
+  &quot;Code&quot;: &quot;DBA&quot;,
+  &quot;Value&quot;: &quot;Integrated Oil &amp; Gas&quot;
+},
+{
+  &quot;Code&quot;: &quot;LCG&quot;,
+  &quot;Value&quot;: &quot;Integrated Telecommunication services&quot;
+},
+{
+  &quot;Code&quot;: &quot;NHA&quot;,
+  &quot;Value&quot;: &quot;Integrated Utility&quot;
+},
+{
+  &quot;Code&quot;: &quot;LEA&quot;,
+  &quot;Value&quot;: &quot;Internet Service Operators&quot;
+},
+{
+  &quot;Code&quot;: &quot;MFD&quot;,
+  &quot;Value&quot;: &quot;Interurban Passenger Rail transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;MFG&quot;,
+  &quot;Value&quot;: &quot;Interurban Passenger Road transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;IGA&quot;,
+  &quot;Value&quot;: &quot;Iron&amp;steel making&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAH&quot;,
+  &quot;Value&quot;: &quot;Labor unions, political parties, private non-profit institutions, other&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAF&quot;,
+  &quot;Value&quot;: &quot;Local governments&quot;
+},
+{
+  &quot;Code&quot;: &quot;MAC&quot;,
+  &quot;Value&quot;: &quot;Logistic services&quot;
+},
+{
+  &quot;Code&quot;: &quot;FFB&quot;,
+  &quot;Value&quot;: &quot;Manufacture of alcoholic beverages&quot;
+},
+{
+  &quot;Code&quot;: &quot;BHB&quot;,
+  &quot;Value&quot;: &quot;Manufacture of Energy Efficient Equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;FFC&quot;,
+  &quot;Value&quot;: &quot;Manufacture of non-alcoholic beverages&quot;
+},
+{
+  &quot;Code&quot;: &quot;BBA&quot;,
+  &quot;Value&quot;: &quot;Medical equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;BDA&quot;,
+  &quot;Value&quot;: &quot;Medical supplies&quot;
+},
+{
+  &quot;Code&quot;: &quot;IED&quot;,
+  &quot;Value&quot;: &quot;Metal packaging&quot;
+},
+{
+  &quot;Code&quot;: &quot;DBC&quot;,
+  &quot;Value&quot;: &quot;Midstream&quot;
+},
+{
+  &quot;Code&quot;: &quot;AFB&quot;,
+  &quot;Value&quot;: &quot;Motos and micro mobility&quot;
+},
+{
+  &quot;Code&quot;: &quot;OBA&quot;,
+  &quot;Value&quot;: &quot;Multilateral banks&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAI&quot;,
+  &quot;Value&quot;: &quot;Multilateral non-financial bodies&quot;
+},
+{
+  &quot;Code&quot;: &quot;KBC&quot;,
+  &quot;Value&quot;: &quot;Multiline Retail&quot;
+},
+{
+  &quot;Code&quot;: &quot;ECA&quot;,
+  &quot;Value&quot;: &quot;Mutual funds&quot;
+},
+{
+  &quot;Code&quot;: &quot;CAC&quot;,
+  &quot;Value&quot;: &quot;Non Residential Building&quot;
+},
+{
+  &quot;Code&quot;: &quot;CCA&quot;,
+  &quot;Value&quot;: &quot;Non-Residential Building Construction and Maintenance Projects&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBF&quot;,
+  &quot;Value&quot;: &quot;Non-residential personal care&quot;
+},
+{
+  &quot;Code&quot;: &quot;NFB&quot;,
+  &quot;Value&quot;: &quot;Nuclear and hydro power generation&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBB&quot;,
+  &quot;Value&quot;: &quot;Office CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;DAA&quot;,
+  &quot;Value&quot;: &quot;Oilfield services&quot;
+},
+{
+  &quot;Code&quot;: &quot;KBD&quot;,
+  &quot;Value&quot;: &quot;Online Retail&quot;
+},
+{
+  &quot;Code&quot;: &quot;CAE&quot;,
+  &quot;Value&quot;: &quot;Other construction activities&quot;
+},
+{
+  &quot;Code&quot;: &quot;HDA&quot;,
+  &quot;Value&quot;: &quot;Other consumer services&quot;
+},
+{
+  &quot;Code&quot;: &quot;BHC&quot;,
+  &quot;Value&quot;: &quot;Other electrical components&quot;
+},
+{
+  &quot;Code&quot;: &quot;EGA&quot;,
+  &quot;Value&quot;: &quot;Other Financial Services&quot;
+},
+{
+  &quot;Code&quot;: &quot;ECD&quot;,
+  &quot;Value&quot;: &quot;Other funds/investment companies (SICAVs, etc.)&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBC&quot;,
+  &quot;Value&quot;: &quot;Other healthcare services&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAJ&quot;,
+  &quot;Value&quot;: &quot;Other Institutions&quot;
+},
+{
+  &quot;Code&quot;: &quot;NFC&quot;,
+  &quot;Value&quot;: &quot;Other low carbon power generation&quot;
+},
+{
+  &quot;Code&quot;: &quot;EIA&quot;,
+  &quot;Value&quot;: &quot;Other Market infrastructures&quot;
+},
+{
+  &quot;Code&quot;: &quot;IGD&quot;,
+  &quot;Value&quot;: &quot;Other metals&quot;
+},
+{
+  &quot;Code&quot;: &quot;LCA&quot;,
+  &quot;Value&quot;: &quot;Other telecommunications&quot;
+},
+{
+  &quot;Code&quot;: &quot;MBD&quot;,
+  &quot;Value&quot;: &quot;Other transportation Operators&quot;
+},
+{
+  &quot;Code&quot;: &quot;ICC&quot;,
+  &quot;Value&quot;: &quot;Paper&quot;
+},
+{
+  &quot;Code&quot;: &quot;IEA&quot;,
+  &quot;Value&quot;: &quot;Paper packaging&quot;
+},
+{
+  &quot;Code&quot;: &quot;MCA&quot;,
+  &quot;Value&quot;: &quot;Passenger Air transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;MEA&quot;,
+  &quot;Value&quot;: &quot;Passenger Maritime transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;ECB&quot;,
+  &quot;Value&quot;: &quot;Pension funds&quot;
+},
+{
+  &quot;Code&quot;: &quot;FCB&quot;,
+  &quot;Value&quot;: &quot;Personal care products&quot;
+},
+{
+  &quot;Code&quot;: &quot;DCB&quot;,
+  &quot;Value&quot;: &quot;Petrol stations&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBA&quot;,
+  &quot;Value&quot;: &quot;Pharmaceutical products&quot;
+},
+{
+  &quot;Code&quot;: &quot;IEB&quot;,
+  &quot;Value&quot;: &quot;Plastic packaging&quot;
+},
+{
+  &quot;Code&quot;: &quot;MBB&quot;,
+  &quot;Value&quot;: &quot;Port services&quot;
+},
+{
+  &quot;Code&quot;: &quot;BHA&quot;,
+  &quot;Value&quot;: &quot;Power generation equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;IFC&quot;,
+  &quot;Value&quot;: &quot;Precious and other metals&quot;
+},
+{
+  &quot;Code&quot;: &quot;ECE&quot;,
+  &quot;Value&quot;: &quot;Private equity funds&quot;
+},
+{
+  &quot;Code&quot;: &quot;FFA&quot;,
+  &quot;Value&quot;: &quot;Processed foods&quot;
+},
+{
+  &quot;Code&quot;: &quot;CBD&quot;,
+  &quot;Value&quot;: &quot;Products and materials based on glass, ceramics and refractories&quot;
+},
+{
+  &quot;Code&quot;: &quot;BEC&quot;,
+  &quot;Value&quot;: &quot;Professional services&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAB&quot;,
+  &quot;Value&quot;: &quot;Public development banks similar to sovereign&quot;
+},
+{
+  &quot;Code&quot;: &quot;LBD&quot;,
+  &quot;Value&quot;: &quot;Publishing&quot;
+},
+{
+  &quot;Code&quot;: &quot;DCD&quot;,
+  &quot;Value&quot;: &quot;Purchase and sale of petroleum and petroleum products&quot;
+},
+{
+  &quot;Code&quot;: &quot;LBC&quot;,
+  &quot;Value&quot;: &quot;Radio and television broadcasting&quot;
+},
+{
+  &quot;Code&quot;: &quot;MBC&quot;,
+  &quot;Value&quot;: &quot;Rail services&quot;
+},
+{
+  &quot;Code&quot;: &quot;DCA&quot;,
+  &quot;Value&quot;: &quot;Refineries&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAE&quot;,
+  &quot;Value&quot;: &quot;Regional governments&quot;
+},
+{
+  &quot;Code&quot;: &quot;MCC&quot;,
+  &quot;Value&quot;: &quot;Renting and leasing of air transport equipment&quot;
+},
+{
+  &quot;Code&quot;: &quot;CAD&quot;,
+  &quot;Value&quot;: &quot;Residential Building&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBG&quot;,
+  &quot;Value&quot;: &quot;Residential CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBD&quot;,
+  &quot;Value&quot;: &quot;Residential personal care&quot;
+},
+{
+  &quot;Code&quot;: &quot;CBE&quot;,
+  &quot;Value&quot;: &quot;Rest of construction materials and products&quot;
+},
+{
+  &quot;Code&quot;: &quot;HBD&quot;,
+  &quot;Value&quot;: &quot;Restaurants and Food services&quot;
+},
+{
+  &quot;Code&quot;: &quot;JBC&quot;,
+  &quot;Value&quot;: &quot;Retail CRE&quot;
+},
+{
+  &quot;Code&quot;: &quot;MBE&quot;,
+  &quot;Value&quot;: &quot;Road Infrastructure Operators&quot;
+},
+{
+  &quot;Code&quot;: &quot;LCE&quot;,
+  &quot;Value&quot;: &quot;Satellite telecommunication services&quot;
+},
+{
+  &quot;Code&quot;: &quot;LAE&quot;,
+  &quot;Value&quot;: &quot;Semiconductor and Other Electronic Component Manufacturing&quot;
+},
+{
+  &quot;Code&quot;: &quot;LEB&quot;,
+  &quot;Value&quot;: &quot;Software&quot;
+},
+{
+  &quot;Code&quot;: &quot;GAC&quot;,
+  &quot;Value&quot;: &quot;Sovereign wealth funds assimilated by sovereign risk&quot;
+},
+{
+  &quot;Code&quot;: &quot;KBB&quot;,
+  &quot;Value&quot;: &quot;Specialized Stores&quot;
+},
+{
+  &quot;Code&quot;: &quot;IDD&quot;,
+  &quot;Value&quot;: &quot;Specialty chemicals&quot;
+},
+{
+  &quot;Code&quot;: &quot;IFD&quot;,
+  &quot;Value&quot;: &quot;Support activities for mining&quot;
+},
+{
+  &quot;Code&quot;: &quot;JCA&quot;,
+  &quot;Value&quot;: &quot;Support activities to real estate&quot;
+},
+{
+  &quot;Code&quot;: &quot;FAD&quot;,
+  &quot;Value&quot;: &quot;Textiles, apparel and luxury goods&quot;
+},
+{
+  &quot;Code&quot;: &quot;FAC&quot;,
+  &quot;Value&quot;: &quot;Tobacco&quot;
+},
+{
+  &quot;Code&quot;: &quot;LFA&quot;,
+  &quot;Value&quot;: &quot;Towers&quot;
+},
+{
+  &quot;Code&quot;: &quot;NDA&quot;,
+  &quot;Value&quot;: &quot;Traditional/Multitech Electric Power Generation&quot;
+},
+{
+  &quot;Code&quot;: &quot;HBA&quot;,
+  &quot;Value&quot;: &quot;Travel agencies and tour operators&quot;
+},
+{
+  &quot;Code&quot;: &quot;AFA&quot;,
+  &quot;Value&quot;: &quot;Trucks &amp; Coaches&quot;
+},
+{
+  &quot;Code&quot;: &quot;AEB&quot;,
+  &quot;Value&quot;: &quot;Trucks &amp; Coaches dealers&quot;
+},
+{
+  &quot;Code&quot;: &quot;DBB&quot;,
+  &quot;Value&quot;: &quot;Upstream&quot;
+},
+{
+  &quot;Code&quot;: &quot;MFE&quot;,
+  &quot;Value&quot;: &quot;Urban and suburban passenger transportation&quot;
+},
+{
+  &quot;Code&quot;: &quot;FBE&quot;,
+  &quot;Value&quot;: &quot;Veterinary activities&quot;
+},
+{
+  &quot;Code&quot;: &quot;NBA&quot;,
+  &quot;Value&quot;: &quot;Waste Collection and Management&quot;
+},
+{
+  &quot;Code&quot;: &quot;NAB&quot;,
+  &quot;Value&quot;: &quot;Water, Sewage and Other Systems&quot;
+},
+{
+  &quot;Code&quot;: &quot;IFE&quot;,
+  &quot;Value&quot;: &quot;Wholesale of mining Products&quot;
+},
+{
+  &quot;Code&quot;: &quot;NFA&quot;,
+  &quot;Value&quot;: &quot;Wind and solar power generation&quot;
+},
+{
+  &quot;Code&quot;: &quot;LCC&quot;,
+  &quot;Value&quot;: &quot;Wireless telecommunication services&quot;
+},
+{
+  &quot;Code&quot;: &quot;ICB&quot;,
+  &quot;Value&quot;: &quot;Wood products&quot;
+}]
+}</value>
+    </values>
+    <values>
+        <field>cstk__Independent_fields__c</field>
+        <value xsi:type="xsd:string">{
+&quot;cstk__Strategy__c&quot;: {
+  &quot;id1&quot;: &quot;cstk__date__c&quot;,
+  &quot;id2&quot;: &quot;cstk__source__c&quot;,
+  &quot;id3&quot;: &quot;cstk__how_clients_portfolio_changing__c&quot;,
+  &quot;id4&quot;: &quot;cstk__other_social_env_factors__c&quot;,
+  &quot;id5&quot;: &quot;cstk__portfolio_alignment_engagement_link__c&quot;,
+  &quot;id6&quot;: &quot;cstk__suppliers_have_to_meet_reqs__c&quot;,
+  &quot;id7&quot;: &quot;cstk__tri_engagement_link__c&quot;,
+  &quot;id8&quot;: &quot;cstk__last_pitch_made_ib_f__c&quot;,
+  &quot;id9&quot;: &quot;cstk__last_pitch_made_gtb__c&quot;,
+  &quot;id10&quot;: &quot;cstk__last_pitch_made_gm__c&quot;,
+  &quot;id11&quot;: &quot;cstk__internal_co2_price__c&quot;
+}
+}</value>
+    </values>
+    <values>
+        <field>cstk__Strategy__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;esFramework&quot;: {
+    &quot;id1&quot;: &quot;cstk__company_affected_by_framework__c&quot;,
+    &quot;id2&quot;: &quot;cstk__affected_sector__c&quot;,
+    &quot;id3&quot;: &quot;cstk__count_due_diligence_on_framework__c&quot;,
+    &quot;id4&quot;: &quot;cstk__non_compliant_issues__c&quot;,
+    &quot;id5&quot;: &quot;cstk__engagement_plan__c&quot;,
+    &quot;id6&quot;: &quot;cstk__no_engagement_plan_reason__c&quot;,
+    &quot;id7&quot;: &quot;cstk__framework_engagement_link__c&quot;
+  },
+  &quot;thermalCoal&quot;: {
+    &quot;id1&quot;: &quot;cstk__g_thermal_coal_exps_ind_type__c&quot;,
+    &quot;id2&quot;: &quot;cstk__g_thermal_coal_exps_i_src_type__c&quot;,
+    &quot;id3&quot;: &quot;cstk__gf_thermal_coal_prod_wg_per__c&quot;,
+    &quot;id4&quot;: &quot;cstk__g_coal_prgrsv_red_pl_ind_type__c&quot;,
+    &quot;id5&quot;: &quot;cstk__gf_thermal_coal_rev_wg_per__c&quot;
+  },
+  &quot;riskIdentification&quot;: {
+    &quot;id1&quot;: &quot;cstk__climate_change_risk_opportunity__c&quot;,
+    &quot;id2&quot;: &quot;cstk__detailed_description__c&quot;
+  },
+  &quot;overallStrategy&quot;: {
+    &quot;id1&quot;: &quot;cstk__total_capex_pledged__c&quot;,
+    &quot;id2&quot;: &quot;cstk__capex_total__c&quot;,
+    &quot;id3&quot;: &quot;cstk__capex_time_horizon_beginning__c&quot;,
+    &quot;id4&quot;: &quot;cstk__capex_time_horizon_end__c&quot;,
+    &quot;id5&quot;: &quot;cstk__gf_arce_mm_mnty_units_t_anl_capex_amount__c&quot;,
+    &quot;id6&quot;: &quot;cstk__gf_capex_currency_id__c&quot;,
+    &quot;id7&quot;: &quot;cstk__gf_total_annual_income_amount__c&quot;,
+    &quot;id8&quot;: &quot;cstk__gf_arce_total_annual_income_amount__c&quot;,
+    &quot;id9&quot;: &quot;cstk__gf_total_revenues_currency_id__c&quot;,
+    &quot;id10&quot;: &quot;cstk__internal_co2_price__c&quot;
+  }
+}</value>
+    </values>
+    <values>
+        <field>cstk__Sustainable_Deals__c</field>
+        <value xsi:type="xsd:string">KPI_searchController</value>
+    </values>
+    <values>
+        <field>cstk__client_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Client</value>
+    </values>
+    <values>
+        <field>cstk__contact_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Contact</value>
+    </values>
+    <values>
+        <field>cstk__default_Account_GroupCodes_per_Sector__c</field>
+        <value xsi:type="xsd:string">{&quot;auto&quot;:[{
+&quot;accountName&quot;:&quot;Volkswagen&quot;,
+&quot;groupCode&quot;:&quot;G00000000000446&quot;
+}, {
+&quot;accountName&quot;:&quot;BYD&quot;,
+&quot;groupCode&quot;:&quot;G20210211174748&quot;
+}, {
+&quot;accountName&quot;:&quot;Nissan Motor&quot;,
+&quot;groupCode&quot;:&quot;G00000000000279&quot;
+}, {
+&quot;accountName&quot;:&quot;FCA Stellantis&quot;,
+&quot;groupCode&quot;:&quot;G20150326181701&quot;
+}, {
+&quot;accountName&quot;:&quot;General Motors&quot;,
+&quot;groupCode&quot;:&quot;G00000000000163&quot;
+}, {
+&quot;accountName&quot;:&quot;Toyota&quot;,
+&quot;groupCode&quot;:&quot;G00000000001019&quot;
+}, {
+&quot;accountName&quot;:&quot;Ford&quot;,
+&quot;groupCode&quot;:&quot;G00000000000146&quot;
+}],
+&quot;cement&quot;:[{
+&quot;accountName&quot;:&quot;Cemex&quot;,
+&quot;groupCode&quot;:&quot;G00000000000040&quot;
+}, {
+&quot;accountName&quot;:&quot;Holcim&quot;,
+&quot;groupCode&quot;:&quot;G00000000000850&quot;
+}, {
+&quot;accountName&quot;:&quot;Union Andina de cementos S.A.A.&quot;,
+&quot;groupCode&quot;:&quot;G00000000001134&quot;
+}, {
+&quot;accountName&quot;:&quot;Buzzi&quot;,
+&quot;groupCode&quot;:&quot;G20170810144255&quot;
+}, {
+&quot;accountName&quot;:&quot;Votorantim&quot;,
+&quot;groupCode&quot;:&quot;G20150326181794&quot;
+}, {
+&quot;accountName&quot;:&quot;Cementos Molins&quot;,
+&quot;groupCode&quot;:&quot;G00000000011110&quot;
+}, {
+&quot;accountName&quot;:&quot;Cementos Argos&quot;,
+&quot;groupCode&quot;:&quot;G20040922183332&quot;
+}],
+&quot;energy&quot;:[{
+&quot;accountName&quot;:&quot;Repsol&quot;,
+&quot;groupCode&quot;:&quot;G00000000000351&quot;
+}, {
+&quot;accountName&quot;:&quot;Petrobras&quot;,
+&quot;groupCode&quot;:&quot;G00000000000315&quot;
+}, {
+&quot;accountName&quot;:&quot;Equinor&quot;,
+&quot;groupCode&quot;:&quot;G20040824095805&quot;
+}, {
+&quot;accountName&quot;:&quot;Chevron&quot;,
+&quot;groupCode&quot;:&quot;G00000000000407&quot;
+}, {
+&quot;accountName&quot;:&quot;Pemex&quot;,
+&quot;groupCode&quot;:&quot;G00000000000310&quot;
+}, {
+&quot;accountName&quot;:&quot;CNOOC&quot;,
+&quot;groupCode&quot;:&quot;G20041229121212&quot;
+}, {
+&quot;accountName&quot;:&quot;Cepsa&quot;,
+&quot;groupCode&quot;:&quot;G20110301182623&quot;
+}],
+&quot;steel&quot;:[{
+&quot;accountName&quot;:&quot;Acerinox&quot;,
+&quot;groupCode&quot;:&quot;G00000000000530&quot;
+}, {
+&quot;accountName&quot;:&quot;Nucor Corporation&quot;,
+&quot;groupCode&quot;:&quot;G20111026175902&quot;
+}, {
+&quot;accountName&quot;:&quot;Aceros Arequipa&quot;,
+&quot;groupCode&quot;:&quot;G20040102115853&quot;
+}, {
+&quot;accountName&quot;:&quot;Arcelor Mittal&quot;,
+&quot;groupCode&quot;:&quot;G00000000000261&quot;
+}, {
+&quot;accountName&quot;:&quot;Gerdau&quot;,
+&quot;groupCode&quot;:&quot;G00000000000983&quot;
+}, {
+&quot;accountName&quot;:&quot;Techint&quot;,
+&quot;groupCode&quot;:&quot;G00000000000839&quot;
+}, {
+&quot;accountName&quot;:&quot;Deacero&quot;,
+&quot;groupCode&quot;:&quot;G00000000001194&quot;
+}],
+&quot;util&quot;:[{
+&quot;accountName&quot;:&quot;Iberdrola&quot;,
+&quot;groupCode&quot;:&quot;G00000000000200&quot;
+}, {
+&quot;accountName&quot;:&quot;China Three Gorges&quot;,
+&quot;groupCode&quot;:&quot;G20121119111036&quot;
+}, {
+&quot;accountName&quot;:&quot;Hera Spa&quot;,
+&quot;groupCode&quot;:&quot;G00000000010678&quot;
+}, {
+&quot;accountName&quot;:&quot;Southern Company&quot;,
+&quot;groupCode&quot;:&quot;G20100212230536&quot;
+}, {
+&quot;accountName&quot;:&quot;State Power Investment Corp&quot;,
+&quot;groupCode&quot;:&quot;G20200812093003&quot;
+}, {
+&quot;accountName&quot;:&quot;CFE&quot;,
+&quot;groupCode&quot;:&quot;G00000000000035&quot;
+}, {
+&quot;accountName&quot;:&quot;Enel&quot;,
+&quot;groupCode&quot;:&quot;G00000000000114&quot;
+}],
+&quot;autoparts&quot;:[{
+&quot;accountName&quot;:&quot;Continental&quot;,
+&quot;groupCode&quot;:&quot;G00000000000566&quot;
+}, {
+&quot;accountName&quot;:&quot;Bridgestone&quot;,
+&quot;groupCode&quot;:&quot;G00000000000007&quot;
+}, {
+&quot;accountName&quot;:&quot;Nemak&quot;,
+&quot;groupCode&quot;:&quot;G20210318181205&quot;
+}, {
+&quot;accountName&quot;:&quot;GRUPO INDUSTRIAL SALTILLO&quot;,
+&quot;groupCode&quot;:&quot;G00000000001184&quot;
+}, {
+&quot;accountName&quot;:&quot;Rassini&quot;,
+&quot;groupCode&quot;:&quot;G00000000001288&quot;
+}, {
+&quot;accountName&quot;:&quot;Coficab&quot;,
+&quot;groupCode&quot;:&quot;G20070312000188&quot;
+}],
+&quot;generic&quot;:[{}]
+}</value>
+    </values>
+    <values>
+        <field>cstk__exception_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Exception_Toolkit</value>
+    </values>
+    <values>
+        <field>cstk__is_active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>cstk__permissions_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Permission</value>
+    </values>
+    <values>
+        <field>cstk__st_approve_email_template__c</field>
+        <value xsi:type="xsd:string">st_recalculation_approved</value>
+    </values>
+    <values>
+        <field>cstk__st_reject_email_template__c</field>
+        <value xsi:type="xsd:string">st_recalculation_rejected</value>
+    </values>
+    <values>
+        <field>cstk__susTurn_request_email__c</field>
+        <value xsi:type="xsd:string">sustainable-activity-validators.group@bbva.com</value>
+    </values>
+    <values>
+        <field>cstk__susTurn_request_email_template__c</field>
+        <value xsi:type="xsd:string">sustainable_turnover_request</value>
+    </values>
+    <values>
+        <field>cstk__sustainable_turnover_param__c</field>
+        <value xsi:type="xsd:string">{&quot;mark&quot;:[{
+&quot;code&quot;:&quot;RBGR&quot;,
+&quot;result&quot;: &quot;RBGR - Green&quot;
+}, {
+&quot;code&quot;:&quot;RBSO&quot;,
+&quot;result&quot;:&quot;RBSO - Social&quot;
+}],
+&quot;category&quot;:[{
+&quot;code&quot;: &quot;RBGR0100&quot;,
+&quot;result&quot;: &quot;RBGR0100 - Suministro De Energia&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0200&quot;,
+&quot;result&quot;: &quot;RBGR0200 - Movilidad&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0300&quot;,
+&quot;result&quot;: &quot;RBGR0300 - Construccion, Actividades Inmobiliarias&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0400&quot;,
+&quot;result&quot;: &quot;RBGR0400 - Agricultura Y Silvicultura&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0500&quot;,
+&quot;result&quot;: &quot;RBGR0500 - Fabricacion&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0600&quot;,
+&quot;result&quot;: &quot;RBGR0600 - Agua, Saneam, Residuos,Descontaminacion&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0700&quot;,
+&quot;result&quot;: &quot;RBGR0700 - Informacion Y Comunicaciones&quot;
+}, {
+&quot;code&quot;: &quot;RBGR0800&quot;,
+&quot;result&quot;: &quot;RBGR0800 - &apos;Activ. Profesionales, Cientificas Y Tecnicas&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0100&quot;,
+&quot;result&quot;: &quot;RBSO0100 - Inclusion Financiera&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0200&quot;,
+&quot;result&quot;: &quot;RBSO0200 - Infraestructuras Inclusivas (Salud)&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0300&quot;,
+&quot;result&quot;: &quot;RBSO0300 - Infraestructuras Inclusivas (Educacion)&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0400&quot;,
+&quot;result&quot;: &quot;RBSO0400 - Infraestructuras Inclusivas (Transporte)&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0500&quot;,
+&quot;result&quot;: &quot;RBSO0500 - nfraestructuras Inclusivas (Agua)&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0600&quot;,
+&quot;result&quot;: &quot;RBSO0600 - Infraestruc.Inclusiva (Vivienda Asequib)&quot;
+}, {
+&quot;code&quot;: &quot;RBSO0700&quot;,
+&quot;result&quot;: &quot;RBSO0700 - Apoyo A Emprendedores&quot;
+}]
+}</value>
+    </values>
+    <values>
+        <field>cstk__toolkit_sector__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;arceValues&quot;: [
+    {
+      &quot;sector&quot;:&quot;Autos, components &amp; Durable goods&quot;,
+      &quot;subsector&quot;:&quot;Automotive (OEMs)&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;:&quot;Auto&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Construction &amp; Construction Materials&quot;,
+      &quot;subsector&quot;: &quot;&quot;,
+      &quot;actividad&quot;:&quot;Construction materials&quot;,
+      &quot;result&quot;:&quot;Cement&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;subsector&quot;:&quot;Upstream&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;:&quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;: &quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;subsector&quot;: &quot;Downstream&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;: &quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;: &quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;subsector&quot;: &quot;Integrated Oil &amp; Gas&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;: &quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;: &quot;Basic Materials&quot;,
+      &quot;subsector&quot;: &quot;Steel &amp; Processed Metals&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;: &quot;Steel&quot;
+    },
+    {
+      &quot;sector&quot;: &quot;Utilities&quot;,
+      &quot;subsector&quot;: &quot;Electric Power &amp; Gas&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;: &quot;Utilities&quot;
+    }, 
+    {
+      &quot;sector&quot;: &quot;Autos, components &amp; Durable goods&quot;,
+      &quot;subsector&quot;: &quot;Auto parts suppliers&quot;,
+      &quot;actividad&quot;: &quot;&quot;,
+      &quot;result&quot;: &quot;Autoparts&quot;
+    }
+  ],
+  &quot;clientValues&quot;: [
+    {
+      &quot;sector&quot;:&quot;Transport vehicles and Components&quot;,
+      &quot;actividad&quot;:&quot;Auto manufacturers&quot;,
+      &quot;result&quot;:&quot;Auto&quot;
+    },
+    {
+      &quot;sector&quot;: &quot;Basic Materials&quot;,
+      &quot;actividad&quot;: &quot;Iron&amp;steel making&quot;,
+      &quot;result&quot;: &quot;Steel&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Construction &amp; Construction Materials&quot;,
+      &quot;actividad&quot;:&quot;Cement-based products and materials&quot;,
+      &quot;result&quot;:&quot;Cement&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;actividad&quot;:&quot;Integrated Oil &amp; Gas&quot;,
+      &quot;result&quot;:&quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;actividad&quot;:&quot;Upstream&quot;,
+      &quot;result&quot;:&quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;actividad&quot;:&quot;Refineries&quot;,
+      &quot;result&quot;:&quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Energy (Oil &amp; Gas)&quot;,
+      &quot;actividad&quot;:&quot;Bio and low-emission fuels.&quot;,
+      &quot;result&quot;:&quot;Energy&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Electric Power Supply&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Gas Supply&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Electric Power T&amp;D&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Gas T&amp;D&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Traditional/Multitech Electric Power Generation&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Wind and solar power generation&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Other low carbon power generation&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Integrated Utility&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    },
+    {
+      &quot;sector&quot;:&quot;Utilities&quot;,
+      &quot;actividad&quot;:&quot;Nuclear and hydro power generation&quot;,
+      &quot;result&quot;:&quot;Utilities&quot;
+    }, 
+    {
+      &quot;sector&quot;: &quot;Transport vehicles and components&quot;,
+      &quot;actividad&quot;: &quot;Auto parts suppliers&quot;,
+      &quot;result&quot;: &quot;Autoparts&quot;
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>cstk__tri_approve_template__c</field>
+        <value xsi:type="xsd:string">tri_recalculation_approved</value>
+    </values>
+    <values>
+        <field>cstk__tri_reject_template__c</field>
+        <value xsi:type="xsd:string">tri_recalculation_rejected</value>
+    </values>
+    <values>
+        <field>cstk__tri_request_email__c</field>
+        <value xsi:type="xsd:string">trivalidators.group@bbva.com</value>
+    </values>
+    <values>
+        <field>cstk__tri_request_template__c</field>
+        <value xsi:type="xsd:string">tri_recalculation_request</value>
+    </values>
+    <values>
+        <field>cstk__validation_itf_class_name__c</field>
+        <value xsi:type="xsd:string">CSTK_Validation</value>
+    </values>
+</CustomMetadata>

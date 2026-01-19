@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Account Relationship Type</label>
+    <protected>false</protected>
+    <values>
+        <field>Field_Name__c</field>
+        <value xsi:type="xsd:string">dwp_acmh__Type__c</value>
+    </values>
+    <values>
+        <field>Mapped_Values__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;1A&quot;:&quot;01 - Grupo&quot;,
+  &quot;1B&quot;:&quot;06 - Shared Management Group&quot;,
+  &quot;1C&quot;:&quot;01 - Grupo&quot;,
+  &quot;2&quot;:&quot;05 - Supragrupo&quot;,
+  &quot;3&quot;:&quot;02 - Subgrupo&quot;
+}</value>
+    </values>
+    <values>
+        <field>Object__c</field>
+        <value xsi:type="xsd:string">dwp_acmh__GBL_Account_Relationship__c</value>
+    </values>
+</CustomMetadata>

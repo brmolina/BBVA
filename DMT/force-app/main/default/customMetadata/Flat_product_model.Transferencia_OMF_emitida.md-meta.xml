@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Transferencia OMF emitida</label>
+    <protected>false</protected>
+    <values>
+        <field>Family_Name__c</field>
+        <value xsi:type="xsd:string">Transferencias OMF</value>
+    </values>
+    <values>
+        <field>Family_order__c</field>
+        <value xsi:type="xsd:double">4.0</value>
+    </values>
+    <values>
+        <field>Id_product__c</field>
+        <value xsi:type="xsd:string">dypri.issued</value>
+    </values>
+    <values>
+        <field>Order__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Price_id__c</field>
+        <value xsi:type="xsd:string">dypri.p.issued</value>
+    </values>
+    <values>
+        <field>Product_name__c</field>
+        <value xsi:type="xsd:string">Emitida</value>
+    </values>
+    <values>
+        <field>Quantity_id__c</field>
+        <value xsi:type="xsd:string">dypri.q.issued</value>
+    </values>
+</CustomMetadata>

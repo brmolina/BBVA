@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Main_Suppliers</label>
+    <protected>false</protected>
+    <values>
+        <field>sekr__Label_NewRecordObj__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__Name_NewRecordObj__c</field>
+        <value xsi:type="xsd:string">arce__Third_Participant__c</value>
+    </values>
+    <values>
+        <field>sekr__OpenFormNewRecord__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>sekr__OptionNewRecord__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>sekr__PresaveApexClass_NewRecord__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>sekr__RecordTypeName_NewRecord__c</field>
+        <value xsi:type="xsd:string">Main_suppliers</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ratingEngineForTest</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">ratingEngine</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;data&quot;:{
+&quot;id&quot;:&quot;kg001&quot;,
+&quot;evaluationDate&quot;:&quot;2019-09-12T05:28:19&quot;,
+&quot;status&quot;:{
+&quot;id&quot;:&quot;VALIDATED&quot;
+},
+&quot;calculationType&quot;:{
+&quot;id&quot;:&quot;AUTOMATIC&quot;
+},
+&quot;isSmallMediumEnterprise&quot;:true,
+&quot;ratings&quot;:[
+{
+&quot;tool&quot;:{
+&quot;id&quot;:&quot;00110008001200010005&quot;
+},
+&quot;ratingType&quot;:{
+&quot;id&quot;:&quot;FINAL&quot;
+},
+&quot;score&quot;:3,
+&quot;defaultProbability&quot;:1.5,
+&quot;shortScaleValue&quot;:&quot;AAA&quot;,
+&quot;longScaleValue&quot;:&quot;BBB-2&quot;
+},
+{
+&quot;tool&quot;:{
+&quot;id&quot;:&quot;00110008001200010005&quot;
+},
+&quot;ratingType&quot;:{
+&quot;id&quot;:&quot;STANDALONE&quot;
+},
+&quot;score&quot;:3,
+&quot;defaultProbability&quot;:1.5,
+&quot;shortScaleValue&quot;:&quot;AAA&quot;,
+&quot;longScaleValue&quot;:&quot;BBB-2&quot;
+}
+],
+&quot;adjustments&quot;:[
+{
+&quot;adjustmentType&quot;:{
+&quot;id&quot;:&quot;OVERLAY&quot;
+},
+&quot;modifier&quot;:{
+&quot;id&quot;:&quot;01&quot;,
+&quot;description&quot;:&quot;No information added&quot;,
+&quot;modifierType&quot;:&quot;01&quot;,
+&quot;value&quot;:&quot;01&quot;
+},
+&quot;score&quot;:3,
+&quot;defaultProbability&quot;:5.3,
+&quot;shortScaleValue&quot;:&quot;AAA&quot;,
+&quot;longScaleValue&quot;:&quot;BBB-2&quot;
+}
+],
+&quot;variables&quot;:[
+{
+&quot;id&quot;:&quot;1100&quot;,
+&quot;level&quot;:&quot;1&quot;,
+&quot;parentCode&quot;:&quot;0&quot;,
+&quot;hasFinalScoreWeight&quot;:true,
+&quot;value&quot;:&quot;12&quot;,
+&quot;adjustedValue&quot;:&quot;3.3&quot;,
+&quot;blockType&quot;:&quot;QUALITATIVE_BLOCK&quot;,
+&quot;score&quot;:{
+&quot;value&quot;:&quot;98&quot;,
+&quot;adjustedScore&quot;:10,
+&quot;minimumScore&quot;:2,
+&quot;maximumScore&quot;:8
+}
+}
+],
+&quot;controls&quot;:[
+{
+&quot;id&quot;:&quot;InvalidBusinessLogicData&quot;,
+&quot;description&quot;:&quot;Invalid SME calculation variables&quot;,
+&quot;isValid&quot;:false
+}
+]
+}
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#riskAssessmentId#/participants/#participantId#/engine-rating-calculations?eventType.id=#eventType#&amp;subEventType.id=#subEvent#&amp;financialStatement.id=#ffssId#&amp;rating.id=#ratingId#&amp;businessAgent.id=#businessAgentId#&amp;economicGroup.participantType.id=#participationType#&amp;bank.id=#bankId#&amp;bank.branch.id=#branchId#&amp;bank.branch.level.id=#branchLevel#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

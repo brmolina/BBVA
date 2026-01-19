@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DEV</label>
+    <protected>false</protected>
+    <values>
+        <field>gcal__GBL_Base_Url__c</field>
+        <value xsi:type="xsd:string">https://dev-bbva-gateway.appspot.com/</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Days__c</field>
+        <value xsi:type="xsd:double">365.0</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Events_privacy__c</field>
+        <value xsi:type="xsd:string">All public</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Google_Oauth2_Url__c</field>
+        <value xsi:type="xsd:string">https://accounts.google.com/o/oauth2/token</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Mail_Domain_Alias__c</field>
+        <value xsi:type="xsd:string">bbva.com</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Mail_Domain__c</field>
+        <value xsi:type="xsd:string">dev.bbva.com</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Max_Results__c</field>
+        <value xsi:type="xsd:double">250.0</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Pkcs8_Key__c</field>
+        <value xsi:type="xsd:string">MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCOuOrSbAwNDYBdSmqPfMD+fk+E4XZZJvJ/bXNrqhc0cUHU1PvXOQ8ZNjaW4W/p6MoUkQm2dttxgBjhjK5SQEN0ZjrT7PXJ4N7o1yH1gdIhP1//WseLwz9lAs7h+R2/FHj5b1Qt7X2SOC0dEoxE1eVo3o8ifb4sh0XVbBEtMcKkkSxRqy1s8tDI12NAynfxsQSgJ/NRR+/sl6moqZOA6FMctuz6/JNeyvGOfoUWz65ciJ9WgYsfz9l87xZO1IOTyK3Ci9bhoJ4uQcdKv0/kXLnqn5pOlsONaGWCO6hJtUV6vCVCebRK/oxzi2zx0tjk3wtb/kemqrZ1067XblP3pDYZAgMBAAECggEAA4gOkmqXQT7tZ1GLMbX46gsq0UtJZAMXUsEc7yPwK01mnzsuaJjKN3ncj67wF5n5nxjoJD5MZ4Jviywxl4osyR1q9Pm66rYAWgNRvSsLTaSNbep7f8ky4T9YqmWBP4xEgoqHSxQibGrsrdiaxSzEPowsP0KcgSpPN2zTP3qo2ezOtHmsQQ5Q2MA0qx9YI7bxluEYTZLfQVDzSufiGmYs153HNiEdDC5vzKup/+TE6QmhTzs9InVpCB6v5pVEDpN17H+3zBoSTE8ocFuoOYkMaDEz0QJDG8p7uYniUw7rdwlXnUd5d9+31ka8fFXIpCyy39uhKcCx4aVbQwy4f5kwQQKBgQDF5PElhZpvEpbUxtM5UoYmTtkVucI7yrPouMh0j6ji+2cxV70imVY5g0gMOnZkJzcqobcVhmJsYslrLb1OdV4q0OVKPqVcmcj2D0KvTRnU9sI6AQpx4j7zb9LBAapKr4izZTjCMxOpAprQs/gQ752nFhbIwpNor2N3joranzH4WQKBgQC4oOGefeYzVAL2Qt5R0BzUXEpHRskUlCcG6gzPGKujEy7ibZ7h2xD9aLwPMxfnq8VQf2ymEpUwtqgkSdpjGkTweFjuWEq86YJ3mepKuH0OtbAHGEaLFYeSJ6AoloXqFiigeZEaS1o/5HyJhe/wW9Cbsedp1ZwHSxFVRj8+9qhzwQKBgCYg1UGIe1fZOgxm/n114/jvii4Aa2b/yCgXqi+jGkQZcil0oTFQX+eW3sPUY8kqMRvaqp7QFJiTdAFdf7LlNC6Frxfd+BheXPTjvdJuxYJdxNBOMQf+MmjO68laG8hmB62g3A22r5wJr3B0rF/++t4diGhH7QTnff+kDCbRM1yJAoGBAK6izoaCA8qtPpf9LBkqxvo/yaqd0/l5IWky3abOaRs5O/HFSrHL6sgn1ypxY70pBtxbi0OS9Dc9rtGUYdO3t1nWHBhmv1rtbREAL1M6KmBNjxFG7wMD/FZM0PtTVZvUFd2k35GFkPo6f2n9nLU3w5xhrMi42nszkFOevJgr666BAoGBAKcKEb2icDudoqDoN1dPoR4UrptO0QDMjD7Ekz+NR3x9Mwdg+u/n44xRWFsXM2zL8onGDoGGdgsZ8KOdGHw85enQVisIIU2MG+A5nvLUN/ZYRzbEVu9q6E7Kojgi5vK06V78YuS/DNR+U5f6auqCcjhQ7tbeuDRByTnJekoOV1u5</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Polling_Frequency__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Scope__c</field>
+        <value xsi:type="xsd:string">email</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Service_User_Email__c</field>
+        <value xsi:type="xsd:string">dev-bbva-digital-workplace-es@dev-bbva-digital-workplace-es.iam.gserviceaccount.com</value>
+    </values>
+    <values>
+        <field>gcal__GBL_Session_Duration__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>gcal__GCalendar_URI__c</field>
+        <value xsi:type="xsd:string">gcalendar/v3</value>
+    </values>
+    <values>
+        <field>gcal__GNameIndexer_URI__c</field>
+        <value xsi:type="xsd:string">gnameindexer</value>
+    </values>
+    <values>
+        <field>gcal__UserFieldKey__c</field>
+        <value xsi:type="xsd:string">FederationIdentifier</value>
+    </values>
+</CustomMetadata>

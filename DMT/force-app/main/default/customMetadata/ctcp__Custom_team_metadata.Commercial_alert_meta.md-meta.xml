@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Commercial alert meta</label>
+    <protected>false</protected>
+    <values>
+        <field>ctcp__AccesLevel__c</field>
+        <value xsi:type="xsd:string">Edit</value>
+    </values>
+    <values>
+        <field>ctcp__Lookup_in_object__c</field>
+        <value xsi:type="xsd:string">commercial_alert_id__c</value>
+    </values>
+    <values>
+        <field>ctcp__ObjectShare__c</field>
+        <value xsi:type="xsd:string">altm__Commercial_Alert__Share</value>
+    </values>
+    <values>
+        <field>ctcp__Record_Type__c</field>
+        <value xsi:type="xsd:string">Commercial Alert</value>
+    </values>
+    <values>
+        <field>ctcp__Sharing_Reasons__c</field>
+        <value xsi:type="xsd:string">alertTeam__c</value>
+    </values>
+    <values>
+        <field>ctcp__customTeamObject__c</field>
+        <value xsi:type="xsd:string">ctcp__Custom_Team__c</value>
+    </values>
+    <values>
+        <field>ctcp__sObjectType__c</field>
+        <value xsi:type="xsd:string">altm__Commercial_Alert__c</value>
+    </values>
+</CustomMetadata>

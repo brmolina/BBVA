@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CIB</label>
+    <protected>false</protected>
+    <values>
+        <field>hpgr__Allow_Configure_Geography_Visibility__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Allow_Download_csv__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Allow_Manage_Consumption_Override__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Allow_Reassign_Contracts__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Allow_Refresh_Approvals__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>hpgr__Capital_EAD_Lower_Percentile__c</field>
+        <value xsi:type="xsd:double">25.0</value>
+    </values>
+    <values>
+        <field>hpgr__Capital_EAD_Upper_Percentile__c</field>
+        <value xsi:type="xsd:double">75.0</value>
+    </values>
+    <values>
+        <field>hpgr__Client_Itf_Class_Name__c</field>
+        <value xsi:type="xsd:string">HPGR_Client</value>
+    </values>
+    <values>
+        <field>hpgr__Currencies_Itf_Class_Name__c</field>
+        <value xsi:type="xsd:string">HPGR_Currencies</value>
+    </values>
+    <values>
+        <field>hpgr__Display_Summary_Chart__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Eco_C_Min_Dif_Between_Percentiles__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>hpgr__Help_Site__c</field>
+        <value xsi:type="xsd:string">https://sites.google.com/bbva.com/wholesaleunderwritingtransform/inicio?authuser=1</value>
+    </values>
+    <values>
+        <field>hpgr__IFRS9_Min_Dif_Between_Percentiles__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>hpgr__Is_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Reg_C_Min_Dif_Between_Percentiles__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>hpgr__Request_Support_Email__c</field>
+        <value xsi:type="xsd:string">gce-support@bbva.com</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Additional_Info__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Approvals_Summary_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Approvals_Tab__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Capital_Provision_Summary_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Capital_Provision_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Connected_Clients_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Consumption_Override_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Data_Report_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_External_App_Icon__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Limits_Summary_Tab__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Show_Risk_Policy_Summary_Tab__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>hpgr__Use_Local_Consumption_Last_Level_Info__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>hpgr__Users_Itf_Class_Name__c</field>
+        <value xsi:type="xsd:string">HPGR_Users</value>
+    </values>
+    <values>
+        <field>hpgr__Utils_Itf_Class_Name__c</field>
+        <value xsi:type="xsd:string">HPGR_Utils</value>
+    </values>
+</CustomMetadata>

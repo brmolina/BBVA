@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>economicGroupDetails</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">economicGroupDetails</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;id&quot;: &quot;CAONlXcCA_uxyJ402AA_xw&quot;,
+        &quot;name&quot;: &quot;Grupo1&quot;,
+        &quot;origin&quot;: {
+            &quot;id&quot;: &quot;C&quot;
+        },
+        &quot;status&quot;: &quot;ACTIVE&quot;,
+        &quot;economicGroupType&quot;: {
+            &quot;id&quot;: &quot;BUSINESS&quot;
+        },
+        &quot;financialSponsor&quot;: {
+            &quot;hasFinancialSponsor&quot;: true,
+            &quot;isExecutive&quot;: false
+        },
+        &quot;creationDate&quot;: &quot;2018-01-11&quot;,
+        &quot;inactiveDate&quot;: &quot;2019-01-11&quot;,
+        &quot;bank&quot;: {
+            &quot;id&quot;: &quot;0101&quot;,
+            &quot;name&quot;: &quot;BBVA Continental&quot;,
+            &quot;branch&quot;: {
+                &quot;id&quot;: &quot;4000&quot;,
+                &quot;name&quot;: &quot;Oficina Principal&quot;
+            }
+        },
+        &quot;country&quot;: {
+            &quot;id&quot;: &quot;MX&quot;
+        },
+        &quot;lastModification&quot;: {
+            &quot;businessAgent&quot;: {
+                &quot;id&quot;: &quot;124A&quot;
+            },
+            &quot;lastUpdateDate&quot;: &quot;2019-01-11&quot;
+        },
+        &quot;economicActivity&quot;: {
+            &quot;id&quot;: &quot;2222&quot;
+        },
+        &quot;isConsolidated&quot;: true,
+        &quot;creationReason&quot;: {
+            &quot;id&quot;: &quot;GROUP_CONSTITUTION&quot;
+        },
+        &quot;assetAllocation&quot;: {
+            &quot;sector&quot;: {
+                &quot;id&quot;: &quot;Retail&quot;
+            },
+            &quot;subsector&quot;: {
+                &quot;id&quot;: &quot;Rest of retailers&quot;
+            },
+            &quot;economicActivity&quot;: {
+                &quot;id&quot;: &quot;specialized sale&quot;
+            }
+        }
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#economicGroupId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

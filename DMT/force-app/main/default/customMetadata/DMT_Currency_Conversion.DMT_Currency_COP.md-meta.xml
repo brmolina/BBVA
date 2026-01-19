@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_Currency_COP</label>
+    <protected>false</protected>
+    <values>
+        <field>Booking_Geography__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Conversion_Factor__c</field>
+        <value xsi:type="xsd:double">1000000.0</value>
+    </values>
+    <values>
+        <field>CurrencyIsoCode__c</field>
+        <value xsi:type="xsd:string">COP</value>
+    </values>
+    <values>
+        <field>Currency_Label__c</field>
+        <value xsi:type="xsd:string">Millions</value>
+    </values>
+    <values>
+        <field>Currency_Mask__c</field>
+        <value xsi:type="xsd:string">#,##0.00</value>
+    </values>
+    <values>
+        <field>Is_Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

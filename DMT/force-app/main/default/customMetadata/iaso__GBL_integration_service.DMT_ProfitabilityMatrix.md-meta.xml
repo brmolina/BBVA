@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_ProfitabilityMatrix</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_ProfitabilityEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#payload#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;audit&quot;: {
+            &quot;opportunityId&quot;: &quot;ESCD25OPP00004604ES&quot;,
+            &quot;opportunityVersion&quot;: &quot;1&quot;,
+            &quot;productId&quot;: &quot;00kKK000003EqaPYAS&quot;,
+            &quot;origin&quot;: &quot;Salesforce&quot;,
+            &quot;auditUser&quot;: &quot;T038839&quot;
+        },
+        &quot;assumption&quot;: {
+            &quot;axisX&quot;: &quot;Term&quot;,
+            &quot;axisY&quot;: &quot;Fees&quot;,
+            &quot;axisCentral&quot;: &quot;RAROEC&quot;
+        },
+        &quot;assumptionResult&quot;: [
+            {
+                &quot;valueAxisX&quot;: &quot;0.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.23642004688843435&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;0.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.3581292540169969&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;0.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.47259479802215293&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;0.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.5804446636712081&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;0.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.6822362842176928&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.16473471973658446&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.22729833651951067&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.28795415170978517&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.3467881188801407&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.40388110462728954&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.11465694004363827&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.15422520954946686&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.1930355311909595&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.23110947657963657&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;1.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.2684678064333358&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.07086299826470839&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.09700987608342872&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.12282828263583494&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.148324368922876&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.1735041333188158&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.04241129772990198&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.0612152262344537&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.0798501659466401&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.09831838469273411&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;2.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.11662210990081112&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.016531519279576513&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.030323787185101838&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.04402561354608122&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.057637885043843505&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.4924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.07116147680687268&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;7.20277891955207E-4&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.011321458243664423&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.021869379356189964&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.03236444157424856&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;3.9924709103353866&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.04280704124011398&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.492470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;-0.009462768385254268&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.492470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;-0.0011914006600485785&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.492470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.007047613858169921&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.492470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.01525446461982132&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.492470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.023429339599056118&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.992470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;2.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;-0.019365348343067447&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.992470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;12.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;-0.012708924404422305&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.992470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;22.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;-0.0060643050707643986&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.992470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;32.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;5.594492826907518E-4&quot;
+            },
+            {
+                &quot;valueAxisX&quot;: &quot;4.992470910335387&quot;,
+                &quot;valueAxisY&quot;: &quot;42.0&quot;,
+                &quot;valueAxisCentral&quot;: &quot;0.007162436778733023&quot;
+            }
+        ]
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">assumption</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

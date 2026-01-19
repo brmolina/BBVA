@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ShortRatingValuesOrder</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__Config_Name__c</field>
+        <value xsi:type="xsd:string">ShortRatingValuesOrder</value>
+    </values>
+    <values>
+        <field>arce__Custom_Permissions__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__Value1__c</field>
+        <value xsi:type="xsd:string">AAA:26,AA+:25,AA:24,AA-:23,A+:22,A:21,A-:20,BBB+:19,BBB:18,BBB-:17,BB+:16,BB:15,BB-:14,CCC+:13,CCC:12,CCC-:11,CC+:10,CC:9,CC-:8,B+:7,B:6,B-:5,D:4,C+:3,C:2,C-:1,NA:0</value>
+    </values>
+</CustomMetadata>

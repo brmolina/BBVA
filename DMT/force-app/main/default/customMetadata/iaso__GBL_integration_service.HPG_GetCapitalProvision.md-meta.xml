@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>HPG_GetCapitalProvision</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">HPG_GrantingTicketPRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CommonEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#payload#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;eadAmount&quot;:13076531.01,
+         &quot;finalProvisionAmount&quot;:7857.18,
+         &quot;regulatoryEadCapital&quot;:13111958.1,
+         &quot;capitalRegyAmount&quot;:592581.48,
+         &quot;regyCapitalAprAmount&quot;:7407268.72,
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+         &quot;economicCapitalEad1Amount&quot;:12976.45,
+         &quot;economicCapitalAprAmount&quot;:12345.67,
+         &quot;economicCapitalAmount&quot;:223197.65
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;currencyId&quot;:&quot;XXX&quot;,
+         &quot;eadAmount&quot;:479.49,
+         &quot;finalProvisionAmount&quot;:0.33,
+         &quot;regulatoryEadCapital&quot;:479.49,
+         &quot;capitalRegyAmount&quot;:24.62,
+         &quot;regyCapitalAprAmount&quot;:307.75,
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+         &quot;economicCapitalEad1Amount&quot;:52331.76,
+         &quot;economicCapitalAprAmount&quot;:23415.71,
+         &quot;economicCapitalAmount&quot;:56198.56
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;currencyId&quot;:&quot;USD&quot;,
+         &quot;eadAmount&quot;:641366.2,
+         &quot;finalProvisionAmount&quot;:295.43,
+         &quot;regulatoryEadCapital&quot;:641366.2,
+         &quot;capitalRegyAmount&quot;:18329.39,
+         &quot;regyCapitalAprAmount&quot;:229117.38,
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+         &quot;economicCapitalEad1Amount&quot;:12141.11,
+         &quot;economicCapitalAprAmount&quot;:78471.93,
+         &quot;economicCapitalAmount&quot;:41075.81
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000002&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 2&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 2&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;eadAmount&quot;:965031.11,
+         &quot;finalProvisionAmount&quot;:406.1,
+         &quot;regulatoryEadCapital&quot;:965011.36,
+         &quot;capitalRegyAmount&quot;:23175.7,
+         &quot;regyCapitalAprAmount&quot;:289696.27,
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+         &quot;economicCapitalEad1Amount&quot;:112856.45,
+         &quot;economicCapitalAprAmount&quot;:34971.41,
+         &quot;economicCapitalAmount&quot;:87164.61
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000003&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 3&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 3&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;eadAmount&quot;:5536.14,
+         &quot;finalProvisionAmount&quot;:268.43,
+         &quot;regulatoryEadCapital&quot;:5755.37,
+         &quot;capitalRegyAmount&quot;:1391.98,
+         &quot;regyCapitalAprAmount&quot;:17399.76,
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+         &quot;economicCapitalEad1Amount&quot;:61068.12,
+         &quot;economicCapitalAprAmount&quot;:871345.61,
+         &quot;economicCapitalAmount&quot;:78123.51
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/capital-provision&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/capital-provision?paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/capital-provision?paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/capital-provision?paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:5,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/capital-provision</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

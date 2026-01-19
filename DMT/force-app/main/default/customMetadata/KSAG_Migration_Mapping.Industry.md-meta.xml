@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Industry</label>
+    <protected>false</protected>
+    <values>
+        <field>Field_Name__c</field>
+        <value xsi:type="xsd:string">Industry</value>
+    </values>
+    <values>
+        <field>Mapped_Values__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;INDUSTRIALS &amp; TRANSPORTATION&quot;: &quot;1&quot;,
+  &quot;INFRA &amp; CONSTRUCTION&quot;: &quot;2&quot;,
+  &quot;CONSUMER &amp; RETAIL&quot;: &quot;3&quot;,
+  &quot;ENERGY&quot;: &quot;4&quot;,
+  &quot;TMT&quot;:&quot;5&quot;,
+  &quot;Other SIX&quot;:&quot;6&quot;
+}</value>
+    </values>
+    <values>
+        <field>Object__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+</CustomMetadata>

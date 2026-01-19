@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DPMX_Validate</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevDPMX</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DPMX_EndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#customerId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#validateJson#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;proposed&quot;:[{&quot;scenaryType&quot;:&quot;BREAK_EVEN&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;RETURN&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:0.0}},{&quot;rateType&quot;:&quot;CREDIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:1.15}},{&quot;rateType&quot;:&quot;INTERNATIONAL_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:2.37}},{&quot;rateType&quot;:&quot;DEBIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:1.09}}]},&quot;amount&quot;:{&quot;amount&quot;:1500.0,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;scenaryType&quot;:&quot;GOOD&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;RETURN&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:0.11}},{&quot;rateType&quot;:&quot;CREDIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:1.56}},{&quot;rateType&quot;:&quot;INTERNATIONAL_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:3.0}},{&quot;rateType&quot;:&quot;DEBIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:1.7}}]},&quot;amount&quot;:{&quot;amount&quot;:1500.0,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;scenaryType&quot;:&quot;OPTIMAL&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;RETURN&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:0.16}},{&quot;rateType&quot;:&quot;CREDIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:2.06}},{&quot;rateType&quot;:&quot;INTERNATIONAL_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:3.2}},{&quot;rateType&quot;:&quot;DEBIT_DISCOUNT&quot;,&quot;itemizeRatesUnit&quot;:{&quot;unitRateType&quot;:&quot;PERCENTAGE&quot;,&quot;percentage&quot;:1.68}}]},&quot;amount&quot;:{&quot;amount&quot;:1500.0,&quot;currency&quot;:&quot;MXN&quot;}}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">stores/v1/acquirer-activities/validate</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

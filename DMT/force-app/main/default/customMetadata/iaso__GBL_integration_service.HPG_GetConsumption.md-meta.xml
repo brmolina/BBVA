@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>HPG_GetConsumption</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">HPG_GrantingTicketPRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">HPG_CommonEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInputTemplate#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;classConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;committedContractsDisposedAmount&quot;:12387180.52,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:295224.27,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:12682404.79,
+               &quot;cNotSignedTrConsumptionAmount&quot;:421323.67
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;20100&quot;,
+               &quot;committedContractsDisposedAmount&quot;:72.96,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:0.0,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:72.96,
+               &quot;cNotSignedTrConsumptionAmount&quot;:7865523.56
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;30000&quot;,
+               &quot;committedContractsDisposedAmount&quot;:0.0,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:5253275.03,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:5253275.03,
+               &quot;cNotSignedTrConsumptionAmount&quot;:712332.56
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;40000&quot;,
+               &quot;committedContractsDisposedAmount&quot;:582605.0,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:0.0,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:582605.0,
+               &quot;cNotSignedTrConsumptionAmount&quot;:213434.12
+            }
+         ],
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000002&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 2&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 2&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;classConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;committedContractsDisposedAmount&quot;:964203.37,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:7102.34,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:971305.71,
+               &quot;cNotSignedTrConsumptionAmount&quot;:523423.56
+            }
+         ],
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000003&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 3&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 3&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;classConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;committedContractsDisposedAmount&quot;:2912.9,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:19887.1,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:22800.0,
+               &quot;cNotSignedTrConsumptionAmount&quot;:71233.12
+            }
+         ],
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000004&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 4&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 4&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;classConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;committedContractsDisposedAmount&quot;:6537.04,
+               &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+               &quot;committedContractsNonDisposedAmount&quot;:173499.26,
+               &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+               &quot;authorizedRiskAmount&quot;:0.0,
+               &quot;unavailableRiskAmount&quot;:180036.3,
+               &quot;cNotSignedTrConsumptionAmount&quot;:456775.56
+            }
+         ],
+         &quot;cutoffDate&quot;:&quot;2024-03-05&quot;
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/consumption&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/consumption?paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/consumption?paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/consumption?paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:4,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/consumption</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>multitemplateSP2</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">multitemplateSP2</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONinput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Data&quot;:[{&quot;id&quot;:null,&quot;sector&quot;:{&quot;id&quot;:&quot;I&quot;},&quot;subsector&quot;:{&quot;id&quot;:&quot;IC&quot;},&quot;economicActivity&quot;:{&quot;id&quot;:&quot;ICA&quot;},&quot;industry&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;contributionPercentage&quot;:&quot;20.0&quot;,&quot;contributionType&quot;:&quot;Ebitda&quot;,&quot;subindustry&quot;:{&quot;id&quot;:&quot;120&quot;}},&quot;competitivePositionSections&quot;:[{&quot;id&quot;:&quot;CompetitiveAdvantage&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;011&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]},{&quot;id&quot;:&quot;035&quot;,&quot;avalaibleAnswers&quot;:[&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]}]},{&quot;id&quot;:&quot;Scale,ScopeandDiversity&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;019&quot;,&quot;avalaibleAnswers&quot;:[&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;]},{&quot;id&quot;:&quot;024&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;,&quot;9.5&quot;,&quot;10&quot;]},{&quot;id&quot;:&quot;036&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]}]},{&quot;id&quot;:&quot;OperatingEfficiency&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;037&quot;,&quot;avalaibleAnswers&quot;:[&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]},{&quot;id&quot;:&quot;038&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]}]} ],&quot;riskScore&quot;:{&quot;engineScores&quot;:[&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;],&quot;standard&quot;:&quot;7&quot;}},{&quot;id&quot;:null,&quot;sector&quot;:{&quot;id&quot;:&quot;H&quot;},&quot;subsector&quot;:{&quot;id&quot;:&quot;HD&quot;},&quot;economicActivity&quot;:{&quot;id&quot;:&quot;BAB&quot;},&quot;industry&quot;:{&quot;id&quot;:&quot;1&quot;,&quot;contributionPercentage&quot;:&quot;55.0&quot;,&quot;contributionType&quot;:&quot;Ebitda&quot;,&quot;subindustry&quot;:{&quot;id&quot;:&quot;124&quot;}},&quot;countries&quot;:[{&quot;id&quot;:&quot;120&quot;,&quot;contributionPercentage&quot;:&quot;85.0&quot;,&quot;contributionType&quot;:&quot;Sales&quot;}],&quot;competitivePositionSections&quot;:[{&quot;id&quot;:&quot;Scale,ScopeandDiversity&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;125&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]},{&quot;id&quot;:&quot;137&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;,&quot;9.5&quot;,&quot;10&quot;]}]},{&quot;id&quot;:&quot;OperatingEfficiency&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;014&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]}]}],&quot;riskScore&quot;:{&quot;engineScores&quot;:[&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;],&quot;standard&quot;:&quot;6&quot;}},{&quot;id&quot;:null,&quot;sector&quot;:{&quot;id&quot;:&quot;B&quot;},&quot;subsector&quot;:{&quot;id&quot;:&quot;BF&quot;},&quot;economicActivity&quot;:{&quot;id&quot;:&quot;HCA&quot;},&quot;industry&quot;:{&quot;id&quot;:&quot;1&quot;,&quot;contributionPercentage&quot;:&quot;15.0&quot;,&quot;contributionType&quot;:&quot;Ebitda&quot;,&quot;subindustry&quot;:{&quot;id&quot;:&quot;121&quot;}},&quot;competitivePositionSections&quot;:[{&quot;id&quot;:&quot;Scale,ScopeandDiversity&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;125&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]},{&quot;id&quot;:&quot;137&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;,&quot;9.5&quot;,&quot;10&quot;]}]},{&quot;id&quot;:&quot;OperatingEfficiency&quot;,&quot;questions&quot;:[{&quot;id&quot;:&quot;014&quot;,&quot;avalaibleAnswers&quot;:[&quot;1&quot;,&quot;1.5&quot;,&quot;2&quot;,&quot;2.5&quot;,&quot;3&quot;,&quot;3.5&quot;,&quot;4&quot;,&quot;4.5&quot;,&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;,&quot;7.5&quot;,&quot;8&quot;,&quot;8.5&quot;,&quot;9&quot;]}]}],&quot;riskScore&quot;:{&quot;engineScores&quot;:[&quot;5&quot;,&quot;5.5&quot;,&quot;6&quot;,&quot;6.5&quot;,&quot;7&quot;],&quot;standard&quot;:&quot;6&quot;}}]}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

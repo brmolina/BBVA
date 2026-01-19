@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetCurrentLimits</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_10100&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+         &quot;limitDesc&quot;:&quot;L/T Financial risk - unsecured limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:268743653.88076,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:95306029.122864,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:173437624.757896,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:879.0,
+         &quot;customersNumber&quot;:57,
+         &quot;currentApprovedAmount&quot;:6.4E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_130000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;130000&quot;,
+         &quot;limitDesc&quot;:&quot;Fixed income underwriting (framework) limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_140000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;140000&quot;,
+         &quot;limitDesc&quot;:&quot;Equity underwriting limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_150000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;150000&quot;,
+         &quot;limitDesc&quot;:&quot;Other indirect risks limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_30000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;30000&quot;,
+         &quot;limitDesc&quot;:&quot;Guaranty risk limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:637678977.311794,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:1535.48,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:637677441.831794,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:420.0,
+         &quot;customersNumber&quot;:24,
+         &quot;currentApprovedAmount&quot;:9.25E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_40000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;40000&quot;,
+         &quot;limitDesc&quot;:&quot;Treasury risk limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:5066321.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:5066321.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:9.0,
+         &quot;customersNumber&quot;:9,
+         &quot;currentApprovedAmount&quot;:5.0E+7,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_50000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;50000&quot;,
+         &quot;limitDesc&quot;:&quot;Total corporate risk limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:1689612380.06442,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:820017946.060557,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:869594434.003863,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:101.0,
+         &quot;customersNumber&quot;:101,
+         &quot;currentApprovedAmount&quot;:2.22E+9,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_60000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;60000&quot;,
+         &quot;limitDesc&quot;:&quot;Project finance limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:2.5E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_70000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;70000&quot;,
+         &quot;limitDesc&quot;:&quot;Total credit risk / Bank credit exposure limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:1689612380.06442,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:820017946.060557,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:869594434.003863,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:101.0,
+         &quot;customersNumber&quot;:101,
+         &quot;currentApprovedAmount&quot;:2.27E+9,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_90000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;90000&quot;,
+         &quot;limitDesc&quot;:&quot;Total credit risk + Issuer + DCR limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:1745612380.06442,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:876017946.060557,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:869594434.003863,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:101.0,
+         &quot;customersNumber&quot;:101,
+         &quot;currentApprovedAmount&quot;:2.34E+9,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_100100&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;100100&quot;,
+         &quot;limitDesc&quot;:&quot;Settlement risk - free delivery limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:4.0E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_100200&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;100200&quot;,
+         &quot;limitDesc&quot;:&quot;Settlement risk - delivery vs. payment limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_10200&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;10200&quot;,
+         &quot;limitDesc&quot;:&quot;L/T Financial risk - secured limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:6609186.548601,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:6609186.548601,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:1.0,
+         &quot;customersNumber&quot;:1,
+         &quot;currentApprovedAmount&quot;:1.1E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_110000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;110000&quot;,
+         &quot;limitDesc&quot;:&quot;Overlimits, ACH limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_120000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;120000&quot;,
+         &quot;limitDesc&quot;:&quot;Equities limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:0.0,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:0.0,
+         &quot;customersNumber&quot;:0,
+         &quot;currentApprovedAmount&quot;:0.0,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_20000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;20000&quot;,
+         &quot;limitDesc&quot;:&quot;S/T Financial risk &amp; commercial limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:771514241.323265,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:713034873.909092,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:58479367.414173,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:49.0,
+         &quot;customersNumber&quot;:49,
+         &quot;currentApprovedAmount&quot;:9.25E+8,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      },
+      {
+         &quot;cutoffDate&quot;:&quot;2024-07-23&quot;,
+         &quot;limitId&quot;:&quot;01_01_G_PFD_TEST000001_80000&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;80000&quot;,
+         &quot;limitDesc&quot;:&quot;Issuer risk /DCR limit # Group - TEST CLIENT NAME 1 # PFD_TEST000001&quot;,
+         &quot;originType&quot;:&quot;HO&quot;,
+         &quot;limitType&quot;:&quot;PFE&quot;,
+         &quot;unavailableRiskAmount&quot;:5.6E+7,
+         &quot;authorizedRiskAmount&quot;:0.0,
+         &quot;committedContractsDisposedAmount&quot;:5.6E+7,
+         &quot;uncommittedContractsDisposedAmount&quot;:0.0,
+         &quot;committedContractsNonDisposedAmount&quot;:0.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:0.0,
+         &quot;cNotSignedTrConsumptionAmount&quot;:0.0,
+         &quot;limitCapitalTradeCnsNumber&quot;:3.0,
+         &quot;customersNumber&quot;:3,
+         &quot;currentApprovedAmount&quot;:7.0E+7,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;riskAnalysisExpDate&quot;:&quot;2024-09-30&quot;,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;opportunityId&quot;:&quot; &quot;,
+         &quot;groupPriorityLineId&quot;:&quot; &quot;,
+         &quot;pendingUnauthorizedAmount&quot;:0.0
+      }
+   ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/currentlimits?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

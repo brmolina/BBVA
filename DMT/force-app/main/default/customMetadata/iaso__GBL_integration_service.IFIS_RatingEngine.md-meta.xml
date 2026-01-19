@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IFIS_RatingEngine</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">ratingEngine</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;id&quot;:&quot;1100002121&quot;,&quot;evaluationDate&quot;:&quot;2021-08-24T00:00:00.000+0200&quot;,&quot;status&quot;:{&quot;id&quot;:&quot;CALCULATED&quot;},&quot;ratings&quot;:[{&quot;tool&quot;:{&quot;id&quot;:&quot;00110009091300010002&quot;},&quot;ratingType&quot;:{&quot;id&quot;:&quot;ANCHOR&quot;},&quot;score&quot;:8.43,&quot;defaultProbability&quot;:7.85,&quot;shortScaleValue&quot;:&quot;B-&quot;,&quot;longScaleValue&quot;:&quot;B-2&quot;},{&quot;tool&quot;:{&quot;id&quot;:&quot;00110009091300010002&quot;},&quot;ratingType&quot;:{&quot;id&quot;:&quot;STANDALONE&quot;},&quot;score&quot;:7.43,&quot;defaultProbability&quot;:1.5,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-2&quot;},{&quot;tool&quot;:{&quot;id&quot;:&quot;00110009091300010002&quot;},&quot;ratingType&quot;:{&quot;id&quot;:&quot;FINAL&quot;},&quot;score&quot;:7.43,&quot;defaultProbability&quot;:1.5,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-2&quot;}],&quot;adjustments&quot;:[{&quot;adjustmentType&quot;:{&quot;id&quot;:&quot;MODIFIER&quot;},&quot;modifier&quot;:{&quot;id&quot;:&quot;01&quot;,&quot;modifierType&quot;:&quot;&quot;,&quot;value&quot;:&quot;Neutral&quot;,&quot;description&quot;:&quot;Diversification / Portfolio Effect Assessment&quot;},&quot;score&quot;:0,&quot;shortScaleValue&quot;:&quot;&quot;,&quot;longScaleValue&quot;:&quot;&quot;},{&quot;adjustmentType&quot;:{&quot;id&quot;:&quot;MODIFIER&quot;},&quot;modifier&quot;:{&quot;id&quot;:&quot;02&quot;,&quot;modifierType&quot;:&quot;&quot;,&quot;value&quot;:&quot;Positive&quot;,&quot;description&quot;:&quot;Capital Structure Assessment&quot;},&quot;score&quot;:-0.5,&quot;shortScaleValue&quot;:&quot;&quot;,&quot;longScaleValue&quot;:&quot;&quot;},{&quot;adjustmentType&quot;:{&quot;id&quot;:&quot;MODIFIER&quot;},&quot;modifier&quot;:{&quot;id&quot;:&quot;03&quot;,&quot;modifierType&quot;:&quot;&quot;,&quot;value&quot;:&quot;Positive&quot;,&quot;description&quot;:&quot;Financial Policy Assessment&quot;},&quot;score&quot;:-0.5,&quot;shortScaleValue&quot;:&quot;&quot;,&quot;longScaleValue&quot;:&quot;&quot;},{&quot;adjustmentType&quot;:{&quot;id&quot;:&quot;MODIFIER&quot;},&quot;modifier&quot;:{&quot;id&quot;:&quot;05&quot;,&quot;modifierType&quot;:&quot;&quot;,&quot;value&quot;:&quot;Strong&quot;,&quot;description&quot;:&quot;Management and Governance Assessment&quot;},&quot;score&quot;:0,&quot;shortScaleValue&quot;:&quot;&quot;,&quot;longScaleValue&quot;:&quot;&quot;},{&quot;adjustmentType&quot;:{&quot;id&quot;:&quot;MODIFIER&quot;},&quot;modifier&quot;:{&quot;id&quot;:&quot;04&quot;,&quot;modifierType&quot;:&quot;&quot;,&quot;value&quot;:&quot;Strong&quot;,&quot;description&quot;:&quot;Liquidity Assessment&quot;},&quot;score&quot;:0,&quot;shortScaleValue&quot;:&quot;&quot;,&quot;longScaleValue&quot;:&quot;&quot;}],&quot;variables&quot;:[{&quot;id&quot;:&quot;0202000000&quot;,&quot;level&quot;:&quot;2&quot;,&quot;parentCode&quot;:&quot;1&quot;,&quot;value&quot;:&quot;&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;5.47&quot;,&quot;adjustedScore&quot;:5.471853125},&quot;blockType&quot;:&quot;BUSINESS_RISK&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;},&quot;globalRating&quot;:{&quot;description&quot;:&quot;Satisfactory&quot;}},{&quot;id&quot;:&quot;0206000001&quot;,&quot;level&quot;:&quot;5&quot;,&quot;parentCode&quot;:&quot;4&quot;,&quot;value&quot;:&quot;441&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;6.5&quot;},&quot;blockType&quot;:&quot;INDUSTRY_RISK&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;}},{&quot;id&quot;:&quot;0210000001&quot;,&quot;level&quot;:&quot;6&quot;,&quot;parentCode&quot;:&quot;5&quot;,&quot;value&quot;:&quot;&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;3&quot;},&quot;blockType&quot;:&quot;SCALE_SCOPE_DIVERSITY&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;}},{&quot;id&quot;:&quot;0210000002&quot;,&quot;level&quot;:&quot;6&quot;,&quot;parentCode&quot;:&quot;5&quot;,&quot;value&quot;:&quot;&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;1.5&quot;},&quot;blockType&quot;:&quot;SCALE_SCOPE_DIVERSITY&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;}},{&quot;id&quot;:&quot;0210000003&quot;,&quot;level&quot;:&quot;6&quot;,&quot;parentCode&quot;:&quot;5&quot;,&quot;value&quot;:&quot;&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;2.5&quot;},&quot;blockType&quot;:&quot;SCALE_SCOPE_DIVERSITY&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;}},{&quot;id&quot;:&quot;0210000004&quot;,&quot;level&quot;:&quot;6&quot;,&quot;parentCode&quot;:&quot;5&quot;,&quot;value&quot;:&quot;&quot;,&quot;adjustedValue&quot;:&quot;&quot;,&quot;score&quot;:{&quot;value&quot;:&quot;7.5&quot;},&quot;blockType&quot;:&quot;SCALE_SCOPE_DIVERSITY&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;,&quot;businessRiskScore&quot;:5.47,&quot;anchor&quot;:&quot;8.43&quot;}}],&quot;combinedRating&quot;:{&quot;anchors&quot;:[{&quot;score&quot;:8.43,&quot;shortScaleValue&quot;:&quot;B-&quot;,&quot;largeScaleValue&quot;:&quot;B-2&quot;,&quot;template&quot;:{&quot;id&quot;:&quot;2&quot;}}],&quot;businessRiskScore&quot;:5.47},&quot;countries&quot;:[{&quot;id&quot;:&quot;BR&quot;,&quot;countryCeiling&quot;:{&quot;score&quot;:20.0,&quot;shortScaleValue&quot;:&quot;A+&quot;,&quot;longScaleValue&quot;:&quot;A+&quot;},&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182000000133&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182000115188&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182000114603&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}}]},{&quot;id&quot;:&quot;ES&quot;,&quot;countryCeiling&quot;:{&quot;score&quot;:20.0,&quot;shortScaleValue&quot;:&quot;A+&quot;,&quot;longScaleValue&quot;:&quot;A+&quot;},&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182000012408&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182023199906&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182777777001&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}}]},{&quot;id&quot;:&quot;HK&quot;,&quot;countryCeiling&quot;:{&quot;score&quot;:20.0,&quot;shortScaleValue&quot;:&quot;A&quot;,&quot;longScaleValue&quot;:&quot;A&quot;},&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182000321034&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}}]},{&quot;id&quot;:&quot;MX&quot;,&quot;countryCeiling&quot;:{&quot;score&quot;:20.0,&quot;shortScaleValue&quot;:&quot;CCC&quot;,&quot;longScaleValue&quot;:&quot;CCC&quot;},&quot;participants&quot;:[{&quot;id&quot;:&quot;MX0074099578523&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;CCC&quot;,&quot;longScaleValue&quot;:&quot;CCC&quot;}}]},{&quot;id&quot;:&quot;UY&quot;,&quot;countryCeiling&quot;:{&quot;score&quot;:20.0,&quot;shortScaleValue&quot;:&quot;A+&quot;,&quot;longScaleValue&quot;:&quot;A+&quot;},&quot;participants&quot;:[{&quot;id&quot;:&quot;ES0182000347690&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182034384066&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182038404874&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182038432613&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182038432614&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182003755961&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182023199908&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182028139948&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182031973839&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182000115352&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182034177250&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}},{&quot;id&quot;:&quot;ES0182034828130&quot;,&quot;riskSegments&quot;:&quot;FINANCIAL_INSTITUTIONS&quot;,&quot;rating&quot;:{&quot;score&quot;:9,&quot;shortScaleValue&quot;:&quot;BB-&quot;,&quot;longScaleValue&quot;:&quot;BB-&quot;}}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#riskAssessmentId#/participants/#participantId#/engine-rating-calculations?eventType.id=#eventType#&amp;subEventType.id=#subEvent#&amp;financialStatement.id=#ffssId#&amp;rating.id=#ratingId#&amp;businessAgent.id=#businessAgentId#&amp;economicGroup.participantType.id=#participationType#&amp;bank.id=#bankId#&amp;bank.branch.id=#branchId#&amp;bank.branch.level.id=#branchLevel#&amp;riskSegment=FINANCIAL_INSTITUTIONS&amp;riskSubsegment=#clientType#&amp;ratingModel.id=#modelId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CSTK TRI Calculation</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">CIB_GrantingTicketINT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">cstk_tri_calculation</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInputTemplate#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{
+&quot;calculations&quot;:[{
+  &quot;id&quot;:&quot;101&quot;,
+  &quot;value&quot;:&quot;Strong&quot;,
+  &quot;score&quot;:2,
+  &quot;percentage&quot;:66.67,
+  &quot;description&quot;:&quot;Overall Awareness Total&quot;
+}, {
+  &quot;id&quot;:&quot;102&quot;,
+  &quot;value&quot;:&quot;Strong&quot;,
+  &quot;score&quot;:2.12,
+  &quot;percentage&quot;:75.00,
+  &quot;description&quot;:&quot;Governance&quot;
+}, {
+  &quot;id&quot;:&quot;103&quot;,
+  &quot;value&quot;:&quot;Strong&quot;,
+  &quot;score&quot;:1.17,
+  &quot;percentage&quot;:71.43,
+  &quot;description&quot;:&quot;Risk Management&quot;
+}, {
+  &quot;id&quot;:&quot;104&quot;,
+  &quot;value&quot;:&quot;Moderate&quot;,
+  &quot;score&quot;:2.1,
+  &quot;percentage&quot;:42.86,
+  &quot;description&quot;:&quot;Strategy&quot;
+}, {
+  &quot;id&quot;:&quot;105&quot;,
+  &quot;value&quot;:&quot;Strong&quot;,
+  &quot;score&quot;:2.01,
+  &quot;percentage&quot;:73.33,
+  &quot;description&quot;:&quot;Metrics and Targets&quot;
+}, {
+  &quot;id&quot;:&quot;106&quot;,
+  &quot;value&quot;:&quot;The company has a complete understanding of its emission profile and is starting to set targets and define transition plans&quot;,
+  &quot;description&quot;:&quot;CCA Comment&quot;
+}, {
+  &quot;id&quot;:&quot;107&quot;,
+  &quot;score&quot;:2.25,
+  &quot;percentage&quot;:17.29,
+  &quot;description&quot;:&quot;Final CCA&quot;
+}, {
+  &quot;id&quot;:&quot;108&quot;,
+  &quot;score&quot;:2.69,
+  &quot;percentage&quot;:82.71,
+  &quot;description&quot;:&quot;Final CTA&quot;
+}, {
+  &quot;id&quot;:&quot;109&quot;,
+  &quot;score&quot;:2.60,
+  &quot;description&quot;:&quot;Final TRI&quot;
+}, {
+  &quot;id&quot;:&quot;110&quot;,
+  &quot;value&quot;:&quot;TRI - 6&quot;,
+  &quot;description&quot;:&quot;Transition Risk Indicator Results&quot;
+}, {
+  &quot;id&quot;:&quot;111&quot;,
+  &quot;value&quot;:&quot;Moderate&quot;,
+  &quot;description&quot;:&quot;Transition Risk Indicator Valuation&quot;
+}, {
+  &quot;id&quot;:&quot;201&quot;,
+  &quot;score&quot;:2.25,
+  &quot;percentage&quot;:17.29,
+  &quot;description&quot;:&quot;CCA Score - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;202&quot;,
+  &quot;score&quot;:0,
+  &quot;description&quot;:&quot;Size and profitability - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;203&quot;,
+  &quot;score&quot;:4,
+  &quot;description&quot;:&quot;Total Revenues - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;204&quot;,
+  &quot;score&quot;:2,
+  &quot;description&quot;:&quot;Low carbon transition profile - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;205&quot;,
+  &quot;score&quot;:4,
+  &quot;description&quot;:&quot;Diff. between company GHG emission intensity and PACTA theoretical emissions intensity&quot;
+}, {
+  &quot;id&quot;:&quot;206&quot;,
+  &quot;score&quot;:1,
+  &quot;description&quot;:&quot;Clinker to Cement Ratio or Clinker factor (%Clinker) -- 2021&quot;
+}, {
+  &quot;id&quot;:&quot;207&quot;,
+  &quot;score&quot;:1,
+  &quot;description&quot;:&quot;Thermal Substitution rate (% biofuels) -- 2021&quot;
+}, {
+  &quot;id&quot;:&quot;208&quot;,
+  &quot;score&quot;:1,
+  &quot;description&quot;:&quot;Use of Renewable Energy (electrical) -- 2021&quot;
+}, {
+  &quot;id&quot;:&quot;209&quot;,
+  &quot;score&quot;:3,
+  &quot;description&quot;:&quot;Exposure to medium term policy risk - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;210&quot;,
+  &quot;score&quot;:3,
+  &quot;description&quot;:&quot;Regional policy risk - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;211&quot;,
+  &quot;score&quot;:3,
+  &quot;description&quot;:&quot;Medium term response activity - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;212&quot;,
+  &quot;score&quot;:4,
+  &quot;description&quot;:&quot;CAPEX / revenue - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;213&quot;,
+  &quot;score&quot;:2,
+  &quot;description&quot;:&quot;Investment in low-carbon technologies (Hydrogen+CCUS+New Materials)&quot;
+}, {
+  &quot;id&quot;:&quot;214&quot;,
+  &quot;score&quot;:4,
+  &quot;description&quot;:&quot;Difference between annual reduction effort -- 2030&quot;
+}, {
+  &quot;id&quot;:&quot;215&quot;,
+  &quot;score&quot;:4,
+  &quot;description&quot;:&quot;Diversification into other products&quot;
+}, {
+  &quot;id&quot;:&quot;216&quot;,
+  &quot;score&quot;:2.69,
+  &quot;percentage&quot;:82.71,
+  &quot;description&quot;:&quot;CTA Score - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;217&quot;,
+  &quot;score&quot;:2.60,
+  &quot;description&quot;:&quot;TRI SCORE - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;218&quot;,
+  &quot;value&quot;:&quot;TRI - 6&quot;,
+  &quot;description&quot;:&quot;Transition Risk Indicator Results - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;219&quot;,
+  &quot;value&quot;:&quot;Moderate&quot;,
+  &quot;description&quot;:&quot;Transition Risk Indicator valuation - Cement&quot;
+}, {
+  &quot;id&quot;:&quot;304&quot;,
+  &quot;score&quot;:2.34,
+  &quot;description&quot;:&quot;Low carbon transition profile - Steel&quot;
+}, {
+  &quot;id&quot;:&quot;307&quot;,
+  &quot;score&quot;:1.87,
+  &quot;description&quot;:&quot;Exposure to medium term policy risk - Steel&quot;
+}, {
+  &quot;id&quot;:&quot;309&quot;,
+  &quot;score&quot;:1.45,
+  &quot;description&quot;:&quot;Medium term response activity - Steel&quot;
+}, {
+  &quot;id&quot;:&quot;404&quot;,
+  &quot;score&quot;:2.16,
+  &quot;description&quot;:&quot;Low carbon transition profile - Auto&quot;
+}, {
+  &quot;id&quot;:&quot;407&quot;,
+  &quot;score&quot;:3.03,
+  &quot;description&quot;:&quot;Exposure to medium term policy risk - Auto&quot;
+}, {
+  &quot;id&quot;:&quot;409&quot;,
+  &quot;score&quot;:2.76,
+  &quot;description&quot;:&quot;Medium term response activity - Auto&quot;
+}, {
+  &quot;id&quot;:&quot;504&quot;,
+  &quot;score&quot;:2,
+  &quot;description&quot;:&quot;Low carbon transition profile - Utilities&quot;
+}, {
+  &quot;id&quot;:&quot;507&quot;,
+  &quot;score&quot;:3.01,
+  &quot;description&quot;:&quot;Exposure to medium term policy risk - Utilities&quot;
+}, {
+  &quot;id&quot;:&quot;509&quot;,
+  &quot;score&quot;:1.98,
+  &quot;description&quot;:&quot;Medium term response activity - Utilities&quot;
+}, {
+  &quot;id&quot;:&quot;604&quot;,
+  &quot;score&quot;:2.12,
+  &quot;description&quot;:&quot;Low carbon transition profile - Energy&quot;
+}, {
+  &quot;id&quot;:&quot;619&quot;,
+  &quot;score&quot;:1.2,
+  &quot;description&quot;:&quot;Exposure to medium term policy risk - Energy&quot;
+}, {
+  &quot;id&quot;:&quot;621&quot;,
+  &quot;score&quot;:2.98,
+  &quot;description&quot;:&quot;Medium term response activity - Energy&quot;
+}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/risk-assessments/#riskAssessmentId#/participants/#participantId#/engine-tri</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>notebookPricing</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GDCibPRWGrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">notebookPricing</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONinput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;petitionBy&quot;:{&quot;petitionType&quot;:&quot;BUSINESS&quot;,&quot;id&quot;:&quot;00001&quot;},&quot;indicators&quot;:[{&quot;id&quot;:&quot;CIRBE&quot;,&quot;value&quot;:10}],&quot;tier&quot;:{&quot;id&quot;:&quot;CORE&quot;},&quot;pricing&quot;:[{&quot;details&quot;:{&quot;pricingType&quot;:&quot;SIMPLE&quot;},&quot;products&quot;:[{&quot;productConditionType&quot;:&quot;CASH_MANAGEMENT&quot;,&quot;id&quot;:&quot;np.nat.transfer.EEE.ob.branch&quot;,&quot;volume&quot;:200,&quot;price&quot;:0,&quot;optimalVolume&quot;:200,&quot;optimalPrice&quot;:3,&quot;indicators&quot;:[{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;STRATEGY&quot;,&quot;strategy&quot;:&quot;recomendacion&quot;}}]}]},{&quot;details&quot;:{&quot;pricingType&quot;:&quot;SIMPLE&quot;},&quot;products&quot;:[{&quot;productConditionType&quot;:&quot;CASH_MANAGEMENT&quot;,&quot;id&quot;:&quot;set&quot;,&quot;volume&quot;:100,&quot;price&quot;:0,&quot;optimalVolume&quot;:100,&quot;optimalPrice&quot;:3,&quot;indicators&quot;:[{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;STRATEGY&quot;,&quot;strategy&quot;:&quot;recomendacion&quot;}}]}]},{&quot;details&quot;:{&quot;pricingType&quot;:&quot;SIMPLE&quot;},&quot;products&quot;:[{&quot;productConditionType&quot;:&quot;CASH_MANAGEMENT&quot;,&quot;id&quot;:&quot;dypri.electronic.issued&quot;,&quot;volume&quot;:200,&quot;price&quot;:0,&quot;optimalVolume&quot;:200,&quot;optimalPrice&quot;:3,&quot;indicators&quot;:[{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;STRATEGY&quot;,&quot;strategy&quot;:&quot;recomendacion&quot;}},{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;ELASTICITY&quot;,&quot;elasticity&quot;:{&quot;id&quot;:&quot;VERY_LOW&quot;,&quot;description&quot;:&quot;test&quot;}}},{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;VOLUME&quot;,&quot;variations&quot;:[{&quot;id&quot;:&quot;QUARTER_PRICE&quot;,&quot;value&quot;:500},{&quot;id&quot;:&quot;ANNUAL_PRICE&quot;,&quot;value&quot;:500}]}},{&quot;details&quot;:{&quot;indicatorType&quot;:&quot;CURVE&quot;,&quot;current&quot;:{&quot;price&quot;:4,&quot;volume&quot;:100},&quot;values&quot;:[{&quot;price&quot;:3,&quot;volume&quot;:300},{&quot;price&quot;:5,&quot;volume&quot;:500}]}}]}]}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DPMX_AcquirerActivitiesFeesNoFamily</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevDPMX</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DPMX_EndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;das82ms4&quot;,
+    &quot;consultMonth&quot;: &quot;marzo-2021&quot;,
+    &quot;commissionType&quot;: &quot;Baja facturación&quot;,
+    &quot;scenarios&quot;: [
+      {
+        &quot;scenarioType&quot;: &quot;BREAK_EVEN&quot;,
+        &quot;fees&quot;: {
+          &quot;itemizeFees&quot;: [
+            {
+              &quot;feeType&quot;: &quot;DEBIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.2
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;CREDIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.2
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;INTERNATIONAL&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.2
+              }
+            }
+          ],
+          &quot;profitability&quot;: {
+            &quot;percentage&quot;: 0,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 0,
+              &quot;currency&quot;: &quot;MXN&quot;
+            }
+          }
+        }
+      },
+      {
+        &quot;scenarioType&quot;: &quot;Bueno&quot;,
+        &quot;fees&quot;: {
+          &quot;itemizeFees&quot;: [
+            {
+              &quot;feeType&quot;: &quot;DEBIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.8
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;CREDIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.4
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;INTERNATIONAL&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 2.2
+              }
+            }
+          ],
+          &quot;profitability&quot;: {
+            &quot;percentage&quot;: 25,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2025000,
+              &quot;currency&quot;: &quot;MXN&quot;
+            }
+          }
+        }
+      },
+      {
+        &quot;scenarioType&quot;: &quot;Bueno&quot;,
+        &quot;fees&quot;: {
+          &quot;itemizeFees&quot;: [
+            {
+              &quot;feeType&quot;: &quot;DEBIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.65
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;CREDIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.37
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;INTERNATIONAL&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 2.15
+              }
+            }
+          ],
+          &quot;profitability&quot;: {
+            &quot;percentage&quot;: 30,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2030000,
+              &quot;currency&quot;: &quot;MXN&quot;
+            }
+          }
+        }
+      },
+      {
+        &quot;scenarioType&quot;: &quot;Óptimo&quot;,
+        &quot;fees&quot;: {
+          &quot;itemizeFees&quot;: [
+            {
+              &quot;feeType&quot;: &quot;DEBIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.9
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;CREDIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 2.05
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;INTERNATIONAL&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 3.3
+              }
+            }
+          ],
+          &quot;profitability&quot;: {
+            &quot;percentage&quot;: 40,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2040000,
+              &quot;currency&quot;: &quot;MXN&quot;
+            }
+          }
+        }
+      },
+      {
+        &quot;scenarioType&quot;: &quot;Óptimo&quot;,
+        &quot;fees&quot;: {
+          &quot;itemizeFees&quot;: [
+            {
+              &quot;feeType&quot;: &quot;DEBIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 1.9
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;CREDIT&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 2.05
+              }
+            },
+            {
+              &quot;feeType&quot;: &quot;INTERNATIONAL&quot;,
+              &quot;itemizeFeeUnit&quot;: {
+                &quot;unitType&quot;: &quot;PERCENTAGE&quot;,
+                &quot;value&quot;: 3.3
+              }
+            }
+          ],
+          &quot;profitability&quot;: {
+            &quot;percentage&quot;: 40,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2040000,
+              &quot;currency&quot;: &quot;MXN&quot;
+            }
+          }
+        }
+      }
+    ]
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">stores/v1/acquirer-categories/#acquirerId#/fees</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

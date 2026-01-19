@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>#Live Opportunities</label>
+    <protected>false</protected>
+    <values>
+        <field>qvcd__GBL_API_name_object__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Field_format__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_FiltersFunction__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Function__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Is_Editable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Label__c</field>
+        <value xsi:type="xsd:string">#Live Opportunities</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_NameCustomSetting__c</field>
+        <value xsi:type="xsd:string">CommercialActivityCS</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_NameOfIcons__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Name_API_field__c</field>
+        <value xsi:type="xsd:string">customer_open_oppy_number__c</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Order__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Relation__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Stage__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Stage_icon__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_Subtitle__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Type_Icon__c</field>
+        <value xsi:type="xsd:string">01</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Type_field__c</field>
+        <value xsi:type="xsd:string">06</value>
+    </values>
+    <values>
+        <field>qvcd__GBL_Type_relation__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>qvcd__GBL_blankSpace__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

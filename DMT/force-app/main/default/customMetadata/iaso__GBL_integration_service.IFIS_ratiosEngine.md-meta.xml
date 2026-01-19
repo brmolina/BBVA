@@ -1,0 +1,1437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IFIS_ratiosEngine</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">ratiosEngine</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+    &quot;financialStatement&quot;: {
+      &quot;id&quot;: &quot;0000000000000000411003&quot;,
+      &quot;currency&quot;: &quot;EUR&quot;,
+      &quot;period&quot;: {
+        &quot;unit&quot;: &quot;MONTHS&quot;,
+        &quot;number&quot;: 12,
+        &quot;periodType&quot;: { &quot;id&quot;: &quot;ANNUAL&quot; },
+        &quot;startDate&quot;: &quot;2022-01-01&quot;,
+        &quot;endDate&quot;: &quot;2022-12-31&quot;
+      },
+      &quot;unit&quot;: &quot;UNITS&quot;,
+      &quot;financialStatementType&quot;: { &quot;id&quot;: &quot;CONSOLIDATED&quot; },
+      &quot;adjustedIndicator&quot;: true,
+      &quot;certification&quot;: { &quot;certificationType&quot;: &quot;FISCAL&quot; }
+    },
+    &quot;calculations&quot;: {
+      &quot;globalSynthesis&quot;: {
+        &quot;nonCurrentAssets&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;intangibles&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;propertiesPlanAndEquipment&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;financialAssetsLongTerm&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;goodwill&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;provisionsAssets&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;currentAssets&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;inventories&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;accountReceivable&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;tradeAccountReceivable&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;assetsRelatedCompanies&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;otherDebtors&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;investmentsShortTerm&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;cash&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;totalAssets&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netWorth&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;commonStock&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;reserves&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netIncome&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;otherEquity&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;provisionsLongTermDeferredIncome&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;nonCurrentLiabilities&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;banksAndBondsLongTerm&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;relatedCompaniesLongTerm&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;otherLiabilitiesNonCurrent&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;currentLiabilities&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;banksAndBondsShortTerm&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;liabilitiesRelatedCompaniesShortTerm&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;tradeAccountPayable&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;otherShortTerm&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;totalLiabilitiesAndEquity&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;totalRevenues&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;variationOnSales&quot;: { &quot;percentage&quot;: 0 },
+        &quot;ebitda&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netOperatingProfit&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;interestExpense&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netFinancialResult&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;incomeFromContinuingOperations&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;netExtraordinaryItems&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netResultsAfterTaxes&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netResultsAfterTaxesAndMinorInterest&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;costOfSales&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;otherDebtFinancialCost&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;taxes&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;investments&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;incomeBeforeTaxesAndContinuingOperations&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;incomeFromDiscontinuedOperations&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;otherCurrentAssets&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } }
+      },
+      &quot;cashFlow&quot;: {
+        &quot;internalGenerationFunds&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;changeWorkingCapital&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;operationalCashFlow&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;capitalExpenditure&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;investmentsIncome&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;cashFlowFromInvestActivities&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;changeInDebt&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;capitalIncrease&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;dividendsPaid&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;cashFlowFromFinanceActivities&quot;: {
+          &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; }
+        },
+        &quot;changeInInvestments&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;totalMovementsCash&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } }
+      },
+      &quot;ratiosMetrics&quot;: {
+        &quot;workingCapital&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;grossFinancialDebt&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;netFinancialDebt&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;discretionalCashFlow&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;totalCashFlow&quot;: { &quot;amount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;0&quot; } },
+        &quot;financialDebtOverEquity&quot;: 0,
+        &quot;interestCoverageWithEbitda&quot;: 0,
+        &quot;grossFinancialDebtOverEbitda&quot;: 0,
+        &quot;netFinancialDebtOverEbitda&quot;: 0,
+        &quot;netPayback&quot;: { &quot;unit&quot;: &quot;DAYS&quot;, &quot;number&quot;: 0 },
+        &quot;averageCollectionPeriod&quot;: { &quot;unit&quot;: &quot;DAYS&quot;, &quot;number&quot;: 0 },
+        &quot;stockTurnover&quot;: { &quot;unit&quot;: &quot;DAYS&quot;, &quot;number&quot;: 0 },
+        &quot;averagePayingPeriod&quot;: { &quot;unit&quot;: &quot;DAYS&quot;, &quot;number&quot;: 0 }
+      },
+      &quot;specificRatiosMagnitudes&quot;: [
+        {
+          &quot;id&quot;: &quot;665&quot;,
+          &quot;description&quot;: &quot;NON-CURRENT ASSETS&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2143767,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;668&quot;,
+          &quot;description&quot;: &quot;Property, plant &amp; Equipment&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2009513,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 94
+        },
+        {
+          &quot;id&quot;: &quot;1303&quot;,
+          &quot;description&quot;: &quot;Intangible&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 133954,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 6
+        },
+        {
+          &quot;id&quot;: &quot;669&quot;,
+          &quot;description&quot;: &quot;Investments&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1351&quot;,
+          &quot;description&quot;: &quot;Financial assets LT&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; }
+        },
+        {
+          &quot;id&quot;: &quot;667&quot;,
+          &quot;description&quot;: &quot;Goodwill&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 300, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;671&quot;,
+          &quot;description&quot;: &quot;Deferred tax assets&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;672&quot;,
+          &quot;description&quot;: &quot;CURRENT ASSET&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 3100, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;673&quot;,
+          &quot;description&quot;: &quot;Inventories&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 2000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;675&quot;,
+          &quot;description&quot;: &quot;Trade accounts receivable&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;676&quot;,
+          &quot;description&quot;: &quot;Related Companies&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;677&quot;,
+          &quot;description&quot;: &quot;Other debtors&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1304&quot;,
+          &quot;description&quot;: &quot;Other current assets&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;678&quot;,
+          &quot;description&quot;: &quot;ST Investments&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;680&quot;,
+          &quot;description&quot;: &quot;Cash and cash equivalents&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 100, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1&quot;,
+          &quot;description&quot;: &quot;TOTAL ASSETS&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2146867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;683&quot;,
+          &quot;description&quot;: &quot;NET WORTH&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 8000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;684&quot;,
+          &quot;description&quot;: &quot;Common Stock&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 8000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1354&quot;,
+          &quot;description&quot;: &quot;Reserves&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1365&quot;,
+          &quot;description&quot;: &quot;Net Income&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;688&quot;,
+          &quot;description&quot;: &quot;Minority interests&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;690&quot;,
+          &quot;description&quot;: &quot;NON-CURRENT LIABILITIES&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1355&quot;,
+          &quot;description&quot;: &quot;Provisions and Deferred taxes&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1356&quot;,
+          &quot;description&quot;: &quot;Banks + Bonds + Derivatives + Leases LT&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;692&quot;,
+          &quot;description&quot;: &quot;Related companies LT&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;693&quot;,
+          &quot;description&quot;: &quot;Other Financial LT&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;694&quot;,
+          &quot;description&quot;: &quot;CURRENT LIABILITIES&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2137867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1357&quot;,
+          &quot;description&quot;: &quot;Banks + Bonds + Derivatives + Leases ST&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2137867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;696&quot;,
+          &quot;description&quot;: &quot;Related companies ST&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;697&quot;,
+          &quot;description&quot;: &quot;Trade accounts Payables&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1358&quot;,
+          &quot;description&quot;: &quot;Other ST&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;699&quot;,
+          &quot;description&quot;: &quot;TOTAL EQUITY &amp; LIABILITY&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2146867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;700&quot;,
+          &quot;description&quot;: &quot;TOTAL REVENUES&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;701&quot;,
+          &quot;description&quot;: &quot;EBITDA&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1363&quot;,
+          &quot;description&quot;: &quot;NET OPERATING INCOME / EBIT&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;703&quot;,
+          &quot;description&quot;: &quot;Interest Expense&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;705&quot;,
+          &quot;description&quot;: &quot;Equity accounted investments results&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;704&quot;,
+          &quot;description&quot;: &quot;NET FINACIAL RESULTS&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1364&quot;,
+          &quot;description&quot;: &quot;INCOME CONT. OPERATIONS&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;706&quot;,
+          &quot;description&quot;: &quot;Net other results&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1365&quot;,
+          &quot;description&quot;: &quot;INCOME (before taxes &amp; discn. oper.)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;707&quot;,
+          &quot;description&quot;: &quot;Income taxes&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1366&quot;,
+          &quot;description&quot;: &quot;Income from discontinued operations&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;1420&quot;,
+          &quot;description&quot;: &quot;NET RESULT (after taxes and disc.op)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1368&quot;,
+          &quot;description&quot;: &quot;NET INCOME Atributable&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;7091&quot;,
+          &quot;description&quot;: &quot;Funds From Operations&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;710&quot;,
+          &quot;description&quot;: &quot;Change in Working Capital&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;7182&quot;,
+          &quot;description&quot;: &quot;Dividends (cash) received&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;711&quot;,
+          &quot;description&quot;: &quot;CASH FLOW FROM OPERATING ACT. (CFO)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;712&quot;,
+          &quot;description&quot;: &quot;Capex&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;713&quot;,
+          &quot;description&quot;: &quot;Investments / Divestments&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;7183&quot;,
+          &quot;description&quot;: &quot;Dividends received (inver)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1372&quot;,
+          &quot;description&quot;: &quot;Other cash flow investment act.&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;715&quot;,
+          &quot;description&quot;: &quot;CASH FLOW INVESTING ACT. (CFI)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;716&quot;,
+          &quot;description&quot;: &quot;Net Change Financial Debt&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;717&quot;,
+          &quot;description&quot;: &quot;Capital Increase&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;718&quot;,
+          &quot;description&quot;: &quot;Dividends&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;7181&quot;,
+          &quot;description&quot;: &quot;Share buyback&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;719&quot;,
+          &quot;description&quot;: &quot;Other cash flow financing act.&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;720&quot;,
+          &quot;description&quot;: &quot;CASH FLOW FINANCING ACT. (CFF)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;721&quot;,
+          &quot;description&quot;: &quot;TOTAL CHANGES IN CASH&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;11&quot;,
+          &quot;description&quot;: &quot;EBITDAᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;12&quot;,
+          &quot;description&quot;: &quot;EBITᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;13&quot;,
+          &quot;description&quot;: &quot;Interest expensesᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;14&quot;,
+          &quot;description&quot;: &quot;Fixed chargeᶜ&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1068934,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;15&quot;,
+          &quot;description&quot;: &quot;Capitalᶜ (Equity reported + Net debtᶜ)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2146767,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;16&quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2138867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;17&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2138767,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;18&quot;,
+          &quot;description&quot;: &quot;FFOᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;19&quot;,
+          &quot;description&quot;: &quot;CFOᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;20&quot;,
+          &quot;description&quot;: &quot;FOCFᶜ&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;21&quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ to Ebitdaᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.7734,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;22&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ to Ebitdaᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.7534,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;23&quot;,
+          &quot;description&quot;: &quot;Ebitdaᶜ / Interest expensesᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;24&quot;,
+          &quot;description&quot;: &quot;Ebitdaᶜ / Fixed chargeᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.004678,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;25&quot;,
+          &quot;description&quot;: &quot;CFOᶜ to Net Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337796,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;59&quot;,
+          &quot;description&quot;: &quot;FOCFᶜ to Net Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337796,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;31&quot;,
+          &quot;description&quot;: &quot;Net Worth / Asset (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.00372636,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;32&quot;,
+          &quot;description&quot;: &quot;Long term debt / Net Worth (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.125,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1396&quot;,
+          &quot;description&quot;: &quot;C. Asset / C. Liabilities (x)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0.0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;NUMBER&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1250&quot;,
+          &quot;description&quot;: &quot;Avg. Days Payable Out.&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 73, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;NUMBER&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1248&quot;,
+          &quot;description&quot;: &quot;Avg. Days Inventory Out.&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1247&quot;,
+          &quot;description&quot;: &quot;Avg. Days Sales Out.&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;41&quot;,
+          &quot;description&quot;: &quot;Avg period to maturity (days)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 73, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;NUMBER&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;51&quot;,
+          &quot;description&quot;: &quot;Ebitdaᶜ margin (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;52&quot;,
+          &quot;description&quot;: &quot;ROA (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002328975,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;53&quot;,
+          &quot;description&quot;: &quot;ROE (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.625,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;54&quot;,
+          &quot;description&quot;: &quot;ROCEᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002329084,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;70&quot;,
+          &quot;description&quot;: &quot;CFOᶜ / Gross Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337686,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;69&quot;,
+          &quot;description&quot;: &quot;FFOᶜ / Gross Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337686,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;68&quot;,
+          &quot;description&quot;: &quot;FFOᶜ / Interest expensesᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;58&quot;,
+          &quot;description&quot;: &quot;FFOᶜ / Net Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337796,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;72&quot;,
+          &quot;description&quot;: &quot;FFOᶜ / Revenues (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;69&quot;,
+          &quot;description&quot;: &quot;FFOᶜ / Gross Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337686,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;26&quot;,
+          &quot;description&quot;: &quot;FOCFᶜ / Gross Debtᶜ (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002337686,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;56&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ / Capitalᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.996273,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;65&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ / EBITᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.7534,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;55&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ / Net Worth (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 267.345875,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;60&quot;,
+          &quot;description&quot;: &quot;Net Paybackᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.7534,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;71&quot;,
+          &quot;description&quot;: &quot;Acid test&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.000514532,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1398&quot;,
+          &quot;description&quot;: &quot;% Amort. acumul inmovilizado material&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1255&quot;,
+          &quot;description&quot;: &quot;Cash and cash equivalents / Revenues (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.02,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;7184&quot;,
+          &quot;description&quot;: &quot;Depreciation &amp; amortization&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;67&quot;,
+          &quot;description&quot;: &quot;EBITᶜ / Interest expensesᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;74&quot;,
+          &quot;description&quot;: &quot;EBITᶜ / Total Asset (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002328975,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;62&quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ / Capitalᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.99632,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;64&quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ / EBITᶜ (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.7734,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;61&quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ / Net Worth (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 267.358375,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;896&quot;,
+          &quot;description&quot;: &quot;Gross Profit&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;245&quot;,
+          &quot;description&quot;: &quot;Interest income&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;237&quot;,
+          &quot;description&quot;: &quot;Operating expenses (without depreciation and amortization)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;73&quot;,
+          &quot;description&quot;: &quot;Pay out (%)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1254&quot;,
+          &quot;description&quot;: &quot;Revenues / Property, plant and equipment (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002488165,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1253&quot;,
+          &quot;description&quot;: &quot;Revenues / Tangible Net Worth (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: -0.039602706,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1252&quot;,
+          &quot;description&quot;: &quot;Revenues / Total Assets (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.002328975,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1209&quot;,
+          &quot;description&quot;: &quot;Tangible Net Worth&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: -126254,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;218&quot;,
+          &quot;description&quot;: &quot;Total cost of sales&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1395&quot;,
+          &quot;description&quot;: &quot;Working Capital / Total Asset (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: -0.99436388,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;80&quot;,
+          &quot;description&quot;: &quot;Ebitda&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;81&quot;,
+          &quot;description&quot;: &quot;Ebit&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;82&quot;,
+          &quot;description&quot;: &quot;Deuda neta (Millones EUR)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2138767,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;83&quot;,
+          &quot;description&quot;: &quot;Deuda total (Millones EUR)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2138867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;84&quot;,
+          &quot;description&quot;: &quot;Fondos Propios (Millones EUR)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;85&quot;,
+          &quot;description&quot;: &quot;Fondos Propios (Millones USD)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2146867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;86&quot;,
+          &quot;description&quot;: &quot;Patrimonio (Millones USD)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 5000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;87&quot;,
+          &quot;description&quot;: &quot;Net interest expenses&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;88&quot;,
+          &quot;description&quot;: &quot;Deuda Total / Capital (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.996,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;89&quot;,
+          &quot;description&quot;: &quot;Deuda Neta / Capital (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.996,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;90&quot;,
+          &quot;description&quot;: &quot;Deuda Neta sobre Capital Neto (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.9963,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;91&quot;,
+          &quot;description&quot;: &quot;Deuda Total sobre EBITDA (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.77,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;92&quot;,
+          &quot;description&quot;: &quot;Deuda Neta sobre EBITDA (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.75,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;93&quot;,
+          &quot;description&quot;: &quot;Deuda Neta sobre EBIT (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 427.75,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;94&quot;,
+          &quot;description&quot;: &quot;GIF / Deuda Total (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.0023,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;95&quot;,
+          &quot;description&quot;: &quot;GIF / Deuda Neta (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.0023,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;96&quot;,
+          &quot;description&quot;: &quot;Cobertura de intereses con GIF (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;97&quot;,
+          &quot;description&quot;: &quot;Cobertura de intereses con EBITDA (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;98&quot;,
+          &quot;description&quot;: &quot;Cobertura de intereses netos con EBITDA (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;99&quot;,
+          &quot;description&quot;: &quot;Cobertura de intereses con EBIT (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 9999.99,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;100&quot;,
+          &quot;description&quot;: &quot;Cobertura del Servicio de Deuda (x)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0.0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;NUMBER&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;101&quot;,
+          &quot;description&quot;: &quot;Cobertura de Cargos Fijos (x)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 0.0, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;NUMBER&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;102&quot;,
+          &quot;description&quot;: &quot;Resultados Operativos (antes de D&amp;A) sobre Ventas (%)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;103&quot;,
+          &quot;description&quot;: &quot;EBITDA sobre Ventas (%)&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;104&quot;,
+          &quot;description&quot;: &quot;Margen con EBITDA (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;105&quot;,
+          &quot;description&quot;: &quot;Margen Operativo (después D&amp;A) (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;106&quot;,
+          &quot;description&quot;: &quot;Retorno sobre Capitalización (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.0023,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;107&quot;,
+          &quot;description&quot;: &quot;Retorno sobre Capitalización Neta (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.0023,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;63 &quot;,
+          &quot;description&quot;: &quot;Gross Debtᶜ / Total Asset (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.996274,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;57&quot;,
+          &quot;description&quot;: &quot;Net Debtᶜ / Total Asset (x)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0.996227,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;NUMBER&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1502&quot;,
+          &quot;description&quot;: &quot;Gross Long Term Financial Debt&quot;,
+          &quot;totalAmount&quot;: { &quot;amount&quot;: 1000, &quot;currency&quot;: &quot;EUR&quot;, &quot;unit&quot;: &quot;UNITS&quot; },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1500&quot;,
+          &quot;description&quot;: &quot;Tangibles + Intangibles + Goodwill&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2143767,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1515&quot;,
+          &quot;description&quot;: &quot;Banks+Bonds (ST and LT)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 2138867,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;UNITS&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1505&quot;,
+          &quot;description&quot;: &quot;Fixed Assets / Net Worth (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 267.970875,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;1501&quot;,
+          &quot;description&quot;: &quot;Net Result / Revenues (%)&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 1,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        },
+        {
+          &quot;id&quot;: &quot;2000&quot;,
+          &quot;description&quot;: &quot;DFN/Ebitda&quot;,
+          &quot;totalAmount&quot;: {
+            &quot;amount&quot;: 0,
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;unit&quot;: &quot;PERCENTAGE&quot;
+          },
+          &quot;percentage&quot;: 100
+        }
+      ]
+    },
+    &quot;controls&quot;: [
+      { &quot;id&quot;: &quot;200&quot;, &quot;isValid&quot;: true, &quot;description&quot;: &quot;OK&quot; },
+      { &quot;id&quot;: &quot;200&quot;, &quot;isValid&quot;: true, &quot;description&quot;: &quot;OK&quot; }
+    ]
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#riskAssessmentId#/participants/#customerId#/engine-financial-statements-calculations?businessAgent.id=#federationId#&amp;financialStatement.id=#financialStatementId#&amp;eventType=#eventType#&amp;economicGroup.participantType.id=#participantType#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

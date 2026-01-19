@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>leveragePersistence</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__JSON_input__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__api_field_Name__c</field>
+        <value xsi:type="xsd:string">arce__ffss_for_rating_id__r.arce__rating_final__c,arce__gf_total_revenues_ytd_amount__c,arce__total_asset_amount__c,arce__gross_financial_debt_amount__c,arce__debt_comt_not_disb_local_amount__c,arce__gf_total_debt_amount__c,arce__ll_adj_debt_auditor_amount__c,arce__ll_adj_deb_excl_amount__c,arce__ll_other_adj_debt_amount__c,arce__ll_adj_ebitda_auditor_amount__c,arce__ll_adj_ebitda_excl_amount__c,arce__ll_other_adj_ebitda_amount__c,arce__ebitda_interest_number__c,arce__total_debt_ebitda_per__c,arce__gross_fin_debt_ebitda_number__c,arce__smes_eur_comuty_defn_type__c,arce__ll_test_scope_ind_type__c,arce__ll_before_adj_ind_type__c,arce__ll_after_adj_ind_type__c,arce__ll_previous_anlys_ind_type__c,arce__fin_covenants_breach_type__c,arce__gf_covenant_desc__c,arce__ll_anlys_clsfn_var_rsn_id__c,arce__employees_number__c</value>
+    </values>
+    <values>
+        <field>arce__iasoVariables__c</field>
+        <value xsi:type="xsd:string">ratingShortVal,specAmount,totalActMillones,totalDebtMilions,debtCompNotDispAmount,totDebtplusCommit,adjDebtByAudit,debtAdjExc,debtAdjOtherRazon,uafirAfter,uafirExclusion,uafirdetNorm,uafirmillions,totalRatioCommUafir,debtOverUafir,isPyme,leverageExclusion,leverageWithoutAdj,leverageAfterAdj,levBeforeArce,isUnbreached,comments,classVarReasonId,en</value>
+    </values>
+</CustomMetadata>

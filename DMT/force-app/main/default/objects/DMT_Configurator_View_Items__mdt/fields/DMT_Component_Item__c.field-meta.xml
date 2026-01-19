@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Component_Item__c</fullName>
+    <description>Component item in Item</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Component Item</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Treasury Line</fullName>
+                <default>true</default>
+                <label>Treasury Line</label>
+            </value>
+            <value>
+                <fullName>Treasury Client</fullName>
+                <default>false</default>
+                <label>Treasury Client</label>
+            </value>
+            <value>
+                <fullName>Treasury Participants</fullName>
+                <default>false</default>
+                <label>Treasury Participants</label>
+            </value>
+            <value>
+                <fullName>Treasury Approval Process Data</fullName>
+                <default>false</default>
+                <label>Treasury Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Page Break</fullName>
+                <default>false</default>
+                <label>Page Break</label>
+            </value>
+            <value>
+                <fullName>Treasury Products</fullName>
+                <default>false</default>
+                <label>Treasury Products</label>
+            </value>
+            <value>
+                <fullName>Text 18px</fullName>
+                <default>false</default>
+                <label>Text 18px</label>
+            </value>
+            <value>
+                <fullName>Text 14px</fullName>
+                <default>false</default>
+                <label>Text 14px</label>
+            </value>
+            <value>
+                <fullName>Text 12px</fullName>
+                <default>false</default>
+                <label>Text 12px</label>
+            </value>
+            <value>
+                <fullName>Line Break</fullName>
+                <default>false</default>
+                <label>Line Break</label>
+            </value>
+            <value>
+                <fullName>Passport</fullName>
+                <default>false</default>
+                <label>Passport</label>
+            </value>
+            <value>
+                <fullName>Limit</fullName>
+                <default>false</default>
+                <label>Limit</label>
+            </value>
+            <value>
+                <fullName>Limit Detail</fullName>
+                <default>false</default>
+                <label>Limit Detail</label>
+            </value>
+            <value>
+                <fullName>Limit Visual</fullName>
+                <default>false</default>
+                <label>Limit Visual</label>
+            </value>
+            <value>
+                <fullName>Opp product profitability</fullName>
+                <default>false</default>
+                <label>Opp product profitability</label>
+            </value>
+            <value>
+                <fullName>Line Info</fullName>
+                <default>false</default>
+                <label>Line Info</label>
+            </value>
+            <value>
+                <fullName>Products</fullName>
+                <default>false</default>
+                <label>Products</label>
+            </value>
+            <value>
+                <fullName>Client</fullName>
+                <default>false</default>
+                <label>Client</label>
+            </value>
+            <value>
+                <fullName>Approval Process Data</fullName>
+                <default>false</default>
+                <label>Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Participants</fullName>
+                <default>false</default>
+                <label>Participants</label>
+            </value>
+            <value>
+                <fullName>Opportunity Info</fullName>
+                <default>false</default>
+                <label>Opportunity Info</label>
+            </value>
+            <value>
+                <fullName>Commercial Process Data</fullName>
+                <default>false</default>
+                <label>Commercial Process Data</label>
+            </value>
+            <value>
+                <fullName>Executive Summary</fullName>
+                <default>false</default>
+                <label>Executive Summary</label>
+            </value>
+            <value>
+                <fullName>Business Plan</fullName>
+                <default>false</default>
+                <label>Business Plan</label>
+            </value>
+            <value>
+                <fullName>Deal</fullName>
+                <default>false</default>
+                <label>Deal</label>
+            </value>
+            <value>
+                <fullName>Requirements</fullName>
+                <default>false</default>
+                <label>Requirements</label>
+            </value>
+            <value>
+                <fullName>Client Information</fullName>
+                <default>false</default>
+                <label>Client Information</label>
+            </value>
+            <value>
+                <fullName>Sustainability</fullName>
+                <default>false</default>
+                <label>Sustainability</label>
+            </value>
+            <value>
+                <fullName>Approval Process</fullName>
+                <default>false</default>
+                <label>Approval Process</label>
+            </value>
+            <value>
+                <fullName>Validation Process</fullName>
+                <default>false</default>
+                <label>Validation Process</label>
+            </value>
+            <value>
+                <fullName>Transaction Overview</fullName>
+                <default>false</default>
+                <label>Transaction Overview</label>
+            </value>
+            <value>
+                <fullName>Economics</fullName>
+                <default>false</default>
+                <label>Economics</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

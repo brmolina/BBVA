@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMTO_EvaluationLine</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMTO_Endpoint_INT</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Passport service TCM</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#payload#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{ &quot;data&quot;:
+{ &quot;opportunityId&quot;: &quot;#idReplace#&quot;, &quot;version&quot;: &quot;001&quot;, &quot;features&quot;: [
+{ &quot;id&quot;: &quot;Test1&quot;, &quot;name&quot;: &quot;Global validations&quot;, &quot;passportSanction&quot;: &quot;passport&quot;, &quot;active&quot;: &quot;Y&quot;, &quot;motorDesc&quot;: &quot;Salesforce&quot;, &quot;stateName&quot;: &quot;RED&quot;, &quot;validations&quot;: [ { &quot;name&quot;: &quot;isCurrentLine&quot;, &quot;message&quot;: &quot;For these dates the following clients already have current lines:ES0182042785388&quot;, &quot;state&quot;: &quot;RED&quot; }
+,
+
+{ &quot;name&quot;: &quot;restricGreaterTerm&quot;, &quot;message&quot;: &quot;There are no terms of operational restrictions longer than the line term&quot;, &quot;state&quot;: &quot;GREEN&quot; }
+,
+
+{ &quot;name&quot;: &quot;deriRestricNOFdDvp&quot;, &quot;message&quot;: &quot;There are no operational restrictions on products for Derivatives and not for Free Delivery or Delivery versus Payment&quot;, &quot;state&quot;: &quot;GREEN&quot; }
+,
+
+{ &quot;name&quot;: &quot;noSettlementAmount&quot;, &quot;message&quot;: &quot;Free Delivery and Delivery versus Payment without amount and has operational restrictions for the following products: FX, CCS, Asset repos&quot;, &quot;state&quot;: &quot;RED&quot; }
+],
+&quot;tasks&quot;: [
+{
+&quot;id&quot;: &quot;1&quot;,
+&quot;name&quot;: &quot;Task 1&quot;,
+&quot;yesFlag&quot;: &quot;Yes Approved&quot;,
+&quot;noFlag&quot;: &quot;No Approved&quot;,
+&quot;naFlag&quot;: &quot;Not Apply Approved&quot;,
+&quot;closingCapacity&quot;: &quot;N&quot;,
+&quot;nextTask&quot;: &quot;2&quot;,
+&quot;status&quot;: &quot;OPEN&quot;,
+&quot;approvers&quot;: [
+
+{ &quot;id&quot;: &quot;10&quot;, &quot;name&quot;: &quot;Specialist1&quot;, &quot;entific&quot;: &quot;HO&quot;, &quot;branch&quot;: &quot;BBVA SA - Spain&quot;, &quot;documentManagerEnable&quot;: &quot;Y&quot; }
+]
+},
+
+{ &quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Task 2&quot;, &quot;yesFlag&quot;: &quot;Yes&quot;, &quot;noFlag&quot;: &quot;No&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;3&quot;, &quot;status&quot;: &quot;OPEN&quot; }
+,
+
+{ &quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Task 3&quot;, &quot;yesFlag&quot;: &quot;Yes Consolidated&quot;, &quot;noFlag&quot;: &quot;No Consolidated&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;&quot;, &quot;status&quot;: &quot;CLOSED&quot; }
+],
+&quot;consumptionLimits&quot;: [
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;3904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;250000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit-SCOTTIS&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;5904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;600000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;200000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;4904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;50000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;6904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;1000000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;2000000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;700000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;800000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+}
+]
+},
+{
+&quot;id&quot;: &quot;Test&quot;,
+&quot;name&quot;: &quot;Limit Feature test 1&quot;,
+&quot;passportSanction&quot;: &quot;passport&quot;,
+&quot;active&quot;: &quot;Y&quot;,
+&quot;motorDesc&quot;: &quot;Limit Engine Lib Name&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;,
+&quot;validations&quot;: [
+
+{ &quot;name&quot;: &quot;Validation 1&quot;, &quot;message&quot;: &quot;The following clients are not in the GDT Salesforce environment: AR0017002063668&quot;, &quot;state&quot;: &quot;GREEN&quot; }
+,
+
+{ &quot;name&quot;: &quot;Validation 2&quot;, &quot;message&quot;: &quot;The term of the line is less than that of the following operating restrictions: Derivatives&quot;, &quot;state&quot;: &quot;RED&quot; }
+],
+&quot;tasks&quot;: [
+{
+&quot;id&quot;: &quot;1&quot;,
+&quot;name&quot;: &quot;Task 1&quot;,
+&quot;yesFlag&quot;: &quot;Yes Approved&quot;,
+&quot;noFlag&quot;: &quot;No Approved&quot;,
+&quot;naFlag&quot;: &quot;Not Apply Approved&quot;,
+&quot;closingCapacity&quot;: &quot;N&quot;,
+&quot;nextTask&quot;: &quot;2&quot;,
+&quot;status&quot;: &quot;OPEN&quot;,
+&quot;approvers&quot;: [
+
+{ &quot;id&quot;: &quot;10&quot;, &quot;name&quot;: &quot;Specialist1&quot;, &quot;entific&quot;: &quot;HO&quot;, &quot;branch&quot;: &quot;BBVA SA - Spain&quot;, &quot;documentManagerEnable&quot;: &quot;Y&quot; }
+]
+},
+
+{ &quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Task 2&quot;, &quot;yesFlag&quot;: &quot;Yes&quot;, &quot;noFlag&quot;: &quot;No&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;3&quot;, &quot;status&quot;: &quot;OPEN&quot; }
+,
+
+{ &quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Task 3&quot;, &quot;yesFlag&quot;: &quot;Yes Consolidated&quot;, &quot;noFlag&quot;: &quot;No Consolidated&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;&quot;, &quot;status&quot;: &quot;CLOSED&quot; }
+],
+&quot;consumptionLimits&quot;: [
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;3904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;250000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit-SCOTTIS&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;5904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;600000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;200000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;4904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;50000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;6904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;1000000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;2000000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;700000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;800000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+}
+]
+},
+{
+&quot;id&quot;: &quot;Test2&quot;,
+&quot;name&quot;: &quot;Limit Feature test 2&quot;,
+&quot;passportSanction&quot;: &quot;passport&quot;,
+&quot;active&quot;: &quot;Y&quot;,
+&quot;motorDesc&quot;: &quot;Limit Engine Lib Name&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;,
+&quot;validations&quot;: [
+
+{ &quot;name&quot;: &quot;&quot;, &quot;message&quot;: &quot;&quot;, &quot;state&quot;: &quot;&quot; }
+],
+&quot;tasks&quot;: [
+{
+&quot;id&quot;: &quot;1&quot;,
+&quot;name&quot;: &quot;Task 1&quot;,
+&quot;yesFlag&quot;: &quot;Yes Approved&quot;,
+&quot;noFlag&quot;: &quot;No Approved&quot;,
+&quot;naFlag&quot;: &quot;Not Apply Approved&quot;,
+&quot;closingCapacity&quot;: &quot;N&quot;,
+&quot;nextTask&quot;: &quot;2&quot;,
+&quot;status&quot;: &quot;OPEN&quot;,
+&quot;approvers&quot;: [
+
+{ &quot;id&quot;: &quot;10&quot;, &quot;name&quot;: &quot;Specialist2&quot;, &quot;entific&quot;: &quot;HO&quot;, &quot;branch&quot;: &quot;BBVA SA - Spain&quot;, &quot;documentManagerEnable&quot;: &quot;Y&quot; }
+]
+},
+
+{ &quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Task 2&quot;, &quot;yesFlag&quot;: &quot;Yes&quot;, &quot;noFlag&quot;: &quot;No&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;3&quot;, &quot;status&quot;: &quot;OPEN&quot; }
+,
+
+{ &quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Task 3&quot;, &quot;yesFlag&quot;: &quot;Yes Consolidated&quot;, &quot;noFlag&quot;: &quot;No Consolidated&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;&quot;, &quot;status&quot;: &quot;CLOSED&quot; }
+],
+&quot;consumptionLimits&quot;: [
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233055_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;3904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;250000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit-SCOTTIS&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;5904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;600000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;200000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;4904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;50000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;yellow&quot;
+}
+]
+},
+{
+&quot;id&quot;: &quot;Test3&quot;,
+&quot;name&quot;: &quot;Limit Feature test 3&quot;,
+&quot;passportSanction&quot;: &quot;passport&quot;,
+&quot;active&quot;: &quot;Y&quot;,
+&quot;motorDesc&quot;: &quot;Limit Engine Lib Name&quot;,
+&quot;stateName&quot;: &quot;Yellow&quot;,
+&quot;validations&quot;: [
+
+{ &quot;name&quot;: &quot;&quot;, &quot;message&quot;: &quot;&quot;, &quot;state&quot;: &quot;&quot; }
+],
+&quot;tasks&quot;: [
+{
+&quot;id&quot;: &quot;1&quot;,
+&quot;name&quot;: &quot;Task 1&quot;,
+&quot;yesFlag&quot;: &quot;Yes Approved&quot;,
+&quot;noFlag&quot;: &quot;No Approved&quot;,
+&quot;naFlag&quot;: &quot;Not Apply Approved&quot;,
+&quot;closingCapacity&quot;: &quot;N&quot;,
+&quot;nextTask&quot;: &quot;2&quot;,
+&quot;status&quot;: &quot;OPEN&quot;,
+&quot;approvers&quot;: [
+
+{ &quot;id&quot;: &quot;10&quot;, &quot;name&quot;: &quot;Analyst2&quot;, &quot;entific&quot;: &quot;HO&quot;, &quot;branch&quot;: &quot;BBVA SA - Spain&quot;, &quot;documentManagerEnable&quot;: &quot;Y&quot; }
+]
+},
+
+{ &quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Task 2&quot;, &quot;yesFlag&quot;: &quot;Yes&quot;, &quot;noFlag&quot;: &quot;No&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;3&quot;, &quot;status&quot;: &quot;OPEN&quot; }
+,
+
+{ &quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Task 3&quot;, &quot;yesFlag&quot;: &quot;Yes Consolidated&quot;, &quot;noFlag&quot;: &quot;No Consolidated&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;&quot;, &quot;status&quot;: &quot;CLOSED&quot; }
+],
+&quot;consumptionLimits&quot;: [
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233055_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;3904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;250000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit-SCOTTIS&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;5904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;600000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;200000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;4904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;50000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;yellow&quot;
+}
+]
+},
+{
+&quot;id&quot;: &quot;Test4&quot;,
+&quot;name&quot;: &quot;Limit Feature test 4&quot;,
+&quot;passportSanction&quot;: &quot;passport&quot;,
+&quot;active&quot;: &quot;Y&quot;,
+&quot;motorDesc&quot;: &quot;Limit Engine Lib Name&quot;,
+&quot;stateName&quot;: &quot;Yellow&quot;,
+&quot;validations&quot;: [
+
+{ &quot;name&quot;: &quot;&quot;, &quot;message&quot;: &quot;&quot;, &quot;state&quot;: &quot;&quot; }
+],
+&quot;tasks&quot;: [
+{
+&quot;id&quot;: &quot;1&quot;,
+&quot;name&quot;: &quot;Task 1&quot;,
+&quot;yesFlag&quot;: &quot;Yes Approved&quot;,
+&quot;noFlag&quot;: &quot;No Approved&quot;,
+&quot;naFlag&quot;: &quot;Not Apply Approved&quot;,
+&quot;closingCapacity&quot;: &quot;N&quot;,
+&quot;nextTask&quot;: &quot;2&quot;,
+&quot;status&quot;: &quot;OPEN&quot;,
+&quot;approvers&quot;: [
+
+{ &quot;id&quot;: &quot;10&quot;, &quot;name&quot;: &quot;Analyst2&quot;, &quot;entific&quot;: &quot;HO&quot;, &quot;branch&quot;: &quot;BBVA SA - Spain&quot;, &quot;documentManagerEnable&quot;: &quot;Y&quot; }
+]
+},
+
+{ &quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;Task 2&quot;, &quot;yesFlag&quot;: &quot;Yes&quot;, &quot;noFlag&quot;: &quot;No&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;3&quot;, &quot;status&quot;: &quot;OPEN&quot; }
+,
+
+{ &quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Task 3&quot;, &quot;yesFlag&quot;: &quot;Yes Consolidated&quot;, &quot;noFlag&quot;: &quot;No Consolidated&quot;, &quot;naFlag&quot;: &quot;Not Apply&quot;, &quot;closingCapacity&quot;: &quot;Y&quot;, &quot;nextTask&quot;: &quot;&quot;, &quot;status&quot;: &quot;CLOSED&quot; }
+],
+&quot;consumptionLimits&quot;: [
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233055_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;3904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;500000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;250000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+},
+{
+&quot;consumptionLastLevelId&quot;: &quot;10200&quot;,
+&quot;cutoffDate&quot;: &quot;2024-04-21&quot;,
+&quot;limitId&quot;: &quot;0000233056_10200&quot;,
+&quot;customerId&quot;: &quot;AR0017002063668&quot;,
+&quot;groupId&quot;: &quot;023511501358232&quot;,
+&quot;goldenCustomerId&quot;: &quot;G20090302125629&quot;,
+&quot;customerGroupId&quot;: &quot;AR0017002063668&quot;,
+&quot;limitDesc&quot;: &quot;L/TFinancialrisk-securedlimit-SCOTTIS&quot;,
+&quot;originType&quot;: &quot;HO&quot;,
+&quot;limitType&quot;: &quot;PF&quot;,
+&quot;amount&quot;:
+
+{ &quot;unavailableRiskAmount&quot;: &quot;5904746.88&quot;, &quot;authorizedRiskAmount&quot;: &quot;600000.00&quot;, &quot;cmtContDisposedAmount&quot;: &quot;300000.00&quot;, &quot;uncmtContDisposedAmount&quot;: &quot;100.00&quot;, &quot;cmtContNonDspsAmount&quot;: &quot;800000.00&quot;, &quot;uncmtContNonDspsAmount&quot;: &quot;200000.35&quot;, &quot;notSignedTrConsumptionAmount&quot;: &quot;100.00&quot;, &quot;currentAprrovedAmount&quot;: &quot;30.00&quot; }
+,
+&quot;currencyId&quot;: &quot;EUR&quot;,
+&quot;riskAnalysisExpiryDate&quot;: &quot;2025-01-15&quot;,
+&quot;consumLimitExceededActionDesc&quot;: &quot;TEXTABOUTLIMIT&quot;,
+&quot;riskAnalystId&quot;: &quot;XXX&quot;,
+&quot;conditionDesc&quot;: &quot;TEXT&quot;,
+&quot;stateName&quot;: &quot;GREEN&quot;
+}
+]
+}
+],
+&quot;auditDate&quot;: &quot;#dateReplace#&quot;
+}
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">evaluation-line</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

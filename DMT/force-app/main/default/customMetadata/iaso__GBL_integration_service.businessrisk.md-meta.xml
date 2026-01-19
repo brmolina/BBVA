@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>businessrisk</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTickets_INT</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">businessrisk</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONIN#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;businessInformation&quot;: {
+        &quot;economicActivity&quot;: {
+            &quot;description&quot;: &quot;construction sector&quot;
+        },
+        &quot;geographicScopeType&quot;: &quot;national&quot;,
+        &quot;marketShare&quot;: {
+            &quot;id&quot;: &quot;MEDIUM&quot;,
+            &quot;comments&quot;: &quot;no comments added&quot;
+        },
+        &quot;exportSalesPercentage&quot;: &quot;15%-30%&quot;,
+        &quot;importSalesPercentage&quot;: &quot;15%-30%&quot;,
+        &quot;geography&quot;: {
+            &quot;isGlobalBusiness&quot;: true,
+            &quot;comments&quot;: &quot;No additional comments&quot;,
+            &quot;otherGeographiesResultsDistributions&quot;: [{
+                &quot;id&quot;: &quot;YEAR_1&quot;,
+                &quot;name&quot;: &quot;sales&quot;,
+                &quot;value&quot;: 15,
+                &quot;otherConceptName&quot;: &quot;revenues&quot;
+            }]
+        },
+        &quot;activity&quot;: {
+            &quot;hasMultiLineBusiness&quot;: &quot;true&quot;,
+            &quot;comments&quot;: &quot;No additional comments&quot;,
+            &quot;otherActivitiesResultsDistributions&quot;: [{
+                &quot;id&quot;: &quot;YEAR_1&quot;,
+                &quot;name&quot;: &quot;sales&quot;,
+                &quot;value&quot;: &quot;15&quot;,
+                &quot;otherConceptName&quot;: &quot;revenues&quot;
+            }]
+        },
+        &quot;diversification&quot;: {
+            &quot;diversificationType&quot;: &quot;low diversification&quot;,
+            &quot;description&quot;: &quot;No additional information&quot;
+        },
+        &quot;exchangeRateVulnerability&quot;: {
+            &quot;vulnerabilityType&quot;: &quot;Does not handle other currencies&quot;,
+            &quot;description&quot;: &quot;no additional information&quot;
+        },
+        &quot;relevantFacts&quot;: {
+            &quot;hasSignificant&quot;: true,
+            &quot;description&quot;: &quot;no additional information&quot;
+        },
+        &quot;thirdPartiesDependencies&quot;: [{
+            &quot;thirdPartyDependencyType&quot;: &quot;SUPPLIER&quot;,
+            &quot;dependencyDegree&quot;: &quot;medium&quot;,
+            &quot;name&quot;: &quot;supplier&quot;,
+            &quot;percentage&quot;: 27
+        }]
+    },
+    &quot;shareholdersInformation&quot;: {
+        &quot;investmentHorizon&quot;: {
+            &quot;id&quot;: &quot;0-3 years&quot;
+        },
+        &quot;companyType&quot;: &quot;Private&quot;,
+        &quot;profile&quot;: {
+            &quot;id&quot;: &quot;Very aggressive&quot;,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        },
+        &quot;disagreement&quot;: {
+            &quot;hasDisagreement&quot;: true,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        },
+        &quot;shareholdersVariation&quot;: {
+            &quot;hasVariations&quot;: true,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        },
+        &quot;support&quot;: {
+            &quot;id&quot;: &quot;Shareholders&quot;,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        },
+        &quot;shareholders&quot;: [{
+            &quot;fullName&quot;: &quot;John Doe&quot;,
+            &quot;percentage&quot;: 43,
+            &quot;hasControl&quot;: &quot;true&quot;,
+            &quot;joinDate&quot;: &quot;2019-04-05&quot;
+        }]
+    },
+    &quot;management&quot;: {
+        &quot;managementExperience&quot;: {
+            &quot;id&quot;: &quot;FROM_0_TO_5&quot;,
+            &quot;comments&quot;: &quot;About 5 years of experience in managing&quot;
+        },
+        &quot;riskProfile&quot;: {
+            &quot;id&quot;: &quot;AGGRESSIVE&quot;,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        },
+        &quot;managementStyle&quot;: {
+            &quot;id&quot;: &quot;FAMILIAR&quot;,
+            &quot;comments&quot;: &quot;No additional comments&quot;
+        }
+    },
+    &quot;affiliateInformation&quot;: {
+        &quot;comments&quot;: &quot;No additional comments&quot;,
+        &quot;affiliates&quot;: [{
+            &quot;name&quot;: &quot;Jamtecsa&quot;,
+            &quot;activity&quot;: &quot;Construction sector&quot;,
+            &quot;groupParticipation&quot;: 62,
+            &quot;consolidationType&quot;: &quot;EQUITY_METHOD&quot;,
+            &quot;isBBVACustomer&quot;: true
+        }]
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#risk-assessment-id#/participants/#participant-id#/business-risks/#risk-assessment-id#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Denorm Opportunities</label>
+    <protected>false</protected>
+    <values>
+        <field>dwp_acmh__Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dwp_acmh__Delete_Batch_Size__c</field>
+        <value xsi:type="xsd:double">1000.0</value>
+    </values>
+    <values>
+        <field>dwp_acmh__Execute_Batch_Size__c</field>
+        <value xsi:type="xsd:double">20.0</value>
+    </values>
+    <values>
+        <field>dwp_acmh__Lead_Lookup_Field_To_Account__c</field>
+        <value xsi:type="xsd:string">DES_Group__c</value>
+    </values>
+    <values>
+        <field>dwp_acmh__Opportunity_Filter__c</field>
+        <value xsi:type="xsd:string">(StageName != &apos;Draft Opp&apos;) AND ((AccountId != null) OR (DES_Prospect__c != null AND DES_Prospect__r.DES_Group__c != null))</value>
+    </values>
+    <values>
+        <field>dwp_acmh__Opportunity_Lookup_Field_To_Lead__c</field>
+        <value xsi:type="xsd:string">DES_Prospect__c</value>
+    </values>
+    <values>
+        <field>dwp_acmh__past_months__c</field>
+        <value xsi:type="xsd:double">12.0</value>
+    </values>
+</CustomMetadata>

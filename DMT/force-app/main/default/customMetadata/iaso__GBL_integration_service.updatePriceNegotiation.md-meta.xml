@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>updatePriceNegotiation</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">updatePriceNegotiation</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PATCH</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;classification&quot;:{&quot;type&quot;:{&quot;id&quot;:&quot;#classification#&quot;},&quot;firstLevel&quot;:{&quot;id&quot;:&quot;#firstLevel#&quot;},&quot;secondLevel&quot;:{&quot;id&quot;:&quot;#secondLevel#&quot;}},&quot;opportunity&quot;:{&quot;id&quot;:&quot;#profAnalysisId#&quot;,&quot;manager&quot;:{&quot;country&quot;:&quot;#countryCode#&quot;,&quot;bankCode&quot;:&quot;#bankCode#&quot;,&quot;branchOperativeCode&quot;:&quot;#branchCode#&quot;}},&quot;participants&quot;:[{&quot;identityDocument&quot;:{&quot;documentType&quot;:{&quot;id&quot;:&quot;#participantDocType#&quot;},&quot;documentNumber&quot;:&quot;#participantDocNumber#&quot;},&quot;participantType&quot;:{&quot;order&quot;:&quot;001&quot;,&quot;id&quot;:&quot;HOLDER&quot;},&quot;firstName&quot;:&quot;#participantName#&quot;,&quot;participantId&quot;:&quot;#participantIntegrationId#&quot;}],&quot;conditions&quot;:#conditionsList#}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;negotiationId&quot;:&quot;84583&quot;,&quot;opportunity&quot;:{&quot;id&quot;:&quot;a051X000004XwXpQAK&quot;,&quot;manager&quot;:{&quot;branchOperativeCode&quot;:&quot;2336&quot;,&quot;country&quot;:&quot;ES&quot;,&quot;bankCode&quot;:&quot;0182&quot;}},&quot;operationType&quot;:&quot;88&quot;,&quot;priceTableCode&quot;:&quot;BCUACO&quot;,&quot;isAtributions&quot;:false,&quot;classification&quot;:{&quot;type&quot;:{&quot;id&quot;:&quot;00022&quot;},&quot;firstLevel&quot;:{&quot;id&quot;:&quot;00084&quot;},&quot;secondLevel&quot;:{&quot;id&quot;:&quot;00085&quot;}},&quot;conditions&quot;:[{&quot;name&quot;:&quot;exception&quot;,&quot;nameId&quot;:&quot;0067&quot;,&quot;description&quot;:&quot;Excepción&quot;,&quot;type&quot;:&quot;SIMPLE&quot;,&quot;value&quot;:{&quot;value&quot;:&quot;48&quot;,&quot;format&quot;:{&quot;id&quot;:&quot;008&quot;,&quot;unit&quot;:{&quot;id&quot;:&quot;000&quot;}},&quot;isReviewIndicator&quot;:true,&quot;status&quot;:&quot;PP&quot;}},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:true,&quot;minimun&quot;:&quot;0001,00000000&quot;,&quot;maximun&quot;:&quot;0005,00000000&quot;,&quot;format&quot;:{&quot;unit&quot;:{&quot;id&quot;:&quot;008&quot;},&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0004,00000000&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;NP TYPE&quot;,&quot;nameId&quot;:&quot;0052&quot;,&quot;name&quot;:&quot;np.nat.transfer.EEE.ob.branch.type&quot;},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:true,&quot;minimun&quot;:&quot;0001,00000000&quot;,&quot;format&quot;:{&quot;unit&quot;:{&quot;id&quot;:&quot;008&quot;},&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0000,00000000&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;NP MIN&quot;,&quot;nameId&quot;:&quot;0052&quot;,&quot;name&quot;:&quot;np.nat.transfer.EEE.ob.branch.min&quot;},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:true,&quot;maximun&quot;:&quot;0005,00000000&quot;,&quot;format&quot;:{&quot;unit&quot;:{&quot;id&quot;:&quot;008&quot;},&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0000,00000000&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;NP MAX&quot;,&quot;nameId&quot;:&quot;0052&quot;,&quot;name&quot;:&quot;np.nat.transfer.EEE.ob.branch.max&quot;},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:true,&quot;minimun&quot;:&quot;0001,00000000&quot;,&quot;format&quot;:{&quot;unit&quot;:{&quot;id&quot;:&quot;008&quot;},&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0000,00000000&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;Diferencial Negociado&quot;,&quot;nameId&quot;:&quot;0056&quot;,&quot;name&quot;:&quot;differential&quot;},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:true,&quot;minimun&quot;:&quot;0001,50000000&quot;,&quot;format&quot;:{&quot;unit&quot;:{&quot;id&quot;:&quot;006&quot;},&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0007,20379579&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;COM MIN&quot;,&quot;nameId&quot;:&quot;0091&quot;,&quot;name&quot;:&quot;COMEX.doc.credit.confirm.def.pay.min&quot;},{&quot;value&quot;:{&quot;status&quot;:&quot;PP&quot;,&quot;isReviewIndicator&quot;:false,&quot;format&quot;:{&quot;id&quot;:&quot;006&quot;},&quot;value&quot;:&quot;0007,20379579&quot;},&quot;type&quot;:&quot;SIMPLE&quot;,&quot;description&quot;:&quot;NP MAIL&quot;,&quot;nameId&quot;:&quot;0058&quot;,&quot;name&quot;:&quot;np.transfer.mail.expenses.amount&quot;}],&quot;participants&quot;:[{&quot;participantId&quot;:&quot;ES0182012107810C&quot;,&quot;firstName&quot;:&quot;ERICOOCU HERREROOCU SIERRAOCU&quot;,&quot;identityDocument&quot;:{&quot;documentNumber&quot;:&quot;ES0182012107810C&quot;,&quot;documentType&quot;:{&quot;id&quot;:&quot;OTHER&quot;}},&quot;participantType&quot;:{&quot;order&quot;:&quot;001&quot;,&quot;id&quot;:&quot;HOLDER&quot;},&quot;riskRating&quot;:{&quot;description&quot;:&quot;CC-&quot;},&quot;isNewCustomer&quot;:true},{&quot;participantId&quot;:&quot;ES0182012107810C&quot;,&quot;firstName&quot;:&quot;ERICOOCU HERREROOCU SIERRAOCU&quot;,&quot;identityDocument&quot;:{&quot;documentNumber&quot;:&quot;ES0182012107810C&quot;,&quot;documentType&quot;:{&quot;id&quot;:&quot;OTHER&quot;}},&quot;participantType&quot;:{&quot;order&quot;:&quot;001&quot;,&quot;id&quot;:&quot;HOLDER&quot;},&quot;riskRating&quot;:{&quot;description&quot;:&quot;CC-&quot;},&quot;isNewCustomer&quot;:true}],&quot;exceptions&quot;:[{&quot;id&quot;:&quot;48&quot;,&quot;name&quot;:&quot;CUADERNO DE CONDICIONES CON EXTENSION DE PAQUETES&quot;}],&quot;decisions&quot;:[{&quot;id&quot;:&quot;A&quot;,&quot;name&quot;:&quot;ENVIO A UNIDAD SANCIONADORA&quot;},{&quot;id&quot;:&quot;B&quot;,&quot;name&quot;:&quot;APROBAR PRECIO&quot;}]}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#negotiationId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

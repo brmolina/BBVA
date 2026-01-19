@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetDerivativesData</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInputTemplate#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;B00000001&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;detailDerivatives&quot;:[
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;FDP&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;&lt;1y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;SL(B)&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:582604.88,
+               &quot;tenorId&quot;:&quot;1y-3y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:186700.31,
+               &quot;tenorId&quot;:&quot;3y-5y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;5y-10y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:564498.56,
+               &quot;tenorId&quot;:&quot;&lt;1y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;POTENCIAL EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;&gt;10y&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DEPO&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DEPO&lt;1Y&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DEPO&gt;1Y&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DERIV&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:582605.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DERIV&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE (NO MITIGANTS)&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.582605,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;DERIV&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE (SA_CCR)&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;REPO&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;REPO(B)&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;SL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:0.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            },
+            {
+               &quot;productType&quot;:&quot;ALL&quot;,
+               &quot;creditRiskTypeName&quot;:&quot;PFE&quot;,
+               &quot;srceSystemCounterpartyId&quot;:&quot;B00000001&quot;,
+               &quot;riskExpsMetricTypeName&quot;:&quot;PEAK EXPOSURE&quot;,
+               &quot;currencyId&quot;:&quot;EUR&quot;,
+               &quot;ctptyRiskExpsrAmount&quot;:582605.0,
+               &quot;tenorId&quot;:&quot;Peak&quot;,
+               &quot;maturityTermNumber&quot;:-9999.0
+            }
+         ]
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/derivatives-data&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/derivatives-data?paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/derivatives-data?paginationKey=0&amp;pageSize=5000&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/derivatives-data?paginationKey=2&amp;pageSize=5000&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:1,
+      &quot;pageSize&quot;:5000
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/derivatives-data</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

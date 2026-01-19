@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>mainBureauPersist</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevMx</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">mainBureauPersist</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#JSONIN#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;: {&quot;id&quot;: &quot;aws159753&quot;,&quot;riskPosition&quot;: {&quot;hasSummaryComments&quot;: &quot;true&quot;,&quot;comments&quot;: &quot;No additional comments&quot;,&quot;bankingEconomicGroupParticipants&quot;:[{&quot;id&quot;: &quot;548156&quot;,&quot;participantType&quot;: &quot;GROUP&quot;,&quot;fullName&quot;: &quot;client A&quot;,&quot;comments&quot;: &quot;No additional comments&quot;,&quot;riskAmounts&quot;: [{&quot;id&quot;: &quot;COMMITED&quot;,&quot;amount&quot;: &quot;1&quot;,&quot;currency&quot;: &quot;MXN&quot;}]}]},&quot;bankingPool&quot;: {&quot;creditBureau&quot;: {&quot;economicGroupParticipants&quot;: [{&quot;id&quot;: &quot;aw8r732&quot;,&quot;participantName&quot;: &quot;client B&quot;,&quot;operationDate&quot;: &quot;2019-08-18&quot;,&quot;preventionKeyId&quot;: &quot;kjsnc143&quot;,&quot;banksNumber&quot;: &quot;1&quot;,&quot;outstandingAmounts&quot;: [{&quot;id&quot;: &quot;UDIS&quot;,&quot;disposedAmounts&quot;: [{&quot;amount&quot;: &quot;1&quot;,&quot;currency&quot;: &quot;MXN&quot;}]}],&quot;totalOutstandingAmount&quot;: {&quot;amount&quot;: &quot;1&quot;,&quot;currency&quot;: &quot;MXN&quot;},&quot;overdueBalances&quot;: [{&quot;id&quot;: &quot;DUE_BALANCE_30_DAYS&quot;,&quot;amount&quot;: &quot;1&quot;,&quot;currency&quot;: &quot;MXN&quot;}]}]},&quot;financialSystem&quot;: {&quot;paymentDelay&quot;: {&quot;hasDelay&quot;: &quot;true&quot;,&quot;comments&quot;: &quot;No additional comments&quot;},&quot;alert&quot;: {&quot;hasAlert&quot;: &quot;true&quot;,&quot;preventionDescription&quot;: &quot;No additional information&quot;,&quot;warningOwnerDescription&quot;: &quot;No additional information&quot;,&quot;origin&quot;: &quot;internal&quot;,&quot;measure&quot;: &quot;No additional comments&quot;}},&quot;bankingDetail&quot;: {&quot;otherBanks&quot;: [{&quot;name&quot;: &quot;BBVA&quot;,&quot;percentage&quot;: &quot;1&quot;}],&quot;banksNumberRange&quot;: &quot;1-20&quot;,&quot;otherProducts&quot;: {&quot;hasOtherProducts&quot;: true,&quot;otherProductsDescription&quot;: &quot;No additional information&quot;},&quot;otherOperations&quot;: {&quot;hasOtherOperations&quot;: true,&quot;description&quot;: &quot;No additional information&quot;},&quot;economicCapital&quot;: {&quot;amount&quot;: &quot;1&quot;,&quot;currency&quot;: &quot;MXN&quot;,&quot;description&quot;: &quot;No additional information&quot;},&quot;localClassification&quot;: &quot;1&quot;,&quot;stageOperations&quot;: {&quot;hasStageOperations&quot;: &quot;true&quot;,&quot;description&quot;: &quot;No additional information&quot;},&quot;transactionalityDescription&quot;: &quot;No additional information&quot;,&quot;debtDescription&quot;: &quot;No additional information&quot;,&quot;capitalProvision&quot;: {&quot;percentage&quot;: &quot;20&quot;,&quot;comments&quot;: &quot;No additional comments&quot;},&quot;covenant&quot;: {&quot;hasCovenantBreaches&quot;: &quot;true&quot;,&quot;breachesComments&quot;: &quot;no additional comments&quot;},&quot;concentrations&quot;: [{&quot;id&quot;: &quot;INDIVIDUALLY&quot;,&quot;hasConcentration&quot;: &quot;true&quot;,&quot;comments&quot;: &quot;No additional comments&quot;}]}}}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#risk-assessment-id#/participants/#participant-id#/banking-relationships/#risk-assessment-id#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

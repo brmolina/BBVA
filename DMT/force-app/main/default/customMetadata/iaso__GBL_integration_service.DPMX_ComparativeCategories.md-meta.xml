@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DPMX_ComparativeCategories</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevDPMX</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DPMX_EndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;consumeruuid&quot;:&quot;#customerId#&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;id&quot;:&quot;13&quot;,&quot;description&quot;:&quot;Grandes_Superficies&quot;,&quot;businessInformations&quot;:[{&quot;companyName&quot;:&quot;BED BATH &amp; BEYOND ME XICO S DE RL DE CV&quot;,&quot;groupName&quot;:&quot;OFFICE MAX&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;CREDIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.75}},{&quot;rateType&quot;:&quot;DEBIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:1.75,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;rateType&quot;:&quot;INTERNATIONAL&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.75}}]}},{&quot;companyName&quot;:&quot;SUBURBIA S DE RL DE CV&quot;,&quot;groupName&quot;:&quot;LIVERPOOL&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;CREDIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.75}},{&quot;rateType&quot;:&quot;DEBIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:1.01,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;rateType&quot;:&quot;INTERNATIONAL&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.75}}]}},{&quot;companyName&quot;:&quot;SANBORN HERMANOS SA DE CV&quot;,&quot;groupName&quot;:&quot;GRUPO CARSO&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;CREDIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.6}},{&quot;rateType&quot;:&quot;DEBIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:1.24,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;rateType&quot;:&quot;INTERNATIONAL&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:2.38}}]}},{&quot;companyName&quot;:&quot;RESTAURANTES TOKS SA DE CV&quot;,&quot;groupName&quot;:&quot;GIGANTE&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;CREDIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:2.0}},{&quot;rateType&quot;:&quot;DEBIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:2.0,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;rateType&quot;:&quot;INTERNATIONAL&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:2.46}}]}},{&quot;companyName&quot;:&quot;SANBORN HERMANOS SA DE CV&quot;,&quot;groupName&quot;:&quot;GRUPO CARSO&quot;,&quot;rate&quot;:{&quot;itemizeRates&quot;:[{&quot;rateType&quot;:&quot;CREDIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:1.61}},{&quot;rateType&quot;:&quot;DEBIT&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;AMOUNT&quot;,&quot;amount&quot;:1.24,&quot;currency&quot;:&quot;MXN&quot;}},{&quot;rateType&quot;:&quot;INTERNATIONAL&quot;,&quot;itemizeRateUnit&quot;:{&quot;unitType&quot;:&quot;PERCENTAGE&quot;,&quot;value&quot;:2.34}}]}}]}}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">stores/v1/acquirer-categories/#acquirerCategoryId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

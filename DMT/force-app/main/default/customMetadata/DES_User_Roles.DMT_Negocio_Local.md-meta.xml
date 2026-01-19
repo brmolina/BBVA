@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT Negocio Local</label>
+    <protected>false</protected>
+    <values>
+        <field>DES_Access_Level__c</field>
+        <value xsi:type="xsd:string">Read/Write</value>
+    </values>
+    <values>
+        <field>DES_Project__c</field>
+        <value xsi:type="xsd:string">DMT</value>
+    </values>
+    <values>
+        <field>DES_Role_Developer_Name__c</field>
+        <value xsi:type="xsd:string">DMT_Negocio Local</value>
+    </values>
+    <values>
+        <field>DES_User_Field_Map__c</field>
+        <value xsi:type="xsd:string">DMT_User_Role__c</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Taxonomy B899</label>
+    <protected>false</protected>
+    <values>
+        <field>Objects_and_fields__c</field>
+        <value xsi:type="xsd:string">[
+    {
+        &quot;targetObject&quot;: &quot;Account&quot;,
+        &quot;targetField&quot;: &quot;DES_Segment__c&quot;
+    }
+]</value>
+    </values>
+    <values>
+        <field>Taxonomy_code__c</field>
+        <value xsi:type="xsd:string">B899</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Profitability Analysis</label>
+    <protected>false</protected>
+    <values>
+        <field>ttke__Empty_Message__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Invert_Sections__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>ttke__Section_Empty_Active__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Section_Empty_Inactive__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Section_Items_Extra_Active__c</field>
+        <value xsi:type="xsd:double">10.0</value>
+    </values>
+    <values>
+        <field>ttke__Section_Items_Extra_Inactive__c</field>
+        <value xsi:type="xsd:double">10.0</value>
+    </values>
+    <values>
+        <field>ttke__Section_Items_Show_Active__c</field>
+        <value xsi:type="xsd:double">50.0</value>
+    </values>
+    <values>
+        <field>ttke__Section_Items_Show_Inactive__c</field>
+        <value xsi:type="xsd:double">50.0</value>
+    </values>
+    <values>
+        <field>ttke__Section_Name_Active__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Section_Name_Inactive__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Section_Order_Invert_Active__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>ttke__Section_Order_Invert_Inactive__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>ttke__Timeline_Icon__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ttke__Timeline_Items_Configuration__c</field>
+        <value xsi:type="xsd:string">{
+&quot;titleField&quot;: &quot;{!Name}&quot;,
+&quot;subConfigurations&quot;: [],
+&quot;invertActive&quot;: true,
+&quot;objectApiName&quot;: &quot;cuco__profitability_analysis__c&quot;,
+&quot;isSubItem&quot;: false,
+&quot;groupByField&quot;: &quot;Name&quot;,
+&quot;filterString&quot;: &quot;related_prof_sheet_code__c = {!cuco__gf_profitability_sheet_id__c}&quot;,
+&quot;belowFieldList&quot;: [
+&quot;cuco__gf_pa_management_type_name__c&quot;
+],
+&quot;rightFieldList&quot;: [
+&quot;cuco__gf_pa_mgmt_stage_type_name__c&quot;
+],
+&quot;dateField&quot;: &quot;CreatedDate&quot;
+}</value>
+    </values>
+</CustomMetadata>

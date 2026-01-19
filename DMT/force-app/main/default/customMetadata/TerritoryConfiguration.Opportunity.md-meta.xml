@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Opportunity</label>
+    <protected>false</protected>
+    <values>
+        <field>Business_Area__c</field>
+        <value xsi:type="xsd:string">ProductCode</value>
+    </values>
+    <values>
+        <field>Confidential__c</field>
+        <value xsi:type="xsd:string">Opportunity.disclosure_info_type__c</value>
+    </values>
+    <values>
+        <field>Countries_available__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Country__c</field>
+        <value xsi:type="xsd:string">Opportunity.DES_Booking_Geography__c</value>
+    </values>
+    <values>
+        <field>SObject__c</field>
+        <value xsi:type="xsd:string">OpportunityLineItem</value>
+    </values>
+    <values>
+        <field>Segment__c</field>
+        <value xsi:type="xsd:string">Opportunity.Account.DES_Segment__c</value>
+    </values>
+</CustomMetadata>

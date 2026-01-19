@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_HPG_ConnectedCustomers</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">HPG_GrantingTicketPRO</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPG_CommonEndPoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;G00000000000001&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;AR0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+         &quot;residenceCountryId&quot;:&quot;AR&quot;,
+         &quot;countryIfoId&quot;:&quot;AR&quot;,
+         &quot;countryId&quot;:&quot;AR&quot;,
+         &quot;level3groupId&quot;:&quot;AG00000001&quot;,
+         &quot;level3groupName&quot;:&quot;Test - Level3 Group Name 1&quot;,
+         &quot;detailConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10200&quot;,
+               &quot;unavailableRiskAmount&quot;:100.01
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;unavailableRiskAmount&quot;:100.02
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;20200&quot;,
+               &quot;unavailableRiskAmount&quot;:100.03
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;20100&quot;,
+               &quot;unavailableRiskAmount&quot;:100.04
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;30000&quot;,
+               &quot;unavailableRiskAmount&quot;:100.05
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;40000&quot;,
+               &quot;unavailableRiskAmount&quot;:100.06
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;130000&quot;,
+               &quot;unavailableRiskAmount&quot;:100.07
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;140000&quot;,
+               &quot;unavailableRiskAmount&quot;:100.08
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;60000&quot;,
+               &quot;unavailableRiskAmount&quot;:100.09
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;80100&quot;,
+               &quot;unavailableRiskAmount&quot;:100.10
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;80200&quot;,
+               &quot;unavailableRiskAmount&quot;:100.11
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;XXXXXX&quot;,
+               &quot;unavailableRiskAmount&quot;:100.12
+            }
+         ],
+         &quot;cutoffDate&quot;:&quot;2023-02-20&quot;
+      },
+      {
+         &quot;groupName&quot;:&quot;Test - Group Name 2&quot;,
+         &quot;groupId&quot;:&quot;G00000000000002&quot;,
+         &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+         &quot;subGroupId&quot;:&quot;-1000&quot;,
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 2&quot;,
+         &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 2&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;detailConsumptions&quot;:[
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10200&quot;,
+               &quot;unavailableRiskAmount&quot;:200.01
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+               &quot;unavailableRiskAmount&quot;:200.02
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;20200&quot;,
+               &quot;unavailableRiskAmount&quot;:200.03
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;20100&quot;,
+               &quot;unavailableRiskAmount&quot;:200.04
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;30000&quot;,
+               &quot;unavailableRiskAmount&quot;:200.05
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;40000&quot;,
+               &quot;unavailableRiskAmount&quot;:200.06
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;130000&quot;,
+               &quot;unavailableRiskAmount&quot;:200.07
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;140000&quot;,
+               &quot;unavailableRiskAmount&quot;:200.08
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;60000&quot;,
+               &quot;unavailableRiskAmount&quot;:200.09
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;80100&quot;,
+               &quot;unavailableRiskAmount&quot;:200.10
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;80200&quot;,
+               &quot;unavailableRiskAmount&quot;:200.11
+            },
+            {
+               &quot;consumptionLastLevelId&quot;:&quot;XXXXXX&quot;,
+               &quot;unavailableRiskAmount&quot;:200.12
+            }
+         ]
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/connected-customers?groupId=G00000000000200&amp;searchDate=2024-01-26&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/connected-customers?groupId=G00000000000200&amp;searchDate=2024-01-26&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/connected-customers?groupId=G00000000000200&amp;searchDate=2024-01-26&amp;paginationKey=0&amp;pageSize=100&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/connected-customers?groupId=G00000000000200&amp;searchDate=2024-01-26&amp;paginationKey=2&amp;pageSize=100&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:2,
+      &quot;pageSize&quot;:100
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/connected-customers?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

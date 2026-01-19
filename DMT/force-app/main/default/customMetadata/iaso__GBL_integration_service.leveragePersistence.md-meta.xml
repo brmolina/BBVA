@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>leveragePersistence</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">GrantingTicketsDevMx</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">leveragePersistence</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">PUT</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{#ratingBlock#&quot;leverageTestType&quot;:&quot;#levTestType#&quot;,&quot;hasFinancialSponsor&quot;:#hasFinSponsor#,&quot;specificAmounts&quot;:[{&quot;id&quot;:&quot;TOTAL_REVENUES&quot;,&quot;amount&quot;:#specAmount#,#cur#},{#variable3#},{&quot;id&quot;:&quot;TOTAL_ASSET&quot;,&quot;amount&quot;:#totalActMillones#,#cur#},{&quot;id&quot;:&quot;MATERIALITY&quot;,&quot;amount&quot;:#arcePropose#,#cur#},{&quot;id&quot;:&quot;GROSS_DEBT&quot;,&quot;amount&quot;:#totalDebtMilions#,#cur#}],#variable0#,&quot;calculation&quot;:{&quot;financialStatement&quot;:{&quot;specificAmounts&quot;:[{&quot;id&quot;:&quot;DEBT_COMMITTED_NOT_DISBURSED&quot;,&quot;amount&quot;:#debtCompNotDispAmount#,#cur#},{&quot;id&quot;:&quot;TOTAL_DEBT&quot;,&quot;amount&quot;:#totDebtplusCommit#,#cur#},{#variable1#},{&quot;id&quot;:&quot;AUDITOR_DEBT&quot;,&quot;amount&quot;:#adjDebtByAudit#,#cur#},{&quot;id&quot;:&quot;EXCLUSION_DEBT&quot;,&quot;amount&quot;:#debtAdjExc#,#cur#},{&quot;id&quot;:&quot;OTHER_DEBT&quot;,&quot;amount&quot;:#debtAdjOtherRazon#,#cur#},{#variable2#},{&quot;id&quot;:&quot;AUDITOR_EBITDA&quot;,&quot;amount&quot;:#uafirAfter#,#cur#},{&quot;id&quot;:&quot;EXCLUSION_EBITDA&quot;,&quot;amount&quot;:#uafirExclusion#,#cur#},{&quot;id&quot;:&quot;OTHER_EBITDA&quot;,&quot;amount&quot;:#uafirdetNorm#,#cur#},{&quot;id&quot;:&quot;EBITDA&quot;,&quot;amount&quot;:#uafirmillions#,#cur#}],&quot;ratios&quot;:[{&quot;id&quot;:&quot;ADJUSTED_DEBT_EBITDA&quot;,&quot;value&quot;:#totalRatioCommUafir#},{&quot;id&quot;:&quot;TOTAL_DEBT_EBITDA&quot;,&quot;value&quot;:#debtOverUafir#}]},&quot;isSmallMediumEnterprise&quot;:#isPyme#},&quot;result&quot;:{&quot;indicators&quot;:[{&quot;id&quot;:&quot;SCOPE_LEVERAGE_TEST&quot;,&quot;isActive&quot;:false},{&quot;id&quot;:&quot;SCOPE_EXCLUSION&quot;,&quot;isActive&quot;:#leverageExclusion#},{&quot;id&quot;:&quot;MATERIALITY&quot;,&quot;isActive&quot;:false},{&quot;id&quot;:&quot;LEVERAGED_BEFORE_ADJUSTMENTS&quot;,&quot;isActive&quot;:#leverageWithoutAdj#},{&quot;id&quot;:&quot;LEVERAGED_AFTER_ADJUSTMENTS&quot;,&quot;isActive&quot;:#leverageAfterAdj#},{&quot;id&quot;:&quot;LEVERAGED_PREVIOUS_ANALYSIS&quot;,&quot;isActive&quot;:#levBeforeArce#},{&quot;id&quot;:&quot;ACQUISITION_DEBT&quot;,&quot;isActive&quot;:false}],&quot;scope&quot;:{&quot;excludedReason&quot;:#excludeType#,&quot;finalExcludedReason&quot;:#finalExcludedReason#},&quot;covenant&quot;:{&quot;covenantType&quot;:&quot;#covenantType#&quot;,&quot;isUnbreached&quot;:#isUnbreached#,&quot;comment&quot;:&quot;#comments#&quot;},&quot;classification&quot;:{&quot;beforeAdjustmentClassType&quot;:&quot;#beforeAdjClassType#&quot;,&quot;afterAdjustmentClassType&quot;:&quot;#afterAdjClassType#&quot;,&quot;previousAnalysisClassType&quot;:&quot;#prevAnalysClassType#&quot;,&quot;classVariationReason&quot;:{&quot;id&quot;:&quot;#classVarReasonId#&quot;}}},&quot;employeesNumber&quot;:#en#}</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;rating&quot;: {
+        &quot;id&quot;: &quot;0000000120160130XX&quot;,
+        &quot;shortScaleValue&quot;: &quot;AAA&quot;
+    },
+    &quot;leverageTestType&quot;: &quot;CONSOLIDATED&quot;,
+    &quot;hasFinancialSponsor&quot;: true,
+    &quot;specificAmounts&quot;: [
+        {
+            &quot;id&quot;: &quot;TOTAL_CREDIT_RISK&quot;,
+            &quot;amount&quot;: 1000,
+            &quot;currency&quot;: &quot;EUR&quot;
+        },
+        {
+            &quot;id&quot;: &quot;TOTAL_REVENUES&quot;,
+            &quot;amount&quot;: 1000,
+            &quot;currency&quot;: &quot;EUR&quot;
+        }
+    ],
+    &quot;grossDebtEbitdaRatio&quot;: 1000,
+    &quot;exchangeRate&quot;: {
+        &quot;base&quot;: {
+            &quot;currency&quot;: &quot;EUR&quot;
+        },
+        &quot;target&quot;: {
+            &quot;currency&quot;: &quot;EUR&quot;,
+            &quot;ratio&quot;: {
+                &quot;id&quot;: &quot;FIXING&quot;,
+                &quot;value&quot;: 0.92367,
+                &quot;date&quot;: &quot;2019-01-31&quot;
+            }
+        },
+        &quot;origin&quot;: &quot;IRISK&quot;
+    },
+    &quot;calculation&quot;: {
+        &quot;financialStatement&quot;: {
+            &quot;specificAmounts&quot;: [
+                {
+                    &quot;id&quot;: &quot;DEBT_COMMITTED_NOT_DISBURSED&quot;,
+                    &quot;amount&quot;: 1000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                {
+                    &quot;id&quot;: &quot;TOTAL_DEBT&quot;,
+                    &quot;amount&quot;: 1000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                },
+                {
+                    &quot;id&quot;: &quot;EXCLUSION_DEBT&quot;,
+                    &quot;amount&quot;: 1000,
+                    &quot;currency&quot;: &quot;MXN&quot;
+                }
+            ],
+            &quot;ratios&quot;: [
+                {
+                    &quot;id&quot;: &quot;ADJUSTED_DEBT_EBITDA&quot;,
+                    &quot;value&quot;: 5000
+                }
+            ]
+        },
+        &quot;isSmallMediumEnterprise&quot;: true
+    },
+    &quot;result&quot;: {
+        &quot;indicators&quot;: [
+            {
+                &quot;id&quot;: &quot;ACQUISITION_DEBT&quot;,
+                &quot;isActive&quot;: true
+            },
+            {
+                &quot;id&quot;: &quot;MATERIALITY&quot;,
+                &quot;isActive&quot;: false
+            }
+        ],
+        &quot;scope&quot;: {
+            &quot;aplicableReason&quot;: &quot;no comments added&quot;,
+            &quot;excludedReason&quot;: &quot;MANUAL&quot;,
+            &quot;finalExcludedReason&quot;: &quot;no comments added&quot;
+        },
+        &quot;covenant&quot;: {
+            &quot;covenantType&quot;: &quot;COVENANT_LOOSE&quot;,
+            &quot;isUnbreached&quot;: true,
+            &quot;comment&quot;: &quot;no comments added&quot;
+        },
+        &quot;classification&quot;: {
+            &quot;beforeAdjustmentClassType&quot;: &quot;INVESTMENT_GRADE&quot;,
+            &quot;afterAdjustmentClassType&quot;: &quot;FINANCIAL_SPONSOR&quot;,
+            &quot;previousAnalysisClassType&quot;: &quot;LEVERAGE_RATIO_GREATER_OR_EQUAL_4&quot;,
+            &quot;classVariationReason&quot;: {
+                &quot;id&quot;: &quot;0001&quot;,
+                &quot;description&quot;: &quot;Rating or Debt/EBITDA changes&quot;
+            }
+        },
+        &quot;leveragedCollective&quot;: {
+            &quot;id&quot;: &quot;0005&quot;
+        }
+    },
+    &quot;employeesNumber&quot;: 250
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#riskid#/participants/#participantid#/leverage-lending-tests/#leverageId#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

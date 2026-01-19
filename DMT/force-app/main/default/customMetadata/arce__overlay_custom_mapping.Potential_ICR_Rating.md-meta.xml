@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Potential ICR Rating</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__defProb_fieldMap__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__longScale_fieldMap__c</field>
+        <value xsi:type="xsd:string">arce__Arc_Gen_Potential_ICR_Long_Rating__c</value>
+    </values>
+    <values>
+        <field>arce__modifierId__c</field>
+        <value xsi:type="xsd:string">0503</value>
+    </values>
+    <values>
+        <field>arce__modifierValue_fieldMap__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__score_fieldMap__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__shortScale_fieldMap__c</field>
+        <value xsi:type="xsd:string">arce__Arc_Gen_Potential_ICR_Short_Rating__c</value>
+    </values>
+</CustomMetadata>

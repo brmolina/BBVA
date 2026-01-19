@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_GetLeveragedLending</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;cutoffDate&quot;: &quot;2022-10-22&quot;,
+      &quot;groupId&quot;: &quot;GRP12345678901&quot;,
+      &quot;groupSectorName&quot;: &quot;Energy and Utilities&quot;,
+      &quot;groupName&quot;: &quot;Grupo Energía Bogotá S.A. E.S.P.&quot;,
+      &quot;cibGroupIndType&quot;: &quot;YES&quot;,
+      &quot;tierId&quot;: &quot;TIER001&quot;,
+      &quot;triScoreNumber&quot;: 3.75,
+      &quot;ccaScoreNumber&quot;: 2.5,
+      &quot;ctaScoreNumber&quot;: 1.75,
+      &quot;leveragedLendingIndType&quot;: &quot;Yes&quot;
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;links&quot;: {
+      &quot;first&quot;: &quot;/api/groups?page=0&amp;pageSize=10&quot;,
+      &quot;last&quot;: &quot;/api/groups?page=9&amp;pageSize=10&quot;,
+      &quot;previous&quot;: &quot;/api/groups?page=1&amp;pageSize=10&quot;,
+      &quot;next&quot;: &quot;/api/groups?page=3&amp;pageSize=10&quot;
+    },
+    &quot;page&quot;: 2,
+    &quot;totalPages&quot;: 10,
+    &quot;totalElements&quot;: 100,
+    &quot;pageSize&quot;: 10
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/groups-data/?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

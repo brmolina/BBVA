@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>listProposalNotebookConditions</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">listProposalNotebookConditions</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;,&quot;back-usercode&quot;:&quot;#userId#&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.EEE.ob.branch.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_THOUSAND&quot;,
+            &quot;value&quot;: 2.9
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.EEE.ob.branch.min&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3000,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.EEE.ob.branch.max&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 4000,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.EEE.ob.tf.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3500,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.BBVA.branch.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;COMMISSIONS_FLAT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_THOUSAND&quot;,
+            &quot;value&quot;: 6.45
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.BBVA.branch.min&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;COMMISSIONS_FLAT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 1500,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.BBVA.branch.max&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;COMMISSIONS_FLAT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2000,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.nat.transfer.BBVA.tf.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;COMMISSIONS_FLAT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3654.08,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.transfer.mail.expenses.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 451.88,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.t.check.letter.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 120,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.exempt.mail.ind&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FORFAIT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;S&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;extended.package&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;001183970F0275&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;EEEp.rec.mail.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 1000,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;EEEp.issued.order.pay.URGENT.CUR.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 567.88,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;EEEp.issued.order.pay.SWIFT.exp.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 567.88,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;FX.bonus.per.fixing.diff.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_CENT&quot;,
+            &quot;value&quot;: 56.87
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;FX.doc.credit.remitt.days&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TERM&quot;,
+            &quot;termUnit&quot;: &quot;DAYS&quot;,
+            &quot;termValue&quot;: 10
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;FX.f.t.purch.comm.sale.EUR.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_THOUSAND&quot;,
+            &quot;value&quot;: 1.23
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;FX.f.t.purch.comm.sale.EUR.min&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 4538.66,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;FX.f.t.purch.comm.sale.EUR.max&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 5463.45,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;cheque.rate99.bonus.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;35&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;roc.audit.reports.fee.office&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 44.33,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;np.bonus.days&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TERM&quot;,
+            &quot;termUnit&quot;: &quot;DAYS&quot;,
+            &quot;termValue&quot;: 45
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.amount.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;IF&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.fixed.amount&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3404.56,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.charge.periodicity&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;1&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.payment.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;2&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.currency&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;EUR&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.payment.date&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;15&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.nonbusiness.payday.procedure&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;R&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.account.unavailable.procedure&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;FLAT_INFORMATION&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;C&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.debts.pyg.accounts.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;PROFIT_LOSS_ACCOUNT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_CENT&quot;,
+            &quot;value&quot;: 23.55
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.sepa.pyg.accounts.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;PROFIT_LOSS_ACCOUNT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_CENT&quot;,
+            &quot;value&quot;: 34.45
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;comflat.services.pyg.accounts.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;PROFIT_LOSS_ACCOUNT&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_CENT&quot;,
+            &quot;value&quot;: 26
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.debts.manual.payment&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3452445.87,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.threshold.type&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;RATE&quot;,
+            &quot;rateUnit&quot;: &quot;PER_CENT&quot;,
+            &quot;value&quot;: 32.98
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.bank.office.urgent&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 7356.55,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.bank.office.urgent&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;345&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.swift.fin&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 3456,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.swift.fin&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;342&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.swift.fileact&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 5673.55,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.swift.fileact&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;237&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.netcash&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 788888.66,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.netcash&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;858&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.receipts.internet&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 2,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.receipts.internet&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;34&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.receipts.phone&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 56356783.77,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.receipts.phone&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;78&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.p.inter.transfer.issued&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;AMOUNT&quot;,
+            &quot;amount&quot;: {
+              &quot;amount&quot;: 35634565.7,
+              &quot;currency&quot;: &quot;EUR&quot;
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;dypri.q.inter.transfer.issued&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;DYNAMIC_PRICING&quot;
+      },
+      &quot;isAutomaticManagement&quot;: false,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;5&quot;
+          }
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;fast.renewal.calculated.ind&quot;,
+      &quot;status&quot;: {
+        &quot;id&quot;: &quot;ACTIVE&quot;
+      },
+      &quot;conditionType&quot;: &quot;SIMPLE&quot;,
+      &quot;origin&quot;: {
+        &quot;id&quot;: &quot;&quot;
+      },
+      &quot;isAutomaticManagement&quot;: true,
+      &quot;formats&quot;: [
+        {
+          &quot;format&quot;: {
+            &quot;formatType&quot;: &quot;TEXT&quot;,
+            &quot;text&quot;: &quot;S&quot;
+          }
+        }
+      ]
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/#profSheetCode#/conditions?conditionsDate=#conditionsDate#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

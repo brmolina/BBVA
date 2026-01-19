@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Interest expense</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__Base_field__c</field>
+        <value xsi:type="xsd:string">arce__Interest_expense_base__c</value>
+    </values>
+    <values>
+        <field>arce__Calc_field__c</field>
+        <value xsi:type="xsd:string">arce__Interest_expense_calc__c</value>
+    </values>
+    <values>
+        <field>arce__Format_Percentage__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>arce__Map_field__c</field>
+        <value xsi:type="xsd:string">arce__Interest_expense__c</value>
+    </values>
+    <values>
+        <field>arce__Order__c</field>
+        <value xsi:type="xsd:double">750.0</value>
+    </values>
+    <values>
+        <field>arce__Percentage_Map__c</field>
+        <value xsi:type="xsd:string">arce__Interest_expense_pct__c</value>
+    </values>
+    <values>
+        <field>arce__Table_ID__c</field>
+        <value xsi:type="xsd:string">2</value>
+    </values>
+    <values>
+        <field>arce__id__c</field>
+        <value xsi:type="xsd:string">703</value>
+    </values>
+</CustomMetadata>

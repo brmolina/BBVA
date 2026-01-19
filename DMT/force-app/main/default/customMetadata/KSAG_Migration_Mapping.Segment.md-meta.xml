@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Segment</label>
+    <protected>false</protected>
+    <values>
+        <field>Field_Name__c</field>
+        <value xsi:type="xsd:string">DES_Segment__c</value>
+    </values>
+    <values>
+        <field>Mapped_Values__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;Institutional Client&quot;: &quot;00001&quot;,
+  &quot;Public Sector&quot;: &quot;00002&quot;,
+  &quot;SME &amp; Retail&quot;: &quot;00003&quot;,
+  &quot;Others&quot;: &quot;00004&quot;,
+  &quot;Corporate&quot;: &quot;00005&quot;,
+  &quot;Financial Sponsors&quot;: &quot;00006&quot;
+}</value>
+    </values>
+    <values>
+        <field>Object__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Ambi38</label>
+    <protected>false</protected>
+    <values>
+        <field>Action__c</field>
+        <value xsi:type="xsd:string">PROPOSE</value>
+    </values>
+    <values>
+        <field>Ambit__c</field>
+        <value xsi:type="xsd:string">38</value>
+    </values>
+    <values>
+        <field>CantEdit__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">CIB Credit Risk France</value>
+    </values>
+    <values>
+        <field>FlujoCross__c</field>
+        <value xsi:type="xsd:string">IRP;ARP;CRP</value>
+    </values>
+    <values>
+        <field>FlujoGeo__c</field>
+        <value xsi:type="xsd:string">IRP;ARP;CRP</value>
+    </values>
+    <values>
+        <field>Flujo__c</field>
+        <value xsi:type="xsd:string">IRP;ARP;CRP</value>
+    </values>
+    <values>
+        <field>Level__c</field>
+        <value xsi:type="xsd:string">R3</value>
+    </values>
+    <values>
+        <field>Region__c</field>
+        <value xsi:type="xsd:string">CIB</value>
+    </values>
+    <values>
+        <field>SelectablesCross__c</field>
+        <value xsi:type="xsd:string">34;35;36;37;38;39;40;41;141;142;143;144;145</value>
+    </values>
+    <values>
+        <field>Selectables__c</field>
+        <value xsi:type="xsd:string">34;35;36;37;38;39;40;41;141;142;143;144;145</value>
+    </values>
+    <values>
+        <field>ValidateCross__c</field>
+        <value xsi:type="xsd:string">34;35;36;37;38;39;40;41;141;142;143;144;145</value>
+    </values>
+    <values>
+        <field>Validate__c</field>
+        <value xsi:type="xsd:string">34;35;36;37;38;39;40;41;141;142;143;144;145</value>
+    </values>
+    <values>
+        <field>canEdit__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>canPropose__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>canRead__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>canValidate__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

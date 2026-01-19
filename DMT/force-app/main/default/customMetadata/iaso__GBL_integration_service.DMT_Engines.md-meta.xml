@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_Engines</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;:[
+    {
+        &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;:&quot;XXXXXXXXXXXX&quot;,
+        &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;:&quot;-1000&quot;,
+        &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+        &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+        &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 1&quot;,
+        &quot;goldenCustomerId&quot;:&quot;Test - Golden Customer Id 1&quot;,
+        &quot;residenceCountryId&quot;:&quot;ES&quot;,
+        &quot;countryIfoId&quot;:&quot;ES&quot;,
+        &quot;countryId&quot;:&quot;ES&quot;,
+        &quot;currentRatingToolDate&quot;:&quot;2023-07-12&quot;,
+        &quot;ffssRegulatoryRatingDate&quot;:&quot;2022-12-31&quot;,
+        &quot;regyCurrRatgToolId&quot;:&quot;0009091300010001&quot;,
+        &quot;adjSbsidRatingIndType&quot;:&quot;N&quot;,
+        &quot;smsclInternalRatgType&quot;:&quot;XXXX&quot;,
+        &quot;lmsclInternalRatgType&quot;:&quot;XXXX&quot;,
+        &quot;customerConsmIndType&quot;:&quot;Y&quot;,
+        &quot;updSmsclInternalRatgType&quot;:&quot;BBB&quot;,
+        &quot;updLmsclInternalRatgType&quot;:&quot;BBB2&quot;,
+        &quot;ratingGenerationDate&quot;:&quot;2023-07-12T19:14:00.000+0200&quot;,
+        &quot;currentRatingToolId&quot;:&quot;00110009091300010001&quot;,
+        &quot;ratingValidityStartDate&quot;:&quot;2022-12-31&quot;,
+        &quot;arceSmsclIntRatgType&quot;:&quot;BBB&quot;,
+        &quot;arceLmsclIntRatgType&quot;:&quot;BBB2&quot;,
+        &quot;scaleLastUpdDate&quot;:&quot;2023-07-12&quot;,
+        &quot;assetAllocationSectorType&quot;:&quot;C&quot;,
+        &quot;assetAllocationSubSecType&quot;:&quot;CA&quot;,
+        &quot;assetAllocationActvyType&quot;:&quot;CAB&quot;,
+        &quot;rtSbsidMtrxReInshpType&quot;:&quot;1&quot;,
+        &quot;frontAnalystId&quot;:&quot;U000001&quot;,
+        &quot;riskAnalystId&quot;:&quot;U000002&quot;,
+        &quot;custTrdWorstStageType&quot;:&quot;1&quot;,
+        &quot;wltClassificacionType&quot;:&quot;0&quot;,
+        &quot;specializedLendingType&quot;:&quot;N&quot;,
+        &quot;rtFfssvldydtmtNumber&quot;:14.13,
+        &quot;regyRatgOverrideIndType&quot;:&quot;N&quot;,
+        &quot;naceActivityId&quot;:&quot;F&quot;,
+        &quot;assetAllcSectorDesc&quot;:&quot;Construction &amp; Construction Materials&quot;,
+        &quot;aaSubSectorDesc&quot;:&quot;Construction&quot;,
+        &quot;aaActivityDesc&quot;:&quot;Infrastructure construction - Civil engineering&quot;,
+        &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+        &quot;consentType&quot;:&quot;6hcy&quot;,
+        &quot;consentTypeDesc&quot;:&quot;Test - consentTypeDesc 1&quot;,
+        &quot;totalExposureAmount&quot;:12383.99,
+        &quot;customerGroupRelType&quot;:&quot;90lgs3wuhdsj6sdqr&quot;,
+        &quot;activityMinimumLevelCodeId&quot;:&quot;Test - activityMinimumLevelCodeId 1&quot;,
+        &quot;activityMinimumLevelCodeDesc&quot;:&quot;Test - activityMinimumLevelCodeDesc 1&quot;,
+        &quot;amountValue&quot;: &quot;5&quot;,
+        &quot;amount&quot;: 
+        {
+            &quot;currentApprovedAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContDisposedAmount&quot;: &quot;5&quot;,
+         &quot;cmtContNonDspsAmount&quot;: &quot;5&quot;,
+        &quot;authorizedRiskAmount&quot;: &quot;5&quot;,
+        &quot;cmtContDisposedAmount&quot;: &quot;5&quot;,
+        &quot;notSignedTrConsumptionAmount&quot;: &quot;5&quot;,
+        &quot;unavailableRiskAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContNonDspsAmount&quot;: &quot;5&quot;
+        }
+        },
+
+        {
+            &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;:&quot;XXXXXXXXXXXX&quot;,
+        &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;:&quot;-1000&quot;,
+        &quot;customerId&quot;:&quot;ES0000000000002&quot;,
+        &quot;customerName&quot;:&quot;Test - Customer Name 2&quot;,
+        &quot;taxpayerId&quot;:&quot;Test - Taxpayer Id 2&quot;,
+        &quot;goldenCustomerId&quot;:&quot;Test - Golden Customer Id 2&quot;,
+        &quot;residenceCountryId&quot;:&quot;ES&quot;,
+        &quot;countryIfoId&quot;:&quot;ES&quot;,
+        &quot;countryId&quot;:&quot;ES&quot;,
+        &quot;currentRatingToolDate&quot;:&quot;2023-06-21&quot;,
+        &quot;ffssRegulatoryRatingDate&quot;:&quot;2022-12-31&quot;,
+        &quot;regyCurrRatgToolId&quot;:&quot;0009091300010001&quot;,
+        &quot;adjSbsidRatingIndType&quot;:&quot;N&quot;,
+        &quot;smsclInternalRatgType&quot;:&quot;XXXX&quot;,
+        &quot;lmsclInternalRatgType&quot;:&quot;XXXX&quot;,
+        &quot;customerConsmIndType&quot;:&quot;Y&quot;,
+        &quot;updSmsclInternalRatgType&quot;:&quot;BBB&quot;,
+        &quot;updLmsclInternalRatgType&quot;:&quot;BBB2&quot;,
+        &quot;ratingGenerationDate&quot;:&quot;2023-06-21T19:35:00.000+0200&quot;,
+        &quot;currentRatingToolId&quot;:&quot;00110009091300010001&quot;,
+        &quot;ratingValidityStartDate&quot;:&quot;2022-12-31&quot;,
+        &quot;arceSmsclIntRatgType&quot;:&quot;BBB&quot;,
+        &quot;arceLmsclIntRatgType&quot;:&quot;BBB2&quot;,
+        &quot;scaleLastUpdDate&quot;:&quot;2023-06-21&quot;,
+        &quot;assetAllocationSectorType&quot;:&quot;C&quot;,
+        &quot;assetAllocationSubSecType&quot;:&quot;CA&quot;,
+        &quot;assetAllocationActvyType&quot;:&quot;CAB&quot;,
+        &quot;rtSbsidMtrxReInshpType&quot;:&quot;1&quot;,
+        &quot;frontAnalystId&quot;:&quot;U000001&quot;,
+        &quot;riskAnalystId&quot;:&quot;U000002&quot;,
+        &quot;custTrdWorstStageType&quot;:&quot;1&quot;,
+        &quot;wltClassificacionType&quot;:&quot;0&quot;,
+        &quot;specializedLendingType&quot;:&quot;N&quot;,
+        &quot;rtFfssvldydtmtNumber&quot;:14.13,
+        &quot;regyRatgOverrideIndType&quot;:&quot;N&quot;,
+        &quot;naceActivityId&quot;:&quot;F&quot;,
+        &quot;assetAllcSectorDesc&quot;:&quot;Construction &amp; Construction Materials&quot;,
+        &quot;aaSubSectorDesc&quot;:&quot;Construction&quot;,
+        &quot;aaActivityDesc&quot;:&quot;Infrastructure construction - Civil engineering&quot;,
+        &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+        &quot;consentType&quot;:&quot;6hcy&quot;,
+        &quot;consentTypeDesc&quot;:&quot;Test - consentTypeDesc 2&quot;,
+        &quot;totalExposureAmount&quot;:22383.99,
+        &quot;customerGroupRelType&quot;:&quot;90lgs3wuhdsj6sdqr&quot;,
+        &quot;activityMinimumLevelCodeId&quot;:&quot;Test - activityMinimumLevelCodeId 2&quot;,
+        &quot;activityMinimumLevelCodeDesc&quot;:&quot;Test - activityMinimumLevelCodeDesc 2&quot;,
+        &quot;consumptionLastLevelId&quot;: &quot;TEST&quot;,
+        &quot;limitId&quot;: &quot;TEST&quot;,
+        &quot;aggregationId&quot;: &quot;TEST&quot;,
+        &quot;customerGroupId&quot;: &quot;TEST&quot;,
+        &quot;amountValue&quot;: &quot;5&quot;,
+        &quot;amount&quot;: 
+        {
+            &quot;currentApprovedAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContDisposedAmount&quot;: &quot;5&quot;,
+         &quot;cmtContNonDspsAmount&quot;: &quot;5&quot;,
+        &quot;authorizedRiskAmount&quot;: &quot;5&quot;,
+        &quot;cmtContDisposedAmount&quot;: &quot;5&quot;,
+        &quot;notSignedTrConsumptionAmount&quot;: &quot;5&quot;,
+        &quot;unavailableRiskAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContNonDspsAmount&quot;: &quot;5&quot;
+        }
+        },
+
+        {
+            &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;:&quot;XXXXXXXXXXXX&quot;,
+        &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;:&quot;-1000&quot;,
+        &quot;customerId&quot;:&quot;PE0000000000001&quot;,
+        &quot;customerName&quot;:&quot;Test - Customer Name 3&quot;,
+        &quot;taxpayerId&quot;:&quot;20549024417 / 2054902441&quot;,
+        &quot;goldenCustomerId&quot;:&quot;Test - Golden Customer Id 3&quot;,
+        &quot;residenceCountryId&quot;:&quot;PE&quot;,
+        &quot;countryIfoId&quot;:&quot;PE&quot;,
+        &quot;countryId&quot;:&quot;PE&quot;,
+        &quot;currentRatingToolDate&quot;:&quot;2022-11-03&quot;,
+        &quot;smsclInternalRatgType&quot;:&quot;BB&quot;,
+        &quot;lmsclInternalRatgType&quot;:&quot;BB2&quot;,
+        &quot;customerConsmIndType&quot;:&quot;Y&quot;,
+        &quot;updSmsclInternalRatgType&quot;:&quot;BBB-&quot;,
+        &quot;updLmsclInternalRatgType&quot;:&quot;BBB-1&quot;,
+        &quot;ratingGenerationDate&quot;:&quot;2021-12-07T05:38:00.000+0100&quot;,
+        &quot;currentRatingToolId&quot;:&quot;00110009091300010001&quot;,
+        &quot;ratingValidityStartDate&quot;:&quot;2021-06-30&quot;,
+        &quot;arceSmsclIntRatgType&quot;:&quot;BBB-&quot;,
+        &quot;arceLmsclIntRatgType&quot;:&quot;BBB-1&quot;,
+        &quot;scaleLastUpdDate&quot;:&quot;2021-12-07&quot;,
+        &quot;assetAllocationSectorType&quot;:&quot;C&quot;,
+        &quot;assetAllocationSubSecType&quot;:&quot;CA&quot;,
+        &quot;assetAllocationActvyType&quot;:&quot;CAC&quot;,
+        &quot;frontAnalystId&quot;:&quot;P000001&quot;,
+        &quot;riskAnalystId&quot;:&quot;RABRWS&quot;,
+        &quot;custTrdWorstStageType&quot;:&quot;1&quot;,
+        &quot;wltClassificacionType&quot;:&quot;0&quot;,
+        &quot;specializedLendingType&quot;:&quot;N&quot;,
+        &quot;outlookRpvGeographyDesc&quot;:&quot;Stable -&quot;,
+        &quot;riskPortfolioViewDesc&quot;:&quot;underweight&quot;,
+        &quot;rtFfssvldydtmtNumber&quot;:32.16,
+        &quot;naceActivityId&quot;:&quot;F&quot;,
+        &quot;assetAllcSectorDesc&quot;:&quot;Construction &amp; Construction Materials&quot;,
+        &quot;aaSubSectorDesc&quot;:&quot;Construction&quot;,
+        &quot;aaActivityDesc&quot;:&quot;Non Residential Building&quot;,
+        &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+        &quot;consentType&quot;:&quot;6hcy&quot;,
+        &quot;consentTypeDesc&quot;:&quot;Test - consentTypeDesc 3&quot;,
+        &quot;totalExposureAmount&quot;:32383.99,
+        &quot;customerGroupRelType&quot;:&quot;90lgs3wuhdsj6sdqr&quot;,
+        &quot;activityMinimumLevelCodeId&quot;:&quot;Test - activityMinimumLevelCodeId 3&quot;,
+        &quot;activityMinimumLevelCodeDesc&quot;:&quot;Test - activityMinimumLevelCodeDesc 3&quot;,
+        &quot;consumptionLastLevelId&quot;: &quot;TEST&quot;,
+        &quot;limitId&quot;: &quot;TEST&quot;,
+        &quot;aggregationId&quot;: &quot;TEST&quot;,
+        &quot;customerGroupId&quot;: &quot;TEST&quot;,
+        &quot;amountValue&quot;: &quot;5&quot;,
+        &quot;amount&quot;: 
+        {
+            &quot;currentApprovedAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContDisposedAmount&quot;: &quot;5&quot;,
+         &quot;cmtContNonDspsAmount&quot;: &quot;5&quot;,
+        &quot;authorizedRiskAmount&quot;: &quot;5&quot;,
+        &quot;cmtContDisposedAmount&quot;: &quot;5&quot;,
+        &quot;notSignedTrConsumptionAmount&quot;: &quot;5&quot;,
+        &quot;unavailableRiskAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContNonDspsAmount&quot;: &quot;5&quot;
+        }
+        },
+
+        {
+            &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+        &quot;groupId&quot;:&quot;XXXXXXXXXXXX&quot;,
+        &quot;subGroupName&quot;:&quot;toplevelclients&quot;,
+        &quot;subGroupId&quot;:&quot;-1000&quot;,
+        &quot;customerId&quot;:&quot;MX0000000000001&quot;,
+        &quot;customerName&quot;:&quot;Test - Customer Name 4&quot;,
+        &quot;taxpayerId&quot;:&quot;SCI 080417 E13&quot;,
+        &quot;goldenCustomerId&quot;:&quot;Test - Golden Customer Id 4&quot;,
+        &quot;residenceCountryId&quot;:&quot;MX&quot;,
+        &quot;countryIfoId&quot;:&quot;MX&quot;,
+        &quot;countryId&quot;:&quot;MX&quot;,
+        &quot;currentRatingToolDate&quot;:&quot;2022-08-18&quot;,
+        &quot;ffssRegulatoryRatingDate&quot;:&quot;2021-12-01&quot;,
+        &quot;regyCurrRatgToolId&quot;:&quot;7026712600000000&quot;,
+        &quot;smsclInternalRatgType&quot;:&quot;BBB-&quot;,
+        &quot;lmsclInternalRatgType&quot;:&quot;BBB6&quot;,
+        &quot;customerConsmIndType&quot;:&quot;Y&quot;,
+        &quot;updSmsclInternalRatgType&quot;:&quot;BBB-&quot;,
+        &quot;updLmsclInternalRatgType&quot;:&quot;BBB6&quot;,
+        &quot;assetAllocationSectorType&quot;:&quot;B&quot;,
+        &quot;assetAllocationSubSecType&quot;:&quot;BE&quot;,
+        &quot;assetAllocationActvyType&quot;:&quot;BEC&quot;,
+        &quot;frontAnalystId&quot;:&quot;MI00001&quot;,
+        &quot;custTrdWorstStageType&quot;:&quot;2&quot;,
+        &quot;wltClassificacionType&quot;:&quot;0&quot;,
+        &quot;specializedLendingType&quot;:&quot;N&quot;,
+        &quot;outlookRpvGeographyDesc&quot;:&quot;Stable&quot;,
+        &quot;riskPortfolioViewDesc&quot;:&quot;Neutral&quot;,
+        &quot;regyRatgOverrideIndType&quot;:&quot;Y&quot;,
+        &quot;naceActivityId&quot;:&quot;M&quot;,
+        &quot;assetAllcSectorDesc&quot;:&quot;Capital goods &amp; Industrial services&quot;,
+        &quot;aaSubSectorDesc&quot;:&quot;Professional &amp; commercial services&quot;,
+        &quot;aaActivityDesc&quot;:&quot;Professional services&quot;,
+        &quot;cutoffDate&quot;:&quot;2024-03-05&quot;,
+        &quot;consentType&quot;:&quot;6hcy&quot;,
+        &quot;consentTypeDesc&quot;:&quot;Test - consentTypeDesc 4&quot;,
+        &quot;totalExposureAmount&quot;:42383.99,
+        &quot;customerGroupRelType&quot;:&quot;90lgs3wuhdsj6sdqr&quot;,
+        &quot;activityMinimumLevelCodeId&quot;:&quot;Test - activityMinimumLevelCodeId 4&quot;,
+        &quot;activityMinimumLevelCodeDesc&quot;:&quot;Test - activityMinimumLevelCodeDesc 4&quot;,
+        &quot;consumptionLastLevelId&quot;: &quot;TEST&quot;,
+        &quot;limitId&quot;: &quot;TEST&quot;,
+        &quot;aggregationId&quot;: &quot;TEST&quot;,
+        &quot;customerGroupId&quot;: &quot;TEST&quot;,
+        &quot;amountValue&quot;: &quot;5&quot;,
+        &quot;amount&quot;: 
+        {
+            &quot;currentApprovedAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContDisposedAmount&quot;: &quot;5&quot;,
+         &quot;cmtContNonDspsAmount&quot;: &quot;5&quot;,
+        &quot;authorizedRiskAmount&quot;: &quot;5&quot;,
+        &quot;cmtContDisposedAmount&quot;: &quot;5&quot;,
+        &quot;notSignedTrConsumptionAmount&quot;: &quot;5&quot;,
+        &quot;unavailableRiskAmount&quot;: &quot;5&quot;,
+        &quot;uncmtContNonDspsAmount&quot;: &quot;5&quot;
+        }
+        }
+    ],
+    &quot;pagination&quot;:
+    {
+        &quot;links&quot;:
+    {
+        &quot;first&quot;:&quot;/risk-position/v0/global-position&quot;,
+        &quot;last&quot;:&quot;/risk-position/v0/global-position?paginationKey=LAST&quot;,
+        &quot;previous&quot;:&quot;/risk-position/v0/global-position?paginationKey=0&amp;pageSize=100&quot;,
+        &quot;next&quot;:&quot;/risk-position/v0/global-position?paginationKey=2&amp;pageSize=100&quot;
+    },
+    &quot;page&quot;:1,
+    &quot;totalPages&quot;:1,
+    &quot;totalElements&quot;:4,
+    &quot;pageSize&quot;:100
+    }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/consumptionlimits?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

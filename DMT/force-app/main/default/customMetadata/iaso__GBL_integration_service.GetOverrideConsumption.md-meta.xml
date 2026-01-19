@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetOverrideConsumption</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+   &quot;data&quot;:[
+      {
+         &quot;customerId&quot;:&quot;ES0000000000001&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_1&quot;,
+         &quot;overrideUploadDate&quot;:&quot;2024-03-26&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;40000&quot;,
+         &quot;committedContractsDisposedAmount&quot;:140.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:150.0,
+         &quot;committedContractsNonDisposedAmount&quot;:120.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:130.0,
+         &quot;authorizedRiskAmount&quot;:100.0,
+         &quot;unavailableRiskAmount&quot;:110.0,
+         &quot;riskAnalystId&quot;:&quot;UTEST01&quot;,
+         &quot;overrideStartDate&quot;:&quot;2024-03-25&quot;,
+         &quot;overrideEndDate&quot;:&quot;2024-05-31&quot;,
+         &quot;overrideComments&quot;:&quot;Comment&quot;,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;eadAmount&quot;:0.0,
+         &quot;finalProvisionAmount&quot;:0.0,
+         &quot;regyCapitalEadAmount&quot;:0.0,
+         &quot;capitalRegyAmount&quot;:0.0,
+         &quot;regyCapitalAprAmount&quot;:0.0,
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 1&quot;,
+         &quot;taxpayerId&quot;:&quot;A00000001&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;opportunityId&quot;:&quot;&quot;,
+         &quot;opportunityAdmissionId&quot;:&quot;&quot;,
+         &quot;pendingUnauthorizedAmount&quot;:160.0
+
+      },
+      {
+         &quot;customerId&quot;:&quot;ES0000000000002&quot;,
+         &quot;internalContractCodeDesc&quot;:&quot;00000000000000000000000001_2&quot;,
+         &quot;overrideUploadDate&quot;:&quot;2024-03-27&quot;,
+         &quot;consumptionLastLevelId&quot;:&quot;10100&quot;,
+         &quot;committedContractsDisposedAmount&quot;:240.0,
+         &quot;uncommittedContractsDisposedAmount&quot;:250.0,
+         &quot;committedContractsNonDisposedAmount&quot;:220.0,
+         &quot;uncommittedContractsNonDisposedAmount&quot;:230.0,
+         &quot;authorizedRiskAmount&quot;:200.0,
+         &quot;unavailableRiskAmount&quot;:210.0,
+         &quot;riskAnalystId&quot;:&quot;UTEST02&quot;,
+         &quot;overrideStartDate&quot;:&quot;2024-03-26&quot;,
+         &quot;overrideEndDate&quot;:&quot;2024-04-07&quot;,
+         &quot;overrideComments&quot;:&quot;Comment&quot;,
+         &quot;currencyId&quot;:&quot;EUR&quot;,
+         &quot;eadAmount&quot;:260.0,
+         &quot;finalProvisionAmount&quot;:0.0,
+         &quot;regyCapitalEadAmount&quot;:0.0,
+         &quot;capitalRegyAmount&quot;:0.0,
+         &quot;regyCapitalAprAmount&quot;:0.0,
+         &quot;groupName&quot;:&quot;Test - Group Name 1&quot;,
+         &quot;groupId&quot;:&quot;GTEST0000000001&quot;,
+         &quot;customerName&quot;:&quot;Test - Customer Name 2&quot;,
+         &quot;taxpayerId&quot;:&quot;B00000001&quot;,
+         &quot;residenceCountryId&quot;:&quot;ES&quot;,
+         &quot;countryIfoId&quot;:&quot;ES&quot;,
+         &quot;countryId&quot;:&quot;ES&quot;,
+         &quot;opportunityId&quot;:&quot;&quot;,
+         &quot;opportunityAdmissionId&quot;:&quot;&quot;,
+         &quot;pendingUnauthorizedAmount&quot;:260.0
+      }
+   ],
+   &quot;pagination&quot;:{
+      &quot;links&quot;:{
+         &quot;first&quot;:&quot;/risk-position/v0/override-consumption?groupId=GTEST0000000001&quot;,
+         &quot;last&quot;:&quot;/risk-position/v0/override-consumption?groupId=GTEST0000000001&amp;paginationKey=LAST&quot;,
+         &quot;previous&quot;:&quot;/risk-position/v0/override-consumption?groupId=GTEST0000000001&amp;paginationKey=0&amp;pageSize=300&quot;,
+         &quot;next&quot;:&quot;/risk-position/v0/override-consumption?groupId=GTEST0000000001&amp;paginationKey=2&amp;pageSize=300&quot;
+      },
+      &quot;page&quot;:1,
+      &quot;totalPages&quot;:1,
+      &quot;totalElements&quot;:2,
+      &quot;pageSize&quot;:300
+   }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/override-consumption?#queryString#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>commercial alert desktop</label>
+    <protected>false</protected>
+    <values>
+        <field>altm__Email_sender_address__c</field>
+        <value xsi:type="xsd:string">no-reply_sf_globaldesktop@bbva.com</value>
+    </values>
+    <values>
+        <field>altm__Email_template__c</field>
+        <value xsi:type="xsd:string">Commercial_Alert_summary</value>
+    </values>
+</CustomMetadata>
