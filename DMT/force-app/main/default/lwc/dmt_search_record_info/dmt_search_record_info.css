@@ -1,0 +1,9 @@
+.slds-dropdown-trigger_click .slds-dropdown {
+    display: block;
+    position: relative;
+    z-index: 1000;
+
+}
+.slds-dropdown-trigger_click .slds-dropdown[aria-hidden="true"] {
+    display: none;
+}

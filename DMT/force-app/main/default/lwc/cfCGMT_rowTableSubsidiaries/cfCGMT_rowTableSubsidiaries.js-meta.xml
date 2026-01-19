@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>CGMT_rowTableSubsidiaries</masterLabel>
+    <runtimeNamespace>omnistudio</runtimeNamespace>
+    <targets>
+      <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        </targets>
+      <targetConfigs>
+    <targetConfig targets="lightning__AppPage">
+                      <property name="debug" type="Boolean"></property>
+                      <property name="recordId" type="String"></property>
+                    </targetConfig>
+    </targetConfigs></LightningComponentBundle>

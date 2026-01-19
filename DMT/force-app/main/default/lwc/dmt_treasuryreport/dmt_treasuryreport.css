@@ -1,0 +1,150 @@
+.table-container-responsive {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 75vh;
+            border: 1px solid #dddbda;
+            border-radius: 0.25rem;
+        }
+        
+        /* TABLA RESPONSIVE */
+        .responsive-table {
+            min-width: 1200px; /* Ancho mínimo para muchas columnas */
+            width: auto;
+            table-layout: auto;
+        }
+        
+        /* CABECERAS FIJAS (opcional, para mejor UX) */
+        .responsive-table thead {
+            position: sticky;
+            top: 0;
+            background-color: #fafaf9;
+            z-index: 1;
+        }
+        
+        /* ESTILOS PARA CELDAS AGRUPADAS */
+        .group-cell {
+            background-color: #f3f2f2;
+            font-weight: bold;
+            border-left: 3px solid #0176d3;
+            min-width: 120px;
+        }
+        
+        .client-cell {
+            background-color: #fafaf9;
+            font-weight: 600;
+            border-left: 2px solid #1b96ff;
+            min-width: 150px;
+        }
+        
+        .line-cell {
+            background-color: #f9f9f9;
+            border-left: 1px solid #8dd1ff;
+            min-width: 100px;
+        }
+        
+        .risk-cell {
+            background-color: #ffffff;
+            min-width: 80px;
+        }
+        
+        /* BORDES Y ESPACIADO */
+        .slds-border_right {
+            border-right: 2px solid #d8dde6 !important;
+        }
+        
+        .slds-table td, .slds-table th {
+            vertical-align: top;
+            white-space: nowrap;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        /* CABECERAS CON ANCHO MÍNIMO */
+        .group-header {
+            min-width: 120px;
+            background-color: #f3f2f2;
+        }
+        
+        .client-header {
+            min-width: 150px;
+            background-color: #fafaf9;
+        }
+        
+        .line-header {
+            min-width: 100px;
+            background-color: #f9f9f9;
+        }
+        
+        .risk-header {
+            min-width: 80px;
+            background-color: #ffffff;
+        }
+        
+        /* SCROLL PERSONALIZADO */
+        .table-container-responsive::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        
+        .table-container-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        .table-container-responsive::-webkit-scrollbar-thumb {
+            background: #c9c9c9;
+            border-radius: 6px;
+        }
+        
+        .table-container-responsive::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* RESPONSIVE PARA PANTALLAS PEQUEÑAS */
+        @media (max-width: 1400px) {
+            .table-container-responsive {
+                max-height: 70vh;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .table-container-responsive {
+                max-height: 80vh;
+            }
+        }
+
+                .filters-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .slds-input-has-icon .slds-input {
+            padding-left: 2rem;
+            width: 200px;
+        }
+        
+        .slds-select {
+            width: 180px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Estilos responsive */
+        @media (max-width: 1200px) {
+            .filters-container {
+                gap: 0.5rem;
+            }
+            
+            .slds-input-has-icon .slds-input {
+                width: 180px;
+            }
+            
+            .slds-select {
+                width: 160px;
+            }
+        }

@@ -1,0 +1,3 @@
+let styleDefinition =
+      {"state0element0block_element0":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element slds-border_top slds-border_right slds-border_bottom slds-border_left slds-p-around_x-small  slds-size_12-of-12  ","style":"     border-top: #dddbda 2px solid;border-right: #dddbda 2px solid;border-bottom: #dddbda 2px solid;border-left: #dddbda 2px solid; \n    border-radius:4px;     ","styleProperties":{}}}]};
+  export default styleDefinition

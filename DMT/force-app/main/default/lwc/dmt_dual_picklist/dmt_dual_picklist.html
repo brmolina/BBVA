@@ -1,0 +1,14 @@
+<template>
+    <lightning-dual-listbox name="productSelector"
+                            source-label="Productos excluidos (No se clonarán)"
+                            selected-label="Productos a clonar"
+                            options={options}
+                            required-options={requiredOptions}
+                            add-button-label = "Volver a incluir"
+                            remove-button-label= "Excluir"
+                            up-button-label = "Mover arriba"
+                            down-button-label = "Mover abajo"	
+                            size = 6
+                            value={values}></lightning-dual-listbox>
+
+</template>

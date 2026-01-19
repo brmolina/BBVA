@@ -1,0 +1,33 @@
+<template>
+    <div class="slds-p-around_medium">
+        <lightning-card title="Line Versions" icon-name="standard:record">
+            <div slot="actions">
+                <lightning-button 
+                    label="Create New Version" 
+                    disabled={isButtonDisabled} 
+                    onclick={handleCreateNewVersion}>
+                </lightning-button>
+            </div>
+            <div class="slds-p-top_small"></div>
+            <!-- <lightning-datatable
+                key-field="Id"
+                data={data}
+                columns={columns}
+                onrowselection={getSelectedRow}
+                max-row-selection="1"
+                single-row-selection-mode="radio"
+            >
+            </lightning-datatable> -->
+            <c-custom-data-table
+                key-field="id"
+                data={data}
+                columns={columns}
+                oncustomselectrowchanged={selectedRowChanged}
+                hide-checkbox-column
+                max-row-selection="1"
+                single-row-selection-mode="radio"
+                selected-rows={selectedRows}>
+            </c-custom-data-table>
+        </lightning-card>
+    </div>
+</template>

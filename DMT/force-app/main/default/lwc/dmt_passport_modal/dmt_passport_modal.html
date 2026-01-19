@@ -1,0 +1,51 @@
+<template>
+    <lightning-modal-header label={featureNameTitle}></lightning-modal-header>
+    <lightning-modal-body> 
+        <template lwc:if={noShowInfo}>
+            <div class="slds-align_absolute-center">
+                <span class="passport_warning">
+                    <c-dmt_helpericon icon-name="utility:warning" icon-size="medium" text="No limits apply to this trade" icon-variant="warning"></c-dmt_helpericon>
+                </span>
+                <b class="slds-m-top_xx-small slds-m-left_medium">No limits apply to this trade</b>
+            </div>
+        </template> 
+        <template lwc:elseif={showProfitabilityChart}>
+            <c-dmt_profitability_chart profitability={profitability} opportunity-id={opportunityId}></c-dmt_profitability_chart> 
+        </template>
+        <template lwc:elseif={graphicModal}>
+            <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight}></c-dmt_subfeature_chart>
+        </template>
+        <template lwc:elseif={errorModal}> 
+            <div class="slds-grid slds-align-middle slds-m-bottom_medium">
+                <div style="display: flex; align-items: center; margin-right: 12px;">
+                    <c-dmt_traffic_light
+                        simplelight="false"
+                        status={featureLight}
+                        lightsize="27px">
+                    </c-dmt_traffic_light>
+                </div>
+                <div style="flex-grow: 1; display: flex; align-items: center;">
+                    <h1 class="tittle-feature" style="margin: 0;"><b>{featureName}</b></h1>
+                </div>
+            </div>
+
+            <template for:each={validations} for:item="validation">
+                <div key={validation.name} class="slds-grid slds-wrap slds-m-bottom_medium">
+                    <div class="slds-col slds-size_3-of-12 slds-align-center slds-p-right_small">
+                        <div style="font-family: sans-serif;color: #838080; white-space: normal;">{validation.name}</div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-12 slds-align-center">
+                        <div class="slds-truncate"><c-dmt_traffic_light status={validation.state} simplelight="true" lightsize="27px"></c-dmt_traffic_light> </div>
+                    </div>
+                    <div class="slds-col slds-size_8-of-12 slds-align-center">
+                        <div style={validation.styleColor} title={validation.message}>{validation.message}</div>
+                    </div>
+                </div>
+            </template>
+
+        </template>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="Close" onclick={handleOkay}></lightning-button>
+    </lightning-modal-footer>
+</template>

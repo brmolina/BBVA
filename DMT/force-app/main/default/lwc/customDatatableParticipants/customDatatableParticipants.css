@@ -1,0 +1,8 @@
+:host .slds-is-open {
+    min-height: 13rem !important;
+}
+
+.slds-modal__container {
+    min-width: 50rem;
+    min-height: 40rem;
+}

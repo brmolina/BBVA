@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <!-- bookingGeography is deprecated and replaced by clientEntific, but it is retained for compatibility with existing "Clone Line" flow versions -->
+            <property name="bookingGeography" label="Booking Geography Deprecated" type="String" role="inputOnly" />
+            <property name="clientEntific" label="Client Entific" type="String" role="inputOnly" />
+            <property name="accountOrLocalClient" label="Account?" type="Boolean" role="inputOnly" />
+            <property name="clientId" label="Account Choosen" type="String" role="outputOnly"/>
+            <property name="accountName" label="Account Name Choosen" type="String" role="outputOnly"/> 
+            <property name="localClientId" label="Local Cliente Choosen" type="String" role="outputOnly" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

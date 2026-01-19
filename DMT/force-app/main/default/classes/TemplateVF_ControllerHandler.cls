@@ -1,0 +1,178 @@
+/*
+*Handler de las tablas del template para guardar
+*/
+public with sharing class TemplateVF_ControllerHandler {
+
+    /*
+*Author: Global Desktop
+*con patron sigleton
+*
+*/
+private TemplateVF_ControllerHandler() {
+}
+
+/*
+* Guarda los datos
+*/
+public static DES_Template_Table__c saveBasicFinancials (DES_Template_Table__c templNew) {
+    DES_Template_Table__c templResult;
+    templResult = new DES_Template_Table__c();
+    templResult.id = templNew.id;
+    templResult.need_Update__c = true;
+    templResult.Parent_Template__c = templNew.Parent_Template__c;
+    templResult.Revenues_Year_number__c = templNew.Revenues_Year_number__c;
+    templResult.Revenues_Last_Year_number__c = templNew.Revenues_Last_Year_number__c;
+    templResult.Revenues_Current_Year_number__c = templNew.Revenues_Current_Year_number__c;
+    templResult.Revenues_Next_Year_number__c = templNew.Revenues_Next_Year_number__c;
+    templResult.Revenues_Next_Year_1_number__c = templNew.Revenues_Next_Year_1_number__c;
+    templResult.Revenues_Next_Year_2_number__c = templNew.Revenues_Next_Year_2_number__c;
+    templResult.EBITDA_Last_Year_number__c = templNew.EBITDA_Last_Year_number__c;
+    templResult.EBITDA_Current_Year_number__c = templNew.EBITDA_Current_Year_number__c;
+    templResult.EBITDA_Next_Year_number__c = templNew.EBITDA_Next_Year_number__c;
+    templResult.EBITDA_Next_Year_1_number__c = templNew.EBITDA_Next_Year_1_number__c;
+    templResult.EBITDA_Next_Year_2_number__c = templNew.EBITDA_Next_Year_2_number__c;
+    templResult.EBIT_Last_Year_number__c = templNew.EBIT_Last_Year_number__c;
+    templResult.EBIT_Current_Year_number__c = templNew.EBIT_Current_Year_number__c;
+    templResult.EBIT_Next_Year_number__c = templNew.EBIT_Next_Year_number__c;
+    templResult.EBIT_Next_Year_1_number__c = templNew.EBIT_Next_Year_1_number__c;
+    templResult.EBIT_Next_Year_2_number__c = templNew.EBIT_Next_Year_2_number__c;
+    templResult.Net_Income_Last_Year_number__c = templNew.Net_Income_Last_Year_number__c;
+    templResult.Net_Income_Current_Year_number__c = templNew.Net_Income_Current_Year_number__c;
+    templResult.Net_Income_Next_Year_number__c = templNew.Net_Income_Next_Year_number__c;
+    templResult.Net_Income_Next_Year_1_number__c = templNew.Net_Income_Next_Year_1_number__c;
+    templResult.Net_Income_Next_Year_2_number__c = templNew.Net_Income_Next_Year_2_number__c;
+    templResult.Free_Cash_Flow_Last_Year_number__c = templNew.Free_Cash_Flow_Last_Year_number__c;
+    templResult.Free_Cash_Flow_Current_Year_number__c = templNew.Free_Cash_Flow_Current_Year_number__c;
+    templResult.Free_Cash_Flow_Next_Year_number__c = templNew.Free_Cash_Flow_Next_Year_number__c;
+    templResult.Free_Cash_Flow_Next_Year_1_number__c = templNew.Free_Cash_Flow_Next_Year_1_number__c;
+    templResult.Free_Cash_Flow_Next_Year_2_number__c = templNew.Free_Cash_Flow_Next_Year_2_number__c;
+    templResult.Debt_EBITDA_Last_Year_number__c = templNew.Debt_EBITDA_Last_Year_number__c;
+    templResult.Debt_EBITDA_Current_Year_number__c = templNew.Debt_EBITDA_Current_Year_number__c;
+    templResult.Debt_EBITDA_Next_Year_number__c = templNew.Debt_EBITDA_Next_Year_number__c;
+    templResult.Debt_EBITDA_Next_Year_1_number__c = templNew.Debt_EBITDA_Next_Year_1_number__c;
+    templResult.Debt_EBITDA_Next_Year_2_number__c = templNew.Debt_EBITDA_Next_Year_2_number__c;
+    templResult.Net_Debt_EBITDA_Last_Year_number__c = templNew.Net_Debt_EBITDA_Last_Year_number__c;
+    templResult.Net_Debt_EBITDA_Current_Year_number__c = templNew.Net_Debt_EBITDA_Current_Year_number__c;
+    templResult.Net_Debt_EBITDA_Next_Year_number__c = templNew.Net_Debt_EBITDA_Next_Year_number__c;
+    templResult.Net_Debt_EBITDA_Next_Year_1_number__c = templNew.Net_Debt_EBITDA_Next_Year_1_number__c;
+    templResult.Net_Debt_EBITDA_Next_Year_2_number__c = templNew.Net_Debt_EBITDA_Next_Year_2_number__c;
+
+    return templResult;
+}
+
+/*
+* Guarda los datos
+*/
+public static DES_Template_Table__c saveBusinessPlan (DES_Template_Table__c templNew) {
+    final List<String> lFields = new List<String>{'Past2_FY_Corp_Synd_Lending_amount__c','Past_FY_Corp_Synd_Lending_amount__c','Current_FY_Corp_Synd_Lending_amount__c','Next_FY_Corp_Synd_Lending_amount__c','Past2_FY_Structured_Finance_amount__c','Past_FY_Structured_Finance_amount__c','Current_FY_Structured_Finance_amount__c','Next_FY_Structured_Finance_amount__c','Past2_FY_Rates_amount__c','Past_FY_Rates_amount__c','Current_FY_Rates_amount__c','Next_FY_Rates_amount__c','Past2_FY_GTF_amount__c','Past_FY_GTF_amount__c','Current_FY_GTF_amount__c','Next_FY_GTF_amount__c','Past2_FY_Working_Capital_amount__c','Past_FY_Working_Capital_amount__c','Current_FY_Working_Capital_amount__c','Next_FY_Working_Capital_amount__c','Past2_FY_ECM_M_A_Amount__c','Past_FY_ECM_M_A_Amount__c','Current_FY_ECM_M_A_Amount__c','Next_FY_ECM_M_A_amount__c','Past2_FY_DCM_amount__c','Past_FY_DCM_amount__c','Current_FY_DCM_amount__c','Next_FY_DCM_amount__c','Past2_FY_Credit_Equity_amount__c','Past_FY_Credit_Equity_amount__c','Current_FY_Credit_Equity_amount__c','Next_FY_Credit_Equity_amount__c','Past2_FY_FX_CCS_amount__c','Past_FY_FX_CCS_amount__c','Current_FY_FX_CCS_amount__c','Next_FY_FX_CCS_amount__c','Past2_FY_Cash_Management_amount__c','Past_FY_Cash_Management_amount__c','Current_FY_Cash_Management_amount__c','Next_FY_Cash_Management_amount__c','Past2_FY_Client_Resources_amount__c','Past_FY_Client_Resources_amount__c','Current_FY_Client_Resources_amount__c','Next_FY_Client_Resources_amount__c','Past2_FY_Securities_Services_amount__c','Past_FY_Securities_Services_amount__c','Current_FY_Securities_Services_amount__c','Next_FY_Securities_Services_amount__c','Past2_FY_Str_Trade_Finance_amount__c','Past_FY_Str_Trade_Finance_amount__c','Current_FY_Str_Trade_Finance_amount__c','Next_FY_Str_Trade_Finance_amount__c','gf_xb_cust_ope_revenue_ly_per__c','gf_xb_cust_ope_revenue_cyr_per__c','gf_xb_cust_ope_revenue_nxy_per__c','gf_xb_cust_ope_revenue_2ya_per__c','gf_kpi_trans_fees_ly_amount__c','gf_kpi_trans_fees_cyr_amount__c','gf_kpi_trans_fees_nxy_amount__c','gf_kpi_trans_fees_2ya_amount__c'    ,'Next2_FY_Corp_Synd_Lending_amount__c','Next2_FY_Structured_Finance_amount__c','Next2_FY_Str_Trade_Finance_amount__c','Next2_FY_Rates_amount__c','Next2_FY_GTF_amount__c','Next2_FY_Working_Capital_amount__c','Next2_FY_ECM_M_A_amount__c','Next2_FY_DCM_amount__c','Next2_FY_Credit_Equity_amount__c','Next2_FY_FX_CCS_amount__c','Next2_FY_Cash_Management_amount__c','Next2_FY_Client_Resources_amount__c','Next2_FY_Securities_Services_amount__c','gf_xb_cust_ope_revenue_nxy2_per__c','gf_kpi_trans_fees_nxy2_amount__c'};
+    DES_Template_Table__c templResult;
+    templResult = new DES_Template_Table__c();
+    templResult.id = templNew.id;
+    templResult.need_Update__c = true;
+    templResult.Parent_Template__c = templNew.Parent_Template__c;
+system.debug('templResult:::'+templResult);
+    for(String field : lFields) {
+        templResult.put(field, templNew.get(field));
+    }
+    system.debug('entro:::'+templResult);
+    return templResult;
+}
+
+/*
+* Guarda los datos
+*/
+public static DES_Template_Table__c saveGlobalStructure (DES_Template_Table__c templNew) {
+    DES_Template_Table__c templResult;
+    templResult = new DES_Template_Table__c();
+    templResult.id = templNew.id;
+    templResult.need_Update__c = true;
+    templResult.Parent_Template__c = templNew.Parent_Template__c;
+    templResult.Debt_Funds_Text_1_desc__c = templNew.Debt_Funds_Text_1_desc__c;
+    templResult.Debt_Funds_Num_1_number__c = templNew.Debt_Funds_Num_1_number__c;
+    templResult.Uses_text_desc__c = templNew.Uses_text_desc__c;
+    templResult.Uses_num_1_number__c = templNew.Uses_num_1_number__c;
+    templResult.Debt_Funds_Text_2_desc__c = templNew.Debt_Funds_Text_2_desc__c;
+    templResult.Debt_Funds_Num_2_number__c = templNew.Debt_Funds_Num_2_number__c;
+    templResult.Uses_text_2_desc__c = templNew.Uses_text_2_desc__c;
+    templResult.Uses_num_2_number__c = templNew.Uses_num_2_number__c;
+    templResult.Debt_Funds_text_3_desc__c = templNew.Debt_Funds_text_3_desc__c;
+    templResult.Debt_Funds_Num_3_number__c = templNew.Debt_Funds_Num_3_number__c;
+    templResult.Uses_text_3_desc__c = templNew.Uses_text_3_desc__c;
+    templResult.Uses_num_3_number__c = templNew.Uses_num_3_number__c;
+    templResult.Debt_Funds_text_4_desc__c = templNew.Debt_Funds_text_4_desc__c;
+    templResult.Debt_Funds_Num_4_number__c = templNew.Debt_Funds_Num_4_number__c;
+    templResult.Uses_text_4_desc__c = templNew.Uses_text_4_desc__c;
+    templResult.Uses_num_4_number__c = templNew.Uses_num_4_number__c;
+    templResult.Debt_Funds_Text_5_desc__c = templNew.Debt_Funds_Text_5_desc__c;
+    templResult.Debt_Funds_Num_5_number__c = templNew.Debt_Funds_Num_5_number__c;
+    templResult.Uses_text_5_desc__c = templNew.Uses_text_5_desc__c;
+    templResult.Uses_num_5_number__c = templNew.Uses_num_5_number__c;
+    templResult.Uses_text_6_desc__c = templNew.Uses_text_6_desc__c;
+    templResult.Uses_num_6_number__c = templNew.Uses_num_6_number__c;
+    templResult.Uses_text_7_desc__c = templNew.Uses_text_7_desc__c;
+    templResult.Uses_num_7_number__c = templNew.Uses_num_7_number__c;
+    templResult.Equity_Funds_text_1_desc__c = templNew.Equity_Funds_text_1_desc__c;
+    templResult.Equity_Funds_num_1_number__c = templNew.Equity_Funds_num_1_number__c;
+    templResult.Uses_text_8_desc__c = templNew.Uses_text_8_desc__c;
+    templResult.Uses_num_8_number__c = templNew.Uses_num_8_number__c;
+    templResult.Equity_Funds_text_2_desc__c = templNew.Equity_Funds_text_2_desc__c;
+    templResult.Equity_Funds_num_2_number__c = templNew.Equity_Funds_num_2_number__c;
+    templResult.Uses_text_9_desc__c = templNew.Uses_text_9_desc__c;
+    templResult.Uses_num_9_number__c = templNew.Uses_num_9_number__c;
+    templResult.Equity_Funds_text_3_desc__c = templNew.Equity_Funds_text_3_desc__c;
+    templResult.Equity_Funds_num_3_number__c = templNew.Equity_Funds_num_3_number__c;
+    templResult.Uses_text_10_desc__c = templNew.Uses_text_10_desc__c;
+    templResult.Uses_num_10_number__c = templNew.Uses_num_10_number__c;
+    templResult.Equity_Funds_text_4_desc__c = templNew.Equity_Funds_text_4_desc__c;
+    templResult.Equity_Funds_num_4_number__c = templNew.Equity_Funds_num_4_number__c;
+    templResult.Uses_text_11_desc__c = templNew.Uses_text_11_desc__c;
+    templResult.Uses_num_11_number__c = templNew.Uses_num_11_number__c;
+    return templResult;
+}
+
+/*
+* Guarda los datos
+*/
+public static DES_Template_Table__c saveTransactionOverview (DES_Template_Table__c templNew) {
+    final List<String> lFields = new List<String>{'Transaction_Type1_desc__c','Transaction_Type2_desc__c','Transaction_Type3_desc__c','Transaction_Type4_desc__c','Transaction_Deal_Amount1_number__c','Transaction_Deal_Amount2_number__c','Transaction_Deal_Amount3_number__c','Transaction_Deal_Amount4_number__c','curncy_trans_year_one_type__c','curncy_trans_year_two_type__c','curncy_trans_year_three_type__c','curncy_trans_year_four_type__c','Role_of_BBVA1_desc__c','Role_of_BBVA2_desc__c','Role_of_BBVA3_desc__c','Role_of_BBVA4_desc__c','Underwriting1_desc__c','Underwriting2_desc__c','Underwriting3_desc__c','Underwriting4_desc__c','BBVA_Commitment1_number__c','BBVA_Commitment2_number__c','BBVA_Commitment3_number__c','BBVA_Commitment4_number__c','Expected_Final_Take1_number__c','Expected_Final_Take2_number__c','Expected_Final_Take3_number__c','Expected_Final_Take4_number__c','Sub_limit_desc__c','Sub_limit_if_any1_number__c','Sub_limit_if_any2_number__c','Sub_limit_if_any3_number__c','Sub_limit_if_any4_number__c','New_Money_for_BBVA1_desc__c','New_Money_for_BBVA2_desc__c','New_Money_for_BBVA3_desc__c','New_Money_for_BBVA4_desc__c','Old_Money_for_BBVA1_desc__c','Old_Money_for_BBVA2_desc__c','Old_Money_for_BBVA3_desc__c','Old_Money_for_BBVA4_desc__c','Maturity_door_to_door1_number__c','Maturity_door_to_door2_number__c','Maturity_door_to_door3_number__c','Maturity_door_to_door4_number__c','gf_ead_tranche_1_amount__c','gf_ead_tranche_2_amount__c','gf_ead_tranche_3_amount__c','gf_ead_tranche_4_amount__c','Availability_Period1_number__c','Availability_Period2_number__c','Availability_Period3_number__c','Availability_Period4_number__c','Tenor_Years1_number__c','Tenor_Years2_number__c','Tenor_Years3_number__c','Tenor_Years4_number__c','Average_Life1_number__c','Average_Life2_number__c','Average_Life3_number__c','Average_Life4_number__c','Project_s_Tail1_number__c','Project_s_Tail2_number__c','Project_s_Tail3_number__c','Project_s_Tail4_number__c','DSCR1_number__c','DSCR2_number__c','DSCR3_number__c','DSCR4_number__c','Leverage_Ratio1_number__c','Leverage_Ratio2_number__c','Leverage_Ratio3_number__c','Leverage_Ratio4_number__c','Standalone_RaR1_number__c','Standalone_RORC1_number__c','Standalone_RaR2_number__c','Standalone_RORC2_number__c','Standalone_RaR3_number__c','Standalone_RORC3_number__c','Standalone_RaR4_number__c','Standalone_RORC4_number__c','Old_Up_Front_Fee1_desc__c','New_Up_Front_Fee1_desc__c','Old_Up_Front_Fee2_desc__c','New_Up_Front_Fee2_desc__c','Old_Up_Front_Fee3_desc__c','New_Up_Front_Fee3_desc__c','Old_Up_Front_Fee4_desc__c','New_Up_Front_Fee4_desc__c','Old_Up_Front_Fee_NonAccrual1_desc__c','New_Up_Front_Fee_NonAccrual1_desc__c','Old_Up_Front_Fee_NonAccrual2_desc__c','New_Up_Front_Fee_NonAccrual2_desc__c','Old_Up_Front_Fee_NonAccrual3_desc__c','New_Up_Front_Fee_NonAccrual3_desc__c','Old_Up_Front_Fee_NonAccrual4_desc__c','New_Up_Front_Fee_NonAccrual4_desc__c','Old_Funding_cost1_desc__c','New_Funding_Cost1_desc__c','Old_Funding_cost2_desc__c','New_Funding_Cost2_desc__c','Old_Funding_cost3_desc__c','New_Funding_Cost3_desc__c','Old_Funding_cost4_desc__c','New_Funding_Cost4_desc__c','Old_Liquidity_fee1_desc__c','New_Liquidity_Fee1_desc__c','Old_Liquidity_fee2_desc__c','New_Liquidity_Fee2_desc__c','Old_Liquidity_fee3_desc__c','New_Liquidity_Fee3_desc__c','Old_Liquidity_fee4_desc__c','New_Liquidity_Fee4_desc__c','Old_Applicable_Margin1_desc__c','New_Applicable_Margin1_desc__c','Old_Applicable_Margin2_desc__c','New_Applicable_Margin2_desc__c','Old_Applicable_Margin3_desc__c','New_Applicable_Margin3_desc__c','Old_Applicable_Margin4_desc__c','New_Applicable_Margin4_desc__c','Old_Pricing_Grid_Step_Up1_desc__c','New_Pricing_Grid_Step_Up1_desc__c','Old_Pricing_Grid_Step_Up2_desc__c','New_Pricing_Grid_Step_Up2_desc__c','Old_Pricing_Grid_Step_Up3_desc__c','New_Pricing_Grid_Step_Up3_desc__c','Old_Pricing_Grid_Step_Up4_desc__c','New_Pricing_Grid_Step_Up4_desc__c','Old_Commitment_Fee1_desc__c','New_Commitment_Fee1_desc__c','Old_Commitment_Fee2_desc__c','New_Commitment_Fee2_desc__c','Old_Commitment_Fee3_desc__c','New_Commitment_Fee3_desc__c','Old_Commitment_Fee4_desc__c','New_Commitment_Fee4_desc__c','Old_Utilisation_Fee1_desc__c','New_Utilisation_Fee1_desc__c','Old_Utilisation_Fee2_desc__c','New_Utilisation_Fee2_desc__c','Old_Utilisation_Fee3_desc__c','New_Utilisation_Fee3_desc__c','Old_Utilisation_Fee4_desc__c','New_Utilisation_Fee4_desc__c','Old_Extension_Duration_Fee1_desc__c','New_Extension_Duration_Fee1_desc__c','Old_Extension_Duration_Fee2_desc__c','New_Extension_Duration_Fee2_desc__c','Old_Extension_Duration_Fee3_desc__c','New_Extension_Duration_Fee3_desc__c','Old_Extension_Duration_Fee4_desc__c','New_Extension_Duration_Fee4_desc__c','Other_Fees_desc__c','Old_Other_Fees1_desc__c','New_Other_Fees1_desc__c','Old_Other_Fees2_desc__c','New_Other_Fees2_desc__c','Old_Other_Fees3_desc__c','New_Other_Fees3_desc__c','Old_Other_Fees4_desc__c','New_Other_Fees4_desc__c','Old_Expected_Drawn1_desc__c','New_Expected_Drawn1_desc__c','Old_Expected_Drawn2_desc__c','New_Expected_Drawn2_desc__c','Old_Expected_Drawn3_desc__c','New_Expected_Drawn3_desc__c','Old_Expected_Drawn4_desc__c','New_Expected_Drawn4_desc__c','Old_All_in_Drawn1_desc__c','New_All_in_Drawn1_desc__c','Old_All_in_Drawn2_desc__c','New_All_in_Drawn2_desc__c','Old_All_in_Drawn3_desc__c','New_All_in_Drawn3_desc__c','Old_All_in_Drawn4_desc__c','New_All_in_Drawn4_desc__c','Old_All_in_Undrawn1_desc__c','New_All_in_Undrawn1_desc__c','Old_All_in_Undrawn2_desc__c','New_All_in_Undrawn2_desc__c','Old_All_in_Undrawn3_desc__c','New_All_in_Undrawn3_desc__c','Old_All_in_Undrawn4_desc__c','New_All_in_Undrawn4_desc__c','gf_old_interest_rate_tr1_desc__c','gf_old_interest_rate_tr2_desc__c','gf_old_interest_rate_tr3_desc__c','gf_old_interest_rate_tr4_desc__c','gf_new_interest_rate_tr1_desc__c','gf_new_interest_rate_tr2_desc__c','gf_new_interest_rate_tr3_desc__c','gf_new_interest_rate_tr4_desc__c'};
+
+    DES_Template_Table__c templResult;
+    templResult = new DES_Template_Table__c();
+    templResult.id = templNew.id;
+    templResult.need_Update__c = true;
+    templResult.Parent_Template__c = templNew.Parent_Template__c;
+
+    for(String field : lFields) {
+        templResult.put(field, templNew.get(field));
+    }
+    return templResult;
+}
+
+/*
+* Guarda los datos
+*/
+public static DES_Template_Table__c saveSustainableDeal (DES_Template_Table__c templNew) {
+    final List<String> lFields =  new List<String>{'gf_green_proj_sustnbl_ind_type__c','gf_env_sustnbl_activity_name__c','gf_corp_transaction_ind_type__c' ,'gf_high_risk_country_ind_type__c' ,'gf_prohibited_actvy_ind_type__c' ,'gf_public_law_corp_ind_type__c' ,'gf_end_user_ind_type__c' ,'gf_env_sustnbl_agency_ind_type__c','gf_green_bond_project_ind_type__c','gf_ngreen_rduc_carbon_ind_type__c','gf_ngreen_act_rduc_carbon_desc__c','gf_social_project_ind_type__c','gf_social_project_desc__c','gf_socl_sustnbl_agncy_ind_type__c','gf_socl_green_bond_ind_type__c','gf_sustnbl_loan_corp_ind_type__c','gf_sustainability_value_name__c','gf_sust_sustnbl_agncy_ind_type__c','Sustainable_Deal_type__c','gf_esg_score_close_ope_name__c', 'gf_co_list_tcfd_ind_type__c','gf_paris_agreement_ind_type__c','gf_customer_sustnbl_strg_desc__c', 'cstk_tri_engagement_plan__c', 'cstk_tri__c', 'cstk_cca__c', 'cstk_cta__c', 'cstk_group_alignment_degree__c', 'cstk_sector_alignment_degree__c', 'cstk_emissions_intensity__c', 'cstk_emissions_intensity_units__c', 'cstk_sust_indicators_comments__c', 'cstk_sector_affected__c', 'cstk_positioning__c', 'gf_pitch_oppy_l12m_ibf_desc__c','gf_pitch_oppy_l12m_gm_desc__c','gf_pitch_oppy_l12m_gtb_desc__c','Reputational_Risk_type__c','Sectorial_Norms_type__c','Equator_Principles_type__c','gf_equator_princ_catg_type__c','gf_crr_social_env_project_type__c','gf_sustnbl_proyect_cmnt_desc__c','Sustainable_Finance_Opinion_Provide_desc__c','gf_bldgs_carbon_env_impc_desc__c','gf_bldgs_env_carbon_ind_type__c','gf_neutral_env_impc_ind_type__c','gf_bldgs_ncarbon_env_impc_desc__c','gf_bldgs_env_ncarbon_ind_type__c'};
+    DES_Template_Table__c templResult;
+    templResult = new DES_Template_Table__c();
+    templResult.id = templNew.id;
+    templResult.need_Update__c = true;
+    templResult.Parent_Template__c = templNew.Parent_Template__c;
+
+    for(String field : lFields) {
+        templResult.put(field, templNew.get(field));
+    }
+    return templResult;
+}
+
+/*
+* Guarda los datos
+*/
+public static void updateOppSustainable (DES_Template_Table__c templNew, DES_Template__c templOld) {
+    if( templNew.Sustainable_Deal_type__c == 'YesKPILink' || templNew.Sustainable_Deal_type__c == 'YesUseFunds') {
+        update new Opportunity(id=templOld.opportunity_id__c, sustainable_finance_ind_type__c = true);
+    } else if ( templNew.Sustainable_Deal_type__c == 'NO' || templNew.Sustainable_Deal_type__c == null) {
+        update new Opportunity(id=templOld.opportunity_id__c, sustainable_finance_ind_type__c = false);
+    }
+}
+}

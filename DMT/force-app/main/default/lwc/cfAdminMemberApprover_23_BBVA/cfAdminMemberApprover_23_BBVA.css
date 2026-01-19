@@ -1,0 +1,40 @@
+.slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown{
+    height: 5.2rem;
+} 
+.slds-button__icon_left, .slds-button__icon--left{
+    margin-right: 0;
+}
+ .slds-dropdown-trigger_click,  .slds-dropdown-trigger--click {
+    display: block;
+    height: inherit;
+}
+.slds-form-element__control{
+    position: relative;
+    width: 19rem;
+    max-width: 29vh;
+}
+.slds-dropdown{
+    position: relative;
+    width: 19rem;
+    max-width: 29vh;
+}
+
+.slds-scope .slds-combobox__form-element {
+    margin-top: 1em;
+}
+
+.slds-scope .slds-button_neutral, .slds-scope .slds-button--neutral {
+    height: 2em;
+    }
+
+.slds-scope .slds-table tbody tr {
+    height: 4em;
+}
+
+.slds-scope .slds-card__body {
+margin-bottom:0;}
+
+.slds-scope .slds-p-horizontal_small, .slds-scope .slds-p-horizontal--small {
+     padding-left: 0; 
+    padding-right: 0; 
+}

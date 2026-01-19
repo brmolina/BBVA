@@ -1,0 +1,10 @@
+:host {
+    display: contents;
+}
+
+.feature_error
+{
+    margin-left: 10px;
+    position: absolute;
+    top: 4px;
+}

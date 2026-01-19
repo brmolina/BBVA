@@ -1,0 +1,55 @@
+<template>
+    <template if:true={hasValueEntity}>
+        <lightning-record-picker
+            label="Select Guarantor"
+            placeholder="Search Guarantor..."
+            filter={filter}
+            object-api-name="Local_Client__c"
+            if:true={hasValue}
+            value={clientId}
+            matching-info={matchingInfo}
+            display-info={displayInfo}
+            disabled={disabled}
+            onchange={handleChange}>
+        </lightning-record-picker>
+
+        <template if:false={hasValue}>
+            <lightning-record-picker
+                label="Select Guarantor"
+                placeholder="Search Guarantor..."
+                filter={filter}
+                object-api-name="Local_Client__c"
+                matching-info={matchingInfo}
+                display-info={displayInfo}
+                disabled={disabled}
+                onchange={handleChange}>
+            </lightning-record-picker>
+        </template>
+    </template>
+
+    <template if:false={hasValueEntity}>
+        <lightning-record-picker
+            label="Select Guarantor"
+            placeholder="Search Guarantor..."
+            object-api-name="Local_Client__c"
+            if:true={hasValue}
+            value={clientId}
+            matching-info={matchingInfo}
+            display-info={displayInfo}
+            disabled={disabled}
+            onchange={handleChange}>
+        </lightning-record-picker>
+
+        <template if:false={hasValue}>
+            <lightning-record-picker
+                label="Select Guarantor"
+                placeholder="Search Guarantor..."
+                object-api-name="Local_Client__c"
+                matching-info={matchingInfo}
+                display-info={displayInfo}
+                disabled={disabled}
+                onchange={handleChange}>
+            </lightning-record-picker>
+        </template>
+    </template>
+</template>

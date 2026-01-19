@@ -1,0 +1,7 @@
+<template>   
+   <select class="slds-select" onchange={handleChangeValue} disabled={disabledValue}>
+      <template for:each={list} for:item="option">
+         <option key={option.key} value={option.value} selected={option.defaultValue}>{option.value} <template lwc:if={option.label}>- {option.label} </template></option>
+   </template>
+   </select>
+</template>

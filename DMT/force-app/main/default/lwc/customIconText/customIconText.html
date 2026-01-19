@@ -1,0 +1,31 @@
+<template>
+  <span class={containerClass}>
+    <template if:true={showIconLeft}>
+      <lightning-icon
+        class="slds-m-right_x-small slds-shrink-none"
+        icon-name={iconName}
+        variant={normalizedVariant}
+        style={computedIconStyle}
+        size="x-small"
+        alternative-text={tooltip}
+        title={tooltip}>
+      </lightning-icon>
+    </template>
+
+    <span class="slds-truncate" style={computedTextStyle} title={value}>
+      {value}
+    </span>
+
+    <template if:true={showIconRight}>
+      <lightning-icon
+        class="slds-m-left_x-small slds-shrink-none"
+        icon-name={iconName}
+        variant={normalizedVariant}
+        style={computedIconStyle}
+        size="x-small"
+        alternative-text={tooltip}
+        title={tooltip}>
+      </lightning-icon>
+    </template>
+  </span>
+</template>

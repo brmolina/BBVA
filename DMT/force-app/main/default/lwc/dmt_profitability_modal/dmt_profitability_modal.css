@@ -1,0 +1,22 @@
+.slds-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Asegura que ocupa toda la ventana */
+}
+
+.slds-modal__container.custom-modal-width {
+    width: 70vw;
+    max-width: 70vw;
+    height: 100%; /* Aquí el cambio */
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+.slds-modal__content {
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 1rem;
+}

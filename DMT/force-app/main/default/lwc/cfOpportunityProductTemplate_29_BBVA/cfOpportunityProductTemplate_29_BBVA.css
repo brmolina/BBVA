@@ -1,0 +1,10 @@
+.slds-modal__container{
+margin: 0 auto;
+    width: fit-content;
+    min-width: 20rem;
+    max-width: 90%;
+}
+
+.slds-p-around_medium, .slds-p-around--medium {
+    padding: 0;
+}

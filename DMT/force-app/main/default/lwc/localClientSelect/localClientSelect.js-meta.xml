@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="urn:metadata.tooling.soap.sforce.com">
+  <apiVersion>48.0</apiVersion>
+  <isExposed>true</isExposed>
+
+  <targets>
+    <target>lightning__FlowScreen</target>
+    <target>lightning__RecordPage</target>
+  </targets>
+
+  <targetConfigs>
+    <targetConfig targets="lightning__RecordPage, lightning__FlowScreen">
+      <property name="clientVar" type="String" default="CClient" label="Cclient " required="true"/>
+    </targetConfig>
+  </targetConfigs>
+</LightningComponentBundle>

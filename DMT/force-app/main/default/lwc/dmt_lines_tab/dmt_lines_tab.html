@@ -1,0 +1,54 @@
+<template>
+    <template lwc:if={isViewDisabled}>
+        <c-dmt_no_access_message></c-dmt_no_access_message>
+    </template>
+    <template lwc:else>
+        <c-dmt_custom_path_line >
+
+        </c-dmt_custom_path_line>
+        <div class="slds-grid slds-wrap slds-col slds-size_1-of-1 row row-main">
+        <div class="column slds-size_1-of-1 slds-medium-size_8-of-12 slds-large-size_8-of-12 region-main slds-p-around_xx-small">
+                        <div class="slds-tabs_card">
+        <lightning-tabset>
+        <lightning-tab label="Line Info" title="Line info title">
+            <c-cf-summary-treasury_-flexcard record-id={recordId}></c-cf-summary-treasury_-flexcard>
+            <c-dmt_upload_file record-id={recordId}></c-dmt_upload_file>
+        </lightning-tab>
+        <lightning-tab label="Client" title="Client title">
+                        <c-dmt_fieldsection
+                record-id={recordId}
+                object-api-name="DMT_Line__c"
+                columns={clientColumns}>
+            </c-dmt_fieldsection>
+            <c-cf-select-clients-in-line record-id={recordId}></c-cf-select-clients-in-line>
+        </lightning-tab>
+        <lightning-tab label="Products">
+            <template lwc:if={treasuryTemplate}>
+            <c-cf-risk-tables-line record-id={recordId}></c-cf-risk-tables-line>
+            </template>
+            <template lwc:else>
+            <c-cf-product-sanction-template record-id={recordId}></c-cf-product-sanction-template>
+            </template>
+            
+        </lightning-tab>
+        <lightning-tab label="Participants">
+            <c-cf-interveners-line-template record-id={recordId}></c-cf-interveners-line-template>
+        </lightning-tab>
+        <lightning-tab label="Approval Process Data">
+            <c-dmt_approval_process_data record-id={recordId}></c-dmt_approval_process_data>
+            <c-dmt_features_selected record-id={recordId}></c-dmt_features_selected>
+        </lightning-tab>
+        <lightning-tab label="Versions">
+            <c-dmt_line-versions record-id={recordId}></c-dmt_line-versions>
+        </lightning-tab>
+    </lightning-tabset>
+                        </div>
+
+    </div>
+    <div class="column slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 region-sidebar-right slds-p-around_xx-small">
+        <c-cf-D-M-T_-small_-passport_v2></c-cf-D-M-T_-small_-passport_v2>
+    </div>
+        </div>
+    </template>
+
+</template>

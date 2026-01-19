@@ -1,0 +1,110 @@
+<template>
+    <div class="slds-form-element custom-lookup">
+        <label class="slds-form-element__label">
+            <template if:true={required}>
+                <span class="slds-required">{label}</span>
+            </template>
+            <template if:false={required}>
+                <span class="slds-no-required">{label}</span>
+            </template>
+        </label>
+        
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                    
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right">
+                        <input type="text"
+                               class="slds-input slds-combobox__input"
+                               placeholder="Buscar..."
+                               value={displayValue}
+                               oninput={handleSearch}
+                               onfocus={handleFocus}
+                               onblur={handleBlur}
+                               onkeydown={handleKeyDown}
+                               data-field-name={fieldName} />
+                        
+                        <span class={searchIconClass}>
+                            <span class="slds-icon_container">
+                                <template if:false={isLoading}>
+                                    <lightning-icon icon-name="utility:search" 
+                                                    size="xx-small"
+                                                    alternative-text="Buscar">
+                                    </lightning-icon>
+                                </template>
+                                <template if:true={isLoading}>
+                                    <div class="slds-spinner slds-spinner_brand slds-spinner_x-small" 
+                                         role="status">
+                                        <span class="slds-assistive-text">Buscando...</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </template>
+                            </span>
+                        </span>
+                        
+                        <template if:true={hasValue}>
+                            <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                    title="Clear"
+                                    onclick={handleClear}>
+                                <lightning-icon icon-name="utility:close" 
+                                                size="x-small"
+                                                alternative-text="Limpiar">
+                                </lightning-icon>
+                            </button>
+                        </template>
+                    </div>
+                    
+                    <div class={resultsClass}>
+                        <ul class="slds-listbox slds-listbox_vertical">
+                            
+                            <template if:true={isLoading}>
+                                <li class="slds-listbox__item">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain">
+                                        <div class="slds-media__body">
+                                            <span class="slds-truncate">Buscando...</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                            
+                            <template if:true={showNoResults}>
+                                <li class="slds-listbox__item">
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain">
+                                        <div class="slds-media__body">
+                                            <span class="slds-truncate">No se encontraron resultados</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                            
+                            <template for:each={searchResults} for:item="result">
+                                <li key={result.Id} 
+                                    class="slds-listbox__item search-result-item"
+                                    data-id={result.Id}
+                                    onclick={handleSelect}
+                                    onmousedown={handleMouseDown}>
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity">
+                                        <span class="slds-media__figure">
+                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                <lightning-icon icon-name="standard:record" 
+                                                                size="small"
+                                                                alternative-text="Record">
+                                                </lightning-icon>
+                                            </span>
+                                        </span>
+                                        <div class="slds-media__body">
+                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                                                {result.displayValue}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

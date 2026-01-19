@@ -1,0 +1,46 @@
+.content-container {
+    padding: 15px;
+}
+
+.section-container {
+    margin-bottom: 20px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.template-preview {
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    background-color: #fafafa;
+    border-radius: 5px;
+}
+
+.pill-container {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Contenedor para alinear el combobox y el botón "Continuar" en una fila */
+.combobox-button-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Aumentar el ancho completo para el combobox */
+.combobox-button-container .full-width {
+    flex: 1;
+}
+
+/* Separar el botón a la derecha del combobox */
+.continue-button {
+    margin-left: 8px;
+}

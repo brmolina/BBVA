@@ -1,0 +1,25 @@
+<template>
+
+  <lightning-combobox
+    name="country"
+    label="Booking country code"
+    value={valueCountry}
+    placeholder="Select Booking country code..."
+    options={optionsCountry}
+    onchange={handleCountryChange}>
+  </lightning-combobox>
+
+  <lightning-combobox
+    name="lclient"
+    label="Local client"
+    value={valueAcc}
+    placeholder="Select client..."
+    options={optionsClient}
+    onchange={handleAccChange}>
+  </lightning-combobox>
+
+  <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-m-top_xx-large">
+    <lightning-button variant="brand" label="Next" title="Primary action" onclick={continueFunction} if:true={showDisabled} disabled ></lightning-button>
+    <lightning-button variant="brand" label="Next" title="Primary action" onclick={continueFunction} if:false={showDisabled} class="slds-button slds-button--brand"></lightning-button>
+  </div>
+</template>

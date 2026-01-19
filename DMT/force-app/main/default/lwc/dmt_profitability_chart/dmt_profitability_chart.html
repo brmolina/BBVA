@@ -1,0 +1,189 @@
+<template>
+    <lightning-card if:false={hidden}>
+
+        <div>
+            <canvas lwc:dom="manual" class="chart" height="100" width="300"></canvas>
+            <div if:false={chartJsInitialized}>
+                loading...
+            </div>
+        </div>
+        <div class="slds-m-vertical_medium">
+            <div class="slds-grid slds-wrap slds-m-top_x-small">
+                <div class="slds-col slds-size_1-of-2">
+                    <strong class="slds-text-heading_small">RORC:</strong>
+                    <span class="slds-text-heading_small"> {summaryData.rorc}</span>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <strong class="slds-text-heading_small">RAROEC:</strong>
+                    <span class="slds-text-heading_small"> {summaryData.raroec}</span>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap slds-m-top_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <strong>RORC no xSell:</strong> {summaryData.rorcNoxsell}
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <strong>RAROEC no xSell:</strong> {summaryData.raroecNoxsell}
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <strong>RORC Prospective CDD:</strong> {summaryData.rorcProspected}
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <strong>RAROEC Prospective CDD:</strong> {summaryData.raroecProspected}
+                </div>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_vertical">
+            <div class="slds-col">
+                <div class="slds-m-top_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
+                        Summary
+                    </h2>
+
+                    <!-- WRAPPER CON SCROLL -->
+                    <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" style="min-width: 98%;">
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">ID</th>
+                                    <th>Initial Date</th>
+                                    <th>Maturity Date</th>
+                                    <th>Tax Rate</th>
+                                    <th>Spread Drawn</th>
+                                    <th>Spread Undrawn</th>
+                                    <th>FC Drawn</th>
+                                    <th>FC Undrawn</th>
+                                    <th>Country Risk Drawn</th>
+                                    <th>Country Risk Undrawn</th>
+                                    <th>Expected Loss</th>
+                                    <th>Fees Non Accrual</th>
+                                    <th>Fees Accrual</th>
+                                    <th>PAT</th>
+                                    <th>FD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={table1Data} for:item="row" for:index="index">
+                                    <tr key={row.id} class={row.rowClass}>
+                                        <td class="slds-truncate">{row.id}</td>
+                                        <td>{row.initialDate}</td>
+                                        <td>{row.maturityDate}</td>
+                                        <td>{row.taxRate}</td>
+                                        <td>{row.spreadDb}</td>
+                                        <td>{row.spreadFb}</td>
+                                        <td>{row.fundingDb}</td>
+                                        <td>{row.fundingFb}</td>
+                                        <td>{row.countryRiskDb}</td>
+                                        <td>{row.countryRiskFb}</td>
+                                        <td>{row.pe}</td>
+                                        <td>{row.feesNonAccrual}</td>
+                                        <td>{row.feesAccrual}</td>
+                                        <td>{row.bdi}</td>
+                                        <td>{row.franchiseDeal}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col">
+                <div class="slds-m-top_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
+                        Regulatory Capital
+                    </h2>
+                    <!-- WRAPPER CON SCROLL -->
+                    <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" style="min-width: 98%;">
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">ID</th>
+                                    <th>Notional Drawn</th>
+                                    <th>Notional Undrawn</th>
+                                    <th>CCF reg</th>
+                                    <th>EAD reg</th>
+                                    <th>LGD reg</th>
+                                    <th>RWA reg</th>
+                                    <th>Regulatory Capital</th>
+                                    <th>RORC</th>
+                                    <th>NIAT CDD</th>
+                                    <th>CR CDD</th>
+                                    <th>RORC CDD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={table3Data} for:item="row">
+                                    <tr key={row.id} class={row.rowClass}>
+                                        <td class="slds-truncate">{row.id}</td>
+                                        <td>{row.nominalDb}</td>
+                                        <td>{row.nominalFb}</td>
+                                        <td>{row.ccfReg}</td>
+                                        <td>{row.eadReg}</td>
+                                        <td>{row.lgdReg}</td>
+                                        <td>{row.rwaReg}</td>
+                                        <td>{row.cr}</td>
+                                        <td>{row.rorc}</td>
+                                        <td>{row.bdiCdd}</td>
+                                        <td>{row.crCdd}</td>
+                                        <td>{row.rorcCdd}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col">
+                <div class="slds-m-top_medium">
+                    <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
+                        Economic Capital
+                    </h2>
+                    <!-- WRAPPER CON SCROLL -->
+                    <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" style="min-width: 98%;">
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">ID</th>
+                                    <th>Notional Drawn</th>
+                                    <th>Notional Undrawn</th>
+                                    <th>CCF eco</th>
+                                    <th>EAD eco</th>
+                                    <th>LGD eco</th>
+                                    <th>RWA eco</th>
+                                    <th>Economic Capital</th>
+                                    <th>RAROEC</th>
+                                    <th>NIAT CDD</th>
+                                    <th>CE CDD</th>
+                                    <th>RAROEC CDD</th>
+                                    <th>FD</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={table2Data} for:item="row">
+                                    <tr key={row.id} class={row.rowClass}>
+                                        <td class="slds-truncate">{row.id}</td>
+                                        <td>{row.nominalDb}</td>
+                                        <td>{row.nominalFb}</td>
+                                        <td>{row.ccfEco}</td>
+                                        <td>{row.eadEco}</td>
+                                        <td>{row.lgdEco}</td>
+                                        <td>{row.rwaEco}</td>
+                                        <td>{row.ce}</td>
+                                        <td>{row.raroec}</td>
+                                        <td>{row.bdiCdd}</td>
+                                        <td>{row.ceCdd}</td>
+                                        <td>{row.raroecCdd}</td>
+                                        <td>{row.franchiseDeal}</td>
+
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </lightning-card>
+</template>

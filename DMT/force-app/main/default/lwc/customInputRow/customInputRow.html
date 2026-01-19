@@ -1,0 +1,30 @@
+<template>
+    <template lwc:if={aviableItem}>
+        <lightning-input
+            type="text"
+            label="Input Text"
+            variant="label-hidden"
+            name="textInput"
+            value={inputValue}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            id={fieldname}
+            disabled="true"
+        >
+        </lightning-input>
+    </template>
+    <template lwc:else>
+        <lightning-input
+            type="text"
+            label="Input Text"
+            variant="label-hidden"
+            name="textInput"
+            value={inputValue}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            id={fieldname}
+            
+        >
+        </lightning-input>
+    </template>
+</template>

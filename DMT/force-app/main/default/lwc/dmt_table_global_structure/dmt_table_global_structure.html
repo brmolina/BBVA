@@ -1,0 +1,69 @@
+<template>
+    <lightning-card>
+        <div class="slds-m-around_medium">
+            <c-dmt_-table-header-section
+                titletable={label}
+                showcopypaste={showcopypaste}
+                context="derivatives"
+                withoutformat ="true"
+                customstyle = 'font-variant: small-caps;'
+            ></c-dmt_-table-header-section>
+            <template lwc:if={isDataProcessed}>
+                <div class="slds-table_edit_container">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_edit slds-table_fixed-layout" role="grid">
+                        <tbody>
+                            <template for:each={processedData} for:item="row">
+                                <tr key={row.Id} class="slds-hint-parent">
+                                    <template for:each={row.values} for:item="cell">
+                                        <td key={cell.field} data-label={cell.label} class={cell.cellClass} role="gridcell">
+                                            <div class="slds-grid slds-gutters cell-content">
+
+                                                <template lwc:if={cell.isEditing}>
+                                                    <div class="slds-p-around_none slds-col slds-truncate slds-size_3-of-3 cell-value">
+                                                        <input 
+                                                            type={cell.type} 
+                                                            class="slds-input" 
+                                                            value={cell.value} 
+                                                            data-index={row.index} 
+                                                            data-field={cell.field} 
+                                                            onchange={handleInputChange} 
+                                                        />
+                                                    </div>
+                                                </template>
+
+                                                <template lwc:else>
+                                                    <div class="slds-col slds-truncate slds-size_2-of-3 cell-value">
+                                                        <span title={cell.value}>{cell.value}</span>
+                                                    </div>
+
+                                                    <div class="slds-p-around_none slds-col slds-size_1-of-3">
+                                                        <template lwc:if={cell.isEditable}>
+                                                            <lightning-button-icon 
+                                                                icon-name="utility:edit" 
+                                                                class="edit-icon no-border" 
+                                                                alternative-text="Edit" 
+                                                                data-id={row.Id} 
+                                                                data-field={cell.field} 
+                                                                onclick={handleEditCell} 
+                                                                variant='bare'>
+                                                            </lightning-button-icon>
+                                                        </template>
+                                                    </div>
+                                                </template>
+
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template lwc:else>
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </template>
+        </div>
+    </lightning-card>
+</template>

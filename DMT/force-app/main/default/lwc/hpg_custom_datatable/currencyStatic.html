@@ -1,0 +1,7 @@
+<template>
+    <span class="slds-truncate" title={value}>
+        <template lwc:if={value}>
+            <lightning-formatted-number value={value} minimum-fraction-digits="2" maximum-fraction-digits="2"></lightning-formatted-number><span>&nbsp;{typeAttributes.currencyCode}</span>
+        </template>
+    </span>
+</template>

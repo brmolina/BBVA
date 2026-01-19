@@ -1,0 +1,25 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 48px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field.wide {
+    grid-column: span 2;
+}
+
+label {
+    color: #5c5c5c;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.readonly {
+    padding-top: 6px;
+    font-size: 14px;
+}

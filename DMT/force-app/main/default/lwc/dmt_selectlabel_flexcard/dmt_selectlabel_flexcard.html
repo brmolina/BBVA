@@ -1,0 +1,9 @@
+<template>
+    <label style="font-size: 16px; font-weight: 600; margin-left: 6px; display: block; margin-bottom: 8px;">Select a view of {displayType}:</label>
+    <select class="slds-select" style="margin-left: 6px; margin-bottom: 8px; font-size: 16px; line-height: 1.5; padding: 0.375rem 0.75rem; height: auto;" onchange={handleChangeValue}>
+      <option value="KO">--None--</option>
+        <template for:each={list} for:item="option">
+        <option key={option.key} value={option.value} selected={option.defaultValue}><template lwc:if={option.label}> {option.label} </template></option>
+        </template>
+    </select>
+</template>

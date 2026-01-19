@@ -1,0 +1,106 @@
+<template>
+    <!--<lightning-card title="Business Plan">
+        <lightning-datatable
+            key-field="id"
+            data={rows}
+            columns={columns}
+            hide-checkbox-column="true"
+            onsave={handleSave}
+            draft-values={draftValues}>
+        </lightning-datatable>
+    </lightning-card>-->
+    <lightning-card>
+        <div class="slds-m-around_medium">
+            <div style="text-align: center; font-variant: small-caps; font-weight: 900; background-color: #AEAEAE;">
+                <h4>BASIC FINANCIALS</h4>
+            </div> 
+            <template lwc:if={isDataProcessed}>
+                <div class="slds-table_edit_container">
+                    <table aria-describedby="tableDataProcesed" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_edit slds-table_fixed-layout" role="grid">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <template for:each={columns} for:item="column">
+                                    <th key={column.fieldName} class="slds-cell_action-mode slds-truncate" scope="col" style="width:100%; height: 100%;">
+                                        {column.label}
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={processedData} for:item="row">
+                                <tr key={row.Id} class="slds-hint-parent">
+                                    <template for:each={row.values} for:item="cell">
+                                        <td key={cell.field} data-label={cell.label} class={cell.cellClass} role="gridcell">
+                                            <!--<div class="slds-truncate cell-content">-->
+                                                <div class="slds-grid slds-gutters cell-content">
+                                                    <template lwc:if={cell.isEditable}>
+                                                        <template lwc:if={cell.isEditing}>
+                                                            <section aria-describedby="dialog-body-id-26" class="slds-popover slds-popover slds-popover_edit" role="dialog" style="position:absolute;top:0;left:0.0625rem">
+                                                                <div class="slds-popover__body" id="dialog-body-id-26">
+                                                                  <div class="slds-media">
+                                                                    <div class="slds-media__body">
+                                                                      <div class="slds-form-element slds-grid slds-wrap">
+                                                                        <label class="slds-form-element__label slds-form-element__label_edit slds-no-flex" for="company-01">
+                                                                          <span class="slds-assistive-text">Company</span>
+                                                                        </label>
+                                                                        <div class="slds-form-element__control slds-grow">
+                                                                          <input type="text" class="slds-input" value={cell.value} data-id={row.Id} data-field={cell.field} onchange={handleInputChange} onfocusout={handleFocusOut}/>
+                                                                        </div>
+                                                                      </div>
+                                                                    </div>
+                                                                  </div>
+                                                                </div>
+                                                              </section>
+                                                        </template>
+                                                        <template lwc:else>
+                                                                <div class="slds-col slds-size_2-of-3 cell-value">
+                                                                    <span>{cell.value} <c-dmt_warning_hover
+                                                                        content={cell.accountValue}
+                                                                        is-equals={cell.isEquals}
+                                                                        object="Client">
+                                                                        </c-dmt_warning_hover></span>
+                                                                </div>
+                                                                <div class="slds-col slds-size_1-of-3">
+                                                                    <template lwc:if={row.isEditable}>
+                                                                        <div class="button-group">
+                                                                            <lightning-button-icon icon-name="utility:redo" class="redo-icon no-border" alternative-text="redo" data-id={row.Id} data-field={cell.field} onclick={handleRedo} variant='bare' style={cell.styleRedo}></lightning-button-icon>
+                                                                            <lightning-button-icon icon-name="utility:edit" class="edit-icon no-border" alternative-text="Edit" data-id={row.Id} data-field={cell.field} onclick={handleEdit} variant='bare' style={cell.withoutRedo}></lightning-button-icon>
+                                                                        </div>
+                                                                    </template>
+                                                                </div>
+                                                        </template>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <div class="slds-col slds-size_2-of-3 cell-value">
+                                                            <span>{cell.value}</span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            <!--</div>-->
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template lwc:else>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+
+        </div>
+        <template lwc:if={hasUnsavedChanges}>
+            <div class="slds-m-around_medium slds-text-align_center">
+                <ul class="slds-button-group-row">
+                    <li class="slds-button-group-item">
+                      <button class="slds-button slds-button_neutral" onclick={handleCancel}>Cancel</button>
+                    </li>
+                    <li class="slds-button-group-item">
+                      <button class="slds-button slds-button_brand" onclick={handleSave}>Save</button>
+                    </li>
+                </ul>
+            </div>
+        </template>
+    </lightning-card>
+</template>

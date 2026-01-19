@@ -1,0 +1,6 @@
+button[class="slds-button slds-p-horizontal_x-small"] {
+    width: 100%;
+    height: auto;
+    background: var(--lwc-colorBackground,#dddddd);
+    color: var(--lwc-color,#6b6969);
+}

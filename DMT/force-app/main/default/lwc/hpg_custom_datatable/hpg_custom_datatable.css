@@ -1,0 +1,13 @@
+.fixTable {
+    padding-top: 0;
+    background-color: none;
+}
+.right{
+    text-align: right;
+}
+.left{
+    text-align: left;
+}
+.vh60 {
+    height: 60vh;
+}

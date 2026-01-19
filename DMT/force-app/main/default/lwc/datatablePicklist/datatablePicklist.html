@@ -1,0 +1,17 @@
+<template>
+
+        <div class={containerStyleWarining}>
+            
+        <lightning-combobox class=" slds-dropdown_length-5 slds-scrollable_y" id={fieldname} name="picklist" label={label} value={value} placeholder={placeholder} options={optionsValue}
+            onchange={handleChange} onclick={handleClick} read-only={readOnlyField}></lightning-combobox>
+                    <!-- Icono de advertencia solo si showReadOnlyWarning es true -->
+        <template if:true={readonlywarning}>
+            <lightning-helptext
+                content={labels.DMT_HELPTEXT_WARNING}
+                icon-name="utility:warning"
+                icon-variant="warning"
+                class="slds-m-left_x-small slds-m-top_small" >
+            </lightning-helptext>
+        </template>
+    </div>
+</template>

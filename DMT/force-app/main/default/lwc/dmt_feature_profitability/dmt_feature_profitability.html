@@ -1,0 +1,51 @@
+<template>
+    <tr class="slds-hint-parent" style="height: 3rem;">
+        <template lwc:if={feature.featureIsValid}> 
+            <td class="slds-p-left_large slds-align-center slds-m-top_small" colspan="1">
+                <b class="slds-m-left_xx-small">{feature.name}</b>
+            </td>
+            
+            <template lwc:if={feature.capabilityIsValid}>
+                <template lwc:if={feature.showTrafficLight}>
+                    <td class="slds-p-left_large slds-align-center">
+                        <div class="slds-truncate"><c-dmt_traffic_light status={feature.stateName} onclick={openModal} data-id={feature.idProccess} simplelight="false" lightsize="25px"></c-dmt_traffic_light> </div>
+                    </td>
+                    <td class="slds-p-left_large slds-align-center"></td>
+                </template>
+                <template lwc:else>
+                    <td class="slds-p-left_large slds-align-center"></td>
+                    <td class="slds-p-left_large slds-align-center"></td>
+                </template> 
+                <template lwc:if={isbig}>
+                    <td class="slds-p-left_large" colspan="7"></td>     
+                </template> 
+            </template>
+            <template lwc:else>
+                <td class="slds-p-left_large slds-align-center">
+                    <div class="passport-space-helpericon">
+                        <template lwc:if={feature.showErrorCapability}>
+                            <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.capabilityErrorMessage} icon-variant="error"></c-dmt_helpericon>
+                        </template>
+                    </div>
+                </td>
+                <td class="slds-p-left_large slds-align-center"></td>
+                <template lwc:if={isbig}>
+                    <td class="slds-p-left_large" colspan="7"></td>     
+                </template> 
+            </template>
+        </template>
+        <template lwc:else>
+            <td class="slds-p-left_large slds-align-center" colspan="3">
+                <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+                <template lwc:if={feature.showErrorFeature}>
+                    <span class="feature_error">
+                        <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.featureErrorMessage} icon-variant="error"></c-dmt_helpericon>
+                    </span>
+                </template>
+            </td>
+            <template lwc:if={isbig}>
+                <td class="slds-p-left_large" colspan="7"></td>     
+            </template> 
+        </template>
+    </tr>
+</template>

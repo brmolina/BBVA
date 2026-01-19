@@ -1,0 +1,25 @@
+<template>
+    <div class="parentDiv" style="margin-top: 20px;">
+        <lightning-card title={labelFeatures} icon-name="standard:table">
+            <template if:true={isDataLoaded}>
+                <div
+                    style="overflow: visible; position: relative; z-index: 20;">
+                    <c-custom-data-table
+                        key-field="Id"
+                        data={features}
+                        columns={columns}
+                        oncustomselectrowchanged={handleCheckboxChange}
+                        hide-checkbox-column
+                        suppress-bottom-bar>
+                    </c-custom-data-table>
+                </div>
+            </template>
+
+            <template if:true={isLoading}>
+                <lightning-spinner class="slds-is-relative"
+                    alternative-text="Loading" size="medium"
+                    style="position: absolute; inset: 0;"></lightning-spinner>
+            </template>
+        </lightning-card>
+    </div>
+</template>

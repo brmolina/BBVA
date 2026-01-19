@@ -1,0 +1,95 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-detail data-style-id="state0element0_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-detail>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-amortizations data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-amortizations>
+    </div><div data-style-id="state0element2" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-funding data-style-id="state0element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-funding>
+    </div><div data-style-id="state0element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-mitigants data-style-id="state0element3_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"updateId":"{Id}"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-mitigants>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-col footer-full-width slds-docked-form-footer slds-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         background-color:trasparent;opacity:0.95; height:3.4rem;padding-left:-5rem; "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"editMode","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"editMode","operator":"==","value":"true","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+                 margin-left: -11.35rem;
+    margin-top: -6.9rem;
+    width: 100%;"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"showPopover","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-custom-lwc-wrapper class="condition-element" element-name="c-dmt_show-popover" property='\{"message":"{message}","showPopover":"{showPopover}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_show-popover   header="We hit a snag."  message-title="Review the errors on this page."  variant="error"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"showPopover","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' ></c-dmt_show-popover></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4block_element1" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 0.7rem;" ><omnistudio-flex-action data-style-id="state0element4block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element1_child flexActionElement" 
+        data-action-element-class="state0element4block_element1_child" data-action-key="state0element4block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block4action1"   state-obj={record}  card={card}  record={record}  label="Cancel"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1749771093123","type":"cardAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"reload"},"key":"1749770886816-li0vh1zu3","label":"Action","draggable":false,"isOpen":true,"actionIndex":0}]'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="neutral"  flyout-details='\{}'  aria-label="Cancel"  disabled=""  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element4block_element2" class="slds-col  slds-text-align_left  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 2.5rem;" ><omnistudio-flex-action data-style-id="state0element4block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element2_child flexActionElement" 
+        data-action-element-class="state0element4block_element2_child" data-action-key="state0element4block_element2" onexecuteaction={performAction} data-show-spinner="true"
+        data-element-label="block4action1clone0"   state-obj={record}  card={card}  record={record}  label="Save"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1753338472196","type":"Event","openUrlIn":"Current Window","eventName":"productOpportunityDetail","subType":"PubSub","message":"saveOpportunityItemInfo","hasExtraParams":true,"extraParams":{"DMT_Opportunity_Tenor__c":"{DMT_Opportunity_Tenor__c}","gf_amortization_type__c":"{gf_amortization_type__c}","gf_payment_frequency__c":"{gf_payment_frequency__c}","CurrencyIsoCode":"{CurrencyIsoCode}","Funding_Curve__c":"{Funding_Curve__c}","Life_Funding_Type__c":"{Life_Funding_Type__c}","gf_funding_cost_db__c":"{gf_funding_cost_db__c}","gf_funding_cost_fb__c":"{gf_funding_cost_fb__c}","gf_green_bonus__c":"{gf_green_bonus__c}","gf_social_bond__c":"{gf_social_bond__c}","gf_country_risk__c":"{gf_country_risk__c}","gf_country_rating__c":"{gf_country_rating__c}","idListToDeleteTenor":"{idListToDeleteTenor}"}},"key":"1749770886816-li0vh1zu3","label":"callSaveEvent","draggable":true,"isOpen":true,"actionIndex":0}]'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="brand"  flyout-details='\{}'  aria-label="Save"  disabled=""  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-detail data-style-id="state0element0_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-detail>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-amortizations data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-amortizations>
+    </div><div data-style-id="state0element2" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-funding data-style-id="state0element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-funding>
+    </div><div data-style-id="state0element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-product-opportunity-mitigants data-style-id="state0element3_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"updateId":"{Id}"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-product-opportunity-mitigants>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-col footer-full-width slds-docked-form-footer slds-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         background-color:trasparent;opacity:0.95; height:3.4rem;padding-left:-5rem; "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"editMode","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"editMode","operator":"==","value":"true","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+                 margin-left: -11.35rem;
+    margin-top: -6.9rem;
+    width: 100%;"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"showPopover","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-custom-lwc-wrapper class="condition-element" element-name="c-dmt_show-popover" property='\{"message":"{message}","showPopover":"{showPopover}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_show-popover   header="We hit a snag."  message-title="Review the errors on this page."  variant="error"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"showPopover","operator":"==","value":"true","type":"custom","hasMergeField":false}]}' ></c-dmt_show-popover></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4block_element1" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 0.7rem;" ><omnistudio-flex-action data-style-id="state0element4block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element1_child flexActionElement" 
+        data-action-element-class="state0element4block_element1_child" data-action-key="state0element4block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block4action1"   state-obj={record}  card={card}  record={record}  label="Cancel"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1749771093123","type":"cardAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"reload"},"key":"1749770886816-li0vh1zu3","label":"Action","draggable":false,"isOpen":true,"actionIndex":0}]'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="neutral"  flyout-details='\{}'  aria-label="Cancel"  disabled=""  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element4block_element2" class="slds-col  slds-text-align_left  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 2.5rem;" ><omnistudio-flex-action data-style-id="state0element4block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element2_child flexActionElement" 
+        data-action-element-class="state0element4block_element2_child" data-action-key="state0element4block_element2" onexecuteaction={performAction} data-show-spinner="true"
+        data-element-label="block4action1clone0"   state-obj={record}  card={card}  record={record}  label="Save"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1753338472196","type":"Event","openUrlIn":"Current Window","eventName":"productOpportunityDetail","subType":"PubSub","message":"saveOpportunityItemInfo","hasExtraParams":true,"extraParams":{"DMT_Opportunity_Tenor__c":"{DMT_Opportunity_Tenor__c}","gf_amortization_type__c":"{gf_amortization_type__c}","gf_payment_frequency__c":"{gf_payment_frequency__c}","CurrencyIsoCode":"{CurrencyIsoCode}","Funding_Curve__c":"{Funding_Curve__c}","Life_Funding_Type__c":"{Life_Funding_Type__c}","gf_funding_cost_db__c":"{gf_funding_cost_db__c}","gf_funding_cost_fb__c":"{gf_funding_cost_fb__c}","gf_green_bonus__c":"{gf_green_bonus__c}","gf_social_bond__c":"{gf_social_bond__c}","gf_country_risk__c":"{gf_country_risk__c}","gf_country_rating__c":"{gf_country_rating__c}","idListToDeleteTenor":"{idListToDeleteTenor}"}},"key":"1749770886816-li0vh1zu3","label":"callSaveEvent","draggable":true,"isOpen":true,"actionIndex":0}]'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="brand"  flyout-details='\{}'  aria-label="Save"  disabled=""  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

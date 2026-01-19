@@ -1,0 +1,23 @@
+.myClass {
+  transition: background-color 0.5s;
+  transition: color 0.5s;
+  width: auto;
+  max-width: 50%;
+}
+
+.myClass:hover {
+              transform: scale(1.05); 
+}
+
+.hoverClass {
+  transition: all 1s;
+}
+
+.hoverClass:hover {
+  background-color: #028484;
+  border-radius: 2vh;
+}
+
+.buttonClass:active { 
+            transform: scale(0.9); 
+        }

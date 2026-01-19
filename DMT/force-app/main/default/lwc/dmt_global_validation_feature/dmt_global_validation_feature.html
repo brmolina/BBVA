@@ -1,0 +1,33 @@
+<template>  
+    <tr class="slds-hint-parent" style="height: 3rem;">
+        <td class="dmt-white-space-break-space" >
+            <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+        </td>
+        
+        <template lwc:if={feature.capabilityIsValid}>
+            <td class="slds-p-left_large slds-align-center">
+                <template lwc:if={feature.showTrafficLight}>
+                    <div class="slds-truncate"><c-dmt_traffic_light status={feature.stateName} onclick={openModal} data-id={feature.idProccess} simplelight="false" lightsize="25px"></c-dmt_traffic_light> </div>
+                </template>
+                <template lwc:if={feature.showErrorCapabilityService}>
+                    <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.messageCapabilityService} icon-variant="error"></c-dmt_helpericon>
+                </template>
+            </td>
+            <td class="slds-p-left_large slds-align-center"></td>
+        </template>
+        <template lwc:else>
+            <td class="slds-p-left_large slds-align-center">
+                <div class="passport-space-helpericon">
+                    <template lwc:if={feature.showErrorCapability}>
+                        <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.capabilityErrorMessage} icon-variant="error"></c-dmt_helpericon>
+                    </template>
+                </div>
+            </td>
+            <td class="slds-p-left_large slds-align-center"></td>
+        </template>
+
+        <template lwc:if={isbig}>
+                <td class="slds-p-left_large" colspan="7"></td>     
+        </template> 
+    </tr>  
+</template>

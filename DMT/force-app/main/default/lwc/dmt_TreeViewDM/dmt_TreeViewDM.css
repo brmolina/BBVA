@@ -1,0 +1,58 @@
+/* Container with transition to smooth expand/collapse */
+.sidebar-container {
+    display: flex;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden; /* prevents content bleed when collapsing */
+}
+
+/* Fixed width for the collapsed state to keep UI stable across resolutions */
+.sidebar-collapsed {
+    width: 3rem;
+    flex: 0 0 3rem;
+}
+
+/* Ensures collapsed header icons are vertically centered regardless of content */
+.collapsed-header {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem 0;
+    height: 100%;
+}
+
+/* Vertical stack used only in collapsed mode for a compact icon layout */
+.collapsed-icons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+/* Slight interaction feedback for collapsed header icons */
+.custom-header-button:hover {
+    transform: scale(1.09);
+    cursor: pointer;
+}
+
+/* Neutral button layout override to align icon + label nicely */
+.custom-button {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Icon used when expanded — size tuned for visual balance with text */
+.custom-icon {
+    width: 1.3rem;
+    height: 1.3rem;
+    object-fit: contain;
+    margin-right: 0.5rem;
+}
+
+/* Icon used when collapsed — slightly larger for visibility in narrow layout */
+.custom-gce-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+    object-fit: contain;
+}

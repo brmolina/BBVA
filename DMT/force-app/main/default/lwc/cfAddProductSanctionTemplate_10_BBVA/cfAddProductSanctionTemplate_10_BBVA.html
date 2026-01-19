@@ -1,0 +1,157 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-modal__header slds-theme_default slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  slds-truncate slds-text-heading_medium slds-hyphenate slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3ENew%20Product:%20%7BMergeList.Name%7D%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-theme_shade slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col   slds-m-around_medium slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0block_element0" class="slds-col   slds-p-around_x-small slds-size_3-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1block_element0block_element0block_element1" class="slds-col  slds-p-right_x-small slds-size_6-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1block_element0block_element0block_element1_child"   card={card}  record={record}  type="combobox"  property-obj='\{"label":" ","type":"combobox","fieldBinding":"{gensearchvalue}","customProperties":[{"label":"searchable","value":"true","id":0},{"label":"options","value":"{allproducts}","id":1}],"placeholder":"Search All Products..."}'  theme="slds"  ></omnistudio-base-input-element>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col    slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_productsselection" property='\{"producttable":"{products}","gensearch":"{gensearchvalue}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_productsselection  ></c-dmt_productsselection></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element0block_element1" class="slds-col   slds-modal__footer slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element1block_element0" class="slds-col  slds-text-align_right slds-m-right_x-small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element2block_element0block_element1block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element2block_element0block_element1block_element0_child flexActionElement" 
+        data-action-element-class="state0element2block_element0block_element1block_element0_child" data-action-key="state0element2block_element0block_element1block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2block0block6action0clone0"   state-obj={record}  card={card}  record={record}  label="Cancel"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1730917640166","type":"Event","openUrlIn":"Current Window","subType":"Custom","eventName":"closemodal","bubbles":true,"composed":true},"key":"1730911817703-0t4rzqpde","label":"Cancel Close Modal","draggable":false,"isOpen":true,"actionIndex":0}]'  display-as-button="true"  hide-action-icon="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element2block_element0block_element1block_element1" class="slds-col  slds-text-align_left  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element2block_element0block_element1block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element2block_element0block_element1block_element1_child flexActionElement" 
+        data-action-element-class="state0element2block_element0block_element1block_element1_child" data-action-key="state0element2block_element0block_element1block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2block0block6action1clone0"   state-obj={record}  card={card}  record={record}  label="Save"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1731432989732","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_sanction\",\"vlocityAsync\":false,\"inputMap\":{\"sanction\":\"{records}\",\"action\":\"insert\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\"}\",\"resultVar\":\"\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":2}]}","responseNode":"resultRisk"},"key":"1730910737396-1j42fr77n","label":"Create Risk Records","draggable":true,"isOpen":true,"actionIndex":0},{"key":"1730969664781-u4e51qbsd","label":"Reload Parent Event","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1731426470801","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"Custom","eventName":"reloadparent","bubbles":true,"composed":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":1},{"key":"1730911750861-lv6zbt779","label":"Close Modal","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1731426478088","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"Custom","eventName":"closemodal","composed":true,"bubbles":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":2}]'  display-as-button="true"  hide-action-icon="true"  button-variant="brand"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-modal__header slds-theme_default slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  slds-truncate slds-text-heading_medium slds-hyphenate slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3ENew%20Product:%20%7BMergeList.Name%7D%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-theme_shade slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col   slds-m-around_medium slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0block_element0" class="slds-col   slds-p-around_x-small slds-size_3-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1block_element0block_element0block_element1" class="slds-col  slds-p-right_x-small slds-size_6-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1block_element0block_element0block_element1_child"   card={card}  record={record}  type="combobox"  property-obj='\{"label":" ","type":"combobox","fieldBinding":"{gensearchvalue}","customProperties":[{"label":"searchable","value":"true","id":0},{"label":"options","value":"{allproducts}","id":1}],"placeholder":"Search All Products..."}'  theme="slds"  ></omnistudio-base-input-element>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col    slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_productsselection" property='\{"producttable":"{products}","gensearch":"{gensearchvalue}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_productsselection  ></c-dmt_productsselection></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element0block_element1" class="slds-col   slds-modal__footer slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element1block_element0" class="slds-col  slds-text-align_right slds-m-right_x-small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element2block_element0block_element1block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element2block_element0block_element1block_element0_child flexActionElement" 
+        data-action-element-class="state0element2block_element0block_element1block_element0_child" data-action-key="state0element2block_element0block_element1block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2block0block6action0clone0"   state-obj={record}  card={card}  record={record}  label="Cancel"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1730917640166","type":"Event","openUrlIn":"Current Window","subType":"Custom","eventName":"closemodal","bubbles":true,"composed":true},"key":"1730911817703-0t4rzqpde","label":"Cancel Close Modal","draggable":false,"isOpen":true,"actionIndex":0}]'  display-as-button="true"  hide-action-icon="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element2block_element0block_element1block_element1" class="slds-col  slds-text-align_left  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element2block_element0block_element1block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element2block_element0block_element1block_element1_child flexActionElement" 
+        data-action-element-class="state0element2block_element0block_element1block_element1_child" data-action-key="state0element2block_element0block_element1block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2block0block6action1clone0"   state-obj={record}  card={card}  record={record}  label="Save"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1731432989732","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_sanction\",\"vlocityAsync\":false,\"inputMap\":{\"sanction\":\"{records}\",\"action\":\"insert\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\"}\",\"resultVar\":\"\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":2}]}","responseNode":"resultRisk"},"key":"1730910737396-1j42fr77n","label":"Create Risk Records","draggable":true,"isOpen":true,"actionIndex":0},{"key":"1730969664781-u4e51qbsd","label":"Reload Parent Event","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1731426470801","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"Custom","eventName":"reloadparent","bubbles":true,"composed":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":1},{"key":"1730911750861-lv6zbt779","label":"Close Modal","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1731426478088","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"Custom","eventName":"closemodal","composed":true,"bubbles":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":2}]'  display-as-button="true"  hide-action-icon="true"  button-variant="brand"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

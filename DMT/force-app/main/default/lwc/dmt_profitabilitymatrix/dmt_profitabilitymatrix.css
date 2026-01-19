@@ -1,0 +1,134 @@
+.matrix-body {
+    animation: fadeIn 0.7s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+.cell:hover {
+    background: #D6E9F8;
+    box-shadow: 0 2px 8px #0e202d;
+    transform: scale(1.15); /* Efecto zoom */
+    z-index: 2;
+}
+.cell {
+    width: 3.5rem;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    margin-right: 5px;
+    font-weight: 500;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    transition: background 0.3s;
+    cursor: default;
+}
+
+.container-full{
+    display: grid;
+    place-items: center;
+    padding: 10px;
+}
+.matrix-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    min-width: 400px;
+}
+
+.matrix-body {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.axis-label {
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+
+}
+
+.y-axis-label {
+    width: 3.5rem;
+    text-align: right;
+    font-weight: bold;
+    font-size: 13px;
+    margin-right: 1rem;
+}
+
+.x-axis-label{
+    width: 3.5rem;
+    text-align: center;
+    font-weight: bold;
+    font-size: 13px;
+}
+.row {
+    display: flex;
+    margin-top: 5px;
+    align-items: center;
+}
+
+
+.y-axis {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-weight: bold;
+}
+
+.matrix-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: auto;
+}
+
+.columnXvalues{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding-top: 1.5rem;
+}
+
+.copy-btn{
+    text-align: right;
+    width: 100%;
+    align-self: flex-start;
+}
+
+.matrix-title {
+  margin-bottom: 0.5rem;
+  width: 100%;               /* ocupar todo el ancho del contenedor */
+  display: block;
+  box-sizing: border-box;
+  padding: 0 0.5rem;         /* espacio lateral para que el fondo no pegue al borde */
+  text-align: center;        /* centrar el contenido interno */
+}
+
+.matrix-title__heading {
+  margin: 0;
+  display: block;            /* block para que ocupe el 100% */
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem; /* 24px */
+  line-height: 1.2;
+  font-weight: 700;
+  color: #16325c; /* SLDS dark blue */
+  background: rgba(22,50,92,0.06);
+  padding: 0.5rem 0.75rem;   /* padding vertical para que destaque */
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  letter-spacing: 0.2px;
+  text-align: center;        /* asegurar que el texto quede centrado */
+}
+
+/* Ajuste móvil */
+@media (max-width: 480px) {
+  .matrix-title__heading {
+    font-size: 1.125rem; /* 18px */
+    padding: 0.35rem 0.5rem;
+  }
+}

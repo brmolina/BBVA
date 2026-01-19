@@ -1,0 +1,25 @@
+:host {
+    display: block;
+}
+
+.slds-form-element {
+    position: relative;
+}
+
+.slds-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.custom-dropdown {
+    z-index: 9999999 !important;
+}
+
+.dropdown {
+    max-height: 160px;
+    overflow-y: auto;
+}

@@ -1,0 +1,279 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12"  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small" style="">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_2-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_6-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+    border-radius:0.25px;     " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block1"  collapsible="true"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-m-right_x-small  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1" class="slds-col   slds-size_3-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element1block_element2" class="slds-col   slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element1block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_3-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element2" class="slds-col   slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element2block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element3block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element3block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element3block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element4block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="red" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element4block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element5block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element5block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element5block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element6" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element6_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element6block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element6block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element1" class="slds-col   slds-size_2-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element6block_element2" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element6block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element3" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element6block_element3_child"   card={card}  record={record}  merge-field="%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element4" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element6block_element4_child"   card={card}  record={record}  merge-field="%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element5" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element7" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element7_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element7block_element0" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element7block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element7block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element7block_element2" class="slds-col  slds-text-align_center  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element7block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element7block_element2_child flexActionElement" 
+        data-action-element-class="state0element7block_element2_child" data-action-key="state0element7block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block4clone0action2"   state-obj={record}  card={card}  record={record}  label="Create Case"  icon-name="utility-case"  action-list='\[{"stateAction":{"id":"test-action","type":"Custom","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"}}}]'  display-as-button="true"  hide-action-icon="false"  icon-only="false"  aria-label=""  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element8_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0" class="slds-col  slds-m-top_small  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element8block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element1" class="slds-col   slds-size_5-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element8block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%3E%3Cstrong%3ETask%20Name:%3C/strong%3E&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3E%3Cstrong%3EAssigned:%20&nbsp;%3C/strong%3EJulio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3E%3Cstrong%3EStatus:%20%3C/strong%3E&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element2" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element8block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20%3Cstrong%3EPrueba%201%3C/strong%3E%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;%3Cstrong%3EJulio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/strong%3E%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;%3Cstrong%3Ein%20progress%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12"  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small" style="">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_2-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_6-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+    border-radius:0.25px;     " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block1"  collapsible="true"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-m-right_x-small  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1" class="slds-col   slds-size_3-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element1block_element2" class="slds-col   slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element1block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_3-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element2" class="slds-col   slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element2block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element3block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="green" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element3block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element3block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element4block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="red" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element4block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element5block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element5block_element2" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element5block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element6" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element6_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element6block_element0" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element6block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element1" class="slds-col   slds-size_2-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element6block_element2" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element6block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20Prueba%201%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element3" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element6block_element3_child"   card={card}  record={record}  merge-field="%3Cdiv%3EAssigned:%20&nbsp;Julio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element4" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element6block_element4_child"   card={card}  record={record}  merge-field="%3Cdiv%3EStatus:%20&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element6block_element5" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element7" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element7_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element7block_element0" class="slds-col   slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element7block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element7block_element1" class="slds-col   slds-size_4-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_traffic_light" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_traffic_light   status="yellow" ></c-dmt_traffic_light></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element7block_element2" class="slds-col  slds-text-align_center  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element7block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element7block_element2_child flexActionElement" 
+        data-action-element-class="state0element7block_element2_child" data-action-key="state0element7block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block4clone0action2"   state-obj={record}  card={card}  record={record}  label="Create Case"  icon-name="utility-case"  action-list='\[{"stateAction":{"id":"test-action","type":"Custom","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"}}}]'  display-as-button="true"  hide-action-icon="false"  icon-only="false"  aria-label=""  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8" class="slds-col   slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element8_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0" class="slds-col  slds-m-top_small  slds-size_4-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element8block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_large%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3ELENDING%20LIMIT%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element1" class="slds-col   slds-size_5-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element8block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%3E%3Cstrong%3ETask%20Name:%3C/strong%3E&nbsp;%20Prueba%201%3C/div%3E%0A%3Cdiv%3E%3Cstrong%3EAssigned:%20&nbsp;%3C/strong%3EJulio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/div%3E%0A%3Cdiv%3E%3Cstrong%3EStatus:%20%3C/strong%3E&nbsp;in%20progress%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element2" class="slds-col   slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element8block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETask%20Name:&nbsp;%20%3Cstrong%3EPrueba%201%3C/strong%3E%3C/div%3E%0A%3Cdiv%3EAssigned:%20&nbsp;%3Cstrong%3EJulio%20An&iacute;bal%20Cort&eacute;s%20Grech%3C/strong%3E%3C/div%3E%0A%3Cdiv%3EStatus:%20&nbsp;%3Cstrong%3Ein%20progress%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="dmt_tree_grid_passport" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><dmt_tree_grid_passport  ></dmt_tree_grid_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

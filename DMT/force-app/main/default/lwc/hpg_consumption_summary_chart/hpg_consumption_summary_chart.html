@@ -1,0 +1,10 @@
+<template>
+    <lightning-card>
+        <div class="slds-box .vh60">
+            <canvas class="summarychart" lwc:dom="manual" style="height:55vh"></canvas>
+            <div if:false={initialized}>
+                Loading chart...
+            </div>
+        </div>
+    </lightning-card>
+</template>

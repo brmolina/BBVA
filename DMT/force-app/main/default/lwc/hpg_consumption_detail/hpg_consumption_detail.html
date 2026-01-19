@@ -1,0 +1,42 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Consumption Details modal" class="slds-modal slds-fade-in-open slds-modal_large">
+        <div class="slds-modal__container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            <lightning-modal-header label={title}></lightning-modal-header>
+            <lightning-modal-body>
+                <div class="vh60">
+                    <c-hpg_custom_datatable
+                        class="hpg"
+                        key-field="id"
+                        columns={columns}
+                        data={data}
+                        errors={errors}
+                        column-widths-mode="auto"
+                        hide-checkbox-column
+                        suppress-bottom-bar
+                        onrowaction={handleRowAction}
+                        onopencontractguarantees={openContractGuarantees}
+                    ></c-hpg_custom_datatable>
+                </div>
+            </lightning-modal-body>
+            <lightning-modal-footer>
+                <lightning-layout>
+                    <lightning-layout-item flexibility="auto" padding="around-small" class="slds-text-align_left">
+                        <template if:true={userIsAdmin}>
+                            <c-hpg_detail_button button-variant="brand" button-label="Add new override" event-name="addoverride" event-value={eventPayload}></c-hpg_detail_button>
+                        </template>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-small">
+                        <lightning-button label="" title="Download CSV" icon-name="utility:download" onclick={downloadCSV} class="slds-m-left_x-small downloadcsv"></lightning-button>
+                        <c-hpg_detail_button button-variant="neutral" button-label="Close" event-name="closemodal"></c-hpg_detail_button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-modal-footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    <c-hpg_contract_guarantees if:true={showContractGuarantees} contract-id={gContractId} current-date={gCurrentDate} client-name={clientName} currency={currency} exchange-rate={exchangeRate} onclosecontractguarantees={closeContractGuarantees}></c-hpg_contract_guarantees>
+    <c-hpg_event_launcher></c-hpg_event_launcher>
+</template>

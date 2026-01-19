@@ -1,0 +1,86 @@
+<template>
+    <template lwc:if={showSpinner}>
+        <div>
+            <lightning-spinner class="spins" alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
+    <template lwc:else>
+        <template lwc:if={showWarning}>
+            <div class="slds-align_absolute-center">
+                <span class="passport_warning">
+                    <c-dmt_helpericon icon-name="utility:warning" icon-size="medium" text="Template values have been modified" icon-variant="warning"></c-dmt_helpericon>
+                </span>
+                <b class="slds-m-top_xx-small slds-m-left_medium">Template values have been modified.</b>
+            </div>
+        </template>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-size_1-of-1 slds-m-top_medium passport-no-stack-wrapper">
+                <template lwc:if={showfeaturesTable}>
+                    <table aria-describedby="passportTable" class="slds-table slds-table--bordered slds-box custom-table full-width-table passport-no-stack-table" style="table-layout:auto; padding:0px;" role="grid">
+                        <thead>
+                            <tr>
+                                <template for:each={columnsWithClass} for:item="col">
+                                    <th class={col.class} key={col.fieldName} scope="col">
+                                        <div class="slds-truncate" title={col.label}><lightning-formatted-rich-text value={col.label}></lightning-formatted-rich-text></div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={globalValidationsFeatures} for:item="feature">
+                                <c-dmt_global_validation_feature key={feature.name} feature={feature} isbig={isBig}></c-dmt_global_validation_feature>
+                            </template>
+                            <template for:each={limitTestFeatures} for:item="feature">
+                                <c-dmt_feature_limit key={feature.name} feature={feature} isbig={isBig}></c-dmt_feature_limit>
+                            </template>
+                            <template for:each={undefinedFeatures} for:item="feature">
+                                <c-dmt_feature_with_workflow key={feature.name} feature={feature} isbig={isBig}></c-dmt_feature_with_workflow>
+                            </template>
+                            <template for:each={profitabilityFeatures} for:item="feature">
+                                <c-dmt_feature_profitability key={feature.name} feature={feature} isbig={isBig}></c-dmt_feature_profitability> 
+                            </template> 
+                            
+                            <tr class="slds-hint-parent dmt-separation" style="height: 3rem;">
+                                <template lwc:if={isBig}>
+                                    <td class="dmt-white-space-break-space" style="text-align: center;" colspan="10"> APPROVAL PROCESS  </td>  
+                                </template> 
+                                <template lwc:else>
+                                    <td class="dmt-white-space-break-space" style="text-align: center;" colspan="3"> APPROVAL PROCESS  </td>
+                                </template>         
+                            </tr>
+                            
+                            <template for:each={approvalFeatures} for:item="feature">
+                                <c-dmt_feature_with_workflow key={feature.name} feature={feature} isbig={isBig}></c-dmt_feature_with_workflow>
+                            </template>
+
+                            <tr class="slds-hint-parent dmt-separation" style="height: 3rem;">
+                                <template lwc:if={isBig}>
+                                    <td class="dmt-white-space-break-space" style="text-align: center;" colspan="10"> READY TO CLOSE  </td>  
+                                </template> 
+                                <template lwc:else>
+                                    <td class="dmt-white-space-break-space" style="text-align: center;" colspan="3"> READY TO CLOSE  </td>
+                                </template>         
+                            </tr>
+                            
+                            <template for:each={readytocloseFeatures} for:item="feature">
+                                <c-dmt_feature_with_workflow key={feature.name} feature={feature} isbig={isBig}></c-dmt_feature_with_workflow>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div class="slds-m-vertical_small slds-m-right_small slds-text-align_right">
+                        <template lwc:if={messageError}>
+                            <span>
+                                Error Message: <lightning-formatted-text value={messageError} style="color: #ea001e;"></lightning-formatted-text>
+                            </span>
+                        </template>
+                        <span>
+                            Passport date: <lightning-formatted-date-time value={showAuditDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                            minute="2-digit" time-zone={userTimeZone}></lightning-formatted-date-time>
+                        </span>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>

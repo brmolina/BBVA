@@ -1,0 +1,77 @@
+<template>
+    <template if:true={disabledControls}>
+        <div class="slds-box slds-theme_alert-texture slds-m-bottom_small" role="alert">
+            <span class="slds-text-heading_small slds-text-color_error">{errorMessage}</span>
+        </div>
+    </template>
+    <div class="slds-grid">
+        <div class="slds-col">
+            <lightning-combobox
+                name="XAxis"
+                label="Select x axis"
+                value=""
+                placeholder="Select"
+                options={optionsX}
+                onchange={handleChange}
+                required
+                disabled={disabledControls}
+            ></lightning-combobox>
+            <lightning-combobox
+                name="YAxis"
+                label="Select y axis"
+                value=""
+                placeholder="Select"
+                options={optionsY}
+                onchange={handleChange}
+                required
+                disabled={disabledControls}
+            ></lightning-combobox>
+            <lightning-combobox
+                name="CentralAxis"
+                label="Select central value"
+                value=""
+                placeholder="Select"
+                options={optionsCentral}
+                onchange={handleChange}
+                required
+                disabled={disabledControls}
+            ></lightning-combobox>
+        </div>
+        <div class="slds-col">
+            <c-dmt_profitability-test-input
+                inputid="xMin"
+                label={label.dmt_cl_ProfMin_Text}
+                min=0
+                type={xFieldType}
+                options={catalogRating}
+                fieldselected={xSelected}
+            ></c-dmt_profitability-test-input>
+            <c-dmt_profitability-test-input
+                inputid="yMin"
+                label={label.dmt_cl_ProfMin_Text}
+                min=0
+                type={yFieldType}
+                options={catalogRating}
+                fieldselected={ySelected}
+            ></c-dmt_profitability-test-input>
+        </div>
+        <div class="slds-col">
+            <c-dmt_profitability-test-input
+                inputid="xRange"
+                label={label.dmt_cl_ProfRange}
+                min=0
+                type={xFieldType}
+                options={catalogRating}
+                fieldselected={xSelected}
+            ></c-dmt_profitability-test-input>
+            <c-dmt_profitability-test-input
+                inputid="yRange"
+                label={label.dmt_cl_ProfRange}
+                min=0
+                type={yFieldType}
+                options={catalogRating}
+                fieldselected={ySelected}
+            ></c-dmt_profitability-test-input>
+        </div>
+    </div>
+</template>

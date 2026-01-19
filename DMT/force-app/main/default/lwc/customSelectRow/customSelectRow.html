@@ -1,0 +1,29 @@
+<template>
+    <template lwc:if={aviableItem}>
+      <lightning-input
+            type="checkbox"
+            label="checkbox"
+            variant="label-hidden"
+            name="checkbox"
+            onchange={handleCheckBoxSelected}
+            id={fieldname}
+            checked={checkedItem}
+
+        >
+      </lightning-input>
+    </template>
+    <template lwc:else>
+        
+      <lightning-input
+        type="checkbox"
+        label="checkbox"
+        variant="label-hidden"
+        name="checkbox"
+        disabled="disabled"
+        checked={checkedItem}
+        id={fieldname}
+
+      >
+      </lightning-input>
+    </template>
+  </template>

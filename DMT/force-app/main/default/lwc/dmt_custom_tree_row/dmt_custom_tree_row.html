@@ -1,0 +1,82 @@
+<template>
+    <tr class={colourStyle}>
+        <template lwc:if={item.isStandardView}>    
+            <template iterator:it={item.cells} for:index="index">
+                <template lwc:if={it.first}>
+                    <td key={it.value.fieldName} data-label={it.value.fieldNameLabel} class="slds-p-left_large">
+                        <div class="slds-truncate" style={indentStyle}>
+                            <template lwc:if={hasChildren}>
+                                <template lwc:if={it.first}>
+                                    <button class="slds-button slds-button_icon slds-m-right_x-small" onclick={toggleExpand} data-id={item.itemKey}>
+                                        <lightning-icon icon-name={expandedIcon} size="xx-small" alternative-text="Toggle"></lightning-icon>
+                                    </button>
+                                </template>
+                            </template>
+                            <template lwc:if={it.value.isUrl}>
+                                <template lwc:if={it.value.isModal}>
+                                    <a class="custom-url" onclick={handleOpenModalClick}>{it.value.urlLabel}</a>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-formatted-url value={it.value.urlValue} tooltip={it.value.urlLabel} label={it.value.urlLabel} target="_self"></lightning-formatted-url>
+                                </template>
+                            </template>
+                            <template lwc:else>
+                                <abbr title={it.value.value}>
+                                    {it.value.value}
+                                </abbr>
+                            </template>
+                        </div>
+                    </td>
+                </template>
+                <template lwc:else>
+                    <td key={it.value.fieldName} data-label={it.value.fieldNameLabel} class="slds-p-left_large shortWidth">
+                        <div class="slds-truncate" style={indentStyle}>
+                            <template lwc:if={hasChildren}>
+                                <template lwc:if={it.first}>
+                                    <button class="slds-button slds-button_icon slds-m-right_x-small" onclick={toggleExpand} data-id={item.itemKey}>
+                                        <lightning-icon icon-name={expandedIcon} size="xx-small" alternative-text="Toggle"></lightning-icon>
+                                    </button>
+                                </template>
+                            </template>
+                            <template lwc:if={it.value.isUrl}>
+                                <template lwc:if={it.value.isModal}>
+                                    <a class="custom-url" onclick={handleOpenModalClick}>{it.value.urlLabel}</a>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-formatted-url value={it.value.urlValue} tooltip={it.value.urlLabel} label={it.value.urlLabel} target="_self"></lightning-formatted-url>
+                                </template>
+                            </template>
+                            <template lwc:else>
+                                <abbr title={it.value.value}>
+                                    {it.value.value}
+                                </abbr>
+                            </template>
+                        </div>
+                    </td>
+                </template>
+            </template>
+        </template>
+        <template lwc:else>
+            <td colspan={columns.length}>
+                <button class="slds-button slds-button_icon slds-m-right_x-small" onclick={toggleExpand} data-id={item.itemKey}>
+                    <lightning-icon icon-name={expandedIcon} size="xx-small" alternative-text="Toggle"></lightning-icon>
+                </button>
+                <span>{item.itemLabel}
+                    <template lwc:if={item.itemKeyAsLink}>
+                        &nbsp;<a href="#" name={onclick} id={getClientId} onclick={handleClickItem} >{item.itemKey}</a>
+                    </template>
+                </span>
+            </td>
+        </template>
+    </tr>
+    <template lwc:if={expanded}>
+        <template for:each={item.subitems} for:item="subitem">
+            <c-dmt_custom_tree_row key={subitem.itemKey} item={subitem} columns={columns} depth={nextDepth}></c-dmt_custom_tree_row>
+        </template>
+    </template>
+    <div class="modal-container">
+        <template lwc:if={isModalOpen}>
+            <lwc:component lwc:is={componentConstructor} lwc:spread={childProps}></lwc:component>
+        </template>
+    </div>
+</template>

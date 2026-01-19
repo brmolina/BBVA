@@ -1,0 +1,84 @@
+<template>
+  <div class="slds-grid">
+  <div class="slds-size_1-of-5 slds-col slds-border_right">
+    <div class="title  slds-p-vertical_x-small slds-border_top slds-border_bottom" data-aura-rendered-by="132:1905;a">
+    <div class="slds-col slds-size_1-of-8" data-aura-rendered-by="133:1905;a">
+    </div>
+    <div class="slds-col slds-size_7-of-8" data-aura-rendered-by="134:1905;a">
+      <span class="slds-text-title_caps slds-page-header__title" style="padding-left: 12px;" data-aura-rendered-by="135:1905;a">FAMILY NAME</span>
+    </div>
+  </div>
+  <div style="height: 35vh" class="slds-scrollable slds-modal__content" data-aura-rendered-by="137:1937;a">
+    <div class="" data-aura-rendered-by="201:1937;a" data-aura-class="uiScrollerWrapper">
+      <div class="slds-p-vertical_x-small slds-p-horizontal_x-small " data-id="family" >
+        <c-searchable-combobox  class="slds-col" pick-list-ordered={family} changeread={readfamily} selected-searchlabel={selectProduct.label} selected-searchvalue={selectProduct.value} oncomboboxchange={handleFilterProduct} onremovesearch={handleRemoveSearch} context="family" selected-search-change={searchfamily.label}></c-searchable-combobox>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="slds-size_1-of-5 slds-col slds-border_right">
+  <div class="title slds-grid slds-p-vertical_x-small slds-border_top slds-border_bottom" data-aura-rendered-by="132:1905;a">
+    <div class="slds-col slds-size_1-of-8" data-aura-rendered-by="133:1905;a">
+    </div>
+    <div class="slds-col slds-size_7-of-8" data-aura-rendered-by="134:1905;a">
+      <span class="slds-text-title_caps slds-page-header__title" data-aura-rendered-by="135:1905;a">SUBFAMILY NAME</span>
+    </div>
+  </div>
+  <div style="height: 35vh" class="slds-scrollable slds-modal__content" data-aura-rendered-by="137:1937;a">
+    <div class="" data-aura-rendered-by="201:1937;a" data-aura-class="uiScrollerWrapper">
+      <div class="slds-p-vertical_x-small slds-p-horizontal_x-small " data-id="subfamily">
+        <c-searchable-combobox  class="slds-col" pick-list-ordered={subfamily} changeread={readsubfamily} selected-searchlabel={selectProduct.label} selected-searchvalue={selectProduct.value} oncomboboxchange={handleFilterProduct} onremovesearch={handleRemoveSearch} context="subfamily" selected-search-change={searchsubfamily.label} ></c-searchable-combobox>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="slds-size_1-of-5 slds-col slds-border_right">
+    <div class="title slds-grid slds-p-vertical_x-small slds-border_top slds-border_bottom" data-aura-rendered-by="132:1905;a">
+      <div class="slds-col slds-size_1-of-8" data-aura-rendered-by="133:1905;a">
+      </div>
+      <div class="slds-col slds-size_7-of-8" data-aura-rendered-by="134:1905;a">
+        <span class="slds-text-title_caps slds-page-header__title" data-aura-rendered-by="135:1905;a">CATEGORY NAME</span>
+      </div>
+    </div>
+    <div style="height: 35vh" class="slds-scrollable slds-modal__content" data-aura-rendered-by="137:1937;a">
+      <div class="" data-aura-rendered-by="201:1937;a" data-aura-class="uiScrollerWrapper">
+        <div class="slds-p-vertical_x-small slds-p-horizontal_x-small " data-id="category">
+          <c-searchable-combobox  class="slds-col" pick-list-ordered={category} changeread={readcategory} selected-searchlabel={selectProduct.label} selected-searchvalue={selectProduct.value} oncomboboxchange={handleFilterProduct} onremovesearch={handleRemoveSearch} context="category" selected-search-change={searchcategory.label} ></c-searchable-combobox>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="slds-size_1-of-5 slds-col slds-border_right">
+  <div class="title slds-grid slds-p-vertical_x-small slds-border_top slds-border_bottom" data-aura-rendered-by="132:1905;a">
+    <div class="slds-col slds-size_1-of-8" data-aura-rendered-by="133:1905;a">
+    </div>
+    <div class="slds-col slds-size_7-of-8" data-aura-rendered-by="134:1905;a">
+      <span class="slds-text-title_caps slds-page-header__title" data-aura-rendered-by="135:1905;a">SUBCATEGORY NAME</span>
+    </div>
+  </div>
+  <div style="height: 35vh" class="slds-scrollable slds-modal__content" data-aura-rendered-by="137:1937;a">
+    <div class="" data-aura-rendered-by="201:1937;a" data-aura-class="uiScrollerWrapper">
+      <div class="slds-p-vertical_x-small slds-p-horizontal_x-small " data-id="subcategory" >
+        <c-searchable-combobox  class="slds-col" pick-list-ordered={subcategory} changeread={readsubcategory} selected-searchlabel={selectProduct.label} selected-searchvalue={selectProduct.value} oncomboboxchange={handleFilterProduct} onremovesearch={handleRemoveSearch} context="subcategory" selected-search-change={searchsubcategory.label}></c-searchable-combobox>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="slds-size_1-of-5 slds-col slds-border_right">
+  <div class="title slds-grid slds-p-vertical_x-small slds-border_top slds-border_bottom" data-aura-rendered-by="132:1905;a">
+    <div class="slds-col slds-size_1-of-8" data-aura-rendered-by="133:1905;a">
+    </div>
+    <div class="slds-col slds-size_7-of-8" data-aura-rendered-by="134:1905;a">
+      <span class="slds-text-title_caps slds-page-header__title" data-aura-rendered-by="135:1905;a">PRODUCT NAME</span>
+    </div>
+  </div>
+  <div style="height: 35vh" class="slds-scrollable slds-modal__content" data-aura-rendered-by="137:1937;a">
+    <div class="" data-aura-rendered-by="201:1937;a" data-aura-class="uiScrollerWrapper">
+      <div class="slds-p-vertical_x-small slds-p-horizontal_x-small " data-id="globalproduct">
+        <c-searchable-combobox  class="slds-col" pick-list-ordered={globalproduct} changeread={readglobalproduct} selected-searchlabel={selectProduct.label} selected-searchvalue={selectProduct.value} oncomboboxchange={handleFilterProduct} onremovesearch={handleRemoveSearch} context="globalproduct" selected-search-change={searchglobalproduct.label}></c-searchable-combobox>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</template>

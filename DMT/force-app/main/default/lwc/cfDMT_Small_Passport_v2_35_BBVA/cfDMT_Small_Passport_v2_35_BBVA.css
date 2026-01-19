@@ -1,0 +1,8 @@
+.slds-sticky {
+    display: flex;
+    position: fixed;
+    max-height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 300px);
+    overflow: auto;
+    scrollbar-width: thin;
+    width: 31.8%;
+}

@@ -1,0 +1,89 @@
+<template>
+    <div class="slds-m-left_small slds-m-top_x-small">
+        <lightning-button label="Search Operative Unit" title="Search Operative Unit" onclick={openSearchModal} disabled={isButtonDisabled} ></lightning-button>
+    </div>
+
+  <template if:true={showUosTable}>
+
+    <div style="height: 300px; margin-top: 12px;">
+        <!-- <lightning-datatable
+                key-field="id"
+                data={tableData}
+                columns={columns}
+                hide-checkbox-column
+                onrowaction={handleRowAction}>
+        </lightning-datatable> -->
+
+        <c-custom-data-table 
+            key-field="Id" 
+            style="position:relative;z-index: 2"
+            data={tableData} 
+            columns={columns} 
+            onrowaction={handleRowAction}
+            oncomboboxchange={comboboxChange}
+            onpicklistchanged={picklistChanged} 
+            hide-checkbox-column
+            suppress-bottom-bar
+            show-row-number-column>
+        </c-custom-data-table>
+    </div>
+  </template>
+
+    <c-dmt-Uos-Search-Modal is-open={isSearchModalOpen} modal-header="Search Operative Units" onclose={handleSearchModalClose} onsave={handleUoSave}>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_12-of-12 slds-m-top_small">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="text-input-id-1">Search UOs</label>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end" style="gap: 0rem;">
+                        <div style="flex-grow: 1;">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                <svg class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default" aria-hidden="true">
+                                    <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#search"></use>
+                                </svg>
+                                <input type="text" id="text-input-id-1" placeholder="UOs code to search" class="slds-input" onchange={searchKeyword} />
+                            </div>
+                        </div>
+                        <div style="margin-left: 0.5rem; display: flex; align-items: flex-end;">
+                            <lightning-button label="Search" title="Search" onclick={handleSearch}></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <template lwc:if={UOsUsers}>
+                <h2 class="slds-m-top_large"> Operative Unit users : </h2>
+                <div class="slds-col slds-size_12-of-12 slds-m-top_large">
+                    <div style="height: 300px;">
+                        <lightning-datatable
+                                key-field="userName"
+                                data={UOsUsers}
+                                columns={columnsReadOnly}
+                                hide-checkbox-column>
+                        </lightning-datatable>
+                    </div>
+                </div>
+            </template>
+            <template lwc:if={noResults}>
+                <h2 class="slds-m-top_large"> Operative Unit not found.</h2>
+            </template>
+        </div>
+    </c-dmt-Uos-Search-Modal>
+    <c-dmt-Uos-Search-Modal is-open={isUOModalOpen} modal-header={UOSModalHeader} onclose={handleUOModalClose} show-header=true>
+      <div class="slds-grid slds-wrap">
+          <template lwc:if={selectedUOUsers}>
+              <h2 class="slds-m-top_large"> Operative Unit users : </h2>
+              <div class="slds-col slds-size_12-of-12 slds-m-top_large">
+                  <div style="height: 300px;">
+                      <lightning-datatable
+                              key-field="userName"
+                              data={selectedUOUsers}
+                              columns={columnsReadOnly}
+                              hide-checkbox-column>
+                      </lightning-datatable>
+                  </div>
+              </div>
+          </template>
+      </div>
+  </c-dmt-Uos-Search-Modal>
+</template>

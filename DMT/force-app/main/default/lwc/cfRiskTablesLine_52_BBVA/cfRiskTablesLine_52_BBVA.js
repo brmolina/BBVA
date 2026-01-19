@@ -1,0 +1,169 @@
+import { FlexCardMixin } from "omnistudio/flexCardMixin";
+    import { CurrentPageReference } from 'lightning/navigation';
+    import {interpolateWithRegex, interpolateKeyValue, loadCssFromStaticResource } from "omnistudio/flexCardUtility";
+    
+          import { LightningElement, api, track, wire } from "lwc";
+          import pubsub from "omnistudio/pubsub";
+          import { getRecord } from "lightning/uiRecordApi";
+          
+          import data from "./definition";
+          
+          import styleDef from "./styleDefinition";
+              
+          export default class cfRiskTablesLine_52_BBVA extends FlexCardMixin(LightningElement){
+              currentPageReference;        
+              @wire(CurrentPageReference)
+              setCurrentPageReference(currentPageReference) {
+                this.currentPageReference = currentPageReference;
+              }
+              @api debug;
+              @api recordId;
+              @api objectApiName;
+              
+              @track record;
+              @track _sessionApiVars = {};
+              @track Label={dmt_cl_TotalAmount:"Total Amount",
+        dmt_cl_CounterpartyRisk_Text:"COUNTERPARTY RISK (DERIVATIVES RISK LINE)",
+        dmt_cl_OneOffTransaction_Text:"ONE-OFF TRANSACTION",
+        dmt_cl_OperationalRestrc_Text:"OPERATIONAL RESTRICTIONS",
+        dmt_cl_AditionalProducts_Text:"Additional Products",
+        dmt_cl_DeposRiskLine_Text:"DEPOS RISK LINE (ONLY FOR FINANCIAL INSTITUTIONS)",
+        dmt_cl_EquitiesWrong_Text:"EQUITIES WRONG WAY RISK (WWR) LINE"
+        };
+              pubsubEvent = [];
+              customEvent = [];
+               
+        firstRender10 = true;
+        @wire(getRecord , {recordId: "$recordId" , fields:"DMT_Line__c.Id",optionalFields: $cmp.getWireOptionalFields(data.events[10])})
+          wiredRecord10({ error, data }){
+            if (this.objectApiName === 'DMT_Line__c'){
+              if(data && this.firstRender10){
+                this.firstRender10 = false;
+                return;
+              }else{
+                this.recordChangeEventHandler(error,data,10)
+              }
+            }
+          }
+        
+              connectedCallback() {
+                super.connectedCallback();
+                this.setThemeClass(data);
+                this.setStyleDefinition(styleDef);
+                data.Session = {} //reinitialize on reload
+                
+                
+                this.customLabels = this.Label;
+                      
+                this.setDefinition(data);
+ this.registerEvents();
+                this.setAttribute(
+                  "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
+                  " card-0koKN0000008WwzYAE"
+                );
+                this.loadCustomStylesheetAttachement("00PKN000004726D2AQ");
+                
+                
+              }
+              
+              disconnectedCallback(){
+                super.disconnectedCallback();
+                    
+                    
+
+                  this.unregisterEvents();
+              }
+
+              registerEvents() {
+                
+            this.customEventName0 = interpolateWithRegex(`tableRiskchange`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[0],0);
+
+            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
+            this.customEventName1 = interpolateWithRegex(`tableRiskinit`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[1],1);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
+            this.customEventName2 = interpolateWithRegex(`calculateGuidance`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[2] = this.handleEventAction.bind(this, data.events[2],2);
+
+            this.template.addEventListener(this.customEventName2,this.customEvent[2]);
+
+          
+            this.customEventName3 = interpolateWithRegex(`tableProductChanges`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[3] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName3,this.customEvent[3]);
+
+          
+            this.customEventName4 = interpolateWithRegex(`sendrowsevent`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[4] = this.handleEventAction.bind(this, data.events[4],4);
+
+            this.template.addEventListener(this.customEventName4,this.customEvent[4]);
+
+          
+            this.customEventName5 = interpolateWithRegex(`tableSingularCon`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[5] = this.handleEventAction.bind(this, data.events[5],5);
+
+            this.template.addEventListener(this.customEventName5,this.customEvent[5]);
+
+          
+            this.customEventName6 = interpolateWithRegex(`tableSingularConInit`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[6] = this.handleEventAction.bind(this, data.events[6],6);
+
+            this.template.addEventListener(this.customEventName6,this.customEvent[6]);
+
+          
+            this.customEventName7 = interpolateWithRegex(`updatedDerivativesAmount`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[7] = this.handleEventAction.bind(this, data.events[7],7);
+
+            this.template.addEventListener(this.customEventName7,this.customEvent[7]);
+
+          
+            this.customEventName8 = interpolateWithRegex(`updatedDeposAmount`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[8] = this.handleEventAction.bind(this, data.events[8],8);
+
+            this.template.addEventListener(this.customEventName8,this.customEvent[8]);
+
+          
+            this.customEventName9 = interpolateWithRegex(`updatedEquitiesAmount`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[9] = this.handleEventAction.bind(this, data.events[9],9);
+
+            this.template.addEventListener(this.customEventName9,this.customEvent[9]);
+
+          
+              }
+
+              unregisterEvents(){
+                
+            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
+
+            this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
+
+            this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
+
+            this.template.removeEventListener(this.customEventName4,this.customEvent[4]);
+
+            this.template.removeEventListener(this.customEventName5,this.customEvent[5]);
+
+            this.template.removeEventListener(this.customEventName6,this.customEvent[6]);
+
+            this.template.removeEventListener(this.customEventName7,this.customEvent[7]);
+
+            this.template.removeEventListener(this.customEventName8,this.customEvent[8]);
+
+            this.template.removeEventListener(this.customEventName9,this.customEvent[9]);
+
+              }
+            
+              renderedCallback() {
+                super.renderedCallback();
+                
+              }
+          }

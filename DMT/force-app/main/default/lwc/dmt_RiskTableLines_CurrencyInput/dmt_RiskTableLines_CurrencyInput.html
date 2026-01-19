@@ -1,0 +1,32 @@
+<template>
+
+    <template lwc:if={showTRSR}>
+        <lightning-layout  horizontal-align="spread" style="align-items: flex-end;" class="slds-m-around_medium">
+            <lightning-layout-item size="10">
+                <lightning-input 
+                    type="number"
+                    label={combLabel}
+                    step="0.01"
+                    value={totalAmountTrack}
+                    onblur={handleInputblur}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item  size="2" class="slds-m-left_medium slds-m-right_medium" style="margin-bottom: 0.55rem;">
+                <span>{currencyTrack}</span>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+
+    <template lwc:elseif={showOTHR}>
+        <lightning-layout horizontal-align="spread" style="display: contents">
+            <lightning-input 
+                    type="number"
+                    label={combLabel}
+                    step="0.01"
+                    value={totalAmountTrack}
+                    onblur={handleInputblur}
+            ></lightning-input>
+        </lightning-layout>
+    </template>
+
+</template>

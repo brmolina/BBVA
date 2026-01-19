@@ -1,0 +1,150 @@
+<template>
+    <div class="slds-p-around_medium">
+    <lightning-card>
+        <h3 slot="title">
+            <lightning-icon icon-name="action:new_note" size="small" class="slds-m-right_small"></lightning-icon>
+            {selectViewTitle}
+        </h3>
+        <div slot="actions" class="slds-grid slds-grid_vertical-align-center slds-p-right_small">
+
+            <template lwc:if={showCreateNewButton}>
+                <lightning-button
+                    label="Create New View"
+                    onclick={handleCreateNewView}
+                    disabled={createNewViewDisabled}>
+                </lightning-button>
+            </template>
+            <template lwc:elseif={isConfigScreenView}>
+                <div slot="actions" class="slds-grid slds-grid_vertical-align-center slds-m-right_medium">
+                    <div class="slds-m-right_x-small slds-text-title_bold">Is Version View</div>
+                    <lightning-input
+                        type="toggle"
+                        variant="label-hidden"
+                        checked={isVersionView}
+                        onchange={handleIsVersionViewChange}
+                        message-toggle-active=""
+                        message-toggle-inactive="">
+                    </lightning-input>
+                </div>
+                <template lwc:if={isOpportunity}>
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <div class="slds-m-right_x-small slds-text-title_bold">Display in Opportunity</div>
+                        <lightning-input
+                            type="toggle"
+                            variant="label-hidden"
+                            checked={displayInOpportunity}
+                            onchange={handleDisplayInOpportunityChange}
+                            message-toggle-active=""
+                            message-toggle-inactive="">
+                        </lightning-input>
+                    </div>
+                </template>
+            </template>
+        </div>
+            <template lwc:if={showTable}>
+                <!-- Search box -->
+                <lightning-input type="search" label="Search Approvers View Name" value={searchKey} onchange={handleSearchKeyChange} placeholder="Type to filter..." class="slds-m-bottom_small"></lightning-input>
+
+                <!-- Datatable -->
+                <lightning-datatable
+                    key-field="Id"
+                    data={pagedApproversViews}
+                    columns={columns}
+                    selected-rows={selectedRows}
+                    onrowselection={handleRowSelection}
+                    onsort={handleSort}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    max-row-selection="1">
+                </lightning-datatable>
+            </template>
+            <template lwc:else>
+                <template lwc:if={isOppScreenView}>
+                <!-- Pasar el selectedLineId como recordId al LWC dmt_view_lwc -->
+                <c-dmt_view_lwc
+                    opp-id={oppId}
+                    selected-items={selectedItems}
+                    currency-iso-code={currencyIsoCode}
+                    >
+                </c-dmt_view_lwc>
+                </template>
+                <template lwc:else>
+                    <c-dmt_main_view
+                        selected-items={selectedItems}
+                        view-id={recordId}
+                        view-name={viewName}
+                        view-type={viewType}
+                        is-profitability={isProfitability}
+                        view-type-options={viewTypeOptions}
+                        onitemselected={handleItemSelected}
+                        onviewnamechanged={handleViewNameChanged}
+                        onviewtypechanged={handleViewTypeChanged}
+                        onprocessing={handleDisableInputs}
+                        onfinishprocessing={handleEnableInputs}
+                        write-access={writeAccess}
+                    >
+                    </c-dmt_main_view>
+                </template>
+            </template>
+
+            <!-- Card footer: pagination and action buttons -->
+            <div slot="footer">
+                <div class="slds-p-top_xxx-small">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <div class="slds-col slds-size_3-of-7 slds-text-align_left slds-p-left_x-small">
+                            <span>
+                                <template lwc:if={showTable}>
+                                    <span>Showing {actualListLength} of {totalListLength}</span>
+                                </template>
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-7">
+                            <span>
+                                <div class="slds-grid slds-gutters slds-grid_vertical-align-center">
+                                    <template lwc:if={showTable}>
+                                        <div class="slds-col">
+                                            <lightning-button variant="base" label="<" alternative-text="Previous" onclick={handlePreviousPage} disabled={isFirstPage}></lightning-button>
+                                        </div>
+                                        <div class="slds-col">
+                                            <span>Page {currentPage} of {totalPages}</span>
+                                        </div>
+                                        <div class="slds-col">
+                                            <lightning-button variant="base" label=">" alternative-text="Next" onclick={handleNextPage} disabled={isLastPage}></lightning-button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </span>
+                        </div>
+                        <div class="slds-col slds-size_2-of-7 slds-text-align_right slds-p-right_x-small">
+                            <span>
+                                <template lwc:if={showCancelButton}>
+                                    <template lwc:if={showSaveButton}>
+                                        <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_small" variant="base"></lightning-button>
+                                    </template>
+                                    <template lwc:if={isNbcView}>
+                                        <lightning-button label="Go back" icon-name="utility:back" onclick={handleCancel} class="slds-m-right_small" variant="base"></lightning-button>
+                                    </template>
+                                </template>
+                                <!-- <lightning-button label="Cancel" onclick={handleCancel} class="slds-m-right_small" variant="base" disabled={showTable}></lightning-button> -->
+                                <template lwc:if={showTable}>
+                                    <lightning-button label="Go to Selected View" onclick={handleEditSelectedView} disabled={editSelectedViewDisabled} variant="brand"></lightning-button>
+                                </template>
+                                <template lwc:else>
+                                    <template lwc:if={showSaveButton}>
+                                        <lightning-button label="Save" onclick={handleSave} disabled={isSaveDisabled} variant="brand"></lightning-button>
+                                        <template lwc:if={showTooltip}>
+                                            <span class="slds-text-color_error slds-m-left_xx-small">
+                                                <lightning-helptext content={saveTooltip}></lightning-helptext>
+                                            </span>
+                                        </template>
+                                    </template>
+                                </template>
+
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+    </div>
+</template>

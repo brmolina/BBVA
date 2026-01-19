@@ -1,0 +1,43 @@
+.slds-modal__footer,
+.forceModal .modal-footer,
+.forceModalActionContainer .modal-footer {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+.slds-modal__content {
+  padding-bottom: 0 !important;
+}
+
+.actionBody .modal-footer,
+.uiModal--default .modal-footer {
+  display: none !important;
+  visibility: hidden !important;
+}
+.slds-modal__header .slds-button_neutral,
+.slds-modal__header .slds-button_brand {
+  display: none !important;
+}
+.slds-modal__header .slds-modal__close {
+    position: absolute;
+    top: -2.5rem !important;
+    right: 92px !important;
+    margin-left: 0 !important;
+    bottom: 0 !important;
+}
+:host {
+  /* Remove default gray backdrop */
+  --lwc-colorBackgroundBackdrop: transparent;
+}
+
+.slds-backdrop {
+  background: transparent !important;
+}
+
+.slds-modal {
+  background: transparent !important;
+  box-shadow: none;
+}

@@ -1,0 +1,65 @@
+<template>
+        <c-dmt_custom_path
+            class="childCustomPath"
+            object-api-name="DMT_Line__c"
+            record-id={recordId}
+            stages={stages}
+            status={status}
+            selected-stage={selectedStage}
+            onmarkcomplete={handleMarkComplete}
+            onstageclick={handleStageClick}>
+        </c-dmt_custom_path>
+        <template lwc:if={showModal}>
+            <section role="dialog" tabindex="-1"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Won/Lost</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-combobox
+                            label="Won/Lost"
+                            value={wonLostValue}
+                            options={wonLostOptions}
+                            onchange={handleWonLostChange}>
+                        </lightning-combobox>
+                    </div>
+                    <lightning-modal-footer>
+                        <lightning-button
+                            label="Cancel"
+                            onclick={closeModal}
+                            class="slds-var-p-right_x-small">
+                        </lightning-button>
+                        <lightning-button
+                            label="Save"
+                            variant="brand"
+                            onclick={saveModal}
+                            class="slds-var-p-right_x-small">
+                        </lightning-button>
+                    </lightning-modal-footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <template lwc:if={showNotApprovalModal}>
+            <section role="dialog" tabindex="-1"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__content slds-p-around_medium slds-text-align_center">
+                        <span class="slds-text-heading_medium" style="color:#ab8207;">
+                            {message_not_approval_required_aux}
+                        </span>
+                    </div>
+                    <lightning-modal-footer>
+                        <lightning-button
+                            label="Continue"
+                            onclick={closeModalNotApproval}
+                            class="slds-var-p-right_x-small slds-text-align_center slds-grid slds-grid_align-center"
+                            variant="brand">
+                        </lightning-button>
+                    </lightning-modal-footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+</template>

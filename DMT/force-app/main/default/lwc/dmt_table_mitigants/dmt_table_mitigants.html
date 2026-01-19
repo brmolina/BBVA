@@ -1,0 +1,25 @@
+<template>
+   <c-dmt_-table-header-section
+    titletable={labels.TITLETABLE}
+    showcopypaste="true"
+    rowscopypaste={tableData}
+    tablecolumnscopypaste={columnstablecopypaste}
+    context="derivatives"
+    isreadonlyuser={isEditMode}
+   ></c-dmt_-table-header-section>
+   <c-custom-data-table
+   data={tableData}
+   style="max-height: 5vh;height: inherit;"
+   columns={columns}
+   key-field="Id"
+   max-row-selection="0"
+   hide-checkbox-column="true"
+   onpicklistchanged={picklistChanged}
+   oncustomtextinputchanged={textInputChanged}
+   oncustomdateinputchanged={textInputChanged}
+   oncellchange={handleChangeCell}
+   onrowaction={handleRowAction}
+   onsave={handleSaveCell}
+   suppress-bottom-bar>
+   </c-custom-data-table>  
+</template>

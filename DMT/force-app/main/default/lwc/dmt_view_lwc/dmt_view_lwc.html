@@ -1,0 +1,60 @@
+<template>
+    <lightning-card class="templateStyle">
+        <!-- Card content wrapper -->
+        <div class="cardContentWrapper">
+            
+            <!-- Loading overlay -->
+            <template lwc:if={isLoading}>
+                <div class="overlay">
+                    <div class="spinner-container">
+                        <lightning-spinner alternative-text="Generating PDF..." size="medium"></lightning-spinner>
+                        <p class="spinner-message">Please wait until view is generated...</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- PDF preview -->
+                <div class="previewContent">
+                    <div class="StyleContentHTML">
+                        <div class="htmlContent" lwc:dom="manual"></div>
+                    </div> 
+                </div>
+        </div>
+
+        <!-- Footer slot -->
+        <div slot="footer" class="slds-grid slds-grid_align-end slds-p-horizontal_medium containerDownload">
+            <!-- Download button -->
+            <template lwc:if={showDownloadPdf}>
+                <lightning-button 
+                    label={downloadLabel} 
+                    onclick={handleDownloadPDF} 
+                    disabled={isDownloadInProgress}
+                ></lightning-button>
+            </template>
+
+            <!-- Downloading overlay inside footer -->
+            <template lwc:if={downloadInProgress}>
+                <div class="footerOverlay">
+                    <div class="loaderContent">
+                        <p>Downloading PDF...</p>
+                        <div class="progressBar">
+                            <div class="progressBarInner"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Hidden components -->
+    <c-dmt_subfeature_chart hidden></c-dmt_subfeature_chart>
+    <c-dmt_profitability_chart hidden profitability={profitability}></c-dmt_profitability_chart>
+
+    <!-- <template lwc:if={showProfitabilityChart}>
+        <c-dmt_profitability_chart profitability={profitability}></c-dmt_profitability_chart>
+    </template>
+    <template lwc:elseif={graphicModal}>
+        <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight}></c-dmt_subfeature_chart>
+    </template> -->
+    <c-pdf-generator></c-pdf-generator>
+</template>

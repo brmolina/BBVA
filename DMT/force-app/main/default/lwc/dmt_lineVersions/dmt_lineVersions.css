@@ -1,0 +1,34 @@
+.full-height-content {
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.spinner-container {
+    text-align: center;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-message {
+    margin-top: 6.5rem; /* Increase spacing from spinner */
+    font-size: 1rem;
+    color: #333;
+    max-width: 90%;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* or use transparent if preferred */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}

@@ -1,0 +1,71 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-around_none " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-small-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"Session.BlockEditView","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"Session.BlockEditView","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element0_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C204","defaultValue":"{Parent.g_upd_smscl_internal_ratg_type__c}","fieldLabel":"Rating Short Scale"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C009","defaultValue":"{Parent.g_upd_lmscl_internal_ratg_type__c}","fieldLabel":"Rating Long Scale"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C162","defaultValue":"{Parent.g_asset_allocation_sector_type__c}","fieldLabel":"Asset Allocation Sector"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element3_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C164","defaultValue":"{Parent.g_asset_allocation_subsec_type__c}","fieldLabel":"Asset Allocation Subsector"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element4_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C039","defaultValue":"{Parent.g_asset_allocation_actvy_type__c}","fieldLabel":"Asset Allocation Activity"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-around_none " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-small-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"Session.BlockEditView","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"Session.BlockEditView","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element0_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C204","defaultValue":"{Parent.g_upd_smscl_internal_ratg_type__c}","fieldLabel":"Rating Short Scale"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C009","defaultValue":"{Parent.g_upd_lmscl_internal_ratg_type__c}","fieldLabel":"Rating Long Scale"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C162","defaultValue":"{Parent.g_asset_allocation_sector_type__c}","fieldLabel":"Asset Allocation Sector"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element3_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C164","defaultValue":"{Parent.g_asset_allocation_subsec_type__c}","fieldLabel":"Asset Allocation Subsector"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-size_6-of-12 " data-rindex={rindex} style="" ><c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y data-style-id="state0element0block_element4_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node=""  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  parent-attribute='\{"catalog":"C039","defaultValue":"{Parent.g_asset_allocation_actvy_type__c}","fieldLabel":"Asset Allocation Activity"}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-d-m-t_-s-e-l-e-c-t_-t-a-x-o-n-o-m-y>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

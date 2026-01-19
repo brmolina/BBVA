@@ -1,0 +1,21 @@
+.slds-row-number{
+     display: none;
+ }
+ .guidance-width {
+    width: calc( 100% - 52px);
+}
+
+ .cell {
+    width: 11.07%;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+ .cell2 {
+    width: 22.1%;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+.footercontainer{
+    width:19rem;
+}

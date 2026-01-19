@@ -1,0 +1,49 @@
+<template>
+    <template lwc:if={isDataProcessed}>
+        <template lwc:if={searchFiltersBar}>
+            <div class="input-container">
+                <template lwc:if={search}>
+                    <c-search-bar-datatable is-lwc=true info-name={processedDataForSearch} ondatasearch={handleSearch}></c-search-bar-datatable>
+                </template>
+                <template lwc:if={areFiltersLoaded}>
+                    <template for:each={processedFilters} for:item="filter" for:index="index">
+                        <c-dmt_multi_select_combobox
+                            key={filter.label}
+                            label={filter.label}
+                            name={filter.fieldName}
+                            options={filter.options}
+                            onchange={handlePicklistChange}
+                            data-index={index}
+                        ></c-dmt_multi_select_combobox>
+                    </template>
+                </template>
+            </div>
+        </template>        
+        <div class="slds-tree_container full-width-container slds-grid" role="tree">
+            <table class="slds-table slds-table--bordered slds-box slds-max-medium-table--stacked-horizontal custom-table full-width-table" role="treegrid" aria-label="Treegrid table">
+                <thead>
+                    <!--<tr>-->
+                        <template for:each={columns} for:item="col">
+                            <th class="slds-is-sortable slds-text-title--caps fixed-header fixed-row-header" key={col.fieldName} scope="col">
+                                <div class="slds-truncate" title={col.label}><lightning-formatted-rich-text value={col.label}></lightning-formatted-rich-text></div>
+                            </th>
+                        </template>
+                    <!--</tr>-->
+                </thead>
+                <tbody>
+                    <template lwc:if={notEmpty}>
+                        <template for:each={processedData} for:item="item">
+                            <c-dmt_custom_tree_row key={item.itemKey} item={item} columns={columns} depth="0" expanded={item.expanded}></c-dmt_custom_tree_row>
+                        </template>
+                    </template>
+                    <template lwc:else>
+                        No data to display
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </template>
+    <template lwc:else>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>

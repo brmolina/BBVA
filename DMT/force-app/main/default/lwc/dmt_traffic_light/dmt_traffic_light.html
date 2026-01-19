@@ -1,0 +1,26 @@
+<template>
+    <template lwc:if={isLoad}> 
+        <lightning-spinner alternative-text="Loading" size="x-small" style="background-color:unset;"></lightning-spinner>
+    </template>
+    <template lwc:else>
+            <template lwc:if={isSimplelight}> 
+                <div class="traffic-light-container">
+                    <div class={correctClass} style={customStyle}></div>
+                </div>
+            </template>
+            <template lwc:else>
+                <div class="dmt-tooltip">
+                    <div class="traffic-light-container">
+                        <div class={redClass} style={customStyle}></div>
+                        <div class={yellowClass} style={customStyle}></div>
+                        <div class={greenClass} style={customStyle}></div>
+                    </div>
+                    <template lwc:if={tooltipmessage}> 
+                        <div class="dmt-tooltip-message slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" style="position:absolute;top:-35px;left:25px">
+                            <div class="slds-popover__body">{tooltipmessage}</div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+    </template>
+</template>

@@ -1,0 +1,7 @@
+.slds-sticky {
+    display: flex;
+    position: fixed;
+    max-height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 350px);
+    z-index: 99;
+    overflow: scroll;
+}

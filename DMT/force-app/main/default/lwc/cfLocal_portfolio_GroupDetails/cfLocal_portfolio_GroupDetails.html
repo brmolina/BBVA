@@ -1,0 +1,83 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                      <omnistudio-flex-card-state   data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Ch1%3E%7BlocalGroupName%7D%3C/h1%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3ESAME%20MONTH%20LAST%20YEAR%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element1" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%3ECURRENT%20MONTH%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element2" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3EYTD%20LAST%20YEAR%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element3" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element3_child"   card={card}  record={record}  merge-field="%3Cdiv%3EYTD%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element4" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element4_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETAM%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-group-detail data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.returnGetDataGCS[0]}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-group-detail>
+    </div><div data-style-id="state0element2" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3Eprueba:%20%7BreturnGetDataGCS%5B0%5D.Portfolio%7D%3C/div%3E%0A%3Cdiv%3Erecordid:%20%7BParams.c__recordId%7D%3C/div%3E%0A%3Cdiv%3Eerror?%20:%20%7BError%7D%3C/div%3E%0A%3Cdiv%3E&nbsp;%3C/div%3E%0A%3Cdiv%3E%7BreturnGetDataGCS%5B0%5D.Role%20Desc%7D%205%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element3_child"   card={card}  record={record}  placeholder="output"  type="text"  field-name="\{returnGetDataGCS[0].Portfolio}"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div>
+      </omnistudio-flex-card-state>
+                </template>
+                <template if:false={hasRecords}>
+                      <omnistudio-flex-card-state   data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Ch1%3E%7BlocalGroupName%7D%3C/h1%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3ESAME%20MONTH%20LAST%20YEAR%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element1" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%3ECURRENT%20MONTH%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element2" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3EYTD%20LAST%20YEAR%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element3" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element3_child"   card={card}  record={record}  merge-field="%3Cdiv%3EYTD%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element4" class="slds-col   slds-size_2-of-12  " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element1block_element4_child"   card={card}  record={record}  merge-field="%3Cdiv%3ETAM%3C/div%3E%0A%3Cdiv%3E--%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><c-cf-group-detail data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.returnGetDataGCS[0]}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-group-detail>
+    </div><div data-style-id="state0element2" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element2_child"   card={card}  record={record}  merge-field="%3Cdiv%3Eprueba:%20%7BreturnGetDataGCS%5B0%5D.Portfolio%7D%3C/div%3E%0A%3Cdiv%3Erecordid:%20%7BParams.c__recordId%7D%3C/div%3E%0A%3Cdiv%3Eerror?%20:%20%7BError%7D%3C/div%3E%0A%3Cdiv%3E&nbsp;%3C/div%3E%0A%3Cdiv%3E%7BreturnGetDataGCS%5B0%5D.Role%20Desc%7D%205%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element3_child"   card={card}  record={record}  placeholder="output"  type="text"  field-name="\{returnGetDataGCS[0].Portfolio}"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div>
+      </omnistudio-flex-card-state>
+                </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

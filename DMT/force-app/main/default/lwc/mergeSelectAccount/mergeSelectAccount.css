@@ -1,0 +1,27 @@
+.slds-pill {
+  width: 100% !important;
+}
+
+.pillSizeClass {
+  border: 1px !important;
+  border-style : solid !important;
+  border-color:rgb(221, 219, 218) !important;
+  border-radius: 0.25rem;
+}
+
+.marginClass {
+  top: 70% !important;
+}
+
+.special {
+  --sds-c-pill-sizing-border: 0px;
+}
+
+.ulClass {
+  min-height: 40px;
+  margin-top: 0px !important;
+}
+
+.box {
+  margin-top: 5%;
+}

@@ -1,0 +1,32 @@
+<template>
+    <template lwc:if={_showSpinner}>
+        <div>
+            <lightning-spinner class="spins" alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
+    <template lwc:else>
+        <c-dmt_passport_child show-warning={showWarning} 
+                            showfeatures-table={showfeaturesTable} 
+                            wrapper={wrapper} 
+                            is-big={isBig} 
+                            columns={columns} 
+                            message-error={messageError} 
+                            is-task-modal-open={isTaskModalOpen} 
+                            no-show-info={noShowInfo}
+                            graphic-modal={graphicModal}
+                            error-modal={errorModal}
+                            validations={validations}
+                            show-audit-date={showAuditDate}
+                            check-status-proposal={checkStatusProposal}
+                            check-status-approval={checkStatusApproval}
+                            user-permission={userPermission}
+                            onopenmodal={openModal}
+                            onstartcase={startCase}
+                            onexpanded={expandedControlEvent}>
+                            
+        </c-dmt_passport_child>
+        
+    </template>
+    
+    <c-dmt_call_passport oncallservice={handleCallServiceEvent} ></c-dmt_call_passport>
+</template>

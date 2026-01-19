@@ -1,0 +1,14 @@
+.addIconClass{
+    --slds-c-icon-color-foreground: #1589ee;
+}
+.nodisplay{
+    display: none;
+}
+
+.checkIconClass{
+    --slds-c-icon-color-foreground: white;
+    --slds-c-icon-color-background: #4acb80;
+}
+.noactionclass{
+    pointer-events: none;
+}

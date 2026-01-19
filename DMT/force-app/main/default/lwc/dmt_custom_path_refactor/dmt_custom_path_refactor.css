@@ -1,0 +1,13 @@
+.fixed-button > button {
+    min-width: 200px !important;
+    text-align: center;
+    padding: 10px;
+}
+
+.slds-path__nav .slds-is-current {
+    background:  rgb(1, 68, 134) !important;
+}
+
+.slds-path__nav .slds-is-current:hover {
+    background:  rgb(3, 45, 96) !important;
+}

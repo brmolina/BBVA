@@ -1,0 +1,38 @@
+<template>
+    <lightning-card title={objectApiName}>
+        <div class="slds-p-horizontal_small slds-p-vertical_small">
+
+            <!-- Buscador -->
+            <lightning-input type="search" label="Buscar" placeholder="Buscar..." onchange={handleSearch}></lightning-input>
+
+            <!-- Botón para configurar columnas -->
+            <lightning-button label="Configurar Columnas" onclick={toggleColumnPanel}></lightning-button>
+
+            <!-- Panel de selección de columnas -->
+            <template if:true={showColumnPanel}>
+                <lightning-dual-listbox
+                    name="columnPicker"
+                    label="Selecciona columnas"
+                    source-label="Disponibles"
+                    selected-label="Seleccionadas"
+                    field-level-help="Selecciona qué columnas mostrar"
+                    options={configcolumns}
+                    onchange={handleColumnChange}>
+                </lightning-dual-listbox>
+            </template>
+
+            <!-- Tabla de registros -->
+            <template if:true={filteredRecords.length}>
+        <lightning-datatable
+                key-field={tableKey}
+                data={filteredRecords}
+                columns={selectedColumns}>
+        </lightning-datatable>
+            </template>
+            <template if:false={filteredRecords.length}>
+                <p>No se encontraron registros.</p>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

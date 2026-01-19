@@ -1,0 +1,63 @@
+.chart {
+    padding-top: 25px;
+}
+
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    padding: 7px;
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.infoTooltip {
+    position: relative;
+    left: -92%;
+    top: 0;
+    transform: translate(-50%);
+    background-color: #072146e7;
+    color: #fff;
+    white-space: nowrap;
+    padding: 10px;
+    border-radius: 10px 15px;
+    border-radius: 7px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.infoTooltip::before {
+    content: "";
+    position: absolute;
+    left: 5%;
+    top: 99%;
+    transform: translate(-50%);
+    border: 15px solid;
+    border-color: #072146e7 #ffffff00 #ffffff00 #ffffff00
+}
+
+.tooltip:hover .infoTooltip {
+    top: -440%;
+    visibility: visible;
+    opacity: 1;
+}
+
+.opportunity-row {
+    background-color: #e6f0fa;
+}
+
+.table-header {
+    background-color: #004481;
+    color: white;
+}
+
+th {
+    white-space: normal;      
+    overflow-wrap: normal;    
+    word-break: keep-all;     
+    max-width: 120px;    
+}
+
+.slds-table{
+zoom: 93%
+}

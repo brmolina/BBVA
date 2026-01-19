@@ -1,0 +1,51 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Consumption Details modal" class="ontop slds-modal slds-fade-in-open slds-modal_medium">
+        <div class="slds-modal__container">
+            <lightning-modal-header label={title}></lightning-modal-header>
+            <lightning-modal-body>
+                <template lwc:if={isLoading}>
+                    <div class="ontop divspinner slds-align_absolute-center">
+                        <div class="slds-is-relative">
+                            <lightning-spinner alternative-text="Loading" variant="brand" size="medium"></lightning-spinner>
+                        </div>
+                    </div>
+                </template>
+                <template lwc:else>
+                    <div class="slds-scrollable table_height">
+                        <template lwc:if={foundGuarantees}>
+                            <table data-id="mainTable" class="slds-table slds-table--bordered slds-box slds-max-medium-table--stacked-horizontal custom-table" aria-describedby="Contract Guarantees" role="grid">
+                                <template iterator:col={columns}>
+                                    <tr key={iteratorKey} class="slds-line-height--reset">
+                                        <th key={iteratorKey} class='slds-text-title_bold fixed-header fixed-row' scope="col">
+                                            <span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text></span>
+                                        </th>
+                                        <template iterator:row={data}>
+                                            <td key={iteratorKey} data-id={iteratorKey} role="gridcell" class="guaranteecolumn">
+                                                <c-hpg_contract_guarantees_cell column={col} index={col.index} row={row.value}></c-hpg_contract_guarantees_cell>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </table>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-illustration slds-illustration_small divspinner">
+                                <div class="slds-text-longform">
+                                <h3 class="slds-text-heading_medium">No Guarantees</h3>
+                                <p class="slds-text-body_regular">No guarantees found for this contract</p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-modal-body>
+            <lightning-modal-footer>
+                <template lwc:if={foundGuarantees}>
+                    <lightning-button title="Download CSV" icon-name="utility:download" onclick={downloadCSV} class="slds-m-left_x-small downloadcsv"></lightning-button>
+                </template>
+                <c-hpg_detail_button button-variant="neutral" button-label="Close" event-name="closecontractguarantees"></c-hpg_detail_button>
+            </lightning-modal-footer>
+        </div>
+    </section>
+    <div class="almosttop slds-backdrop slds-backdrop_open"></div>
+</template>

@@ -1,0 +1,18 @@
+<template>
+    <div class="slds-align_absolute-center dmt-msg-info-container">
+        <div class=" slds-media slds-media_center slds-p-around_medium" style="width: auto;">
+            <div class="slds-media__figure dmt-msg-valign-m">
+                <lightning-icon class="dmt-warning" icon-name="utility:warning" alternative-text="Warning" size="medium" variant="warning"></lightning-icon>
+            </div>
+            <div class="slds-media__body dmt-msg-valign-m">
+                <span class="slds-text-title_bold">
+                    {message}
+                </span>
+                <template if:true={linkMessage}>
+                    <a class="slds-m-left_xx-small" href={linkOpp} target="_blank">{linkMessage}</a>
+                </template>
+            </div>
+        </div>
+
+    </div>
+</template>

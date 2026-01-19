@@ -1,0 +1,41 @@
+<template>
+    <template for:each={array} for:item="object">
+        <article key={object.id} class="slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium">
+            <ul  class="slds-list_horizontal slds-wrap">
+                <li class="slds-grid slds-grid_vertical slds-size_1-of-2 slds-p-bottom_small">
+                    <h3 class="slds-truncate" style="align-content: center;">
+                        <strong>{object.productName}</strong>
+                    </h3>
+                </li>
+                <li data-id={object.id} class="slds-grid slds-grid_vertical slds-size_1-of-2 slds-p-bottom_small">
+                    <template lwc:if={object.isGreen}> 
+                        <div style="display: flex; justify-content: center; align-items: center; width: 12vh; height: 5vh; border-radius: 3vh; overflow: hidden; background-color: #939393;">
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: Green;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                        </div>
+                    </template>
+                    <template lwc:elseif={object.isYellow}> 
+                        <div style="display: flex; justify-content: center; align-items: center; width: 12vh; height: 5vh; border-radius: 3vh; overflow: hidden; background-color: #939393;">
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: Yellow;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                        </div>
+                    </template>
+                    <template lwc:elseif={object.isRed}> 
+                        <div style="display: flex; justify-content: center; align-items: center; width: 12vh; height: 5vh; border-radius: 3vh; overflow: hidden; background-color: #939393;">
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: white;"></div>
+                            <div style="flex: 1; border: 0.2vh solid #000; border-radius: 3vh; aspect-ratio: 1; margin: 0 0.7vh; background-color: Red;"></div>
+                        </div>
+                    </template>
+                    <template lwc:else> 
+                        <div style="position: relative; display:inline-block; width:12vh; height: 5vh;">
+                            <lightning-spinner alternative-text="Loading" size="x-small" style="background-color:unset;"></lightning-spinner>
+                        </div>
+                    </template>
+                </li>
+            </ul>   
+        </article>
+    </template>
+</template>

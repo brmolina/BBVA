@@ -1,0 +1,81 @@
+.slds-scrollable_y {
+
+  height:auto;
+  width:auto;
+
+}
+
+c-datatable-picklist .slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown{
+    height: 10rem;
+} 
+.slds-button__icon_left, .slds-button__icon--left{
+    margin-right: 0;
+    padding: 0;
+}
+ c-datatable-picklist .slds-dropdown-trigger_click,  .slds-dropdown-trigger--click {
+    display: block;
+    height: inherit;
+}
+
+c-datatable-picklist .slds-dropdown{
+    position: relative;
+    max-width: 27vh;
+}
+.slds-popover_full-width{
+    width:25em;
+}
+.slds-hint-parent .slds-cell-edit .slds-button__icon_edit, .slds-hint-parent .slds-cell-edit .slds-button__icon--edit, .slds-hint-parent .slds-cell-edit .slds-button__icon_lock, .slds-hint-parent .slds-cell-edit .slds-button__icon--lock {
+opacity:1;
+}
+
+.slds-popover_edit, .slds-popover--edit {
+    width: auto;
+    left: 20rem;
+} 
+
+.slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+
+.slds-checkbox .slds-checkbox_faux, .slds-checkbox .slds-checkbox--faux {
+    width: 2rem;
+    height: 2rem;
+}
+
+.slds-checkbox [type=checkbox]:checked+.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox--faux:after {
+
+    height: .55rem;
+    width: 1.25rem;
+} 
+ .slds-table_bordered, .slds-table--bordered {
+    border-collapse: collapse;
+} 
+
+.slds-show {
+    max-height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 300px) !important;
+    z-index: 99 !important;
+    overflow: auto !important;
+    color: red;
+}
+
+.rounded-box {
+    border-radius: 0.5rem; /* Bordes redondeados */
+    border: 1px solid #d8dde6; /* Borde gris suave */
+    padding: 1rem; /* Espaciado interno */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra ligera */
+    background-color: white; /* Fondo blanco para contraste */
+}
+
+/* Corrección para el dropdown de picklist en OmniStudio */
+c-datatable-picklist .slds-combobox__dropdown {
+  max-height: 12rem !important; /* Muestra solo 4 ítems aprox. */
+  overflow-y: auto !important;  /* Scroll para el resto */
+  z-index: 9999 !important;     /* Que se muestre por encima */
+  position: absolute !important;
+}
+
+/* Asegura que el padre permita posicionamiento relativo */
+.slds-form-element {
+  position: relative;
+}

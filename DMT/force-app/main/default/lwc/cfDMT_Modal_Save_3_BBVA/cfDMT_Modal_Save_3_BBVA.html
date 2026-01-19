@@ -1,0 +1,99 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-small-size_12-of-12 slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-around_none " style="background-color:#F7F7F7;      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EThe%20Opportunity%20will%20be%20modified%20and%20the%20associated%20cases%20and%20task%20will%20be%20reopened.%3C/span%3E%3Cbr%3E%3Cbr%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3EDo%20you%20want%20to%20modify%20the%20Opportunity?%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col  slds-text-align_right slds-m-right_x-small  slds-large-size_6-of-12 slds-medium-size_6-of-12 slds-small-size_6-of-12 slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element1block_element0block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element0block_element0_child flexActionElement" 
+        data-action-element-class="state0element1block_element0block_element0_child" data-action-key="state0element1block_element0block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="cancel"   state-obj={record}  card={card}  record={record}  label="No"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1765836138378","type":"Event","openUrlIn":"Current Window","eventName":"closemodal","subType":"Custom","composed":true,"bubbles":true},"key":"1765809461688-jdplvjp0g","label":"Close Modal","draggable":true,"isOpen":true,"actionIndex":0},{"key":"1765887015995-0i93qqo5p","label":"Reload Opportunity Info","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765918780543","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"DMT_Opportunity_Info_Tab","message":"reloadAfterSave","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":1},{"key":"1765918509905-tdxzyi0fx","label":"Reload Client Info","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765919075342","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"Button","message":"Reload","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":2},{"key":"1765918636803-f8d42myqq","label":"Reload Products","draggable":true,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765919089566","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"productOpportunityFields","message":"reloadParent","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":3}]'  display-as-button="true"  icon-only="true"  hide-action-icon="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element1block_element0block_element1" class="slds-col  slds-m-left_x-small  slds-large-size_2-of-12 slds-medium-size_2-of-12 slds-small-size_2-of-12 slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element1block_element0block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element0block_element1_child flexActionElement" 
+        data-action-element-class="state0element1block_element0block_element1_child" data-action-key="state0element1block_element0block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="save"   state-obj={record}  card={card}  record={record}  label="Yes"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1765876316731","type":"Event","openUrlIn":"Current Window","eventName":"isSaveRtC","subType":"Custom","message":"saveEventInRtC","hasExtraParams":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]},"extraParams":{"isRtCSave":"true"},"composed":true,"bubbles":true},"key":"1765487559375-db4yn69fz","label":"Is Save Opportunity","draggable":true,"isOpen":false,"actionIndex":0},{"key":"1765874995936-5mca887c1","label":"Opportunity Info Reload","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1765902440833","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"DMT_Opportunity_Info_Tab","message":"reloadAfterSave","composed":true,"bubbles":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-77","field":"Parent.tabOppInfo","operator":"==","value":"tabOppInfo","type":"custom","hasMergeField":false}]}},"actionIndex":1},{"key":"1765902253480-rcoyki33m","label":"Client Info Reload","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1765918524038","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"Button","message":"Reload","actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-68","field":"Parent.tabClient","operator":"==","value":"tabClient","type":"custom","hasMergeField":false}]}},"actionIndex":2},{"key":"1765916106274-glbwt32ad","label":"Products Reload","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765918616259","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Parent.tabOppProducts","operator":"==","value":"tabOppProducts","type":"custom","hasMergeField":false}]},"subType":"PubSub","eventName":"productOpportunityFields","message":"reloadParent"},"actionIndex":3}]'  flyout-channel=""  flyout-details='\{}'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="brand"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-small-size_12-of-12 slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-around_none " style="background-color:#F7F7F7;      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EThe%20Opportunity%20will%20be%20modified%20and%20the%20associated%20cases%20and%20task%20will%20be%20reopened.%3C/span%3E%3Cbr%3E%3Cbr%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element1_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3EDo%20you%20want%20to%20modify%20the%20Opportunity?%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col  slds-text-align_right slds-m-right_x-small  slds-large-size_6-of-12 slds-medium-size_6-of-12 slds-small-size_6-of-12 slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element1block_element0block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element0block_element0_child flexActionElement" 
+        data-action-element-class="state0element1block_element0block_element0_child" data-action-key="state0element1block_element0block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="cancel"   state-obj={record}  card={card}  record={record}  label="No"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1765836138378","type":"Event","openUrlIn":"Current Window","eventName":"closemodal","subType":"Custom","composed":true,"bubbles":true},"key":"1765809461688-jdplvjp0g","label":"Close Modal","draggable":true,"isOpen":true,"actionIndex":0},{"key":"1765887015995-0i93qqo5p","label":"Reload Opportunity Info","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765918780543","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"DMT_Opportunity_Info_Tab","message":"reloadAfterSave","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":1},{"key":"1765918509905-tdxzyi0fx","label":"Reload Client Info","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765919075342","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"Button","message":"Reload","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":2},{"key":"1765918636803-f8d42myqq","label":"Reload Products","draggable":true,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765919089566","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"productOpportunityFields","message":"reloadParent","actionConditions":{"id":"state-condition-object","isParent":true,"group":[]}},"actionIndex":3}]'  display-as-button="true"  icon-only="true"  hide-action-icon="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element1block_element0block_element1" class="slds-col  slds-m-left_x-small  slds-large-size_2-of-12 slds-medium-size_2-of-12 slds-small-size_2-of-12 slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element1block_element0block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element0block_element1_child flexActionElement" 
+        data-action-element-class="state0element1block_element0block_element1_child" data-action-key="state0element1block_element0block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="save"   state-obj={record}  card={card}  record={record}  label="Yes"  icon-name="standard-default"  action-list='\[{"stateAction":{"id":"flex-action-1765876316731","type":"Event","openUrlIn":"Current Window","eventName":"isSaveRtC","subType":"Custom","message":"saveEventInRtC","hasExtraParams":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[]},"extraParams":{"isRtCSave":"true"},"composed":true,"bubbles":true},"key":"1765487559375-db4yn69fz","label":"Is Save Opportunity","draggable":true,"isOpen":false,"actionIndex":0},{"key":"1765874995936-5mca887c1","label":"Opportunity Info Reload","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1765902440833","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"DMT_Opportunity_Info_Tab","message":"reloadAfterSave","composed":true,"bubbles":true,"actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-77","field":"Parent.tabOppInfo","operator":"==","value":"tabOppInfo","type":"custom","hasMergeField":false}]}},"actionIndex":1},{"key":"1765902253480-rcoyki33m","label":"Client Info Reload","draggable":true,"isOpen":false,"card":"{card}","stateAction":{"id":"flex-action-1765918524038","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","subType":"PubSub","eventName":"Button","message":"Reload","actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-68","field":"Parent.tabClient","operator":"==","value":"tabClient","type":"custom","hasMergeField":false}]}},"actionIndex":2},{"key":"1765916106274-glbwt32ad","label":"Products Reload","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1765918616259","type":"Event","displayName":"Action","vlocityIcon":"standard-default","openUrlIn":"Current Window","actionConditions":{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Parent.tabOppProducts","operator":"==","value":"tabOppProducts","type":"custom","hasMergeField":false}]},"subType":"PubSub","eventName":"productOpportunityFields","message":"reloadParent"},"actionIndex":3}]'  flyout-channel=""  flyout-details='\{}'  icon-only="false"  hide-action-icon="true"  display-as-button="true"  button-variant="brand"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

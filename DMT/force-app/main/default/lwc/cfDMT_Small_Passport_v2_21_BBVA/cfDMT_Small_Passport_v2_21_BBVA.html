@@ -1,0 +1,101 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_xx-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col    slds-size_1-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-size_12-of-12  " data-rindex={rindex} style="      
+         
+" ><omnistudio-flex-img data-style-id="state0element0block_element0block_element0_child"   record={record}  card={card}  extraclass="slds-align_absolute-center"  size=""  state-img='\{"alternativeText":"Image description","imgsrc":"/resource/limitTesPassport"}'  theme="slds"  ></omnistudio-flex-img>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col  slds-m-top_x-small  slds-size_3-of-12  " data-rindex={rindex} style="      
+         font-weight: bold;" ><omnistudio-output-field data-style-id="state0element0block_element1_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%20font-family:%20'Salesforce%20Sans',%20Arial,%20sans-serif;%22%3EPASSPORT%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         fill:currentColor !important;" ><omnistudio-flex-action data-style-id="state0element0block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element2_child flexActionElement" 
+        data-action-element-class="state0element0block_element2_child" data-action-key="state0element0block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0block0action3"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"card":"{card}","draggable":true,"isOpen":true,"key":"1733136810833-grd5a38r1","label":"Set call client service","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"callservice","fieldValue":"true"}],"id":"flex-action-1733136841493","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1730991559339-fl9n7h08y","label":"Call passport","stateAction":{"Web Page":{"targetName":"/apex"},"id":"flex-action-1731327296815","message":"{\"type\":\"ApexRemote\",\"value\":{\"dsDelay\":\"\",\"remoteClass\":\"DMT_Passport_Handler\",\"remoteMethod\":\"callPassportLine\",\"vlocityAsync\":false,\"inputMap\":{\"recordId\":\"{recordId}\",\"forceCall\":\"true\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5YKN0000000Sx22AE\",\"id\":1}]}","openUrlIn":"Current Window","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1731667783867-vs4qj46u8","label":"ShowSpinner","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"Session.showSpinner","fieldValue":"true"}],"id":"flex-action-1731667844402","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":3,"card":"{card}","draggable":true,"isOpen":true,"key":"1733136863821-e9hx594pd","label":"Set to false call service","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"callservice","fieldValue":"false"}],"id":"flex-action-1733136884600","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  aria-label="Calculate Passport"  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  icon-color="#808080"  icon-name="custom:custom109"  label="Calculate"  styles='\{"label":{"textAlign":""}}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element0block_element3" class="slds-col  slds-text-align_center slds-p-around_xx-small  slds-size_3-of-12  " data-rindex={rindex} style="      
+    border-radius:.25rem;    color:#000000; fill:currentColor !important;" ><omnistudio-flex-action data-style-id="state0element0block_element3_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element3_child flexActionElement" 
+        data-action-element-class="state0element0block_element3_child" data-action-key="state0element0block_element3" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0block0action4"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1730885733832-kld3g1x48","label":"Extract passport id","stateAction":{"Record":{"targetAction":"view","targetId":"{}","targetName":"Passport__c"},"id":"flex-action-1730887645430","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrGetPassportByLine\",\"bundleType\":\"Extract\",\"inputMap\":{\"recordId\":\"{recordId}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5YKN0000000TAz2AM\",\"id\":1}]}","openUrlIn":"Current Window","responseNode":"passportId","targetType":"Record","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":true,"key":"1730886560959-iznbmcbbn","label":"Navigate to passport","stateAction":{"Record":{"targetAction":"view","targetId":"{passportId.passportId}","targetName":"Passport__c"},"displayName":"Action","id":"flex-action-1730887705256","openUrlIn":"Current Window","targetType":"Record","type":"Custom","vlocityIcon":"standard-default"}}]'  aria-label="Passport Detail"  button-variant="neutral"  disabled=""  display-as-button="true"  flyout-details='\{}'  hide-action-icon="false"  icon-color="#808080"  icon-name="utility-expand_alt"  icon-only="false"  icon-size="xx-small"  label="Detail"  styles='\{"label":{"color":"","textAlign":"right"}}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_passport" property='\{"getservice":"{callservice}","showSpinner":"{Session.showSpinner}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_passport   record-id={recordId}  is-big-version="false" ></c-dmt_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_xx-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col    slds-size_1-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-size_12-of-12  " data-rindex={rindex} style="      
+         
+" ><omnistudio-flex-img data-style-id="state0element0block_element0block_element0_child"   record={record}  card={card}  extraclass="slds-align_absolute-center"  size=""  state-img='\{"alternativeText":"Image description","imgsrc":"/resource/limitTesPassport"}'  theme="slds"  ></omnistudio-flex-img>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col  slds-m-top_x-small  slds-size_3-of-12  " data-rindex={rindex} style="      
+         font-weight: bold;" ><omnistudio-output-field data-style-id="state0element0block_element1_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%20font-family:%20'Salesforce%20Sans',%20Arial,%20sans-serif;%22%3EPASSPORT%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         fill:currentColor !important;" ><omnistudio-flex-action data-style-id="state0element0block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element2_child flexActionElement" 
+        data-action-element-class="state0element0block_element2_child" data-action-key="state0element0block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0block0action3"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"card":"{card}","draggable":true,"isOpen":true,"key":"1733136810833-grd5a38r1","label":"Set call client service","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"callservice","fieldValue":"true"}],"id":"flex-action-1733136841493","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1730991559339-fl9n7h08y","label":"Call passport","stateAction":{"Web Page":{"targetName":"/apex"},"id":"flex-action-1731327296815","message":"{\"type\":\"ApexRemote\",\"value\":{\"dsDelay\":\"\",\"remoteClass\":\"DMT_Passport_Handler\",\"remoteMethod\":\"callPassportLine\",\"vlocityAsync\":false,\"inputMap\":{\"recordId\":\"{recordId}\",\"forceCall\":\"true\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5YKN0000000Sx22AE\",\"id\":1}]}","openUrlIn":"Current Window","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1731667783867-vs4qj46u8","label":"ShowSpinner","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"Session.showSpinner","fieldValue":"true"}],"id":"flex-action-1731667844402","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":3,"card":"{card}","draggable":true,"isOpen":true,"key":"1733136863821-e9hx594pd","label":"Set to false call service","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"callservice","fieldValue":"false"}],"id":"flex-action-1733136884600","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  aria-label="Calculate Passport"  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  icon-color="#808080"  icon-name="custom:custom109"  label="Calculate"  styles='\{"label":{"textAlign":""}}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element0block_element3" class="slds-col  slds-text-align_center slds-p-around_xx-small  slds-size_3-of-12  " data-rindex={rindex} style="      
+    border-radius:.25rem;    color:#000000; fill:currentColor !important;" ><omnistudio-flex-action data-style-id="state0element0block_element3_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element3_child flexActionElement" 
+        data-action-element-class="state0element0block_element3_child" data-action-key="state0element0block_element3" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0block0action4"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1730885733832-kld3g1x48","label":"Extract passport id","stateAction":{"Record":{"targetAction":"view","targetId":"{}","targetName":"Passport__c"},"id":"flex-action-1730887645430","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrGetPassportByLine\",\"bundleType\":\"Extract\",\"inputMap\":{\"recordId\":\"{recordId}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5YKN0000000TAz2AM\",\"id\":1}]}","openUrlIn":"Current Window","responseNode":"passportId","targetType":"Record","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":true,"key":"1730886560959-iznbmcbbn","label":"Navigate to passport","stateAction":{"Record":{"targetAction":"view","targetId":"{passportId.passportId}","targetName":"Passport__c"},"displayName":"Action","id":"flex-action-1730887705256","openUrlIn":"Current Window","targetType":"Record","type":"Custom","vlocityIcon":"standard-default"}}]'  aria-label="Passport Detail"  button-variant="neutral"  disabled=""  display-as-button="true"  flyout-details='\{}'  hide-action-icon="false"  icon-color="#808080"  icon-name="utility-expand_alt"  icon-only="false"  icon-size="xx-small"  label="Detail"  styles='\{"label":{"color":"","textAlign":"right"}}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_passport" property='\{"getservice":"{callservice}","showSpinner":"{Session.showSpinner}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_passport   record-id={recordId}  is-big-version="false" ></c-dmt_passport></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

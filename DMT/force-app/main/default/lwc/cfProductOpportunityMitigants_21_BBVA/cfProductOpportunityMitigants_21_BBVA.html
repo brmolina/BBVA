@@ -1,0 +1,177 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element0block_element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Collateral_Guarantees_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:47px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"oppState":"{StageName}","termoptions":"{catalogOptions.taxoE895Picklist}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","editModeTableMitigans":"{editMode}","idListToDeleteMitigans":"{idListToDeleteMitigans}","oppProduct":"{Parent.updateId}","isReadOnlyUser":"{Parent.isReadOnlyUser}","internalRatings":"{catalogOptions.taxoC204}","countryOptions":"{catalogOptions.taxoC245}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants  ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element0block_element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Guarantors_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:41px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","oppState":"{StageName}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","defaultLimit":"{defaultLimitderivatives}","isReadOnlyUser":"{Parent.isReadOnlyUser}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state><omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="1" data-rindex={rindex} class="cf-vlocity-state-1 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state1element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state1element0_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element0" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state1element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state1element0block_element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Collateral_Guarantees_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state1element0block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:47px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state1element0block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"termoptions ":"{catalogOptions.taxoE895Picklist}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","idListToDeleteMitigans":"{idListToDeleteMitigans}","oppProduct":"{Parent.updateId}","internalRatings":"{catalogOptions.taxoC204}","countryOptions":"{catalogOptions.taxoC245}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants   edit-mode-table-mitigans="true" ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state1element0block_element2" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state1element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element2block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state1element0block_element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Guarantors_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state1element0block_element2block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:41px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state1element0block_element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element0block_element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Collateral_Guarantees_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:47px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"oppState":"{StageName}","termoptions":"{catalogOptions.taxoE895Picklist}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","editModeTableMitigans":"{editMode}","idListToDeleteMitigans":"{idListToDeleteMitigans}","oppProduct":"{Parent.updateId}","isReadOnlyUser":"{Parent.isReadOnlyUser}","internalRatings":"{catalogOptions.taxoC204}","countryOptions":"{catalogOptions.taxoC245}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants  ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element0block_element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Guarantors_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:41px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element0block_element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","oppState":"{StageName}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","defaultLimit":"{defaultLimitderivatives}","isReadOnlyUser":"{Parent.isReadOnlyUser}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state><omnistudio-flex-card-state  record={record} data-statue="false"  data-index="1" data-rindex={rindex} class="cf-vlocity-state-1 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state1element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state1element0_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element0" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state1element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state1element0block_element0block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Collateral_Guarantees_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state1element0block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:47px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state1element0block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"termoptions ":"{catalogOptions.taxoE895Picklist}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}","idListToDeleteMitigans":"{idListToDeleteMitigans}","oppProduct":"{Parent.updateId}","internalRatings":"{catalogOptions.taxoC204}","countryOptions":"{catalogOptions.taxoC245}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants   edit-mode-table-mitigans="true" ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state1element0block_element2" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state1element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state1element0block_element2block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state1element0block_element2block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-title%20slds-text-align_center%22%3E%3Cspan%20style=%22color:%20#e03e2d;%22%3E%3Cstrong%3E%3Cspan%20class=%22slds-text-color_default%22%20style=%22font-size:%2012pt;%22%3E%7BLabel.dmt_cl_Guarantors_Text%7D%3C/span%3E%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state1element0block_element2block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:41px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state1element0block_element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}","totalamount":"{derivativestotalamount}","bookingGeographyLine":"{bookingGeography}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      <div slot="flyout" class="listener2action1 " if:true={action.listener2action1}> <c-cf-guarantors-modal-fields data-style-id="state1element0block_element2block_element2_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"oppLineItemId":"{Parent.updateId}","mitigantId":"{mitigantId}","mitigantName":"{mitigantName}","entityId":"{entityId}"}'  ></c-cf-guarantors-modal-fields></div><div slot="flyout" class="listener4action1 " if:true={action.listener4action1}> <c-cf-guarantors-modal-delete data-style-id="state1element0block_element2block_element2_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"mitigantName":"{mitigantName}","mitigantId":"{mitigantId}"}'  ></c-cf-guarantors-modal-delete></div>
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

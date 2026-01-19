@@ -1,0 +1,3 @@
+let styleDefinition =
+      {"state0element3block_element1":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element slds-m-around_xx-small slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_6-of-12  ","style":"      \n      min-height:4em;   width: 49%;","styleProperties":{}}}]};
+  export default styleDefinition

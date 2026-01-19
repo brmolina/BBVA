@@ -1,0 +1,60 @@
+.slds-m-right_small, .slds-m-right--small {
+    margin-right:0.75rem;
+}
+.slds-button_icon-error, .slds-button_icon-error:hover, .slds-button_icon-error:active, .slds-button_icon-error:focus, .slds-button--icon-error, .slds-button--icon-error:hover, .slds-button--icon-error:active, .slds-button--icon-error:focus {
+    color:  rgb(234, 0, 30);
+}
+.slds-button_icon, .slds-button--icon, .slds-button_icon-inverse, .slds-button--icon-inverse, .slds-button_icon-container, .slds-button--icon-container, .slds-button_icon-border, .slds-button--icon-border, .slds-button_icon-border-filled, .slds-button--icon-border-filled, .slds-button_icon-border-inverse, .slds-button--icon-border-inverse, .slds-button_icon-more, .slds-button--icon-more, .slds-button_icon-error, .slds-button--icon-error, .slds-button_icon-warning, .slds-button--icon-warning {
+    line-height:  1;
+    vertical-align: middle;
+    justify-content: center;
+    color:  rgb(116, 116, 116);
+    flex-shrink: 0;
+}
+.slds-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding-top: 1;
+    padding-right: 1;
+    padding-bottom: 1;
+    padding-left: 1;
+    background: none;
+    background-color: 1;
+    background-clip: border-box;
+    border-color: 1;
+    border-style: solid;
+    border-width: 1;
+    border-radius: 1;
+    box-shadow: 1;
+    line-height: 1;
+    text-decoration: none;
+    color: 1;
+    -webkit-appearance: none;
+    white-space: normal;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+a, button {
+    cursor: pointer;
+}
+button, html input[type=button], input[type=reset], input[type=submit] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+button, select {
+    text-transform: none;
+}
+button {
+    overflow: visible;
+}
+button, input, optgroup, select, textarea {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+*, *:before, *:after {
+    box-sizing: border-box;
+}

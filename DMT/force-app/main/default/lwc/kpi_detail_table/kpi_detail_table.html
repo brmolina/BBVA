@@ -1,0 +1,125 @@
+<template >
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container relative slds-scrollable" style="overflow: visible !important;">
+
+                <lightning-modal-body class="relative slds-scrollable">
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </template>
+                    <div class="c-container" style="max-height:400px;">
+                        <lightning-layout >
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Business Area"><b>Business area</b></p>
+                                    <p>{contract.businessArea}</p>
+                                </div>
+                            </lightning-layout-item> 
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Operation Id"><b>Operation Id</b></p>
+                                    <p>{contract.operationId}</p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Client Name"><b>Client Name</b></p>
+                                    <p>{contract.client}</p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Initial Date"><b>Initial date</b></p>
+                                    <p><lightning-formatted-date-time value={contract.initialDate} year="numeric" month="2-digit" day="2-digit" ></lightning-formatted-date-time></p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Final Date"><b>Final date</b></p>
+                                    <p><lightning-formatted-date-time value={contract.finalDate} year="numeric"  month="2-digit" day="2-digit" ></lightning-formatted-date-time></p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Initial Amount"><b>Initial amount</b></p>
+                                    <p><lightning-formatted-number value={contract.initialAmount}></lightning-formatted-number>&nbsp;{contract.currency}</p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Booking Country"><b>Booking Country</b></p>
+                                    <p>{contract.bookingCountry}</p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="around-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Activity"><b>Activity</b></p>
+                                    <p>{contract.activity}</p>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item padding="horizontal-medium">
+                                <div class="header-column">
+                                    <p class="field-title title_contract" title="Deadline Reception KPI filter"><b>Deadline Reception KPI</b></p>
+                                    <p><c-combobox label=" " options={comboBoxOptions} origin="yearFilter" multiselect="true" autocomplete="true" onchange={filterTable}></c-combobox></p>
+                                </div>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </div>
+                    <div class=" slds-p-vertical_medium slds-p-around_xx-small slds-p-left_medium slds-text-align_left">
+                        <p><i>The data is updated every Friday</i></p>
+                    </div>
+                    <template lwc:if={noData}>
+                        <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+                            {labelData}
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div id="detailKPITable" style='height: 300px;background-color: white;' class="classTableCmp slds-table_col-bordered slds-p-around_small slds-scrollable">
+                            <c-kpi_custom_datatable
+                            class="customDataTable"
+                            key-field="id"
+                            columns={columns}
+                            data={dinamicData}
+                            draft-values={draftValues}
+                            hide-checkbox-column
+                            suppress-bottom-bar
+                            oncellchange={handleChange}
+                            onrowaction={handleRowActions}
+                            errors={errors}
+                            wrap-text-max-lines="3"
+                            column-widths-mode="auto"
+                            sorted-by={sortBy}
+                            sorted-direction={sortedDirection}
+                            onsort={doSorting}>
+                            </c-kpi_custom_datatable>
+                        </div>
+                    </template>
+                </lightning-modal-body>
+                <lightning-modal-footer>
+                    <template lwc:if={contract.editable}>   
+                        <lightning-button
+                        class="slds-var-m-left_small"
+                        onclick={addTrigger}
+                        icon-name="utility:add"
+                        style="float:left"
+                        label="Add KPI"
+                    	></lightning-button>
+                    </template>
+                    <template lwc:else>
+                        
+                    </template>
+                    
+                    <c-kpi_detail_button button-variant="neutral" button-label="Cancel" event-name="closemodal" ></c-kpi_detail_button>
+                    <lightning-button
+                        button-variant="brand"
+                        class="slds-var-m-left_small"
+                        disabled={saveDisabled}
+                        onclick={handleSaveClick}
+                        label="Save"
+                    ></lightning-button>
+                </lightning-modal-footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

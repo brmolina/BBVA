@@ -1,0 +1,97 @@
+<template>
+    <template lwc:if={accountOrLocalClient}>
+        <!-- Contenedor principal que controla el estado del combobox (abierto/cerrado) -->
+        <div class="slds-combobox_container">
+            <!-- SECCIÓN 1: La "Píldora" del registro seleccionado (se muestra después de seleccionar) label={selectedClient.Name}-->
+            <template lwc:if={selectedClient}>
+                <label class="slds-form-element__label">Group</label>
+                <div class="slds-box slds-box_xx-small" style="height:32px; padding:2px;">
+                    <div class="pill-container">
+                        <lightning-pill onremove={handleClearSelection}>
+                            <label class="slds-form-element__label" style="width: 29vh;display: flex;position: absolute;margin-left: 28px;bottom: 2px;">
+                                {selectedClient.Name}
+                            </label>
+                            <lightning-icon icon-name="standard:account" alternative-text="Account"></lightning-icon>
+                        </lightning-pill>
+                    </div>
+                </div>
+            </template>
+            <template if:false={selectedClient}>
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded={isDropdownOpen} aria-haspopup="listbox" role="combobox">
+                    <!-- Campo de entrada con el icono de búsqueda -->
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-inputhas-icon_right" role="none">
+                        <lightning-input
+                            label="Group"
+                            placeholder="Search Groups..."
+                            onkeyup={handleSearch}
+                            onblur={handleBlur}
+                            onfocus={handleFocus}
+                            value={searchTerm}
+                            autocomplete="off"
+                            disabled={disabledAccount}
+                            role="textbox">
+                        </lightning-input>
+                        <lightning-icon
+                            icon-name="utility:search"
+                            size="x-small"
+                            class="slds-input__icon slds-input__icon_right slds-icon-text-default slds-icon_container slds-icon_container-center"
+                            style="top: 38px; left: 97%;">
+                        </lightning-icon>
+                    </div>
+                    <!-- Lista desplegable de resultados-->
+                <template lwc:if={isDropdownOpen}>
+                        <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                <!-- Mensaje de "Cargando..." -->
+                                <template lwc:if={isSearching}>
+                                    <li role="presentation" class="slds-listbox__item">
+                                        <span class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                            <lightning-spinner size="small"></lightning-spinner>
+                                            <span class="slds-media__body">Loading...</span>
+                                        </span>
+                                    </li>
+                                </template>
+                                <!-- Mensaje de "No hay resultados" -->
+                                <template lwc:if={noResultsFound}>
+                                    <li role="presentation" class="slds-listbox__item">
+                                        <span class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                            <span class="slds-media__body">No results found.</span>
+                                        </span>
+                                    </li>
+                                </template>
+                                <!-- Itera sobre los resultados y los muestra con el estilo de record-picker-->
+                                <template for:each={searchResults} for:item="client">
+                                    <li key={client.Id} role="presentation" class="slds-listbox__item" onmousedown={handleSelect} data-id={client.Id}>
+                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_center" role="option">
+                                            <span class="slds-media__figure slds-listbox__option-icon">
+                                                <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                                            </span>
+                                            <span class="slds-media__body">
+                                                <span class="slds-listbox__option-text slds-listbox__optiontext_entity">{client.Name}</span>
+                                                <span class="slds-listbox__option-meta slds-listbox__optionmeta_entity">{client.secondaryField}</span>
+                                            </span>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </template>
+    <lightning-record-picker
+        label="Local Client"
+        placeholder="Search Clients..."
+        object-api-name="Local_Client__c"
+        filter={filter}
+        matching-info={matchingInfo}
+        onchange={handleChangeLocalClient}
+        value={localClientValue}
+        disabled={disabledLocalClient}
+        display-info={displayInfoLocal}
+    >
+    </lightning-record-picker>
+
+
+</template>

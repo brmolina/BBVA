@@ -1,0 +1,47 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-path">
+                <div class="slds-grid slds-path__track">
+                    <div class="slds-grid slds-path__scroller-container">
+                        <div class="slds-path__scroller">
+                            <div class="slds-path__scroller_inner">
+                                <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                    <template for:each={computedSteps} for:item="step">
+                                        <li key={step.value} class={step.className} role="presentation">
+                                            <a aria-selected="false"
+                                               class="slds-path__link"
+                                               href="javascript:void(0);"
+                                               role="option"
+                                               tabindex="-1"
+                                               data-value={step.value}
+                                               onclick={handleStageClick}>
+                                                <span class="slds-path__stage">
+                                                    <template if:true={step.showCheckIcon}>
+                                                        <lightning-icon icon-name="utility:check" size="x-small" variant="inverse"></lightning-icon>
+                                                    </template>
+                                                    <span class="slds-assistive-text">{step.label}</span>
+                                                </span>
+                                                <span class="slds-path__title">{step.label}</span>
+                                            </a>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-path__action">
+                        <lightning-button
+                            class="fixed-button"
+                            label={buttonLabel}
+                            variant="brand"
+                            icon-name={buttonIcon}
+                            onclick={handleMarkComplete}
+                            disabled={isDisabled}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</template>

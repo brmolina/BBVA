@@ -1,0 +1,204 @@
+.table_height {
+    height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 250px);
+}
+
+.table_height_consumption {
+    height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 305px);
+}
+
+.custom-table {
+    padding: 0px;
+    margin: 0px;
+}
+
+/* height: calc( 100vh - (var(--lwc-heightHeader) + var(--lwc-heightContextBar) + (var(--lwc-templateGutters))) - 250px); */
+
+.maintable {
+    height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 250px);
+}
+
+.consumptiontable {
+    height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 304px);
+}
+
+thead th {
+    top: 0;
+    position: sticky;
+    background-color: #f3f3f3;
+    z-index: 55;
+    min-height: 30px;
+    height: 30px;
+    text-align: left;
+    letter-spacing: normal;
+    font-weight: normal;
+    font-size: inherit;
+}
+
+.col-name {
+    left: 0;
+    position: sticky;
+}
+
+.fixed-header {
+    border-right: 2px solid #c9c9c9;
+}
+
+.fixed-row-name {
+    left: 0;
+    position: sticky;
+    z-index:50;
+    background: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60ch;
+    background-color: #ffffff;
+}
+
+.fixed-row-header {
+    left: 0;
+    z-index:60 !important;
+}
+
+.notfound {
+    display: none !important;
+}
+
+.found {
+    display: table-row !important;
+}
+
+.headerName {
+    color: var(--lwc-brandTextLink, rgba(11, 92, 171, 1));
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.headerName:hover {
+    text-decoration: underline;
+    color: var(--lwc-brandTextLinkActive, rgba(1, 68, 134, 1));
+    outline: 0;
+    cursor: pointer;
+}
+
+.collapsed .groupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><g><path fill="%23666666" d="M17.9,4.4l20.7,20.5c0.6,0.6,0.6,1.6,0,2.2L17.9,47.6c-0.6,0.6-1.6,0.6-2.2,0l-2.2-2.2c-0.6-0.6-0.6-1.6,0-2.2l16.3-16.1c0.6-0.6,0.6-1.6,0-2.2L13.6,8.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2C16.4,3.9,17.3,3.9,17.9,4.4z"/></g></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 5px;
+    padding-left: 25px;
+    cursor: pointer;
+    background-color: #f3f3f3
+}
+
+.expanded .groupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><path fill="%23666666" d="M47.6,17.8L27.1,38.5c-0.6,0.6-1.6,0.6-2.2,0L4.4,17.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2c0.6-0.6,1.6-0.6,2.2,0l16.1,16.3c0.6,0.6,1.6,0.6,2.2,0l16.1-16.2c0.6-0.6,1.6-0.6,2.2,0l2.2,2.2C48.1,16.3,48.1,17.2,47.6,17.8z"/></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 5px;
+    padding-left: 25px;
+    cursor: pointer;
+    background-color: #f3f3f3
+}
+
+.foundGroup .groupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><path fill="%23666666" d="M47.6,17.8L27.1,38.5c-0.6,0.6-1.6,0.6-2.2,0L4.4,17.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2c0.6-0.6,1.6-0.6,2.2,0l16.1,16.3c0.6,0.6,1.6,0.6,2.2,0l16.1-16.2c0.6-0.6,1.6-0.6,2.2,0l2.2,2.2C48.1,16.3,48.1,17.2,47.6,17.8z"/></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 5px;
+    padding-left: 25px;
+    cursor: auto;
+    background-color: #f3f3f3
+}
+
+.collapsed .l3GroupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><g><path fill="%23666666" d="M17.9,4.4l20.7,20.5c0.6,0.6,0.6,1.6,0,2.2L17.9,47.6c-0.6,0.6-1.6,0.6-2.2,0l-2.2-2.2c-0.6-0.6-0.6-1.6,0-2.2l16.3-16.1c0.6-0.6,0.6-1.6,0-2.2L13.6,8.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2C16.4,3.9,17.3,3.9,17.9,4.4z"/></g></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 40px;
+    padding-left: 60px;
+    cursor: pointer;
+    background-color: #f3f3f3
+}
+
+.expanded .l3GroupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><path fill="%23666666" d="M47.6,17.8L27.1,38.5c-0.6,0.6-1.6,0.6-2.2,0L4.4,17.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2c0.6-0.6,1.6-0.6,2.2,0l16.1,16.3c0.6,0.6,1.6,0.6,2.2,0l16.1-16.2c0.6-0.6,1.6-0.6,2.2,0l2.2,2.2C48.1,16.3,48.1,17.2,47.6,17.8z"/></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 40px;
+    padding-left: 60px;
+    cursor: pointer;
+    background-color: #f3f3f3
+}
+
+.foundGroup .l3GroupName {
+    background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="52px" height="52px" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve"><path fill="%23666666" d="M47.6,17.8L27.1,38.5c-0.6,0.6-1.6,0.6-2.2,0L4.4,17.8c-0.6-0.6-0.6-1.6,0-2.2l2.2-2.2c0.6-0.6,1.6-0.6,2.2,0l16.1,16.3c0.6,0.6,1.6,0.6,2.2,0l16.1-16.2c0.6-0.6,1.6-0.6,2.2,0l2.2,2.2C48.1,16.3,48.1,17.2,47.6,17.8z"/></svg>') left no-repeat;
+    background-size: 15px;
+    background-position-x: 40px;
+    padding-left: 60px;
+    cursor: auto;
+    background-color: #f3f3f3
+}
+
+.clientexpanded {
+    background-color: #ffffff
+}
+
+.clientcollapsed {
+    display: none;
+}
+
+.l3collapsed {
+    display: none;
+}
+
+.topClient {
+    padding-left: 25px;
+}
+
+.clientName {
+    padding-left: 40px;
+}
+
+.l3ClientName {
+    padding-left: 80px;
+}
+
+.clientName span {
+    display: block;
+    font-size: 0.87em;
+}
+
+.l3ClientName span {
+    display: block;
+    font-size: 0.87em;
+}
+
+.topClient span {
+    display: block;
+    font-size: 0.87em;
+}
+
+.downloadButton {
+    position: absolute;
+    right: 0.6rem;
+    top: 1.1rem;
+    display: inline;
+}
+
+.grill-fields {
+    padding:10px;
+}
+
+.selected {
+    animation: blink 4s linear;
+}
+
+.isSelected {
+    background-color: #afdbf7 !important;
+}
+
+tr:hover td.isSelected:hover {
+    background-color: #afdbf7 !important;
+}
+
+@keyframes blink {
+    0%{background-color: #fff6c5}
+    75%{background-color: #fff6c5}
+    100%{background-color: #ffffff}
+}

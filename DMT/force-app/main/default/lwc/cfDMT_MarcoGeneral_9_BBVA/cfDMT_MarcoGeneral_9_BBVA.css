@@ -1,0 +1,67 @@
+.myicon {
+    --slds-c-icon-color-background: #5867E8;
+}
+
+.modalClass{
+    height: auto;
+    width: auto;
+    margin: 0rem;
+    padding: 0rem;
+} 
+
+.slds-modal_medium .slds-modal__container{
+    width: auto;
+    max-width: 45rem;
+    min-width: 30rem; 
+}
+.modal_modal_slds[clsas="slds-modal_medium .slds-modal__container"]{
+    max-width: var(--sizeSmall,45rem);
+    min-width: var(--sizeXxSmall,30rem);
+    width: auto;
+     
+     
+}
+.slds-p-around_medium, .slds-p-around--medium {
+    padding: 0;
+}
+.slds-button__icon_left, .slds-button__icon--left{
+    margin-right: 0;
+}
+
+.slds-form-element .slds-dropdown_left {
+    bottom: 100% !important;
+    top: auto !important;
+}
+
+.separator{
+    width: 30px;
+
+}
+.borderTop {
+    border-bottom: 1.3rem solid;
+    border-color: #f3f3f3;
+}
+.GCEStyle {
+    height: 25px;
+    width: 25px;
+    position: relative;
+    left: 5px;
+    bottom: -8px;
+    cursor: pointer;
+}
+.elementActionGCE {
+    font-weight: bold;
+    display: inline-flex;
+    width: fit-content;
+}
+.imagetyleGCE {
+    height: 30px;
+    width: 30px;
+    position: relative;
+    text-align: right;
+    
+}
+.elementActionStileGCE {
+    display: inline-flex;
+    width: fit-content;
+}

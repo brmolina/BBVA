@@ -1,0 +1,37 @@
+<template>
+    <template if:true={filteredProducts}>
+        <template if:false={isLoading}>
+        <template if:true={isFilteredByParent}>
+            <div class="back-container" style="border-bottom:1px solid #ccc; margin-bottom:8px;">
+                <span 
+                    style="cursor:pointer; font-weight:bold; font-size:18px;margin-left:1rem;"
+                    title="Back"
+                    onclick={handleBack}> 
+                    <lightning-icon icon-name="utility:back"  size="x-small"></lightning-icon>
+                </span>
+            </div>
+        </template>
+            <div class="productList">
+                <template for:each={filteredProducts} for:item="product">
+                    <div key={product.id} class="slds-p-vertical_x-small slds-border_bottom">
+                        <c-dmt_producttreenode
+                            product={product}
+                            oncheck={handleCheck}
+                            zero-level="true"
+                            onexpand={handleExpand}
+                            is-selected={product.selected}
+                            onterm={handleTerm}
+                            level="0">
+                        </c-dmt_producttreenode>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </template>
+
+    <template if:true={isLoading}>
+        <div class="slds-text-align_center slds-p-vertical_medium">
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </div>
+    </template>
+</template>

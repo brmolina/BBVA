@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-grid slds-wrap">
+        <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="select01"><abbr class="slds-required" title="required">* </abbr>Product Risk Type</label>
+                <div class="slds-form-element__control">
+                    <div class="slds-select_container">
+                        <select class="slds-select slds-p-around_xx-small"  id="select01" onchange={handleProductTypeChange} required >
+                            <template for:each={producttype} for:item="option">
+                                <option key={option.key} value={option.value} selected={option.defaultValue}><template lwc:if={option.label} > {option.label} </template></option>
+                             </template>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        
+            <lightning-input required type="number" min="0" id="field-number-price" value={amount} label="Amount" onblur={handleAmountChange} ></lightning-input>
+
+            <lightning-input required type="number" min="1" id="field-number-moths-years" value={monthsYearValue} label="Number of Months/Years" onblur={handleMonthsYearsChange} ></lightning-input>
+
+        </div>
+        <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="select-02"><abbr class="slds-required" title="required">* </abbr>Client Type</label>
+                <div class="slds-form-element__control">
+                    <div class="slds-select_container">
+                        <select class="slds-select slds-p-around_xx-small clienttype"  id= "select-02" onchange={handleClientTypeChange} required="">
+                            <template for:each={clienttype} for:item="client">
+                                <option key={client.label} value={client.value} selected={client.label}><template lwc:if={client.label}> {client.label} </template></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="select-03"><abbr class="slds-required" title="required">* </abbr>Currency</label>
+                <div class="slds-form-element__control">
+                    <div class="slds-select_container">
+                        <select class="slds-select slds-p-around_xx-small currencytype"  id= "select-03" onchange={handleCurrencyTypeChange} required="">
+                            <template for:each={currencytype} for:item="currency">
+                                <option key={currency.label} value={currency.value} selected={currency.defaultValue}><template lwc:if={currency.label}> {currency.label} </template></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="select-04"><abbr class="slds-required" title="required">* </abbr>Months/Years</label>
+                <div class="slds-form-element__control">
+                    <div class="slds-select_container">
+                        <select class="slds-select slds-p-around_xx-small plazoMetric"  id= "select-04" onchange={handlePlazoMetricChange} required="">
+                            <template for:each={plazo} for:item="valorplazo">
+                                <option key={valorplazo.label} value={valorplazo.value} selected={valorplazo.defaultValue}><template lwc:if={valorplazo.label}> {valorplazo.label} </template></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

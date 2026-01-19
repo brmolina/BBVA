@@ -1,0 +1,29 @@
+<template>
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            <!-- dmt_item_selector ocupa 1/3 -->
+            <c-dmt_item_selector selected-items={selectedItems}
+                onitemselected={handleItemSelected}
+                onviewnamechanged={handleViewNameChanged}
+                onviewtypechanged={handleViewTypeChanged}
+                view-name={viewName}
+                view-type={viewType}
+                inputs-disabled={inputsDisabled}
+                view-type-options={viewTypeOptions}
+                is-profitability={isProfitability}
+                write-access={writeAccess}
+                ></c-dmt_item_selector>
+        </div>
+
+        <div style="flex: 2;">
+            <!-- dmt_view_structure ocupa 2/3 y recibe la lista de ítems seleccionados -->
+            <c-dmt_view_structure selected-items={selectedItems}
+            view-type={viewType}
+            view-type-options={viewTypeOptions}
+            onprocessing={handleDisableInputs}
+            onfinishprocessing={handleEnableInputs}
+            search-id-label={searchIdLabel}
+            ></c-dmt_view_structure>
+        </div>
+    </div>
+</template>

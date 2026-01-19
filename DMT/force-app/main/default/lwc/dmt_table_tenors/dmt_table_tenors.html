@@ -1,0 +1,80 @@
+<template>
+    <div class="slds-is-relative">
+
+        <template lwc:if={isLoading}>
+            <lightning-spinner
+                alternative-text="Loading..."
+                size="medium"
+                variant="brand">
+            </lightning-spinner>
+        </template>
+
+        <c-dmt_-table-header-section
+            titletable="Tenors"
+            showcopypaste="true"
+            rowscopypaste={rowstablecopypaste}
+            tablecolumnscopypaste={columnstablecopypaste}
+            context="Tenors"
+            isreadonlyuser={isTableLocked}
+            onsendrowsevent={handlePasteData}>
+        </c-dmt_-table-header-section>
+
+        <c-custom-data-table
+            data={paginatedData}
+            style="max-height: 5vh;height: inherit;"
+            columns={columns}
+            key-field="Id"
+            max-row-selection="0"
+            hide-checkbox-column="true"
+            onpicklistchanged={picklistChanged}
+            oncustomtextinputchanged={textInputChanged}
+            oncustomdateinputchanged={textInputChanged}
+            oncellchange={handleChangeCell}
+            onrowaction={handleRowAction}
+            onsave={handleSaveCell}
+            suppress-bottom-bar>
+        </c-custom-data-table>
+
+        <template lwc:if={showPagination}>
+            <div class="slds-p-top_small"></div>
+            <div class="slds-grid slds-wrap">
+
+                <div class="slds-col slds-text-align_left slds-grid slds-grid_vertical-align-center">
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-p-top_xx-small">
+                            <p>Showing {paginatedData.length} of {tableData.length} items</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-grow slds-text-align_right slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-p-left_small">
+                    <div class="slds-grid slds-grid_align-center">
+                        <div class="slds-m-right_small">
+                            <lightning-button
+                                variant="base"
+                                icon-name="utility:chevronleft"
+                                onclick={handlePreviousPage}
+                                disabled={disablePrevious}>
+                            </lightning-button>
+                        </div>
+
+                        <div class="slds-m-horizontal_small slds-grid slds-grid_vertical-align-center">
+                            <span>Page {currentPage} of {totalPages}</span>
+                        </div>
+
+                        <div class="slds-m-left_small">
+                            <lightning-button
+                                variant="base"
+                                icon-name="utility:chevronright"
+                                icon-position="right"
+                                onclick={handleNextPage}
+                                disabled={disableNext}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+    </div>
+</template>

@@ -1,0 +1,21 @@
+.combobox-custom-width {
+    --lwc-sizeXSmall: 8rem;
+}
+
+.combobox-container {
+    z-index: 9001;
+    margin-bottom: 6px;
+    margin-top: -14px;
+    margin-left: 8px;
+}
+
+
+
+.combobox-container-with-helptext {
+    display: flex;
+    z-index: 9001;
+    margin-bottom: 6px;
+    margin-top: -14px;
+    margin-left: 8px;
+    align-items: center;
+}

@@ -1,0 +1,37 @@
+.containerClass {
+    position: relative;
+    border:1px solid #939393;
+    border-radius: 3.5px;
+}
+
+.containerClass input {
+    height: 31.3px;
+    width: 100%;
+    padding-right: 60px;
+}
+
+.labelClass{
+    margin-bottom: 1.2px; 
+    font:12px; 
+    color:#444444;
+}
+
+.buttonBoxClass {
+    position: absolute;
+    top: 0;
+    display: flex;
+    right: 0;
+    height: 100%;
+    align-items: bottom;
+}
+
+.buttonsClass:hover {
+    background: #d4c4c4;
+}
+
+.buttonsClass {
+    height: 100%;
+    border: none;
+    background: none;
+    font-size: 18px;
+}

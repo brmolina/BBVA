@@ -1,0 +1,18 @@
+<template>
+    <template if:true={isLoading}> 
+         <lightning-card>
+            <div class="slds-text-align_center slds-m-around_xx-large slds-text-heading_large">
+                <img src="/resource/DMT_Deals" alt="Deals image" width="100" style="margin-bottom:-24px;"></img>   
+            </div>
+            <div class="slds-text-align_center slds-m-around_xx-large " style="font-size: 2.7rem;bottom: 22px; position: relative;">
+                Profitability Test
+            </div>
+            <div class="slds-text-align_center slds-m-around_xx-large slds-text-heading_medium" style="top: -25px; position: relative;left: -7px;">
+                Loading
+                    <div class="loading">
+                        <lightning-spinner alternative-text="Loading"  variant="brand" size="small" class="styleSpinner" ></lightning-spinner>
+                    </div>
+            </div>
+        </lightning-card>
+    </template>
+</template>

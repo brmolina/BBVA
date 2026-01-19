@@ -1,0 +1,32 @@
+.slds-table_header-fixed_container {
+    padding-top: 0px;
+}
+
+.vh35 {
+    height: 35vh;
+}
+
+.vh25 {
+    height: 35vh;
+}
+
+.vh65 {
+    height: 65vh;
+}
+
+.vh33 {
+    height: 33vh;
+}
+
+.vh32 {
+    height: 32vh;
+}
+
+.vh12 {
+    height: 12vh;
+}
+
+.downloadcsv {
+    --lwc-spacingXSmall: 0px;
+    --lwc-spacingMedium: 9px;
+}

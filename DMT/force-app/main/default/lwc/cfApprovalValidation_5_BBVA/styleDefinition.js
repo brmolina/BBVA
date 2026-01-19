@@ -1,0 +1,3 @@
+let styleDefinition =
+      {"state0element3":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element slds-p-around_x-small slds-size_5-of-12  ","style":"","styleProperties":""}}],"state0element5block_element1":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element slds-text-align_left slds-m-left_xx-small  slds-size_3-of-12  ","style":"      \n         ","styleProperties":{}}}]};
+  export default styleDefinition

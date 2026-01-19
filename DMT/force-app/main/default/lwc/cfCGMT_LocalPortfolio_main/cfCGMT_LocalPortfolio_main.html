@@ -1,0 +1,95 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small highlights slds-clearfix slds-page-header slds-page-header_record-home fixed-position forcegenerated-record-layout2 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-2","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-2","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  slds-text-align_left slds-p-top_x-small slds-p-left_x-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-icon data-style-id="state0element0block_element0_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="action:new_account"  size="large"  extraclass="slds-icon_container slds-icon-action-new-account record-avatar-container  slds-avatar_medium icon"  variant="inverse"  imgsrc=""  theme="slds"  ></omnistudio-flex-icon>
+      </div><div data-style-id="state0element0block_element1" class="slds-col  slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         margin-left: -4.5em;" ><omnistudio-output-field data-style-id="state0element0block_element1_child"   card={card}  record={record}  merge-field="%3Ch2%20class=%22slds-text-heading_medium%20slds-text-title%22%3E%3Cspan%20style=%22font-size:%2018pt;%22%3E%3Cstrong%3E%7BgetTableSubsidiary.returnGetDataGCS%5B0%5D.localGroupName%7D%3C/strong%3E%3C/span%3E%3C/h2%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         box-shadow: var(--lwc-pageHeaderShadow, 0 2px 2px 0 rgba(0, 0, 0, 0.10)); border-left: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201))); border-right: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201))); border-bottom: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201)));"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-11","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' ><c-cf-c-g-m-t_-group-detail data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.getTableSubsidiary.returnGetDataGCS[0]}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-11","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-c-g-m-t_-group-detail>
+    </div><div data-style-id="state0element2" class="slds-col  slds-m-top_x-large  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-18","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' ><c-cf-c-g-m-t_-table-subsidiaries data-style-id="state0element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.getTableSubsidiary.getTableSubsidiary}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-18","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-c-g-m-t_-table-subsidiaries>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_12-of-12 condition-element" data-rindex={rindex} style=""  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"StatusCode","operator":"==","value":"400","type":"custom","hasMergeField":false}]}' ><omnistudio-output-field data-style-id="state0element4block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2014pt;%22%3ENo%20associated%20records%20available%20for%20display%3C/span%3E%3C/div%3E%0A%3Cdiv%20class=%22slds-text-align_center%22%3E&nbsp;%3C/div%3E"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"StatusCode","operator":"==","value":"400","type":"custom","hasMergeField":false}]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small highlights slds-clearfix slds-page-header slds-page-header_record-home fixed-position forcegenerated-record-layout2 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-2","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-2","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  slds-text-align_left slds-p-top_x-small slds-p-left_x-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-icon data-style-id="state0element0block_element0_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="action:new_account"  size="large"  extraclass="slds-icon_container slds-icon-action-new-account record-avatar-container  slds-avatar_medium icon"  variant="inverse"  imgsrc=""  theme="slds"  ></omnistudio-flex-icon>
+      </div><div data-style-id="state0element0block_element1" class="slds-col  slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         margin-left: -4.5em;" ><omnistudio-output-field data-style-id="state0element0block_element1_child"   card={card}  record={record}  merge-field="%3Ch2%20class=%22slds-text-heading_medium%20slds-text-title%22%3E%3Cspan%20style=%22font-size:%2018pt;%22%3E%3Cstrong%3E%7BgetTableSubsidiary.returnGetDataGCS%5B0%5D.localGroupName%7D%3C/strong%3E%3C/span%3E%3C/h2%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         box-shadow: var(--lwc-pageHeaderShadow, 0 2px 2px 0 rgba(0, 0, 0, 0.10)); border-left: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201))); border-right: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201))); border-bottom: var(--lwc-borderWidthThin,1px) solid var(--slds-g-color-border-base-1, var(--lwc-pageHeaderColorBorder,rgb(201, 201, 201)));"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-11","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' ><c-cf-c-g-m-t_-group-detail data-style-id="state0element1_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.getTableSubsidiary.returnGetDataGCS[0]}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-11","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-c-g-m-t_-group-detail>
+    </div><div data-style-id="state0element2" class="slds-col  slds-m-top_x-large  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-18","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}' ><c-cf-c-g-m-t_-table-subsidiaries data-style-id="state0element2_child"  tracking-obj={_childCardTrackingObj}  is-inside-parent={insideParent} parent-uniquekey={uniqueKey}  card-node="\{record.getTableSubsidiary.getTableSubsidiary}"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  is-child-card-tracking-enabled="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-18","field":"StatusCode","operator":"!=","value":"400","type":"custom","hasMergeField":false}]}'  object-api-name={objectApiName}  theme="slds"   onupdateparent={updateParentData}></c-cf-c-g-m-t_-table-subsidiaries>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col   slds-size_12-of-12 condition-element" data-rindex={rindex} style=""  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"StatusCode","operator":"==","value":"400","type":"custom","hasMergeField":false}]}' ><omnistudio-output-field data-style-id="state0element4block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-align_center%22%3E%3Cspan%20style=%22font-size:%2014pt;%22%3ENo%20associated%20records%20available%20for%20display%3C/span%3E%3C/div%3E%0A%3Cdiv%20class=%22slds-text-align_center%22%3E&nbsp;%3C/div%3E"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"StatusCode","operator":"==","value":"400","type":"custom","hasMergeField":false}]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

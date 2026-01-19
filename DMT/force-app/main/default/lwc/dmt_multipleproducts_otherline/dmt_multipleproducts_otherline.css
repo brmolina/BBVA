@@ -1,0 +1,57 @@
+.greenButton {
+    --slds-c-button-color-background: #28a745;
+    --slds-c-button-text-color: white;
+}
+
+.redButton {
+    --slds-c-button-color-background: #dc3545;
+    --slds-c-button-text-color: white;
+}
+
+.productList {
+    height: 35vh; /* ajusta según tu diseño */
+    overflow-y: auto;
+    /* margin-left: 1.2rem; */
+}
+lightning-input[type="checkbox"] .sldscheckbox_faux{
+    width: 1.5rem;
+    height: 1.5rem
+}
+
+.child-container{
+    padding-left: 3rem;
+    margin-top: 0.5rem;
+    position: relative;
+}
+
+.child-container::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    width: 1px;
+    height: 100%;
+    background-color: #ffffff;
+}
+
+.tree-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    /*margin-left: 1.5rem;  ligera indentación */
+    position: relative;
+}
+
+.tree-line {
+    width: 20px;
+    height: 24px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    margin-right: 8px;
+    position: relative;
+    top: 8px;
+}
+
+.tree-node {
+    flex: 1;
+}

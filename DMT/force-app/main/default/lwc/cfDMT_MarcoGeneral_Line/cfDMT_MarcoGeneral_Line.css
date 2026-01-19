@@ -1,0 +1,13 @@
+.slds-modal_medium .slds-modal__container{
+    width: auto;
+    max-width: 55rem;
+    min-width: 30rem;
+
+}
+
+.slds-modal__container .slds-p-around_medium, .slds-p-around--medium {
+    padding: 0;
+}
+.slds-modal__close {
+    display: none;
+}

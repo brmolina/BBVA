@@ -1,0 +1,365 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Funding"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="Funding_Curve__c"  label="Funding Curve"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element0block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element0block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element1block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="Life_Funding_Type__c"  label="Funding Term"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element1block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element1block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element2block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_funding_cost_db__c"  label="Funding Drawn (BPS)"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element2block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element2block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element3block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element3block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_funding_cost_fb__c"  label="Funding Undrawn (BPS)"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element3block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element3block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element3block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element4block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element0block_element4block_element0block_element0_child"   card={card}  record={record}  type="checkbox"  property-obj='\{"checked":false,"label":"Green Bonus","fieldBinding":"{gf_green_bonus__c}","disabled":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element0block_element4block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element4block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element4block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element5" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element5block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element0block_element5block_element0block_element0_child"   card={card}  record={record}  type="checkbox"  property-obj='\{"checked":false,"label":"Social Bonus","fieldBinding":"{gf_social_bond__c}","disabled":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element0block_element5block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element5block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element5block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Country Risk"  collapsible="true"  collapsed-by-default="true"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element1block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_country_risk__c"  label="Country"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element0block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element1block_element0block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element1block_element0block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element1block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element1block_element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element1block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element1block_element1block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_country_rating__c"  label="Rating"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element1block_element1block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element1block_element1block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="true"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element2block_element0block_element0_child"   card={card}  record={record}  type="combobox"  property-obj='\{"label":"Currency","type":"combobox","value":"EUR","options":[{"label":"EUR","value":"EUR","group":"","id":0},{"label":"COP","value":"COP","group":"","id":1}]}'  theme="slds"  ></omnistudio-base-input-element>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element1" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element1block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element2block_element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_small%20slds-text-align_center%22%3E%3Cstrong%3EREAL%20GUARANTEES%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:3.6em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants  ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element3" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element3block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element2block_element3block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_small%20slds-text-align_center%22%3E%3Cstrong%3EGUARANTORS%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element3block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:3.6em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element4" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Funding"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="Funding_Curve__c"  label="Funding Curve"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element0block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element0block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element1block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="Life_Funding_Type__c"  label="Funding Term"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element1block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element1block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element1block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element2block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_funding_cost_db__c"  label="Funding Drawn (BPS)"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element2block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element2block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element2block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"Funding_Curve__c","operator":"==","value":"Other","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element3block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element0block_element3block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_funding_cost_fb__c"  label="Funding Undrawn (BPS)"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element3block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element3block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element3block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element4_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element4block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element0block_element4block_element0block_element0_child"   card={card}  record={record}  type="checkbox"  property-obj='\{"checked":false,"label":"Green Bonus","fieldBinding":"{gf_green_bonus__c}","disabled":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element0block_element4block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element4block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element4block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element5" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element0block_element5block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_11-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element0block_element5block_element0block_element0_child"   card={card}  record={record}  type="checkbox"  property-obj='\{"checked":false,"label":"Social Bonus","fieldBinding":"{gf_social_bond__c}","disabled":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element0block_element5block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element0block_element5block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element0block_element5block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  card={card}  record={record}  label="Country Risk"  collapsible="true"  collapsed-by-default="true"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element1block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element1block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_country_risk__c"  label="Country"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element0block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element1block_element0block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element1block_element0block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element1block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+         margin-top:0.5rem" >
+    <omnistudio-block data-style-id="state0element1block_element1block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element1block_element0block_element0" class="slds-col   slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:3em;   " ><omnistudio-output-field data-style-id="state0element1block_element1block_element0block_element0_child"   card={card}  record={record}  placeholder=""  field-name="gf_country_rating__c"  label="Rating"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1block_element0block_element1" class="slds-col  slds-text-align_right slds-p-around_xx-small  slds-size_1-of-12  " data-rindex={rindex} style="      
+         padding-top:0.9rem" ><omnistudio-flex-icon data-style-id="state0element1block_element1block_element0block_element1_child"   card={card}  record={record}  icon-type="Salesforce SVG"  icon-name="utility:edit"  size="xx-small"  extraclass="slds-icon_container slds-icon__svg--default slds-text-link_reset"  variant="default"  imgsrc=""  action='\{"label":"Action","iconName":"standard-default","eventType":"onclick","actionList":[{"key":"1751975103477-0do39dvtc","label":"EnableEditMode","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1751975115793","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"editState","fieldValue":"true"}]},"actionIndex":0}],"showSpinner":"false"}'  theme="slds" onclick={executeAction} data-element-label="block0block0block0icon1" data-action-key="state0element1block_element1block_element0block_element1" ></omnistudio-flex-icon>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  card={card}  record={record}  label="Mitigants"  collapsible="true"  collapsed-by-default="true"  styles='\{"label":{"color":"#181818"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col   slds-p-around_x-small slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element2block_element0block_element0_child"   card={card}  record={record}  type="combobox"  property-obj='\{"label":"Currency","type":"combobox","value":"EUR","options":[{"label":"EUR","value":"EUR","group":"","id":0},{"label":"COP","value":"COP","group":"","id":1}]}'  theme="slds"  ></omnistudio-base-input-element>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element1" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element1_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element1block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element2block_element1block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_small%20slds-text-align_center%22%3E%3Cstrong%3EREAL%20GUARANTEES%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:3.6em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element2" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_mitigants  ></c-dmt_table_mitigants></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element2block_element3" class="slds-col   slds-m-top_x-small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+         " >
+    <omnistudio-block data-style-id="state0element2block_element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element3block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    position: relative; left: 25px;" ><omnistudio-output-field data-style-id="state0element2block_element3block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%20class=%22slds-text-heading_small%20slds-text-align_center%22%3E%3Cstrong%3EGUARANTORS%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element3block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px;padding-left:3.6em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{OppLineItemMitigant}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="MITIGANTS"  context="derivatives" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element4" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_table_unfunded_mitigants" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{OppLineItemMitigant}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_table_unfunded_mitigants  ></c-dmt_table_unfunded_mitigants></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      <div slot="flyout" class="listener0action1 " if:true={action.listener0action1}> <c-cf-guarantors-modal-fields data-style-id="state0element2block_element4_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"oppLineItemId":"{Parent.updateId}","mitigantId":"{mitigantId}","mitigantName":"{mitigantName}"}'  ></c-cf-guarantors-modal-fields></div>
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

@@ -1,0 +1,31 @@
+.containerWithData {
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+  max-height: 65vh;
+}
+.tableWithData {
+    display: inline-block;
+    min-width: -moz-available;
+    min-width: -webkit-fill-available;
+    min-width: stretch;
+}
+
+.containerWithOutData {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  white-space: nowrap;
+  max-height: 65vh;
+}
+
+.empty-state {
+  height: 65vh;
+  align-content: center;
+}
+
+.empty-svg {
+  max-width: 550px !important;
+  width: 100%;
+  height: auto;
+  margin-bottom: 1rem !important;
+}

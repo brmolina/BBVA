@@ -1,0 +1,5 @@
+.dmt-panel-responsive {
+  margin-top: 0;
+  width: calc(100% - 3rem);
+  transition: all 0.3s ease;
+}

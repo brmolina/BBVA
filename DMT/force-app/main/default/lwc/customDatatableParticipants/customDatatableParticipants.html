@@ -1,0 +1,80 @@
+<template>
+    <template if:true={tableData}>
+        <c-custom-data-table 
+            key-field="Id" 
+            style="position:relative;z-index: 2"
+            data={tableData} 
+            columns={columns} 
+            oncomboboxchange={comboboxChange}
+            onrecordpickerchange={handleRecordPicker}
+            onpicklistchanged={picklistChanged} 
+            onvalueselect={handleSelection}
+            draft-values={draftValues} 
+            oncellchange={handleCellChange}
+            onrowaction={handleRowAction}
+            hide-checkbox-column
+            suppress-bottom-bar
+            show-row-number-column>
+        </c-custom-data-table>
+        
+         <!--<template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}><lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small" ></lightning-icon></button>
+                        <h2 class="slds-text-heading_medium">New BBVA Team Member</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-record-edit-form object-api-name="DES_Opportunity_Management_member__c"> 
+
+                            <lightning-layout multiple-rows="true">
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field  field-name="DES_User__c" required onchange={handleUserChange}></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-combobox
+                                            label ='Access Level'
+                                            options={accessLevel}
+                                            onchange={handleAccessLevelChange}
+                                            value={accessLevelValue}
+                                            required
+                                    ></lightning-combobox>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="DES_Opportunity_member_role__c" required onchange={handleTeamRoleChange}></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="DES_Tipo_de_cobertura__c" onchange={handleCoverageTypeChange}></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="DES_PS_Product_Family__c" onchange={handlePsProductFamilyChange}></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="DES_Scope__c" onchange={handleScopeChange}></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="DES_PS_Product__c" onchange={handlePsProductChange}></lightning-input-field>
+                                </lightning-layout-item>
+                            
+                            </lightning-layout>
+                        </lightning-record-edit-form>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" class="slds-m-right_small" onclick={closeModal}></lightning-button>
+                        <lightning-button variant="brand"  label="Save" onclick={handleSaveTeamMember}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>-->
+    </template>
+    <template if:true={isLoading}>
+        <lightning-spinner class="slds-is-fixed slds-is-relative" alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+</template>

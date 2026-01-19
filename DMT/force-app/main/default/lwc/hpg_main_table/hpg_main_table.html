@@ -1,0 +1,144 @@
+<template>
+    <!-- MAIN TABLE -->
+    <div class='slds-scrollable table_height' onscroll={handleScroll} data-id="container">
+		<!-- SPINNER -->
+        <template lwc:if={showSpinner}>
+            <div>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+		<!-- ERROR MESSAGE -->
+		<template lwc:if={showErrorMessage}>
+			<div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+				<span class="slds-assistive-text">Error</span>
+				<span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Error">
+					<lightning-icon icon-name="utility:error" alternative-text="Error" variant="error" size="small"></lightning-icon>
+				</span>
+				<h2>Service unavailable. Please try again later.</h2>
+			</div>
+		</template>
+		<!-- HPG TABLE -->
+		<template lwc:else>
+			<table data-id="mainTable" class="slds-table slds-table--bordered slds-box slds-max-medium-table--stacked-horizontal custom-table" role="grid">
+
+				<!-- TABLE HEADERS -->
+				<thead>
+					<tr class="slds-line-height--reset">
+						<template iterator:col={visibleColumns}>
+							<template lwc:if={col.first}>
+								<th key={col.value.field} data-id="mainTableColumn" width={col.value.initialWidth} class='slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header fixed-row-header' scope="col">
+									<a onclick={selectGroup} data-id={groupCode} title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text></a>
+								</th>
+							</template>
+							<template lwc:else>
+								<th key={col.value.field} data-id="mainTableColumn" width={col.value.initialWidth} class='slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header' scope="col">
+									<template lwc:if={doubleLineHeader}>
+										<span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text><br/>{selectedGrillField}</span>
+									</template>
+									<template lwc:else>
+										<span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text></span>
+									</template>
+								</th>
+							</template>
+						</template>
+					</tr>
+				</thead>
+	
+				<!-- TABLE BODY -->
+				<tbody>
+					<!-- GROUPS -->
+					<template lwc:if={selectedData}>
+						<template iterator:group={selectedData.groups}>
+							<!-- GROUP-->
+							<tr key={nextIteratorKey} data-id="mainTableRow" id={group.value.subGroupId} class="slds-hint-parent group slds-theme_shade collapsed" >
+								<template iterator:col={visibleColumns}>
+									<template lwc:if={col.first}>
+										<td key={iteratorKey} data-id={group.value.subGroupId} id={group.value.subGroupId} class="groupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
+											<div class="slds-truncate" id={group.value.subGroupId} title={group.value.Name}>
+												<c-hpg_main_table_cell data-id={iteratorKey} row={group.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={group.value.subGroupId} onselectclient={selectRow}></c-hpg_main_table_cell>
+											</div>
+										</td>
+									</template>
+									<template lwc:else>
+										<td key={iteratorKey}>-</td>
+									</template>
+								</template>
+							</tr>
+							<template iterator:l3group={group.value.l3groups} >
+								<!-- L3 GROUPS-->
+								<tr key={nextIteratorKey} data-id="mainTableRow" id={l3group.value.level3GroupId} data-subgroup={l3group.value.subGroupId} class="slds-hint-parent group slds-theme_shade collapsed l3collapsed">
+									<template iterator:col={visibleColumns}>
+										<template lwc:if={col.first}>
+											<td key={iteratorKey} data-id={l3group.value.level3GroupId} id={l3group.value.level3GroupId} class="l3GroupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
+												<div class="slds-truncate" id={l3group.value.level3GroupId} title={l3group.value.Name}>
+													<c-hpg_main_table_cell data-id={iteratorKey} row={l3group.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={l3group.value.level3GroupId} onselectclient={selectRow}></c-hpg_main_table_cell>
+												</div>
+											</td>
+										</template>
+										<template lwc:else>
+											<td key={iteratorKey}>-</td>
+										</template>
+									</template>
+								</tr>
+								<!-- L3 CLIENTS -->
+								<template iterator:client={l3group.value.clients}>
+									<tr key={nextIteratorKey} data-id="mainTableRow" id={l3group.value.level3GroupId} data-subgroup={l3group.value.subGroupId} class="slds-hint-parent l3client clientcollapsed l3collapsed">
+										<template iterator:col={visibleColumns}>
+											<template lwc:if={col.first}>
+												<td key={iteratorKey} data-id={iteratorKey} class="clientName l3ClientName fixed-row-name" role="gridcell">
+													<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+												</td>
+											</template>
+											<template lwc:else>
+												<td key={iteratorKey} data-id={iteratorKey} role="gridcell">
+													<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+												</td>
+											</template>
+										</template>
+									</tr>
+								</template>
+							</template>
+							<!-- GROUP CLIENTS -->
+							<template iterator:client={group.value.clients}>
+								<tr key={nextIteratorKey} data-id="mainTableRow" id={group.value.subGroupId} class="slds-hint-parent clientcollapsed">
+									<template iterator:col={visibleColumns}>
+										<template lwc:if={col.first}>
+											<td key={iteratorKey} data-id={iteratorKey} class="clientName fixed-row-name" role="gridcell">
+												<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+											</td>
+										</template>
+										<template lwc:else>
+											<td key={iteratorKey} data-id={iteratorKey} role="gridcell">
+												<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+											</td>
+										</template>
+									</template>
+								</tr>
+							</template>
+						</template>
+						<!-- TOP LEVEL CLIENTS -->
+						<template iterator:client={selectedData.toplevel.clients} >
+							<tr key={nextIteratorKey} data-id="mainTableRow">
+								<template iterator:col={visibleColumns}>
+									<template lwc:if={col.first}>
+										<td key={iteratorKey} data-id={iteratorKey} class="topClient fixed-row-name" role="gridcell">
+											<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+										</td>
+									</template>
+									<template lwc:else>
+										<td key={iteratorKey} data-id={iteratorKey} role="gridcell">
+											<c-hpg_main_table_cell data-id={iteratorKey} row={client.value} hassupragroup={isSupragroup} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} onselectclient={selectRow}></c-hpg_main_table_cell>
+										</td>
+									</template>
+								</template>
+							</tr>
+						</template>
+					</template>
+				</tbody>
+			</table>
+		</template>
+
+    </div>
+    {body}
+    <c-hpg_fetcher onfetchmore={handleFetchMoreEvent}></c-hpg_fetcher>
+</template>

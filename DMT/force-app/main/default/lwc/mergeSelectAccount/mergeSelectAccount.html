@@ -1,0 +1,51 @@
+<template>
+  <div data-id="searchRes" class="slds-form-element slds-lookup slds-is-close" data-select="single">
+    <div class="slds-form-element__control">
+      <div class="slds-input-has-icon slds-input-has-icon--right">
+        <lightning-icon data-id="lupa" class="slds-input__icon slds-show marginClass" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon>
+        <!-- This markup is for when an record is selected -->
+        <div data-id="lookup-pill" class="slds-pill-container slds-hide special">
+          <div class="pillSizeClass">
+            <lightning-pill label={selectedValue} name={selectedValue} onremove={handleRemove}>
+              <lightning-icon icon-name={iconNametoShow} size="x-small" alternative-text={iconNametoShow}></lightning-icon>
+            </lightning-pill>
+          </div>
+        </div>
+        <div data-id="lookupField" class="slds-show">
+          <lightning-input type="text" label={label} value={searchKeyWord} click={onfocus}
+            onchange={onChangeController} class="slds-lookup__search-input" data-name="inputText"
+            placeholder="Search..">
+          </lightning-input>
+        </div>
+      </div>
+    </div>
+    <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds ulClass" role="listbox">
+      <lightning-spinner class="slds-hide" variant="brand" size="small" data-id="mySpinner"></lightning-spinner>
+      <center>{message}</center>
+      <template for:each={listOfSearchRecords} for:item="record">
+        <li key={record.Id} onclick={onSelect} data-id={record.Id} role="presentation" data-name={record.Name}>
+          <span class="slds-lookup__item-action slds-lookup__item-action--label" role="option">
+            <lightning-icon class="slds-icon slds-icon--small slds-icon-text-default" icon-name={iconNametoShow} alternative-text={objectAPIName} size="small"></lightning-icon>
+            <span class="slds-truncate">{record.Name}</span>
+          </span>
+        </li>
+      </template>
+    </ul>
+    <div class="slds-box box slds-hide" data-id="box">
+      <lightning-record-view-form record-id={selectedRecordId} object-api-name={objectAPIName} if:true={areVisible}>
+        <div class="slds-grid">
+          <div class="slds-col slds-size_1-of-2">
+            <template for:each={fieldsSplit} for:item="field">
+              <lightning-output-field key={field} field-name={field}></lightning-output-field>
+            </template>
+          </div>
+          <div class="slds-col slds-size_1-of-2">
+            <template for:each={fieldsSplit1} for:item="field1">
+              <lightning-output-field key={field1} field-name={field1}></lightning-output-field>
+            </template>
+          </div>
+        </div>
+      </lightning-record-view-form>
+    </div>
+  </div>
+</template>

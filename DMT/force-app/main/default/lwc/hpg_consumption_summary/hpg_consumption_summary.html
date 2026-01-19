@@ -1,0 +1,50 @@
+<template >
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Meaningful description of the modal content" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <lightning-modal-header label={title}></lightning-modal-header>
+                <lightning-modal-body class="relative">
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </template>
+                    <!-- TABS -->
+                    <lightning-tabset active-tab-value="summary">
+                        <lightning-tab label={labels.HPG_Summary} value="summary" data-id="summary" onactive={handleActiveTab}>
+                            <div id="resumenTable" class="slds-table_col-bordered slds-p-around_small slds-p-right_large">
+                                <div class="vh60 hpg fixTable">
+                                    <lightning-tree-grid
+                                        columns={columns}
+                                        data={data}
+                                        key-field="internalId"
+                                        hide-checkbox-column ="true"
+                                        expanded-rows={expandedRows}
+                                    ></lightning-tree-grid>
+                                </div>
+                            </div>
+                        </lightning-tab>
+                        <template if:true={userAdmin}>
+                            <lightning-tab label={labels.HPG_Chart} value="chart" data-id="chart" onactive={handleActiveTab}>
+                                <div id="chart" class="vh60 hpg fixTable">
+                                    <c-hpg_consumption_summary_chart
+                                        client-id={clientId}
+                                        client-type={clientType}
+                                        search-date={searchDate}
+                                        client-name={clientName}
+                                        chart-data={chartData}
+                                        currency-id={currency}
+                                        exchange-rate={exchangeRate}>
+                                    </c-hpg_consumption_summary_chart>
+                                </div>
+                            </lightning-tab>
+                        </template>
+                    </lightning-tabset>
+                </lightning-modal-body>
+                <lightning-modal-footer>
+                    <lightning-button title="Download CSV" icon-name="utility:download" onclick={downloadCSV} class="slds-m-left_x-small downloadcsv"></lightning-button>
+                    <c-hpg_detail_button button-variant="neutral" button-label="Close" event-name="closemodal"></c-hpg_detail_button>
+                </lightning-modal-footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

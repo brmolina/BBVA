@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="View List">
+        <lightning-datatable
+            key-field="Id"
+            data={views}
+            columns={columns}
+            max-row-selection="1"
+            onsave={handleRowSelection}
+        >
+        </lightning-datatable>
+    </lightning-card>
+</template>

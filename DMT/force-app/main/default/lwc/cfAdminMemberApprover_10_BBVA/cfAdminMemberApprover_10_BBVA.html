@@ -1,0 +1,107 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_2-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_10-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element1block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EAPPROVER%20USERS%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:0.3em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{teamMembers}","tableColumns":"{colToCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="APPROVER USERS" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col  slds-p-right_x-small  slds-size_2-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{DMT_ApproversView__c}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="approverview" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element3" class="slds-col   slds-size_10-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-custom-datatable-interveners" property='\{"accessLevelOptions":"{accessLevelOptions}","nextFlow":"{nextFlow}","pickListOrdered":"{users}","recordId":"{approver}","selectedSearchResult":"{selectedUser}","tableDataName":"{teamMembers}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-custom-datatable-interveners   additional-fields="true" ></c-custom-datatable-interveners></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4" class="slds-col   slds-card__footer navigationBar slds-size_12-of-12  " data-rindex={rindex} style="      
+         padding-right:16px;padding-left:16px;padding-top:12px;padding-bottom:12px;" >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col  slds-text-align_right  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element4block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element0_child flexActionElement" 
+        data-action-element-class="state0element4block_element0_child" data-action-key="state0element4block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2action0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":true,"key":"1723034735212-vcjftvrjh","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"id":"flex-action-1723034781127","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"ApproverAdmin_members\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\",\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5mKN00000001roYAA\",\"id\":1},{\"name\":\"records\",\"val\":\"\",\"id\":3}]}","openUrlIn":"Current Window","responseNode":"resultMember","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":true,"key":"1723034823615-8zb46mlsd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"{resultMember.error}","hasMergeField":true,"id":"state-new-condition-0","operator":"==","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"nextFlow","fieldValue":"true"}],"id":"flex-action-1723034836570","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  button-variant="brand"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Save"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small slds-size_2-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_10-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element1block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EAPPROVER%20USERS%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element1block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:0.3em" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{teamMembers}","tableColumns":"{colToCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="APPROVER USERS" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col  slds-p-right_x-small  slds-size_2-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{DMT_ApproversView__c}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="approverview" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element3" class="slds-col   slds-size_10-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-custom-datatable-interveners" property='\{"accessLevelOptions":"{accessLevelOptions}","nextFlow":"{nextFlow}","pickListOrdered":"{users}","recordId":"{approver}","selectedSearchResult":"{selectedUser}","tableDataName":"{teamMembers}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-custom-datatable-interveners   additional-fields="true" ></c-custom-datatable-interveners></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element4" class="slds-col   slds-card__footer navigationBar slds-size_12-of-12  " data-rindex={rindex} style="      
+         padding-right:16px;padding-left:16px;padding-top:12px;padding-bottom:12px;" >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col  slds-text-align_right  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element4block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element4block_element0_child flexActionElement" 
+        data-action-element-class="state0element4block_element0_child" data-action-key="state0element4block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2action0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":true,"key":"1723034735212-vcjftvrjh","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"id":"flex-action-1723034781127","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"ApproverAdmin_members\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\",\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"recordId\",\"val\":\"a5mKN00000001roYAA\",\"id\":1},{\"name\":\"records\",\"val\":\"\",\"id\":3}]}","openUrlIn":"Current Window","responseNode":"resultMember","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":true,"key":"1723034823615-8zb46mlsd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"{resultMember.error}","hasMergeField":true,"id":"state-new-condition-0","operator":"==","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"nextFlow","fieldValue":"true"}],"id":"flex-action-1723034836570","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  button-variant="brand"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Save"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

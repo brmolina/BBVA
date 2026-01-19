@@ -1,0 +1,19 @@
+<template>
+        <template lwc:if={hasTitle}>
+            <div style="display:flex;">
+                <div class="slds-text-body_small">
+                    {title}
+                </div>
+                <template lwc:if={showWarning}>
+                    <div style="margin-top:-0.29rem;">
+                        <lightning-helptext icon-name="utility:warning" flexibility="auto" content={contentFull} class="slds-m-left_x-small slds-m-bottom_medium slds-icon-text-warning"></lightning-helptext>
+                    </div>
+                </template>
+            </div>
+        </template>
+        <template lwc:else>
+            <template lwc:if={showWarning}>
+                <lightning-helptext icon-name="utility:warning" flexibility="auto" content={contentFull} class="slds-m-left_x-small slds-m-bottom_medium slds-icon-text-warning"></lightning-helptext>
+            </template>
+        </template>
+</template>

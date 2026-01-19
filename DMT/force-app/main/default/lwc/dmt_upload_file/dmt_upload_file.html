@@ -1,0 +1,39 @@
+<template>
+    <div class="slds-box slds-box_xx-small slds-theme_default" style="padding:0px">
+        <div class="slds-grid slds-page-header forceRelatedListCardHeader" style="border-width: 1px; border-color:grey;border-radius:2px" data-aura-rendered-by="502:0" data-aura-class="forceRelatedListCardHeader">
+            <header class="slds-media slds-media--center slds-has-flexi-truncate" data-aura-rendered-by="503:0">
+                <div aria-hidden="true" class="slds-m-right_small stencil slds-avatar slds-avatar_small" data-aura-rendered-by="504:0">
+                    <div style="background-color: #939393" class="extraSmall forceEntityIcon" data-aura-rendered-by="822:0" data-aura-class="forceEntityIcon">
+                        <span data-aura-rendered-by="825:0" class="uiImage" data-aura-class="uiImage">
+                            <img data-aura-rendered-by="823:0" src="https://bbvacibsales--tcm.sandbox.my.salesforce.com/img/icon/t4v35/standard/file_120.png" class="icon " alt="">
+                        </span></div></div><div class="slds-media__body" data-aura-rendered-by="505:0"><h2 id="header_486:0" class="slds-card__header-title" data-aura-rendered-by="506:0">
+                            <!-- <a href="/lightning/r/DMT_Line__c/a5YKN0000000sLV2AY/related/AttachedContentDocuments/view" class="slds-card__header-link baseCard__header-title-container" data-aura-rendered-by="507:0"> -->
+                                <span title="Files" class="slds-truncate slds-m-right--xx-small" data-aura-rendered-by="508:0">Files</span>
+                                <span title="(1)" class="slds-shrink-none slds-m-right--xx-small" data-aura-rendered-by="511:0">({size})</span></h2></div></header>
+                                <div class="slds-no-flex" data-aura-rendered-by="514:0">
+            <div class="actionsContainer" data-aura-rendered-by="496:0"><!-- workaround for W-2413659, remove once that bug is fixed -->
+                <template if:true={showEditControls}>
+               
+                <input type="file" accept=".pdf" multiple style="display: none" onclick={resetFileAttachmentInput} onchange={handleFileChange} class="hiddenFileInput"/>
+                <lightning-button label="Add Files"
+                                  onclick={triggerFileSelect}
+                                  class="slds-m-bottom_small"></lightning-button>
+                                </template></div></div></div>
+        <template if:true={attachments}>
+            <lightning-datatable
+                key-field="id"
+                data={attachments}
+                columns={columns}
+                hide-checkbox-column
+                resize-column-disabled
+                onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </template>
+
+        <template if:true={isLoading}>
+            <div class="slds-p-around_medium">
+                <lightning-spinner alternative-text="Cargando..."></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>

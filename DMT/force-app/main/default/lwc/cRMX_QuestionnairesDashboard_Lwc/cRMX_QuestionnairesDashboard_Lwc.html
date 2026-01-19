@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title={labelTituloCuestionario}>
+        <p class="slds-text-body_small slds-m-bottom_medium">
+            {labelTituloCuestionario}
+        </p> 
+        <lightning-datatable
+            key-field="questionnaireId"
+            data={questionnaires}
+            columns={columns}
+            hide-checkbox-column
+            onrowaction={handleRowAction}>
+        </lightning-datatable>
+    </lightning-card>
+</template>

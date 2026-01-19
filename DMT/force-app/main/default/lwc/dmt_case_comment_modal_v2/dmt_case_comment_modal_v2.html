@@ -1,0 +1,12 @@
+<template>
+    <lightning-modal-header label={approver}></lightning-modal-header>
+    <lightning-modal-body>
+         <lightning-textarea value={comment} onchange={handleComment} label="Comment" placeholder="comment here..."></lightning-textarea>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <div  class="slds-grid slds-grid_align-center">
+            <lightning-button  class="slds-m-horizontal_small" label="Close" onclick={handleClose}></lightning-button>
+            <lightning-button  class="slds-m-horizontal_small" variant="brand" label="Request" onclick={handleRequest} data-feature={featureid}></lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

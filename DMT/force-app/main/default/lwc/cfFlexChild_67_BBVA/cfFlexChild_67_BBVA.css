@@ -1,0 +1,22 @@
+.bordeColorRed{
+    box-shadow: 0px 0px 7px 0px rgb(22, 22, 22, 0.4);
+}
+.bordeColorWhite{
+    box-shadow: -1px 4px 6px 1px rgba(37, 37, 37, 0.4);
+}
+.rotarElem{
+    transform: rotate(45deg);
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    z-index: 2;
+    position: relative;
+    top: 20.7px;
+    box-shadow: 4px 4px 3px 0px rgba(22, 22, 22, 0.4);
+}
+.containerDism{
+    min-width: 431px;
+}
+.iconMarg{
+        margin-left: 23.5px;
+}

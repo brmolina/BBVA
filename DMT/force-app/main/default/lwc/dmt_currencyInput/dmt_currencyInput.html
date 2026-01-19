@@ -1,0 +1,35 @@
+<template>
+
+    <template lwc:if={withCurrency}>
+        <lightning-layout  horizontal-align="spread" style="align-items: flex-end;" class="slds-m-around_medium">
+            <lightning-layout-item size="10">
+                <lightning-input 
+                    type="number"
+                    label={label}
+                    step={step}
+                    value={value}
+                    onblur={handleInputblur}
+                    pattern={pattern}
+                    required={required}
+                ></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item  size="2" class="slds-m-left_medium slds-m-right_medium" style="margin-bottom: 0.55rem;">
+                <span>{currencyIsoCode}</span>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template lwc:else>
+        <lightning-layout horizontal-align="spread" style="display: contents">
+            <lightning-input 
+                    type="number"
+                    label={label}
+                    step={step}
+                    value={value}
+                    onblur={handleInputblur}
+                    pattern={pattern}
+                    required={required}
+            ></lightning-input>
+        </lightning-layout>
+    </template>
+
+</template>

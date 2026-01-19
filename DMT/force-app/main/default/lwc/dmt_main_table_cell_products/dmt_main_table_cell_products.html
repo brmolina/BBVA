@@ -1,0 +1,93 @@
+<template>
+    <template lwc:if={isName}>
+
+         <div class="slds-grid slds-grid_align-spread">
+            <div style="overflow: hidden;">
+
+                <div class="slds-truncate" title={Name}>
+                    <a href="#" name={Name} id={getClientId} onclick={handleClick}>{Name}</a>
+                </div>
+                <template lwc:if={isClient}> 
+                    <div class="slds-truncate " title={taxpayerId}>
+                        <span class="meta">{countryIfoId} - {Id} - {taxpayerId}</span>
+                    </div>
+                </template>
+
+            </div>
+
+            <!-- <template lwc:if={isSelected}> 
+                <div class="toggle-container" style="pointer-events:none">
+                    <span class="priority-label">{labels.DMT_Main_Holder}</span>
+                    <label class="slds-checkbox_toggle tiny-toggle" for={toggleId}>
+                        <input type="checkbox" id={toggleId} name="input1" checked={ismainholder} onchange={handleToggleChange}>
+                        <span class="slds-checkbox_faux_container" aria-live="polite">
+                            <span class="slds-checkbox_faux"></span>
+                        </span>
+                    </label>
+                </div>
+            </template> -->
+
+        </div>
+
+
+    </template>
+    <template lwc:else>
+        <div class={alignClass} title={value} data-id={getcustomerId}>
+            <template lwc:if={isLink}>
+                <a href="#" name={onclick} id={getClientId} onclick={handleClick}>
+                    <template lwc:if={isCurrency}>
+                        <lightning-formatted-number title={title}
+                            value={value}></lightning-formatted-number>{currencyCode}
+                    </template>
+                    <template lwc:elseif={isDate}>
+                        <lightning-formatted-date-time title={title} value={value}></lightning-formatted-date-time>
+                    </template>
+                    <template lwc:elseif={isPercent}>
+                        <lightning-formatted-number title={title} value={value}></lightning-formatted-number>
+                    </template>
+                    <template lwc:elseif={isTextinput}>
+                        <lightning-input data-id="inputLink" type="number" label="" value={value} variant="label-hidden"
+                            onblur={handleChange}></lightning-input>
+                    </template>
+                    <template lwc:elseif={isCombobox}>
+                        <lightning-combobox class="slds-dropdown_length-5" placeholder="BUCKETING" data-id="comboLink"
+                            options={column.options} label="" value={value} variant="label-hidden"
+                            onchange={handleChange}></lightning-combobox>
+                    </template>
+                    <template lwc:elseif={isCurrencylabel}>
+                        <lightning-formatted-text title={title} value={currencyrow}></lightning-formatted-text>
+                    </template>
+                    <template lwc:else>
+                        <lightning-formatted-text title={title} value={value}></lightning-formatted-text>
+                    </template>
+                </a>
+            </template>
+            <template lwc:else>
+                <template lwc:if={isCurrency}>
+                    <lightning-formatted-number title={title} value={value}></lightning-formatted-number>{currencyCode}
+                </template>
+                <template lwc:elseif={isDate}>
+                    <lightning-formatted-date-time title={title} value={value}></lightning-formatted-date-time>
+                </template>
+                <template lwc:elseif={isPercent}>
+                    <lightning-formatted-number title={title} value={value}></lightning-formatted-number>
+                </template>
+                <template lwc:elseif={isTextinput}>
+                    <lightning-input data-id="amount" type="number" label="" value={value} variant="label-hidden"
+                        onblur={handleChange}></lightning-input>
+                </template>
+                <template lwc:elseif={isCombobox}>
+                    <lightning-combobox data-id="term" class="slds-dropdown_length-5" options={column.options} label=""
+                        value={value} variant="label-hidden" onchange={handleChange}
+                        style="min-width: 6rem;"></lightning-combobox>
+                </template>
+                <template lwc:elseif={isCurrencylabel}>
+                    <lightning-formatted-text title={title} value={currencyrow}></lightning-formatted-text>
+                </template>
+                <template lwc:else>
+                    <lightning-formatted-text title={title} value={value}></lightning-formatted-text>
+                </template>
+            </template>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,12 @@
+.slds-table_header-fixed_container {
+    padding-top: 0px;
+}
+
+.vh60 {
+    height: 60vh;
+}
+
+.downloadcsv {
+    --lwc-spacingXSmall: 0px;
+    --lwc-spacingMedium: 9px;
+}

@@ -1,0 +1,27 @@
+/* Estilo base del elemento */
+img .tooltip{
+  position: relative;
+  display: inline-block;
+  cursor: pointer; /* Cambia el cursor a una mano al hacer hover */
+}
+
+/* Estilo del tooltip */
+ img .tooltip::before {
+  content: attr(alt); /* Toma el texto del atributo data-tooltip */
+  /*content: '';*/
+  position: absolute;
+  bottom: 125%; /* Coloca el tooltip arriba del elemento principal */
+  left: 50%; /* Centra el tooltip en relación con el elemento principal */
+  transform: translateX(-50%); /* Centra el tooltip horizontalmente */
+  padding: 5px 10px;
+  background-color: #333;
+  color: #fff;
+  border-radius: 5px;
+  opacity: 0; /* Inicialmente invisible */
+  transition: opacity 0.3s ease; /* Agrega una transición para una apariencia suave */
+}
+
+/* Muestra el tooltip al hacer hover */
+ img .tooltip:hover::before {
+  opacity: 1;
+}

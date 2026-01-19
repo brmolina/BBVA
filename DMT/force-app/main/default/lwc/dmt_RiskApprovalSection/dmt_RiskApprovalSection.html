@@ -1,0 +1,25 @@
+<template>
+    <div class="radio-container">
+
+        <!-- Radio Group -->
+        <lightning-radio-group
+            name="riskType"
+            options={options}
+            value={selectedOption}
+            type="radio"
+            onchange={handleOptionChange}
+            disabled={isReadOnly}>
+
+        </lightning-radio-group>
+
+        <!-- Link alineado con el radio "Line" -->
+        <template if:true={showLine}>
+            <span
+                class="line-link"
+                onclick={handleLineLinkClick}>
+                {lineName}
+            </span>
+        </template>
+
+    </div>
+</template>

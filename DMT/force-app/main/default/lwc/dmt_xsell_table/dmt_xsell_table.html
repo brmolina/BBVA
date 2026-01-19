@@ -1,0 +1,27 @@
+<template>
+ 
+    <div class="slds-accordion__list-item">
+        <section class="slds-accordion__section slds-is-open">
+            <div class="slds-accordion__summary accordeon-heading-background" >
+                <h2 class="slds-accordion__summary-heading">
+                    <button class="section-control slds-button slds-button_reset slds-accordion__summary-action" aria-hidden="true" onclick={recordToggle}>
+                        <lightning-icon icon-name={icon} size="x-small" alternative-text="Toggle"></lightning-icon>
+                        <span class="slds-accordion__summary-content" ><h1 class="slds-m-left_x-small">xSell </h1></span>
+                    </button>
+                </h2>
+            </div>
+        </section>
+    </div>
+
+    <template lwc:if={isExpanded}>
+        <div class="slds-size_2-of-2 slds-m-top_medium">
+            <lightning-datatable class="slds-m-top_xx-small" data={xSell} columns={columns} key-field="Id" hide-checkbox-column="true"></lightning-datatable>
+        </div>   
+    </template>
+
+    <!-- <lightning-accordion active-section-name={activeSections}>
+        <lightning-accordion-section class="accordeon-heading-background" name="xSell" label="xSell" >
+            <lightning-datatable class="slds-m-top_xx-small" data={xSell} columns={columns} key-field="Id" hide-checkbox-column="true"></lightning-datatable>
+        </lightning-accordion-section>
+    </lightning-accordion> -->
+</template>

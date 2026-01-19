@@ -1,0 +1,57 @@
+<template>
+    <div class="slds-grid slds-wrap" style="align-items: center;">
+        <!-- Primera columna: 2/3 del ancho -->
+        <div class="slds-col slds-size_2-of-3 slds-p-around_x-small" style="display: flex; align-items: center; height: 100%;">
+            <lightning-card title="View Selected Components" style="width: 100%;">
+                <!-- Contenido adicional del card, si aplica -->
+            </lightning-card>
+        </div>
+
+        <!-- Segunda columna: 1/3 del ancho -->
+        <div class="slds-col slds-size_1-of-3 slds-p-around_x-small" style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
+            <lightning-card style="width: 100%;">
+                <!-- Campo de búsqueda dinámico -->
+                    <lightning-input 
+                        label={searchIdLabel} 
+                        placeholder="Type to search"
+                        value={searchTerm}
+                        onchange={handleSearch}
+                        onmousedown={clearSearchTerm}
+                        disabled={isSearchIdInputsDisabled}>
+                    </lightning-input>
+                <!-- Mostrar la lista desplegable si hay resultados -->
+                <template if:true={showDropdownList}>
+                    <div class="slds-box slds-m-top_small slds-dropdown slds-dropdown_fluid">
+                        <ul class="slds-dropdown__list" role="menu">
+                            <template for:each={filteredLineOptions} for:item="option">
+                                <li key={option.value} class="slds-dropdown__item" role="presentation">
+                                    <!-- Botón con ancho fijo -->
+                                    <button class="slds-button slds-button_neutral" style="width: 150px;" data-value={option.value} data-label={option.label} onclick={handleLineSelect}>
+                                        {option.label}
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+            </lightning-card>
+        </div>
+    </div>    
+
+    <template if:true={hasItems}>
+        <!-- Pasar el selectedLineId como recordId al LWC dmt_view_lwc -->
+        <c-dmt_view_lwc     
+            record-id={recordId}
+            selected-items={sortedItems} 
+            view-type={viewType} 
+            onprocessing={handleDisableInputs} 
+            onfinishprocessing={handleEnableInputs}
+            object-api-name={objectApiName}
+            currency-iso-code={currencyIsoCode}
+            record-type-api-name={recordTypeApiName}>
+        </c-dmt_view_lwc>
+    </template>
+    <template if:false={hasItems}>
+        <p>No items selected yet.</p>
+    </template>
+</template>

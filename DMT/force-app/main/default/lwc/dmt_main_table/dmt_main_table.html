@@ -1,0 +1,157 @@
+<template>
+
+    <!-- SPINNER -->
+    <!-- div>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </div -->
+
+    <!-- MAIN TABLE -->
+    <div >
+        <template lwc:if={showSpinner}>
+            <div>
+                <lightning-spinner class="spins"  alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+        <template lwc:if={errorLoading}>
+            <c-dmt_show-popover style="margin-top: 2rem;margin-left: 18rem;display: flex;" show-popover={errorLoading} variant="error" header="We hit a snag." message-title="Error occur while retrieving client data." message="Please try again later"></c-dmt_show-popover>
+         </template>
+         <template lwc:else>
+
+            <div style="position: relative; ">
+                <div class='slds-scrollable table_height' onscroll={handleScroll} >
+                    <table data-id="mainTable" class="slds-table slds-table--bordered slds-box slds-max-medium-table--stacked-horizontal custom-table" role="grid" aria-label="dmttable">
+
+                        <!-- TABLE HEADERS -->
+                        <thead>
+                            <tr class="slds-line-height--reset">
+                                <template iterator:col={visibleColumns}>
+                                    <template lwc:if={col.first}>
+                                        <th key={col.value.field} data-id="mainTableColumn" width={col.value.initialWidth} class='slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header fixed-row-header' scope="col">
+                                            <span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text></span>
+                                            <div class="lineLeft" onclick={scrollLeft} onmousemove={showArrowLeft} onmouseleave={hideArrow}>
+                                                <span class="arrowCustom"><lightning-icon icon-name="utility:chevronleft" size="x-small"></lightning-icon></span>
+                                            </div>
+
+                                        </th>
+                                    </template>
+                                    <template lwc:else>
+                                        <th key={col.value.field} data-id="mainTableColumn" width={col.value.initialWidth} class='slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header' scope="col">
+                                            <template lwc:if={doubleLineHeader}>
+                                                <span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text><br/>{selectedGrillField}</span>
+                                            </template>
+                                            <template lwc:else>
+                                                <span class="slds-truncate" title={col.value.title}><lightning-formatted-rich-text value={col.value.label}></lightning-formatted-rich-text></span>
+                                            </template>
+                                        </th>
+                                    </template>
+                                </template>
+                            </tr>
+                        </thead>
+
+                        <!-- TABLE BODY -->
+                        <tbody data-id="container">
+                            <!-- GROUPS -->
+                            <template iterator:group={selectedData.groups}>
+                                <!-- GROUP-->
+                                <tr key={nextIteratorKey} data-id="mainTableRow" id={group.value.subGroupId} class="slds-hint-parent group slds-theme_shade collapsed" >
+                                    <template iterator:col={visibleColumns}>
+                                        <template lwc:if={col.first}>
+                                            <td key={iteratorKey} data-id={group.value.subGroupId} id={group.value.subGroupId} class="groupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
+                                                <div class="slds-truncate" id={group.value.subGroupId} title={group.value.Name}>
+                                                    <c-dmt_main_table_cell row={group.value} index={col.index} column={col.value} tab={selectedTab} cellid={group.value.subGroupId} groupselected={groupsSelected} selectedcell={priorselectedRows} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
+                                                </div>
+                                            </td>
+                                        </template>
+                                        <template lwc:else>
+                                            <td key={iteratorKey}>-</td>
+                                        </template>
+                                    </template>
+                                </tr>
+                                <template iterator:l3group={group.value.l3groups} >
+                                    <!-- L3 GROUPS-->
+                                    <tr key={nextIteratorKey} data-id="mainTableRow" id={l3group.value.level3GroupId} data-subgroup={l3group.value.subGroupId} class="slds-hint-parent group slds-theme_shade collapsed l3collapsed">
+                                        <template iterator:col={visibleColumns}>
+                                            <template lwc:if={col.first}>
+                                                <td key={iteratorKey} data-id={l3group.value.level3GroupId} id={l3group.value.level3GroupId} class="l3GroupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
+                                                    <div class="slds-truncate" id={l3group.value.level3GroupId} title={l3group.value.Name}>
+                                                        <c-dmt_main_table_cell row={l3group.value} index={col.index} column={col.value} tab={selectedTab} cellid={l3group.value.level3GroupId} selectedcell={priorselectedRows} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
+                                                    </div>
+                                                </td>
+                                            </template>
+                                            <template lwc:else>
+                                                <td key={iteratorKey}>-</td>
+                                            </template>
+                                        </template>
+                                    </tr>
+                                    <!-- L3 CLIENTS -->
+                                    <template iterator:client={l3group.value.clients}>
+                                        <tr key={nextIteratorKey} data-id="mainTableRow" id={l3group.value.level3GroupId} data-subgroup={l3group.value.subGroupId} class="slds-hint-parent l3client clientcollapsed l3collapsed">
+                                            <template iterator:col={visibleColumns}>
+                                                <template lwc:if={col.first}>
+                                                    <td key={iteratorKey} data-id={customerId} id={l3group.value.level3GroupId} class="clientName l3ClientName fixed-row-name" role="gridcell">
+                                                        <c-dmt_main_table_cell  row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                                </td>
+                                                    </td>
+                                                </template>
+                                                <template lwc:else>
+                                                    <td key={iteratorKey} data-id={customerId} id={l3group.value.level3GroupId} role="gridcell">
+                                                        <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  ></c-dmt_main_table_cell>
+                                                    </td>
+                                                </template>
+                                            </template>
+                                        </tr>
+                                    </template>
+                                </template>
+                                <!-- GROUP CLIENTS -->
+                                <template iterator:client={group.value.clients}>
+                                    <tr key={nextIteratorKey} data-id="mainTableRow" id={group.value.subGroupId} class="slds-hint-parent clientcollapsed">
+                                        <template iterator:col={visibleColumns}>
+                                            <template lwc:if={col.first}>
+                                                <td key={iteratorKey} data-id={customerId} id={group.value.subGroupId} class="clientName fixed-row-name" role="gridcell">
+                                                    <c-dmt_main_table_cell row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                                </td>
+                                            </template>
+                                            <template lwc:else>
+                                                <td key={iteratorKey} data-id={customerId} id={group.value.subGroupId} role="gridcell">
+                                                    <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
+                                                </td>
+                                            </template>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </template>
+                            <!-- TOP LEVEL CLIENTS -->
+                            <template iterator:client={selectedData.toplevel.clients} >
+                                <tr key={nextIteratorKey} data-id="mainTableRow">
+                                    <template iterator:col={visibleColumns}>
+                                        <template lwc:if={col.first}>
+                                            <td key={iteratorKey} id={iteratorKey} data-id={customerId} class="topClient fixed-row-name" role="gridcell">
+                                                <c-dmt_main_table_cell  data-customerid={customerId}  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                            </td>
+                                        </template>
+                                        <template lwc:else>
+                                            <td key={iteratorKey} id={iteratorKey} data-id={customerId} role="gridcell">
+                                                <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
+                                            </td>
+                                        </template>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+
+
+                </div>
+                <div class="lineRight" onclick={scrollRight} onmousemove={showArrowRight} onmouseleave={hideArrow}>
+                        <span class="arrowCustom"><lightning-icon icon-name="utility:chevronright"  size="x-small"></lightning-icon></span>
+                </div>
+            </div>
+
+        </template>
+    </div>
+
+
+
+    {body}
+    <c-hpg_fetcher onfetchmore={handleFetchMoreEvent}></c-hpg_fetcher>
+</template>

@@ -1,0 +1,24 @@
+<template>
+    <div class="axis-input slds-p-right_x-small slds-m-left_xx-small slds-m-bottom_xx-small">
+        <template if:true={isRating}>
+            <lightning-combobox
+                label={label}
+                options={options}
+                value={_internalValue}
+                placeholder="Select"
+                onchange={handleChange}>
+            </lightning-combobox>
+        </template>
+        <template if:false={isRating}>
+            <lightning-input
+                key={refreshPlaceholderFlag}
+                label={label}
+                type="number"
+                value={_internalValue}
+                step={step}
+                placeholder={computedPlaceholder}
+                onchange={handleChange}>
+            </lightning-input>
+        </template>
+    </div>
+</template>

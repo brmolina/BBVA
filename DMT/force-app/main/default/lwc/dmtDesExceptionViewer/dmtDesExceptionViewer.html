@@ -1,0 +1,132 @@
+<template>
+    <lightning-card title="Lista de Excepciones">
+        <div class="slds-m-around_medium">
+            <!-- Contenedor del formulario de búsqueda -->
+            <div class="slds-grid slds-gutters">
+                <!-- Primera columna -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input 
+                        type="date" 
+                        label="Fecha Desde" 
+                        value={searchTimestampFrom} 
+                        data-field="searchTimestampFrom" 
+                        required 
+                        class="slds-m-bottom_small"
+                        onchange={handleInputChange}>
+                    </lightning-input>
+
+                </div>
+
+                <!-- Segunda columna -->
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input 
+                        type="date" 
+                        label="Fecha Hasta" 
+                        value={searchTimestampTo} 
+                        data-field="searchTimestampTo" 
+                        required 
+                        class="slds-m-bottom_small"
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <!-- Mensaje de error si no se ingresan las fechas -->
+            <template if:true={showError}>
+                <div style="color: red; margin-top: 10px;"><p class="slds-text-color_error slds-m-top_small">{errorMessage}</p></div>
+            </template>
+
+            <!-- Botón de búsqueda alineado -->
+            <div class="slds-m-top_medium slds-align_absolute-center">
+                <lightning-button label="Buscar" variant="brand" onclick={handleSearch}></lightning-button>
+            </div>
+        </div>
+
+ <!-- Tabla de datos con filtros en encabezados -->
+ <div style="overflow-x: auto;">
+    <table aria-label="dmtDesExceptionTable" class="slds-table slds-table_bordered slds-table_cell-buffer" >
+        <thead>
+            <tr>
+                <th scope="col">Fecha Creación</th>
+                <th scope="col">Proyecto</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Clase</th>
+                <th scope="col">Método</th>
+                <th scope="col">Mensaje</th>
+                <th scope="col">Descargar</th>
+            </tr>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        placeholder="Filtrar"
+                        data-field="projectFilter"
+                        onchange={handleFilterChange}>
+                    </lightning-input>
+                </th>
+                <th scope="col">
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        placeholder="Filtrar"
+                        data-field="typeFilter"
+                        onchange={handleFilterChange}>
+                    </lightning-input>
+                </th>
+                <th scope="col">
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        placeholder="Filtrar"
+                        data-field="classFilter"
+                        onchange={handleFilterChange}>
+                    </lightning-input>
+                </th>
+                <th scope="col">
+                    <lightning-input 
+                        type="text" 
+                        variant="label-hidden"
+                        placeholder="Filtrar"
+                        data-field="methodFilter"
+                        onchange={handleFilterChange}>
+                    </lightning-input>
+                </th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <template if:true={isLoading}>
+                <tr>
+                    <td colspan="7" class="slds-align_absolute-center slds-p-vertical_medium">
+                        <lightning-spinner alternative-text="Cargando..." size="medium"></lightning-spinner>
+                    </td>
+                </tr>
+            </template>
+            <template if:false={isLoading}>
+                <template for:each={filteredRecords} for:item="record">
+                    <tr key={record.Id}>
+                        <td>{record.formattedTimestamp}</td>
+                        <td>{record.Project__c}</td>
+                        <td>{record.Type__c}</td>
+                        <td>{record.Class_Name__c}</td>
+                        <td>{record.MethodName__c}</td>
+                        <td>{record.shortMessage}</td>
+                        <td>
+                            <lightning-button-icon icon-name="utility:download" alternative-text="Descargar" onclick={handleDownload} data-id={record.Id}></lightning-button-icon>
+                        </td>
+                    </tr>
+                </template>
+            </template>
+        </tbody>
+    </table>
+</div>
+
+        <!-- Botón de carga de más registros -->
+        <div class="slds-m-top_medium slds-align_absolute-center">
+            <lightning-button label="Cargar más" onclick={loadMoreRecords} disabled={isLoading}></lightning-button>
+        </div>
+    </lightning-card>
+</template>

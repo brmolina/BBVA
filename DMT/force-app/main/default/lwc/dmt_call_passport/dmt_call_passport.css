@@ -1,0 +1,8 @@
+.spins::after {
+    position: absolute;
+    content: 'Loading client data...';
+    width: 100%;
+    text-align: center;
+    top: calc(50% + 3em);
+    font-weight: bold;
+}

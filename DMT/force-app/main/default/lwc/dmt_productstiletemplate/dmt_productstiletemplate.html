@@ -1,0 +1,69 @@
+<template>
+    <div class="slds-grid slds-scrollable_x slds-theme_shade fprdGBL_Opportunity_Products_cmp" data-aura-rendered-by="769:0" data-aura-class="fprdGBL_Opportunity_Products_cmp">
+        
+        <div  style="border-right: 2px solid white;" class="slds-col slds-large-size_5-of-5 slds-small-size_2-of-3 slds-medium-size_2-of-3 slds-scrollable_x" data-aura-rendered-by="771:0">
+          <div class="slds-grid" data-aura-rendered-by="772:0">
+             <template lwc:if={isOpportunityObject}>
+              <template for:each={productList} for:item="listVariable">
+                <template lwc:if={listVariable.isSelected}>
+                <div key={listVariable.Id} style="border-right: 2px solid white;"  class="slds-large-size_1-of-4 slds-small-size_1-of-2 slds-medium-size_1-of-2 slds-col_bump-left slds-m-left_xxx-small" data-aura-rendered-by="1:1439;a">
+                  <!--render facet: 4:1439;a-->
+                <div onclick={handleSelected} id={listVariable.Id} data-id={listVariable.Id} style="min-height: 67px;height: 100%" class="isSelected slds-theme_shade slds-p-around_x-small fprdGBL_Tile_cmp" data-aura-rendered-by="6:1439;a" data-aura-class="fprdGBL_Tile_cmp">
+                  <div  class="slds-page-header__title" data-id={listVariable.Id} >{listVariable.nameProduct} </div>
+                  <template lwc:if={listVariable.amount}><div  class="slds-page-header__name-meta" data-id={listVariable.Id}  style="pointer-events: none;"><lightning-formatted-number value={listVariable.amount} maximum-fraction-digits="2"></lightning-formatted-number> {listVariable.currencyLabel} {listVariable.currencyIsoCode} </div></template>
+                </div>
+                </div>
+            </template>
+            <template lwc:else>
+            <div key={listVariable.Id} style="border-right: 2px solid white;"  class="slds-large-size_1-of-4 slds-small-size_1-of-2 slds-medium-size_1-of-2 slds-col_bump-left slds-m-left_xxx-small" data-aura-rendered-by="1:1439;a">
+              <!--render facet: 4:1439;a-->
+              <div onclick={handleSelected} id={listVariable.Id} data-id={listVariable.Id} style="min-height: 67px;height: 100%" class="slds-theme_shade slds-p-around_x-small fprdGBL_Tile_cmp">
+                <div  class="slds-page-header__title" data-id={listVariable.Id} >{listVariable.nameProduct} </div>
+                <template lwc:if={listVariable.amount}><div  class="slds-page-header__name-meta" data-id={listVariable.Id} style="pointer-events: none;" ><lightning-formatted-number value={listVariable.amount} maximum-fraction-digits="2"></lightning-formatted-number> {listVariable.currencyLabel} {listVariable.currencyIsoCode} </div></template>
+              </div>
+            </div>
+          </template>
+            </template>
+             </template>
+             <template lwc:else> 
+              <template for:each={productList} for:item="listVariable">
+                <template lwc:if={listVariable.isSelected}>
+                <div key={listVariable.Id} style="border-right: 2px solid white;"  class="slds-large-size_1-of-4 slds-small-size_1-of-2 slds-medium-size_1-of-2 slds-col_bump-left slds-m-left_xxx-small" data-aura-rendered-by="1:1439;a">
+                  <!--render facet: 4:1439;a-->
+                <div onclick={handleSelected} id={listVariable.Id} data-id={listVariable.Id} style="min-height: 67px;height: 100%" class="isSelected slds-theme_shade slds-p-around_x-small fprdGBL_Tile_cmp" data-aura-rendered-by="6:1439;a" data-aura-class="fprdGBL_Tile_cmp">
+                  <div  class="slds-page-header__title" data-id={listVariable.Id} >{listVariable.name} </div>
+                  <template lwc:if={listVariable.amount}><div  class="slds-page-header__name-meta" data-id={listVariable.Id}  style="pointer-events: none;"><lightning-formatted-number value={listVariable.amount} maximum-fraction-digits="2"></lightning-formatted-number> {listVariable.currencyLabel} {listVariable.currencyIsoCode} </div></template>
+                </div>
+                </div>
+            </template>
+            <template lwc:else>
+            <div key={listVariable.Id} style="border-right: 2px solid white;"  class="slds-large-size_1-of-4 slds-small-size_1-of-2 slds-medium-size_1-of-2 slds-col_bump-left slds-m-left_xxx-small" data-aura-rendered-by="1:1439;a">
+              <!--render facet: 4:1439;a-->
+              <div onclick={handleSelected} id={listVariable.Id} data-id={listVariable.Id} style="min-height: 67px;height: 100%" class="slds-theme_shade slds-p-around_x-small fprdGBL_Tile_cmp">
+                <div  class="slds-page-header__title" data-id={listVariable.Id} >{listVariable.name} </div>
+                <template lwc:if={listVariable.amount}><div  class="slds-page-header__name-meta" data-id={listVariable.Id} style="pointer-events: none;" ><lightning-formatted-number value={listVariable.amount} maximum-fraction-digits="2"></lightning-formatted-number> {listVariable.currencyLabel} {listVariable.currencyIsoCode} </div></template>
+              </div>
+            </div>
+          </template>
+            </template>
+             </template>
+            
+          </div>
+        </div>
+     
+        <!-- <div class="slds-large-size_1-of-5 slds-medium-size_1-of-3 slds-small-size_1-of-3" data-aura-rendered-by="774:0">
+          <div style="height: 100%;" class="slds-col slds-theme_shade slds-align_absolute-center" data-aura-rendered-by="775:0">
+            <div class="slds-grid" data-aura-rendered-by="776:0">
+              <div class="slds-col slds-m-left_small neutral" data-aura-rendered-by="778:0">
+                <span data-testing-id="button add" data-aura-rendered-by="779:0">
+                  <button type="button" class="slds-button slds-button_icon slds-button_icon-border" data-aura-rendered-by="783:0">
+                    <lightning-icon icon-name="utility:add" variant="neutral" onclick={handleAddProducts} data-aura-rendered-by="784:0" lwc-3220386utb1-host="" size="xx-small">
+                    </lightning-icon>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+   </template>

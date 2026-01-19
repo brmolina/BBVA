@@ -1,0 +1,333 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-bottom_x-small " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-p-right_x-small slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109337484-cfq9e89qt","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDerivatives","fieldValue":"true"}],"id":"flex-action-1723109342590","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109337484-cfq9e89qt","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDerivatives","fieldValue":"true"}],"id":"flex-action-1723109342590","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","customProperties":[],"fieldBinding":"{derivativestotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block2clone0currency1" data-action-key="state0element1block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element1block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuDerivatives","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element1block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element1_child flexActionElement" 
+        data-action-element-class="state0element1block_element1_child" data-action-key="state0element1block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2clone0action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"close_modal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Derivatives"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932662960","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuDerivatives","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="close_modal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block2clone0action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element1block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Derivatives"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element2block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3ECOUNTERPARTY%20RISK%20(DERIVATIVES%20RISK%20LINE)%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{derivatives}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{derivatives}","totalamount":"{derivativestotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-m-top_small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element4block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EOPERATIONAL%20RESTRICTIONS%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{tableRestric}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="OPERATIONAL RESTRICTIONS" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-product-restric-table" property='\{"dvpAmount":"{dvpAmount}","fdAmount":"{fdAmount}","maxTenorOptionsName":"{maxTenorOptions}","tableDataName":"{tableRestric}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-product-restric-table  ></c-product-restric-table></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element6" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element6_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element7" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element7_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element7block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element7block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109233702-n54f96vrd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDepos","fieldValue":"true"}],"id":"flex-action-1723109240791","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109233702-n54f96vrd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDepos","fieldValue":"true"}],"id":"flex-action-1723109240791","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","customProperties":[],"fieldBinding":"{depostotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block2currency1" data-action-key="state0element7block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element7block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuDepos","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element7block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element7block_element1_child flexActionElement" 
+        data-action-element-class="state0element7block_element1_child" data-action-key="state0element7block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"closemodal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Depos"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932751778","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuDepos","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="closemodal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block2action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element7block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Depos"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element8_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element8block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element8block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EDEPOS%20RISK%20LINE%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{depos}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitdepos}","table":"{depos}","totalamount":"{depostotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element9" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element9_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element10" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element10_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element10block_element0" class="slds-col  slds-p-right_x-small slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element10block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109273583-hd69fy5na","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuEquities","fieldValue":"true"}],"id":"flex-action-1723109280327","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109273583-hd69fy5na","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuEquities","fieldValue":"true"}],"id":"flex-action-1723109280327","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","fieldBinding":"{equitiestotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block0clone0currency1" data-action-key="state0element10block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element10block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuEquities","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element10block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element10block_element1_child flexActionElement" 
+        data-action-element-class="state0element10block_element1_child" data-action-key="state0element10block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0clone0action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"close_modal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Equities"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932646169","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuEquities","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="close_modal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block0clone0action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element10block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Equities"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element11" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element11_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element11block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element11block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element11block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element11block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3EEQUITIES%20WWR%20RISK%20LINE%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element11block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{equities}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element11block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitequities}","table":"{equities}","totalamount":"{equitiestotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element12" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element12_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element13" class="slds-col   slds-p-around_x-small slds-col footer-full-width slds-docked-form-footer slds-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         background-color:trasparent;opacity:0.95; height:3.4rem;padding-left:-5rem; "  data-conditions='\{"group":[{"field":"editMode","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element13_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"editMode","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element13block_element0" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+                 margin-left: -11.35rem;
+    margin-top: -6.9rem;
+    width: 100%;"  data-conditions='\{"group":[{"field":"showPopover","hasMergeField":false,"id":"state-new-condition-7","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-custom-lwc-wrapper class="condition-element" element-name="c-dmt_show-popover" property='\{"message":"{message}","showPopover":"{showPopover}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_show-popover   data-conditions='\{"group":[{"field":"showPopover","hasMergeField":false,"id":"state-new-condition-7","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  header="We hit a snag."  message-title="Review the errors on this page."  variant="error" ></c-dmt_show-popover></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element13block_element1" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 0.7rem;" ><omnistudio-flex-action data-style-id="state0element13block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element13block_element1_child flexActionElement" 
+        data-action-element-class="state0element13block_element1_child" data-action-key="state0element13block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action1"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722595070892-ra7x7qbm6","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"eventName":"reload","id":"flex-action-1722595091066","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction"}}]'  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Cancel"  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element13block_element2" class="slds-col  slds-text-align_left  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 2.5rem;" ><omnistudio-flex-action data-style-id="state0element13block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element13block_element2_child flexActionElement" 
+        data-action-element-class="state0element13block_element2_child" data-action-key="state0element13block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action1clone0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1722595070892-ra7x7qbm6","label":"Create Records Risk","stateAction":{"Web Page":{"targetName":"/apex"},"eventName":"reload","id":"flex-action-1722596967065","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_riskLineTerm\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":1}]}","openUrlIn":"Current Window","responseNode":"resultLine","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1727947533549-ntwuf0e5l","label":"Create Records Restrictions","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","id":"flex-action-1728289281526","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_productLineCreation\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\",\"recordId\":\"{recordId}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\",\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"id\":1,\"name\":\"recordId\",\"val\":\"a5YKN0000000SRp2AM\"},{\"name\":\"records\",\"val\":\"\",\"id\":3}]}","openUrlIn":"Current Window","responseNode":"restricResult","targetType":"Web Page","type":"DataAction","vlocityIcon":"standard-default"}},{"actionIndex":2,"card":"{card}","draggable":true,"isOpen":true,"key":"1722596855137-on8lpjxtm","label":"Show Popover","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"resultLine.error","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"message","fieldValue":"{resultLine.IPResult.error}"},{"fieldName":"showPopover","fieldValue":"true"}],"id":"flex-action-1727947747562","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":3,"card":"{card}","draggable":true,"isOpen":true,"key":"1727947756568-x7vc2d3wb","label":"Show Popover Restric","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"restricResult.error","hasMergeField":false,"id":"state-new-condition-102","operator":"!=","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"message","fieldValue":"{restricResult.IPResult.error}"},{"fieldName":"showPopover","fieldValue":"true"}],"id":"flex-action-1729091740796","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":2,"card":"{card}","draggable":true,"isOpen":false,"key":"1722596943138-qp9mifsyg","label":"Reload","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"reload","fieldValues":[{"fieldName":"","fieldValue":""}],"id":"flex-action-1722596948943","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  button-variant="brand"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Save"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element14" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element14_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-bottom_x-small " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element1block_element0" class="slds-col  slds-p-right_x-small slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109337484-cfq9e89qt","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDerivatives","fieldValue":"true"}],"id":"flex-action-1723109342590","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109337484-cfq9e89qt","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDerivatives","fieldValue":"true"}],"id":"flex-action-1723109342590","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","customProperties":[],"fieldBinding":"{derivativestotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block2clone0currency1" data-action-key="state0element1block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element1block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuDerivatives","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element1block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element1block_element1_child flexActionElement" 
+        data-action-element-class="state0element1block_element1_child" data-action-key="state0element1block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2clone0action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"close_modal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Derivatives"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932662960","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuDerivatives","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="close_modal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block2clone0action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element1block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Derivatives"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element2block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element2block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3ECOUNTERPARTY%20RISK%20(DERIVATIVES%20RISK%20LINE)%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{derivatives}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitderivatives}","table":"{derivatives}","totalamount":"{derivativestotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-m-top_small  slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element4block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element4block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EOPERATIONAL%20RESTRICTIONS%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element4block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{tableRestric}","tableColumns":"{restricCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="OPERATIONAL RESTRICTIONS" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-product-restric-table" property='\{"dvpAmount":"{dvpAmount}","fdAmount":"{fdAmount}","maxTenorOptionsName":"{maxTenorOptions}","tableDataName":"{tableRestric}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-product-restric-table  ></c-product-restric-table></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element6" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element6_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element7" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element7_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element7block_element0" class="slds-col  slds-p-right_small slds-m-bottom_xx-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-base-input-element data-style-id="state0element7block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109233702-n54f96vrd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDepos","fieldValue":"true"}],"id":"flex-action-1723109240791","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109233702-n54f96vrd","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuDepos","fieldValue":"true"}],"id":"flex-action-1723109240791","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","customProperties":[],"fieldBinding":"{depostotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block2currency1" data-action-key="state0element7block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element7block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuDepos","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element7block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element7block_element1_child flexActionElement" 
+        data-action-element-class="state0element7block_element1_child" data-action-key="state0element7block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block2action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"closemodal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Depos"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932751778","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuDepos","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="closemodal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block2action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element7block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Depos"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element8_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element8block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element8block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element8block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cstrong%3E%3Cspan%20style=%22font-size:%2012pt;%22%3EDEPOS%20RISK%20LINE%3C/span%3E%3C/strong%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element8block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{depos}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element8block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitdepos}","table":"{depos}","totalamount":"{depostotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element9" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element9_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element10" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element10_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element10block_element0" class="slds-col  slds-p-right_x-small slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element10block_element0_child"   record={record}  card={card}  action='\{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109273583-hd69fy5na","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuEquities","fieldValue":"true"}],"id":"flex-action-1723109280327","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"}'  property-obj='\{"action":{"actionList":[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1723109273583-hd69fy5na","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"calcuEquities","fieldValue":"true"}],"id":"flex-action-1723109280327","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}],"eventType":"onchange","iconName":"standard-default","label":"Action","showSpinner":"false"},"currency":"{currency}","fieldBinding":"{equitiestotalamount}","label":"Total Amount","locale":"es-ES"}'  type="currency"  extraclass=" slds-text-link_reset"  theme="slds" onchange={executeAction} data-element-label="block0clone0currency1" data-action-key="state0element10block_element0" ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element10block_element1" class="slds-col  slds-text-align_center slds-m-top_small  slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"calcuEquities","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element10block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element10block_element1_child flexActionElement" 
+        data-action-element-class="state0element10block_element1_child" data-action-key="state0element10block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block0clone0action2"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722873091400-0pyz1jrpb","label":"Action","stateAction":{"cardName":"popoverGuidanceLimit","cardNode":"","channelName":"close_modal","flyoutLwc":"popoverGuidanceLimit","flyoutParams":{"tabletype":"Equities"},"flyoutType":"childCard","hasExtraParams":true,"id":"flex-action-1722932646169","openFlyoutIn":"Popover","openUrlIn":"Current Window","type":"Flyout"}}]'  button-variant="neutral"  data-conditions='\{"group":[{"field":"calcuEquities","hasMergeField":false,"id":"state-new-condition-2","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-channel="close_modal"  flyout-details='\{"openFlyoutIn":"Popover"}'  icon-name="custom:custom109"  icon-only="true"  label="Guidance Limits"  theme="slds"  ><div slot="popoverflyout" class="block0clone0action2action0 " > <c-cf-popover-guidance-limit data-style-id="state0element10block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"tabletype":"Equities"}'  ></c-cf-popover-guidance-limit></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element11" class="slds-col   slds-p-around_x-small slds-size_10-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element11_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element11block_element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:38px;    " >
+    <omnistudio-block data-style-id="state0element11block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element11block_element0block_element0" class="slds-col  slds-text-align_center slds-p-top_x-small  slds-size_11-of-12  " data-rindex={rindex} style="background-color:#AEAEAE;      
+     height:32px;    " ><omnistudio-output-field data-style-id="state0element11block_element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2012pt;%22%3E%3Cstrong%3EEQUITIES%20WWR%20RISK%20LINE%3C/strong%3E%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element11block_element0block_element1" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+         margin-top:4px" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_datatable_copy_paste" property='\{"rows":"{equities}","tableColumns":"{columnsCopy}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_datatable_copy_paste   titletable="DEPOS RISK LINE" ></c-dmt_datatable_copy_paste></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element11block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="      
+         " >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_risk_limit_table" property='\{"currency":"{currency}","defaultLimit":"{defaultLimitequities}","table":"{equities}","totalamount":"{equitiestotalamount}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_risk_limit_table  ></c-dmt_risk_limit_table></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element12" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:3rem;    " >
+    <omnistudio-block data-style-id="state0element12_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element13" class="slds-col   slds-p-around_x-small slds-col footer-full-width slds-docked-form-footer slds-size_12-of-12 slds-size_12-of-12  condition-element" data-rindex={rindex} style="      
+         background-color:trasparent;opacity:0.95; height:3.4rem;padding-left:-5rem; "  data-conditions='\{"group":[{"field":"editMode","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element13_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"editMode","hasMergeField":false,"id":"state-new-condition-0","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element13block_element0" class="slds-col   slds-size_1-of-12 " data-rindex={rindex} style="      
+                 margin-left: -11.35rem;
+    margin-top: -6.9rem;
+    width: 100%;"  data-conditions='\{"group":[{"field":"showPopover","hasMergeField":false,"id":"state-new-condition-7","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-custom-lwc-wrapper class="condition-element" element-name="c-dmt_show-popover" property='\{"message":"{message}","showPopover":"{showPopover}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_show-popover   data-conditions='\{"group":[{"field":"showPopover","hasMergeField":false,"id":"state-new-condition-7","operator":"==","type":"custom","value":"true"}],"id":"state-condition-object","isParent":true}'  header="We hit a snag."  message-title="Review the errors on this page."  variant="error" ></c-dmt_show-popover></omnistudio-custom-lwc-wrapper>
+    </div><div data-style-id="state0element13block_element1" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 0.7rem;" ><omnistudio-flex-action data-style-id="state0element13block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element13block_element1_child flexActionElement" 
+        data-action-element-class="state0element13block_element1_child" data-action-key="state0element13block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action1"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1722595070892-ra7x7qbm6","label":"Action","stateAction":{"Web Page":{"targetName":"/apex"},"eventName":"reload","id":"flex-action-1722595091066","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction"}}]'  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Cancel"  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element13block_element2" class="slds-col  slds-text-align_left  slds-size_2-of-12  " data-rindex={rindex} style="      
+         margin-left: 2.5rem;" ><omnistudio-flex-action data-style-id="state0element13block_element2_child"  tracking-obj={_childCardTrackingObj}  class= "state0element13block_element2_child flexActionElement" 
+        data-action-element-class="state0element13block_element2_child" data-action-key="state0element13block_element2" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action1clone0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":true,"isOpen":false,"key":"1722595070892-ra7x7qbm6","label":"Create Records Risk","stateAction":{"Web Page":{"targetName":"/apex"},"eventName":"reload","id":"flex-action-1722596967065","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_riskLineTerm\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":1}]}","openUrlIn":"Current Window","responseNode":"resultLine","targetType":"Web Page","type":"DataAction"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1727947533549-ntwuf0e5l","label":"Create Records Restrictions","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","id":"flex-action-1728289281526","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"lineTemplate_productLineCreation\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\",\"recordId\":\"{recordId}\"},\"jsonMap\":\"{\\\"recordId\\\":\\\"{recordId}\\\",\\\"records\\\":\\\"{records}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"id\":1,\"name\":\"recordId\",\"val\":\"a5YKN0000000SRp2AM\"},{\"name\":\"records\",\"val\":\"\",\"id\":3}]}","openUrlIn":"Current Window","responseNode":"restricResult","targetType":"Web Page","type":"DataAction","vlocityIcon":"standard-default"}},{"actionIndex":2,"card":"{card}","draggable":true,"isOpen":true,"key":"1722596855137-on8lpjxtm","label":"Show Popover","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"resultLine.error","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"message","fieldValue":"{resultLine.IPResult.error}"},{"fieldName":"showPopover","fieldValue":"true"}],"id":"flex-action-1727947747562","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":3,"card":"{card}","draggable":true,"isOpen":true,"key":"1727947756568-x7vc2d3wb","label":"Show Popover Restric","stateAction":{"Web Page":{"targetName":"/apex"},"actionConditions":{"group":[{"field":"restricResult.error","hasMergeField":false,"id":"state-new-condition-102","operator":"!=","type":"custom","value":"OK"}],"id":"state-condition-object","isParent":true},"displayName":"Action","eventName":"setValues","fieldValues":[{"fieldName":"message","fieldValue":"{restricResult.IPResult.error}"},{"fieldName":"showPopover","fieldValue":"true"}],"id":"flex-action-1729091740796","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}},{"actionIndex":2,"card":"{card}","draggable":true,"isOpen":false,"key":"1722596943138-qp9mifsyg","label":"Reload","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","eventName":"reload","fieldValues":[{"fieldName":"","fieldValue":""}],"id":"flex-action-1722596948943","openUrlIn":"Current Window","targetType":"Web Page","type":"cardAction","vlocityIcon":"standard-default"}}]'  button-variant="brand"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Save"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element14" class="slds-col    slds-size_2-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element14_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

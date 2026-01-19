@@ -1,0 +1,56 @@
+.slds-scrollable_y {
+
+  height:auto;
+  width:auto;
+
+}
+
+.slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown{
+    height: 10rem;
+} 
+.slds-button__icon_left, .slds-button__icon--left{
+    margin-right: 0;
+    padding: 0;
+}
+ .slds-dropdown-trigger_click,  .slds-dropdown-trigger--click {
+    display: block;
+    height: inherit;
+}
+.slds-form-element__control{
+    position: relative;
+    max-width: 27vh;
+}
+.slds-dropdown{
+    position: relative;
+    max-width: 27vh;
+}
+.slds-popover_full-width{
+    width:25em;
+}
+.slds-hint-parent .slds-cell-edit .slds-button__icon_edit, .slds-hint-parent .slds-cell-edit .slds-button__icon--edit, .slds-hint-parent .slds-cell-edit .slds-button__icon_lock, .slds-hint-parent .slds-cell-edit .slds-button__icon--lock {
+opacity:1;
+}
+
+.slds-popover_edit, .slds-popover--edit {
+    width: auto;
+    left: 20rem;
+} 
+
+.slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+
+.slds-checkbox .slds-checkbox_faux, .slds-checkbox .slds-checkbox--faux {
+    width: 2rem;
+    height: 2rem;
+}
+
+.slds-checkbox [type=checkbox]:checked+.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox--faux:after {
+
+    height: .55rem;
+    width: 1.25rem;
+} 
+ .slds-table_bordered, .slds-table--bordered {
+    border-collapse: collapse;
+}

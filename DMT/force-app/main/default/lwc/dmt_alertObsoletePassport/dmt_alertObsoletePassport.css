@@ -1,0 +1,15 @@
+.custom-warning-icon-color .slds-icon{
+        fill:rgb(248, 205, 81) !important;
+    }
+.dmt-msg-info-container {
+    width:100%;
+    margin-top:1rem;
+    margin-bottom:1rem;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background-color:#f3f3f3 ;
+    padding: 0.25rem;   
+}
+.dmt-msg-valign-m{
+    vertical-align: middle;
+}

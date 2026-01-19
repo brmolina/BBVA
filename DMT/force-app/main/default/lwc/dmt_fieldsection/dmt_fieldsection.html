@@ -1,0 +1,82 @@
+<template>
+
+    <template if:false={isEditMode}>
+        <lightning-layout multiple-rows="true">
+            <template for:each={processedColumnData} for:item="column">
+                <lightning-layout-item key={column.id} size={columnSize} padding="around-small">
+
+                    <template for:each={column.fields} for:item="field">
+
+                        <div class={field.viewClasses} key={field.id}>
+                            <span class="slds-form-element__label">{field.label}</span>
+                            <div class="slds-form-element__control">
+                                <div class="slds-form-element__static">{field.value}</div>
+
+                                <template if:false={field.isReadOnly}>
+                                    <lightning-button-icon
+                                        icon-name="utility:edit"
+                                        alternative-text={field.label}
+                                        title={field.label}
+                                        onclick={handleEditClick}
+                                        variant="border-filled"
+                                        size="x-small"
+                                        class="slds-button_icon-hint">
+                                    </lightning-button-icon>
+                                </template>
+                            </div>
+                        </div>
+
+                    </template>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </template>
+
+    <template if:true={isEditMode}>
+        <lightning-record-edit-form
+            record-id={recordId}
+            object-api-name={objectApiName}
+            onsuccess={handleSuccess}
+            onerror={handleError}>
+
+            <lightning-messages></lightning-messages>
+
+            <lightning-layout multiple-rows="true">
+                <template for:each={processedColumnData} for:item="column">
+                    <lightning-layout-item key={column.id} size={columnSize} padding="around-small">
+
+                        <template for:each={column.fields} for:item="field">
+
+                            <template if:true={field.isReadOnly}>
+                                <lightning-output-field
+                                    key={field.id}
+                                    field-name={field.fieldApiName}>
+                                </lightning-output-field>
+                            </template>
+                            <template if:false={field.isReadOnly}>
+                                <lightning-input-field
+                                    key={field.id}
+                                    field-name={field.fieldApiName}>
+                                </lightning-input-field>
+                            </template>
+
+                        </template>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
+
+            <div class="slds-m-top_medium slds-text-align_center">
+                <lightning-button
+                    label="Cancelar"
+                    onclick={handleCancelClick}
+                    class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    type="submit"
+                    label="Guardar">
+                </lightning-button>
+            </div>
+        </lightning-record-edit-form>
+    </template>
+</template>

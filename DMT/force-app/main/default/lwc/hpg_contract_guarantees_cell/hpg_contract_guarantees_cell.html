@@ -1,0 +1,16 @@
+<template>
+    <template lwc:if={notEmpty}>
+        <template lwc:if={isCurrency}>
+            <lightning-formatted-number title={title} value={value}></lightning-formatted-number>&nbsp;{currencyCode}
+        </template>
+        <template lwc:elseif={isDate}>
+            <lightning-formatted-date-time title={title} value={value}></lightning-formatted-date-time>
+        </template>
+        <template lwc:elseif={isPercent}>
+            <lightning-formatted-number title={title} value={value}></lightning-formatted-number>%
+        </template>
+        <template lwc:else>
+            <lightning-formatted-text title={title} value={value}></lightning-formatted-text>
+        </template>
+    </template>
+</template>

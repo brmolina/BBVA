@@ -1,0 +1,145 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-around_none " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-modal__header header-container slds-size_12-of-12  " data-rindex={rindex} style="      
+    border-radius:2;     " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  header slds-modal__title slds-hyphenate slds-text-heading_medium slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3EClose%20task%20and%20send%20to%20approver:%20%7BtaskCreateResult.error%7D%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2em;    " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-m-left_small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col  slds-text-align_left  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2.4em;    zoom:1.05" ><omnistudio-output-field data-style-id="state0element2block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%22%3ESelect%20the%20following%20task%20to%20perform:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_10-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{Parent.validations}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="nextStepCatalog" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_5-of-12  condition-element" data-rindex={rindex} style=""  data-conditions='\{"group":[{"field":"stepSelected","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"stepSelected","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col  slds-text-align_left  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2.4em;    zoom:1.05" ><omnistudio-output-field data-style-id="state0element3block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%22%3ESelect%20the%20approver%20to%20assign%20this%20task%20to:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{nextApprovers}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="nextApproverCatalog" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2em;    " >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small footer-full-width center-align-buttons slds-size_12-of-12  " data-rindex={rindex} style="background-color:#ECEBEA;      
+    border-radius:2;     " >
+    <omnistudio-block data-style-id="state0element5_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element5block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element5block_element0_child flexActionElement" 
+        data-action-element-class="state0element5block_element0_child" data-action-key="state0element5block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3clone0action0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1725021902871-amd8eowxz","label":"Action","stateAction":{"bubbles":true,"composed":true,"eventName":"closemodal","id":"flex-action-1725271072977","openUrlIn":"Current Window","subType":"Custom","type":"Event"}}]'  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Cancel"  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element5block_element1" class="slds-col  slds-text-align_left slds-m-left_xx-small  slds-size_3-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"nextApprover","hasMergeField":false,"id":"state-new-condition-20","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element5block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element5block_element1_child flexActionElement" 
+        data-action-element-class="state0element5block_element1_child" data-action-key="state0element5block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3clone0action0clone0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1725276311879-6myijrqmt","label":"Integration Procedure","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","id":"flex-action-1726083216498","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"Approver_UpdateStep\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\",\"recordId\":\"{recordId}\",\"modalType\":\"{Parent.modalType}\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\",\\\"recordId\\\":\\\"{recordId}\\\",\\\"Parent.modalType\\\":\\\"{Parent.modalType}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":1},{\"name\":\"recordId\",\"val\":\"\",\"id\":3},{\"name\":\"Parent.modalType\",\"val\":\"\",\"id\":10}]}","openUrlIn":"Current Window","responseNode":"taskCreateResult","targetType":"Web Page","type":"DataAction","vlocityIcon":"standard-default"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1725302139433-4ext9nw20","label":"ReloadCard","stateAction":{"actionConditions":{"group":[],"id":"state-condition-object","isParent":true},"bubbles":true,"composed":true,"displayName":"Action","eventName":"reloadcard","id":"flex-action-1725302997201","openUrlIn":"Current Window","subType":"Custom","type":"Event","vlocityIcon":"standard-default"}}]'  button-variant="brand"  data-conditions='\{"group":[{"field":"nextApprover","hasMergeField":false,"id":"state-new-condition-20","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Close Task"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-m-around_none " style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col   slds-modal__header header-container slds-size_12-of-12  " data-rindex={rindex} style="      
+    border-radius:2;     " >
+    <omnistudio-block data-style-id="state0element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col  header slds-modal__title slds-hyphenate slds-text-heading_medium slds-size_12-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-output-field data-style-id="state0element0block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3EClose%20task%20and%20send%20to%20approver:%20%7BtaskCreateResult.error%7D%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element1" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2em;    " >
+    <omnistudio-block data-style-id="state0element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element2" class="slds-col   slds-p-around_x-small slds-m-left_small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element2block_element0" class="slds-col  slds-text-align_left  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2.4em;    zoom:1.05" ><omnistudio-output-field data-style-id="state0element2block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%22%3ESelect%20the%20following%20task%20to%20perform:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element2block_element1" class="slds-col   slds-size_10-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{Parent.validations}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="nextStepCatalog" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_5-of-12  condition-element" data-rindex={rindex} style=""  data-conditions='\{"group":[{"field":"stepSelected","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}' >
+    <omnistudio-block data-style-id="state0element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  data-conditions='\{"group":[{"field":"stepSelected","hasMergeField":false,"id":"state-new-condition-0","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}'  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col  slds-text-align_left  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2.4em;    zoom:1.05" ><omnistudio-output-field data-style-id="state0element3block_element0_child"   record={record}  card={card}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%2010pt;%22%3ESelect%20the%20approver%20to%20assign%20this%20task%20to:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element3block_element1" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_selectlabel_flexcard" property='\{"list":"{nextApprovers}"}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_selectlabel_flexcard   catalog="nextApproverCatalog" ></c-dmt_selectlabel_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col   slds-p-around_x-small  slds-size_12-of-12  " data-rindex={rindex} style="      
+     height:2em;    " >
+    <omnistudio-block data-style-id="state0element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small footer-full-width center-align-buttons slds-size_12-of-12  " data-rindex={rindex} style="background-color:#ECEBEA;      
+    border-radius:2;     " >
+    <omnistudio-block data-style-id="state0element5_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col  slds-text-align_right slds-m-right_xx-small  slds-size_6-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element5block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element5block_element0_child flexActionElement" 
+        data-action-element-class="state0element5block_element0_child" data-action-key="state0element5block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3clone0action0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"draggable":false,"isOpen":true,"key":"1725021902871-amd8eowxz","label":"Action","stateAction":{"bubbles":true,"composed":true,"eventName":"closemodal","id":"flex-action-1725271072977","openUrlIn":"Current Window","subType":"Custom","type":"Event"}}]'  button-variant="neutral"  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Cancel"  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element5block_element1" class="slds-col  slds-text-align_left slds-m-left_xx-small  slds-size_3-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"group":[{"field":"nextApprover","hasMergeField":false,"id":"state-new-condition-20","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}' ><omnistudio-flex-action data-style-id="state0element5block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element5block_element1_child flexActionElement" 
+        data-action-element-class="state0element5block_element1_child" data-action-key="state0element5block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3clone0action0clone0"   state-obj={record}  record={record}  card={card}  action-list='\[{"actionIndex":0,"card":"{card}","draggable":false,"isOpen":true,"key":"1725276311879-6myijrqmt","label":"Integration Procedure","stateAction":{"Web Page":{"targetName":"/apex"},"displayName":"Action","id":"flex-action-1726083216498","message":"{\"type\":\"IntegrationProcedures\",\"value\":{\"dsDelay\":\"\",\"ipMethod\":\"Approver_UpdateStep\",\"vlocityAsync\":false,\"inputMap\":{\"records\":\"{records}\",\"recordId\":\"{recordId}\",\"modalType\":\"{Parent.modalType}\"},\"jsonMap\":\"{\\\"records\\\":\\\"{records}\\\",\\\"recordId\\\":\\\"{recordId}\\\",\\\"Parent.modalType\\\":\\\"{Parent.modalType}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"records\",\"val\":\"\",\"id\":1},{\"name\":\"recordId\",\"val\":\"\",\"id\":3},{\"name\":\"Parent.modalType\",\"val\":\"\",\"id\":10}]}","openUrlIn":"Current Window","responseNode":"taskCreateResult","targetType":"Web Page","type":"DataAction","vlocityIcon":"standard-default"}},{"actionIndex":1,"card":"{card}","draggable":true,"isOpen":false,"key":"1725302139433-4ext9nw20","label":"ReloadCard","stateAction":{"actionConditions":{"group":[],"id":"state-condition-object","isParent":true},"bubbles":true,"composed":true,"displayName":"Action","eventName":"reloadcard","id":"flex-action-1725302997201","openUrlIn":"Current Window","subType":"Custom","type":"Event","vlocityIcon":"standard-default"}}]'  button-variant="brand"  data-conditions='\{"group":[{"field":"nextApprover","hasMergeField":false,"id":"state-new-condition-20","operator":"!=","type":"custom","value":"KO"}],"id":"state-condition-object","isParent":true}'  display-as-button="true"  flyout-details='\{}'  hide-action-icon="true"  icon-name="standard-default"  label="Close Task"  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

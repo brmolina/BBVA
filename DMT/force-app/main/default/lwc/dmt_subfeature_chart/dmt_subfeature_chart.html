@@ -1,0 +1,37 @@
+<template>
+    <div class="container" if:false={hidden}>
+        <div class="slds-grid slds-align-middle slds-m-bottom_small">
+            <div style="display: flex; align-items: center; margin-right: 12px;">
+                <c-dmt_traffic_light
+                    simplelight="false"
+                    status={light}
+                    lightsize="27px">
+                </c-dmt_traffic_light>
+            </div>
+            <div style="flex-grow: 1; display: flex; align-items: center;">
+                <h1 class="tittle-feature"><b>{featureName}</b></h1>
+            </div>
+            <div class="right-align" style="margin-left: auto;">
+                <lightning-combobox
+                    name="progress"
+                    label="Currency"
+                    value={currencyId}
+                    options={pickListC}
+                    onchange={handleSelectChange}
+                    dropdown-alignment="bottom">
+                </lightning-combobox>
+            </div>
+        </div>
+        <!--<div class="center-align" style="margin-left: auto;">
+            <aura:component>
+                <h2 style="margin-bottom:0.8rem;" class="header">Additional Products:</h2>
+                <textarea style="min-height:4rem; min-width:100%;" disabled name="input5" value="initial value" label="Disabled textarea field">{additional_Restrictions}</textarea>
+            </aura:component>
+        </div>-->
+        <lightning-layout>
+            <lightning-layout-item class="slds-col slds-size_12-of-12">
+                <canvas lwc:ref="canvas" class="chart" id="Chart1"></canvas>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+</template>

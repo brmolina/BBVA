@@ -1,0 +1,68 @@
+<template>
+    <lightning-button-icon
+        icon-name="utility:copy_to_clipboard"
+        alternative-text="Copy Table"
+        variant="border-filled"
+        size="small"
+        onclick={openModal}
+        disabled={isReadOnlyUser}>
+    </lightning-button-icon>
+
+    <template lwc:if={showModal}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+
+                <lightning-modal-header label={modalHeaderLabel}></lightning-modal-header>
+
+                <lightning-modal-body>
+                    <template lwc:if={rows}>
+                        <div class="slds-theme_shade slds-box slds-box_xx-small slds-text-align_center slds-m-bottom_small">
+                            <div class="slds-text-heading_small slds-text-transform_uppercase">
+                                <b>{titletable}</b>
+                            </div>
+                        </div>
+
+                        <div class="slds-scrollable_y datatable-container" style="max-height: 60vh;">
+                            <lightning-datatable
+                                key-field="id"
+                                onrowaction={callRowAction}
+                                data={rows}
+                                columns={formatColumns}
+                                hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+                    </template>
+
+                    <template lwc:else>
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <textarea
+                                    rows="6"
+                                    class="slds-textarea slds-text-align_center slds-p-around_medium"
+                                    placeholder="Paste Excel data here..."
+                                    onclick={onClickTextArea}
+                                    style="resize: none;">
+                                </textarea>
+                            </div>
+                        </div>
+                    </template>
+                </lightning-modal-body>
+
+                <lightning-modal-footer>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                        <div class="slds-text-body_regular slds-text-color_weak slds-text-align_left">
+                            You can use <b>Ctrl + C</b> to copy and <b>Ctrl + V</b> to paste.
+                        </div>
+
+                        <div>
+                            <lightning-button label="Cancel" onclick={closeModal} class="slds-var-p-right_x-small"></lightning-button>
+                            <lightning-button variant="brand" label="Save" onclick={saveModal}></lightning-button>
+                        </div>
+                    </div>
+                </lightning-modal-footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

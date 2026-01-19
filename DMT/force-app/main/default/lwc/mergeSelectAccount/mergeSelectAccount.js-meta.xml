@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="urn:metadata.tooling.soap.sforce.com" fqn="mergeSelectAccount">
+  <apiVersion>48.0</apiVersion>
+  <isExposed>true</isExposed>
+
+  <targets>
+    <target>lightning__FlowScreen</target>
+    <target>lightning__RecordPage</target>
+  </targets>
+
+  <targetConfigs>
+    <targetConfig targets="lightning__RecordPage, lightning__FlowScreen">
+      <property name="iconName"         type="String" default="account"            label="Icon Name"                       required="true"/>
+      <property name="objectAPIName"    type="String" default="Account"            label="Object to perform SOSL"          required="true"/>
+      <property name="selectedRecordId" type="String"                              label="String to save Id selected"      required="false"/>
+      <property name="label"            type="String" default="Client"             label="Label to show"                   required="true"/>
+      <property name="message"          type="String" default="No Result Found..." label="Message to show for no results"  required="true"/>
+      <property name="fieldsToGet"      type="String" default="Id,Name"            label="Fields to return in SOSL"        required="true"/>
+      <property name="filter"           type="String"                              label="Filter to apply to SOSL"         required="false"/>
+      <property name="fieldToOrder"     type="String"                              label="One field to order SOSL"         required="false"/>
+    </targetConfig>
+  </targetConfigs>
+</LightningComponentBundle>

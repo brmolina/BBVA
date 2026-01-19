@@ -1,0 +1,46 @@
+<template >
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Derivatives Data" class="slds-modal slds-fade-in-open slds-modal_large">
+        <div class="slds-modal__container">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            <lightning-modal-header label={title}></lightning-modal-header>
+            <lightning-modal-body class="vh65">
+                <div class="vh65">
+                    <div class={heightClass}>
+                        <c-hpg_custom_datatable
+                            class="hpg"
+                            key-field="id"
+                            columns={columns}
+                            data={data}
+                            errors={errors}
+                            column-widths-mode="auto"
+                            min-column-width="130"
+                            hide-checkbox-column
+                            suppress-bottom-bar>
+                        </c-hpg_custom_datatable>
+                    </div>
+                    <template if:true={showChart}>
+                        <div class="slds-p-vertical_xx-small vh32">
+                            <c-hpg_derivatives_chart
+                                client-id={clientId}
+                                client-type={clientType}
+                                client-name={clientName}
+                                search-date={searchDate}
+                                countries={countries}
+                                params={params}
+                                currency={currency}
+                                exchange-rate={exchangeRate}>
+                            </c-hpg_derivatives_chart>
+                        </div>
+                    </template>
+                </div>
+            </lightning-modal-body>
+            <lightning-modal-footer>
+                <lightning-button title="Download CSV" icon-name="utility:download" onclick={downloadCSV} class="slds-m-left_x-small downloadcsv"></lightning-button>
+                <c-hpg_detail_button button-variant="neutral" button-label="Close" event-name="closemodal"></c-hpg_detail_button>
+            </lightning-modal-footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

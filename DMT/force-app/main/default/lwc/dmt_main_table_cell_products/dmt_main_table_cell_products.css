@@ -1,0 +1,46 @@
+.slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown{
+    height: 5.2rem;
+} 
+
+ .slds-dropdown-trigger_click,  .slds-dropdown-trigger--click {
+    display: contents;
+    height: inherit;
+}
+.slds-form-element__control{
+    position: relative;
+    width: 19rem;
+    max-width: 29vh;
+}
+.slds-dropdown{
+    position: relative;
+    width: 19rem;
+    max-width: 29vh;
+}
+
+
+
+.tiny-toggle {
+  display: inline-block;
+  transform: scale(0.60);    
+  transform-origin: center;
+}
+
+
+.meta {
+  display: block;
+  font-size: 0.87em;
+  margin-top: 0.1rem;
+}
+.toggle-container {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  margin-left: 10px; 
+}
+
+.priority-label {
+  font-size: 0.60rem;  
+  line-height: 1;    
+  margin-bottom: 2px;
+  color: #444;       
+}

@@ -1,0 +1,104 @@
+<template>
+    <div class="container">
+
+        <!-- New Money for BBVA -->
+        <div class="field">
+            <label>New Money for BBVA</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_NewMoney_BBVA__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-input 
+                    type="number"
+                    step="0.01"
+                    value={DMT_NewMoney_BBVA__c}
+                    data-field="DMT_NewMoney_BBVA__c"
+                    onchange={handleChange}>
+                </lightning-input>
+            </template>
+        </div>
+
+        <!-- Old Money for BBVA -->
+        <div class="field">
+            <label>Old Money for BBVA</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_OldMoney_BBVA__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-input 
+                    type="number"
+                    step="0.01"
+                    value={DMT_OldMoney_BBVA__c}
+                    data-field="DMT_OldMoney_BBVA__c"
+                    onchange={handleChange}>
+                </lightning-input>
+            </template>
+        </div>
+
+        <!-- Expected Final Take -->
+        <div class="field">
+            <label>Expected Final Take</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_ExpectedFinal_Take__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-input 
+                    type="number"
+                    step="0.01"
+                    value={DMT_ExpectedFinal_Take__c}
+                    data-field="DMT_ExpectedFinal_Take__c"
+                    onchange={handleChange}>
+                </lightning-input>
+            </template>
+        </div>
+
+        <!-- Expected Drawn (%) -->
+        <div class="field">
+            <label>Expected Drawn (%)</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_Expected_Drawn__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-input 
+                    type="number"
+                    step="1"
+                    value={DMT_Expected_Drawn__c}
+                    data-field="DMT_Expected_Drawn__c"
+                    onchange={handleChange}>
+                </lightning-input>
+            </template>
+        </div>
+
+        <!-- Extension/Duration Fees -->
+        <div class="field">
+            <label>Extension / Duration Fees (bps)</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_Extension_Duration_Fees__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-input 
+                    type="number"
+                    value={DMT_Extension_Duration_Fees__c}
+                    data-field="DMT_Extension_Duration_Fees__c"
+                    onchange={handleChange}>
+                </lightning-input>
+            </template>
+        </div>
+
+        <!-- Pricing Grid or Step-ups -->
+        <div class="field wide">
+            <label>Pricing Grid or Step-ups (if applicable)</label>
+            <template if:false={isEdit}>
+                <div class="readonly">{DMT_PricingGrid_OR_StepUps__c}</div>
+            </template>
+            <template if:true={isEdit}>
+                <lightning-textarea 
+                    value={DMT_PricingGrid_OR_StepUps__c}
+                    data-field="DMT_PricingGrid_OR_StepUps__c"
+                    onchange={handleChange}>
+                </lightning-textarea>
+            </template>
+        </div>
+
+    </div>
+</template>

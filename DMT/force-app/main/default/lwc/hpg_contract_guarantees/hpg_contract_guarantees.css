@@ -1,0 +1,43 @@
+.ontop {
+    z-index: 9002;
+}
+
+.almosttop {
+    z-index: 9001;
+}
+
+.fixed-row {
+    left: 0;
+    position: sticky;
+    z-index:9003;
+    background: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #f3f3f3;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    width: 300px;
+    min-width: 240px;
+}
+
+.fixed-row-header {
+    left: 0;
+    z-index:9003 !important;
+}
+
+.guaranteecolumn {
+    white-space: break-spaces;
+    min-width: 300px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.downloadcsv {
+    --lwc-spacingXSmall: 0px;
+    --lwc-spacingMedium: 9px;
+}
+
+.divspinner {
+    height:395px;
+}

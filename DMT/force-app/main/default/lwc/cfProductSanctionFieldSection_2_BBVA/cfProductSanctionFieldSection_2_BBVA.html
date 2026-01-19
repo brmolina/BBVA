@@ -1,0 +1,523 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Detail"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#747474"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0block_element0" class="slds-col   slds-size_10-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   width:auto" ><omnistudio-output-field data-style-id="state0element0block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder="\{parentProductName}"  type="text"  field-name="parentProductName"  label="Parent Product Name"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element0block_element1" class="slds-col  slds-p-left_xx-small slds-p-top_medium  slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element0block_element0block_element0block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element0block_element0block_element1_child flexActionElement" 
+        data-action-element-class="state0element0block_element0block_element0block_element1_child" data-action-key="state0element0block_element0block_element0block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action2"   state-obj={record}  card={card}  record={record}  label="Navigate to Parent"  icon-name="utility-preview"  action-list='\[{"stateAction":{"id":"flex-action-1742978664613","type":"Flyout","openUrlIn":"New Tab/Window","flyoutType":"childCard","openFlyoutIn":"Modal","channelName":"","cardName":"productSanctionFields","flyoutLwc":"productSanctionFields","hasExtraParams":true,"flyoutParams":{"editState":"false","updateRisk":"{parentProductSFId}"}},"key":"1742917369488-wg9dovz0i","label":"View parent","draggable":true,"isOpen":true,"actionIndex":0,"preloadFlyout":false}]'  icon-only="true"  flyout-details='\{"openFlyoutIn":"Modal"}'  icon-color="#747474"  icon-size="x-small"  flyout-channel=""  preload-flyout="false"  theme="slds"  ><div slot="modalflyout" class="block1action2action0 " > <c-cf-product-sanction-fields data-style-id="state0element0block_element0block_element0block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"editState":"false","updateRisk":"{parentProductSFId}"}'  ></c-cf-product-sanction-fields></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element1block_element0_child"   card={card}  record={record}  placeholder="\{parentProductId}"  type="text"  field-name="parentProductId"  label="Parent Product Id"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element2block_element0_child"   record={record}  card={card}  field-name="amount"  label="Amount"  placeholder="\{emptyString}"  type="currency"  locale="es-ES"  currency={CurrencyIsoCode}  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element3block_element0_child"   record={record}  card={card}  field-name="CurrencyIsoCode"  format="DD/MM/YYYY"  label="Currency"  placeholder="\{emptyString}"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element4block_element0_child"   record={record}  card={card}  field-name="currencyProvision"  format="DD/MM/YYYY"  label="Available Currencies"  placeholder="All Currencies"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element5" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element5_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element5block_element0_child"   record={record}  card={card}  field-name="warrantyName"  format="DD/MM/YYYY"  label="Required mitigants"  placeholder="\{emptyString}"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element6" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element6_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element6block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element6block_element0_child"   record={record}  card={card}  field-name="DMT_LastLevelId__clab"  format="DD/MM/YYYY"  label="Typology of financial program risks"  placeholder="\{DMT_LastLevelId__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element7" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element7_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element7block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element7block_element0_child"   record={record}  card={card}  field-name="g_global_product_id__clab"  format="DD/MM/YYYY"  label="Global Product"  placeholder="\{g_global_product_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element8" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element8_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element8block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element8block_element0_child"   record={record}  card={card}  field-name="g_gbl_product_subcategory_id__clab"  label="Global Product Subcategory"  placeholder="\{g_gbl_product_subcategory_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element9" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element9_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element9block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element9block_element0_child"   record={record}  card={card}  field-name="g_global_product_category_id__clab"  label="Global Product Category"  placeholder="\{g_global_product_category_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element10" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element10_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element10block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element10block_element0_child"   record={record}  card={card}  field-name="g_global_product_subfamily_id__clab"  label="Global Product Subfamily"  placeholder="\{g_global_product_subfamily_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element11" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element11_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element11block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element11block_element0_child"   record={record}  card={card}  field-name="g_global_product_family_id__clab"  label="Global Product Family"  placeholder="\{g_global_product_family_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element12" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element12_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element12block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element12block_element0_child"   record={record}  card={card}  field-name="g_bullet_ind_type__c"  label="Bullet indicator Limitation"  placeholder="\{g_bullet_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element13" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element13_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element13block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element13block_element0_child"   record={record}  card={card}  field-name="g_smscl_internal_ratg_type__c"  label="Minimum Internal Rating Limitation"  placeholder="\{g_smscl_internal_ratg_type}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element14" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' >
+    <omnistudio-block data-style-id="state0element0block_element14_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element14block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  condition-element" data-rindex={rindex} style="      
+     height:46px; min-height:46px;   "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' ><omnistudio-output-field data-style-id="state0element0block_element14block_element0_child"   record={record}  card={card}  field-name="initTerm"  label="Initial Term"  placeholder="\{emptyString}"  type="text"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element15" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' >
+    <omnistudio-block data-style-id="state0element0block_element15_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element15block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  condition-element" data-rindex={rindex} style="      
+     height:46px; min-height:46px;   "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' ><omnistudio-output-field data-style-id="state0element0block_element15block_element0_child"   record={record}  card={card}  field-name="endTerm"  label="Maximum Term"  placeholder="\{emptyString}"  type="text"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element16" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element16_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element16block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element16block_element0_child"   record={record}  card={card}  field-name="g_limit_sinds_ast_sctr_id__clab"  label="Asset Allocation Sector Limitation"  placeholder="\{g_limit_sinds_ast_sctr_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element17" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element17_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element17block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element17block_element0_child"   record={record}  card={card}  field-name="g_limit_sinds_ast_subsec_id__clab"  label="Asset Allocation Subsector Limitation"  placeholder="\{g_limit_sinds_ast_subsec_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element18" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element18_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element18block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element18block_element0_child"   record={record}  card={card}  field-name="g_branch_id__c"  label="Branch Limitation"  placeholder="\{g_branch_id__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element19" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element19_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element19block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element19block_element0_child"   record={record}  card={card}  field-name="gf_inscol_months_grace_number__c"  label="Number of months of grace period"  placeholder="\{gf_inscol_months_grace_number__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element20" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element20_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element20block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element20block_element0_child"   record={record}  card={card}  field-name="gf_loan_value_per__c"  label="Loan to value LTV (%)"  placeholder="\{gf_loan_value_per__c}"  type="text"  mask="00.00%"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element21" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element21_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element21block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element21block_element0_child"   record={record}  card={card}  field-name="g_notary_crtfn_ind_type__c"  label="Notary formalization indicator GMOD"  placeholder="\{g_notary_crtfn_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element22" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element22_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element22block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element22block_element0_child"   record={record}  card={card}  field-name="g_gtee_public_adm_ind_type__c"  label="Indicator guarantees to public administrations GMOD"  placeholder="\{g_gtee_public_adm_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element23" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element23_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element23block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element23block_element0_child"   record={record}  card={card}  field-name="gf_loan_eca_cntrb_per__c"  label="Percentage contribution export credit agency loan"  placeholder="\{gf_loan_eca_cntrb_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element24" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element24_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element24block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element24block_element0_child"   record={record}  card={card}  field-name="gf_min_raroec_fcg_per__c"  label="Minimum percentage RAROEC with financing"  placeholder="\{gf_min_raroec_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element25" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element25_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element25block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element25block_element0_child"   record={record}  card={card}  field-name="gf_min_raroec_wo_fcg_per__c"  label="Minimum percentage RAROEC without financing"  placeholder="\{gf_min_raroec_wo_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element26" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element26_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element26block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element26block_element0_child"   record={record}  card={card}  field-name="gf_min_rorc_fcg_per__c"  label="Minimum percentage RORC with financing"  placeholder="\{gf_min_rorc_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element27" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element27_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element27block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element27block_element0_child"   record={record}  card={card}  field-name="gf_min_rorc_wo_fcg_per__c"  label="Minimum percentage RORC without financing"  placeholder="\{gf_min_rorc_wo_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element28" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element28_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element28block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element28block_element0_child"   record={record}  card={card}  field-name="gf_revolvence_pd_days_number__c"  label="Number of days revolvency period"  placeholder="\{gf_revolvence_pd_days_number__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element29" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element29_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element29block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element29block_element0_child"   record={record}  card={card}  field-name="g_multioperation_ind_type__c"  label="Multioperation indicator"  placeholder="\{g_multioperation_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element30" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element30_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element30block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+      min-height:46px;max-width:96%" ><omnistudio-output-field data-style-id="state0element0block_element30block_element0_child"   record={record}  card={card}  field-name="DMT_Comments__c"  label="Comments"  placeholder="\{DMT_Comments__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12 "  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root slds-card" style="      
+         ">
+          <div data-style-id="state0element0" class="slds-col    slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0_child"  card={card}  record={record}  label="Detail"  collapsible="true"  collapsed-by-default="false"  styles='\{"label":{"color":"#747474"}}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element0_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-0","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0" class="slds-col   slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element0block_element0_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element0block_element0block_element0" class="slds-col   slds-size_10-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   width:auto" ><omnistudio-output-field data-style-id="state0element0block_element0block_element0block_element0_child"   card={card}  record={record}  placeholder="\{parentProductName}"  type="text"  field-name="parentProductName"  label="Parent Product Name"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element0block_element0block_element0block_element1" class="slds-col  slds-p-left_xx-small slds-p-top_medium  slds-size_1-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element0block_element0block_element0block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element0block_element0block_element0block_element1_child flexActionElement" 
+        data-action-element-class="state0element0block_element0block_element0block_element1_child" data-action-key="state0element0block_element0block_element0block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block1action2"   state-obj={record}  card={card}  record={record}  label="Navigate to Parent"  icon-name="utility-preview"  action-list='\[{"stateAction":{"id":"flex-action-1742978664613","type":"Flyout","openUrlIn":"New Tab/Window","flyoutType":"childCard","openFlyoutIn":"Modal","channelName":"","cardName":"productSanctionFields","flyoutLwc":"productSanctionFields","hasExtraParams":true,"flyoutParams":{"editState":"false","updateRisk":"{parentProductSFId}"}},"key":"1742917369488-wg9dovz0i","label":"View parent","draggable":true,"isOpen":true,"actionIndex":0,"preloadFlyout":false}]'  icon-only="true"  flyout-details='\{"openFlyoutIn":"Modal"}'  icon-color="#747474"  icon-size="x-small"  flyout-channel=""  preload-flyout="false"  theme="slds"  ><div slot="modalflyout" class="block1action2action0 " > <c-cf-product-sanction-fields data-style-id="state0element0block_element0block_element0block_element1_child"  parent-record={record}  records={_records}  parent-mergefields={card}  record-id={recordId}  object-api-name={objectApiName}  parent-attribute='\{"editState":"false","updateRisk":"{parentProductSFId}"}'  ></c-cf-product-sanction-fields></div></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element1" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}' >
+    <omnistudio-block data-style-id="state0element0block_element1_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[{"id":"state-new-condition-7","field":"hasNotParent","operator":"==","value":"false","type":"custom","hasMergeField":false}]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element1block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element1block_element0_child"   card={card}  record={record}  placeholder="\{parentProductId}"  type="text"  field-name="parentProductId"  label="Parent Product Id"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element2" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element2_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element2block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element2block_element0_child"   record={record}  card={card}  field-name="amount"  label="Amount"  placeholder="\{emptyString}"  type="currency"  locale="es-ES"  currency={CurrencyIsoCode}  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element3" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element3_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element3block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element3block_element0_child"   record={record}  card={card}  field-name="CurrencyIsoCode"  format="DD/MM/YYYY"  label="Currency"  placeholder="\{emptyString}"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element4" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element4_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element4block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element4block_element0_child"   record={record}  card={card}  field-name="currencyProvision"  format="DD/MM/YYYY"  label="Available Currencies"  placeholder="All Currencies"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element5" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element5_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element5block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element5block_element0_child"   record={record}  card={card}  field-name="warrantyName"  format="DD/MM/YYYY"  label="Required mitigants"  placeholder="\{emptyString}"  type="text"  locale="es-ES"  currency="EUR"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element6" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element6_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element6block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+      min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element6block_element0_child"   record={record}  card={card}  field-name="DMT_LastLevelId__clab"  format="DD/MM/YYYY"  label="Typology of financial program risks"  placeholder="\{DMT_LastLevelId__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element7" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element7_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element7block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   
+" ><omnistudio-output-field data-style-id="state0element0block_element7block_element0_child"   record={record}  card={card}  field-name="g_global_product_id__clab"  format="DD/MM/YYYY"  label="Global Product"  placeholder="\{g_global_product_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element8" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element8_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element8block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element8block_element0_child"   record={record}  card={card}  field-name="g_gbl_product_subcategory_id__clab"  label="Global Product Subcategory"  placeholder="\{g_gbl_product_subcategory_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element9" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element9_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element9block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element9block_element0_child"   record={record}  card={card}  field-name="g_global_product_category_id__clab"  label="Global Product Category"  placeholder="\{g_global_product_category_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element10" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element10_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element10block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element10block_element0_child"   record={record}  card={card}  field-name="g_global_product_subfamily_id__clab"  label="Global Product Subfamily"  placeholder="\{g_global_product_subfamily_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element11" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element11_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element11block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element11block_element0_child"   record={record}  card={card}  field-name="g_global_product_family_id__clab"  label="Global Product Family"  placeholder="\{g_global_product_family_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element12" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element12_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element12block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element12block_element0_child"   record={record}  card={card}  field-name="g_bullet_ind_type__c"  label="Bullet indicator Limitation"  placeholder="\{g_bullet_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element13" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element13_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element13block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element13block_element0_child"   record={record}  card={card}  field-name="g_smscl_internal_ratg_type__c"  label="Minimum Internal Rating Limitation"  placeholder="\{g_smscl_internal_ratg_type}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element14" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' >
+    <omnistudio-block data-style-id="state0element0block_element14_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element14block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  condition-element" data-rindex={rindex} style="      
+     height:46px; min-height:46px;   "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' ><omnistudio-output-field data-style-id="state0element0block_element14block_element0_child"   record={record}  card={card}  field-name="initTerm"  label="Initial Term"  placeholder="\{emptyString}"  type="text"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element15" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  condition-element" data-rindex={rindex} style="      
+         "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' >
+    <omnistudio-block data-style-id="state0element0block_element15_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element15block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  condition-element" data-rindex={rindex} style="      
+     height:46px; min-height:46px;   "  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}' ><omnistudio-output-field data-style-id="state0element0block_element15block_element0_child"   record={record}  card={card}  field-name="endTerm"  label="Maximum Term"  placeholder="\{emptyString}"  type="text"  data-conditions='\{"id":"state-condition-object","isParent":true,"group":[]}'  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element16" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element16_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element16block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element16block_element0_child"   record={record}  card={card}  field-name="g_limit_sinds_ast_sctr_id__clab"  label="Asset Allocation Sector Limitation"  placeholder="\{g_limit_sinds_ast_sctr_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element17" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element17_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element17block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element17block_element0_child"   record={record}  card={card}  field-name="g_limit_sinds_ast_subsec_id__clab"  label="Asset Allocation Subsector Limitation"  placeholder="\{g_limit_sinds_ast_subsec_id__clab}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element18" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element18_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element18block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element18block_element0_child"   record={record}  card={card}  field-name="g_branch_id__c"  label="Branch Limitation"  placeholder="\{g_branch_id__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element19" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element19_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element19block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element19block_element0_child"   record={record}  card={card}  field-name="gf_inscol_months_grace_number__c"  label="Number of months of grace period"  placeholder="\{gf_inscol_months_grace_number__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element20" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element20_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element20block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element20block_element0_child"   record={record}  card={card}  field-name="gf_loan_value_per__c"  label="Loan to value LTV (%)"  placeholder="\{gf_loan_value_per__c}"  type="text"  mask="00.00%"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element21" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element21_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element21block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element21block_element0_child"   record={record}  card={card}  field-name="g_notary_crtfn_ind_type__c"  label="Notary formalization indicator GMOD"  placeholder="\{g_notary_crtfn_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element22" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element22_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element22block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element22block_element0_child"   record={record}  card={card}  field-name="g_gtee_public_adm_ind_type__c"  label="Indicator guarantees to public administrations GMOD"  placeholder="\{g_gtee_public_adm_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element23" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element23_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element23block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element23block_element0_child"   record={record}  card={card}  field-name="gf_loan_eca_cntrb_per__c"  label="Percentage contribution export credit agency loan"  placeholder="\{gf_loan_eca_cntrb_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element24" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element24_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element24block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element24block_element0_child"   record={record}  card={card}  field-name="gf_min_raroec_fcg_per__c"  label="Minimum percentage RAROEC with financing"  placeholder="\{gf_min_raroec_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element25" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element25_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element25block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element25block_element0_child"   record={record}  card={card}  field-name="gf_min_raroec_wo_fcg_per__c"  label="Minimum percentage RAROEC without financing"  placeholder="\{gf_min_raroec_wo_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element26" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element26_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element26block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element26block_element0_child"   record={record}  card={card}  field-name="gf_min_rorc_fcg_per__c"  label="Minimum percentage RORC with financing"  placeholder="\{gf_min_rorc_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element27" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element27_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element27block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element27block_element0_child"   record={record}  card={card}  field-name="gf_min_rorc_wo_fcg_per__c"  label="Minimum percentage RORC without financing"  placeholder="\{gf_min_rorc_wo_fcg_per__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element28" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element28_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element28block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element28block_element0_child"   record={record}  card={card}  field-name="gf_revolvence_pd_days_number__c"  label="Number of days revolvency period"  placeholder="\{gf_revolvence_pd_days_number__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element29" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_6-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element29_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element29block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_11-of-12  " data-rindex={rindex} style="      
+     height:46px; min-height:46px;   " ><omnistudio-output-field data-style-id="state0element0block_element29block_element0_child"   record={record}  card={card}  field-name="g_multioperation_ind_type__c"  label="Multioperation indicator"  placeholder="\{g_multioperation_ind_type__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element0block_element30" class="slds-col   slds-col slds-p-horizontal_small slds-text-body_regular slds-p-around_x-small slds-size_12-of-12  " data-rindex={rindex} style="      
+         " >
+    <omnistudio-block data-style-id="state0element0block_element30_child"  record={record}  card={card}  collapsed-by-default="false"  collapsible="false"  label="Block"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element0block_element30block_element0" class="slds-col  slds-form-element slds-hint-parent test-id__output-root slds-form-element_edit slds-form-element_readonly is-stacked is-stacked-not-editing slds-size_12-of-12  " data-rindex={rindex} style="      
+      min-height:46px;max-width:96%" ><omnistudio-output-field data-style-id="state0element0block_element30block_element0_child"   record={record}  card={card}  field-name="DMT_Comments__c"  label="Comments"  placeholder="\{DMT_Comments__c}"  type="text"  theme="slds"  ></omnistudio-output-field>
+      </div>
+        </div></omnistudio-block>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

@@ -1,0 +1,99 @@
+<template>
+    <div class="slds-grid slds-grid_vertical-align-center" style={indentStyle}>
+        <template if:true={hasChildren}>
+            <template if:true={zeroLevel}>
+                <label class="custom-radio">
+            <input
+                type="checkbox"
+                checked={product.selected}
+                onchange={toggleExpand}/>
+            <span class="radio-circle"></span>
+            </label>
+            </template>
+            <template if:false={zeroLevel}>
+            <lightning-input
+                type="checkbox"
+                variant="label-hidden"
+                class="custom-radio"
+                checked={product.selected}
+                onchange={toggleExpand}>
+            </lightning-input>
+            </template>
+            <span onclick={toggleExpand} style="cursor:pointer" class={levelClass}>{product.displayName}</span>
+            <template if:true={zeroLevel}>
+            <template if:true={isSelected}><lightning-combobox
+            name="progress"
+            style="margin-left: 0.8rem; min-width: 12rem;"
+            label="Max Term"
+            variant="label-hidden"
+            value={valueTerm}
+            placeholder="Select Term"
+            options={optionsTerm}
+            onchange={handleChangeTerm} ></lightning-combobox>
+        </template>
+        </template>
+        </template>
+        <template if:false={hasChildren} >
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <template if:true={zeroLevel}>
+                <label class="custom-radio">
+                <input
+                type="checkbox"
+                checked={product.selected}
+                onchange={handleCheckbox}/>
+            <span class="radio-circle"></span>
+            </label> 
+            </template>  
+                <template if:false={zeroLevel}>
+                <lightning-input
+                type="checkbox"
+                variant="label-hidden"
+                disabled={product.disabled}
+                class="custom-radio"
+                checked={product.selected}
+                onchange={handleCheckbox}>
+            </lightning-input>
+                </template>
+            <template if:true={product.disabled}>
+                <span class={levelClass} style="cursor:pointer; pointer-events:none;" onclick={handleCheckbox}>{product.displayName}</span><span style="cursor:pointer; pointer-events:none;font-style:italic;" onclick={handleCheckbox}> - &#123;{product.taxValue}&#125;</span>
+            </template>
+            <template if:false={product.disabled}>
+                <span class={levelClass} style="cursor:pointer" onclick={handleCheckbox}>{product.displayName}</span><span style="cursor:pointer;font-style:italic;" onclick={handleCheckbox}> - &#123;{product.taxValue}&#125;</span>
+            </template>  
+            <template if:true={zeroLevel}>
+            <template if:true={isSelected}>
+                <lightning-combobox
+            name="progress"
+            style="margin-left: 0.8rem;; min-width: 12rem;"
+            label="Max Term"
+            variant="label-hidden"
+            value={valueTerm}
+            placeholder="Term"
+            options={optionsTerm}
+            onchange={handleChangeTerm} ></lightning-combobox>
+        </template>
+        </template>  
+            </div>
+        </template>
+    </div>
+
+    <template if:true={hasChildren}>
+        <template if:true={product.expanded}>
+            <template for:each={product.children} for:item="child">
+                <div key={child.id} style="margin-left: 2.8rem;">                
+                    <c-dmt_producttreenode
+                    key={child.id}
+                    zero-level="false"
+                    product={child}
+                    level={nextLevel}
+                    disabled={child.disabled}
+                    is-selected={child.selected}
+                    oncheck={handleCheckboxBubble}
+                    onterm={handleChangeTermBubble}
+                    onexpand={handleExpandBubble}>
+                </c-dmt_producttreenode>
+            </div>
+            </template>
+        </template>
+    </template>
+</template>

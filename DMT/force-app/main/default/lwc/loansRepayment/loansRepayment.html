@@ -1,0 +1,37 @@
+<template>
+    <div class="slds-theme_default ">
+        <div class=" slds-size_1-of-1 slds-m-top_medium">
+            <template if:true={noData}>
+                <p class="mainText slds-align_absolute-center">
+                    {label.NODATA}
+                </p>
+            </template>
+            <template if:false={noData}>
+                <!-- <div style="height: 200px">
+                    <div class="mainWrapper " style="height: 100%">300px
+                        <canvas class="canvasChart" lwc:dom="manual" ></canvas>
+                    </div>
+                </div> -->
+                <div class="mainWrapper "  style="height: 40vh">
+                    <canvas class="canvasChart" lwc:dom="manual"></canvas>
+                </div>
+
+                <template if:true={showViewDetails}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item size="9" flexibility="auto"
+                            class="slds-text-body_regular slds-align_absolute-left slds-p-top_small  slds-p-left_medium">
+                            <a href="" class="slds-text-link" onclick={navigateToMyComponent}>View Report</a>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="3" flexibility="auto"
+                            class="slds-text-body_regular slds-align_absolute-right slds-p-top_small ">
+                            <span>As of Today at {timeRefresh} &nbsp;
+                            </span>
+                            <lightning-button-icon icon-name="utility:refresh" onclick={getData} alternative-text="Refresh.">
+                            </lightning-button-icon>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>

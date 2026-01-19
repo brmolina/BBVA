@@ -1,0 +1,8 @@
+.inputNameDisabled input {
+  pointer-events: none;       
+  background-color: #f4f4f4;  
+  color: #555;                
+  border: 1px solid #ccc;     
+  opacity: 1;                 
+
+}

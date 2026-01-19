@@ -1,0 +1,136 @@
+<template>
+      <template lwc:if={showDefault}>
+        <div class="slds-p-around_medium">
+            <lightning-card title="Line Versions" icon-name="standard:record">
+                <div slot="actions" class="slds-grid slds-grid_vertical-align-center">
+                    <lightning-button 
+                        label="Create New Version" 
+                        disabled={isButtonDisabled} 
+                        onclick={processCreateNewVersion}>
+                    </lightning-button>
+                    <lightning-button-icon
+                        icon-name="utility:refresh"
+                        alternative-text="Refresh"
+                        title="Refresh"
+                        onclick={handleGetSnapshotEvaluationVersions}
+                        class="slds-m-left_x-small">
+                    </lightning-button-icon>
+                </div>
+                <div class="slds-p-top_small"></div>
+                    <template lwc:if={isLoading}>
+                        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                    </template>
+                    <template lwc:else>
+                        <template lwc:if={paginatedData.length}>
+                            <c-custom-data-table
+                                key-field="id"
+                                data={paginatedData}
+                                columns={columns}
+                                onrowaction={handleCreatePDF}
+                                hide-checkbox-column>
+                            </c-custom-data-table>
+                        </template>
+                        <template lwc:if={showPagination}>
+                            <div class="slds-p-top_small"></div>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-text-align_left slds-grid slds-grid_vertical-align-center">
+                                    <div class="slds-grid slds-grid_align-center">
+                                        <div class="slds-p-top_xx-small">
+                                            <p>Showing {paginatedData.length} of {data.length} items</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-grow slds-text-align_right slds-grid slds-grid_vertical-align-center slds-grid_align-end slds-p-left_small">
+                                    <div class="slds-grid slds-grid_align-center">
+                                        <div class="slds-m-right_small">
+                                            <lightning-button 
+                                                variant="base" 
+                                                icon-name="utility:chevronleft" 
+                                                onclick={handlePreviousPage}
+                                                disabled={disablePrevious}>
+                                            </lightning-button>
+                                        </div>
+                                        <div class="slds-m-horizontal_small slds-grid slds-grid_vertical-align-center">
+                                            <span>Page {currentPage} of {totalPages}</span>
+                                        </div>
+                                        <div class="slds-m-left_small">
+                                            <lightning-button 
+                                                variant="base" 
+                                                icon-name="utility:chevronright" 
+                                                icon-position="right"
+                                                onclick={handleNextPage}
+                                                disabled={disableNext}>
+                                            </lightning-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+            </lightning-card>
+        </div>
+        <c-pdf-generator></c-pdf-generator>
+      </template>
+        
+        <template lwc:if={showPrompt}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title">{enteredAdditionalText}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-input label={versionDescriptionText} value={userInput} onchange={handleUserInput} oncommit={focusCombobox} data-id="versionInput" onkeydown={handleDialogKeydown}></lightning-input>
+                        <lightning-input label={versionCategoryText} value={selectedCategory} onchange={handleCategoryChange} oncommit={focusConfirmButton} data-id="categoryInput" onkeydown={handleDialogKeydown} disabled={selectCategoryDisabled}></lightning-input>
+                        <!-- <lightning-combobox label="Select Category" value={selectedCategory} placeholder="Select Category" options={categoryOptions} onchange={handleCategoryChange} oncommit={focusConfirmButton} data-id="categoryInput" onkeydown={handleDialogKeydown}></lightning-combobox> -->
+                    </div>
+                    <footer class="slds-grid slds-modal__footer slds-grid_align-center">
+                        <lightning-button class="slds-m-around_small" variant="neutral" label="Cancel" onclick={closePrompt}></lightning-button>
+                        <lightning-button class="slds-m-around_small" variant="brand" label="Save" onclick={confirmPrompt} data-id="dialogConfirmButton" onkeydown={handleDialogKeydown}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <template lwc:if={showLineClosedView}>
+            <div class="slds-p-around_medium slds-m-around_medium">
+                <section role="dialog" tabindex="-1">
+                    <header class="slds-text-heading_medium slds-text-align_center">
+                        <h2>{enteredAdditionalText}</h2>
+                    </header>
+                    <div class="slds-p-around_medium">
+                        <lightning-input label={versionDescriptionText} value={userInput} onchange={handleUserInput} oncommit={focusCombobox} data-id="versionInput"></lightning-input>
+                        <lightning-input label={versionCategoryText} value={selectedCategory} onchange={handleCategoryChange} oncommit={focusConfirmButton} data-id="categoryInput" disabled={selectCategoryDisabled}></lightning-input>
+                    </div>
+                    <footer class="slds-grid slds-grid_align-center">
+                        <lightning-button class="slds-m-around_small" variant="brand" label="Save" onclick={handleCreateNewVersion} data-id="dialogConfirmButton"></lightning-button>
+                    </footer>
+                </section>
+                <template lwc:if={isLoading}>
+                        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </template>
+            </div>
+        </template>
+        <template lwc:if={displayModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large slds-backdrop slds-backdrop_open">
+                <div class="slds-modal__container" >
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal} disabled={loadingPDF}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <div class="slds-modal__content slds-p-around_medium full-height-content">
+                        <template lwc:if={loadingPDF}>
+                            <div class="modal-overlay">
+                                <div class="spinner-container">
+                                        <lightning-spinner alternative-text="Generating PDF..." size="medium"></lightning-spinner>
+                                    </div>
+                                        <p class="spinner-message">Please wait while we generate your PDF...</p>
+                                </div>
+                            </div>
+                        </template>
+                        <c-preview-pdf pdf-data={pdfData}></c-preview-pdf>
+                    </div>
+                </div>
+            </section>
+        </template>
+        <c-pdf-generator></c-pdf-generator>
+</template>

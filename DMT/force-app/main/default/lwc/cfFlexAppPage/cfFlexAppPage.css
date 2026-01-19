@@ -1,0 +1,5 @@
+.blackF {
+    font-family: var(--lwc-fontFamily,-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'); 
+    font-size: 13px; 
+    font-weight: bold;
+}

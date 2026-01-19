@@ -1,0 +1,95 @@
+<template>
+            <div class="slds-grid slds-wrap slds-is-relative ">
+            <div style="position: fixed;z-index: 999999;top: 0;right: 0;">
+  <omnistudio-toast class="flexcard-toast-element" theme="slds" title="" message="" styletype=""> </omnistudio-toast>
+</div>
+            <div if:true={showLoader} class="slds-is-absolute vloc-loader_override" style="height: 100%; width: 100%; min-height:50px; background: transparent; z-index: 99;">
+  <div>
+   <omnistudio-spinner
+      variant="brand"
+      alternative-text="Loading content..."
+      size="medium"
+      theme="slds"
+      ></omnistudio-spinner>
+  </div>
+</div>
+            <template if:false={hasPermission}>
+              You don't have required permissions to view this card.
+            </template>
+            <template if:true={hasPermission}>
+              <template if:true={hasRecords}>
+                        <template for:each={_records} for:item="record" for:index="rindex">
+                            <omnistudio-flex-card-state if:true={record}  key={record._flex.uniqueKey} data-recordid={record.Id} record={record} data-statue="true"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12"  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small" style="">
+          <div data-style-id="state0element0" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element0_child"   card={card}  record={record}  type="date"  property-obj='\{"label":"Start Date","format":"MM-DD-YYYY","outputFormat":"MM-DD-YYYY","name":"Date-0","fieldBinding":"{Parent.StartDate}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element1" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1_child"   card={card}  record={record}  type="date"  property-obj='\{"label":"End Date","format":"MM-DD-YYYY","outputFormat":"MM-DD-YYYY","name":"Date-0-clone-0","fieldBinding":"{Parent.EndDate}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element2" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element2_child"   card={card}  record={record}  type="text"  property-obj='\{"label":"Line Term","fieldBinding":"{Parent.nextMonth.months}","value":"{Parent.nextMonth.months}","readOnly":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_3-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col  slds-m-top_x-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element3block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element3block_element0_child flexActionElement" 
+        data-action-element-class="state0element3block_element0_child" data-action-key="state0element3block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3action0"   state-obj={record}  card={card}  record={record}  label="Add month"  icon-name="utility-add"  action-list='\[{"stateAction":{"id":"flex-action-1717429100746","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"responseNode":"nextMonth","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrtaddMonth\",\"bundleType\":\"Transform\",\"inputMap\":{\"nextMonth\":\"{Parent.EndDate}\",\"addOneMonth\":\"true\",\"StartDate\":\"{Parent.StartDate}\"},\"jsonMap\":\"{\\\"Parent.EndDate\\\":\\\"{Parent.EndDate}\\\",\\\"Parent.StartDate\\\":\\\"{Parent.StartDate}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"Parent.EndDate\",\"val\":\"\",\"id\":2},{\"name\":\"Parent.StartDate\",\"val\":\"\",\"id\":5}]}"},"key":"1717428837914-c02za3nc4","label":"Action","draggable":true,"isOpen":false,"actionIndex":0},{"key":"1717429120290-z7f6yowa7","label":"Action","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1717429230406","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"EndDate","fieldValue":"{Parent.nextMonth.date}"}]},"actionIndex":1}]'  display-as-button="true"  icon-only="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element3block_element1" class="slds-col  slds-m-top_x-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element3block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element3block_element1_child flexActionElement" 
+        data-action-element-class="state0element3block_element1_child" data-action-key="state0element3block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3action0clone0"   state-obj={record}  card={card}  record={record}  label="Add month"  icon-name="utility-dash"  action-list='\[{"stateAction":{"id":"flex-action-1717429195651","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"responseNode":"nextMonth","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrtaddMonth\",\"bundleType\":\"Transform\",\"inputMap\":{\"nextMonth\":\"{Parent.EndDate}\",\"removeOneMonth\":\"true\",\"StartDate\":\"{Parent.StartDate}\"},\"jsonMap\":\"{\\\"Parent.EndDate\\\":\\\"{Parent.EndDate}\\\",\\\"Parent.StartDate\\\":\\\"{Parent.StartDate}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"Parent.EndDate\",\"val\":\"\",\"id\":2},{\"name\":\"Parent.StartDate\",\"val\":\"\",\"id\":5}]}"},"key":"1717428837914-c02za3nc4","label":"Action","draggable":false,"isOpen":true,"actionIndex":0},{"key":"1717429120290-z7f6yowa7","label":"Action","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1717429213497","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"EndDate","fieldValue":"{Parent.nextMonth.date}"}]},"actionIndex":1}]'  display-as-button="true"  icon-only="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element4_child"   card={card}  record={record}  type="number"  property-obj='\{"label":"Delivery versus Payment (DvP) Amount","fieldBinding":"{DvPAmount}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small slds-size_3-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element5block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%208pt;%20color:%20#444444;%22%3EDelivery%20versus%20Payment%20(DvP)%20Currency:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_select_flexcard" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_select_flexcard  ></c-dmt_select_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                        </template>
+                      </template>
+                      <template if:false={hasRecords}>
+                            <omnistudio-flex-card-state  record={record} data-statue="false"  data-index="0" data-rindex={rindex} class="cf-vlocity-state-0 cf-vlocity-state slds-size_12-of-12"  tracking-obj={_childCardTrackingObj} >
+      <div if:true={cardLoaded} class="slds-grid slds-wrap slds-card slds-p-around_x-small slds-m-bottom_x-small" style="">
+          <div data-style-id="state0element0" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element0_child"   card={card}  record={record}  type="date"  property-obj='\{"label":"Start Date","format":"MM-DD-YYYY","outputFormat":"MM-DD-YYYY","name":"Date-0","fieldBinding":"{Parent.StartDate}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element1" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element1_child"   card={card}  record={record}  type="date"  property-obj='\{"label":"End Date","format":"MM-DD-YYYY","outputFormat":"MM-DD-YYYY","name":"Date-0-clone-0","fieldBinding":"{Parent.EndDate}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element2" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element2_child"   card={card}  record={record}  type="text"  property-obj='\{"label":"Line Term","fieldBinding":"{Parent.nextMonth.months}","value":"{Parent.nextMonth.months}","readOnly":true}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element3" class="slds-col   slds-p-around_x-small slds-size_3-of-12 " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element3_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element3block_element0" class="slds-col  slds-m-top_x-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element3block_element0_child"  tracking-obj={_childCardTrackingObj}  class= "state0element3block_element0_child flexActionElement" 
+        data-action-element-class="state0element3block_element0_child" data-action-key="state0element3block_element0" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3action0"   state-obj={record}  card={card}  record={record}  label="Add month"  icon-name="utility-add"  action-list='\[{"stateAction":{"id":"flex-action-1717429100746","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"responseNode":"nextMonth","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrtaddMonth\",\"bundleType\":\"Transform\",\"inputMap\":{\"nextMonth\":\"{Parent.EndDate}\",\"addOneMonth\":\"true\",\"StartDate\":\"{Parent.StartDate}\"},\"jsonMap\":\"{\\\"Parent.EndDate\\\":\\\"{Parent.EndDate}\\\",\\\"Parent.StartDate\\\":\\\"{Parent.StartDate}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"Parent.EndDate\",\"val\":\"\",\"id\":2},{\"name\":\"Parent.StartDate\",\"val\":\"\",\"id\":5}]}"},"key":"1717428837914-c02za3nc4","label":"Action","draggable":true,"isOpen":false,"actionIndex":0},{"key":"1717429120290-z7f6yowa7","label":"Action","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1717429230406","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"EndDate","fieldValue":"{Parent.nextMonth.date}"}]},"actionIndex":1}]'  display-as-button="true"  icon-only="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div><div data-style-id="state0element3block_element1" class="slds-col  slds-m-top_x-small  slds-size_5-of-12  " data-rindex={rindex} style="      
+         " ><omnistudio-flex-action data-style-id="state0element3block_element1_child"  tracking-obj={_childCardTrackingObj}  class= "state0element3block_element1_child flexActionElement" 
+        data-action-element-class="state0element3block_element1_child" data-action-key="state0element3block_element1" onexecuteaction={performAction} data-show-spinner="false"
+        data-element-label="block3action0clone0"   state-obj={record}  card={card}  record={record}  label="Add month"  icon-name="utility-dash"  action-list='\[{"stateAction":{"id":"flex-action-1717429195651","type":"DataAction","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"responseNode":"nextMonth","message":"{\"type\":\"DataRaptor\",\"value\":{\"dsDelay\":\"\",\"resultVar\":\"[0]\",\"bundle\":\"DmtDrtaddMonth\",\"bundleType\":\"Transform\",\"inputMap\":{\"nextMonth\":\"{Parent.EndDate}\",\"removeOneMonth\":\"true\",\"StartDate\":\"{Parent.StartDate}\"},\"jsonMap\":\"{\\\"Parent.EndDate\\\":\\\"{Parent.EndDate}\\\",\\\"Parent.StartDate\\\":\\\"{Parent.StartDate}\\\"}\"},\"orderBy\":{\"name\":\"\",\"isReverse\":\"\"},\"contextVariables\":[{\"name\":\"Parent.EndDate\",\"val\":\"\",\"id\":2},{\"name\":\"Parent.StartDate\",\"val\":\"\",\"id\":5}]}"},"key":"1717428837914-c02za3nc4","label":"Action","draggable":false,"isOpen":true,"actionIndex":0},{"key":"1717429120290-z7f6yowa7","label":"Action","draggable":false,"isOpen":true,"card":"{card}","stateAction":{"id":"flex-action-1717429213497","type":"cardAction","displayName":"Action","vlocityIcon":"standard-default","targetType":"Web Page","openUrlIn":"Current Window","Web Page":{"targetName":"/apex"},"eventName":"setValues","fieldValues":[{"fieldName":"EndDate","fieldValue":"{Parent.nextMonth.date}"}]},"actionIndex":1}]'  display-as-button="true"  icon-only="true"  button-variant="neutral"  flyout-details='\{}'  theme="slds"  ></omnistudio-flex-action>
+      </div>
+        </div></omnistudio-block>
+    </div><div data-style-id="state0element4" class="slds-col  slds-p-right_x-small slds-size_3-of-12  " data-rindex={rindex} style="" ><omnistudio-base-input-element data-style-id="state0element4_child"   card={card}  record={record}  type="number"  property-obj='\{"label":"Delivery versus Payment (DvP) Amount","fieldBinding":"{DvPAmount}"}'  theme="slds"  ></omnistudio-base-input-element>
+      </div><div data-style-id="state0element5" class="slds-col   slds-p-around_x-small slds-size_3-of-12  " data-rindex={rindex} style="" >
+    <omnistudio-block data-style-id="state0element5_child"  card={card}  record={record}  label="Block"  collapsible="false"  collapsed-by-default="false"  theme="slds"  ><div class="slds-grid slds-wrap">
+          <div data-style-id="state0element5block_element0" class="slds-col   slds-size_12-of-12 " data-rindex={rindex} style="" ><omnistudio-output-field data-style-id="state0element5block_element0_child"   card={card}  record={record}  merge-field="%3Cdiv%3E%3Cspan%20style=%22font-size:%208pt;%20color:%20#444444;%22%3EDelivery%20versus%20Payment%20(DvP)%20Currency:%3C/span%3E%3C/div%3E"  theme="slds"  ></omnistudio-output-field>
+      </div><div data-style-id="state0element5block_element1" class="slds-col   slds-size_12-of-12" data-rindex={rindex} style="" >
+    <omnistudio-custom-lwc-wrapper class="" element-name="c-dmt_select_flexcard" property='\{}' data-rindex={rindex} records={records} record={record} record-id={recordId} card={card} ><c-dmt_select_flexcard  ></c-dmt_select_flexcard></omnistudio-custom-lwc-wrapper>
+    </div>
+        </div></omnistudio-block>
+    </div>
+        </div>
+      </omnistudio-flex-card-state>
+                      </template>
+            </template>
+            <template if:true={hasError}>
+            {error}
+            </template>
+            
+      <omnistudio-action action-wrapperclass="slds-hide" re-render-flyout class="action-trigger slds-col" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+      
+      </omnistudio-action>
+  
+            <omnistudio-action class="execute-action" re-render-flyout action-wrapperclass="slds-hide" onupdateos={updateOmniscript} onselectcards={updateSelectedCards} onsetvalue={updateAction} onfireactionevent={actionEvtHandler}>
+            
+            </omnistudio-action>
+            </div>
+          </template>

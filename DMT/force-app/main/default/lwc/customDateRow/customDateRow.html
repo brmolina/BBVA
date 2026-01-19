@@ -1,0 +1,14 @@
+<template>
+    <lightning-input
+        type="date"
+        label="Select Date"
+        variant="label-hidden"
+        name="dateInput"
+        value={dateValue}
+        onchange={handleDateChange}
+        id={fieldname}
+        max={maxdate}
+        disabled={isDisabled}
+        message-when-range-overflow="Date isn't available">
+    </lightning-input>
+</template>

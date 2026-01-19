@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>46.0</apiVersion>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>3</minorNumber>
+        <namespace>cond</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>3</majorNumber>
+        <minorNumber>83</minorNumber>
+        <namespace>dwp_kitv</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>11</minorNumber>
+        <namespace>intt</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>4</minorNumber>
+        <namespace>pith</namespace>
+    </packageVersions>
+    <status>Active</status>
+</ApexClass>

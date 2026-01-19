@@ -1,0 +1,66 @@
+.flexCss{
+    display: flow;
+    align-items: center;
+    position: relative;
+    text-align: left;  
+}
+span{
+    text-align: left;
+
+}
+
+
+button[class="slds-button slds-p-horizontal_x-small"] {
+    width: 100%;
+    height: auto;
+    background: var(--lwc-colorBackground,#dddddd);
+    color: var(--lwc-color,#6b6969);
+}
+.contenedorMensaje
+{
+    background-color: rgb(217 216 209);
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(255, 204, 0);
+    border-radius: 4px;
+    position: absolute;
+    top: auto;
+    z-index: 9999;
+    height: -webkit-fill-available;
+    opacity: 50%;
+}
+
+.contenerdorPadreMensaje
+{
+    position: relative;
+}
+.mensajeStyle{
+    z-index: 2;
+    position: relative;
+  
+}
+.imagetyle {
+    height: 1.9em;
+    width: 2.9em;
+    position: relative;
+    text-align: right;
+}
+.elementActionStile {
+    font-weight: bold;
+    display: inline-flex;
+    width: fit-content;
+}
+.passportStyle{
+    position: absolute;
+    right: 4dvw;
+}
+
+.slds-button__icon .slds-icon_small .slds-button__icon_left {
+    fill: grey !important;
+}
+
+.slds-modal_medium .slds-modal__container{
+    width: auto;
+    max-width: 70%;
+    min-width: 20%;
+}

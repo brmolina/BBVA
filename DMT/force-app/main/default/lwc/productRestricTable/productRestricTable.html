@@ -1,0 +1,25 @@
+<template>
+    <template if:true={tableData}>
+        <c-dmt_-table-header-section
+        titletable={labels.TITLE_TABLE}
+        showcopypaste="true"
+        rowscopypaste={tableData}
+        tablecolumnscopypaste={columnstablecopypaste}
+        context="derivatives"
+        isreadonlyuser={isReadOnlyUser}
+        ></c-dmt_-table-header-section>
+        <c-custom-data-table 
+            key-field="Id" 
+            style="position:relative;z-index: 2"
+            data={tableData} 
+            columns={columns} 
+            onpicklistchanged={picklistChanged} 
+            oncustomselectrowchanged={selectedRowChanged} 
+            draft-values={draftValues} 
+            oncellchange={handleCellChange}
+            hide-checkbox-column
+            suppress-bottom-bar
+            show-row-number-column>
+        </c-custom-data-table>
+    </template>
+</template>

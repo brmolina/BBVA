@@ -1,0 +1,16 @@
+<template>
+    <c-dmt_fieldsection
+                record-id={recordId}
+                object-api-name="DMT_Line__c"
+                columns={approvalProcessDataColumns}>
+            </c-dmt_fieldsection>
+            <c-dmt_fieldsection
+                record-id={recordId}
+                object-api-name="DMT_Line__c"
+                columns={commentsColumns}>
+            </c-dmt_fieldsection>
+            <c-dmt_approverfield
+                label="Local Approver"
+                placeholder="Probando approvers">
+            </c-dmt_approverfield>
+</template>

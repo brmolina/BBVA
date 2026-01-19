@@ -1,0 +1,27 @@
+<template>
+    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center" style="background-color: #aeaeae">
+
+        <!-- Espaciador izquierdo -->
+        <div class="slds-col slds-size_1-of-12"></div>
+
+        <!-- Texto centrado horizontal y vertical -->
+        <div class="slds-col slds-size_10-of-12 slds-text-align_center slds-text-title_bold"
+            style={customStyle}>
+            {titletable}
+        </div>
+
+
+        <!-- Icono / botón / componente copy-paste a la derecha -->
+        <div class="slds-col slds-size_1-of-12 slds-text-align_right slds-p-around_xx-small">
+            <template lwc:if={showcopypaste}>
+                <c-dmt_datatable_copy_paste
+                    titletable={titletable}
+                    rows={rowscopypaste}
+                    table-columns={tablecolumnscopypaste}
+                    context={context}
+                    is-read-only-user={isreadonlyuser}
+                ></c-dmt_datatable_copy_paste>
+            </template>
+        </div>
+    </div>
+</template>

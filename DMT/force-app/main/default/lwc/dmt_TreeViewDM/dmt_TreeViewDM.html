@@ -1,0 +1,166 @@
+<template>
+    <!--
+        Collapsible sidebar container for client/group information,
+        search/filter controls and the client selection table.
+    -->
+    <div class="sidebar-container">
+        <!--
+            Root card element. CSS class is driven by {cardClasses}
+            to switch between expanded and collapsed styles.
+        -->
+        <article class={cardClasses}>
+
+            <!-- ===== HEADER: EXPANDED STATE ===== -->
+            <template if:true={isExpanded}>
+                <!-- Collapse button (top-right) -->
+                <div class="slds-grid slds-grid_align-end slds-p-right_x-small slds-p-top_x-small">
+                    <lightning-button-icon
+                        icon-name="utility:chevronleft"
+                        class="slds-icon_medium"
+                        alternative-text={toggleLabel}
+                        variant="bare"
+                        size="medium"
+                        onclick={togglePanel}>
+                    </lightning-button-icon>
+                </div>
+
+                <!-- Header layout: left (group info) / right (GCE shortcut) -->
+                <div class="slds-grid slds-grid_align-spread">
+
+                    <!-- Group / client information (icon + name + code) -->
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-left_x-small">
+                        <div class="slds-media__figure slds-m-left_medium">
+                            <span class="slds-icon_container slds-icon-standard-account" title={groupname}>
+                                <lightning-icon
+                                    icon-name="standard:account_info"
+                                    alternative-text={groupname}
+                                    size="medium"
+                                    style="cursor:pointer;"
+                                    onclick={goToClientRecord}>
+                                </lightning-icon>
+                            </span>
+                        </div>
+
+                        <div class="slds-media slds-media_center slds-truncate" title={groupname}>
+                            <div class="slds-media__body">
+                                <!-- Group name opens client record -->
+                                <h2 class="slds-text-heading_small slds-truncate" title={groupname}>
+                                    <a onclick={goToClientRecord} class="slds-card__header-link">
+                                        {groupname}
+                                    </a>
+                                </h2>
+
+                                <!-- Group code subtitle -->
+                                <p class="slds-text-body_small slds-text-color_weak slds-truncate" title={groupcode}>
+                                    {groupcode}
+                                </p>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- GCE navigation button (opens external exposure component) -->
+                    <div class="slds-grid slds-p-right_large slds-grid_vertical-align-end">
+                        <button class="slds-button slds-button_neutral custom-button" onclick={goToGCE}>
+                            <img src="/resource/DMTMarco_GCE" alt="Go to GCE" class="custom-icon" />
+                            Go To GCE
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ===== HEADER: COLLAPSED STATE ===== -->
+            <template if:false={isExpanded}>
+                <!--
+                    Compact header showing only icons in a vertical stack:
+                    expand chevron, client info, and GCE shortcut.
+                -->
+                <div class="slds-card__header slds-grid collapsed-header">
+                    <div class="collapsed-icons-container">
+                        <!-- Expand button -->
+                        <lightning-button-icon
+                            icon-name="utility:chevronright"
+                            alternative-text={toggleLabel}
+                            variant="bare"
+                            size="medium"
+                            onclick={togglePanel}>
+                        </lightning-button-icon>
+
+                        <!-- Client record shortcut -->
+                        <lightning-icon
+                            class="custom-header-button"
+                            icon-name="standard:account_info"
+                            alternative-text="Go to Client Info"
+                            size="medium"
+                            title="Go to Client Info"
+                            onclick={goToClientRecord}>
+                        </lightning-icon>
+
+                        <!-- GCE shortcut (collapsed icon) -->
+                        <span
+                            class="slds-icon_container slds-icon-standard-survey custom-header-button"
+                            title="Go to GCE"
+                            onclick={goToGCE}>
+                            <span class="slds-icon slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+                                <img src={iconMarcoGCE} class="custom-gce-icon" alt="Go to GCE" />
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ===== BODY: SEARCH, FILTER & TABLE ===== -->
+            <!--
+                Body visibility is controlled via {hideElements}
+                (uses SLDS show/hide classes when expanded/collapsed).
+            -->
+            <div class={hideElements}>
+                <!-- Search and filter controls -->
+                <lightning-layout multiple-rows>
+                    <!-- Text search for clients -->
+                    <lightning-layout-item size="12" medium-device-size="6" padding="around-small">
+                        <lightning-input
+                            type="search"
+                            label="Search clients"
+                            placeholder="Search clients..."
+                            value={searchValue}
+                            onchange={handleInputChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <!-- Filter by exposure type -->
+                    <lightning-layout-item size="12" medium-device-size="6" padding="around-small">
+                        <lightning-combobox
+                            label="Clients Filter"
+                            value={filterValue}
+                            placeholder="Select filter"
+                            options={filterOptions}
+                            onchange={handleFilterChange}>
+                        </lightning-combobox>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+                <!-- Table section: metadata + child table component -->
+                <div class="slds-p-horizontal_small slds-p-bottom_medium">
+                    <!-- Data reference date -->
+                    <div class="slds-text-body_small">Data From: {searchdate}</div>
+
+                    <!--
+                        Child component that renders the main client selection table.
+                        It receives the current client, date, filters and group context.
+                    -->
+                    <div>
+                        <c-dmt_-main-client-selection-table
+                            client-id={clientid}
+                            search-date={searchdate}
+                            selected-tab="tcm"
+                            group-code={groupcode}
+                            client-positions-type={filterValue}
+                            filter={searchValue}
+                            group-name={groupname}>
+                        </c-dmt_-main-client-selection-table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</template>

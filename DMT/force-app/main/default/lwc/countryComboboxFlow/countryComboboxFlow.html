@@ -1,0 +1,82 @@
+<template>
+    
+    <div class="content-container">
+        <template if:false={isFiltersVisible}>
+            <div class="section-container">
+                <p>Please select a Email Template</p>
+                <div class="combobox-button-container">
+                    <lightning-combobox
+                        class="full-width"
+                        label="Select Email Template"
+                        value={selectedTemplateId}
+                        options={emailTemplates}
+                        onchange={handleTemplateChange}
+                        placeholder="Select a Template">
+                    </lightning-combobox>
+        
+                    <!-- Botón "Continuar" alineado a la derecha -->
+                    <lightning-button 
+                        label="Continuar" 
+                        onclick={handleNext} 
+                        class="continue-button"
+                        disabled={disableButtonContinue}>
+                    </lightning-button>
+                </div>
+                <template if:true={isTemplateSelected}>
+                    <div class="section-container template-preview">
+                        <lightning-formatted-rich-text value={selectedTemplateHtml}></lightning-formatted-rich-text>
+                    </div>
+                    <br>   
+                </template>
+            </div>
+        </template>
+        <template if:true={isFiltersVisible}>
+            <p>You can select the user type and country.</p>
+            <span >It is optional; if you don't select any filter, the email will be sent to all users.</span>    
+            <div class="section-container">
+                <lightning-radio-group
+                    label="User Type"
+                    options={userTypeOptions}
+                    value={selectedUserType}
+                    onchange={handleUserTypeChange}>
+                </lightning-radio-group>
+            </div>
+            <div class="section-container">
+                <!-- <lightning-combobox
+                    label="Select Country"
+                    placeholder="Select one or more countries"
+                    options={filteredCountries}
+                    value={selectedCountries}
+                    onchange={handleCountryChange}
+                    multiple>
+                </lightning-combobox> -->
+                <lightning-dual-listbox name="countries"
+                    label="Select Countries"
+                    source-label="Available"
+                    selected-label="Selected"
+                    field-level-help="Select your preferred languages"
+                    options={countryOptions}
+                    onchange={handleCountryChange}>
+                </lightning-dual-listbox>
+            </div>
+            
+            <!-- <template if:true={selectedCountries.length}>
+                <div class="pill-container">
+                    <template for:each={selectedCountries} for:item="country">
+                        <lightning-pill 
+                            key={country}
+                            label={country}
+                            onremove={handleRemoveCountry}>
+                        </lightning-pill>
+                    </template>
+                </div>
+            </template> -->
+        
+            <div class="button-container">
+                <lightning-button label="Back" onclick={handleBack} class="slds-m-right_small"></lightning-button>
+                
+                <lightning-button label="Send Emails"  variant="brand" onclick={handleSendEmails} class="slds-m-top_medium"></lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

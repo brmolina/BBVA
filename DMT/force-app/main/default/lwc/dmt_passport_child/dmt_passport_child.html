@@ -1,0 +1,266 @@
+<template>
+    <template lwc:if={showWarning}>
+        <div class="slds-align_absolute-center">
+            <span class="passport_warning">
+                <c-dmt_helpericon icon-name="utility:warning" icon-size="medium" text="Template values have been modified" icon-variant="warning"></c-dmt_helpericon>
+            </span>
+            <b class="slds-m-top_xx-small slds-m-left_medium">Template values have been modified.</b>
+        </div>
+    </template>
+    
+    <div class="slds-grid slds-wrap" >
+        <div class="slds-size_1-of-1 slds-m-top_medium">
+            <template lwc:if={showfeaturesTable}>
+                <div class="passport-no-stack-wrapper">
+                    <table aria-describedby="passportTable" class="slds-table slds-table--bordered slds-box custom-table full-width-table passport-no-stack-table" style="table-layout:auto;" role="treegrid">
+                        <thead>
+                            <tr>
+                                <template for:each={columnsWithClass} for:item="col">
+                                    <th class={col.class} key={col.fieldName} scope="col">
+                                        <div class="slds-truncate" title={col.label}><lightning-formatted-rich-text value={col.label}></lightning-formatted-rich-text></div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={wrapper} for:item="feature" for:index="featureIndex">
+                                <template lwc:if={feature.changeSanction}>
+                                    <tr key={feature.idProccess} class="slds-hint-parent dmt-separation" style="height: 3rem;">
+                                        <template lwc:if={isBig}>
+                                            <td class="dmt-white-space-break-space" style="text-align: center;" colspan="10">
+                                                {feature.name}
+                                            </td>
+                                        </template>
+                                        <template lwc:else>
+                                            <td class="dmt-white-space-break-space" style="text-align: center;" colspan="3">
+                                                {feature.name}
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                                <template lwc:else>
+                                    <tr key={feature.idProccess} class="slds-hint-parent" style="height: 3rem;">
+                                        <template lwc:if={feature.isValid}>
+                                            <td class="dmt-white-space-break-space">
+                                                <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+                                            </td>
+                                            <template lwc:if={feature.capabilityIsValid}>
+                                                <td class="slds-p-left_large slds-align-center">
+                                                    <template lwc:if={feature.showTrafficLight}>
+                                                        <div class="slds-truncate"><c-dmt_traffic_light status={feature.stateName} onclick={openModal} data-id={feature.idProccess} simplelight="false" lightsize="25px"></c-dmt_traffic_light> </div>
+                                                    </template>
+                                                    <template lwc:if={feature.ShowErrorCapabilityService}>
+                                                        <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.messageCapabilityService} icon-variant="error"></c-dmt_helpericon>
+                                                    </template>
+                                                </td>
+                                                <template lwc:if={feature.variadito}>
+                                                    <td class="slds-p-left_large slds-align-center">
+                                                    </td>
+                                                    <template lwc:if={isBig}>
+                                                        <td class="slds-p-left_large" colspan="7"></td>
+                                                    </template>
+                                                </template>
+                                                <template lwc:elseif={feature.workflowIsValid}>
+                                                    <td class="slds-p-left_large slds-align-center">
+                                                        <template lwc:if={feature.tasks}>
+                                                            <template lwc:if={feature.hasSFtask}>
+                                                                <c-dmt_traffic_light status={feature.workflowColor} data-id={feature.idProccess} style="display: inline-block;" simplelight="false" lightsize="25px"></c-dmt_traffic_light>
+                                                                <template lwc:if={feature.isNotFinishedTask}>
+                                                                     <template lwc:if={feature.isApprover}>
+                                                                         <lightning-button variant="base" label="View" style="vertical-align:top;"  title="View" onclick={handleNavigationToTask} class="slds-m-left_x-small" data-id={feature.sfCurrentTask.taskId}></lightning-button>
+                                                                     </template>
+                                                                     <template lwc:else>
+                                                                        <span style="font-weight:bold; vertical-align:top;padding-right:0" class="slds-form-element__label slds-m-left_xx-small">Requested</span> 
+                                                                     </template>
+                                                                </template>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                <div class="slds-truncate slds-grid">
+                                                                    <c-dmt_traffic_light status="yellow" data-id={feature.idProccess} simplelight="false" lightsize="25px"></c-dmt_traffic_light>
+                                                                    <template lwc:if={userPermission}>
+                                                                        <template lwc:if={checkStatusProposal}>
+                                                                            <template lwc:if={feature.request}>
+                                                                                <lightning-button variant="base" label="Request" title="Request" onclick={handleOpenCaseModalClick} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>   
+                                                                                <!--<lightning-button variant="base" label="Request" title="Request" onclick={startCase} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>-->
+                                                                            </template>   
+                                                                        </template>
+                                                                        <template lwc:elseif={checkStatusApproval}>
+                                                                             <template lwc:if={feature.request}>
+                                                                                <lightning-button variant="base" label="Request" title="Request" onclick={handleOpenCaseModalClick} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>
+                                                                             </template>
+                                                                            <!--TODO: Logica approval process, solo request en el workflow de negocio orden 1, si existe -->
+                                        
+                                                                            <!--<lightning-button variant="base" label="Request" title="Request" onclick={startCase} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>-->
+                                                                        </template>
+                                                                        
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+                                                        </template>
+                                                    </td>
+                                                    <template lwc:if={isBig}>
+                                                        <template lwc:if={feature.hasSFtask}>
+                                                            <td class="slds-p-left_large">
+                                                                <template lwc:if={feature.showHistoryButton}>
+                                                                    <template lwc:if={feature.expanded}>
+                                                                        <lightning-button-icon icon-name="utility:chevrondown" onclick={expandedControlEvent} size="small" variant="bare" data-id={feature.idProccess}></lightning-button-icon>
+                                                                    </template>
+                                                                    <template lwc:else>
+                                                                        <lightning-button-icon icon-name="utility:chevronright" onclick={expandedControlEvent} size="small" variant="bare" data-id={feature.idProccess}></lightning-button-icon>
+                                                                    </template>
+                                                                </template>
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <div class="slds-truncate">{feature.sfCurrentTask.approver}</div>
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <template lwc:if={feature.sfCurrentTask.step}>
+                                                                  <div class="slds-truncate">
+                                                                    <template lwc:if={feature.sfCurrentTask.openModal}>
+                                                                        <a class="custom-url" onclick={handleOpenTaskModalClick} data-id={feature.sfCurrentTask.taskId}>{feature.sfCurrentTask.step.urlLabel}</a>
+                                                                    </template>
+                                                                    <template lwc:else>
+                                                                        {feature.sfCurrentTask.step.urlLabel}
+                                                                    </template>
+                                                                  </div>
+                                                                </template>
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <div class="slds-truncate">{feature.sfCurrentTask.status}</div>  
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <div class="slds-truncate">{feature.sfCurrentTask.startDate}</div>
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <div class="slds-truncate">{feature.sfCurrentTask.endDate}</div>  
+                                                            </td>
+                                                            <td class="slds-p-left_large">
+                                                                <div class="slds-truncate">{feature.sfCurrentTask.result}</div>  
+                                                            </td>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <template lwc:if={feature.taskTemplate}>
+                                                                <td class="slds-p-left_large">
+                                                                    <!-- <button onclick={expandedControlEvent} class="slds-button slds-button_icon" data-id={feature.id}>
+                                                                        <lightning-icon icon-name="utility:chevronright" alternative-text="Approved" title="Approved" size="xx-small"></lightning-icon>
+                                                                    </button> -->
+                                                                </td>
+                                                                <td class="slds-p-left_large">
+                                                                    <div class="slds-truncate">{feature.taskTemplate.approver}</div>
+                                                                </td>
+                                                                <td class="slds-p-left_large">
+                                                                    <div class="slds-truncate">{feature.taskTemplate.name}</div>
+                                                                </td>
+                                                                <td class="slds-p-left_large">
+                                                                    <div class="slds-truncate">{feature.taskTemplate.status}</div>  
+                                                                </td>
+                                                                <td class="slds-p-left_large" colspan="3">
+                                                                    <div class="slds-truncate"></div>  
+                                                                </td>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                <td class="slds-p-left_large" colspan="7"></td>
+                                                            </template>
+                                                        </template>
+                                                    </template>
+                                                </template>
+                                                <template lwc:else>
+                                                    <td class="slds-p-left_large slds-align-center">
+                                                        <div class="passport-space-helpericon">
+                                                            <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.workflowErrorMessage} icon-variant="error"></c-dmt_helpericon>
+                                                        </div>
+                                                    </td>
+                                                    <template lwc:if={isBig}>
+                                                        <td class="slds-p-left_large" colspan="7"></td>
+                                                    </template>
+                                                </template>
+                                            </template>
+                                            <template lwc:else>
+                                                <td class="slds-p-left_large slds-align-center">
+                                                    <div class="passport-space-helpericon">
+                                                        <template lwc:if={feature.ShowErrorCapability}>
+                                                            <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.capabilityErrorMessage} icon-variant="error"></c-dmt_helpericon>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                                <td class="slds-p-left_large slds-align-center"></td>
+                                                <template lwc:if={isBig}>
+                                                    <td class="slds-p-left_large" colspan="7"></td>
+                                            </template> 
+                                        </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <td class="slds-p-left_large slds-align-center">
+                                                    <div>
+                                                    <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+                                                    <span class="feature_error">
+                                                    <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.errorMessage} icon-variant="error"></c-dmt_helpericon>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="slds-p-left_large slds-align-center" colspan="2"></td>
+                                            <template lwc:if={isBig}>
+                                                <td class="slds-p-left_large" colspan="7"></td>
+                                            </template> 
+                                        </template> 
+                                        
+                                    </tr>
+                                </template>
+                                
+                                <template lwc:if={feature.expanded}> 
+                                    <template for:each={feature.featureTasksHistory} for:item="task">
+                                        <tr key={task.taskId} style="height: 3rem;  padding: 0;">
+                                            <td class="slds-p-left_large" colspan="4"></td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                                <div class="slds-truncate">{task.approver}</div>
+                                            </td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                                <a class="custom-url" onclick={handleOpenTaskModalClick} data-id={task.taskId}>{task.step.urlLabel}</a>
+                                            </td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                                <div class="slds-truncate">{task.status}</div>
+                                            </td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                               <div class="slds-truncate">{task.startDate}</div>
+                                            </td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                                <div class="slds-truncate">{task.endDate}</div>
+                                            </td>
+                                            <td class="slds-p-left_large passport-taskhistory-cell">
+                                                <div class="slds-truncate">{task.result}</div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </template> 
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slds-m-vertical_small slds-m-right_small slds-m-left_small slds-text-align_left">
+                    <template lwc:if={messageError}>
+                        <div class="error-message">
+                            <span style="font-weight: bold;">
+                                Error Message:
+                            </span>
+                            <span style="color: #ea001e; margin-left: 0.3rem;">
+                                <lightning-formatted-text value={messageError}></lightning-formatted-text>
+                            </span>
+                        </div>
+                    </template>
+                    <div class="passport-date slds-text-align_right" style="color: #444;">
+                        Passport date:&nbsp;
+                        <lightning-formatted-date-time value={showAuditDate} year="numeric" month="numeric" day="numeric" hour="2-digit"
+                            minute="2-digit" time-zone={userTimeZone}></lightning-formatted-date-time>
+                    </div>
+                </div>
+            </template>
+        </div> 
+    </div>    
+    <div class="modal-container">
+        <template lwc:if={isTaskModalOpen}>
+            <lwc:component lwc:is={componentConstructor} lwc:spread={childProps}></lwc:component>
+        </template>
+    </div>
+    
+    
+</template>

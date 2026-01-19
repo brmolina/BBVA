@@ -1,0 +1,4 @@
+.axis-input { display:flex; flex-direction:column; gap:0.25rem;}
+label.slds-form-element__label { font-weight:600; font-size:0.85rem; }
+.errors { color:#b00020; font-size:0.8rem; margin-top:0.2rem; }
+.error-item { margin: 2px 0; }

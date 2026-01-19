@@ -1,0 +1,96 @@
+<template>
+    <div class="bloque">
+        <lightning-card>
+            <lightning-combobox
+                data-id="viewTypeInput"
+                label="Select View Type"
+                options={viewTypeOptions}
+                value={viewType}
+                onchange={handleViewTypeChange}
+                disabled={ViewTypeInputDisabled}>
+            </lightning-combobox>
+        </lightning-card>
+        <lightning-card title="Name View">
+            <!-- Cuadro de texto para "Name View" -->
+            <lightning-input 
+                data-id="viewNameInput"
+                label="Name" 
+                value={viewName} 
+                onchange={handleNameChange}
+                disabled={isViewNameInputsDisabled}>
+            </lightning-input>
+        </lightning-card>
+
+        <lightning-card title="Select Components">
+            <!-- Campo Type Item -->
+            <lightning-combobox
+                label="Select Type Item"
+                options={typeOptions}
+                value={selectedType}
+                onchange={handleTypeChange}
+                disabled={isTypeInputsDisabled}>
+            </lightning-combobox>
+
+            <!-- Campo Component Item dependiente -->
+            <lightning-combobox
+                label={selectComponentItemLabel}
+                options={filteredComponentOptions}
+                value={selectedComponentItem}
+                onchange={handleComponentChange}
+                disabled={isAddComponentDisabled}>
+            </lightning-combobox>
+
+            <!-- Cuadro de texto para el componente Text -->
+            <template if:true={isTextComponent}>
+                <lightning-textarea 
+                    label="Enter Text"
+                    value={textValue}
+                    onchange={handleTextChange}>
+                </lightning-textarea>
+            </template>
+
+            <!-- Botón para añadir el ítem -->
+             <div class="slds-p-top_small"></div>
+            <lightning-button
+                label="Add Component"
+                onclick={addItem}
+                disabled={isAddComponentDisabled}>
+            </lightning-button>
+        </lightning-card>
+
+        <!-- Tabla para mostrar los ítems seleccionados con funcionalidad de arrastrar y soltar -->
+        <lightning-card title="Selected Items (Drag and Drop)">
+            <template if:true={items.length}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="List of types of items">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col">Type</th>
+                            <th scope="col">Component</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={itemsWithKeys} for:item="item" for:index="index">
+                            <tr 
+                                key={item.key} 
+                                draggable={draggable} 
+                                ondragstart={handleDragStart} 
+                                ondragover={handleDragOver} 
+                                ondrop={handleDrop}
+                                data-index={index}>
+                                <td>{item.type}</td>
+                                <td>{item.component}</td>
+                                <td>
+                                    <lightning-button-icon icon-name="utility:delete" alternative-text="Remove" onclick={handleRemoveItem} data-index={index} disabled={areInputsDisabled}></lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+            <template if:false={items.length}>
+                <p>No items added yet.</p>
+            </template>
+        </lightning-card>
+    </div>
+</template>
