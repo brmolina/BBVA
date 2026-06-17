@@ -1,0 +1,26 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+    <div class='slds-box c-container' style="background-color: white;">
+        
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <dwp_dv:DynamicDetailRow_Comp recordId="{!v.recordId}" 
+                                              sObjectName="{!v.sObjectName}"
+                                              fieldsToDisplay="bank_turnover_volume_amount__c,margin_ordinary_amount__c,alert__c,risk_strategy_class_name__c,commercial_strategy__c,financial_program_expiry_date__c,net_cash_desc__c"
+                                              format=""
+                                              useSymbol="false"
+                                              positionCurrency="Left"
+                                              currencyLocale="true"
+                                              cssClassName="Vertical_Clear"
+                                              classSize="7 Column Span"
+                                              currencyDimension="None"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+       
+        <br/>
+        <lightning:layout multipleRows="true">
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <c:Flash_client_secondBlock recordId="{!v.recordId}" />
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+</aura:component>

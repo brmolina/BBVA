@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_actn_sp_gbl_bnkr_need_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Where is the participation of the Global Banker needed / required?</inlineHelpText>
+    <label>Global Banker participation needed?</label>
+    <length>3000</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

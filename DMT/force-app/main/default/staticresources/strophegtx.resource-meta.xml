@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>application/x-javascript</contentType>
+    <description>**ATENCIÓN: este fichero finalmente no va a ser necesario porque BT unifca las llamadas al CAS SERVER. Eliminarlo después de instalar el PoC y testear que no es necesario</description>
+</StaticResource>

@@ -1,14 +1,14 @@
 /*-----------------------------------------------------------------------------------------------
 Author:        Juan Carlos Terrón
   Company:       Accenture
-  Description:   Class to handle methods called when the triggers over Case object are fired
-  
+  Description:   Class to handle methods called when the triggers over Case object are fired reupload
+
 History:
   <Date>          <Author>                <Description>
   08/07/2017      Juan Carlos Terrón        Initial version
   -------------------------------------------------------------------------------------------------*/
 public without sharing class SER_CaseMethods {
-  
+
   /*Constante identificador Usuario*/
   final static string ID_USER = '005';
   /*Constante texto identificador de test*/
@@ -19,17 +19,19 @@ public without sharing class SER_CaseMethods {
   final static string STATUS_ANSWERED = 'Answered';
   /*Constante Primer contacto de la lista no repetido*/
   final static string FIRST_CTCT_NO_REC = 'First Contact No Recurrence';
-  
+  /*Constante Value Queries para el campo Classification */
+  final static string CLASSIFICATION_QUERIES = 'Queries';
+
   private SER_CaseMethods() {
   }
   /*-----------------------------------------------------------------------------------------------
   Author:        Juan Carlos Terrón
     Company:       Accenture
     Description:   Method to set case responsible field with the ownerid field value of the case
-    
+
   IN:            list<Case>
     OUT:           void
-    
+
   History:
     <Date>                  <Author>                <Change Description>
     07/08/2017              Juan Carlos Terrón      Initial version
@@ -50,19 +52,33 @@ public without sharing class SER_CaseMethods {
   Author:        Juan Carlos Terrón
     Company:       Accenture
     Description:   Fills the SER_Responsible__c field with the OwnerID field whenever a Case is created or updated.
-    
+
   IN:            Trigger.new && Trigger.oldMap
     OUT:           Void
-    
+
   History:
     <Date>                  <Author>                <Change Description>
     27/02/2017              Juan Carlos Terrón      Initial Version
     ----------------------------------------------------------------------------------------------------------------*/
   public static void fillCaseResponsible(List<Case> newList,List<Case> oldList,Map<Id,Case> newMap, Map<Id,Case> oldMap) {
     try {
+
+      for(Case newCase : newMap.values()) {
+        if (newCase.SER_Classification__c == CLASSIFICATION_QUERIES) {
+          newCase.SER_Source_of_the_error__c = CLASSIFICATION_QUERIES;
+          if (newCase.Reason_Queries__c != null) {
+            newCase.SER_Subtype_GM__c = newCase.Reason_Queries__c;
+          }
+
+          if (newCase.Typology_Queries__c != null) {
+            newCase.SER_Type_GM__c = newCase.Typology_Queries__c;
+          }
+        }
+      }
+
       if(oldMap==null) {       //oldMap = null --> insert event
         insertEvent (newList, newMap);
-        
+
       } else if(oldMap!=null) {       //Update event (oldMap not null)
         updateEvent (newMap, oldMap);
       }
@@ -71,7 +87,7 @@ public without sharing class SER_CaseMethods {
       cibLog(ex, 'SER_CaseMethods.fillCaseResponsible()');
     }
   }
-  
+
   private static void insertEvent (List<Case> newList, Map<Id,Case> newMap) {
     if(newMap==null) {     //Before insert call
       for(Case casoItem : newList) {       //Iterate over the trigger list
@@ -96,30 +112,30 @@ public without sharing class SER_CaseMethods {
       if(!listCaseToUpdate.isEmpty()) { update listCaseToUpdate; }      //Update the list.
     }
   }
-  
+
   private static void updateEvent (Map<Id,Case> newMap, Map<Id,Case> oldMap) {
     //Set<Id> set_Cases_ToProcessID = new Set<Id>();
     Map<Id,Case> mapCaseToProcess;
     Map<Id,String> mapQueueIdEmail;
     Map<String,String> mapQueAssignment;
     Map<String,String> mapCS;
-    
+
     mapCaseToProcess = new Map<Id,Case>();
     mapQueueIdEmail = new Map<Id,String>();
     mapQueAssignment = new Map<String,String>();
     mapCS = new Map<String,String>();
-    
+
     for(SER_EmailDefaultValues_Assignment__c csrItem : SER_EmailDefaultValues_Assignment__c.getAll().values()) {     //Custom setting records into the maps
       mapCS.put(csrItem.SER_FromAddres__c,csrItem.SER_OutboundMailbox__c);       //FromAddress -> OutboundMailbox
       mapQueAssignment.put(csrItem.SER_Queue__c, csrItem.SER_FromAddres__c);       //Queue DevName -> FromAdress
     }
-    
+
     updateEventI(mapCaseToProcess, newMap, oldMap);
     updateEventII(mapCaseToProcess, mapQueueIdEmail, mapQueAssignment, mapCS);
-    
+
   }
   private static void updateEventI (Map<Id,Case> mapCaseToProcess, Map<Id,Case> newMap, Map<Id,Case> oldMap) {
-    
+
     for(Case casoItem : newMap.values()) {
       final boolean ownerIsUser = casoItem.OwnerID != null
         && casoItem.SER_Responsible__c == null
@@ -133,14 +149,14 @@ public without sharing class SER_CaseMethods {
           &&( !(casoItem.SER_Escalate__c && !oldMap.get(casoItem.Id).SER_Escalate__c)
           || !(casoItem.Status == 'Transferred' && oldMap.get(casoItem.Id).Status != 'Transferred'))
           && casoItem.OwnerID != null && String.valueOf(casoItem.OwnerId).startswith('00G');
-        
+
         if(isGMtransfe) {             //Case is GM Business and is being transferred without changing the SER_Escalate__c field value.
           mapCaseToProcess.put(casoItem.Id, casoItem);
         }
       }
     }
   }
-  
+
   private static void updateEventII(Map<Id,Case> mapCaseToProcess,Map<Id,String> mapQueueIdEmail,Map<String,String> mapQueAssignment,Map<String,String> mapCS) {
     if(!mapCaseToProcess.isEmpty()) {     //We have cases being transferred from one queue to anoter.
       for(List<Group> lqueueItem : [SELECT Id, DeveloperName FROM Group WHERE DeveloperName IN :mapQueAssignment.keySet()]) {       //Query the queues in th database filtered by their devnames
@@ -154,20 +170,20 @@ public without sharing class SER_CaseMethods {
             //casoItem.Origin = mapCS.get(mapQueueIdEmail.get(casoItem.OwnerId)); Deprecated
             casoItem.SER_Outbound_Mailbox__c = mapCS.get(mapQueueIdEmail.get(casoItem.OwnerId));
           }
-          
+
         }
       }
     }
   }
-  
+
   /*----------------------------------------------------------------------
   Author:        Juan Carlos Terrón
     Company:       Accenture
     Description:   Change the case Status on update.
-    
+
   IN:            Trigger structures.
     OUT:           void
-    
+
   History:
     <Date>                  <Author>                <Change Description>
     ------------------------------------------------------------------------*/
@@ -181,7 +197,7 @@ public without sharing class SER_CaseMethods {
         mapPicklistValues = new Map<String,String>();
         Set<String> setRemedyStatus;
         setRemedyStatus = new Set<String> {'Remedy - Escalated', 'Remedy - Pending information', 'Remedy - Pending to close', 'Remedy - Rejected'};
-        
+
         for(Schema.PicklistEntry plvItem : mapCaseFields.get('Status').getDescribe().getPickListValues()) {         //Case status field values into map.
           mapPicklistValues.put(plvItem.getLabel(), plvItem.getValue());
         }
@@ -203,15 +219,15 @@ public without sharing class SER_CaseMethods {
       cibLog(ex, 'SER_CaseMethods.assignerCaseStatusOnUpdate()');
     }
   }
-  
+
   /*------------------------------------------------------------------------------------------------------------------------------------
   Author:        Juan Carlos Terrón
     Company:       Accenture
     Description:   Method that asigns a client and a value for product field for ste cases when they get its external reference linked
-    
+
   IN:            Trigger.newMap,Trigger.oldMap
     OUT:           void
-    
+
   History:
     <Date>                  <Author>                <Change Description>
     25/10/2017                Juan Carlos Terrón        Initial version
@@ -220,7 +236,7 @@ public without sharing class SER_CaseMethods {
     final Set<Id> stReferences = new Set<Id>();
     Map<Id,case> mapCasesToProcess;
     mapCasesToProcess = new Map<Id,case>();
-    
+
     for(Case casoItem: newMap.values()) {
       Case oldCase = new Case();
       oldCase = oldMap.get(casoItem.Id);
@@ -253,8 +269,8 @@ public without sharing class SER_CaseMethods {
       }
     }
   }
-  
-  
+
+
   //Comprueba si nos encontramos en ejecución de un test
   private static boolean runTest() {
     return Test.isRunningTest();
@@ -266,48 +282,45 @@ public without sharing class SER_CaseMethods {
     logToInsert.CIB_Subject__c = pMetodo+' ERROR';
     insert logToInsert;
   }
-  
+
   //if this Case passes to 'isClosed == true' and the related DML_Line__c record has status 'Approval', create a DML_Line__c version snapshot
-  public static void createLineVersionSnapshot(List<Case> newList, Map<Id, Case> oldMap){
-    List<DMT_AsyncPayload> batchPayloads = new List<DMT_AsyncPayload>();
-    String userId = UserInfo.getUserId();
-    List<User> loggedInUser = [SELECT ID_User__c FROM User WHERE Id = :userId];
-    
-    Map<String, String> lineIdCaseTypeMap = new Map<String, String>();
-    Map<String, String> lineIdCategoryMap = new Map<String, String>();
-    
-    // 1. Collect DMT_Line__c Ids from Cases that are closing now and weren't closed before
-    Set<Id> dmtLineIds = new Set<Id>();
-    for (Case c : newList) {
-      if (c.DMT_Line__c != null && c.IsClosed == true && oldMap.get(c.Id).IsClosed == false) {
-        dmtLineIds.add(c.DMT_Line__c);
-        if(!lineIdCaseTypeMap.containsKey(c.DMT_Line__c)) {
-          lineIdCaseTypeMap.put(c.DMT_Line__c, c.DMT_LineOpportunity__c);
-          lineIdCategoryMap.put(c.DMT_Line__c, c.DMT_Related_feature_name__c);
-        }
+  public static void createLineVersionSnapshot(List<Case> newList, Map<Id, Case> oldMap) {
+      
+      String userId = UserInfo.getUserId();
+      List<User> loggedInUser = [SELECT ID_User__c FROM User WHERE Id = :userId];
+      
+      Map<String, String> lineIdCaseTypeMap = new Map<String, String>();
+      Map<String, String> lineIdCategoryMap = new Map<String, String>();
+      Set<Id> dmtLineIds = new Set<Id>();
+
+      // 1. Collect DMT_Line__c Ids from Cases closing now
+      for (Case c : newList) {
+          if (c.DMT_Line__c != null && c.IsClosed == true && oldMap.get(c.Id).IsClosed == false) {
+              dmtLineIds.add(c.DMT_Line__c);
+              if(!lineIdCaseTypeMap.containsKey(c.DMT_Line__c)) {
+                  lineIdCaseTypeMap.put(c.DMT_Line__c, c.DMT_LineOpportunity__c);
+                  lineIdCategoryMap.put(c.DMT_Line__c, c.DMT_Related_feature_name__c);
+              }
+          }
       }
-    }
-    
-    if (dmtLineIds.isEmpty()) return;
-    
-    // 2. Query DMT_Line__c records with Status__c = 'Approval', include Line_Id__c
-    // 3. For each line, prepare and enqueue the snapshot request
-    for (DMT_Line__c line : [SELECT Id, Line_Id__c, DMT_ID_User__c, Status__c FROM DMT_Line__c WHERE Id IN :dmtLineIds AND Status__c = :DMT_Constants.APPROVAL]) {
       
-      String type = lineIdCaseTypeMap.get(line.id) == 'L' ? 'Line' : lineIdCaseTypeMap.get(line.id) == 'O' ? 'Opportunity' : '';
-      System.debug('Type: ' + type);
-      String category = lineIdCategoryMap.get(line.id) == null ? '' : lineIdCategoryMap.get(line.id);
-      //sending userDmtId, dmtLineId, categoryId, versionDescription, line.Id and type
-      DMT_SnapshotEvaluationVersions.PostRequestWrapperClass requestBody = new DMT_SnapshotEvaluationVersions.PostRequestWrapperClass();
-      requestBody.user = (loggedInUser.isEmpty() ? line.DMT_ID_User__c : loggedInUser[0].ID_User__c);
-      requestBody.opportunityId = line.Line_Id__c;
-      requestBody.categoryId = category;
-      requestBody.versionDescription = '';
+      if (dmtLineIds.isEmpty()) return;
       
-      batchPayloads.add(new DMT_SnapshotPayload(requestBody, line.Id, type));
-    }
-    if (!batchPayloads.isEmpty()) {
-      Database.executeBatch(new DMT_AsyncBatchJob(batchPayloads), 1);
-    }
+      // 2. Query and process qualifying DMT_Lines
+      for (DMT_Line__c line : [SELECT Id, Line_Id__c, DMT_ID_User__c, Status__c FROM DMT_Line__c WHERE Id IN :dmtLineIds AND Status__c = :DMT_Constants.APPROVAL]) {
+          
+          String type = lineIdCaseTypeMap.get(line.id) == 'L' ? 'Line' : lineIdCaseTypeMap.get(line.id) == 'O' ? 'Opportunity' : '';
+          String category = lineIdCategoryMap.get(line.id) == null ? '' : lineIdCategoryMap.get(line.id);
+          
+          // Prepare the Service Request Body
+          DMT_SnapshotEvaluationVersions.PostRequestWrapperClass requestBody = new DMT_SnapshotEvaluationVersions.PostRequestWrapperClass();
+          requestBody.user = (loggedInUser.isEmpty() ? line.DMT_ID_User__c : loggedInUser[0].ID_User__c);
+          requestBody.opportunityId = line.Line_Id__c;
+          requestBody.categoryId = category;
+          requestBody.versionDescription = '';
+          
+          // Add directly to the Interface-based payload list
+          DMT_AsyncOrchestrator.enqueue(new DMT_SnapshotPayload(requestBody, line.Id, type));
+      }
   }
 }

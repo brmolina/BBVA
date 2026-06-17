@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LastTradeDate_Check</fullName>
+    <active>false</active>
+    <description>Check if the fields &quot;Last Trade Date FI&quot;, &quot;Last Trade Date FX&quot; and &quot;Last Trade Date Cash Equity&quot; are neither not null nor greater than today.</description>
+    <errorConditionFormula>AND (
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+OR (
+AND(ISBLANK(Last_Trade_Date_Cash_Equity__c),
+ISBLANK(Last_Trade_Date_FI__c),
+ISBLANK(Last_Trade_Date_FX__c) ),
+Last_Trade_Date_Cash_Equity__c &gt; TODAY(),
+Last_Trade_Date_FI__c &gt; TODAY(),
+Last_Trade_Date_FX__c &gt; TODAY(),
+PRIORVALUE(Last_Trade_Date_Cash_Equity__c) &gt; Last_Trade_Date_Cash_Equity__c,
+PRIORVALUE(Last_Trade_Date_FI__c) &gt; Last_Trade_Date_FI__c,
+PRIORVALUE(Last_Trade_Date_FX__c) &gt; Last_Trade_Date_FX__c
+)
+)</errorConditionFormula>
+    <errorMessage>Last Trade Date fields cannot be null or greater than today or earlier than existing date</errorMessage>
+</ValidationRule>

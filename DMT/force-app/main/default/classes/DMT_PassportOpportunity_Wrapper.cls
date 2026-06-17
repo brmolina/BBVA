@@ -39,6 +39,12 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         @AuraEnabled
         public String currencyId;
         @AuraEnabled
+        public Decimal clientBDI;
+        @AuraEnabled
+        public Decimal clientRWA;
+        @AuraEnabled
+        public Decimal xsellCostToIncome;
+        @AuraEnabled
         public String clientSector;
         @AuraEnabled
         public Decimal groupSales;
@@ -48,6 +54,26 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public List<Xsells> xsells {get;set;}
         @AuraEnabled
         public List<OpportunitySanctions> opportunitySanctions;
+        @AuraEnabled
+        public String underwriting;
+        @AuraEnabled
+        public Decimal opportunityAmount;
+        @AuraEnabled
+        public Decimal opportunityAmountEUR;
+        @AuraEnabled
+        public Date businessApprovedDate;
+        @AuraEnabled
+        public String tenor;
+        @AuraEnabled
+        public String productArea;
+        @AuraEnabled
+        public String capitalAction;
+        @AuraEnabled
+        public String contingentCommitments;
+        @AuraEnabled
+        public Boolean confidential;
+        @AuraEnabled
+        public Decimal opportunityAmountDealTotal;
     }
 
     public class Xsells{
@@ -62,6 +88,8 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
     public class Product extends DMT_Wrapper_Passport_Abs.Product
     {
         @AuraEnabled
+        public String name;
+        @AuraEnabled
         public String geographyBranch;
         @AuraEnabled
         public String productId;
@@ -74,9 +102,19 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         @AuraEnabled
         public String countryRisk;
         @AuraEnabled
+        public String groupCountryRisk;
+        @AuraEnabled
+        public Decimal dealAmount;
+        @AuraEnabled
+        public Decimal liquidityFee;
+        @AuraEnabled
         public String crr2;
         @AuraEnabled
         public String lastLevelId;
+        @AuraEnabled
+        public String useOfProceeds;
+        @AuraEnabled
+        public String TXTComentarios;
         @AuraEnabled
         public String countryRating;
         @AuraEnabled
@@ -85,6 +123,10 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public Funding funding {get;set;}
         @AuraEnabled
         public Amortization amortization {get;set;}
+        @AuraEnabled
+        public Decimal tenorAmount {get;set;}
+        @AuraEnabled
+        public String committedLine {get;set;}
     }
 
     public class Mitigant
@@ -127,6 +169,8 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public String supragroupId {get;set;} //CIBGLOBALD-2027
         @AuraEnabled
         public String mitigantCountry;
+        @AuraEnabled
+        public Decimal scoring;
         
     }
 
@@ -144,6 +188,18 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public Boolean greenBond;
         @AuraEnabled
         public Boolean socialBond;
+        @AuraEnabled
+        public String sustainableDeal;
+        @AuraEnabled
+        public String sustainableDealSubcategory;
+        @AuraEnabled
+        public String sustainableDealLabel;
+        @AuraEnabled
+        public String sustainableDelegatedFilter;
+        @AuraEnabled
+        public Decimal sustainabilityPercentage;
+        @AuraEnabled
+        public String sustainabilityBonus;
     }
 
     public class Amortization
@@ -155,7 +211,25 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         @AuraEnabled
         public Decimal feesPeriodic;
         @AuraEnabled
-        public List<AmortizationPayments> payments ;
+        public List<AmortizationPayments> payments;
+        @AuraEnabled
+        public String rateType;
+        @AuraEnabled
+        public Decimal newmoney;
+        @AuraEnabled
+        public Decimal oldmoney;
+        @AuraEnabled
+        public Decimal finaltake;
+        @AuraEnabled
+        public String pricinggridOrstepUp;
+        @AuraEnabled
+        public Decimal extensionDurationFees;
+        @AuraEnabled
+        public Decimal expectedDrawn;
+        @AuraEnabled
+        public Boolean bullet;
+        @AuraEnabled
+        public Boolean balloon;
     }
 
     public class AmortizationPayments
@@ -184,6 +258,16 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public String lineCode;
         @AuraEnabled
         public List<ProductsLine> productsLine;
+        @AuraEnabled
+        public Date businessApprovedDateStartDate;
+        @AuraEnabled
+        public Date businessApprovedDateEndDate;
+        @AuraEnabled
+        public Date riskStartDate;
+        @AuraEnabled
+        public Date riskEndDate;
+        @AuraEnabled
+        public Boolean newApproval;
     }
 
     public class ProductsLine {
@@ -191,6 +275,8 @@ public with sharing class DMT_PassportOpportunity_Wrapper extends DMT_Wrapper_Pa
         public String productApproval;
         @AuraEnabled
         public String productOpportunity;
+        @AuraEnabled
+        public String productId;
     }
 
         public virtual class Analyst

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Crear una Visita ligada a un Compromiso</description>
+    <flowDefinition>FCSC_Add_Or_Create_Commitment_Visit</flowDefinition>
+    <label>Add or Relate Visit</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

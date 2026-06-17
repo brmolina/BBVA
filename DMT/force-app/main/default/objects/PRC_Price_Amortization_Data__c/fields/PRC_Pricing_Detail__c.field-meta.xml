@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PRC_Pricing_Detail__c</fullName>
+    <description>Oportunidad con la que se relaciona. No se puede crear un campo lookup al OpportunityLineItem, por eso se crea este para relacionarlo con el Pricing_Detail</description>
+    <label>Pricing Detail</label>
+    <referenceTo>PRC_Pricing_Detail__c</referenceTo>
+    <relationshipLabel>Price Amortization Data</relationshipLabel>
+    <relationshipName>Price_Amortization_Data</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

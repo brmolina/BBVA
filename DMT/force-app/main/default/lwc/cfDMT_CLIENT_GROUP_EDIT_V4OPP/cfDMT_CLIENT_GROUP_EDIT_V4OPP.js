@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           import { OmniscriptBaseMixin } from "omnistudio/omniscriptBaseMixin";
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -28,38 +29,27 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                   }
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_TRI_Title:"TRI",
-        dmt_cl_Positioning_Title:"Positioning",
-        dmt_cl_CCA_Title:"CCA",
-        dmt_cl_CTA_Title:"CTA",
-        dmt_cl_TRIEngagementPlan_Title:"TRI Engagement Plan",
-        dmt_cl_Scope_Title:"Scope",
-        dmt_cl_Comments_Title:"Comments",
-        dmt_cl_ReputationalRisk_Title:"Reputational Risk",
-        dmt_cl_EquatorPrinciples_Title:"Equator Principles",
-        dmt_cl_CleanTech_Title:"CleanTech",
-        dmt_cl_PortfolioAlignment_Title:"Portfolio Alignment",
-        dmt_cl_KPILinkMarginAdjustment_Title:"KPI-Link Margin Adjustment"
-        };
+              
+              
               pubsubEvent = [];
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
                 data.Session = {} //reinitialize on reload
                 
                 
-                this.customLabels = this.Label;
-                      
+                
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L630YAC"
+                  " card-0koKE000000L9iDYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003p7ps2AA");
+                this.loadCustomStylesheetAttachement("00PKE000001wP5o2AE");
                 
                 
               }
@@ -80,10 +70,26 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`Save`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
+        this.pubsubEvent[1] = {
+          [interpolateWithRegex(`setNotional`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[1],1),
+[interpolateWithRegex(`setIncomes`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[2],2)
+        };
+        this.pubsubChannel1 = interpolateWithRegex(`DMT_CLIENT_GROUP_EDIT_V4OPP`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
+
+            this.customEventName0 = interpolateWithRegex(`xSellListUpdated`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
+
+            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
               }
             

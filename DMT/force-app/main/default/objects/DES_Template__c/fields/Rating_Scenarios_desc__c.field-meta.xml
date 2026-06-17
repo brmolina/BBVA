@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rating_Scenarios_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>(max 840 characters)</inlineHelpText>
+    <label>Rating Scenarios</label>
+    <length>840</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

@@ -1,0 +1,44 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_TableBundleProductCtrl">
+  
+  
+  <aura:attribute name="dataOrigin" type="Object" />
+  <aura:attribute name="data" type="Object" />
+  <aura:attribute name="petitionType" type="String" />
+  <aura:attribute name="participantId" type="String" />
+  <aura:attribute name="errors" type="Object" default="[]"/>
+  <aura:attribute name="bundleID" type="Integer" default="0"/>
+  <aura:attribute name="iteration" type="Integer" default="0"/>
+  <aura:attribute name="buttonGeneric" type="Boolean" default="true"/>
+  <aura:attribute name="buttonCalculate" type="Boolean" default="true"/>
+  <aura:attribute name="checkboxActivate" type="Boolean" default="true"/>
+  <aura:attribute name="indexNumberFila" type="Object" default="[]"/>
+  <aura:attribute name="radioBundle" type="Boolean" default="false"/>
+  <aura:attribute name="bundleLength" type="Boolean" default="false"/>
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="acc" type="Account" access="global"/>
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="lAccountId" type="String" />
+  <aura:attribute name="catalog" type="String" />
+  
+  <aura:registerEvent name="PRW_CatalogEvent" type="c:PRW_CatalogEvent"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+  <aura:handler event="c:PRW_CatalogPassEvent" action="{!c.firstCalculateEvtHandler}"/>
+
+
+    <article class="slds-card customCardClass">
+        <div class="slds-card__body slds-card__body_inner">
+          <gfsc:guidanceforSuccessWrapper guidanceName="Pricewise" fieldName="Bundles" minimised='true' nomenu="true"/>
+        </div>
+    </article>
+    <div style="display: flex;flex-direction: row-reverse;">
+      <div style="width: 60%;">
+        <c:PRW_BundleProduct isPreview="true" accountId="{!v.accountId}" lAccountId="{!v.lAccountId}" acc="{!v.acc}" profSheetId="{!v.profSheetId}" />
+      </div>
+      <div class="slds-grid slds-wrap" style="border-right: dotted;width: 40%;max-height: 440px;overflow-y: scroll;">
+            <aura:iteration items="{!v.data}" var="indexNumberFila">
+              <c:PRW_BundleProduct data="{!indexNumberFila}" isPreview="false" />
+            </aura:iteration>
+      </div>
+    </div>
+</aura:component>

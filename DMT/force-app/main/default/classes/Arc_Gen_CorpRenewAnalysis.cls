@@ -15,20 +15,24 @@
 *             dynamic update and insertion of all the changes involved
 * -----------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('sf:TooManyMethods')
-public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstract { 
+@SuppressWarnings('sf:TooManyMethods,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity,PMD.NcssMethodCount')
+public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstract {
     /**
-    *-------------------------------------------------------------------------------
-    * @description empty constructor to sonar validations
-    *--------------------------------------------------------------------------------
-    * @date		07/03/2022
-    * @author	saimassimilianno.jordana.contractor@bbva.com
+    * @Description: 'text' literal 2012P1IRP
     */
-    @testVisible
-    private Arc_Gen_CorpRenewAnalysis() {
-        super();
-    }
-
+    static final string TEXT_2012P1 = '2012P1IRP';
+    /**
+    * @Description: 'text' LITERAL RENEW
+    */
+    static final string TEXT_RENEW = 'renew';
+    /**
+    * @Description: 'text' LITERAL ahaId
+    */
+    static final string TEXT_AHAID = 'ahaId';
+    /**
+    * @Description: 'text' LITERAL finalDate
+    */
+    static final string TEXT_FINALD = 'finalDate';
     /** ----------------------------------------------------------------------------------------------------
     * @Description Leveraged Type Literal.
     * ---------------------------------------------------------------------------------------------------- **/
@@ -37,7 +41,6 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @Description Arce config for corp renwal activation.
     * ---------------------------------------------------------------------------------------------------- **/
     private static final String RENEW_CONFIG = 'ArceRenewalCorp';
-
     /** ----------------------------------------------------------------------------------------------------
     * @Description arce__Account_has_Analysis__c.
     * ---------------------------------------------------------------------------------------------------- **/
@@ -94,7 +97,6 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @Description fieldsMap.
     * ---------------------------------------------------------------------------------------------------- **/
     private static Map<String, List<String>> fieldsMap = new Map<String, List<String>>{AHAOBJ => new List<String>{'arce__IRP_Workflow__c'}};
-
     /** ----------------------------------------------------------------------------------------------------
     * @Description YEAR.
     * ---------------------------------------------------------------------------------------------------- **/
@@ -102,7 +104,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     /** ----------------------------------------------------------------------------------------------------
     * @Description fieldsMap.
     * ---------------------------------------------------------------------------------------------------- **/
-    private static Map<String, String> ratingToolMap = new Map<String, String>{'2012P1IRP' => '2012IRP'};
+    private static Map<String, String> ratingToolMap = new Map<String, String>{TEXT_2012P1 => TEXT_2012P1};
     /** ----------------------------------------------------------------------------------------------------
     * @Description fieldsMap.
     * ---------------------------------------------------------------------------------------------------- **/
@@ -115,6 +117,14 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @Description fieldsMap.
     * ---------------------------------------------------------------------------------------------------- **/
     private static Map<String, String> sObjectRelation = new Map<String, String>{'arce__Activity_Split_2012__c' => 'arce__Activity_Splits_2012__r', 'arce__Activity_Split__c' => 'arce__Activity_Splits__r'};
+    /** ----------------------------------------------------------------------------------------------------
+    * @Description Financial Risk templates by rating tool.
+    * ---------------------------------------------------------------------------------------------------- **/
+    private static final Map<String, String> FINANCIAL_RISK_TEMPLATES = new Map<String, String>{ '2012P1IRP' => 'SP2-IRP-01-100-FR-2012P1',
+                                                                                    '2021RTC_GEN' => 'sp2-irp-01-100-FR-2021RTC_GEN',
+                                                                                    '2021RTC_NFI' => 'sp2-irp-01-100-FR-2021RTC_NFI',
+                                                                                    '2021RTC_FS' => 'sp2-irp-01-100-FR-2021RTC_FS',
+                                                                                    '2021RTC_GEN_NBF' => 'sp2-irp-01-100-FR-2021RTC_GEN'};
     /** ----------------------------------------------------------------------------------------------------
     * @Description noDuplicates.
     * ---------------------------------------------------------------------------------------------------- **/
@@ -138,6 +148,18 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
 
     /**
     *-------------------------------------------------------------------------------
+    * @description empty constructor to sonar validations
+    *--------------------------------------------------------------------------------
+    * @date		07/03/2022
+    * @author	saimassimilianno.jordana.contractor@bbva.com
+    */
+    @testVisible
+    private Arc_Gen_CorpRenewAnalysis() {
+        super();
+    }
+
+    /**
+    *-------------------------------------------------------------------------------
     * @description method to get analysis which were created with the same structure.
     *--------------------------------------------------------------------------------
     * @author saimassimilianno.jordana.contractor@bbva.com
@@ -148,11 +170,10 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @return JSON as String.
     * @example public static String fetchAnalysis(String varRecord) {
     **/
-    @AuraEnabled
     public static String fetchAnalysis(String type, String clientId, String ratingTool) {
         String jsonToRtrn;
         List<arce__Account_has_Analysis__c> ahas = arce.Arc_Gen_AccHasAnalysis_Data.getAhaToRenew(type, clientId, ratingTool);
-        if(ahas.isEmpty() && ratingTool =='2012P1IRP') {
+        if(ahas.isEmpty() && ratingTool == TEXT_2012P1) {
             ahas = arce.Arc_Gen_AccHasAnalysis_Data.getAhaToRenew(type, clientId, ratingToolMap.get(ratingTool));
         }
         final Boolean isRenew = Test.isRunningTest() || RENEW_ON;
@@ -160,21 +181,74 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
 
         if(ahas.isEmpty() || !isRenew) {
             data.writeStartObject();
-            data.writeBooleanField('renew', false);
+            data.writeBooleanField(TEXT_RENEW, false);
             data.writeEndObject();
             jsonToRtrn = data.getAsString();
         } else {
             data.writeStartObject();
-            data.writeBooleanField('renew', true);
+            data.writeBooleanField(TEXT_RENEW, true);
             data.writeStringField('Name', ahas[0].arce__Analysis__r.Name);
             data.writeStringField('Type', ahas[0].arce__Analysis__r.arce__rating_prerating_type__c);
+            //data.writeStringField('finalScore', string.valueOf(ahas[0].arce__total_rating_score_number__c));
             data.writeStringField('id', string.valueOf(ahas[0].arce__Analysis__c));
-            data.writeStringField('ahaId', string.valueOf(ahas[0].Id));
-            data.writeDateField('finalDate', getValidtdDate(ahas[0]));
+            data.writeStringField(TEXT_AHAID, string.valueOf(ahas[0].Id));
+            data.writeDateField(TEXT_FINALD, ahas[0].arce__Analysis__r.arce__end_date__c);
             data.writeEndObject();
             jsonToRtrn = data.getAsString();
         }
 
+        return jsonToRtrn;
+    }
+    /**
+    *-------------------------------------------------------------------------------
+    * @description method to get analysis RTC renewal.
+    *--------------------------------------------------------------------------------
+    * @author joseluis.miralles.tech@bbva.com
+    * @date xx-03-2022
+    * @param type rating or prerating.
+    * @param clientId recordId for the account.
+    * @param ratingTool Model+Flow selected.
+    * @return JSON as String.
+    * @example public static String fetchAnalysisRTC(String type, String clientId, String ratingTool) {
+    **/
+    @AuraEnabled
+    public static String fetchAnalysisRTC(String type, String clientId, String ratingTool) {
+        List<arce__Account_has_Analysis__c> ahas = new List<arce__Account_has_Analysis__c>();
+        String jsonToRtrn;
+        if (ratingTool == '2021RTC_EXPG') {
+            ahas = arce.Arc_Gen_AccHasAnalysis_Data.getAhaToRenewExpRTC(type, clientId, ratingTool);
+        } else {
+            ahas = arce.Arc_Gen_AccHasAnalysis_Data.getAhaToRenewRTC(type, clientId, ratingTool);
+        }
+        if(ahas.isEmpty() && ratingTool == TEXT_2012P1) {
+            ahas = arce.Arc_Gen_AccHasAnalysis_Data.getAhaToRenewRTC(type, clientId, ratingToolMap.get(ratingTool));
+        }
+        final Boolean isRenew = Test.isRunningTest() || RENEW_ON;
+        final JSONGenerator data = JSON.createGenerator(false);
+
+        if(ahas.isEmpty() || !isRenew) {
+            data.writeStartObject();
+            data.writeBooleanField(TEXT_RENEW, false);
+            data.writeEndObject();
+            jsonToRtrn = data.getAsString();
+        } else {
+            final arce__Account_has_Analysis__c aha = ahas[0];
+            data.writeStartObject();
+            data.writeBooleanField(TEXT_RENEW, true);
+            data.writeStringField('Name', aha.arce__Analysis__r.Name);
+            data.writeStringField('Type', aha.arce__Analysis__r.arce__rating_prerating_type__c);
+            data.writeStringField('finalScore', String.valueOf(aha.arce__total_rating_score_number__c));
+            data.writeStringField('rating', String.valueOf(aha.arce__long_rating_value_type__c));
+            data.writeStringField('nameURL', '/lightning/r/arce__Analysis__c/' + aha.arce__Analysis__c + '/view');
+            data.writeStringField('finalizedBy', aha.arce__Analysis__r.LastModifiedBy.Name);
+            data.writeStringField('finishDate', String.valueOf(getValidtdDate(aha)));
+            data.writeStringField('dateEEFF', String.valueOf(aha.arce__ffss_for_rating_id__r.arce__financial_statement_end_date__c));
+            data.writeStringField('id', string.valueOf(aha.arce__Analysis__c));
+            data.writeStringField(TEXT_AHAID, string.valueOf(aha.Id));
+            data.writeDateField(TEXT_FINALD, aha.arce__Analysis__r.arce__end_date__c);
+            data.writeEndObject();
+            jsonToRtrn = data.getAsString();
+        }
         return jsonToRtrn;
     }
 
@@ -186,12 +260,14 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     **/
     public static Date getValidtdDate(arce__Account_has_Analysis__c ahas) {
         Date toRtrn;
-        if (ahas.arce__Analysis__r.arce__end_date__c == null) {
-            final String analysisId = ahas.arce__Analysis__r.Id;
-            final arce__Traceability_Event__c trcEvnt = [select arce__audit_date__c, arce__current_event__c  from arce__Traceability_Event__c where arce__account_has_analysis_id__r.arce__Analysis__c = :analysisId AND arce__current_event__c = true LIMIT 1];
-            toRtrn = trcEvnt.arce__audit_date__c;
-        } else {
-            toRtrn = ahas.arce__Analysis__r.arce__end_date__c;
+        if (Schema.sObjectType.arce__Traceability_Event__c.isAccessible()) {
+            if (ahas.arce__Analysis__r.arce__end_date__c == null) {
+                final String analysisId = ahas.arce__Analysis__r.Id;
+                final arce__Traceability_Event__c trcEvnt = [select arce__audit_date__c, arce__current_event__c  from arce__Traceability_Event__c where arce__account_has_analysis_id__r.arce__Analysis__c = :analysisId AND arce__current_event__c = true LIMIT 1];
+                toRtrn = trcEvnt.arce__audit_date__c;
+            } else {
+                toRtrn = ahas.arce__Analysis__r.arce__end_date__c;
+            }
         }
 
         return toRtrn;
@@ -207,23 +283,30 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @return NONE
     * @example public static getAllToClone(String ratingTool) {
     **/
-    @AuraEnabled
+    @SuppressWarnings('PMD.UnusedLocalVariable')
     public static void getAllToClone(String currAha, String data, String ratingTool) {
         final Map<String,Object> jsonCorp = (Map<String,Object>) JSON.deserializeUntyped(data);
-        final String oldAha = (String) jsonCorp.get('ahaId');
-        final Date finalDate = Date.valueOf((String) jsonCorp.get('finalDate'));
+        final String oldAha = (String) jsonCorp.get(TEXT_AHAID);
+        final Date finalDate = Date.valueOf((String) jsonCorp.get(TEXT_FINALD));
         final Integer monthsBetween = finalDate.monthsBetween(Date.today());
         final Set<String> ahasId = new Set<String>{currAha, oldAha}; //NOSONAR
         //get sections SOQL to Sectors.
         final List<String> bigSections = [SELECT arce__rar_rating_tool_id__c, arce__analysis_section_list__c FROM arce__Sector__c WHERE arce__rar_rating_tool_id__c = :ratingTool LIMIT 1].arce__analysis_section_list__c.split(';');
-        if (ratingTool.containsIgnoreCase('2012P1')) {
-            bigSections.add('SP2-IRP-01-100-FR-2012P1');
+        for (String rTool : FINANCIAL_RISK_TEMPLATES.keySet()) {
+            if (rTool.equalsIgnoreCase(ratingTool)) {
+                bigSections.add(FINANCIAL_RISK_TEMPLATES.get(rTool));
+            }
         }
+
         //get tabs related to previous sector.
         final Map<String, String > tabsToGet = new Map<String, String>();
-        for(dyfr__Tab__c currtab : [SELECT id, dyfr__Tab_Code__c, renewal_attributes__c FROM dyfr__Tab__c WHERE dyfr__Template__r.name IN :bigSections]) {
-            if(String.isNotBlank(currtab.renewal_attributes__c)) {
-                tabsToGet.put(currtab.dyfr__Tab_Code__c, currtab.renewal_attributes__c);
+        // We dont want dependency on renewal_attributes__c field
+        for(SObject currtab : Database.query(String.escapeSingleQuotes(
+            'SELECT Id, dyfr__Tab_Code__c, arce__renewal_attributes__c FROM dyfr__Tab__c WHERE dyfr__Template__r.Name IN :bigSections'
+        ))) {
+            final String renewalAttrs = (String) currtab.get('arce__renewal_attributes__c');
+            if(String.isNotBlank(renewalAttrs)) {
+                tabsToGet.put((String) currtab.get('dyfr__Tab_Code__c'), renewalAttrs);
             }
         }
         //get Map with TabCode -> List of sections obtained from JSON attr on tab.
@@ -263,6 +346,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
         toUpdate.add(arceObj);
         cloneSObjects(lstMod.get(currAha), lstMod.get(oldAha),fieldsMap,ratingTool);
         cloneAhaExtension((arce__Account_has_Analysis__c) lstMod.get(currAha), (arce__Account_has_Analysis__c) lstMod.get(oldAha));
+        cloneProjection((arce__Account_has_Analysis__c) lstMod.get(currAha), (arce__Account_has_Analysis__c) lstMod.get(oldAha));
         if (ratingTool.contains('2012P1')) {
             cloneLeveraged((arce__Account_has_Analysis__c) lstMod.get(currAha), (arce__Account_has_Analysis__c) lstMod.get(oldAha));
         }
@@ -322,12 +406,33 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
         }
     }
     /**
+    * @description cloneProjection values)
+    * @author joseluis.miralles.tech@bbva.com | 08-23-2024
+    * @param arce__Account_has_Analysis__c currAha
+    * @param arce__Account_has_Analysis__c oldAha
+    **/
+    private static void cloneProjection (arce__Account_has_Analysis__c currAha, arce__Account_has_Analysis__c oldAha) {
+        final List<arce__Projection__c> projections = arce.Arc_Gen_Projection_Data.getProjectionByAhaId(oldAha.Id);
+        final List<arce__Projection__c> projectionsCloned = new List<arce__Projection__c>();
+            if (projections != null && !projections.isEmpty()) {
+                for (arce__Projection__c projection : projections) {
+                    arce__Projection__c proClone = projection.clone(false, true, false, false);
+                    proClone.arce__Account_has_Analysis__c  = currAha.Id;
+                    proClone.arce__Simulation_Calculated__c  = false;
+                    proClone.arce__Prop_Need_Cloned__c  = true;
+                    projectionsCloned.add(proClone);
+                }
+                Database.insert(projectionsCloned, AccessLevel.SYSTEM_MODE);
+            }
+    }
+    /**
     * @description cloneSObjects
     * @author amunguia.contractor@bbva.com | 04-21-2022
     * @param SObject currAha
     * @param SObject oldAha
     * @param Map<String List<String>> fieldsMap
     **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     private static void cloneSObjects (SObject currAha, SObject oldAha, Map<String, List<String>> fieldsMap, String currRatingTool) {
         for(String relationField : fieldsMap.keySet()) {
             if(relationField == AHAOBJ) {
@@ -344,7 +449,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
                         }
                     }
                 }
-                final Boolean isDiff = oldAha.get('arce__RAR_rating_tool_id__c') != currRatingTool && relationField.contains('Activity_Splits') && currRatingTool == '2012P1IRP';
+                final Boolean isDiff = oldAha.get('arce__RAR_rating_tool_id__c') != currRatingTool && relationField.contains('Activity_Splits') && currRatingTool == TEXT_2012P1;
                 relationField = isDiff ? correctActSplit.get(relationField) : relationField;
                 if(oldList != null) {
                     fillSubindMaps(isDiff, oldList);
@@ -386,6 +491,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @param Map<String List<String>> sections
     * @return List<dyfr__Field_Config__c>
     **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     private static void upsertRecords(String relationField, SObject objRelOld, SObject currAha, Boolean isDifferent) {//NOSONAR
         final List<SObject> currList = currAha.getSObjects(relationField);
         final Schema.sObjectType type = isDifferent ? Schema.getGlobalDescribe().get(relationSObject.get(relationField)) : objRelOld.getSObjectType();
@@ -410,6 +516,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
                     toInsertDiff.add(sObjToInsert);
                 }
             }
+
         } else {
             SObject sobj = mergeRecords(currObj, objRelOld, fieldsMap.get(relationField));
             if(!String.isBlank((String)sobj.get('Id'))){
@@ -425,16 +532,16 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @param String data
     * @param String ratingTool
     **/
-    @AuraEnabled
     public static void createEEFF(String currAha, String data, String ratingTool) {
         final Map<String,Object> jsonCorp = (Map<String,Object>) JSON.deserializeUntyped(data);
-        final Date finalDate = Date.valueOf((String) jsonCorp.get('finalDate'));
+        final Date finalDate = Date.valueOf((String) jsonCorp.get(TEXT_FINALD));
         final Integer monthsBetween = finalDate.monthsBetween(Date.today());
-        final String oldAha = (String) jsonCorp.get('ahaId');
+        final String oldAha = (String) jsonCorp.get(TEXT_AHAID);
         final Set<Id> ahaIds = new Set<Id>{currAha,oldAha};
         final Map<Id,arce__Account_has_Analysis__c> lstMod = new Map<Id,arce__Account_has_Analysis__c>([SELECT Id, arce__ffss_for_rating_id__c FROM arce__Account_has_Analysis__c WHERE Id IN :ahaIds]);
         final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
         final List<arce__Financial_Statements__c> ffssList = dataAccess.getFinancialStatements(new List<String>{lstMod.get(oldAha).arce__ffss_for_rating_id__c});
+        //Revisar monthsBetween menor a un año
         if(!ffssList.isEmpty() && monthsBetween < YEAR) {
             for(arce__Financial_Statements__c ffss : ffssList) {
                 makeTheCallout(lstMod.get(currAha).Id, new List<arce__Financial_Statements__c>{ffss}, new List<String>{ffss.arce__financial_statement_id__c});
@@ -448,8 +555,8 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @param Map<Id String> acctyMap
     * @param List<SObject> toInsert
     **/
+    @SuppressWarnings('PMD.UnusedLocalVariable,PMD.ApexCRUDViolation')
     private static void createGeographies(Map<Id, String> acctyMap) {
-
         final Set<Id> acctyId = acctyMap.keySet();//NOSONAR
         final List<SObject> geoInsert = new List<SObject>();
         final List<String> geoFields = new List<String>{'Id', ACCTYOBJ, 'arce__Country__c', COUN2012_LIT, 'arce__gf_geography_split_per_type__c', 'arce__gf_geography_weight_per__c'};
@@ -474,9 +581,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
                 }
             }
         }
-        if(!geoInsert.isEmpty()) {
-            insert geoInsert;
-        }
+        insert geoInsert;
     }
 
     /**
@@ -511,7 +616,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     /**
     * @description getCorrectValMap
     * @author alberto.martinez.carrero.contractor@bbva.com | 13-12-2022
-    * @param SObject objRelOld  
+    * @param SObject objRelOld
     * @return String strToRet
     **/
     @TestVisible
@@ -530,10 +635,11 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @param Map<Id String> acctyMapDiff
     **/
     @TestVisible
+    @SuppressWarnings('PMD.UnusedLocalVariable,PMD.ApexCRUDViolation')
     private static void createGeographiesDiff(Map<Id, String> acctyMapDiff) {
         Decimal percSub = 0;
         final Set<Id> acctyId = acctyMapDiff.keySet();//NOSONAR
-        final List<String> geoFields = new List<String>{'Id', SECTORID_LIT,'arce__Subsector_id__c', 'arce__gf_company_economic_actvy_id__c', SUBACT_LIT, TEMPTYPE_LIT, COUN2012_LIT, SUBINDWEI_LIT}; 
+        final List<String> geoFields = new List<String>{'Id', SECTORID_LIT,'arce__Subsector_id__c', 'arce__gf_company_economic_actvy_id__c', SUBACT_LIT, TEMPTYPE_LIT, COUN2012_LIT, SUBINDWEI_LIT};
         final String queryQ = 'SELECT ' + String.join(geoFields, ',')
             + ' FROM arce__Activity_Split_2012__c WHERE Id IN :acctyId';
         final Map<String, List<SObject>> actSplit2012Map = new Map<String,List<SObject>>();
@@ -589,6 +695,7 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
     * @return Decimal
     **/
     @TestVisible
+    @SuppressWarnings('PMD.AvoidDeeplyNestedIfStmts')
     private static void fillSubindMaps(Boolean isDiff, List<sObject> oldList) {
         Decimal percSub = 0;
         Decimal maxPerc = 0;
@@ -597,13 +704,13 @@ public with sharing class Arc_Gen_CorpRenewAnalysis extends Arc_Gen_Renew_Abstra
                 final String key = getCorrectValMap(obj);
                 if(weightMap.containsKey(key)) {
                     percSub = weightMap.get(key) + (Decimal) obj.get(SUBINDWEI_LIT);
-                    weightMap.put(key,percSub);
+                    weightMap.put(key, percSub);
                     if((Decimal) obj.get(SUBINDWEI_LIT) > maxPerc) {
                         maxWeightMap.put(key, obj);
                     }
                 } else {
                     percSub = (Decimal) obj.get(SUBINDWEI_LIT);
-                    weightMap.put(key,percSub);
+                    weightMap.put(key, percSub);
                     maxPerc = percSub;
                     maxWeightMap.put(key, obj);
                 }

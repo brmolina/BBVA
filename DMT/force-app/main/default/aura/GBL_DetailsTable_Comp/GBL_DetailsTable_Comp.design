@@ -1,0 +1,10 @@
+<design:component label="Dynamic Details Table">
+  <design:attribute name="fieldsToDisplay" label="Fields"
+      required="true" />
+  <design:attribute name="inNumberOfDecimals" label="Format Decimals"
+      datasource="Unformatted,0,1,2"
+      default="2" />
+  <design:attribute name="cssClassName" label="The class name to format the table"
+      datasource="Horizontal_Grey_Space,Horizontal_Grey_No_Space,Vertical_Clear,Vertical_Grey"
+      default="Horizontal_Grey_No_Space" />
+</design:component>

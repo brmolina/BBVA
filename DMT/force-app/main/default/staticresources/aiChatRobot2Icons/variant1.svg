@@ -1,0 +1,29 @@
+<svg width="100" height="88" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_f_1483_16208)">
+<circle cx="44" cy="44" r="24" fill="url(#paint0_radial_1483_16208)"/>
+</g>
+<g filter="url(#filter1_f_1483_16208)">
+<circle cx="44" cy="44" r="15" stroke="white" stroke-width="2"/>
+<circle cx="40" cy="44" r="11" stroke="white" stroke-width="2"/>
+<circle cx="43" cy="44" r="7" stroke="white" stroke-width="2"/>
+</g>
+<circle cx="44" cy="44" r="15" stroke="white" stroke-width="2"/>
+<circle cx="40" cy="44" r="11" stroke="white" stroke-width="2"/>
+<circle cx="43" cy="44" r="7" stroke="white" stroke-width="2"/>
+<defs>
+<filter id="filter0_f_1483_16208" x="-12" y="-12" width="112" height="112" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="16" result="effect1_foregroundBlur_1483_16208"/>
+</filter>
+<filter id="filter1_f_1483_16208" x="22" y="22" width="44" height="44" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="3" result="effect1_foregroundBlur_1483_16208"/>
+</filter>
+<radialGradient id="paint0_radial_1483_16208" cx="0" cy="0" r="1" gradientTransform="matrix(28.11 0 0.0445757 28.1305 27.77 47.365)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2165CA"/>
+<stop offset="1" stop-color="#01C1CC"/>
+</radialGradient>
+</defs>
+</svg>

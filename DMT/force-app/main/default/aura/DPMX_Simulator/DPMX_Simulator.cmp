@@ -1,0 +1,322 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="DPMX_Simulator_Ctrl">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="acquirerActivityWrapper" type="Object"/>
+    <aura:attribute name="dynamicPricing" type="Object"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}"/>
+
+    <div class="slds-m-left_x-small slds-m-vertical_x-small">
+        <div class="slds-text-heading_small slds-m-top_small">
+            <p><strong>{!$Label.c.DPMX_Simulator_Title}</strong></p>
+        </div>
+        <div class="slds-m-top_xx-small slds-m-bottom_small">
+            <p>{!$Label.c.DPMX_Simulator_Text1}</p>
+        </div>
+        <div class="slds-box slds-theme_shade slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+            <p>{!$Label.c.DPMX_Client_Information}</p>
+        </div>
+        <aura:if isTrue="{!v.dynamicPricing.Client_Information__c}">
+            <!-- MOSTRAR TABLA -->
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column1}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column2}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column3}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column4}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column5}</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product1}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_Debit_Own__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_Debit_Own_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_Debit_Own_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_Debit_Own_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_Debit_Own_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_Debit_MixOwn__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product2}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_Debit_ThirdParty__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_Debit_ThirdParty_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_Debit_ThirdParty_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_Debit_ThirdParty_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_Debit_ThirdParty_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_Debit_MixExternal__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product3}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_Credit_Own__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_Credit_Own_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_Credit_Own_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_Credit_Own_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_Credit_Own_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_Credit_MixOwn__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product4}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_Credit_ThirdParty__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_Credit_ThirdParty_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_Credit_ThirdParty_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_Credit_ThirdParty_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_Credit_ThirdParty_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_Credit_MixExternal__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product5}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_International__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_International_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_International_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_International_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_International_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_MixInternational__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product6}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Transaction_AcquirerAffiliation__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Billing_TotalAmount_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Billing_TotalAmount_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Tickets_TotalAmount_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Tickets_TotalAmount_Currency__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.dynamicPricing.Sim_Percentage_Total__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="slds-m-vertical_small">
+                <!-- Icon utility:edit -->
+                <lightning:button label="{!$Label.c.DPMX_Update_Information}" iconName="utility:edit" iconPosition="left" onclick="{!c.handleModifyClientInformation}"/>
+            </div>
+            <aura:set attribute="else">
+                <img class="slds-align_absolute-center slds-m-top_small" src="{!$Resource.DPMX_Simulator_Image}"/>
+                <div class="slds-align_absolute-center slds-text-heading_medium slds-m-top_small">
+                    <p>{!$Label.c.DPMX_Simulator_Text2}</p>
+                </div>
+                <div class="slds-align_absolute-center slds-m-top_small">
+                    <p>{!$Label.c.DPMX_Simulator_Text3}</p>
+                </div>
+                <div class="alturadd slds-align_absolute-center slds-m-top_small">
+                    <p>
+                        <lightning:button class="slds-button slds-button_brand" label="{!$Label.c.DPMX_Add}" onclick="{!c.handleAddClientInformation}"/>
+                    </p>
+                </div>
+            </aura:set>
+        </aura:if>
+        <div class="slds-box slds-theme_shade slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+            <p>{!$Label.c.DPMX_Devices}</p>
+        </div>
+        <aura:if isTrue="{!v.dynamicPricing.Devices__c}">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Información del cliente">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column1}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column2}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column3}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column4}</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row1}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_Terminal_Id__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row5}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Fees_ExtraBilling_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Fees_ExtraBilling_Currency__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row2}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_PinPadsInfo_PinPads__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row6}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Fees_Cellnet_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Fees_Cellnet_Currency__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row3}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CHECKBOX" fieldValue="{!v.dynamicPricing.Sim_Ecommerce__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row7}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.dynamicPricing.Sim_Fees_Billing_Amount__c}" currencyText="{!v.dynamicPricing.Sim_Fees_Billing_Currency__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <th scope="row">
+                            <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row4}</div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.dynamicPricing.Sim_DevicesInfo_Devices__c}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="slds-m-vertical_small">
+                <!-- Icon utility:edit -->
+                <lightning:button label="{!$Label.c.DPMX_Update_Information}" iconName="utility:edit" iconPosition="left" onclick="{!c.handleModifyDevices}"/>
+            </div>
+            <aura:set attribute="else">
+                <img class="slds-align_absolute-center slds-m-top_small" src="{!$Resource.DPMX_Simulator_Image}"/>
+                <div class="slds-align_absolute-center slds-text-heading_medium slds-m-top_small">
+                    <p>{!$Label.c.DPMX_Simulator_Text4}</p>
+                </div>
+                <div class="slds-align_absolute-center slds-m-top_small">
+                    <p>{!$Label.c.DPMX_Simulator_Text5}</p>
+                </div>
+                <div class="slds-align_absolute-center slds-m-top_small">
+                    <p>
+                        <lightning:button class="slds-button slds-button_brand" label="{!$Label.c.DPMX_Add}" onclick="{!c.handleAddDevices}"/>
+                    </p>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+    {!v.body}
+</aura:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Index xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ErrorLog_ByDate</fullName>
+    <fields>
+        <name>Timestamp__c</name>
+        <sortDirection>DESC</sortDirection>
+    </fields>
+    <label>ErrorLog_ByDate</label>
+</Index>

@@ -1,0 +1,13 @@
+<aura:component controller="NONC_CreateAccountOverwrite_ctlr"
+  implements="lightning:actionOverride,force:hasSObjectName,force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+  access="global">
+  <lightning:navigation aura:id="navService" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="cmpEvent" event="c:NONC_ceEvent" action="{!c.handleComponentEvent}" />
+  <aura:attribute name="pageReference" type="String" />
+  <aura:attribute name="isAddTY" type="Boolean" default="false"/>
+  <aura:attribute name="rtName" type="String" default="undefined"/>
+  <aura:attribute name="defaultRTId" type="String" />
+  <div aura:id="showChildModal"></div>
+
+</aura:component>

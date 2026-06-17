@@ -1,0 +1,8 @@
+/* Estilo inicial del bloque */
+.grandChild {
+}
+
+/* Estilo cuando el mouse pasa sobre el bloque */
+.grandChild div:hover {
+  background-color: #f3f3f3!important; /* Nuevo color de fondo al pasar el mouse */
+}

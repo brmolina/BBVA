@@ -1,114 +1,264 @@
-public without sharing class DMT_CreateTeamMemberCase {
+public without sharing class DMT_CreateTeamMemberCase implements Queueable {
+
+    private Id caseId;
+    private Boolean sanctionEdit;
+
     public class InputWrapper {
-        @InvocableVariable
-        public Id caseId;
-        @InvocableVariable
-        public Boolean sanctionEdit;
+        @InvocableVariable public Id caseId;
+        @InvocableVariable public Boolean sanctionEdit;
     }
 
-    @InvocableMethod(label = 'Create Team Member' description = 'Se hacen comprobaciones para poder crear team members con acceso Read Only')
+    public DMT_CreateTeamMemberCase(Id caseId, Boolean sanctionEdit) {
+        this.caseId = caseId;
+        this.sanctionEdit = sanctionEdit;
+    }
+
+    @InvocableMethod(
+        label = 'Create Team Member'
+        description = 'Se hacen comprobaciones para poder crear team members con acceso Read Only'
+    )
     public static void createTeamMemberCase(List<InputWrapper> inputIds) {
+        if (inputIds == null || inputIds.isEmpty()) {
+            return;
+        }
 
-        try {
-            Id caseId = inputIds[0].caseId;
-            Boolean sanctionEdit = inputIds[0].sanctionEdit;
-
-            Case caseRecord = [SELECT Id, DMT_Line__c, opportunity_id__c, OwnerId FROM Case WHERE Id = :caseId WITH SECURITY_ENFORCED LIMIT 1];
-
-            // Se comprueba que el OwnerId es una cola y empieza con 00G
-            if (String.valueOf(caseRecord.OwnerId).startsWith('00G') && caseRecord.DMT_Line__c != null) {
-                Group caseOwner = [SELECT DeveloperName, Name FROM Group WHERE Id = :caseRecord.OwnerId WITH SECURITY_ENFORCED LIMIT 1];
-
-                // Se comprueba que hay un grupo aprobador con la misma cola
-                if (caseOwner != null) {
-                    DMT_Approver__c approver = [SELECT Id, DMT_Group__c FROM DMT_Approver__c WHERE DMT_Group__c = :caseOwner.DeveloperName WITH SECURITY_ENFORCED LIMIT 1];
-
-                    // Se comprueba que hay miembros aprobadores en el grupo aprobador
-                    if(approver != null) {
-                        List<DMT_Approver_Member__c> approverMembers = [SELECT Id, DMT_Approver__c, DMT_Approver__r.Name, DMT_User__c, DMT_User__r.Name FROM DMT_Approver_Member__c WHERE DMT_Approver__c = :approver.Id WITH SECURITY_ENFORCED];
-
-                        if (!approverMembers.isEmpty()) {
-                            // Se realiza una query para comprobar los participantes que hay en una línea
-                            List<DMT_TeamMember__c> teamMembersLine = DMT_TeamMember_Selector.getTeamMemberLines(caseRecord.DMT_Line__c);
-
-                            Set<Id> teamMembersLineSetId = new Set<Id>();
-                            Set<Id> approversLineSetId = new Set<Id>();
-                            String currentLineStatus = 'Draft';
-
-                            if (!teamMembersLine.isEmpty()) {
-                                for (DMT_TeamMember__c teamMember : teamMembersLine) {
-                                    teamMembersLineSetId.add(teamMember.User__c);
-                                }
-                            }
-                            system.debug('approverMembers '+ approverMembers.size());
-                            if (sanctionEdit && !approverMembers.isEmpty()) {
-                                for (DMT_Approver_Member__c approverMember : approverMembers) {
-                                    approversLineSetId.add(approverMember.DMT_User__c);
-                                }
-                            system.debug('approversLineSetId '+ approversLineSetId.size());
-                            List<DMT_TeamMember__c> currentMembersLine = DMT_TeamMember_Selector.getTeamMemberLinesApprover(caseRecord.DMT_Line__c, approversLineSetId);
-
-
-
-                            system.debug('current '+ currentMembersLine.size());
-                            if(!currentMembersLine.isEmpty()){
-
-                                currentLineStatus = currentMembersLine[0].Line__r.Status__c;
-
-                                for(DMT_TeamMember__c currentTeamMember : currentMembersLine){
-                                    currentTeamMember.AccessLevel__c = 'Edit';
-
-                                    if(currentLineStatus == 'Draft'){
-                                        currentTeamMember.Team_Role__c = 'validator';
-                                    } else {
-                                        currentTeamMember.Team_Role__c = 'approver';
-                                    }
-
-                                    currentTeamMember.DMT_ApprovalEdit__c = true;
-                                }
-                                update currentMembersLine;
-                            }
-                            }
-
-                            List<DMT_TeamMember__c> newTeamMembers = new List<DMT_TeamMember__c>();
-                            Set<Id> processedApproverMembersSetId = new Set<Id>();
-
-                            // Se comprueban los miembros aprobadores y los participantes de la línea para no duplicar participantes
-                            for (DMT_Approver_Member__c approverMember : approverMembers) {
-                                if ((teamMembersLine.isEmpty() && !processedApproverMembersSetId.contains(approverMember.DMT_User__c)) || (!teamMembersLineSetId.contains(approverMember.DMT_User__c) && !processedApproverMembersSetId.contains(approverMember.DMT_User__c))) {
-                                    DMT_TeamMember__c newTeamMember = new DMT_TeamMember__c();
-                                    newTeamMember.User__c = approverMember.DMT_User__c;
-                                    newTeamMember.AccessLevel__c = sanctionEdit ? 'Edit' : 'Read';
-                                    newTeamMember.Team_Role__c = 'approver';
-
-                                    if(currentLineStatus == 'Draft'){
-                                        newTeamMember.Team_Role__c = 'validator';
-                                    } else {
-                                        newTeamMember.Team_Role__c = 'approver';
-                                    }
-
-                                    newTeamMember.DMT_ApprovalEdit__c = sanctionEdit;
-                                    newTeamMember.Name = approverMember.DMT_User__r.Name;
-                                    newTeamMember.Line__c = caseRecord.DMT_Line__c;
-                                    newTeamMember.Opportunity__c = caseRecord.opportunity_id__c;
-
-                                    newTeamMembers.add(newTeamMember);
-
-                                    processedApproverMembersSetId.add(approverMember.DMT_User__c);
-                                }
-                            }
-                            system.debug('size '+ newTeamMembers.size());
-                            if (!newTeamMembers.isEmpty()) {
-                                insert newTeamMembers;
-                            }
-                        }
-                    }
-                }
+        for (InputWrapper input : inputIds) {
+            if (input == null || input.caseId == null) {
+                continue;
             }
-        } catch (Exception e) {
-            DES_Exception_Utils.logException(e,'DMT_CreateTeamMemberCase', 'invokeCreateTeamMember', 'DMT', '');
+
+            System.enqueueJob(
+                new DMT_CreateTeamMemberCase(
+                    input.caseId,
+                    input.sanctionEdit == true
+                )
+            );
         }
     }
 
+    public void execute(QueueableContext context) {
+        processCase(this.caseId, this.sanctionEdit);
+    }
 
+    private static void processCase(Id caseId, Boolean sanctionEdit) {
+        try {
+            Case caseRecord = [
+                SELECT Id, DMT_Line__c, opportunity_id__c, OwnerId, DMT_Passport_Sanction__c
+                FROM Case
+                WHERE Id = :caseId
+                WITH USER_MODE
+                LIMIT 1
+            ];
+
+            if (caseRecord.DMT_Line__c == null && caseRecord.opportunity_id__c == null) {
+                return;
+            }
+
+            if (!String.valueOf(caseRecord.OwnerId).startsWith('00G')) {
+                return;
+            }
+
+            Group caseOwner = [
+                SELECT DeveloperName, Name
+                FROM Group
+                WHERE Id = :caseRecord.OwnerId
+                WITH USER_MODE
+                LIMIT 1
+            ];
+
+            List<DMT_Approver__c> approvers = [
+                SELECT Id, DMT_Group__c, DMT_ApproverType__r.Name
+                FROM DMT_Approver__c
+                WHERE DMT_Group__c = :caseOwner.DeveloperName
+                WITH USER_MODE
+                LIMIT 1
+            ];
+
+            if (approvers.isEmpty()) {
+                return;
+            }
+
+            DMT_Approver__c approver = approvers[0];
+
+            List<DMT_Approver_Member__c> approverMembers = [
+                SELECT Id, DMT_Approver__c, DMT_Approver__r.Name, DMT_User__c, DMT_User__r.Name
+                FROM DMT_Approver_Member__c
+                WHERE DMT_Approver__c = :approver.Id
+                AND DMT_User__r.IsActive = true
+                WITH USER_MODE
+            ];
+
+            if (approverMembers.isEmpty()) {
+                return;
+            }
+
+            Set<Id> existingTeamMemberUsersByLine = new Set<Id>();
+            Set<Id> existingTeamMemberUsersByOpportunity = new Set<Id>();
+
+            Map<String, DMT_TeamMember__c> teamMembersToUpdateMap = new Map<String, DMT_TeamMember__c>();
+
+            if (caseRecord.DMT_Line__c != null) {
+                List<DMT_TeamMember__c> teamMembersLine =
+                    DMT_TeamMember_Selector.getTeamMemberLines(caseRecord.DMT_Line__c);
+
+                for (DMT_TeamMember__c tm : teamMembersLine) {
+                    String key = String.valueOf(tm.User__c) + '_Line';
+                    existingTeamMemberUsersByLine.add(tm.User__c);
+                    teamMembersToUpdateMap.put(key, tm);
+                }
+            }
+
+            if (caseRecord.opportunity_id__c != null) {
+                List<DMT_TeamMember__c> teamMembersOpportunity = [
+                    SELECT Id, User__c, AccessLevel__c, Team_Role__c, DMT_ApprovalEdit__c,
+                           Line__c, Opportunity__c, Line__r.Status__c
+                    FROM DMT_TeamMember__c
+                    WHERE Opportunity__c = :caseRecord.opportunity_id__c
+                    WITH USER_MODE
+                ];
+
+                for (DMT_TeamMember__c tm : teamMembersOpportunity) {
+                    String key = String.valueOf(tm.User__c) + '_Opportunity';
+                    existingTeamMemberUsersByOpportunity.add(tm.User__c);
+                    teamMembersToUpdateMap.put(key, tm);
+                }
+            }
+
+            if (sanctionEdit) {
+                Set<Id> approverUserIds = new Set<Id>();
+
+                for (DMT_Approver_Member__c am : approverMembers) {
+                    approverUserIds.add(am.DMT_User__c);
+                }
+
+                if (caseRecord.DMT_Line__c != null) {
+                    List<DMT_TeamMember__c> lineMembersToUpdate = new List<DMT_TeamMember__c>();
+
+                    for (Id userId : approverUserIds) {
+                        String key = String.valueOf(userId) + '_Line';
+
+                        if (teamMembersToUpdateMap.containsKey(key)) {
+                            DMT_TeamMember__c tm = teamMembersToUpdateMap.get(key);
+                            tm.AccessLevel__c =
+                                approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_RISK
+                                ? 'Edit'
+                                : 'Read';
+                            tm.DMT_ApprovalEdit__c =
+                                approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_RISK;
+
+                            lineMembersToUpdate.add(tm);
+                        }
+                    }
+
+                    if (!lineMembersToUpdate.isEmpty()) {
+                        update lineMembersToUpdate;
+                    }
+                }
+
+                if (caseRecord.opportunity_id__c != null) {
+                    List<DMT_TeamMember__c> oppMembersToUpdate = new List<DMT_TeamMember__c>();
+
+                    for (Id userId : approverUserIds) {
+                        String key = String.valueOf(userId) + '_Opportunity';
+
+                        if (teamMembersToUpdateMap.containsKey(key)) {
+                            DMT_TeamMember__c tm = teamMembersToUpdateMap.get(key);
+                            tm.AccessLevel__c =
+                                approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_BUSINESS
+                                ? 'Edit'
+                                : 'Read';
+                            tm.DMT_ApprovalEdit__c =
+                                approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_BUSINESS;
+
+                            oppMembersToUpdate.add(tm);
+                        }
+                    }
+
+                    if (!oppMembersToUpdate.isEmpty()) {
+                        update oppMembersToUpdate;
+                    }
+                }
+            }
+
+            List<DMT_TeamMember__c> newTeamMembers = new List<DMT_TeamMember__c>();
+            Set<String> processedKeys = new Set<String>();
+
+            for (DMT_Approver_Member__c approverMember : approverMembers) {
+                Id userId = approverMember.DMT_User__c;
+
+                if (caseRecord.DMT_Line__c != null) {
+                    String lineKey = String.valueOf(userId) + '_Line';
+
+                    if (
+                        !existingTeamMemberUsersByLine.contains(userId)
+                        && !processedKeys.contains(lineKey)
+                    ) {
+                        DMT_TeamMember__c newTm = new DMT_TeamMember__c();
+                        newTm.User__c = userId;
+                        newTm.Name = approverMember.DMT_User__r.Name;
+                        newTm.Line__c = caseRecord.DMT_Line__c;
+                        newTm.AccessLevel__c =
+                            sanctionEdit
+                            && approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_RISK
+                            ? 'Edit'
+                            : 'Read';
+                        newTm.Team_Role__c =
+                            caseRecord.DMT_Passport_Sanction__c == 'passport'
+                            ? 'validator'
+                            : 'approver';
+                        newTm.DMT_ApprovalEdit__c = sanctionEdit;
+
+                        newTeamMembers.add(newTm);
+                        processedKeys.add(lineKey);
+                    }
+                }
+
+                if (caseRecord.opportunity_id__c != null) {
+                    String oppKey = String.valueOf(userId) + '_Opportunity';
+
+                    if (
+                        !existingTeamMemberUsersByOpportunity.contains(userId)
+                        && !processedKeys.contains(oppKey)
+                    ) {
+                        DMT_TeamMember__c newTm = new DMT_TeamMember__c();
+                        newTm.User__c = userId;
+                        newTm.Name = approverMember.DMT_User__r.Name;
+                        newTm.Opportunity__c = caseRecord.opportunity_id__c;
+                        newTm.AccessLevel__c =
+                            sanctionEdit
+                            && approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_BUSINESS
+                            ? 'Edit'
+                            : 'Read';
+                        newTm.Team_Role__c =
+                            caseRecord.DMT_Passport_Sanction__c == 'passport'
+                            ? 'validator'
+                            : 'approver';
+                        newTm.DMT_ApprovalEdit__c = sanctionEdit;
+
+                        newTeamMembers.add(newTm);
+                        processedKeys.add(oppKey);
+                    }
+                }
+            }
+
+            if (!newTeamMembers.isEmpty()) {
+                insert newTeamMembers;
+            }
+
+        } catch (Exception e) {
+            DMT_LogExceptionPayload errorPayload = new DMT_LogExceptionPayload(
+                e.getMessage(),
+                e.getStackTraceString(),
+                e.getLineNumber(),
+                e.getTypeName(),
+                'DMT_CreateTeamMemberCase',
+                'processCase',
+                'DMT',
+                'Case/TeamMember'
+            );
+
+            DMT_AsyncOrchestrator.enqueue(errorPayload);
+            DMT_AsyncOrchestrator.flush();
+        }
+    }
 }

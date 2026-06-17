@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_fld_Email__c</fullName>
+    <label>Email</label>
+    <referenceTo>DES_obj_MassEmailHistory__c</referenceTo>
+    <relationshipLabel>Mass Email Users</relationshipLabel>
+    <relationshipName>DES_fld_Users</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

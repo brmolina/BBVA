@@ -1,0 +1,40 @@
+<aura:component controller="GraphicsGenerator_cls" implements="flexipage:availableForAllPageTypes" access="GLOBAL">
+
+    <aura:attribute name="TipoGrafica" type="String" default="horizontalBar" />
+    <aura:attribute name="NombreCanvas" type="String" default=" " />
+    <aura:attribute name="Fill" type="Boolean" default="false" />
+    <aura:attribute name="Colores" type="List" default="#79B8E2, #F7893B, #DA3851, #48AE64, #BDBDBD" />
+    <aura:attribute name="posicionLeyenda" type="String" default="bottom" />
+    <aura:attribute name="ParametrosDina" type="List" default="[15, 19, 20]" />
+    <aura:attribute name="ParametrosDina2" type="List" default="[18, 25, 30]"/>
+    <aura:attribute name="ParametrosDina3" type="List" default=""/>
+    <aura:attribute name="ParametrosDina4" type="List" default=""/>
+    <aura:attribute name="ParametrosDina5" type="List" default=""/>
+    <aura:attribute name="labelColumnas" type="List" default="Indicador1, Indicador2, Indicador3"/>
+    <aura:attribute name="NombreInforme" type="String" default="" />
+    <aura:attribute name="numerosdegraficas" type="Decimal" default="1"/>
+    <aura:attribute name="JsonConsultas" type="List" default="" />
+    <aura:attribute name="ListaLabels" type="List" default="" />
+    <aura:attribute name="conceptoList" type="List" default="" />
+    <aura:attribute name="parametrosCirculo" type="List" default="" />
+    <aura:attribute name="BanderaEjecucion" type="Boolean" default="false" />
+    <aura:attribute name="Filtro" type="String" />
+    <aura:attribute name="FiltroRango" type="String" />
+    <aura:attribute name="numeroCentro" type="Integer" />
+    <aura:attribute name="tamanoValorCentro" type="Integer" />
+    <aura:attribute name="Id" type="String" />
+    <ltng:require scripts="{!join(',',
+                           $Resource.ChartjsAP + '/chartjs/Chart.bundle.js',
+                           $Resource.ChartjsAP + '/chartjs/Chart.bundle.min.js',
+                           $Resource.ChartjsAP  + '/chartjs/Chart.js',
+                           $Resource.ChartjsAP  + '/chartjs/Chart.min.js'
+                           )}"
+                  afterScriptsLoaded="{!c.iniciaGraficas}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <aura:handler name="change" value="{!v.BanderaEjecucion}" action="{!c.cambio}"/>
+    <div class="c-container" onload="c.rerender">
+    <div class="slds-text-heading_small" style="color:#292366" >{!v.NombreCanvas}</div>
+        <br></br>
+        <canvas aura:id="grafEvolucion"  ></canvas>
+    </div>
+</aura:component>

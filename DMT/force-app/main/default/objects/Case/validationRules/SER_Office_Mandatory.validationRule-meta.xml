@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Office_Mandatory</fullName>
+    <active>true</active>
+    <description>Office field is mandatory if Booking center is Madrid</description>
+    <errorConditionFormula>AND(
+ !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+ !$Setup.CIB_User_Org__c.CIB_Is_Admin__c,
+ $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ ISPICKVAL(SER_Business_Case_Type__c, &quot;GM&quot;),
+ ISPICKVAL(SER_Booking__c, &quot;BBVA Madrid&quot; ) ,
+  ISBLANK(TEXT(SER_Office__c ))
+)</errorConditionFormula>
+    <errorDisplayField>SER_Office__c</errorDisplayField>
+    <errorMessage>Office field is mandatory if Booking center is Madrid</errorMessage>
+</ValidationRule>

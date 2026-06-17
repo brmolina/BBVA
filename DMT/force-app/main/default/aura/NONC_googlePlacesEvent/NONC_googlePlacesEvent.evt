@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="addressType" type="String"/>
+    <aura:attribute name="city" type="String"/>
+    <aura:attribute name="street" type="String"/>
+    <aura:attribute name="country" type="String"/>
+    <aura:attribute name="state" type="String"/>
+    <aura:attribute name="postalCode" type="String"/>
+</aura:event>

@@ -1,0 +1,7 @@
+* {
+    
+}
+
+.slds-box {
+    padding : var(--slds-g-spacing-2) !important;
+}

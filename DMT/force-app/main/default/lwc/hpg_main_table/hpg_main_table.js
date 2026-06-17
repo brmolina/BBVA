@@ -1,5 +1,4 @@
 import { LightningElement, track, api, wire } from 'lwc';
-import { labels } from './hpg_main_table_labels.js';
 import { getColumns, getVisibleColumns, getGrillFields } from './hpg_main_table_columns.js';
 import fetchInitialData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchInitialData';
 import fetchData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
@@ -11,7 +10,6 @@ export default class Hpg_main_table extends LightningElement {
     @api clientId;
     @api groupId;
     @api groupCode;
-    @api labels = labels;
     @api columns;
     @api scroll;
     @api body;
@@ -304,7 +302,7 @@ export default class Hpg_main_table extends LightningElement {
             pageSize: pageSize,
             bubbles: false
         };
-        this.template.querySelector("c-hpg_fetcher").fireFetchMoreEvent(params);
+        this.template.querySelector("c-dmt_fetcher").fireFetchMoreEvent(params);
     }
 
     handleFetchMoreEvent(event) {
@@ -523,7 +521,7 @@ export default class Hpg_main_table extends LightningElement {
                             inline: "nearest"
                         });
                         this.selectRow({detail:{cellid: cellid}});
-                        var cell = this.template.querySelector('c-hpg_main_table_cell[data-id="' + cellid + '"]');
+                        var cell = this.template.querySelector('c-dmt_client_table_cell[data-id="' + cellid + '"]');
                         if (cell) {
                             cell.handleClick();
                         }

@@ -1,0 +1,12 @@
+<aura:component >
+
+ <aura:attribute name="recordId" type="String"/>
+ <aura:attribute name="maxProductNumber" type="String"/>
+ <aura:attribute name="comparatorColumns" type="String"/>
+ <aura:attribute name="comparatorFields" type="String"/>
+ <div class="slds-modal__content mainWrap" style="height: 100%;">
+     <ui:scrollerWrapper class="srollWrap">
+   		<fprd:GBL_Opportunity_Products_cmp recordId="{!v.recordId}" maxProductNumber="{!v.maxProductNumber}" comparatorColumns="{!v.comparatorColumns}" comparatorFields="{!v.comparatorFields}"/>
+ 	</ui:scrollerWrapper>
+</div>
+</aura:component>

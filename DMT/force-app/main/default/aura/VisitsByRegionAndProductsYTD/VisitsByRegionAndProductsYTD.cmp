@@ -1,0 +1,78 @@
+<aura:component controller="VisitsByRegionAndProductsYTDcnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+        access="global">
+
+  <ltng:require scripts="{! join(',',
+                          $Resource.Chart,
+                          $Resource.baseFichaGrupo)}"
+  afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+    <aura:attribute name="timeRefresh" type="String" default="false"/>
+    <aura:attribute name="noData" type="Boolean" default="false"/>
+    <aura:attribute name="showViewDetails" type="Boolean" default="true" />
+
+
+  <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+      <div>
+      <div class="boxsection slds-p-around_small">
+          <div class="slds-m-bottom_medium">
+              <lightning:formattedText class="slds-text-heading_medium sectiontitle" value="Visits by Country and Products (YTD)" /><br />
+          </div>
+          <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium">
+            <aura:if isTrue="{!v.noData}">
+                <div class="slds-text-align_center">
+                    <span class="slds-m-bottom_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+                </div>
+              <aura:set attribute="else">
+                <div id="chartjs-tooltip"></div>
+                <canvas aura:id="chart"></canvas>
+              </aura:set>
+            </aura:if>
+          </div>
+          <aura:if isTrue="{!!v.noData}">
+            <aura:if isTrue="{! v.showViewDetails == true}">
+              <div class="slds-grid slds-gutters slds-grid_vertical-align-center slds-m-top_x-small">
+                  <div class="slds-col slds-text-align_left">
+                      <a href="" class="slds-text-link" onclick="{!c.navigateToMyComponent}">View Report</a>
+                  </div>
+                  <div class="slds-col slds-text-align_right">
+                      <span class="slds-text-body_small slds-m-right_x-small weight700">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+                      <lightning:buttonIcon class="radiusbutton" iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+                  </div>
+              </div>
+            </aura:if>
+          </aura:if>
+      </div>
+      </div>
+
+      <aura:set attribute="else">
+      <div class="slds-box" style="padding:30px 30px 50px 30px;height:100%; width:100%">
+          <h1>Visits by Country and Products (YTD)</h1>
+          <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium">
+              <aura:if isTrue="{!v.noData}">
+          <p style="height:200px;text-align:center;padding-top:100px;">
+                {!$Label.c.DES_Chart_No_Data}
+              </p>
+          <aura:set attribute="else">
+            <div id="chartjs-tooltip"></div>
+            <canvas aura:id="chart"></canvas>
+          </aura:set>
+        </aura:if>
+          </div>
+          <aura:if isTrue="{!!v.noData}">
+            <aura:if isTrue="{! v.showViewDetails == true}">
+              <div style="width:100%; margin-top:10px;">
+                  <a href="" class="slds-text-link" style="float:left;" onclick="{!c.navigateToMyComponent}">View Report</a>
+                  <span style="float:right;">
+                      <span style="margin-right:10px;">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+                      <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+                  </span>
+              </div>
+            </aura:if>
+          </aura:if>
+      </div>
+      </aura:set>
+      
+  </aura:if>
+	
+</aura:component>

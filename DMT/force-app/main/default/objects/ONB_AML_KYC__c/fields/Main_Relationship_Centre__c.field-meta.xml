@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Main_Relationship_Centre__c</fullName>
+    <label>Main Relationship Centre</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>BBVA SA - China</fullName>
+                <default>false</default>
+                <label>BBVA SA - China</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - France</fullName>
+                <default>false</default>
+                <label>BBVA SA - France</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Germany</fullName>
+                <default>false</default>
+                <label>BBVA SA - Germany</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Hong Kong</fullName>
+                <default>false</default>
+                <label>BBVA SA - Hong Kong</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Italy</fullName>
+                <default>false</default>
+                <label>BBVA SA - Italy</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Japan</fullName>
+                <default>false</default>
+                <label>BBVA SA - Japan</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Portugal</fullName>
+                <default>false</default>
+                <label>BBVA SA - Portugal</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Singapore</fullName>
+                <default>false</default>
+                <label>BBVA SA - Singapore</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Spain</fullName>
+                <default>false</default>
+                <label>BBVA SA - Spain</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Taiwan</fullName>
+                <default>false</default>
+                <label>BBVA SA - Taiwan</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - United kingdom</fullName>
+                <default>false</default>
+                <label>BBVA SA - United kingdom</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - United States of America</fullName>
+                <default>false</default>
+                <label>BBVA SA - United States of America</label>
+            </value>
+            <value>
+                <fullName>BSI</fullName>
+                <default>false</default>
+                <label>BSI</label>
+            </value>
+            <value>
+                <fullName>IFI</fullName>
+                <default>false</default>
+                <label>IFI</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Reasons_Lost__c</fullName>
+    <label>Reasons Lost</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Risk structure requirements</fullName>
+                <default>false</default>
+                <label>Risk structure requirements</label>
+            </value>
+            <value>
+                <fullName>Risk amounts limitation</fullName>
+                <default>false</default>
+                <label>Risk amounts limitation</label>
+            </value>
+            <value>
+                <fullName>Risk not approved</fullName>
+                <default>false</default>
+                <label>Risk not approved</label>
+            </value>
+            <value>
+                <fullName>Pricing</fullName>
+                <default>false</default>
+                <label>Pricing</label>
+            </value>
+            <value>
+                <fullName>Missed Deadline</fullName>
+                <default>false</default>
+                <label>Missed Deadline</label>
+            </value>
+            <value>
+                <fullName>Client withdrawn</fullName>
+                <default>false</default>
+                <label>Client withdrawn</label>
+            </value>
+            <value>
+                <fullName>Deal awarded to competitor</fullName>
+                <default>false</default>
+                <label>Deal awarded to competitor</label>
+            </value>
+            <value>
+                <fullName>Not recommended by the NBC</fullName>
+                <default>false</default>
+                <label>Not recommended by the NBC</label>
+            </value>
+            <value>
+                <fullName>Lack of product capability</fullName>
+                <default>false</default>
+                <label>Lack of product capability</label>
+            </value>
+            <value>
+                <fullName>Opportunity expired</fullName>
+                <default>false</default>
+                <label>Opportunity expired</label>
+            </value>
+            <value>
+                <fullName>Risk not approved due to EGS criteria</fullName>
+                <default>false</default>
+                <label>Risk not approved due to EGS criteria</label>
+            </value>
+            <value>
+                <fullName>Opportunity cancelled in draft status</fullName>
+                <default>false</default>
+                <label>Opportunity cancelled in draft status</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Bank Credit Commitment</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Bank Credit Commitment</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Local Knowledge/presence</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Local Knowledge/presence</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Missed deadline</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Missed deadline</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Post Trade Services</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Post Trade Services</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Product capabilities</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Product capabilities</label>
+            </value>
+            <value>
+                <fullName>BBVA Constratins - Rating BBVA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA Constratins - Rating BBVA</label>
+            </value>
+            <value>
+                <fullName>Commercial Reason - GCC not supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Commercial Reason - GCC not supportive</label>
+            </value>
+            <value>
+                <fullName>Commercial Reason - Product Teams not supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Commercial Reason - Product Teams not supportive</label>
+            </value>
+            <value>
+                <fullName>Commercial Reason - Rotation of banks</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Commercial Reason - Rotation of banks</label>
+            </value>
+            <value>
+                <fullName>Deal not closed with any Bank - Client did not win the bid</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Deal not closed with any Bank - Client did not win the bid</label>
+            </value>
+            <value>
+                <fullName>Deal not closed with any Bank - Client no longer need the Product</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Deal not closed with any Bank - Client no longer need the Product</label>
+            </value>
+            <value>
+                <fullName>Deal not closed with any Bank - Market Conditions</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Deal not closed with any Bank - Market Conditions</label>
+            </value>
+            <value>
+                <fullName>Risk - Limits not approved</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Risk - Limits not approved</label>
+            </value>
+            <value>
+                <fullName>Risk - Restrictions/ convenants</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Risk - Restrictions/ convenants</label>
+            </value>
+            <value>
+                <fullName>Risk - Tenors not approved</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Risk - Tenors not approved</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

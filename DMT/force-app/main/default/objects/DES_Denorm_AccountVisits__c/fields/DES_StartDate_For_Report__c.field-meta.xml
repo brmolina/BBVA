@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_StartDate_For_Report__c</fullName>
+    <description>Campo creado para usarlo en los reports como filtro o crossFilter. El problema era que con el campo DATETIME explotaba el report. Si se arregla el problema: utilizar el campo Datetime y eliminar este campo formula porque no hace falta.</description>
+    <formula>DATEVALUE( DES_Start_Date__c )</formula>
+    <label>StartDate For Report</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

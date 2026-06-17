@@ -1,0 +1,114 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName"
+  controller="SoldOrderFormController" access="GLOBAL">
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:attribute name="disabled" type="Boolean" default="false" />
+  <aura:attribute name="saved" type="Boolean" default="false" />
+  <aura:attribute name="showSpinner" type="Boolean" default="true" />
+  <aura:attribute name="soldOrderAmount" type="Decimal" default="0" />
+  <aura:attribute name="settledAmount" type="Decimal" default="0" />
+  <aura:attribute name="feesPaidBPS" type="Decimal" default="0" />
+  <aura:attribute name="feesPaidAmount" type="Decimal" default="0" />
+  <aura:attribute name="underwritingPercent" type="Decimal" default="0" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="oppCurrency" type="String" />
+  <aura:attribute name="isOpen" type="boolean" default="false" />
+  <aura:attribute name="fields" type="String[]"
+    default="['gf_loan_br_ctpty_id__c','gf_ctpty_sold_order_amount__c','gf_sold_ord_ctpty_setl_amount__c','gf_sold_order_settled_ind_type__c','Currency__c', 'gf_assur_bbva_so_prort_amount__c']" />
+
+  <aura:attribute name="customMetadata" type="String" description="" default="AccountTest" />
+  <aura:attribute name="selectIdSeeker" type="String" description="" />
+  <aura:attribute name="fieldSeeker" type="String" default="gf_loan_br_ctpty_id__c" />
+
+  <aura:if isTrue="{!!v.saved}">
+    <!-- <aura:if isTrue="{!and(v.isOpen, v.oppCurrency != null)}"> -->
+    <aura:if isTrue="{!v.isOpen}">
+      <div class="slds-m-around--xx-large" style="text-align:center;">
+        <!--###### MODAL BOX Start From Here ######-->
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+            <div class="slds-modal__header">
+              <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close"
+                onclick="{!c.runCloseModel}">
+                <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="header99" class="slds-text-heading--medium">Create Sold Order</h2>
+            </div>
+            <!--###### MODAL BOX BODY Part Start From Here ######-->
+            <aura:if isTrue="{!v.showSpinner}">
+              <lightning:spinner />
+            </aura:if>
+
+            <!-- onerror="{!c.handleError}" -->
+
+            <lightning:recordEditForm aura:id="newSoldOrderForm" onload="{!c.handleLoad}" onsubmit="{!c.handleSubmit}"
+              onsuccess="{!c.handleSuccess}" objectApiName="Sold_Order__c">
+
+              <div class="slds-modal__content slds-p-around--medium">
+                <lightning:messages />
+                <br /><br /><br />
+                <lightning:layout multipleRows="true">
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+
+                    <!-- <lightning:inputField fieldName="gf_loan_br_ctpty_id__c" /> -->
+                    <label>Loan Counterparty</label>
+                    <sekr:seeker_cmp aura:id="seekerField" customMetadata="{!v.customMetadata}"
+                      onseekersubmit="{!c.handleChangeSeeker}" />
+
+                  </lightning:layoutItem>
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <ui:inputNumber label="Sold Order (amount in units)" value="{!v.soldOrderAmount}" />
+                  </lightning:layoutItem>
+
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <ui:inputNumber label="Settled amount (amount in units)" value="{!v.settledAmount}" />
+                  </lightning:layoutItem>
+                  <!-- <lightning:inputField fieldName="gf_ctpty_sold_order_amount__c" /> -->
+                  <!-- <lightning:inputField fieldName="gf_sold_ord_ctpty_setl_amount__c" /> -->
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <lightning:inputField fieldName="gf_sold_order_settled_ind_type__c" />
+                  </lightning:layoutItem>
+
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <lightning:inputField fieldName="Currency__c" value="{!v.oppCurrency}" />
+                  </lightning:layoutItem>
+                  <!-- <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                          </lightning:layoutItem> -->
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <ui:inputNumber label="Fees paid to the market (bps)" value="{!v.feesPaidBPS}" />
+                  </lightning:layoutItem>
+
+
+                  <!-- <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                            <ui:inputNumber label="Fees paid to the market (amount in units)" value="{!v.feesPaidAmount}"/>
+                          </lightning:layoutItem> -->
+
+                  <lightning:layoutItem padding="around-small" size="6" class="left-align">
+                    <ui:inputNumber label="%Underwriting" value="{!v.underwritingPercent}" />
+                  </lightning:layoutItem>
+                 
+
+                </lightning:layout>
+                <br /><br /><br />
+              </div>
+
+              <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+              <div class="slds-modal__footer">
+                <lightning:button variant="neutral" onclick="{!c.runCloseModel}" name="Cancel" label="Cancel" />
+                <lightning:button disabled="{!v.disabled}" variant="brand" type="submit" name="save" label="Save" />
+              </div>
+            </lightning:recordEditForm>
+          </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+      </div>
+    </aura:if>
+  </aura:if>
+
+
+  <!-- <aura:attribute name ="oppRecordId" type="Id"/>
+  <aura:if isTrue="{!v.recordId != null}">
+    <c:addSoldOrderForm onfireRefreshView="{!c.fireRefreshView}" recordId="{!v.recordId}" oppRecordId="{!v.recordId}"/>
+  </aura:if> -->
+</aura:component>

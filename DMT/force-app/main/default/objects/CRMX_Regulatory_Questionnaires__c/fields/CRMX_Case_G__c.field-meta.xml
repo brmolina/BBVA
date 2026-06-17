@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Case_G__c</fullName>
+    <description>Clause of the regulation of the Criterion of Article 52 Section IV that represents whether the expected source of funds for the repayment of loans or credits of both counterparties of the Institution is the same</description>
+    <formula>OR(
+    AND(
+        ISPICKVAL(CRMX_Annual_Expenses__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Gross_Income__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Production__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Alternate_Income_Source__c, &quot;FALSE&quot;)
+    ),
+    AND(
+        ISPICKVAL(CRMX_Annual_Expenses__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Gross_Income__c, &quot;TRUE&quot;),
+        ISPICKVAL(CRMX_Percentage__c, &quot;NO&quot;),
+        ISPICKVAL(CRMX_Production__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Alternate_Income_Source__c, &quot;FALSE&quot;)
+    ),
+    AND(
+        ISPICKVAL(CRMX_Annual_Expenses__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Gross_Income__c, &quot;TRUE&quot;),
+        ISPICKVAL(CRMX_Percentage__c, &quot;Between 45% and 50%.&quot;),
+        ISPICKVAL(CRMX_Credit_Rating__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Production__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Alternate_Income_Source__c, &quot;FALSE&quot;)
+    ),
+    AND(
+        ISPICKVAL(CRMX_Annual_Expenses__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Gross_Income__c, &quot;TRUE&quot;),
+        ISPICKVAL(CRMX_Percentage__c, &quot;Between 45% and 50%.&quot;),
+        ISPICKVAL(CRMX_Credit_Rating__c, &quot;TRUE&quot;),
+        OR(
+            ISPICKVAL(CRMX_Risk_Grade__c, &quot;Risk level 1&quot;),
+            ISPICKVAL(CRMX_Risk_Grade__c, &quot;Risk level 2&quot;),
+            ISPICKVAL(CRMX_Risk_Grade__c, &quot;Risk level 3&quot;),
+            ISPICKVAL(CRMX_Risk_Grade__c, &quot;Risk level 4&quot;)
+        ),
+        ISPICKVAL(CRMX_Production__c, &quot;FALSE&quot;),
+        ISPICKVAL(CRMX_Alternate_Income_Source__c, &quot;FALSE&quot;)
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Case G</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

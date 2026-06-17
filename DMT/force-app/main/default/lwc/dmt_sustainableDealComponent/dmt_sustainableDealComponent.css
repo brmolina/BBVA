@@ -1,0 +1,15 @@
+/* Estilos personalizados para los picklists */
+:host ::part(lightning-combobox) {
+    width: 100%;
+}
+
+/* Espaciado responsivo */
+@media (max-width: 768px) {
+    .slds-grid {
+        padding: 0 !important;
+    }
+
+    .slds-col {
+        min-width: 100%;
+    }
+}

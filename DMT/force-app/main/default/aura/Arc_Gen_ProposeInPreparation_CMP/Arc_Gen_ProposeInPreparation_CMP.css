@@ -1,0 +1,11 @@
+.THIS .slds-spinner_container {
+  background-color: rgb(255, 255, 255);
+  margin-top: 140px;
+  margin-bottom: 140px;
+}
+
+.THIS .slds-modal__content {
+  height: unset !important;
+  max-height: unset !important;
+  overflow: initial;
+}

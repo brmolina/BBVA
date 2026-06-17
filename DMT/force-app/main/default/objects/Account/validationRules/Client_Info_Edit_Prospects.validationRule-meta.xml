@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_Info_Edit_Prospects</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  $Permission.Client_Info_Prospects ,
+
+  $Profile.Name &lt;&gt; &apos;Desktop Integration&apos;,
+  $Profile.Name &lt;&gt; &apos;System Administrator&apos;,
+
+
+   RecordType.DeveloperName &lt;&gt; &quot;DES_Prospect_Desktop&quot;,
+   RecordType.DeveloperName &lt;&gt; &quot;Prospect_Group&quot;,
+   RecordType.DeveloperName &lt;&gt; &quot;DES_Prospect_Group_Desktop&quot;,
+   RecordType.DeveloperName &lt;&gt; &quot;Prospect_Subsidiary&quot;,
+
+   NOT( ISCHANGED(Closed_Lost_Opptys__c)),
+   NOT( ISCHANGED(Closed_Won_Opptys__c)),
+   NOT( ISCHANGED(Closed_Won_Value__c)),
+   NOT( ISCHANGED(DES_Alive_Opportunities__c)),
+   NOT( ISCHANGED(DES_Closed_Won_Value__c)),
+   NOT( ISCHANGED(DES_EXP_REV__c)),
+   NOT( ISCHANGED(DES_EXP_REV_LY__c)),
+   NOT( ISCHANGED(DES_REV_LOSS_YTD_LY__c)),
+   NOT( ISCHANGED(DES_REV_LY_YTD__c)),
+   NOT( ISCHANGED(Open_Oppty_Value__c)),
+   NOT( ISCHANGED(DES_REV_YTD__c) ),
+   NOT( ISCHANGED(DES_REV_LOSS_YTD__c) ),
+   NOT( ISCHANGED(DES_Ano_rollup__c) ),
+   NOT( ISCHANGED(DES_Last_Contact_Date__c) ),
+   NOT( ISCHANGED(DES_Won_opportunities__c) ),
+   NOT( ISCHANGED(DES_Lost_opportunities__c) )
+)</errorConditionFormula>
+    <errorMessage>Sorry, you don&apos;t have the required permissions to make changes to this account.</errorMessage>
+</ValidationRule>

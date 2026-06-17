@@ -311,6 +311,7 @@ public with sharing class DMT_Passport_Handler_test {
     @isTest
     private static void startCaseTest(){
         String errorMessage = '';
+        Map<String, Object> startCase = new Map<String, Object>();
 
         DMT_Line__c line = [SELECT Id, Line_Id__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1 FOR UPDATE];
         Opportunity opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
@@ -342,13 +343,13 @@ public with sharing class DMT_Passport_Handler_test {
 
         try {
             //CIBGLOBALD-1195 parameter is added to the method
-            Boolean startCase = DMT_Passport_Handler.startCase(line.Line_Id__c, null, '1', taskList, '1', 'Test limit feature','', 'APPROVAL');
+            startCase = DMT_Passport_Handler.startCase(line.Line_Id__c, null, '1', taskList, '1', 'Test limit feature','', 'APPROVAL');
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
 
 
-        Assert.areNotEqual(null, errorMessage);
+        Assert.areNotEqual(null, startCase.get('message'),startCase.get('message')+ 'No deberia haber error en la creación del caso');
     }
 
     @isTest
@@ -396,6 +397,7 @@ public with sharing class DMT_Passport_Handler_test {
     @isTest
     public static void testBuildOpportunitySanctions() {
         Test.startTest();
+        TriggerBypass.setBypass();
         DMT_Line__c line = new DMT_Line__c(
             Name = 'Test Line'
         );
@@ -437,15 +439,62 @@ public with sharing class DMT_Passport_Handler_test {
         );
         insert oli;
 
-        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id, DMT_Sanction__r.Line_Id__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
+        // Sanction line created natively within this same opportunity
+        line.DMT_Opportunity__c = opp.Id;
+        update line;
+
+        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c, DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
             FROM Opportunity
             WHERE Id = :opp.Id
         ];
 
         List<DMT_PassportOpportunity_Wrapper.OpportunitySanctions> result = DMT_Passport_Helper.buildOpportunitySanctions(opp);
         Test.stopTest();
+
+        Assert.areEqual(1, result.size(), 'Expected a single OpportunitySanctions entry');
+        Assert.areEqual(true, result[0].newApproval, 'newApproval should be true when the sanction line originated from this same opportunity');
     }
+
     @isTest
+    public static void testBuildOpportunitySanctions_ReusedSanction() {
+        Test.startTest();
+
+        TriggerBypass.setBypass();
+        Opportunity originOpp = new Opportunity(
+            Name = 'Origin Opportunity',
+            StageName = 'Draft OPP',
+            CloseDate = Date.today()
+        );
+        insert originOpp;
+
+        // Sanction line created for a different opportunity and reused here
+        DMT_Line__c line = new DMT_Line__c(
+            Name = 'Test Line Reused',
+            DMT_Opportunity__c = originOpp.Id
+        );
+        insert line;
+
+        Opportunity opp = new Opportunity(
+            Name = 'Test Opportunity Reused Sanction',
+            StageName = 'Draft OPP',
+            CloseDate = Date.today(),
+            DMT_Sanction__c = line.Id
+        );
+        insert opp;
+
+        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c, DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
+            FROM Opportunity
+            WHERE Id = :opp.Id
+        ];
+
+        List<DMT_PassportOpportunity_Wrapper.OpportunitySanctions> result = DMT_Passport_Helper.buildOpportunitySanctions(opp);
+        Test.stopTest();
+
+        Assert.areEqual(1, result.size(), 'Expected a single OpportunitySanctions entry');
+        Assert.areEqual(false, result[0].newApproval, 'newApproval should be false when the sanction line originated from a different opportunity');
+    }
+
+     @isTest
     public static void testFeatureTypeByApproverType() {
         DMT_Line__c line = [SELECT Id, Line_Id__c FROM DMT_Line__c WHERE Line_Id__c = '00002' ];
         List<DMT_Approver__c> approverUpdate = [SELECT Id,DMT_External_Id__c FROM DMT_Approver__c WHERE Name = 'TestApproverDataFactory'];
@@ -465,4 +514,134 @@ public with sharing class DMT_Passport_Handler_test {
 
         Test.stopTest();
     }
+
+    @isTest
+    private static void testMarkAsObsolete_DirectCall() {
+        // 1. Identify the Passport from Setup data
+        Passport__c passport = [SELECT Id, DMT_Is_Obsoleted_Passport_Save__c FROM Passport__c LIMIT 1];
+        
+        // Ensure the starting state is false
+        passport.DMT_Is_Obsoleted_Passport_Save__c = false;
+        update passport;
+
+        // 2. EXECUTION: Call the private method directly
+        Test.startTest();
+        DMT_Passport_Handler.markAsObsolete(passport.Id);
+        Test.stopTest();
+
+        // 3. ASSERTION: Verify the database was updated
+        Passport__c updatedPassport = [SELECT DMT_Is_Obsoleted_Passport_Save__c FROM Passport__c WHERE Id = :passport.Id];
+        
+        Assert.isTrue(updatedPassport.DMT_Is_Obsoleted_Passport_Save__c, 
+            'The passport should have been marked as obsolete by the direct method call.');
+    }
+
+    @IsTest
+    static void testAllWrapperProperties() {
+        // 1. Instantiate the Outer Wrapper
+        DMT_PassportOpportunity_Wrapper wrapper = new DMT_PassportOpportunity_Wrapper();
+
+        // 2. Test Request & RequestBody (Covers 'analysts' {get;set;})
+        DMT_PassportOpportunity_Wrapper.RequestBody body = new DMT_PassportOpportunity_Wrapper.RequestBody();
+        body.analysts = new DMT_PassportOpportunity_Wrapper.Analyst(); 
+        body.opportunity = new DMT_PassportOpportunity_Wrapper.Opportunity();
+        body.products = new List<DMT_PassportOpportunity_Wrapper.Product>();
+
+        // 3. Test Opportunity (Covers 'xsells' {get;set;})
+        DMT_PassportOpportunity_Wrapper.Opportunity opp = new DMT_PassportOpportunity_Wrapper.Opportunity();
+        opp.xsells = new List<DMT_PassportOpportunity_Wrapper.Xsells>();
+        opp.counterpart = 'Test Counterpart';
+        opp.opportunityAmount = 1000.00;
+
+        // 4. Test Product (Covers 'mitigants', 'funding', 'amortization', 'tenorAmount' {get;set;})
+        DMT_PassportOpportunity_Wrapper.Product prod = new DMT_PassportOpportunity_Wrapper.Product();
+        prod.mitigants = new List<DMT_PassportOpportunity_Wrapper.Mitigant>();
+        prod.funding = new DMT_PassportOpportunity_Wrapper.Funding();
+        prod.amortization = new DMT_PassportOpportunity_Wrapper.Amortization();
+        prod.tenorAmount = 500.50;
+        prod.productId = 'P123';
+
+        // 5. Test Funding (Covers your new field 'sustainableDelegatedFilter')
+        prod.funding.sustainableDelegatedFilter = 'FilterValue';
+        prod.funding.sustainableDeal = 'Yes';
+        prod.funding.greenBond = true;
+
+        // 6. Test Mitigant (Covers 'customerId', 'groupId', 'subgroupId', 'supragroupId' {get;set;})
+        DMT_PassportOpportunity_Wrapper.Mitigant mit = new DMT_PassportOpportunity_Wrapper.Mitigant();
+        mit.customerId = 'C-100';
+        mit.groupId = 'G-200';
+        mit.subgroupId = 'S-300';
+        mit.supragroupId = 'SUPER-400';
+        mit.mitigantType = 'Type A';
+
+        // 7. Test Amortization & Payments
+        DMT_PassportOpportunity_Wrapper.Amortization amrt = new DMT_PassportOpportunity_Wrapper.Amortization();
+        amrt.rateType = 'Fixed';
+        amrt.payments = new List<DMT_PassportOpportunity_Wrapper.AmortizationPayments>();
+        
+        DMT_PassportOpportunity_Wrapper.AmortizationPayments pay = new DMT_PassportOpportunity_Wrapper.AmortizationPayments();
+        pay.nominalAmount = 100.00;
+        amrt.payments.add(pay);
+
+        // 8. Test Sanctions & Lines
+        DMT_PassportOpportunity_Wrapper.OpportunitySanctions sanc = new DMT_PassportOpportunity_Wrapper.OpportunitySanctions();
+        sanc.lineCode = 'L001';
+        sanc.productsLine = new List<DMT_PassportOpportunity_Wrapper.ProductsLine>();
+
+        // Assertions to validate the data was set correctly
+        System.assertNotEquals(null, prod.funding.sustainableDelegatedFilter, 'The new filter should be set.');
+        System.assertEquals('C-100', mit.customerId, 'Customer ID should match.');
+        System.assertEquals(500.50, prod.tenorAmount, 'Tenor amount should match.');
+    }
+
+    // -----------------------------------------------------------------------
+    // Tests for getMainHolderAccountId
+    // -----------------------------------------------------------------------
+
+    @isTest
+    private static void testGetMainHolderAccountId_nullOppId() {
+        String errorMessage = '';
+        Test.startTest();
+        try {
+            DMT_Passport_Handler.getMainHolderAccountId(null);
+        } catch (AuraHandledException e) {
+            errorMessage = e.getMessage();
+        }
+        Test.stopTest();
+        Assert.isTrue(String.isNotBlank(errorMessage), 'Should throw AuraHandledException for null oppId');
+    }
+
+    @isTest
+    private static void testGetMainHolderAccountId_noAssoc() {
+        Opportunity opp = [SELECT Id, AccountId FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
+        Test.startTest();
+        Map<String, Object> result = DMT_Passport_Handler.getMainHolderAccountId(opp.Id);
+        Test.stopTest();
+        Assert.isNotNull(result, 'Result map should not be null');
+        Assert.areEqual(opp.AccountId, (Id) result.get('AccountId'), 'AccountId should match the opportunity account');
+    }
+
+    @isTest
+    private static void testGetMainHolderAccountId_withAssocAndLocalClient() {
+        Opportunity opp = [SELECT Id, AccountId FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
+        Account acc = [SELECT Id FROM Account WHERE Id = :opp.AccountId LIMIT 1];
+        acc.DES_Structure_Type__c = 'Subsidiary';
+        update acc;
+
+        Custom_Association_Opportunity__c assoc = new Custom_Association_Opportunity__c(
+            Opportunity__c = opp.Id,
+            g_customer_id__c = 'TEST123',
+            gf_customer_group_id__c = 'OLD_GROUP'
+        );
+        insert assoc;
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Passport_Handler.getMainHolderAccountId(opp.Id);
+        Test.stopTest();
+
+        Assert.isNotNull(result, 'Result map should not be null');
+        Assert.isNotNull(result.get('AccountId'), 'AccountId should be populated via local client path');
+        Assert.areEqual('Subsidiary', (String) result.get('ClientType'), 'ClientType should match DES_Client_Type__c on account');
+    }
+
 }

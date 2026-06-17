@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_validation_creation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>if checked, when saving the non-client, uses the &apos;validateNonCliente&apos; method of the class defined in this custom setting to validate the creation.</description>
+    <inlineHelpText>if checked, when saving the non-client, uses the &apos;validateNonCliente&apos; method of the class defined in this custom setting to validate the creation.</inlineHelpText>
+    <label>Custom validation in creation</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

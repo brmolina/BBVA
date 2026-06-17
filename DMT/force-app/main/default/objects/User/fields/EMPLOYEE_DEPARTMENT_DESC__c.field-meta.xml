@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EMPLOYEE_DEPARTMENT_DESC__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(DES_LevelUO_3__c,
+					&apos;00040459&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00082167&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00006565&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00004328&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00082168&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00030463&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00004597&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00005748&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00012104&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00044922&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00030514&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00041858&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00006135&apos;,&apos;Global Client Coverage&apos;,
+					&apos;00004255&apos;,&apos;Global Transactional Banking&apos;,
+					&apos;BBVA Desktop GM Standard&apos;,&apos;Global Markets&apos;,
+					&apos;00034590&apos;,&apos;Investment Banking &amp; Finance&apos;,
+					&apos;BBVA Desktop CIB Management&apos;,&apos;CIB&apos;,
+					&apos;00042656&apos;,&apos;Finance&apos;,
+					&apos;00030087&apos;,&apos;Finance&apos;,
+					&apos;00025676&apos;,&apos;Finance&apos;,
+					&apos;00039781&apos;,&apos;Global Markets&apos;,
+					&apos;00025539&apos;,&apos;Global Markets&apos;,
+					&apos;00080347&apos;,&apos;Compliance&apos;,
+					&apos;&apos;,&apos;&apos;,
+					&apos;Default&apos;)</formula>
+    <label>GDT User Department</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

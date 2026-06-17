@@ -1,6 +1,19 @@
 <template>
     <tr class={colourStyle}>
-        <template lwc:if={item.isStandardView}>    
+        <template lwc:if={isSelectionMode}>
+        <td class="slds-text-align_center" style="width: 3.25rem; vertical-align: middle;">
+            <template lwc:if={isSelectable}>
+                <lightning-input
+                    type="checkbox"
+                    variant="label-hidden"
+                    checked={isChecked}
+                    data-id={item.itemKey}
+                    onchange={handleCheckboxChange}>
+                </lightning-input>
+            </template>
+        </td>
+    </template>
+        <template lwc:if={item.isStandardView}>
             <template iterator:it={item.cells} for:index="index">
                 <template lwc:if={it.first}>
                     <td key={it.value.fieldName} data-label={it.value.fieldNameLabel} class="slds-p-left_large">
@@ -17,7 +30,7 @@
                                     <a class="custom-url" onclick={handleOpenModalClick}>{it.value.urlLabel}</a>
                                 </template>
                                 <template lwc:else>
-                                    <lightning-formatted-url value={it.value.urlValue} tooltip={it.value.urlLabel} label={it.value.urlLabel} target="_self"></lightning-formatted-url>
+                                    <lightning-formatted-url value={it.value.urlValue} tooltip={it.value.urlLabel} label={it.value.urlLabel} target="_blank"></lightning-formatted-url>
                                 </template>
                             </template>
                             <template lwc:else>
@@ -71,7 +84,7 @@
     </tr>
     <template lwc:if={expanded}>
         <template for:each={item.subitems} for:item="subitem">
-            <c-dmt_custom_tree_row key={subitem.itemKey} item={subitem} columns={columns} depth={nextDepth}></c-dmt_custom_tree_row>
+            <c-dmt_custom_tree_row key={subitem.itemKey} item={subitem} columns={columns} depth={nextDepth} is-selection-mode={isSelectionMode} selected-row-keys={selectedRowKeys} onrowselect={forwardSelectionEvent}></c-dmt_custom_tree_row>
         </template>
     </template>
     <div class="modal-container">

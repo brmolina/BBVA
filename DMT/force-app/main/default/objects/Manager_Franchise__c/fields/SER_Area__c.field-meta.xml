@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Area__c</fullName>
+    <label>Area</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>MAD CORPORATE GLOBALES</fullName>
+                <default>false</default>
+                <label>MAD CORPORATE GLOBALES</label>
+            </value>
+            <value>
+                <fullName>MAD CORPORATE BEC</fullName>
+                <default>false</default>
+                <label>MAD CORPORATE BEC</label>
+            </value>
+            <value>
+                <fullName>MAD FX TIER 1</fullName>
+                <default>false</default>
+                <label>MAD FX TIER 1</label>
+            </value>
+            <value>
+                <fullName>MAD GC FIXING</fullName>
+                <default>false</default>
+                <label>MAD GC FIXING</label>
+            </value>
+            <value>
+                <fullName>MAD NET CASH TIER 1</fullName>
+                <default>false</default>
+                <label>MAD NET CASH TIER 1</label>
+            </value>
+            <value>
+                <fullName>UKA CORPORATE LDN</fullName>
+                <default>false</default>
+                <label>UKA CORPORATE LDN</label>
+            </value>
+            <value>
+                <fullName>LIS CORPORATE LISBOA</fullName>
+                <default>false</default>
+                <label>LIS CORPORATE LISBOA</label>
+            </value>
+            <value>
+                <fullName>PAR CORPORATE PARIS</fullName>
+                <default>false</default>
+                <label>PAR CORPORATE PARIS</label>
+            </value>
+            <value>
+                <fullName>MIL CORPORATE MILAN</fullName>
+                <default>false</default>
+                <label>MIL CORPORATE MILAN</label>
+            </value>
+            <value>
+                <fullName>DUS CORPORATE DUSSELDORF</fullName>
+                <default>false</default>
+                <label>DUS CORPORATE DUSSELDORF</label>
+            </value>
+            <value>
+                <fullName>MAD DERIVADOS CORPORATES</fullName>
+                <default>false</default>
+                <label>MAD DERIVADOS CORPORATES</label>
+            </value>
+            <value>
+                <fullName>LIS DERIVADOS CORPORATES</fullName>
+                <default>false</default>
+                <label>LIS DERIVADOS CORPORATES</label>
+            </value>
+            <value>
+                <fullName>PAR DERIVADOS CORPORATES</fullName>
+                <default>false</default>
+                <label>PAR DERIVADOS CORPORATES</label>
+            </value>
+            <value>
+                <fullName>MAD DERIVADOS CORPORATES GERMANY</fullName>
+                <default>false</default>
+                <label>MAD DERIVADOS CORPORATES GERMANY</label>
+            </value>
+            <value>
+                <fullName>MAD SEGUROS</fullName>
+                <default>false</default>
+                <label>MAD SEGUROS</label>
+            </value>
+            <value>
+                <fullName>MAD PRODUCTOS ESTRUCTURADOS</fullName>
+                <default>false</default>
+                <label>MAD PRODUCTOS ESTRUCTURADOS</label>
+            </value>
+            <value>
+                <fullName>LIS PROD EST LISBOA</fullName>
+                <default>false</default>
+                <label>LIS PROD EST LISBOA</label>
+            </value>
+            <value>
+                <fullName>PAR PROD EST PARIS</fullName>
+                <default>false</default>
+                <label>PAR PROD EST PARIS</label>
+            </value>
+            <value>
+                <fullName>MIL PROD EST MILAN</fullName>
+                <default>false</default>
+                <label>MIL PROD EST MILAN</label>
+            </value>
+            <value>
+                <fullName>DUS PROD EST DUSSELDORF</fullName>
+                <default>false</default>
+                <label>DUS PROD EST DUSSELDORF</label>
+            </value>
+            <value>
+                <fullName>UKA PROD FLUJO LONDRES</fullName>
+                <default>false</default>
+                <label>UKA PROD FLUJO LONDRES</label>
+            </value>
+            <value>
+                <fullName>UKA MERCADOS EMERGENTES</fullName>
+                <default>false</default>
+                <label>UKA MERCADOS EMERGENTES</label>
+            </value>
+            <value>
+                <fullName>PAR PROD FLUJO PARIS</fullName>
+                <default>false</default>
+                <label>PAR PROD FLUJO PARIS</label>
+            </value>
+            <value>
+                <fullName>LIS PROD FLUJO LISBOA</fullName>
+                <default>false</default>
+                <label>LIS PROD FLUJO LISBOA</label>
+            </value>
+            <value>
+                <fullName>MIL PROD FLUJO MILAN</fullName>
+                <default>false</default>
+                <label>MIL PROD FLUJO MILAN</label>
+            </value>
+            <value>
+                <fullName>MAD DIST CORTO PLAZO</fullName>
+                <default>false</default>
+                <label>MAD DIST CORTO PLAZO</label>
+            </value>
+            <value>
+                <fullName>MAD PRODUCTOS DE FLUJO</fullName>
+                <default>false</default>
+                <label>MAD PRODUCTOS DE FLUJO</label>
+            </value>
+            <value>
+                <fullName>MAD EJ FX INV</fullName>
+                <default>false</default>
+                <label>MAD EJ FX INV</label>
+            </value>
+            <value>
+                <fullName>DUS PROD FLUJO DUSSELDORF</fullName>
+                <default>false</default>
+                <label>DUS PROD FLUJO DUSSELDORF</label>
+            </value>
+            <value>
+                <fullName>MAD FLOW</fullName>
+                <default>false</default>
+                <label>MAD FLOW</label>
+            </value>
+            <value>
+                <fullName>MAD EQ RETAIL FUNDS FLOW</fullName>
+                <default>false</default>
+                <label>MAD EQ RETAIL FUNDS FLOW</label>
+            </value>
+            <value>
+                <fullName>MAD EQ RETAIL FUNDS</fullName>
+                <default>false</default>
+                <label>MAD EQ RETAIL FUNDS</label>
+            </value>
+            <value>
+                <fullName>MAD EQ DELTA 1</fullName>
+                <default>false</default>
+                <label>MAD EQ DELTA 1</label>
+            </value>
+            <value>
+                <fullName>MAD EQ PB ESPAÑA</fullName>
+                <default>false</default>
+                <label>MAD EQ PB ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>UKA EQ PB SUIZA</fullName>
+                <default>false</default>
+                <label>UKA EQ PB SUIZA</label>
+            </value>
+            <value>
+                <fullName>UKA EQ PB</fullName>
+                <default>false</default>
+                <label>UKA EQ PB</label>
+            </value>
+            <value>
+                <fullName>DUS EQ PB NORDICS</fullName>
+                <default>false</default>
+                <label>DUS EQ PB NORDICS</label>
+            </value>
+            <value>
+                <fullName>PAR ESTRUCTURADOS PARIS</fullName>
+                <default>false</default>
+                <label>PAR ESTRUCTURADOS PARIS</label>
+            </value>
+            <value>
+                <fullName>PAR FLOW DERIVATIVES PARIS</fullName>
+                <default>false</default>
+                <label>PAR FLOW DERIVATIVES PARIS</label>
+            </value>
+            <value>
+                <fullName>PAR EQ DELTA 1</fullName>
+                <default>false</default>
+                <label>PAR EQ DELTA 1</label>
+            </value>
+            <value>
+                <fullName>MIL ESTRUCTURADOS MILAN</fullName>
+                <default>false</default>
+                <label>MIL ESTRUCTURADOS MILAN</label>
+            </value>
+            <value>
+                <fullName>MIL FLOW DERIVATIVES MILAN</fullName>
+                <default>false</default>
+                <label>MIL FLOW DERIVATIVES MILAN</label>
+            </value>
+            <value>
+                <fullName>MIL EQ DELTA 1</fullName>
+                <default>false</default>
+                <label>MIL EQ DELTA 1</label>
+            </value>
+            <value>
+                <fullName>LIS ESTRUCTURADOS LISBOA</fullName>
+                <default>false</default>
+                <label>LIS ESTRUCTURADOS LISBOA</label>
+            </value>
+            <value>
+                <fullName>DUS ESTRUCTURADOS DUSSELDORF</fullName>
+                <default>false</default>
+                <label>DUS ESTRUCTURADOS DUSSELDORF</label>
+            </value>
+            <value>
+                <fullName>DUS FLOW DERIVATIVES</fullName>
+                <default>false</default>
+                <label>DUS FLOW DERIVATIVES</label>
+            </value>
+            <value>
+                <fullName>DUS STRUCTURED NORDICS</fullName>
+                <default>false</default>
+                <label>DUS STRUCTURED NORDICS</label>
+            </value>
+            <value>
+                <fullName>DUS EQ DELTA 1</fullName>
+                <default>false</default>
+                <label>DUS EQ DELTA 1</label>
+            </value>
+            <value>
+                <fullName>UKA FLOW DERIVATIVES UK/NOREUROPA</fullName>
+                <default>false</default>
+                <label>UKA FLOW DERIVATIVES UK/NOREUROPA</label>
+            </value>
+            <value>
+                <fullName>UKA FLOW DERIVATIVES DUTCH/NORDICS</fullName>
+                <default>false</default>
+                <label>UKA FLOW DERIVATIVES DUTCH/NORDICS</label>
+            </value>
+            <value>
+                <fullName>UKA FLOW DERIVATIVES GERMANY</fullName>
+                <default>false</default>
+                <label>UKA FLOW DERIVATIVES GERMANY</label>
+            </value>
+            <value>
+                <fullName>UKA EQ DELTA 1</fullName>
+                <default>false</default>
+                <label>UKA EQ DELTA 1</label>
+            </value>
+            <value>
+                <fullName>MAD EQ INSURANCE FLOW</fullName>
+                <default>false</default>
+                <label>MAD EQ INSURANCE FLOW</label>
+            </value>
+            <value>
+                <fullName>MAD EQ INSURANCE</fullName>
+                <default>false</default>
+                <label>MAD EQ INSURANCE</label>
+            </value>
+            <value>
+                <fullName>UKA ESTRUCTURADOS SUIZA</fullName>
+                <default>false</default>
+                <label>UKA ESTRUCTURADOS SUIZA</label>
+            </value>
+            <value>
+                <fullName>UKA ESTRUCTURADOS UK/SUIZA</fullName>
+                <default>false</default>
+                <label>UKA ESTRUCTURADOS UK/SUIZA</label>
+            </value>
+            <value>
+                <fullName>MAD REDES CENTRO</fullName>
+                <default>false</default>
+                <label>MAD REDES CENTRO</label>
+            </value>
+            <value>
+                <fullName>MAD REDES ESTE</fullName>
+                <default>false</default>
+                <label>MAD REDES ESTE</label>
+            </value>
+            <value>
+                <fullName>MAD REDES SUR</fullName>
+                <default>false</default>
+                <label>MAD REDES SUR</label>
+            </value>
+            <value>
+                <fullName>MAD REDES CATALUÑA</fullName>
+                <default>false</default>
+                <label>MAD REDES CATALUÑA</label>
+            </value>
+            <value>
+                <fullName>MAD REDES NOROESTE</fullName>
+                <default>false</default>
+                <label>MAD REDES NOROESTE</label>
+            </value>
+            <value>
+                <fullName>MAD REDES NORTE</fullName>
+                <default>false</default>
+                <label>MAD REDES NORTE</label>
+            </value>
+            <value>
+                <fullName>MAD FX TIER 2</fullName>
+                <default>false</default>
+                <label>MAD FX TIER 2</label>
+            </value>
+            <value>
+                <fullName>MAD NET CASH</fullName>
+                <default>false</default>
+                <label>MAD NET CASH</label>
+            </value>
+            <value>
+                <fullName>MAD BANCA PRIVADA</fullName>
+                <default>false</default>
+                <label>MAD BANCA PRIVADA</label>
+            </value>
+            <value>
+                <fullName>MAD BOLSA DIRECTA</fullName>
+                <default>false</default>
+                <label>MAD BOLSA DIRECTA</label>
+            </value>
+            <value>
+                <fullName>MAD BBVA TRADER</fullName>
+                <default>false</default>
+                <label>MAD BBVA TRADER</label>
+            </value>
+            <value>
+                <fullName>MAD IN VTA CRUZADA REC</fullName>
+                <default>false</default>
+                <label>MAD IN VTA CRUZADA REC</label>
+            </value>
+            <value>
+                <fullName>MAD IN VTA CRUZADA</fullName>
+                <default>false</default>
+                <label>MAD IN VTA CRUZADA</label>
+            </value>
+            <value>
+                <fullName>MAD COMPLEMENTO RED</fullName>
+                <default>false</default>
+                <label>MAD COMPLEMENTO RED</label>
+            </value>
+            <value>
+                <fullName>MAD QUEBRANTOS RED</fullName>
+                <default>false</default>
+                <label>MAD QUEBRANTOS RED</label>
+            </value>
+            <value>
+                <fullName>MAD DIRECCIÓN REDES</fullName>
+                <default>false</default>
+                <label>MAD DIRECCIÓN REDES</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>3</visibleLines>
+</CustomField>

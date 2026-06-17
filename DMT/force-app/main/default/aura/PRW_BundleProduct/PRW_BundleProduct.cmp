@@ -1,0 +1,212 @@
+<aura:component access="global" controller="PRW_RecordCompactCtrl">
+  <aura:attribute name="dataString" type="Object" default="[]"/>
+  <aura:attribute name="data" type="Object" default="[]"/>
+  <aura:attribute name="acc" type="Account" access="global"/>
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="dataProducts" type="Object" default="[]"/>
+  <aura:attribute name="masterDataPreview" type="Object" default="[]"/>
+  <aura:attribute name="dataProductsPreview" type="Object" default="[]"/>
+  <aura:attribute name="dataProductsPreviewInitial" type="Object" default="[]"/>
+  <aura:attribute name="dataProductsAdded" type="Object" default="[]"/>
+  <aura:attribute name="dataNBP" type="Object" default="[]"/>
+  <aura:attribute name="columnsProducts" type="List" />
+  <aura:attribute name="columnsProductsAddProduct" type="List" />
+  <aura:attribute name="columnsNextBestProducts" type="List" />
+  <aura:attribute name="buttonGeneric" type="Boolean" default="true"/>
+  <aura:attribute name="buttonCalculate" type="Boolean" default="true"/>
+  <aura:attribute name="checkboxActivate" type="Boolean" default="true"/>
+  <aura:attribute name="indexNumberFila" type="Object" default="[]"/>
+  <aura:attribute name="checkbox" type="Boolean" default="false"/>
+  <aura:attribute name="errors" type="Object" default="[]"/>
+  <aura:attribute name="articleHeader" type="Boolean" default="false"/>
+  <aura:attribute name="tableLength" type="Boolean" default="false"/>
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="lAccountId" type="String" />
+  <aura:attribute name="isPreview" type="Boolean"/>
+  <aura:attribute name="isBundleAdded" type="Boolean" default="false"/>
+  <aura:attribute name="totalAnnualValue" type="String" default="{!$Label.c.PRW_EuroDefault}"/>
+  <aura:attribute name="totalAnnualValueNumber" type="String" default="{!$Label.c.PRW_EuroDefault}"/>
+  <aura:attribute name="totalAnnualValueInitial" type="String" default="{!$Label.c.PRW_EuroDefault}"/>
+  <aura:attribute name="bundleAddedNumber" type="Decimal" default="0"/>
+  <aura:attribute name="totalAnnualValueNotPreviewNumber" type="Decimal" default="0"/>
+  <aura:attribute name="totalAnnualValueNotPreview" type="String" default="{!$Label.c.PRW_EuroDefault}"/>
+  <aura:attribute name="totalAnnualValueNotPreviewInitial" type="String" default="{!$Label.c.PRW_EuroDefault}"/>
+  <aura:attribute name="removeButtonDisable" type="Boolean" default="true"/>
+  <aura:attribute name="draftValues" type="Object" default="[]"/>
+  <aura:attribute name="draftValuesAdded" type="Object" default="[]"/>
+  <aura:attribute name="buttonReset" type="Boolean" default="true"/>
+  <aura:attribute name="buttonSendInbox" type="Boolean" default="true"/>
+  <aura:attribute name="bundleProductsInitialList" type="Object" default="[]"/>
+  <aura:attribute name="draftValuesArray" type="Object" default="[]"/>
+  <aura:attribute name="draftValuesInd" type="Decimal" default="0"/>
+  <aura:attribute name="totalAnnualPriceBundleInitial" type="String" default="{!$Label.c.PRW_EuroDefault}" />
+  <aura:attribute name="isBundlePreviewEdited" type="Boolean" default="false"/>
+  <aura:attribute name="isProductAddedPreview" type="Boolean" default="false"/>
+  <aura:attribute name="catalog" type="String" />
+  <aura:attribute name="bundleAvailable" type="Boolean" default="true"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+  <aura:registerEvent name="PRW_BundleEvent" type="c:PRW_BundleEvent"/> 
+  <aura:handler event="c:PRW_BundleEvent" action="{!c.bundleSelector}"/>
+  <aura:handler event="c:PRW_CatalogEvent" action="{!c.catalogEvtHandler}"/>
+
+  
+<aura:if isTrue="{!v.isPreview}">
+    <div style="padding: 15px;position: relative" name="bundleOption"  label="bundle">
+      <article style="height: 400px;position: relative" aura:id="articleID" class="slds-card slds-card-custom slds-card_boundary">
+        <div style=" border-bottom-style: solid;border-bottom-width: inherit;background-color: #E6E6E6;padding-bottom: 12px; " class="slds-border_left slds-card__header slds-grid">
+          <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+              <h2 class="slds-card__header-title">
+                <p style="color: #43bbf7;">{!$Label.c.PRW_PreviewTitle}</p>
+                <div style="margin-right: 0;margin-left: auto; border-color: #E6E6E6;" class="slds-float_right">
+                    <lightning:buttonIcon variant="bare" size="medium" class="slds-float_right colorButtonIcon" iconName="utility:comments" alternativeText="Comments" title="Comments" onclick="{!c.viewComment}"/>
+                </div>
+              </h2>
+            </div>
+          </header>
+        </div>
+        <div style="overflow-y: auto; max-height: 245px">
+          <div style="overflow-y:auto;max-height: 150px;margin-left:15px;margin-right:15px;width: auto;min-width: 335px;" aura:id="tableDataBundleProduct">
+            <lightning:datatable
+              aura:id="tablePreviewID"
+              class="table-test tableHeader tableRowPreview rowClass"
+              data="{!v.dataProductsPreview}"
+              columns="{!v.columnsProducts}"
+              keyField="id"
+              hideCheckboxColumn="true"
+              errors="{!v.errorsProducts}"
+              suppressBottomBar="true"
+              draftValues="{!v.draftValues}"
+              oncellchange="{!c.handleCellEdition}"
+              wrapTextMaxLines="1"
+            />
+          </div>
+
+          <aura:if isTrue="{!v.isProductAddedPreview}">
+            <div style="color: #E6E6E6;max-height: 197px;border-style: dotted;margin: 5px;">
+              <div style="color:rgb(68,68,68);display: flex;flex-direction: row;align-items: center;justify-content: space-between;">
+                <p style="font-weight: bold;margin-left: 8px;">{!$Label.c.PRW_SpecialConditionTitle}</p>
+                <lightning:button class="buttonCalculateClass slds-button slds-brand" variant="brand" onclick="{!c.handleCalculate}" label ="Calculate"/>
+              </div>
+              <div style="color:black;overflow-y:auto;max-height: 150px;margin: 8px;width: auto;min-width: 335px;" aura:id="tableDataBundleProduct">
+                <lightning:datatable
+                  aura:id="tablePreviewID"
+                  class="table-test tableHeader tableRowPreview rowClass spanClass"
+                  data="{!v.dataProductsAdded}"
+                  columns="{!v.columnsProductsAddProduct}"
+                  keyField="id"
+                  hideCheckboxColumn="true"
+                  errors="{!v.errorsProducts}"
+                  suppressBottomBar="true"
+                  draftValues="{!v.draftValuesAdded}"
+                  oncellchange="{!c.handleCellEditionAdded}"
+                  onrowaction="{!c.handleRowAction}"
+                  wrapTextMaxLines="1"
+                />
+              </div>
+            </div>
+          </aura:if>
+        </div>
+
+        <div style="top: 305px;width: -webkit-fill-available;position: absolute;margin-left: 15px; margin-right: 15px;padding: 5px;display: flex;justify-content: center;align-items: center;" class="slds-box slds-theme_shade">
+          <div style="width: 40%;">
+            {!$Label.c.PRW_Bundle_TotalAnual}
+          </div>
+          <div style="width: 30%;font-weight: bold;height: 31px;">
+            <lightning:input aura:id="inputColorPreview"  class="removeLabel" style="height: 30px;display: flex;" value="{!v.totalAnnualValue}" oncommit="{!c.changeInput}"/>
+          </div>
+          <div>
+            <lightning:icon class="iconEditClass slds-p-left_x-small" iconName="utility:edit" size="x-small" alternativeText="Approved" title="Approved" />
+          </div>
+        </div>
+        <footer style="padding-left: 0;padding-right: 0;width: -webkit-fill-available;display: flex;border: white;top: 335px;position: absolute;flex-direction: row;align-items: center;justify-content: space-evenly;" class="slds-border_left slds-card__footer">
+          <lightning:button  class="buttonClass slds-button slds-button_neutral" disabled="{!v.buttonReset}" iconName="utility:refresh" iconPosition="left" onclick="{!c.resetBundle}" label ="{!$Label.c.PRW_ResetTitle}"/>
+          <lightning:button  class="slds-button slds-button_neutral" disabled="{!v.buttonSendInbox}" iconName="utility:email" iconPosition="left" onclick="{!c.sendEmailHandler}" label ="{!$Label.c.PRW_Bundle_Send}"/>
+          <lightning:button  class="slds-button slds-button_neutral" iconName="utility:add" iconPosition="left" onclick="{!c.addBundleProduct}" label ="{!$Label.c.PRW_AddProductTitle}"/>
+        </footer>
+      </article>
+    </div>
+  <aura:set attribute="else">
+    <div class="slds-size_1-of-1 slds-p-horizontal_xx-small slds-p-vertical_medium" style="position: relative">
+      <div style="position: relative" name="bundleOption"  label="bundle">
+        <article style="height: 350px;position: relative" aura:id="articleID" class="slds-card slds-card-custom slds-card_boundary">
+          <aura:if isTrue="{!v.articleHeader}">
+            <div style=" border-bottom-style: solid;border-bottom-color: #43BBF7;border-bottom-width: inherit;background-color: #E0ECF8;padding: 5px; " class="slds-border_left slds-card__header slds-grid">
+              <header style="height: 34px;padding-left: 10px;padding-right: 10px;" class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__body">
+                  <h2 style="display: flex;align-items: center;" class="slds-card__header-title">
+                    <div>
+                      <p style="font-size: 9px;font-weight: normal;">BEST OPTION</p>
+                      <p style="font-size: 15px;">{!$Label.c.PRW_Bundle_BundleNumber} {!v.data.bundleName}</p>
+                    </div>
+                    <div style="margin-right: 0;margin-left: auto; border-color: #E6E6E6;" class="slds-float_right">
+                        <lightning:buttonIcon variant="bare" size="medium" class="slds-float_right colorButtonIcon" iconName="utility:comments" alternativeText="Comments" title="Comments" onclick="{!c.viewComment}"/>
+                    </div>
+                  </h2>
+                </div>
+              </header>
+            </div>
+          
+            <aura:set attribute="else">
+              <div aura:id="articleDivID" style=" border-bottom-style: solid;border-bottom-width: inherit;padding-bottom: 12px; " class="slds-border_left slds-card__header slds-grid bundleClassNotSelected">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                  <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                      <div style="display: flex;">
+                        <p>{!$Label.c.PRW_Bundle_BundleNumber} </p>
+                        <p style="margin-left: 5px">{!v.data.bundleName}</p>
+                      </div>
+                      <div style="margin-right: 0;margin-left: auto; border-color: #E6E6E6;" class="slds-float_right">
+                          <lightning:buttonIcon variant="bare" size="medium" class="{!v.bundleAvailable ? 'slds-float_right colorButtonIcon' : 'slds-float_right colorButtonWarning'}" iconName="{!v.bundleAvailable ? 'utility:comments' : 'utility:warning'}" alternativeText="Comments" title="Comments" onclick="{!c.viewComment}"/>
+                      </div>
+                    </h2>
+                  </div>
+                </header>
+              </div>
+            </aura:set>
+          </aura:if>
+
+              <div style="overflow-y:auto;max-height: 148px;margin-top: 15px;margin-left:15px;margin-right:15px;width: auto;min-width: 335px;" aura:id="tableDataBundleProduct">
+                <lightning:datatable
+                  class="table-test tableHeader tableRow colorEditCell"
+                  data="{!v.dataProducts}"
+                  columns="{!v.columnsProducts}"
+                  keyField="id"
+                  hideCheckboxColumn="true"
+                  errors="{!v.errorsProducts}"
+                  suppressBottomBar="true"
+                  draftValues="{!v.draftValues}"
+                  oncellchange="{!c.handleCellEdition}"
+                  wrapTextMaxLines="1"
+                />
+              </div>
+
+              <div style="top: 250px;width: -webkit-fill-available;position: absolute;margin-left: 15px; margin-right: 15px;padding: 5px;display: flex;justify-content: center;align-items: center;" class="slds-box slds-theme_shade">
+                <div style="width: 41%;">
+                {!$Label.c.PRW_Bundle_TotalAnual}
+              </div>
+              <div style="width: 30%;font-weight: bold;height: 31px;">
+                <lightning:input aura:id="inputColorNotPreviewID" class="removeLabel " style="height: 30px;display: flex;" value="{!v.totalAnnualValueNotPreview}" oncommit="{!c.changeInputNotPreview}"/>
+              </div>
+              <div>
+                <lightning:icon class="iconEditClass slds-p-left_x-small" iconName="utility:edit" size="x-small" alternativeText="Approved" title="Approved" />
+              </div>
+            </div>
+
+            <footer style="padding-left: 0;padding-right: 0; width: -webkit-fill-available;display: flex;border: white;top: 280px;position: absolute;flex-direction: row;align-items: center;justify-content: space-evenly;" class="slds-border_left slds-card__footer">
+              <lightning:button class="buttonClass slds-button slds-button_neutral" disabled="{!v.buttonReset}" iconName="utility:refresh" iconPosition="left" onclick="{!c.resetBundle}" label ="{!$Label.c.PRW_ResetTitle}"/>
+              <lightning:button class="slds-button slds-button_neutral" iconName="utility:add" disabled="{!(!v.bundleAvailable)}" iconPosition="left" onclick="{!c.buttonAddHandler}" label ="{!$Label.c.PRW_AddCIFTitle}"/>
+              <lightning:button class="slds-button slds-button_neutral" disabled="{!v.removeButtonDisable}" iconName="utility:delete" iconPosition="left" onclick="{!c.buttonDeleteHandler}" label ="{!$Label.c.PRW_RemoveCIFTitle}"/>
+              <div style="display: flex;">
+                <p style="color: #0176D3;font-weight: bold;font-size: 18px;margin-left: 5px;">{!v.bundleAddedNumber}</p>
+                <p style="color: #0176D3;font-weight: bold;font-size: 18px;margin-left: 5px;">{!$Label.c.PRW_CIFTitle}</p>
+              </div>
+            </footer>
+        </article>
+      </div>
+    </div>
+  </aura:set>
+</aura:if>
+{!v.body}
+</aura:component>

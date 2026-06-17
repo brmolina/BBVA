@@ -5,14 +5,14 @@ public with sharing class DMT_DefaultParticipantRenderer implements DMT_ViewRend
         }
         try {
             String table = '<div>'
-                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">PARTICIPANTS</h2>'
+                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Participants</h2>'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse;">'
                 + '<tr>'
-                + '<td colspan="2" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>PARTICIPANT SELECTION</strong></td>'
+                + '<td colspan="2" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>Participant Selection</strong></td>'
                 + '</tr>'
                 + '<tr>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>PARTICIPANT</strong></td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>ACCESS LEVEL</strong></td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Participant</strong></td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Access Level</strong></td>'
                 + '</tr>';
             for (DMT_TeamMember__c participant : data.participantList) {
                 table += '<tr>'
@@ -44,9 +44,9 @@ public with sharing class DMT_DefaultParticipantRenderer implements DMT_ViewRend
             };
             
             contentListParticipants.add(pageBreak);
-            contentListParticipants.add(DMT_Create_Pdf_Controller.createTitle('PARTICIPANTS'));
+            contentListParticipants.add(DMT_Create_Pdf_Controller.createTitle('Participants'));
             List<List<String>> headers = new List<List<String>>();
-            List<String> listHeaders = new List<String>{'PARTICIPANT', 'ACCESS LEVEL'};
+            List<String> listHeaders = new List<String>{'Participant', 'Access Level'};
             headers.add(listHeaders);
             Map<String, Object> tableParticipantsComponent = new Map<String, Object>();
             List<List<String>> body = new List<List<String>>();
@@ -71,17 +71,17 @@ public with sharing class DMT_DefaultParticipantRenderer implements DMT_ViewRend
     
             //CREATE TITLE SECTION
             List<Object> titleSection = new List<Object>();
-            titleSection = DMT_Create_Pdf_Controller.createTitleSection('PARTICIPANT SELECTION');
+            titleSection = DMT_Create_Pdf_Controller.createTitleSection('Participant Selection');
             contentListParticipants.add(titleSection[0]);
             contentListParticipants.add(titleSection[1]);
             contentListParticipants.add(tableParticipantsComponent);
             componentParticipants.put('content', contentListParticipants);
-            componentParticipants.put('name', 'PARTICIPANTS');
+            componentParticipants.put('name', 'Participants');
     
             return componentParticipants;
         } catch (Exception e){
             System.debug('Error in DMT_DefaultParticipantRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultParticipantRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultParticipantRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

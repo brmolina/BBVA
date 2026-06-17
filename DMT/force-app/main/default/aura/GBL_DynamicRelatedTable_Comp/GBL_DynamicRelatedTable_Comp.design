@@ -1,0 +1,23 @@
+<design:component label="Dynamic Related Table">
+  <design:attribute name="TableHeading" label="Heading for the related table"
+      default="Example of Table Heading" />
+  <design:attribute name="relatedObjectName" label="Related Object"
+      required="true" />
+  <design:attribute name="fieldsToDisplay" label="Fields of the Related Object"
+      required="true" />
+  <design:attribute name="totalRowFieldsToDisplay" label="Fields for Total"
+      default="" />
+  <design:attribute name="labelsToDisplayFromParent" label="Fields from Parent Object for labels"
+      default="" />
+  <design:attribute name="inNumberOfDecimals" label="Format Decimals"
+      datasource="Unformatted,0,1,2"
+      default="2" />
+  <design:attribute name="linkToDetail" label="Link records to detail" />
+  <design:attribute name="parentRecordTypesForDisplay" label="Record Types to display"
+      default="" />
+  <design:attribute name="customLabelAPIname" label="Custom Label for no in Record Types" />
+  <design:attribute name="noRecordscustomLabelAPIname" label="Custom Label for no records"
+      default="" />
+  <design:attribute name="WhereClause" label="The 'where' clause to filter"
+      default="" />
+</design:component>

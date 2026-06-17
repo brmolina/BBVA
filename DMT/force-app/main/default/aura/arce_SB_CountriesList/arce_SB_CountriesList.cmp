@@ -1,0 +1,58 @@
+<aura:component access="global" controller="arce_SB_CountriesListCtrl" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId">
+
+    <aura:attribute name="bankCountriesSBList" type="List" />
+    <aura:attribute name="insurerCountriesSBList" type="List" />
+    <aura:attribute name="isBank" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 75%; max-height: 100rem; width: 75%; max-width: 100rem; } .modal-body{ height : 100px !important; max-height: 100px !important; } .customFooter{ display: inline !important; } .cuf-content { padding: 0 0rem !important;
+        } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; }
+    </aura:html>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme_default">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Countries list </h1>
+            </div>
+            <div class="slds-scrollable_y" tabindex="0">
+                <div class="slds-modal__content slds-p-around_medium">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col">
+                                    <div class="slds-truncate">Country Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">Country Iaso Code</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.isBank}">
+                                    <aura:iteration items="{!v.bankCountriesSBList}" var="status" indexVar="key">
+                                        <tr class="slds-hint-parent">
+                                            <td>{!status.key}</td>
+                                            <td>{!status.value}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                    <aura:set attribute="else">
+                                        <aura:iteration items="{!v.insurerCountriesSBList}" var="status" indexVar="key">
+                                        <tr class="slds-hint-parent">
+                                            <td>{!status.key}</td>
+                                            <td>{!status.value}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                    </aura:set>
+                                </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral slds-float_left" onclick="{!c.handleOnCancel}" aria-label="Close">Close</button>
+            </div>
+        </div>
+        {!v.body}
+    </section>
+</aura:component>

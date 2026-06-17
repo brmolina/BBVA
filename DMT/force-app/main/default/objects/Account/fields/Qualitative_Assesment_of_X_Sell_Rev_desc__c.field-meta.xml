@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Qualitative_Assesment_of_X_Sell_Rev_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Qualitative Assesment of X-Sell Revenues</label>
+    <length>1319</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

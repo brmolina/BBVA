@@ -1,0 +1,20 @@
+.THIS.customDiv #deprecated {
+  background: rgba(227, 227, 227, 1);
+}
+
+.THIS .redArrow svg {
+  fill: red;
+}
+
+.THIS .greenArrow svg {
+  fill: green;
+}
+
+.THIS .srollWrap {
+  width: 100%;
+  border-radius: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.THIS.versionSelect{
+    margin-bottom:18px;
+}

@@ -956,9 +956,9 @@ Global with sharing class CommercialAlertTriggerHandler {
       }
 
       final List <Account> accountsIds = new List <Account>([
-        SELECT Id, SER_CClient__c, Client_STAR_ID__c
+        SELECT Id, g_customer_id__c, Client_STAR_ID__c
         FROM Account
-        WHERE SER_CClient__c IN :setParticName OR Client_STAR_ID__c IN :setClientStar
+        WHERE g_customer_id__c IN :setParticName OR Client_STAR_ID__c IN :setClientStar
       ]);
 
 
@@ -974,8 +974,8 @@ Global with sharing class CommercialAlertTriggerHandler {
       final Map<String, String> mapExtId = new Map <String, String>();
 
       for(Account acc : accountsIds) {
-        if(acc.SER_CClient__c != null && mapExtId.get(acc.SER_CClient__c) == null) {
-          mapExtId.put(acc.SER_CClient__c, acc.Id);
+        if(acc.g_customer_id__c != null && mapExtId.get(acc.g_customer_id__c) == null) {
+          mapExtId.put(acc.g_customer_id__c, acc.Id);
         }
         if(acc.Client_STAR_ID__c != null && mapExtId.get(acc.Client_STAR_ID__c) == null) {
           mapExtId.put(acc.Client_STAR_ID__c, acc.Id);
@@ -1022,11 +1022,11 @@ Global with sharing class CommercialAlertTriggerHandler {
 
         }
         system.debug('clientIdSet: ' + clientIdSet);
-        final Map<Id, Account> clientID = new Map<Id, Account>([SELECT Id, SER_CClient__c FROM Account WHERE Id IN :clientIdSet]);
+        final Map<Id, Account> clientID = new Map<Id, Account>([SELECT Id, g_customer_id__c FROM Account WHERE Id IN :clientIdSet]);
         system.debug('clientID: ' + clientID);
         for(almd__Commercial_Alert__c alert : triggerNew) {
-          if(alert.almd__participant_id__c != null && clientID.get(alert.almd__participant_id__c).SER_CClient__c != null && alert.almd__alert_sub_stage_type__c != 'Discarded') {
-            alert.Name = alert.Name + '_' + clientID.get(alert.almd__participant_id__c).SER_CClient__c;
+          if(alert.almd__participant_id__c != null && clientID.get(alert.almd__participant_id__c).g_customer_id__c != null && alert.almd__alert_sub_stage_type__c != 'Discarded') {
+            alert.Name = alert.Name + '_' + clientID.get(alert.almd__participant_id__c).g_customer_id__c;
           }
         }
       }

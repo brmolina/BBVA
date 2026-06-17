@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Custom Metadata Type to control account visibility configuration including visibility days and exempt record types</description>
+    <label>Visibility Configuration</label>
+    <pluralLabel>Visibility Configurations</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

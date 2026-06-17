@@ -1,0 +1,17 @@
+<template>
+    <template if:true={enabled}>
+        <lightning-card icon-name="standard:bot_training" title="Fast Actions" hide-header="" show-footer="false">
+            <div class="buttons-grid">
+                <template for:each={buttons} for:item="button">
+                    <lightning-button
+                        key={button.key}
+                        data-key={button.key}
+                        label={button.label}
+                        onclick={handleClick}
+                        icon-name={button.icon}>
+                    </lightning-button>
+                </template>
+            </div>
+        </lightning-card>
+    </template>    
+</template>

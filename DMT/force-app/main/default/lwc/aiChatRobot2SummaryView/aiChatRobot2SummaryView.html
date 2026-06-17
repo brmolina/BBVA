@@ -1,0 +1,77 @@
+<template>
+    <div class={containerClass}>
+        <!-- Resizer handle -->
+        <div class="resizer" onmousedown={handleMouseDown} ontouchstart={handleTouchStart}></div>
+        
+        <div class="summary-sidebar">
+            <!-- Header del sidebar -->
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">{summaryTitle}</h2>
+                <div class="header-actions">
+                    <template if:true={showCopyAllInHeader}>
+                        <button class="copy-full-btn" onclick={handleCopyAll} title="Copy full report">
+                            <span class="sr-only">{copyAllLabel}</span>
+                            <svg class="copy-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M8 4V16C8 17.1046 8.89543 18 10 18H18C19.1046 18 20 17.1046 20 16V7.24162C20 6.7034 19.7831 6.18789 19.3982 5.81161L16.6569 3.10714C16.2842 2.73836 15.7873 2.52892 15.2676 2.51598L10 2.5C8.89543 2.5 8 3.39543 8 4.5V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 18V20.5C16 21.6046 15.1046 22.5 14 22.5H6C4.89543 22.5 4 21.6046 4 20.5V9.5C4 8.39543 4.89543 7.5 6 7.5H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </template>
+                    <button class="close-button" onclick={handleClose} title="Close summary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content del sidebar -->
+            <div class="sidebar-content">
+
+                <!-- Loading state -->
+                <template if:true={isLoading}>
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p class="loading-text">{label.aiChatRobot2_GeneratingReport}</p>
+                    </div>
+                </template>
+
+                <!-- Summary messages -->
+                <template if:false={isLoading}>
+                    <template if:true={hasSummaryBlocks}>
+                        <template for:each={summaryBlocksWithState} for:item="block" for:index="idx">
+                            <div key={block.id} class={block.rowClass} data-idx={idx}>
+                                <div class="section-header-row">
+                                    <h3 class="section-title">{block.title}</h3>
+                                    <button
+                                        class="copy-section-btn"
+                                        data-block-id={block.id}
+                                        onmouseenter={handleSectionCopyHoverIn}
+                                        onmouseleave={handleSectionCopyHoverOut}
+                                        onclick={handleCopySection}
+                                        title="Copy this section"
+                                    >
+                                        <span class="sr-only">{block.copyLabel}</span>
+                                        <svg class="copy-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path d="M8 4V16C8 17.1046 8.89543 18 10 18H18C19.1046 18 20 17.1046 20 16V7.24162C20 6.7034 19.7831 6.18789 19.3982 5.81161L16.6569 3.10714C16.2842 2.73836 15.7873 2.52892 15.2676 2.51598L10 2.5C8.89543 2.5 8 3.39543 8 4.5V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M16 18V20.5C16 21.6046 15.1046 22.5 14 22.5H6C4.89543 22.5 4 21.6046 4 20.5V9.5C4 8.39543 4.89543 7.5 6 7.5H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="content-text text"></div>
+                            </div>
+                        </template>
+                    </template>
+                    <template if:false={hasSummaryBlocks}>
+                        <div class="empty-state">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>{label.aiChatRobot2_Empty_Summary}</p>
+                        </div>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

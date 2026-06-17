@@ -1,0 +1,36 @@
+img.myRelatedListIconAccount{
+    background-image: url(/img/icon/t4v35/standard/account_60.png);
+    content: url(/img/icon/t4v35/standard/account_60.png);
+    background-size: contain;
+    background-color: #7f8de1;
+    background-position: 0 0;
+    position: relative;
+    border-radius: .125rem;
+    margin-bottom: 0px;
+    margin-left: 0px;    
+}
+
+img.myRelatedListIconContact{
+    background-image: url(/img/icon/t4v35/standard/contact_60.png);
+    content: url(/img/icon/t4v35/standard/contact_60.png);
+    background-size: contain;
+    background-color: #a094ed;
+    background-position: 0 0;
+    position: relative;
+    border-radius: .125rem;
+    margin-bottom: -0px;    
+    margin-left: 0px;    
+}  
+
+
+img.myRelatedListIconLead{
+    background-image: url(/img/icon/t4v35/standard/lead_60.png);
+    content: url(/img/icon/t4v35/standard/lead_60.png);
+    background-size: contain;
+    background-color: #f88962;
+    background-position: 0 0;
+    position: relative;
+    border-radius: .125rem;
+    margin-bottom: -0px;    
+    margin-left: 0px;    
+}

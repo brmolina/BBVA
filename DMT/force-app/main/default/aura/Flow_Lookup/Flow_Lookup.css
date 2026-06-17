@@ -1,0 +1,11 @@
+.THIS .slds-dropdown-trigger .slds-dropdown {
+    max-height: 200px;
+    min-height:20px;
+    overflow: auto;
+    font-size:12px;
+}
+
+.THIS .separate-sm {
+	padding-top: 10px;
+	background-color: red;
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Critical_Issue_Email_GNC__c</fullName>
+    <defaultValue>&quot;operation.cib.es@bbva.com&quot;</defaultValue>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Critical Issue Email GNC</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Email</type>
+    <unique>false</unique>
+</CustomField>

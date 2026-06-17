@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FX</fullName>
+    <columns>NAME</columns>
+    <columns>Asset_Type__c</columns>
+    <columns>Product__c</columns>
+    <columns>Currency__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Asset_Type__c</field>
+        <operation>equals</operation>
+        <value>FX</value>
+    </filters>
+    <label>FX</label>
+</ListView>

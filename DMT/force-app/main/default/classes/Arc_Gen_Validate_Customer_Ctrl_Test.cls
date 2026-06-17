@@ -68,6 +68,7 @@ public without sharing class Arc_Gen_Validate_Customer_Ctrl_Test {
     * --------------------------------------------------------------------------------------
     **/
     @testSetup static void setup() {
+        arce.Arc_UtilitiesToTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{GROUP_ID,SUBSIDIARY_ID,SUBSIDIARY_ID2});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get(GROUP_ID);

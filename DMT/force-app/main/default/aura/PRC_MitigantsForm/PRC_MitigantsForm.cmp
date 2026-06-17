@@ -1,0 +1,225 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 08-04-2021
+  @last modified by  : Global Desktop
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-24-2021   David Rodríguez   Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="PRC_PricingDetails_CONTROLLER">
+  <aura:attribute name="pricingDetailsId" type="Id" access="public"/>
+  <aura:attribute name="pricingMitigantId" type="Id" access="public"/>
+  <aura:attribute name="picklists" type="object" />
+
+  <aura:attribute name="selectedValue" type="String" access="PRIVATE" />
+  <aura:attribute name="externalValue" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue1" type="String" access="PRIVATE" />
+  <aura:attribute name="ratingValue" type="String" access="PRIVATE" />
+
+  <aura:attribute name="expirationValue" type="String" access="PRIVATE" />
+  <aura:attribute name="requiredFieldsMessage" type="String" access="PRIVATE" />
+  <aura:attribute name="displayError" type="Boolean" default="false" access="PRIVATE" />
+
+  <aura:attribute name="showSameParent" type="Boolean" default="false" access="PRIVATE" />
+  <aura:attribute name="showCoverCountry" type="Boolean" default="false" access="PRIVATE" />
+  <aura:attribute name="showIsEuropean" type="Boolean" default="false" access="PRIVATE" />
+  <aura:attribute name="showDistinctCncy" type="Boolean" default="false" access="PRIVATE" />
+
+
+  <aura:registerEvent name="addMitigantEvent" type="c:PRC_MitigantEvent" />
+  <aura:handler name="vieweditevt" event="c:PRC_ViewEditEvent" action="{!c.doViewEdit}" />
+
+  <lightning:recordEditForm objectApiName="PRC_Mitigant__c" aura:id="pricemitigantform" recordId="{!v.pricingMitigantId}" onsuccess="{!c.clearData}">
+
+    <aura:if isTrue="{!v.displayError}">
+      <div class="slds-notify_container slds-is-relative">
+        <div role="alert" class="slds-notify slds-notify_toast slds-theme_error">
+          <div class="slds-notify__content">
+            <h2 class="slds-text-heading_small">{!v.requiredFieldsMessage}</h2>
+          </div>
+        </div>
+      </div>
+    </aura:if>
+
+
+    <H1 class="text-large">NEW MITIGATING FACTORS</H1><br />
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Mitigating Type</span>
+      </div>
+      <div class="inputitemPicklist">
+        <lightning:inputField fieldName="gf_warranty_type__c" aura:id="mitigantingTypeId" />
+      </div>
+    </div>
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Mitigating</span>
+      </div>
+      <div class="inputitemPicklist">
+        <lightning:inputField fieldName="gf_subwarranty_name__c" aura:id="mitigantingId" onchange="{!c.changeMitiganting}"/>
+      </div>
+    </div>
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Conterparty Mitigating</span>
+      </div>
+      <div class="inputitemPicklist">
+        <lightning:inputField fieldName="DES_Client_Mitigant__c" aura:id="conterpartyId" />
+      </div>
+    </div>
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>External Rating</span>
+      </div>
+      <div class="inputitem">
+        <aura:iteration items="{!v.picklists}" var="picklistwanted">
+          <aura:if isTrue="{!picklistwanted.id=='RATING SHORT SCALE'}">
+            <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId" value="{!v.selectedValue}">
+              <option text="--None--" value=""/>
+              <aura:iteration items="{!picklistwanted.records}" var="option">
+                <option text="{!option.name}" value="{!option.name}" selected="{!option.name==v.externalValue}"/>
+              </aura:iteration>
+            </lightning:select>
+          </aura:if>
+        </aura:iteration>
+        <lightning:inputField fieldName="gf_external_rating_agncy_type__c" class="slds-hide" value="{!v.selectedValue}" aura:id="externalRatingId" />
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Rating</span>
+      </div>
+      <div class="inputitem">
+        <aura:iteration items="{!v.picklists}" var="picklistwanted">
+          <aura:if isTrue="{!picklistwanted.id=='RATING LARGE SCALE'}">
+            <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId" value="{!v.selectedValue1}">
+              <option text="--None--" value=""/>
+              <aura:iteration items="{!picklistwanted.records}" var="option">
+                <option text="{!option.name}" value="{!option.name}" selected="{!option.name==v.ratingValue}"/>
+              </aura:iteration>
+            </lightning:select>
+          </aura:if>
+        </aura:iteration>
+        <lightning:inputField fieldName="gf_warranty_ptt_rating_type__c" class="slds-hide" value="{!v.selectedValue1}" aura:id="ratingId" />
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Country</span>
+      </div>
+      <div class="inputitemPicklist">
+        <lightning:inputField fieldName="gf_offer_warranty_country_type__c" aura:id="countryId" />
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Political Percentage</span>
+      </div>
+      <div class="inputitem">
+        <lightning:inputField fieldName="gf_cty_rqst_wrrnty_risk_per__c" aura:id="polPercentageId" />
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Commercial Percentage</span>
+      </div>
+      <div class="inputitem">
+        <lightning:inputField fieldName="gf_mit_rk_rqst_warranty_per__c" aura:id="comPercentageId" />
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Expiration</span>
+      </div>
+      <div class="inputitem">
+        <lightning:inputField fieldName="gf_expir_wrrnty_operation_name__c" aura:id="expirationId" onchange="{!c.onChangeExpiration}"/>
+      </div>
+    </div>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>End Date</span>
+      </div>
+      <div class="inputitem">
+        <lightning:inputField fieldName="gf_end_guarantee_date__c" aura:id="endDateId" disabled="{!if(v.expirationValue!='LESS_THAN_DEAL_MATURITY',true,false)}"/>
+      </div>
+    </div>
+
+    <aura:if isTrue="{!v.showSameParent}">
+      <div class="borderTop">
+        <div class="inputitem">
+          <span>Mitigating and borrower belong to the same parent company?</span>
+        </div>
+        <div class="inputitem">
+          <lightning:inputField fieldName="gf_gtr_debtor_group_ind_type__c" aura:id="sameParentId"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.showCoverCountry}">
+      <div class="borderTop">
+        <div class="inputitem">
+          <span>If country risk exists, does the mitigating cover the Country Risk?</span>
+        </div>
+        <div class="inputitem">
+          <lightning:inputField fieldName="gf_cvr_rk_cty_wrrnty_ind_type__c" aura:id="countryRiskCoverageId"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.showIsEuropean}">
+      <div class="borderTop">
+        <div class="inputitem">
+          <span>Is the Export Credit Agency European?</span>
+        </div>
+        <div class="inputitem">
+          <lightning:inputField fieldName="gf_exprt_cr_eur_agncy_ind_type__c" aura:id="agencyEuropeanId"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.showDistinctCncy}">
+      <div class="borderTop">
+        <div class="inputitem">
+          <span>Distinct currency</span>
+        </div>
+        <div class="inputitem">
+          <lightning:inputField fieldName="gf_oppy_mit_dif_ccy_ind_type__c" aura:id="distinctCurrencyId" />
+        </div>
+      </div>
+    </aura:if>
+
+    <div class="borderTop">
+      <div class="inputitem">
+        <span>Comments</span>
+      </div>
+      <div class="inputitem">
+        <lightning:inputField fieldName="gf_mitigating_comment_desc__c" aura:id="commentsId" />
+      </div>
+    </div>
+
+    <lightning:inputField fieldName="Pricing_Detail__c" class="slds-hide" value="{!v.pricingDetailsId}" aura:id="pricingDetailsId" />
+
+
+
+
+  </lightning:recordEditForm>
+
+  <button class="slds-button slds-button--neutral" onclick="{!c.checkData}">
+    <lightning:buttonIcon iconName="utility:add" variant="bare" alternativeText="Add/Edit Mitigant" title="Add/Edit Mitigant" class="icon-color" />
+    &nbsp;&nbsp;Add/Edit Mitigant</button>
+    <button class="slds-button slds-button--neutral" onclick="{!c.clearData}">
+      <lightning:buttonIcon iconName="utility:clear" variant="bare" alternativeText="Clear" title="Clear" class="icon-color" />
+      &nbsp;&nbsp;Clear</button>
+
+  <c:PRC_PriceMitigantsDetails pricingDetailsId="{!v.pricingDetailsId}" mitigantForm="true"/>
+
+
+</aura:component>

@@ -1,4 +1,4 @@
-public without sharing class DMT_OpportunityCloneUtil {
+public with sharing class DMT_OpportunityCloneUtil {
    public class CloneInput {
         @InvocableVariable
         public Opportunity originalOpportunity;
@@ -48,6 +48,8 @@ public without sharing class DMT_OpportunityCloneUtil {
                 newOpp.OwnerId = UserInfo.getUserId();
                 newOpp.DMT_Sanction__c = null;
                 newOpp.DMT_Parent_Opportunity__c = null;
+              //  newOpp.DMT_Ready_to_close__c = false;
+                newOpp.DMT_Opp_User_Lock__c = null;
                 insert newOpp;
                 result.newOpportunityId = newOpp.Id;
 
@@ -179,4 +181,7 @@ public without sharing class DMT_OpportunityCloneUtil {
         System.debug('Resultado lineId: ' + lineId);
         return lineId;
     }
+
+
+
 }

@@ -1,0 +1,7 @@
+<design:component>
+    <design:attribute name="OpportunityInfo" label="Query Name"
+      datasource="OpenLastYear,WonLastYear,LostLastYear,WonLast4M,LostLast4M,CreatedLastYear,CreatedLast4M"
+      default="WonLastYear" />
+    <design:attribute name="fieldLabels" label="Titles for the cards, separated by comma"
+      default="Avge. revenues by won opportunity VS Last Year" />
+</design:component>

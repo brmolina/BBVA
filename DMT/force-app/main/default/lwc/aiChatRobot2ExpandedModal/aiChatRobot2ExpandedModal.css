@@ -1,0 +1,193 @@
+/* aiChatRobot2ExpandedModal - Modal de pantalla completa con barra lateral de resumen */
+
+:host {
+    --ai-chat-footer-height: 0px;
+    --summary-width: 420px;
+    /* Variables tipográficas que deben cascadear a todos los child components */
+    --cib-font: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    --cib-text: #0f1b4c;
+    --cib-muted: #4b5563;
+    --cib-hr: #e6eefc;
+    --cib-code-bg: #f6f8fa;
+    --cib-code-border: #d0d7de;
+    --cib-blockquote-border: #0b57d0;
+    --cib-blockquote-bg: #f8f9fa;
+    font-family: var(--cib-font);
+    display: block;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- Disposicion de dos columnas --- */
+.expanded-layout {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Cuando el resumen esta abierto, mostrar la barra lateral */
+.expanded-layout.summary-open .summary-column {
+    width: var(--summary-width);
+    min-width: 280px;
+    opacity: 1;
+    border-left: 1px solid #e5e5e5;
+}
+
+/* Cuando el resumen esta cerrado, ocultar la barra lateral */
+.expanded-layout .summary-column {
+    width: 0;
+    min-width: 0;
+    opacity: 0;
+    border-left: none;
+    overflow: hidden;
+}
+
+/* --- Columna de chat (izquierda) --- */
+.chat-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: flex 0.25s ease;
+}
+
+/* --- Mensajes --- */
+.messages-wrapper {
+    flex: 1 1 0%;
+    overflow: hidden;
+    background: #ffffff;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* El host element de MessageList debe estirarse y limitar su alto para que
+   .list-root (overflow-y:auto) sea el unico contenedor con scroll */
+.messages-wrapper c-ai-chat-robot2-message-list {
+    --ai-chat-footer-height: 0px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0%;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* --- Entrada fija en la parte inferior --- */
+.input-sticky {
+    flex: 0 0 auto;
+    background: #ffffff;
+    padding: 16px 24px 12px 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.language-selector-slot {
+    transition: all 0.3s ease;
+}
+
+.language-selector-slot:empty {
+    display: none;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+/* --- Columna de resumen (barra lateral derecha) --- */
+.summary-column {
+    height: 100%;
+    overflow: hidden;
+    transition: width 0.25s ease, opacity 0.25s ease;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* --- Acciones del encabezado --- */
+.chat-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 16px 4px 16px;
+    flex: 0 0 auto;
+    min-height: 0;
+}
+
+.chat-header-actions:empty {
+    display: none;
+    padding: 0;
+}
+
+.request-report-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a73e8;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 5px 14px;
+    border-radius: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.request-report-button:hover {
+    background: #1557b0;
+}
+
+.request-report-button:disabled {
+    background: #9ca3af;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.request-report-button:disabled:hover {
+    background: #9ca3af;
+}
+
+.summary-toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #1a73e8;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.2s ease;
+}
+
+.summary-toggle-button:hover {
+    background: #e8f0fe;
+    border-radius: 4px;
+}
+
+.summary-toggle-button svg {
+    color: #1a73e8;
+    width: 24px;
+    height: 24px;
+}

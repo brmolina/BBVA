@@ -1,0 +1,16 @@
+<design:component>
+   	<design:attribute name="owner" label="codOwner" />
+	<design:attribute name="status" label="status" />
+    <design:attribute name="name" label="Opp Name" />
+    <design:attribute name="codOpportunity" label="codOpportunity" />
+    <design:attribute name="additionalComments" label="additionalComments" />
+    <design:attribute name="bbvaCountriesParticipants" label="bbvaCountriesParticipants" />
+
+    <design:attribute name="descReasonLostDeal" label="descReasonLostDeal" />
+    <design:attribute name="needDescription" label="needDescription" />
+    <design:attribute name="bookingGeography" label="bookingGeography" />  
+    <design:attribute name="operation" label="operation" required="true"/>
+ 	<design:attribute name="error" label="error" />
+    <design:attribute name="endpoint" label="endpoint" />
+    <design:attribute name="isError" label="isError" />
+</design:component>

@@ -1,0 +1,13 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component that show the hotel projection table</b></h5>
+    <p>attribute columns: contains the columns of the table</p>
+    <p>attribute rows: contains the rows of the table</p>
+    <p>attribute showTable: Show/Hide Table</p>
+    <p>attribute showButton: Show/Hide edit button</p>
+    <p><code>c:Arc_Gen_Hotel_Projection_Table</code></p>
+  </aura:description>
+  <aura:example name="Arc_Gen_Hotel_Projection_Table" ref="c:Arc_Gen_Hotel_Projection_Table" label="Hotel Projection Table">
+    <p>Component that show the hotel projection table</p>
+  </aura:example>
+</aura:documentation>

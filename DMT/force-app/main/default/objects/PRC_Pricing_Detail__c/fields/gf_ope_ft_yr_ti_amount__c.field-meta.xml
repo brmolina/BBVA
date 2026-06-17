@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_ope_ft_yr_ti_amount__c</fullName>
+    <description>Monetary amount associated to the income</description>
+    <externalId>false</externalId>
+    <label>Income Next 12 months (thousand)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

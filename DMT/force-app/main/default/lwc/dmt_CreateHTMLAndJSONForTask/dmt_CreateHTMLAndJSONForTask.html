@@ -1,5 +1,18 @@
 <template>
-    <lightning-card></lightning-card>
+    <template lwc:if={isProcessingClosure}>
+        <div class="full-screen-overlay">
+            <div class="spinner-container">
+                <lightning-spinner 
+                    alternative-text="Navigating..." 
+                    size="large">
+                </lightning-spinner>
+                
+                <p class="spinner-message">Navigating to Case Tasks, please do not close this window...</p>
+            </div>
+        </div>
+    </template>
+
     <c-dmt_subfeature_chart hidden></c-dmt_subfeature_chart>
     <c-dmt_profitability_chart hidden profitability={profitability}></c-dmt_profitability_chart>
+    <c-pdf-generator></c-pdf-generator>
 </template>

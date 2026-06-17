@@ -1,0 +1,9 @@
+.THIS .clsButtonIcon {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.THIS .clsRecordsPage {
+  display: flex;
+  align-items: center;
+}

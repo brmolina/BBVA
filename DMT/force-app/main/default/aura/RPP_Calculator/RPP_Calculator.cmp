@@ -1,0 +1,1245 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="RPP_Calculator_Ctrl">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="waiting" type="Boolean" default="false"/>
+    <aura:attribute name="RPPCalculator" type="Object"/>
+    <aura:attribute name="RPPCalculatorFields" type="Map"/>
+    <aura:attribute name="RPPCalculatorDebtors" type="List" default="[]"/>
+    <aura:attribute name="RPPCalculatorDebtorFields" type="Map"/>
+    <aura:attribute name="RPPCalculatorSimulation" type="Object"/>
+    <aura:attribute name="RPPCalculatorSimFields" type="Map"/>
+    <aura:attribute name="RPPCalculatorSimulationDebtors" type="List" default="[]"/>
+    <aura:attribute name="RPPCalculatorSimDebtorFields" type="Map"/>
+    <aura:attribute name="hasSimulations" type="Boolean" default="false"/>
+    <aura:attribute name="selectedTab" type="String" default="googlesheet"/>
+    <aura:attribute name="selectedSimTab" type="String" default="rppport"/>
+    <aura:attribute name="errorsList" type="List" default="[]"/>
+    <aura:attribute name="hasErrors" type="Boolean" default="false" />
+    <aura:attribute name="simulationsWrapperList" type="List" default="[]"/>
+    <aura:attribute name="selectedSimulation" type="String"/>
+    <aura:attribute name="canSimulate" type="Boolean"/>
+    <aura:attribute name="showSimulationButtons" type="Boolean"/>
+    <aura:attribute name="showSimulationResults" type="Boolean"/>
+    <aura:attribute name="hasPermission" type="Boolean"/>
+    <aura:attribute name="isGoal1" type="Boolean"/>
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="selectedValue" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="c:RPP_CalculatorRefresh_evt" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.waiting}">
+        <lightning:spinner variant="brand" />
+    </aura:if>
+    <aura:if isTrue="{!v.hasErrors}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small">
+                <lightning:icon iconName="utility:error" size="xx-small" variant="inverse"/>
+            </span>
+            <h2>{!$Label.c.RPP_Load_Gsheet_Error}</h2>
+        </div>
+        <div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_GOOGLE_SHEET_TAB}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_GOOGLE_SHEET_CELL}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_DEBTORS_ROW}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_TYPE_COLUMN}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_FIELD}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_ERROR}</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.RPP_SUPPORTED_VALUES}</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.errorsList}" var="error">
+                        <tr class="slds-hint-parent">
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.tab}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.cell}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.row}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.type}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.field}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.message}"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <ui:outputText value="{!error.values}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-page-header">
+                <div class="slds-page-header__row">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span class="slds-page-header__title slds-truncate" title="Rohde Corp - 80,000 Widgets">{!v.RPPCalculator.Name}</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                                <p class="slds-page-header__name-meta">Created by {!v.RPPCalculator.CreatedBy.Name} on <ui:outputDate value="{!v.RPPCalculator.CreatedDate}"/></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <lightning:tabset selectedTabId="{!v.selectedTab}" variant="default">
+                <lightning:tab label="{!$Label.c.RPP_CONFIG}" id="config">
+                    <article>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <ul class="slds-grid slds-wrap slds-grid_pull-padded">
+                                <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                        <div class="slds-media__body">
+                                            <div class="slds-tile__detail">
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <thead>
+                                                        <tr class="slds-line-height_reset">
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">
+                                                                    {!$Label.c.RPP_Config_Section_1}
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <tbody>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.target__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Target__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.target_rating_sim__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Target_Rating_Sim__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.prefixed_first_loss__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Prefixed_First_Loss__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <thead>
+                                                        <tr class="slds-line-height_reset">
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">
+                                                                    {!$Label.c.RPP_Config_Section_2}
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <tbody>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.obligors_debtors_number__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Obligors_Debtors_Number__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.average_portfolio_dilution__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Average_Portfolio_Dilution__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.max_unrated_limit__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Max_Unrated_Limit__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.unrated_pd_equivalency__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Unrated_PD_Equivalency__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.seller_internal_rating__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Seller_Internal_Rating__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.mean_dilution__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Mean_Dilution__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.mean_dilution_deviation__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Mean_Dilution_Deviation__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </li>
+                                <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-2">
+                                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                        <div class="slds-media__body">
+                                            <div class="slds-tile__detail">
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <thead>
+                                                        <tr class="slds-line-height_reset">
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">
+                                                                    {!$Label.c.RPP_Config_Section_3}
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <tbody>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.insurer__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Insurer__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.insurer_limit__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Insurer_Limit__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.insurer_name__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Insurer_Name__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.insurer_internal_rating__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputText value="{!v.RPPCalculator.Insurer_Internal_Rating__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <thead>
+                                                        <tr class="slds-line-height_reset">
+                                                            <th scope="col">
+                                                                <div class="slds-truncate">
+                                                                    {!$Label.c.RPP_Config_Section_4}
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                    <tbody>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.number_of_simulations__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Number_Of_Simulations__c}"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.lgd_capital__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.LGD_Capital__c}"/>%
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="slds-hint-parent">
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <ui:outputText value="{!v.RPPCalculatorFields.maturity__c}"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate slds-text-align_right">
+                                                                    <ui:outputNumber value="{!v.RPPCalculator.Maturity__c}" format="#0.00"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </li>
+                            </ul>
+                        </div>
+                    </article>
+                </lightning:tab>
+                <lightning:tab label="{!$Label.c.RPP_Google_Sheet}" id="googlesheet">
+                    <div>
+                        <aura:if isTrue="{!v.hasPermission}">
+                            <aura:if isTrue="{!v.showSimulationButtons}">
+                                <div class="slds-text-align_center">
+                                    <lightning:button class="slds-button_brand" label="{!$Label.c.RPP_Get_Ratings}" onclick="{!c.handleOnGetRatings}"/>
+                                </div>
+                            </aura:if>
+                        </aura:if>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorFields.tax_id__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorFields.seller_assignor__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate"></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value="{!v.RPPCalculator.Tax_Id__c}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value="{!v.RPPCalculator.Seller_Assignor__c}"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <ui:outputText value=""/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <br></br>
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate slds-text-align_right">{!v.RPPCalculatorDebtorFields.number__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate slds-text-align_right">{!v.RPPCalculatorDebtorFields.insurer_internal_rating__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorDebtorFields.tax_id__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorDebtorFields.lei__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorDebtorFields.obligor_debtor__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!v.RPPCalculatorDebtorFields.currency__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate slds-text-align_right">{!v.RPPCalculatorDebtorFields.total_amount_local__c}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate slds-text-align_right">{!v.RPPCalculatorDebtorFields.authorised_limit_local__c}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.RPPCalculatorDebtors}" var="RPPCalculatorDebtor">
+                                    <tr class="slds-hint-parent">
+                                        <td>
+                                            <div class="slds-truncate slds-text-align_right">
+                                                <ui:outputNumber value="{!RPPCalculatorDebtor.Number__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate slds-text-align_right">
+                                                <ui:outputText value="{!RPPCalculatorDebtor.Insurer_Internal_Rating__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:outputText value="{!RPPCalculatorDebtor.Tax_Id__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:outputText value="{!RPPCalculatorDebtor.LEI__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:outputText value="{!RPPCalculatorDebtor.Obligor_Debtor__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">
+                                                <ui:outputText value="{!RPPCalculatorDebtor.Currency__c}"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate slds-text-align_right">
+                                                <ui:outputNumber value="{!RPPCalculatorDebtor.Total_Amount_Local__c}" format="#,###,###,###,###,##0.00"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate slds-text-align_right">
+                                                <ui:outputNumber value="{!RPPCalculatorDebtor.Authorised_Limit_Local__c}" format="#,###,###,###,###,##0.00"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </lightning:tab>
+                <aura:if isTrue="{!v.hasSimulations}">
+                    <lightning:tab label="{!$Label.c.RPP_Simulations}" id="simulations">
+                        <aura:if isTrue="{!v.RPPCalculatorSimulation.Final_Simulation__c}">
+                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                                <h2>{!$Label.c.RPP_THIS_IS_THE_FINAL_SIMULATION}</h2>
+                            </div>
+                        </aura:if>
+                        <div class="slds-grid slds-wrap slds-m-bottom_medium">
+                            <div class="slds-col slds-size_1-of-4">
+                                <lightning:select name="selectedOption" aura:id="selectedOption" label="{!$Label.c.RPP_Select_Simulation}" required="true" value="{!v.selectedSimulation}" onchange="{!c.handleOnGetSimulationData}">
+                                    <aura:iteration items="{!v.simulationsWrapperList}" var="simulationsWrapperElement">
+                                        <option text="{!simulationsWrapperElement.name}" value="{!simulationsWrapperElement.id}" selected="{!simulationsWrapperElement.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-m-top_large slds-m-left_small">
+                                <aura:if isTrue="{!v.hasPermission}">
+                                    <aura:if isTrue="{!v.showSimulationButtons}">
+                                        <aura:if isTrue="{!v.canSimulate}">
+                                            <lightning:button class="slds-button slds-button_brand" label="{!$Label.c.RPP_Modify_Data}" onclick="{!c.handleOnModifyData}"/>
+                                            <lightning:button class="slds-button slds-button_brand " label="{!$Label.c.RPP_Simulate}" onclick="{!c.handleOnSimulate}"/>
+                                            <aura:set attribute="else">
+                                                <lightning:button class="slds-button slds-button_brand " label="{!$Label.c.RPP_Select_As_Final_Simulation}" onclick="{!c.handleOnSetFinalSimulation}"/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+                            </div>
+                        </div>
+                        <lightning:tabset selectedTabId="{!v.selectedSimTab}" variant="default">
+                            <lightning:tab label="{!$Label.c.RPP_RPP_PORT}" id="rppport">
+                                <table class="slds-table slds-table_bordered slds-m-top_small">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.tax_id__c}</th>
+                                            <th scope="col"></th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.seller_assignor__c}</th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.total_amount_eur__c}</th>
+                                            <th scope="col"></th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.total_limit_eur__c}</th>
+                                            <th scope="col"></th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.internal_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.external_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.obligor_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimFields.sp_method_rating__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.ead__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.average_pd__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.expected_loss__c}</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="slds-hint-parent">
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.Tax_Id__c}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.Seller_Assignor__c}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber value="{!v.RPPCalculatorSimulation.Total_Amount_EUR__c}" format="#,###,###,###,###,##0.00"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber value="{!v.RPPCalculatorSimulation.Total_Limit_EUR__c}" format="#,###,###,###,###,##0.00"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.Internal_Rating__c}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.External_Rating__c}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.Obligor_Rating__c}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.RPPCalculatorSimulation.SP_Method_Rating__c}"/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber value="{!v.RPPCalculatorSimulation.EAD__c}" format="#,###,###,###,###,##0.00"/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber value="{!v.RPPCalculatorSimulation.Average_PD__c}" format="##0.00"/>
+                                            </td>
+                                            <td class="slds-text-align_right">
+                                                <ui:outputNumber value="{!v.RPPCalculatorSimulation.Expected_Loss__c}" format="##0.00"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value=""/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <br></br>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.number__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.insurer_internal_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.tax_id__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.lei__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.obligor_debtor__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.currency__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.total_amount_local__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.total_amount_eur__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.authorised_limit_local__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.authorised_limit_eur__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.percentage__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.internal_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.external_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.obligor_rating__c}</th>
+                                            <th scope="col">{!v.RPPCalculatorSimDebtorFields.sp_method_rating__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.ead__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.pd__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.expected_loss__c}</th>
+                                            <th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.kirb__c}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.RPPCalculatorSimulationDebtors}" var="rppCalculatorSimDebtor">
+                                            <tr class="slds-hint-parent">
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Number__c}"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Insurer_Internal_Rating__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Tax_Id__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.LEI__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Obligor_Debtor__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Currency__c}"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Total_Amount_Local__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Total_Amount_EUR__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Authorised_Limit_Local__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Authorised_Limit_EUR__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Percentage__c}" format="##0.00"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Internal_Rating__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.External_Rating__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.Obligor_Rating__c}"/>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!rppCalculatorSimDebtor.SP_Method_Rating__c}"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.EAD__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.PD__c}" format="##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.Expected_Loss__c}" format="#,###,###,###,###,##0.00"/>
+                                                </td>
+                                                <td class="slds-text-align_right">
+                                                    <ui:outputNumber value="{!rppCalculatorSimDebtor.KIRB__c}" format="##0.00"/>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                                <aura:if isTrue="{!v.showSimulationResults}">
+                                    <br></br>
+                                    <div class="slds-grid slds-wrap">
+                                        <div class="slds-col slds-size_1-of-6">
+                                            <table class="slds-table slds-table_bordered">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th scope="col">{!$Label.c.RPP_Simulation_Result}</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <ui:outputText value="{!v.RPPCalculatorSimFields.ce__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-align_right">
+                                                            <ui:outputNumber value="{!v.RPPCalculatorSimulation.CE__c}" format="##0.00"/>%
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <ui:outputText value="{!v.RPPCalculatorSimFields.equivalent_rating__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-align_right">
+                                                            <ui:outputText value="{!v.RPPCalculatorSimulation.Equivalent_Rating__c}"/>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="slds-hint-parent">
+                                                        <td>
+                                                            <ui:outputText value="{!v.RPPCalculatorSimFields.rwa__c}"/>
+                                                        </td>
+                                                        <td class="slds-text-align_right">
+                                                            <ui:outputNumber value="{!v.RPPCalculatorSimulation.RWA__c}" format="##0.00"/>%
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </lightning:tab>
+                            <aura:if isTrue="{!v.showSimulationResults}">
+                                <lightning:tab label="{!$Label.c.RPP_PORTFOLIO_SUMMARY}" id="simulationResult">
+                                    <article>
+                                        <div class="slds-card__body slds-card__body_inner">
+                                            <ul class="slds-grid slds-wrap slds-grid_pull-padded">
+                                                <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3">
+                                                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail">
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <thead>
+                                                                        <tr class="slds-line-height_reset">
+                                                                            <th scope="col">
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    {!$Label.c.RPP_FIRST_LOSS_SIMULATIONS}
+                                                                                </div>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <tbody>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.senior_tranche_rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Senior_Tranche_Rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <aura:if isTrue="{!v.isGoal1}">
+                                                                                        <ui:outputText value="{!$Label.c.RPP_PREFIXED}"/>
+                                                                                        <aura:set attribute="else">
+                                                                                            <ui:outputText value="{!$Label.c.RPP_AVERAGE_RATING}"/>
+                                                                                        </aura:set>
+                                                                                    </aura:if>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.first_loss__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.First_Loss__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Max_Or_Fixed__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <aura:if isTrue="{!v.isGoal1}">
+                                                                                        <ui:outputText value="{!$Label.c.RPP_MAX_SP_SIM}"/>
+                                                                                        <aura:set attribute="else">
+                                                                                            <ui:outputText value="{!$Label.c.RPP_PREFIXED_FL}"/>
+                                                                                        </aura:set>
+                                                                                    </aura:if>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <aura:if isTrue="{!v.isGoal1}">
+                                                                                <td>
+                                                                                    <div class="slds-truncate">
+                                                                                        <ui:outputText value="{!v.RPPCalculatorSimFields.fl_sim__c}"/>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div class="slds-truncate slds-text-align_right">
+                                                                                        <ui:outputNumber value="{!v.RPPCalculatorSimulation.FL_SIM__c}" format="##0.00"/>%
+                                                                                    </div>
+                                                                                </td>
+                                                                                <aura:set attribute="else">
+                                                                                    <td>
+                                                                                        <div class="slds-truncate">
+                                                                                            <ui:outputText value="{!v.RPPCalculatorSimFields.rating_under_95__c}"/>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div class="slds-truncate slds-text-align_right">
+                                                                                            <ui:outputText value="{!v.RPPCalculatorSimulation.Rating_Under_95__c}"/>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                            <td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.total_limit__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_right">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Total_Limit__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </article>
+                                                </li>
+                                                <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3">
+                                                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail">
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <thead>
+                                                                        <tr class="slds-line-height_reset">
+                                                                            <th scope="col">
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    {!$Label.c.RPP_FIRST_LOSS_ACCORDING_TO_METHODOLOGY_BASED_ON_SP}
+                                                                                </div>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <tbody>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_left">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.goal_rating_sp_methodology__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_left">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Goal_Rating_SP_Methodology__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <thead>
+                                                                        <tr class="slds-line-height_reset">
+                                                                            <th class="slds-text-align_center" scope="col">
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!$Label.c.RPP_Objective_Rating_SP}"/>
+                                                                                </div>
+                                                                            </th>
+                                                                            <th class="slds-text-align_center" scope="col">
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!$Label.c.RPP_First_Loss}"/>
+                                                                                </div>
+                                                                            </th>
+                                                                            <th class="slds-text-align_center" scope="col">
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!$Label.c.RPP_Rating_Loss}"/>
+                                                                                </div>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Objective_Rating_SP_1__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.First_Loss_1__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Rating_Loss_1__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Objective_Rating_SP_2__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.First_Loss_2__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Rating_Loss_2__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Objective_Rating_SP_3__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.First_Loss_3__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Rating_Loss_3__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </article>
+                                                </li>
+                                                <li class="slds-p-horizontal_small slds-size_1-of-1 slds-medium-size_1-of-3">
+                                                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-tile__detail">
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <thead>
+                                                                        <tr class="slds-line-height_reset">
+                                                                            <th scope="col">
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    {!$Label.c.RPP_FIRST_LOSS_WITH_DILUTION}
+                                                                                </div>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </table>
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <tbody>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorFields.average_portfolio_dilution__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculator.Average_Portfolio_Dilution__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorFields.mean_dilution_deviation__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculator.Mean_Dilution_Deviation__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td></td><td></td><td></td><td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorFields.seller_internal_rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculator.Seller_Internal_Rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.senior_tranche_rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimulation.Senior_Tranche_Rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorFields.insurer_internal_rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputText value="{!v.RPPCalculator.Insurer_Internal_Rating__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td></td><td></td><td></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                                                                    <tbody>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.maximum_insurance_liability_value__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Maximum_Insurance_Liability_Value__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Maximum_Insurance_Liability_Percent__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.dilution_value__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Dilution_Value__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Dilution_Percent__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.senior_tranche_value__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Senior_Tranche_Value__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Senior_Tranche_Percent__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.risk_retention_value__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Risk_Retention_Value__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Risk_Retention_Percent__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr class="slds-hint-parent">
+                                                                            <td>
+                                                                                <div class="slds-truncate">
+                                                                                    <ui:outputText value="{!v.RPPCalculatorSimFields.maximum_insurance_amount_value__c}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Maximum_Insurance_Amount_Value__c}" format="#,###,###,###,###,##0.00"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="slds-truncate slds-text-align_center">
+                                                                                    <ui:outputNumber value="{!v.RPPCalculatorSimulation.Maximum_Insurance_Amount_Percent__c}" format="##0.00"/>%
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </article>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </article>
+                                </lightning:tab>
+                            </aura:if>
+                        </lightning:tabset>
+                    </lightning:tab>
+                </aura:if>
+            </lightning:tabset>
+        </aura:set>
+    </aura:if>
+    {!v.body}
+</aura:component>

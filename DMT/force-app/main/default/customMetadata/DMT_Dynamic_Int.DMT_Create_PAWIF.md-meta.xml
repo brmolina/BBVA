@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_Create_PAWIF</label>
+    <protected>false</protected>
+    <values>
+        <field>DMT_Integration__c</field>
+        <value xsi:type="xsd:string">IASO</value>
+    </values>
+    <values>
+        <field>DMT_JSON_Template__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;opportunityId&quot;: &quot;%Opportunity.Id%&quot;,
+  &quot;taskId&quot;: &quot;%Task.Id%&quot;,
+  &quot;userCode&quot;: &quot;%User.FederationIdentifier%&quot;,
+  &quot;sectorId&quot;: &quot;06&quot;,
+  &quot;groupId&quot;: &quot;%Opportunity.Account.DES_Group_Code__c%&quot;,
+  &quot;clientId&quot;: &quot;%Opportunity.Account.g_customer_id__c%&quot;,
+  &quot;isPortfolioAlignment&quot;: false,
+  &quot;isExistingClient&quot;: true,
+  &quot;dealDetails&quot;: {
+    &quot;facilityType&quot;: &quot;TODO&quot;,
+    &quot;facilityDestination&quot;: &quot;PAWIF06007&quot;,
+    &quot;productIds&quot;: [
+      &quot;%OpportunityLineItem.Product2.ProductCode%&quot;
+    ],
+
+    &quot;currencyId&quot;: &quot;%Opportunity.DMT_CurrencyText__c%&quot;,
+    &quot;commitmentAmount&quot;: %Opportunity.DMT_CUR_Notional_Amount__c%,
+    &quot;termMonths&quot;: %Opportunity.DMT_Tenor__c%,
+    &quot;dealStartDate&quot;: &quot;%Opportunity.DMT_DATE_Initial_Date__c%&quot;
+  },
+  &quot;oilAndGasDetails&quot;: {
+    &quot;clientActivity&quot;: &quot;Upstream&quot;,
+    &quot;oldNewMoney&quot;: &quot;NEWMONEY&quot;,
+    &quot;expectedDrawnPercentage&quot;: 100.0,
+    &quot;amortizationType&quot;: &quot;Linear&quot;
+  },
+  &quot;shippingDetails&quot;: {
+    &quot;shipType&quot;: &quot;Bulk carrier (&lt;279k DWT)&quot;,
+    &quot;vesselName&quot;: &quot;vessel&quot;,
+    &quot;imoNumber&quot;: &quot;imoq1234&quot;,
+    &quot;deadWeightTonnage&quot;: 10000,
+    &quot;metricType&quot;: &quot;AER&quot;,
+    &quot;vesselIntensity&quot;: 10000.0,
+    &quot;distanceTravelledNauticalMiles&quot;: 10000,
+    &quot;typesOfFuel&quot;: [
+      &quot;PAWIF00001&quot;,
+      &quot;PAWIF00002&quot;
+    ],
+    &quot;fuelConsumption&quot;: [
+      500,
+      500
+    ]
+  },
+  &quot;manualProjections&quot;: [
+    {
+      &quot;year&quot;: 2026,
+      &quot;intensity&quot;: 100.0,
+      &quot;absoluteEmissions&quot;: 100.0,
+      &quot;enterpriseValue&quot;: 200.0
+    }
+  ]
+}</value>
+    </values>
+    <values>
+        <field>DMT_MetadataIntegration__c</field>
+        <value xsi:type="xsd:string">DMT_Create_PAWIF</value>
+    </values>
+</CustomMetadata>

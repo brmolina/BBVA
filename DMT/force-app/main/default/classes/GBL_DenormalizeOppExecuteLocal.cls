@@ -27,7 +27,7 @@ public without sharing class GBL_DenormalizeOppExecuteLocal implements Database.
   * Execute method
   */
   public void execute(Database.BatchableContext bch, List<Opportunity> scope) {
-    final dwp_acmh.GBL_DenormalizeOpportunitiesUtils doUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils();
+    final GBL_DenormalizeOpportunitiesUtils doUtil = new GBL_DenormalizeOpportunitiesUtils();
 
     for (Opportunity opty : scope) {
       relationshipsCreated = relationshipsCreated + doUtil.denormalize(opty);

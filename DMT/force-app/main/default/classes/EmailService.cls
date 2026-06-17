@@ -6,6 +6,7 @@ Description:   Method that generates Email Service for GM
 History:
 <Author>                  <Date>                <Change Description>
 Juan Carlos Terrón                              Initial version.
+Adrian Salinas (NFQ)     04/02/2026          Uso de Email_Service_Config__mdt para eliminacion de hardcode.
 ---------------------------------------------------------------------------------*/
 global with sharing class EmailService implements Messaging.InboundEmailHandler {
   /*
@@ -13,6 +14,11 @@ global with sharing class EmailService implements Messaging.InboundEmailHandler 
   */
   global Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) {
     Messaging.InboundEmailResult result;
+
+    Email_Service_Config__mdt config = EmailServiceUtils.getConfig();
+    if (config.isActive__c == false) {
+        return result; 
+    }
     try {
       //System.debug('REFERENCES : '+email.references);
 
@@ -33,7 +39,8 @@ global with sharing class EmailService implements Messaging.InboundEmailHandler 
       } else {
         Id caseId;
         final EmailService_CaseEngine caseEngine = new EmailService_CaseEngine(currentEmail);
-        final EmailServiceUtils engine = new EmailServiceUtils('local.EmailService',currentEmail,'GM');
+        // final EmailServiceUtils engine = new EmailServiceUtils('local.EmailService',currentEmail,'GM');
+        final EmailServiceUtils engine = new EmailServiceUtils(config.Partition_Name__c,currentEmail,config.Business_Unit_Code__c);
         final String preassignAddress = engine.preassignAddress(currentEmail);
         final Map<String,SER_EmailDefaultValues_Assignment__c> settings = engine.getMailboxSettings();
         final Set<String> defined = settings.keySet();
@@ -42,23 +49,25 @@ global with sharing class EmailService implements Messaging.InboundEmailHandler 
           //System.debug('EmailService - handleInboundEmail - Hay Dirección pre-asignada : '+preassignAddress);
           final SER_EmailDefaultValues_Assignment__c setting = settings.get(preassignAddress);
           caseEngine.setting = setting;
-          caseId = caseEngine.createCase();
         } else {
-            final String assignedAddress = engine.assignAddress(Label.SER_CustomerServiceMailbox,currentEmail);
-            final SER_EmailDefaultValues_Assignment__c setting = settings.get(assignedAddress);
+          final String assignedAddress = engine.assignAddress(Label.SER_CustomerServiceMailbox,currentEmail);
+          final SER_EmailDefaultValues_Assignment__c setting = settings.get(assignedAddress);
           caseEngine.setting = setting;
-          caseId = caseEngine.createCase();
         }
+        caseId = caseEngine.createCase();
       //System.debug('EmailService - handleInboundEmail - Case ID creado : '+caseId);
       if(caseId != null) {
-          Cache.OrgPartition orgPartition =  Cache.Org.getPartition('local.EmailService'); //NOSONAR
+          // Cache.OrgPartition orgPartition =  Cache.Org.getPartition('local.EmailService'); //NOSONAR
+          Cache.OrgPartition orgPartition =  Cache.Org.getPartition(config.Partition_Name__c); //NOSONAR
           //System.debug('EmailService GM - handleInboundEmail - emailId : '+emailId);
-          log.CIB_ErrorMessage__c += 'CASE ID : '+caseId+'\nEMAIL ID : '+emailEngine.createEmail(caseId)+'\n';            
+          log.CIB_ErrorMessage__c += 'CASE ID : '+caseId+'\nEMAIL ID : '+emailEngine.createEmail(caseId)+'\n';
           //final Boolean emailResult =  (emailId != null);
           final InboundEmailWrapper currentEmailCopy = currentEmail;
           currentEmailCopy.email = null; //NOSONAR
-          //final Boolean finalduplicity = engine.checkDuplicity(currentEmail);
-          orgPartition.put(currentEmail.cacheKey,currentEmailCopy,300,Cache.Visibility.NAMESPACE,false);
+          // orgPartition.put(currentEmail.cacheKey,currentEmailCopy,300,Cache.Visibility.NAMESPACE,false);
+          Integer ttl = (Integer)config.Cache_TTL__c;
+          orgPartition.put(currentEmail.cacheKey,currentEmailCopy,ttl,Cache.Visibility.NAMESPACE,false);
+
         }
       }
       for(String header : currentEmail.headers.keySet()) {
@@ -73,7 +82,7 @@ global with sharing class EmailService implements Messaging.InboundEmailHandler 
       EmailServiceUtils.insertCathCibLog (email,ex2);
       result = new Messaging.InboundEmailresult();
     } catch (Exception error) { //NOSONAR
-      System.debug('EmailService - Error Catch - Log Creation : '+EmailServiceUtils.generateLog(error,email,'GM'));
+      System.debug('EmailService - Error Catch - Log Creation : '+EmailServiceUtils.generateLog(error,email,config.Business_Unit_Code__c));
       result = new Messaging.InboundEmailresult();
     }
     return result;

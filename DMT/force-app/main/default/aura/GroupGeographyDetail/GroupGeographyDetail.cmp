@@ -1,0 +1,81 @@
+<aura:component controller="GroupGeographyCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+	<ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.doInit}"/>
+	<aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String"/>
+    <aura:attribute name="defaultSortDirection" type="String"/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="userISOCode" type="String"/>
+
+    <aura:attribute name="fieldsToDisplayInput" type="String" default="gf_ibf_cyr_revenue_amount__c,gm_revenue_cyr_amount__c,gtb_revenue_cyr_amount__c"/>
+    <aura:attribute name="inNumberOfDecimalsInput" type="String" default="2"/>
+    <aura:attribute name="cssClassNameInput" type="String" default="Vertical_fourColumns"/>
+    <aura:attribute name="prettyHeader" type="Boolean" default="true" />
+    <aura:attribute name="rowSubitle" type="String" default="BBVA revenues (YTD)" />
+    <aura:attribute name="country" type="String" default="Todos" />
+
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:handler name="countryPickedEvent" event="c:GoogleMapEvent" action="{! c.handleCountryPicked }"/>
+
+
+
+    <lightning:navigation aura:id="nav" />
+
+    <force:recordData aura:id="forceRecordCmp"
+    	recordId="{!v.recordId}"
+        layoutType="{!v.layout}"
+        fields="Id, Name"
+        mode="VIEW"
+        targetRecord="{!v.record}"
+        targetFields="{!v.simpleRecord}"
+        targetError="{!v.error}" />
+
+
+    <div class="slds-page-header slds-is-fixed " style="height: 77px; z-index: 9999999">
+        <lightning:layout>
+            <lightning:layoutItem class="slds-media__figure">
+                <lightning:icon iconName="standard:account"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem class="slds-media__body">
+                <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Group Geography Details</h1>
+                <lightning:breadcrumbs>
+                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                                          label="Return to global information"
+                                          onclick="{! c.onClickButton}"
+                                          title="Go back to the account"
+                                          />
+                </lightning:breadcrumbs>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+
+    <div id="headerSpace" class="slds-page-header" style="height:77px"></div>
+
+
+	<div class="slds-modal__content mainWrap" style="height: 90%;">
+				<ui:scrollerWrapper class="srollWrap">
+
+
+        <div style="width:70veh; overflow:hidden">
+            <c:GroupGeography recordId="{!v.recordId}"
+            					zoomLevel="2"
+            					showFooter="false"
+            					markersTitle="Countries"
+            					showViewDetails="false"
+            					/>
+        </div>
+
+		<div style="width:80%; border:1px; border-color:grey; border-style: solid;display:block;margin-left:auto;margin-right:auto;">
+		    <c:GeographyCustomTabs familyParam="GTB" recordId="{! v.recordId}" country="{! v.country}"/>
+	    </div>
+		</ui:scrollerWrapper>
+			</div>
+
+</aura:component>

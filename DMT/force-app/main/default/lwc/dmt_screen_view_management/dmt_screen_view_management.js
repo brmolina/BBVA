@@ -289,6 +289,7 @@ export default class Dmt_screen_view_management extends LightningElement {
             isVersionView: this.isVersionView,
             displayInOpportunity: this.displayInOpportunity
         };
+        
 
         upsertApproversViewWithItems({jsonPayload: JSON.stringify(payload)})
         .then(result => {

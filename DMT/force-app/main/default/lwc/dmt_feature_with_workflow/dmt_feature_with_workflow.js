@@ -1,19 +1,13 @@
 import { LightningElement,api,track } from 'lwc';
-import passportModal from 'c/dmt_passport_modal';
 import { NavigationMixin } from "lightning/navigation";
 import dmt_case_comment_modal_v2 from 'c/dmt_case_comment_modal_v2';
 import startCase from '@salesforce/apex/DMT_Passport_Handler.startCase';
 import getStepsFromCase from '@salesforce/apex/DMT_Case_Steps_Controller.getStepsFromCase';
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import passportModal from 'c/dmt_passport_modal';
+import getProductIds from '@salesforce/apex/DMT_Opportunity_Selector.getProductIds';
+import getAssociatedSanctionLine from '@salesforce/apex/DMT_Opportunity_Handler.getAssociatedSanctionLine';
+import sendRequest from '@salesforce/apex/DMT_DynamicIntegrationServices.sendRequest';
 
-const LOAD_STYLE_MESSAGE = 'Static Resource Loaded';
-const ERROR_MESSAGE = 'error';
-const ERROR_PASSPORT_MESSAGE = 'Error processing passport';
-const UNSUBCRIBE_MESSAGE = 'Unsubscribed to change events';
-const UNKNOWN_MESSAGE = 'Unknown error';
-const PASSPORT_ENTITY = 'Passport__c';
-const TASK_ENTTITY = 'Task';
-const STRING_TYPE = 'string';
 
 
 export default class Dmt_feature_with_workflow extends NavigationMixin(LightningElement) {
@@ -24,73 +18,71 @@ export default class Dmt_feature_with_workflow extends NavigationMixin(Lightning
     haveProducts = false;
     componentConstructor;
     isTaskModalOpen;
+    haveTaskHistory;
     
     @track featureTasksHistory;
     @track currentTask;
-    
+    @api oppId;
+    @api isreadytoclose = false;
+
     @api
     get feature() {
         return this._feature;
     }
     set feature(value) {
         
-        console.log('Dmt_feature_with_workflow set feature feature ' +  JSON.stringify(value,2));
-        console.log('Dmt_feature_with_workflow set feature name ' + value.name);
-        console.log('Dmt_feature_with_workflow set feature hasSftask ' + value.hasSftask);
-        console.log('Dmt_feature_with_workflow set feature isNotFinishedTask ' + value.isNotFinishedTask);
-        console.log('Dmt_feature_with_workflow set feature workflowColor ' + value.workflowColor);
-        console.log('Dmt_feature_with_workflow set feature isApprover ' + value.isApprover);
-        console.log('Dmt_feature_with_workflow set feature stateName ' + value.stateName);
-        console.log('Dmt_feature_with_workflow set feature value.products?.length > 0 ' + value.products?.length > 0);
-        console.log('Dmt_feature_with_workflow set feature value.products !== undefined ' + value.products != undefined);
-        console.log('Dmt_feature_with_workflow set feature feature.showTrafficLight ' + value.showTrafficLight);
-        console.log('Dmt_feature_with_workflow set feature record.tasks ' + JSON.stringify(value.tasks));
-        
         this.haveProducts = value.products != undefined && value.products?.length > 0;
         this.currentTask = value?.currentTask;
         
-        console.log('Dmt_feature_with_workflow set feature this.haveProducts ' + this.haveProducts);
-        
         var temptValue = JSON.parse(JSON.stringify(value));
-        temptValue.showTrafficLight = this.haveProducts ? !this.haveProducts : value.showTrafficLight;
-        
-        console.log('Dmt_feature_with_workflow set feature temptValue ' +  JSON.stringify(temptValue,2));
+
+        temptValue.showTrafficLight = value.showTrafficLight;
+        temptValue.request = temptValue == undefined ? true : temptValue.request;
         
         this._feature = temptValue;
+        this.getTaskHistory();
     }
-    
-    @api 
+
+    @api
     get isbig() {
         return this._isbig;
     }
     set isbig(value) {
         this._isbig = value;
     }
-    
+
+    get rowClass() {
+        return 'slds-hint-parent' + (this._feature?.isFaded ? ' faded-row' : '');
+    }
+
+    get disableReadyToCloseBusinessClick() {
+        const currentFeature = this.feature || {};
+        const isReadyToCloseFeature = currentFeature?.passportSanction === 'readytoclose';
+        const isBusinessReadyToClose = currentFeature?.motorDesc === 'Line Engine - Profitability Engine';
+        const isGrayState = (currentFeature?.stateName || '').toUpperCase() === 'GRAY';
+
+        return isReadyToCloseFeature && isBusinessReadyToClose && isGrayState;
+    }
+
     handleExpandedControlEvent(event) {
         this.expandedControlEvent(event);
     }
-    
+
     handleOpenCaseModalClick(event) {
-        console.log('Dmt_feature_with_workflow openCaseModal handleOpenCaseModalClick ');
         this.openCaseModal(event);
     }
-    
+
     handleOpenTaskModalClick(event) {
-        console.log('Dmt_feature_with_workflow openCaseModal handleOpenTaskModalClick ');
         this.openTaskModal(event);
     }
-    
+
     handleNavigationToTask(event) {
-        
+
         var currentTask = this.feature.currentTask;
 
-        console.log('Dmt_feature_with_workflow handleNavigationToTask currentTask ' +  JSON.stringify(currentTask,2));
-        
+
         const urlFinal = (currentTask?.step?.urlValue).replace('/', '');
-        
-        console.log('Dmt_feature_with_workflow handleNavigationToTask urlFinal ' +  JSON.stringify(urlFinal,2));
-        
+
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
             attributes: {
@@ -98,201 +90,361 @@ export default class Dmt_feature_with_workflow extends NavigationMixin(Lightning
                 objectApiName: 'Case',
                 actionName: 'view'
             },
-            
+
         });
     }
-    
+
     handleTaskModalClose() {
         this.isTaskModalOpen = false;
     }
-    
+
     async openTaskModal(event) {
-        
-        var currentTask;
-        
-        console.log('Dmt_feature_with_workflow openTaskModal event.currentTarget.dataset ' +  JSON.stringify(event.currentTarget.dataset,2));
-        console.log('Dmt_feature_with_workflow openTaskModal event.currentTarget.dataset.approver ' +  JSON.stringify(event.currentTarget.dataset.approver,2));
-        
-        let taskIdToFind = event.currentTarget.dataset.id;
-        
-        console.log('Dmt_feature_with_workflow openTaskModal ');
-        console.log('Dmt_feature_with_workflow openTaskModal taskIdToFind ' +  JSON.stringify(taskIdToFind,2));
-        console.log('Dmt_feature_with_workflow openTaskModal this.feature.tasks ' +  JSON.stringify(this.feature.tasks,2));
-        
         try {
-            
-            currentTask = this.feature.currentTask;
-            
-            console.log('Dmt_feature_with_workflow openTaskModal currentTask ' +  JSON.stringify(currentTask,2));
-            
-            if(currentTask) {
-                
-                this.childProps = {closecallback: this.handleTaskModalClose.bind(this),record: currentTask};
-                
-                const { default: ctor } = await import('c/dmt_case_history_modal');
-                this.componentConstructor = ctor;
+            // 1. Get the specific Task ID that was clicked
+            const clickedTaskId = event.currentTarget.dataset.id;
+            let taskToPass = null;
+
+            // 2. Determine if they clicked the Current Task
+            if (this.feature.currentTask && this.feature.currentTask.taskId === clickedTaskId) {
+                taskToPass = this.feature.currentTask;
+            }
+            // 3. Or if they clicked a task in the History table
+            else if (this.featureTasksHistory && this.featureTasksHistory.length > 0) {
+                taskToPass = this.featureTasksHistory.find(task => task.taskId === clickedTaskId);
+            }
+
+            // 4. Open the modal with the correct record
+            if (taskToPass) {
+                this.childProps = { closecallback: this.handleTaskModalClose.bind(this), record: taskToPass };
+                const modalModule = this.feature?.motorDesc === 'PAWIF'
+                    ? await import('c/dmt_case_history_modal_pawif')
+                    : await import('c/dmt_case_history_modal');
+                this.componentConstructor = modalModule.default;
                 this.isTaskModalOpen = true;
-            }else{
+            } else {
                 console.error('Task not found, its required to open modal');
             }
-        }catch (error) {
-            this.handleError(error);
+        } catch (error) {
+            this.notifyParentError(error);
         }
     }
-    
+
     async openCaseModal(event){
-        
-        console.log('Dmt_feature_with_workflow openCaseModal this.feature.tasks[0].approvers[0].name ' + JSON.stringify(this.feature.tasks?.[0].approvers?.[0].name));
-        console.log('Dmt_feature_with_workflow openCaseModal this.feature.id ' + JSON.stringify(this.feature.id));
-        
+
         try{
             if(this.feature.tasks[0].approvers[0].name) {
-                
+
                 const result =  dmt_case_comment_modal_v2.open({
                     size: 'small',
                     description: 'Modal for comment on the case',
                     approver: this.feature.tasks[0].approvers[0].name,
                     featureid: this.feature.id
                 }).then((result) => {
-                    
-                    console.log('Dmt_feature_with_workflow openCaseModal result ' + JSON.stringify(result));
-                    
+
                     if(result !== undefined){
-                        this.startCase(result.comment);       
-                    }    
+                        this.startCase(result.comment);
+                    }
                 })
-                
+
             } else {
                 console.error('Task not found, its required to open modal');
             }
         }catch (error) {
-            //ns que cojones hacer
-            this.handleError(error);
+            this.notifyParentError(error);
         }
     }
-    
+
+
+   async openModalLimit(event) {
+
+        // READY TO CLOSE business modal
+        const profitability = this.feature?.profitability;
+        const profitabilityPayload = profitability && typeof profitability === 'object'
+            ? profitability
+            : { results: [] };
+        const isProfitabilityReadyToClose = this.feature?.passportSanction === 'readytoclose' &&
+            this.feature?.motorDesc === 'Line Engine - Profitability Engine';
+
+        if (isProfitabilityReadyToClose) {
+
+            try {
+                const conditionDesc = this.feature?.products
+                    ?.find(p => p?.opportunityValidation?.conditionDesc)
+                    ?.opportunityValidation?.conditionDesc || null;
+
+                await passportModal.open({
+                    noShowInfo: false,
+                    graphicModal: true,
+                    noShowInfoMessage: conditionDesc,
+                    limits: null,
+                    featureName: this.feature?.name,
+                    featureLight: null,
+                    validations: null,
+                    errorModal: false,
+                    profitability: profitabilityPayload,
+                    showProfitabilityChart: true,
+                    opportunityId: this.oppId
+                });
+
+            } catch (error) {
+                this.notifyParentError(error);
+            }
+            return;
+        }
+
+        // RIESGO
+        const products = this.feature?.products || [];
+
+        if (products.length === 0) return;
+
+        // Resolver IDs reales de OpportunityLineItem
+        const opportunityExternalId = this.feature?.opportunityId;
+        const productIds = products.map(p => p.productId);
+
+        let resolvedIdMap = {};
+        try {
+            const lineItems = await getProductIds({ opportunityExternalId, productIds });
+
+            console.log('Resolved Line Items:', JSON.stringify(lineItems));
+            lineItems.forEach(item => {
+                resolvedIdMap[item.gf_group_priority_opportunity_id__c] = {
+                        id: item.Id,
+                        name: item.DES_Product_Name__c
+                    };
+                });
+        } catch (error) {
+            this.notifyParentError(error);
+            return;
+        }
+
+        let associatedLineUrl = null;
+        let associatedLineLabel = null;
+        if (this.feature?.passportSanction === 'readytoclose') {
+            try {
+                const associatedLine = await getAssociatedSanctionLine({ opportunityExternalId });
+                if (associatedLine?.lineId) {
+                    associatedLineUrl = `/lightning/r/DMT_Line__c/${associatedLine.lineId}/view`;
+                    associatedLineLabel = associatedLine.lineLabel;
+                }
+            } catch (error) {
+                console.error('Error resolving associated sanction line:', error);
+            }
+        }
+
+        let labels = [];
+        let targets = [];
+        let conditions = [];
+        let conditionLineDiffs = [];
+        let limitLights = [];
+        let dataDraw = [];
+        let currencies = [];
+        let originCurrency = null;
+
+        products.forEach(p => {
+            const conditionDesc = p.opportunityValidation?.conditionDesc || '';
+            const currencyId = p.opportunityValidation?.currencyId || null;
+            const resolved = resolvedIdMap[p.productId];
+            const resolvedName = resolved.name;
+            const conditionLineAmount = Number(p.opportunityValidation?.conditionLineAmount || 0);
+            const authorizedRiskAmount = Number(p.opportunityValidation?.authorizedRiskAmount || 0);
+
+            labels.push(`${resolvedName} # ${conditionDesc}`);
+            targets.push(conditionLineAmount);
+            conditions.push(conditionDesc);
+            conditionLineDiffs.push(conditionLineAmount - authorizedRiskAmount > 0 ? conditionLineAmount - authorizedRiskAmount : null);
+            limitLights.push(p.stateName);
+            dataDraw.push(p.opportunityValidation?.productAmount || 0);
+            currencies.push(currencyId);
+
+            if (!originCurrency && currencyId) {
+                originCurrency = currencyId;
+            }
+        });
+
+        console.log('DEBUG: conditionLineDiffs', JSON.stringify(conditionLineDiffs));
+        console.log('DEBUG: dataDraw', JSON.stringify(dataDraw));
+
+        const limits = {
+            labels,
+            sections: ["Consumption", "New Opportunity"],
+            datasets: [{
+                label: "Consumption",
+                data: conditionLineDiffs,
+                backgroundColor: "rgba(36, 150, 234, 1)"
+            }, {
+                label: "New Opportunity",
+                data: dataDraw,
+                backgroundColor: "rgba(189, 189, 189, 1)"
+            }],
+            targetColor: "red",
+            targets,
+            conditions,
+            limitLights,
+            currencies,
+            originCurrency
+        };
+
+        try {
+            await passportModal.open({
+                noShowInfo: false,
+                graphicModal: true,
+                limits: limits,
+                featureName: this.feature?.name,
+                featureLight: this.feature?.stateName?.toLowerCase(),
+                validations: null,
+                errorModal: false,
+                profitability: null,
+                showProfitabilityChart: false,
+                showConditionDesc: this.feature?.passportSanction === 'readytoclose',
+                associatedLineUrl,
+                associatedLineLabel
+            });
+
+            this.isExpanded = false;
+
+        } catch (error) {
+            this.notifyParentError(error);
+        }
+    }
+
     startCase(comment) {
         
-        console.log('Dmt_feature_with_workflow startCase comment ' + comment);
-        console.log('Dmt_feature_with_workflow startCase this.feature.tasks[0].approvers[0].id ' + this.feature.tasks[0].approvers[0].id);
-        console.log('Dmt_feature_with_workflow startCase this.feature.tasks[0].id ' + this.feature.tasks[0].id);
-        console.log('Dmt_feature_with_workflow startCase this.feature.tasks ' + JSON.stringify(this.feature.tasks));
-        console.log('Dmt_feature_with_workflow startCase this.feature.id ' + this.feature.id);
-        console.log('Dmt_feature_with_workflow startCase this.feature.name ' + this.feature.name);
-        console.log('Dmt_feature_with_workflow startCase this.feature.passportSanction ' + this.feature.passportSanction);
-        console.log('Dmt_feature_with_workflow startCase this.feature.opportunityId ' + this.feature.opportunityId);
-        
+        //this.notifyShowSpinner(true);
+        var externalLineid = this.feature.opportunityId;
+        var approverId = this.feature.tasks[0].approvers[0].id;
+        var taskId = this.feature.tasks[0].id;
+        var featureId = this.feature.id;
+        var featureName = this.feature.name;
+        var passportSanction = this.feature.passportSanction
+        var taskList = this.feature.tasks
+        taskList.shift();
         startCase({
-            externalLineid: this.feature.opportunityId,
-            approverId: this.feature.tasks[0].approvers[0].id,
-            taskId: this.feature.tasks[0].id,
-            taskList: this.feature.tasks,
-            featureId: this.feature.id,
-            featureName: this.feature.name,
+            externalLineid: externalLineid,
+            approverId: approverId,
+            taskId: taskId,
+            taskList: taskList,
+            featureId: featureId,
+            featureName: featureName,
             comment: comment,
-            passportSanction: this.feature.passportSanction
+            passportSanction: passportSanction
         }).then(response => {
-            
-            console.log('Dmt_feature_with_workflow startCase response ' + JSON.stringify(response));
-            
-            //this.initRefreshTasksInProgress();
+            if (!response.success) {
+                this.notifyParentError(response.message);
+                this._showSpinner = false;
+                return;
+            }
+            if (this.feature.name == 'PAWIF SALESFORCE') {
+                const caseTaskId = response.TASK;
+                sendRequest({
+                    developerName: 'DMT_Create_PAWIF',
+                    opportunityId: this.oppId,
+                    taskId: caseTaskId
+                }).then(() => {
+                    this.notifyParentReload();
+                }).catch((error) => {
+                    this.notifyParentError(error);
+                });
+            } else {
+                this.notifyParentReload();
+            }
             
         }).catch((error) => {
-            this.handleError(error);
+            this.notifyParentError(error);
         });
         
     }
-    
+
     expandedControlEvent() {
-        
+
         this.isExpanded = !this.isExpanded;
-        
-        console.log('Dmt_feature_with_workflow expandedControlEvent this.isExpanded ' + JSON.stringify(this.isExpanded));
-        
+
         if(this.isExpanded){
             this.getTaskHistory();
         }
     }
-    
+
     getTaskHistory() {
-        
-        console.log('Dmt_feature_with_workflow getTaskHistory this.feature.id ' + JSON.stringify(this.feature.id));
-        console.log('Dmt_feature_with_workflow getTaskHistory this.feature.opportunityId ' + JSON.stringify(this.feature.opportunityId));
-        
-        const idToSend = this.feature.currentTask?.step?.urlValue.replace('/', '');
-        
+        const idToSend = this.feature.currentTask?.caseId
+
+        if(idToSend == undefined || idToSend == 'c-modal-container') {
+          return;
+        }
+
         getStepsFromCase({
             caseId: idToSend
         }).then(responseTasks => {
-            
-            console.log('Dmt_feature_with_workflow getTaskHistory responseTasks ' + JSON.stringify(responseTasks));
-            
-            if(responseTasks) {
 
-                console.log('Dmt_feature_with_workflow getTaskHistory responseTasks ' + JSON.stringify(responseTasks));
-            
-                
-                responseTasks.forEach(task =>{
+            const processedResponseTasks = responseTasks[0].itemKey === "Finished" ? responseTasks[0].subitems[0] : responseTasks[0];
 
-                    console.log('Dmt_feature_with_workflow getTaskHistory task ' + JSON.stringify(task));
-                    console.log('Dmt_feature_with_workflow getTaskHistory task.step ' + JSON.stringify(task?.step));
-                    console.log('Dmt_feature_with_workflow getTaskHistory task.step.urlLabel ' + JSON.stringify(task?.step?.urlLabel));
-            
-                    /*if(task?.startDate != ''){
-                        task.startDate = this.formatDate(task.startDate);
+            if(processedResponseTasks.taskId) {
+
+                this.featureTasksHistory = processedResponseTasks?.subitems?.filter(task => {
+                    return String(task.taskId) != String(this.currentTask?.taskId);
+                }).map(task =>{
+
+                    let newTask = { ...task };
+
+                    newTask.urlLabel = task?.step?.urlLabel;
+
+                    if(task?.startDate) {
+                        newTask.startDate = this.formatDate(task?.startDate);
                     }
-                    if(task?.endDate != ''){
-                        task.endDate = this.formatDate(task.endDate);
-                    }*/
 
-                    console.log('Dmt_feature_with_workflow getTaskHistory task salida ');
+                    if(task?.endDate) {
+                        newTask.endDate = this.formatDate(task?.endDate);
+                    }
+
+                    return newTask;
                 });
 
-                console.log('Dmt_feature_with_workflow getTaskHistory responseTasks ' + JSON.stringify(responseTasks));
-                
-                this.featureTasksHistory = responseTasks;
-                
-                console.log('Dmt_feature_with_workflow getTaskHistory this.featureTasksHistory ' + JSON.stringify(this.featureTasksHistory));
-            }     
+                this.featureTasksHistory.length <= 0 ? this.haveTaskHistory = false : this.haveTaskHistory = true;
+
+            }else {
+                this.haveTaskHistory = false;
+            }
         }).catch((error) => {
-            this.handleError(error);
+            console.error(JSON.stringify(error.message));
+            this.notifyParentError(error.message);
         });
     }
-    
-    handleError(error){
-        
-        console.error(ERROR_MESSAGE,JSON.stringify(error));
-        
-        let message = UNKNOWN_MESSAGE;
-        
-        if (Array.isArray(error.body)) {
-            message = error.body.map((e) => e.message).join(", ");
-        } else if (typeof error?.body?.message === STRING_TYPE) {
-            message = error.body.message;
-        } else if (typeof error === STRING_TYPE) {
-            message = error;
-        }else if(Array.isArray(error) && error.length > 0 && typeof error[0] === STRING_TYPE){
-            message =  this.csLabels.requiredMsg+' '+error.join(", ")+'.';
-        }
-        
-        this.messageError = message;
-        this.setToast(ERROR_PASSPORT_MESSAGE,message,ERROR_MESSAGE);
-        this.showSpinner = false;
+
+    notifyShowSpinner(showSpinner) {
+
+        const errorEvent = new CustomEvent('notifyshowspinner', {
+            detail: { message: showSpinner }
+        });
+
+        this.dispatchEvent(errorEvent);
     }
-    
-    setToast(title,message,variant) {
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: title,
-                message,
-                variant: variant,
-            }),
-        );
+
+    notifyParentError(errorMessage) {
+
+        const errorEvent = new CustomEvent('notifyparenterror', {
+            detail: { message: errorMessage }
+        });
+
+        this.dispatchEvent(errorEvent);
     }
-    
+
+    notifyParentReload() {
+
+        const event = new CustomEvent('notifyparentreload', {
+            detail: {  }
+        });
+
+        this.dispatchEvent(event);
+    }
+
     formatDate(dateToFormat){
-        var [date, hour] = (dateToFormat).split(" ");
-        var [day, mnt, year] = date.split("/");
-        return day+'-'+mnt+'-'+year;
+
+        try {
+            var [date, hour] = (dateToFormat).split(" ");
+            var [day, mnt, year] = date.split("/");
+            return day+'-'+mnt+'-'+year;
+        }catch (error) {
+            this.notifyParentError(error);
+            return null;
+        }
+
     }
 }

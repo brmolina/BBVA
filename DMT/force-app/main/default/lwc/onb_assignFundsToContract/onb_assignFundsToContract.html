@@ -1,0 +1,103 @@
+<template>
+    <lightning-modal-header>
+        <div class="slds-text-heading_medium">{header}</div>
+    </lightning-modal-header>
+
+    <lightning-modal-body>
+        <template if:true={isBusy}>
+            <div class="slds-is-relative" style="min-height: 180px;">
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isBusy}>
+            <template if:true={funds.length}>
+                <div class="slds-grid slds-grid_align-end slds-grid_vertical-align-center slds-m-bottom_small">
+                    <div class="slds-col slds-size_1-of-3">
+                        <lightning-input
+                            type="search"
+                            variant="label-hidden"
+                            aria-label="Search funds"
+                            placeholder="Search..."
+                            value={searchFundTermRaw}
+                            onchange={handleFundSearch}>
+                        </lightning-input>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-5 slds-m-left_small">
+                        <lightning-combobox
+                            variant="label-hidden"
+                            aria-label="Fund filter"
+                            value={selectionFilter}
+                            options={selectionFilterOptions}
+                            onchange={handleSelectionFilterChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+
+                <template if:true={hasLoadedFunds}>
+                    <template if:true={funds.length}>
+                        <div class="full-bleed slds-m-top_small">
+                            <c-clamped-datatable
+                                key-field="Id"
+                                data={displayedFunds}
+                                columns={columns}
+                                onrowselection={handleFundsSelection}
+                                selected-rows={selectedFundIdsArray}>
+                            </c-clamped-datatable>
+                        </div>
+                    </template>
+                </template>
+            </template>
+
+            <template if:false={funds.length}>
+                <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center slds-p-vertical_xx-large" style="min-height: 260px;">
+                    <div class="slds-text-align_center slds-p-horizontal_medium">
+                        <img 
+                            src={emptyFundsImage} 
+                            alt="Empty state illustration"
+                            class="slds-m-bottom_medium"
+                        />
+
+                        <h2 class="slds-text-heading_medium slds-m-bottom_x-small">{labels.ONB_EMPTY_LIST}</h2>
+                        <p class="slds-text-color_weak slds-m-bottom_medium">
+                            {labels.ONB_NO_FUNDS}
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+        </template>
+    </lightning-modal-body>
+    
+    <template if:false={isBusy}>
+        <lightning-modal-footer>
+            <template if:true={fundsLength}>
+                <div class="slds-m-top_small slds-align_absolute-center">
+                    <lightning-button-icon
+                        icon-name="utility:chevronleft"
+                        alternative-text="Previous page"
+                        onclick={handleFundPrevPage}
+                        disabled={isPreviousDisabledFund}>
+                    </lightning-button-icon>
+
+                    <span class="slds-m-horizontal_small">
+                        Page {currentFundPage} of {totalFundPages}
+                    </span>
+
+                    <lightning-button-icon
+                        icon-name="utility:chevronright"
+                        alternative-text="Next page"
+                        onclick={handleFundNextPage}
+                        disabled={isNextDisabledFund}>
+                    </lightning-button-icon>
+                </div>
+            </template>
+
+            <template if:true={funds.length}>
+                <lightning-button variant="neutral" label="Save" onclick={handleConfirmSave}></lightning-button>
+            </template>
+            <lightning-button class="slds-m-left_small" variant="neutral" label="Cancel" onclick={handleClose}></lightning-button>
+        </lightning-modal-footer>
+    </template>
+</template>

@@ -8,9 +8,11 @@
                     label={label}
                     step={step}
                     value={value}
+                    onkeydown={handleKeyDown}
                     onblur={handleInputblur}
                     pattern={pattern}
                     required={required}
+                    field-level-help={helpTextMessage}
                 ></lightning-input>
             </lightning-layout-item>
             <lightning-layout-item  size="2" class="slds-m-left_medium slds-m-right_medium" style="margin-bottom: 0.55rem;">
@@ -25,9 +27,11 @@
                     label={label}
                     step={step}
                     value={value}
+                    onkeydown={handleKeyDown}
                     onblur={handleInputblur}
                     pattern={pattern}
                     required={required}
+                    field-level-help={helpTextMessage}
             ></lightning-input>
         </lightning-layout>
     </template>

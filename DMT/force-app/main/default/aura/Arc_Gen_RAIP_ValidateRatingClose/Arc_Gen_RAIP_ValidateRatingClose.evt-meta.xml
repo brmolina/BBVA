@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuraDefinitionBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>48.0</apiVersion>
+    <description>Event that fires in RAIP process when closing the component &quot;Arc_Gen_ValidateRating_cmp&quot;. This closes the component &quot;Arc_Gen_ValidateRatingRAIP_cmp&quot;</description>
+</AuraDefinitionBundle>

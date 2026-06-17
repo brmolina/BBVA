@@ -1,0 +1,57 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+  controller="HistoricOppsCnt" access="global">
+
+  <aura:attribute name="products" type="List" default="[]" />
+  <aura:attribute name="sizeProducts" type="Integer" default="1" />
+  <aura:attribute name="isVisible" type="boolean" default="true"/>
+  <aura:attribute name="Spinner" type="Boolean" default="false"/>
+  <aura:attribute name="oppId" type="String" description="Referencia al registro"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <lightning:navigation aura:id="navService"/>
+
+
+  <aura:renderIf isTrue="{!v.isVisible}">
+    <article class="slds-card ">
+      <div class="slds-grid slds-page-header forceRelatedListCardHeader">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+          <div class="slds-media__figure">
+            <span class="slds-icon_container slds-icon-standard-account" title="account">
+              <lightning:icon size="small" iconName="standard:product" alternativeText="Opportunity Products" title="Opportunity Products"/>
+              <span class="slds-assistive-text">Opportunity Products</span>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <p class="slds-card__header-title">
+              <a class="slds-card__header-link slds-truncate" title="BBVA Opp. Team Members">
+                <span>Opportunity Products ({!v.sizeProducts})</span>
+              </a>
+              <aura:if isTrue="{!v.Spinner}">
+                <lightning:spinner alternativeText="Loading" />
+              </aura:if>
+            </p>
+          </div>
+        </header>
+      </div>
+      <div class="slds-card__body slds-card__body_inner">
+        <aura:iteration items="{!v.products}" var="product">
+          <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+            <div class="slds-media__body">
+              <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                <p class="slds-tile__title slds-truncate" title="{!product.solution_classification_desc__c}">
+                  <a href="#" onclick="{!c.navigateRecord}" id="{!product.OpportunityId__c + '.||.' + product.OpportunityLineItemId__c}">{!product.solution_classification_desc__c}</a>
+                </p>
+              </div>
+              <div class="slds-tile__detail">
+                <dl class="slds-list_horizontal slds-wrap">
+                  <dt class="slds-item_label slds-text-color_weak slds-truncate">Product family:</dt>
+                  <dd class="slds-item_detail slds-truncate">{!product.DES_Product_Family__c}</dd>
+                </dl>
+              </div>
+            </div>
+          </article>
+        <hr class="hrclass"></hr>
+        </aura:iteration>
+      </div>
+    </article>
+  </aura:renderIf>
+</aura:component>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Clave_Externa__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>Campo usado por el equipo de Back para poder generar una clave única que identifique a los registros y que puedan casar con sus datos</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>true</externalId>
+    <label>Clave Externa</label>
+    <length>100</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

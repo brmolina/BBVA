@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Last_Contact_Date__c</fullName>
+    <label>Last Contact Date</label>
+    <summarizedField>DES_Denorm_AccountVisits__c.DES_Start_Date__c</summarizedField>
+    <summaryForeignKey>DES_Denorm_AccountVisits__c.DES_Client__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

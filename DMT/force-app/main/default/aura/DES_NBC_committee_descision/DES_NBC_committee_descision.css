@@ -1,0 +1,73 @@
+.THIS{}
+/*Estilo para la lista*/
+.THIS .list li::before {
+    content: "\2022";
+    color: grey;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 44px;
+    vertical-align: top;
+    width: 20px;
+    line-height: 21px;
+}
+.THIS .list {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 10px;
+    list-style: none;
+}
+.THIS .list .NonSup::before{
+    color: rgb(194,58,53);
+}
+.THIS .list .Sup::before{
+    color: rgb(4,132,75);
+}
+
+.THIS .NonSupportive, .THIS  .Supportive{
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-radius: 4.1px;
+    height: 6em;
+}
+.THIS .NonSupportive{
+    color: rgb(194,58,53);
+}
+.THIS .Supportive{
+    color: rgb(4,132,75);
+}
+.THIS .imgstyle{
+    margin-right: 1em;
+}
+.THIS .imgstyle2{
+    margin-right: 0.5em;
+    vertical-align: bottom;
+}
+.THIS .centrar{
+    padding-top: 0.7em;
+}
+.THIS .boton1{
+    width: 151.063px;
+    float: left;
+}
+.THIS .boton2{
+    width: 151.063px;
+    right: -13%;
+    float: right;
+}
+.THIS .decisionYes{
+    background-color: rgb(4,132,75);
+    color: white;
+}
+.THIS .decisionNon{
+    background-color: rgb(194,57,52);
+    color: white;
+}
+.THIS .littel{
+    height: 8.5em;
+}
+.THIS .description{
+    overflow: hidden;
+}
+.THIS .slds-box{
+    background: white!important;
+}

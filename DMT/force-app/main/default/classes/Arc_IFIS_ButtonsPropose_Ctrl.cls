@@ -81,6 +81,7 @@ public with sharing class Arc_IFIS_ButtonsPropose_Ctrl {
                     arce__recalculate_rating__c,
                     arce__AHA_Extension__r.arce__rating_copies_created__c,
                     arce__AHA_Extension__r.arce__rating_copies_validated__c,
+                    arce__RAR_rating_tool_id__c,
                     (SELECT Id FROM arce__Rating_Copies__r)
                 FROM arce__Account_has_Analysis__c
                 WHERE id = :ahaId
@@ -294,33 +295,5 @@ public with sharing class Arc_IFIS_ButtonsPropose_Ctrl {
         } catch (Exception e) {
             throw new AuraHandledException(System.Label.Arc_Gen_ApexCallError + ': ' + e); //NOSONAR
         }
-    }
-
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Get the configuration values to use in the component
-    * -----------------------------------------------------------------------------------------------
-    * @autor       marcos.gimeno.tech@bbva.com
-    * @date        22-05-2024
-    * @return      Serialized JSON with the configuration values
-    * @example     String configValues = getArceConfigs()
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @AuraEnabled(cacheable=true)
-    public static String getArceConfigs() {
-        final List<String> configNames = new List<String>{ 'EnableRatingSystem' };
-
-        final Map<String, String> arceConfMap = new Map<String, String>();
-        for (String configName : configNames) {
-            final List<arce__Arce_Config__mdt> arceConfList = arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo(
-                configName
-            );
-            for (arce__Arce_Config__mdt arceConf : arceConfList) {
-                arceConfMap.put(arceConf.arce__Config_Name__c, arceConf.arce__Value1__c);
-            }
-        }
-
-        return JSON.serialize(arceConfMap);
     }
 }

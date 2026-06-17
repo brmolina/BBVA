@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Contact__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Contact</label>
+    <lookupFilter>
+        <active>false</active>
+        <errorMessage>Contacts for &quot;Master Case User Notification&quot; must belong to &quot;BBVA Internal&quot; client account.</errorMessage>
+        <filterItems>
+            <field>Contact.Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>BBVA Internal Contact</value>
+        </filterItems>
+        <infoMessage>Search results display only contacts from &quot;BBVA Internal&quot; client account.</infoMessage>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Master Case User Notification</relationshipLabel>
+    <relationshipName>Master_Case_User_Notification</relationshipName>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

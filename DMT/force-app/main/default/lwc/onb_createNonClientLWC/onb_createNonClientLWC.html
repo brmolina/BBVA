@@ -1,0 +1,191 @@
+<template>
+    <lightning-modal-header>
+        <div class="slds-text-heading_medium">
+            {header}
+        </div>
+    </lightning-modal-header>
+    
+    <!-- ========================== BODY ========================== -->
+    <lightning-modal-body>
+
+        <!-- Mensaje de error general -->
+        <template lwc:if={showAccList}>
+            <div class="uiMessage error slds-m-bottom_small">
+                <lightning-icon icon-name="action:close"
+                                alternative-text="Error"
+                                size="small"
+                                class="slds-m-right_x-small">
+                </lightning-icon>
+                <span>{labelFollowRequirements}</span>
+            </div>
+        </template>
+
+        <template lwc:else>
+            <p>{labelCheckSimilar}</p><br/>
+        </template>
+
+        
+
+        <!-- ========================== FORMULARIO ========================== -->
+        <template lwc:if={showForm}> 
+            <div class="first-screen-form">
+                <div class="form-row">
+                    <lightning-input
+                        name="clientName"
+                        label="Client Name"
+                        value={clientName}
+                        onchange={handleNameChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="form-row">
+                    <lightning-input
+                        name="clientLei"
+                        label={labelLei}
+                        value={clientLei}
+                        onchange={handleLeiChange}
+                        maxlength={leiMaxLength}>
+                    </lightning-input>
+                </div>
+
+                <div class="form-row">
+                    <lightning-input
+                        name="clientCif"
+                        label="CIF"
+                        value={clientCif}
+                        onchange={handleCifChange}
+                        maxlength={cifMaxLength}>
+                    </lightning-input>
+                </div>
+
+                
+            <!-- Warning -->
+            <template lwc:if={showWarning}>
+                <div class="uiMessage warning slds-m-bottom_small">
+                    <lightning-icon icon-name="utility:warning"
+                                    alternative-text="Warning"
+                                    class="warning-white slds-m-right_x-small">
+                    </lightning-icon>
+                    <lightning-formatted-rich-text
+                        class="bBody"
+                        value={msg}>
+                    </lightning-formatted-rich-text>
+                </div>
+            </template>
+
+            <!-- Confirm / noAccountsMsg -->
+            <template lwc:if={noAccountsMsg}>
+                <div class="confirmMessage uiMessage confirm slds-m-bottom_small">
+                    <lightning-icon icon-name="action:approval"
+                                    alternative-text="Confirm"
+                                    size="small"
+                                    class="slds-m-right_x-small">
+                    </lightning-icon>
+                    <lightning-formatted-rich-text
+                        class="bBody"
+                        value={msg}>
+                    </lightning-formatted-rich-text>
+                </div>
+            </template>
+
+                <div class="slds-m-top_medium slds-text-align_center">
+                    <lightning-button
+                        class="contrast-button"
+                        variant="brand"
+                        label="Contrast"
+                        onclick={handleContrast}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- ========================== LISTA DE CUENTAS ========================== -->
+        <template lwc:if={showAccList}>
+            <div class="table-account" style="width: 100%; height: 200px;">
+                <div class={scrollerWrapperClass}>
+                    <div class="innerDivWrapper">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate">{labelClientName}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">Client Type</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{labelLei}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">CIF</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={similarAccounts} for:item="item">
+                                    <tr key={item.clientLink} class="slds-hint-parent">
+                                        <th data-label={labelClientName} scope="row">
+                                            <template lwc:if={item.isExactName}>
+                                                <div class="slds-truncate">
+                                                    <a href={item.clientLink}>{item.clientName}</a>
+                                                </div>
+                                            </template>
+                                            <template if:false={item.isExactName}>
+                                                <a href={item.clientLink}>{item.clientName}</a>
+                                            </template>
+                                        </th>
+                                        <td data-label="Client Type">
+                                            <div class="slds-truncate">{item.clientType}</div>
+                                        </td>
+                                        <td data-label="LEI">
+                                            <div class="slds-truncate">{item.LEI}</div>
+                                        </td>
+                                        <td data-label="CIF">
+                                            <div class="slds-truncate">{item.CIF}</div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </lightning-modal-body>
+
+    <!-- ========================== FOOTER DESKTOP ========================== -->
+
+    <template lwc:if={showFooter}>
+        <lightning-modal-footer>
+            <template lwc:if={showCancel}>
+                <lightning-button class="right-position slds-m-right_small"
+                                    label={labelCancel}
+                                    title="Cancel"
+                                    onclick={handleClose}>
+                </lightning-button>
+            </template>
+            <template lwc:if={showBack}>
+                <lightning-button class="right-position slds-m-right_small"
+                                    label={labelBack}
+                                    title="Back"
+                                    onclick={handleBack}>
+                </lightning-button>
+            </template>
+            <lightning-button class="right-position"
+                            variant="brand"
+                            label={labelContinue}
+                            title="Continue"
+                            onclick={handleContinue}
+                            disabled={disableContinue}>
+            </lightning-button>
+            
+            <!--<lightning-button class="rigth-position"
+                                variant="brand"
+                                label={labelContinue}
+                                title="Save"
+                                onclick={handleSave}
+                                disabled={disableContinue}>
+            </lightning-button-->
+        </lightning-modal-footer>
+    </template>
+</template>

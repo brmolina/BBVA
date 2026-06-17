@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Assign_To_Fixed_Prices_Account_Valid</fullName>
+    <active>true</active>
+    <description>To assign a case to fixed prices department, the case must be related to an account that is not BBVA Internal Contact.</description>
+    <errorConditionFormula>AND(
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ Owner:Queue.DeveloperName = &quot;SER_Fixed_Data&quot;,
+OR
+(
+  ISBLANK(AccountId),
+  Account.Name = &quot;BBVA Internal Contact&quot;
+)
+)</errorConditionFormula>
+    <errorDisplayField>AccountId</errorDisplayField>
+    <errorMessage>To assign a case to fixed prices department, the case must be related to an account that is not BBVA Internal Contact.</errorMessage>
+</ValidationRule>

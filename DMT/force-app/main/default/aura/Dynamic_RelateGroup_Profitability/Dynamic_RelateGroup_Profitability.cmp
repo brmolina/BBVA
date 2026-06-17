@@ -1,0 +1,84 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,force:hasSObjectName" 
+                access="global" controller="DynamicRelateProfability_cls" >
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />
+    <aura:attribute name="recordId" type="Id" default="{!v.recordId}" />
+    <aura:attribute name="ProductIS" type="String" default="CLIENTE" />
+    <aura:attribute name="coint1" type="String" default="PEN" />
+    <aura:attribute name="profiType" type="String" default="TOTAL CLIENTE"/> 
+    <aura:attribute name="profiType1" type="String" default="TOTAL DI"/> 
+    <aura:attribute name="profiType2" type="String" default="TOTAL SPREAD"/> 
+    <aura:attribute name="profiType3" type="String" default="TOTAL TASA"/> 
+    <aura:attribute name="profiType4" type="String" default=""/> 
+    <aura:attribute name="isLoad" type="Boolean" access="global" default="false"/>
+    <aura:attribute name="sizeColSpanMatrix" type="String"/>
+    <aura:attribute name="bGrafica" type="Boolean" default="false" />
+    <aura:attribute name="options" type="List" default="[]"/>
+    <aura:attribute name="fInicial" type="Date" />
+    <aura:attribute name="fFInal" type="Date" />
+	<aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner />
+    </aura:if>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" /> 
+	<div>
+        <div class="slds-box slds-grid">
+            <div class="slds-col slds-size_2-of-3">
+                <lightning:combobox name="general" placeholder="TOTAL CLIENTE"  dropdownAlignment="right"
+                                    variant="label-hidden" label="" options="{! v.options }" onchange="{!c.chgProduct}" />
+            </div>
+            <div class="slds-col slds-grow-none">
+                &nbsp;
+            </div>
+            <div class="slds-col slds-size_1-of-3 slds-grid_align-center">
+                <lightning:buttonGroup> 
+                    &nbsp;
+                    <lightning:button aura:id="BtnTotal" disabled="false" variant="Neutral" label="Total" title="Total" onclick="{! c.BtnChangTotal}"/>
+                    <lightning:button aura:id="BtnPEN" disabled="false" variant="Neutral" label="MN" title="MN" onclick="{!c.BtnChangPEN}"/>
+                    <lightning:button aura:id="BtnUSD" disabled="false" variant="Neutral" label="ME" title="ME" onclick="{!c.BtnChangUSD}"/>
+                </lightning:buttonGroup>
+            </div>
+        </div>
+        <br></br>
+        <div class="slds-box">
+            <aura:if isTrue="{!v.isLoad}">   
+                <dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                       sObjectName="{!v.sObjectName}"
+                                                       Type="Matrix"
+                                                       customLabelAPInameError="AccountNoData"
+                                                       showTitle="false"
+                                                       Object="Account_Profitability__c"
+                                                       RelatedField="account_id__c"
+                                                       Header="Value_Unificade__c"
+                                                       FilterStatic="{!'is_date_type_1_within_last_6_months__c = true and product_desc__c!=\'\' and 
+                                                                     product_desc__c=\''+v.ProductIS+'\' and origin_currenIso_Name__c=\''+v.coint1+'\' and 
+                                                                     profitability_subcategory_type__c IN (\''+v.profiType+'\',\''+v.profiType1+'\',\''+v.profiType2+'\',\''+v.profiType3+'\',\''+v.profiType4+'\')'}"
+                                                       Order="profitability_subcategory_type_order__c ASC, year_month_day_date__c ASC" 
+                                                       Group="profitability_subcategory_form__c"
+                                                       HeaderGroup="period__c"
+                                                       hidenSubHeadMatrix="true"
+                                                       CollapsedDefault="true"
+                                                       Format=" "
+                                                       Summarize="SUM"
+                                                       Symbol="true"
+                                                       PositionCurrency="rigth"
+                                                       Collapsed="true" 
+                                                       />        
+            </aura:if>
+            <br></br>
+            <div>
+                <aura:if isTrue="{!v.bGrafica}">
+                    
+                    <c:GraphicsGenerator_comp NombreCanvas="Evolución Facturación Total"
+                                              posicionLeyenda="right" 
+                                              NombreInforme="EVOLUCION_FACTURACION_TOTAL"        
+                                              TipoGrafica="line"
+                                              Id="{!v.recordId}"
+                                              Colores="#004481,#f7893b,#da3851,#48ae64,#bdbdbd"
+                                              Filtro="{!v.ProductIS}"
+                                              FiltroRango="{!v.profiType}"
+                                              />
+                    
+                </aura:if>
+            </div>
+        </div>
+    </div>
+</aura:component>

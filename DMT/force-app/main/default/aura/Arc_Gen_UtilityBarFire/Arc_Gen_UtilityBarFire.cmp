@@ -1,0 +1,8 @@
+<aura:component implements="lightning:isUrlAddressable,force:hasRecordId,flexipage:availableForAllPageTypes,force:hasSObjectName,lightning:utilityItem" controller="Arc_Gen_UtilityBarFire_Controller" access="global">
+    <aura:attribute name="recordId" type="Id" description="Standard record id"/>
+    <aura:attribute name="pageReference" type="Object" description="variable to save page reference"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <lightning:navigation aura:id="navService"/>
+    <lightning:button label="{!$Label.c.Arc_Gen_ResumeTable}" onclick="{!c.handleClick}"/>
+</aura:component>

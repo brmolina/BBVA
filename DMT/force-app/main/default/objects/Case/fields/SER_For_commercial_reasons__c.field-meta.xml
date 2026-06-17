@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_For_commercial_reasons__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>We flag it when the case is commercially authorized</description>
+    <label>For commercial reasons</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

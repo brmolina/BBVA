@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Desktop_Compact_Layout</fullName>
+    <fields>Subject</fields>
+    <fields>OwnerId</fields>
+    <fields>WhatId</fields>
+    <fields>ActivityDate</fields>
+    <label>Desktop Compact Layout</label>
+</CompactLayout>

@@ -1,0 +1,39 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable"
+                access="global" controller="GroupGeographyCnt">
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="country" type="String" default=""/>
+	<aura:attribute name="region" type="String" default="" />
+	<aura:attribute name="nameUser" type="String" default="" />
+	<aura:attribute name="nameId" type="Integer" default="" />
+	<aura:attribute name="info" type="Object" default="" />
+
+	<lightning:navigation aura:id="nav" />
+
+	<aura:if isTrue="{!v.country != null}" >
+		 <div class="customDiv">
+			<div id="wr_zone" class="slds-grid ">
+				<div id="wr_iconRegion" class=" slds-col slds-size_1-of-3 slds-small-size_1-of-3 slds-x-small-size_1-of-3 slds-medium-size_1-of-4 slds-p-horizontal_xxx-small ">
+					<lightning:icon iconName="standard:lead" size="medium" alternativeText="Report" />
+				</div>
+				<div id="wr_regionText" class=" slds-col slds-size_2-of-3 slds-small-size_2-of-3 slds-x-small-size_2-of-3 slds-medium-size_3-of-4 slds-p-horizontal_xxx-small ">
+					<strong>{!v.country}</strong><br />
+					{!v.region}
+				</div>
+			</div>
+			<br/>
+			<div id="wr_person" class="slds-grid">
+				<div id="wr_iconTB" class=" slds-col slds-size_1-of-3 slds-small-size_1-of-3 slds-x-small-size_1-of-3 slds-medium-size_1-of-4 slds-p-horizontal_xxx-small ">
+					<lightning:icon iconName="action:user" size="xx-small" alternativeText="Report" />
+				</div>
+				<div id="wr_TBText" class=" slds-col slds-size_2-of-3 slds-small-size_2-of-3 slds-x-small-size_2-of-3 slds-medium-size_3-of-4 slds-p-horizontal_xxx-small ">
+					Transaction<br/>Banker
+					<br/>
+					<a onclick="{!c.navigateToUser}">{!v.nameUser}</a>
+				</div>
+			</div>
+		</div>
+
+	</aura:if>
+
+
+</aura:component>

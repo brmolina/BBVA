@@ -6,7 +6,7 @@ public with sharing class DMT_OtherApprovalProcessDataRenderer implements DMT_Vi
         try {
             DMT_Line__c line = data.line;
             String html = '<div>'
-                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">APPROVAL PROCESS DATA</h2>'
+                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Approval Process Data</h2>'
                 + '<table class="style-table" style="width:100%; border-collapse: separate; border-spacing: 10px 0; table-layout: fixed; margin-left: -10px; margin-right: -10px;">'
                 + '<colgroup>'
                 + '<col style="width: 50%;">'
@@ -87,7 +87,7 @@ public with sharing class DMT_OtherApprovalProcessDataRenderer implements DMT_Vi
             contentProcessData.add(pageBreak);
     
             //TITLE PROECESS DARA
-            contentProcessData.add(DMT_Create_Pdf_Controller.createTitle('APPROVAL PROCESS DATA'));
+            contentProcessData.add(DMT_Create_Pdf_Controller.createTitle('Approval Process Data'));
             //TEXT APPROVAL PROCESS DATA
             Map<String, Object> textProcessData = new Map<String, Object>();
             List<String> name = new List<String>();

@@ -1,0 +1,23 @@
+<design:component>
+    <design:attribute name="queryField" label="Query field" required="true"
+      description="API Name field that relates the current object with the Business Plan"/>
+    <design:attribute name="parentObjectName" label="Current Record Object Name" required="true" 
+    	description="API Name of the object where the Business Plan is displayed."/>
+    <design:attribute name="parentObjectParentIdFieldName" label="Current Record Parent/Related Field Name" required="true" 
+    	description="API Name of the look up field that relates object from which we display the component, with object from which we want to get the Business Plan Items"/>
+    <design:attribute name="parentIdFieldName" label="Children Records ParentId Field API Name" required="true" 
+    	description="API Name of the look up field in Business Plan Item object which is related with the target object"/>
+    <design:attribute name="sectionGroupingField" label="Section Grouping Field" required="true" 
+        description="API Name of the field used for separating the Items into several tables"/>
+    <design:attribute name="gridGroupingField" label="Grid Grouping Field" required="true"
+        description="API Name of the field by which records will be grouped in each one of the tables." />
+    <design:attribute name="noAccessBPmsg" label="No access Business Plan message" required="false"
+        description="Message displayed when Business Plan record data is not allowed for the user." />        
+    <design:attribute name="showtotals" label="Show Totals" required="false"
+        description="Controls the visibility of totals section" />
+    <design:attribute name="showtable" label="Show Table" required="false"
+        description="Controls the visibility of table" />
+    <design:attribute name="lastValidatedVersion" label="Last validated BP version data" required="false"
+        description="If checked, totals and table show last validated BP version data. If unchecked, current version data." />
+    <design:attribute name="currencyISOCode" label="Deprecated attribute" required="false"/>
+</design:component>

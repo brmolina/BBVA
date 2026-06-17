@@ -22,27 +22,14 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_Filter_Selected:"Filter by selected",
-        DMT_ErrorToastTitle:"Something went wrong",
+              @track Label={DMT_Error_MainHolder:"No main holder has been selected for the multiclient group",
         DMT_ErrorToastSubTitle:"Please check the details below",
-        DMT_Error_MainHolder:"No main holder has been selected for the multiclient group"
+        DMT_ErrorToastTitle:"Something went wrong",
+        dmt_cl_Filter_Selected:"Filter by selected"
         };
               pubsubEvent = [];
               customEvent = [];
-               
-        firstRender2 = true;
-        @wire(getRecord , {recordId: "$recordId" , fields:"DMT_Line__c.Id",optionalFields: $cmp.getWireOptionalFields(data.events[2])})
-          wiredRecord2({ error, data }){
-            if (this.objectApiName === 'DMT_Line__c'){
-              if(data && this.firstRender2){
-                this.firstRender2 = false;
-                return;
-              }else{
-                this.recordChangeEventHandler(error,data,2)
-              }
-            }
-          }
-        
+              
               connectedCallback() {
                 super.connectedCallback();
                 this.setThemeClass(data);
@@ -56,9 +43,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L5vIYAS"
+                  " card-0koKE000000L7ZvYAK"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003oyv12AA");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ1n2AG");
                 
                 
               }
@@ -73,6 +60,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
 
               registerEvents() {
                 
+        this.pubsubEvent[0] = {
+          [interpolateWithRegex(`refresh`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[2],2)
+        };
+        this.pubsubChannel0 = interpolateWithRegex(`linestab`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
+
+        this.pubsubEvent[1] = {
+          [interpolateWithRegex(`reload`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[6],6)
+        };
+        this.pubsubChannel1 = interpolateWithRegex(`dmtSaveCompleted`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
+
             this.customEventName0 = interpolateWithRegex(`selectclientdmt`,this._allMergeFields,this._regexPattern,"noparse");
             this.customEvent[0] = this.handleEventAction.bind(this, data.events[0],0);
 
@@ -106,7 +105,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               }
 
               unregisterEvents(){
-                
+                pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
+
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
             this.template.removeEventListener(this.customEventName1,this.customEvent[1]);

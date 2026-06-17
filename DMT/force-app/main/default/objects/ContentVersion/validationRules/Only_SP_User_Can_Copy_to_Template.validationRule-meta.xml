@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Only_SP_User_Can_Copy_to_Template</fullName>
+    <active>true</active>
+    <description>Impide que un usuario con un perfil que no sea el de S&amp;P modifique el check de &apos;Copy to NBC&apos;</description>
+    <errorConditionFormula>AND(
+				    $Profile.Name !=  $Label.DES_Profile_BBVA_Desktop_SP,
+        ISCHANGED(Copy_to_NBC__c)
+			)</errorConditionFormula>
+    <errorDisplayField>Copy_to_NBC__c</errorDisplayField>
+    <errorMessage>Only S&amp;P Team can edit &apos;Copy to NBC&apos;</errorMessage>
+</ValidationRule>

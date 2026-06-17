@@ -1,0 +1,1100 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId"
+                access="global" controller="DES_IpFormController">
+    <ltng:require styles="{!$Resource.questionnary}"/>
+
+    <aura:attribute name="questions" type="Map"/>
+    <aura:attribute name="codBbvaUser" type="String"/>
+    <aura:attribute name="endPoint" type="String"/>
+    <aura:attribute name="idOppIP" type="String"/>
+    <aura:attribute name="data_formExt" type="Object"/>
+    <aura:attribute name="data_CompaniesExt" type="Object"/>
+    <aura:attribute name="data_form" type="Object"/>
+    <aura:attribute name="data_bbvaInsiders" type="Object"/>
+    <aura:attribute name="data_extInsiders" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <aura:attribute name="formCountry" type="String"/>
+    <aura:attribute name="isAllDataLoad" type="Boolean" default="false"/>
+
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="Id, IsDeleted, Name, CurrencyIsoCode, RecordTypeId, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById,
+    reserved_information_type__c, reserved_information_desc__c, 
+    oper_prvlg_stk_mkt_afct_ind_type__c, oper_prvlg_stk_mkt_afct_desc__c, oper_afct_cust_revenue_ind_type__c, 
+    oper_afct_cust_revenue_desc__c, oper_afct_cust_bal_ind_type__c, oper_afct_cust_bal_desc__c, operation_strategic_ind_type__c, 
+    operation_strategic_desc__c, operation_viable_ind_type__c, operation_viable_desc__c, operation_cmtee_apprv_ind_type__c, 
+    operation_cmtee_apprv_desc__c, oper_info_stakeholders_ind_type__c, oper_info_stakeholders_desc__c, non_disclosure_agree_ind_type__c, 
+    non_disclosure_agree_desc__c, requester_info_complete_ind_type__c, requester_info_complete_desc__c, oper_materialized_ind_type__c, 
+    operation_materialized_desc__c, oper_stakeholder_invest_ind_type__c, oper_stakeholder_invest_desc__c, operation_privileged_ind_type__c, 
+    oper_prvlg_other_prtcpt_desc__c, oper_cnmv_cmun_ind_type__c, oper_cnmv_cmun_desc__c, other_information_desc__c, user_name__c, 
+    compliance_form_send_date__c, operation_privileged_name__c, operation_privileged_desc__c, operation_privileged_start_date__c, 
+    cust_low_profitabilliy_ind_type__c, cust_low_profitabilliy_desc__c, status_type__c, participant_name__c, participant1_name__c, 
+    participant2_name__c, participant3_name__c, participant4_name__c, participant5_name__c, prtcpt_stock_exch_ind_type__c, 
+    prtcpt_stock_exch_ind1_type__c, prtcpt_stock_exch_ind2_type__c, prtcpt_stock_exch_ind3_type__c, prtcpt_stock_exch_ind4_type__c, 
+    prtcpt_stock_exch_ind5_type__c, country_id__c, oper_manager_informed_ind_type__c, opportunity_id__c, 
+    gf_master_agreement_desc__c, gf_reason_funds_used_ind_type__c, gf_reason_funds_used_desc__c, 
+    gf_agree_more_3_per_desc__c, gf_master_agreement_type__c, gf_agree_more_3_per_type__c"
+                      targetFields="{!v.data_form}"
+                      targetError="{!v.recordLoadError}"
+                      recordUpdated="{!c.doInit}"
+    />
+
+    <aura:handler event="aura:doneRendering" action="{!c.onDoneRendering}"/>
+
+    <div class="printable">
+
+            <header>
+                <img src="{!$Resource.New_header_BBVA_background2}"/>
+                <div class="header-left">
+                    <img class="logo-size" src="{!$Resource.New_Logo_BBVA_Creating_Opportunities_Transparent}"
+                         alt="New Logo BBVA"/>
+                </div>
+            </header>
+
+            <!-- ****************** ****************** INICIO CUESTIONARIO ****************** ******************  -->
+            <div class="page">
+                <div class="header-containerTitle">
+                    <div class="header-title">
+                        <p>Inside Information/MNPI Projects Verification Checklist</p>
+                    </div>
+                </div>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_1}</p></th>
+                        <th>Yes</th>
+                        <th>No</th>
+                        <th>N/A</th>
+                        <th>Comments</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td>{!v.questions.Q1_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_prvlg_stk_mkt_afct_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_prvlg_stk_mkt_afct_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_prvlg_stk_mkt_afct_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.listedComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_2}</p></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q2_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.reserved_information_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.reserved_information_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.reserved_information_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.notPublicComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_3}</p></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q3_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_revenue_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_revenue_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_revenue_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.profitComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q3_2}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_bal_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_bal_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_afct_cust_bal_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.balanceComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q3_3}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.cust_low_profitabilliy_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.cust_low_profitabilliy_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.cust_low_profitabilliy_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.lossComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q3_4}</td>                        
+                        <td colspan="3">
+					{! v.data_form.gf_master_agreement_type__c}
+                            <!-- No descomentar esto hasta que se cambie los valores de la picklist a YES/NO/N.A.
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_master_agreement_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                            -->
+                        </td>
+                        <!--
+                        <td>
+                            
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_master_agreement_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_master_agreement_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                            
+                        </td>
+                        -->
+                        <td><!-- No descomentar esto hasta que se cambie encripte este campo y venga de la BBDD externa
+                            {!v.data_formExt.gf_master_agreement_desc__c} 
+                            -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q3_5}</td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_reason_funds_used_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_reason_funds_used_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_reason_funds_used_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td><!--
+                            {!v.data_formExt.gf_reason_funds_used_desc__c} 
+                            -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q3_6}</td>
+                        <td>						
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_agree_more_3_per_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_agree_more_3_per_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                    <div class="{! v.data_form.gf_agree_more_3_per_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td><!--  No descomentar esto hasta que se cambie encripte este campo y venga de la BBDD externa
+                            {!v.data_formExt.gf_agree_more_3_per_desc__c} 
+                            -->
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_4}</p></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q4_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_strategic_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_strategic_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_strategic_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.strategicComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            <div class="page">
+
+                <div class="header-containerTitle">
+                    <div class="header-title">
+                        <p>Inside Information/MNPI Projects Verification Checklist</p>
+                    </div>
+                </div>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_5}</p></th>
+                        <th>Yes</th>
+                        <th>No</th>
+                        <th>N/A</th>
+                        <th>Comments</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q5_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_viable_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_viable_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_viable_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.analysisComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_2}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_cmtee_apprv_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_cmtee_apprv_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_cmtee_apprv_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.comiteComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_3}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_info_stakeholders_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_info_stakeholders_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_info_stakeholders_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.thirPartyComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_4}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.non_disclosure_agree_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.non_disclosure_agree_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.non_disclosure_agree_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.confidentialComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_5}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.requester_info_complete_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.requester_info_complete_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.requester_info_complete_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.priceComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_6}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_materialized_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_materialized_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_materialized_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.achieveComments}</td>
+                    </tr>
+                    <tr>
+                        <td>{!v.questions.Q5_7}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_stakeholder_invest_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_stakeholder_invest_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_stakeholder_invest_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.investmentComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_6}</p></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q6_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_privileged_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_privileged_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.operation_privileged_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.insideComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th><p>{!v.questions.Title_Section_7}</p></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.questions.Q7_1}</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_cnmv_cmun_ind_type__c == 'YES' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_cnmv_cmun_ind_type__c == 'NO' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_form.oper_cnmv_cmun_ind_type__c == 'N.A.' ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>{!v.data_formExt.publishComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+            <!-- ****************** ****************** FIN CUESTIONARIO ****************** ******************  -->
+
+            <div class="page">
+                <div class="header-containerTitle">
+                    <div class="header-title">
+                        <p>Inside Information/MNPI file registration request</p>
+                    </div>
+                </div>
+
+                <table width="75%"  class="questn-table2">
+                    <tbody>
+                    <tr>
+                        <td  colspan="2">Notification Date (DD/MM/YYYY):&nbsp;
+                            <lightning:formattedDateTime value="{!v.data_form.compliance_form_send_date__c}"
+                                                         year="numeric" month="2-digit" day="2-digit"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="75%">From: {!v.data_form.user_name__c}</td>
+                        <td >To: S&amp;D Compliance</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>1. Code Name:</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.data_form.Name}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>2. Brief description of the transaction:</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.data_formExt.operationDescription}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>3. Affected securities:</th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <table class="form-table">
+                    <thead>
+                    <tr>
+                        <th width="11%">&nbsp;&nbsp;&nbsp;Company Name</th>
+                        <th width="5%" colspan="4">Listed</th>
+                        <th width="2%"></th>
+                        <th width="11%">Company Name</th>
+                        <th width="5%" colspan="4">Listed</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td>{!v.data_CompaniesExt[0].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[0].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[0].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td></td>
+
+                        <td>{!v.data_CompaniesExt[1].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[1].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[1].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>{!v.data_CompaniesExt[2].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[2].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[2].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td></td>
+
+                        <td>{!v.data_CompaniesExt[3].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[3].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[3].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>{!v.data_CompaniesExt[4].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[4].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[4].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td></td>
+
+                        <td>{!v.data_CompaniesExt[5].companyName}</td>
+                        <td>Yes</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[5].listedCheck ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                        <td>No</td>
+                        <td>
+                            <div class="checkContainer">
+                                <div class="{! v.data_CompaniesExt[5].listedCheck == false ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+
+
+                <table width="100%" class="questn-table2">
+                    <thead>
+                    <tr>
+                        <th colspan='2'>4. Date and time when this inside information was identified:</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan='2'>Date (DD/MM/YYYY):&nbsp;
+                            <lightning:formattedDateTime value="{!v.data_form.operation_privileged_start_date__c}"
+                                                         year="numeric" month="2-digit" day="2-digit"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="45%">Local Time (HH:MM):&nbsp;
+                            <lightning:formattedDateTime value="{!v.data_form.operation_privileged_start_date__c}"
+                                                         hour="2-digit" minute="2-digit"/>
+                        </td>
+                        <td>Country: {!v.formCountry}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+            </div>
+
+
+            <div class="page">
+                <div class="header-containerTitle">
+                    <div class="header-title">
+                        <p>Inside Information/MNPI file registration request</p>
+                    </div>
+                </div>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>5. Persons of BBVA Group who are considered “insiders” (they participate in the transaction
+                            or
+                            know of it), The Area or Department where they work, the date and time at which they
+                            obtained
+                            access to the information and the function and the reason for being on this list:
+                        </th>
+                    </tr>
+                    </thead>
+                </table>
+
+                <table class="form-table">
+                    <thead>
+                    <tr>
+                        <th width="23%">&nbsp;&nbsp;&nbsp;Name</th>
+                        <th width="19%">Area or Departament</th>
+                        <th width="18%">Date and Time</th>
+                        <th colspan="2">Function and reason for being insider</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <aura:iteration items="{!v.data_bbvaInsiders}" var="bbvaInsider">
+                        <tr>
+                            <td>{!bbvaInsider.person_name__c}</td>
+                            <td>{!bbvaInsider.employee_department_name__c}</td>
+                            <td>
+                                <lightning:formattedDateTime value="{!bbvaInsider.operation_user_assign_date__c}"
+                                                             year="numeric" month="2-digit" day="2-digit"
+                                                             hour="2-digit" minute="2-digit"/>
+                                <!-- lightning:formattedDateTime value="{!bbvaInsider.operation_user_assign_date__c}" timeZone="{!$Locale.timezone}" day="numeric" month="numeric" year="numeric" hour="2-digit" minute="2-digit"/ -->
+                                <!-- lightning:formattedDateTime value="{!bbvaInsider.operation_user_assign_date__c}" timeZone="UTC"/ -->
+                            </td>
+                            <td width="18%">{!bbvaInsider.role_name__c}</td>
+                            <td width="20%">{!bbvaInsider.operation_user_reason_acc_type__c}</td>
+                        </tr>
+                    </aura:iteration>
+                    </tbody>
+                </table>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>If necessary, you can include an additional sheet as an attachment.</th>
+                    </tr>
+                    </thead>
+                </table>
+                <br/>
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>6. In accordance with the Control of Inside Information procedure, it is assumed that the
+                            direct
+                            hierarchical superiors of the Project Leader of this transaction, up to General Manager
+                            level,
+                            have knowledge about it.
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>In the event of NOT having been informed by the Area at the date of this communication,
+                            please
+                            mark the box
+                            on this line with an "X":&nbsp;&nbsp;&nbsp;&nbsp;<div class="checkContainer">
+                                <div class="{! v.data_form.oper_manager_informed_ind_type__c ? 'checked':'' }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+
+
+            </div>
+
+            <aura:iteration items="{!v.data_extInsiders}" var="extInsiderPage">
+                <div class="page">
+                    <div class="header-containerTitle">
+                        <div class="header-title">
+                            <p>Inside Information/MNPI file registration request</p>
+                        </div>
+                    </div>
+
+                    <aura:if isTrue="{!extInsiderPage.pageNumber == 1}">
+                        <table class="questn-table">
+                            <thead>
+                            <tr>
+                                <th>7. List of persons outside of the BBVA Group who will participate in the operation and will therefore 
+                                    have knowledge of inside info/MNPI (attorneys, consultants, etc.). Please indicate if they have 
+                                    signed a Confidentiality Agreement (CA) with BBVA (please fill in the applicable fields):
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </aura:if>
+
+                    <table class="form-table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th width="16%" colspan="2">Person {!((extInsiderPage.pageNumber - 1) * 4) + 1}</th>
+                            <th width="16%" colspan="2">Person {!((extInsiderPage.pageNumber - 1) * 4) + 2}</th>
+                            <th width="16%" colspan="2">Person {!((extInsiderPage.pageNumber - 1) * 4) + 3}</th>
+                            <th width="16%" colspan="2">Person {!((extInsiderPage.pageNumber - 1) * 4) + 4}</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].person_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].person_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].person_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].person_name__c}</td>
+                        </tr>
+                        <tr>
+                            <td>National Identification Number</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].personal_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].personal_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].personal_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].personal_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Date of bith</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime value="{!extInsiderPage.externalInsiders[0].birth_date__c}"
+                                 year="numeric" month="2-digit" day="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime value="{!extInsiderPage.externalInsiders[1].birth_date__c}"
+                                 year="numeric" month="2-digit" day="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime value="{!extInsiderPage.externalInsiders[2].birth_date__c}"
+                                 year="numeric" month="2-digit" day="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime value="{!extInsiderPage.externalInsiders[3].birth_date__c}"
+                                 year="numeric" month="2-digit" day="2-digit"/>
+							</td>
+                        </tr>
+                        <tr>
+                            <td>Reason for being insider</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].operation_user_reason_acc_type__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].operation_user_reason_acc_type__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].operation_user_reason_acc_type__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].operation_user_reason_acc_type__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Function</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].role_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].role_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].role_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].role_name__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Date and local time (access to information)</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime
+                                        value="{!extInsiderPage.externalInsiders[0].operation_user_assign_date__c}"
+                                        year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime
+                                        value="{!extInsiderPage.externalInsiders[1].operation_user_assign_date__c}"
+                                        year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime
+                                        value="{!extInsiderPage.externalInsiders[2].operation_user_assign_date__c}"
+                                        year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"/>
+							</td>
+                            <td colspan="2">
+                                <lightning:formattedDateTime
+                                        value="{!extInsiderPage.externalInsiders[3].operation_user_assign_date__c}"
+                                        year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Company name</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].participant_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].participant_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].participant_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].participant_name__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Company address</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].participant_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].participant_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].participant_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].participant_address_struct_desc__c}</td>
+                        </tr>
+                        <tr>
+                            <td>City</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].town_name__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Post/Zip code</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].zipcode_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Country</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].country_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Work direct telephone line</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].phone_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].phone_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].phone_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].phone_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Work mobile number</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].cell_phone_number_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].cell_phone_number_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].cell_phone_number_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].cell_phone_number_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Personal address</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].person_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].person_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].person_address_struct_desc__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].person_address_struct_desc__c}</td>
+                        </tr>
+                        <tr>
+                            <td>City</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].address_town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].address_town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].address_town_name__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].address_town_name__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Post/Zip code</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].commerce_zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].commerce_zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].commerce_zipcode_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].commerce_zipcode_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Country</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].address_country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].address_country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].address_country_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].address_country_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Home telephone number</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].phone1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].phone1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].phone1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].phone1_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Personal mobile telephone</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[0].cell_phone_number1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[1].cell_phone_number1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[2].cell_phone_number1_id__c}</td>
+                            <td colspan="2">{!extInsiderPage.externalInsiders[3].cell_phone_number1_id__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Confidentiality agreement</td>
+                            <td width="1%"></td>
+                            <td>
+                                <div class="checkContainer">
+                                    <div class="{! extInsiderPage.externalInsiders[0].non_disclosure_agree_ind_type__c? 'checked':'' }"></div>
+                                </div>
+                            </td>
+                            <td width="1%"></td>
+                            <td>
+                                <div class="checkContainer">
+                                    <div class="{! extInsiderPage.externalInsiders[1].non_disclosure_agree_ind_type__c? 'checked':'' }"></div>
+                                </div>
+                            </td>
+                            <td width="1%"></td>
+                            <td>
+                                <div class="checkContainer">
+                                    <div class="{! extInsiderPage.externalInsiders[2].non_disclosure_agree_ind_type__c? 'checked':'' }"></div>
+                                </div>
+                            </td>
+                            <td width="1%"></td>
+                            <td>
+                                <div class="checkContainer">
+                                    <div class="{! extInsiderPage.externalInsiders[3].non_disclosure_agree_ind_type__c? 'checked':'' }"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <aura:if isTrue="{!extInsiderPage.pageNumber == v.data_extInsiders.length}">
+                        <br/>
+                        <table class="questn-table">
+                                <thead>
+                                <tr>
+                                    <th>If necessary, you can include an additional sheet as an attachment.</th>
+                                </tr>
+                                </thead>
+                        </table>
+                    </aura:if>
+                </div>
+            </aura:iteration>
+
+
+            <div class="page">
+                <div class="header-containerTitle">
+                    <div class="header-title">
+                        <p>Inside Information/MNPI file registration request</p>
+                    </div>
+                </div>
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>8. Notes:</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{!v.data_formExt.formComments}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+
+
+                <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>Signature</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Name: {!v.data_form.user_name__c}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <br/>
+                
+                <!-- <table class="questn-table">
+                    <thead>
+                    <tr>
+                        <th>(*)Mandatory data in Europe according to Regulation (EU) 2016/347: </th>
+                    </tr>
+                    </thead>
+                </table>
+                -->
+                <br/>
+            </div>
+
+    </div>
+
+</aura:component>

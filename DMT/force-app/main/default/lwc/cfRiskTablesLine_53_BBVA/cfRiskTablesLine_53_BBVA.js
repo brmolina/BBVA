@@ -22,7 +22,14 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              
+              @track Label={dmt_cl_TotalAmount:"Total Amount",
+        dmt_cl_CounterpartyRisk_Text:"COUNTERPARTY RISK (DERIVATIVES RISK LINE)",
+        dmt_cl_OneOffTransaction_Text:"ONE-OFF TRANSACTION",
+        dmt_cl_OperationalRestrc_Text:"OPERATIONAL RESTRICTIONS",
+        dmt_cl_AditionalProducts_Text:"Additional Products",
+        dmt_cl_DeposRiskLine_Text:"DEPOS RISK LINE (ONLY FOR FINANCIAL INSTITUTIONS)",
+        dmt_cl_EquitiesWrong_Text:"EQUITIES WRONG WAY RISK (WWR) LINE"
+        };
               pubsubEvent = [];
               customEvent = [];
                
@@ -46,14 +53,15 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                
+                this.customLabels = this.Label;
+                      
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L3UkYAK"
+                  " card-0koKN0000008Wz5YAE"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003QhPJ2A0");
+                this.loadCustomStylesheetAttachement("00PKN00000472Fy2AI");
                 
                 
               }

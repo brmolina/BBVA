@@ -118,9 +118,9 @@ global with sharing class HPGR_Client implements hpgr.Client_Itf {
     */
     private static Map<String,Object> getParentGroupFromId(Id clientId) {
         Map<String,Object> res = new Map<String, Object>{'recordCode' => '', 'errorMessage' => Label.hpgr.Error_Get_Data, 'success' => false};
-        final List<dwp_acmh__GBL_Account_Relationship__c> acmh = [SELECT dwp_acmh__Parent_Account__r.DES_Group_Code__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND DES_Main_Parent__c = 'S' AND dwp_acmh__Child_Account__c =:clientId];
-        if (acmh.size() > 0 && !String.isBlank(acmh[0].dwp_acmh__Parent_Account__r.DES_Group_Code__c)) {
-            res.put('recordCode', acmh[0].dwp_acmh__Parent_Account__r.DES_Group_Code__c);
+        final List<AMH_GBL_Account_Relationship__c> acmh = [SELECT AMH_Parent_Account__r.DES_Group_Code__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Vision__c = 'Riesgos' AND DES_Main_Parent__c = 'S' AND AMH_Child_Account__c =:clientId];
+        if (acmh.size() > 0 && !String.isBlank(acmh[0].AMH_Parent_Account__r.DES_Group_Code__c)) {
+            res.put('recordCode', acmh[0].AMH_Parent_Account__r.DES_Group_Code__c);
             res.put('errorMessage', '');
             res.put('success', true);
         } else {

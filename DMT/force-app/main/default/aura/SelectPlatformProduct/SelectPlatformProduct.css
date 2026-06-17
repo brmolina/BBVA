@@ -1,0 +1,16 @@
+.THIS .first-col {
+    padding-left: 0px;
+}
+
+.THIS .product-picklist > .slds-form-element {
+    margin-right: 0px !important;
+    padding-right: 0px !important;
+}
+
+.THIS .display-none {
+    display: none;
+}
+
+.THIS .container-picklist {
+    padding-left: 10px !important;
+}

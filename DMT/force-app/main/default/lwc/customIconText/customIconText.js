@@ -47,4 +47,6 @@ export default class customIconText extends LightningElement {
   get containerClass() {
     return 'slds-grid slds-grid_vertical-align-center slds-truncate';
   }
+
+
 }

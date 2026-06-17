@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Disable_Chatter__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This field must be checked for users who do not have to access to chatter (for example FINRA users from United States)</description>
+    <inlineHelpText>Disable Chatter for this user</inlineHelpText>
+    <label>Disable Chatter</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

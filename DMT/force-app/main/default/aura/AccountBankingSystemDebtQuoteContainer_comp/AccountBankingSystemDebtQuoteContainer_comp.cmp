@@ -1,0 +1,86 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+	<lightning:layout multipleRows="true">
+        <lightning:layoutItem flexibility="auto" padding="around-small" largeDeviceSize='6' size='6'>
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Matrix"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="true"
+                                              		  reportTitleAPI="AccountRankingClassification1"
+                                                      Object="Account_Banking_System_Debt__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="debt_quote_amount__c"
+                                                      FilterStatic="{!'is_last_date__c = true AND product_group_classification_id__c = \''+ $Label.c.AccountRankingClassificationTable1 +'\' AND product_desc__c = null AND entity_name__c != \'\''}"
+                                                      Format="%"
+                                                      Order="entity_order__c ASC"
+                                                      Group="product_group_classification_id__c"
+                                                      HeaderGroup="entity_name__c"
+                                                      hidenSubHeadMatrix="true"
+                                                      Collapsed="true"
+                                                      CollapsedDefault="true"
+                                                      Summarize="SUM"
+                                                      Symbol="true"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem flexibility="auto" padding="around-small" largeDeviceSize='6' size='6'>
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Matrix"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="true"
+                                              		  reportTitleAPI="AccountRankingClassification2"
+                                                      Object="Account_Banking_System_Debt__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="debt_quote_amount__c"
+                                                      FilterStatic="{!'is_last_date__c = true AND product_group_classification_id__c = \''+ $Label.c.AccountRankingClassificationTable2 +'\' AND product_desc__c = null AND entity_name__c != \'\''}"
+                                                      Format="%"
+                                                      Order="entity_order__c ASC"
+                                                      Group="product_group_classification_id__c"
+                                                      HeaderGroup="entity_name__c"
+                                                      hidenSubHeadMatrix="true"
+                                                      Collapsed="true"
+                                                      CollapsedDefault="true"
+                                                      Summarize="SUM"
+                                                      Symbol="true"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem flexibility="auto" padding="around-small" largeDeviceSize='6' size='6'>
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Matrix"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="false"
+                                                      Object="Account_Banking_System_Debt__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="debt_quote_amount__c"
+                                                      FilterStatic="{!'is_last_date__c = true AND product_group_classification_id__c = \''+ $Label.c.AccountRankingClassificationTable1 +'\' AND product_desc__c != \'\' AND entity_name__c != \'\''}"
+                                                      Format="%"
+                                                      Order="product_desc_order__c ASC, entity_order__c ASC"
+                                                      Group="product_desc_calc__c"
+                                                      HeaderGroup="entity_name__c"
+                                                      hidenSubHeadMatrix="true"
+                                                      Collapsed="true"
+                                                      CollapsedDefault="true"
+                                                      Summarize="SUM"
+                                                      Symbol="true"/>
+        </lightning:layoutItem>
+        <lightning:layoutItem flexibility="auto" padding="around-small" largeDeviceSize='6' size='6'>
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Matrix"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="false"
+                                                      Object="Account_Banking_System_Debt__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="debt_quote_amount__c"
+                                                      FilterStatic="{!'is_last_date__c = true AND product_group_classification_id__c = \'' + $Label.c.AccountRankingClassificationTable2 + '\' AND product_desc__c != \'\' AND entity_name__c != \'\''}"
+                                                      Format="%"
+                                                      Order="product_desc_order__c ASC, entity_order__c ASC"
+                                                      Group="product_desc_calc__c"
+                                                      HeaderGroup="entity_name__c"
+                                                      hidenSubHeadMatrix="true"
+                                                      Collapsed="true"
+                                                      CollapsedDefault="true"
+                                                      Summarize="SUM"
+                                                      Symbol="true"/>
+        </lightning:layoutItem>
+	</lightning:layout>
+</aura:component>

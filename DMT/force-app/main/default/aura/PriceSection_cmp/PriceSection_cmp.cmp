@@ -1,0 +1,6 @@
+<aura:component extends="c:Collapsable_comun" controller="SanctionPrice_ctrl" implements="force:hasRecordId">
+	<aura:attribute name="objectInput" type="Object" />
+	<aura:attribute name="typeView" type="String" default="_View" />
+	<aura:attribute name="hasDivider" type="Boolean" default="true" />
+	<c:FieldsForm_cmp aura:id="table" recordId="{!v.objectInput.IdOppLineItem}" isInput="false" valueDynamic="-,-" developerNameTable="{!v.objectInput.approvalMethod + v.typeView}" hasDivider="{!v.hasDivider}"/>
+</aura:component>

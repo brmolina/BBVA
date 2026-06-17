@@ -1,0 +1,115 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="month" type="String"/>
+    <aura:attribute name="year" type="String"/>
+    <aura:attribute name="currencyText" type="String" access="private"/>
+    <aura:attribute name="acquirerActivityWrapper" type="Object"/>
+
+    <div class="slds-box slds-m-vertical_x-small">
+        <span class="slds-text-heading_small">
+            <strong>{!$Label.c.DPMX_Summary_Title} - {!v.acquirerActivityWrapper.monthName}&nbsp;{!v.acquirerActivityWrapper.year}</strong>
+        </span>
+        <div class="slds-grid slds-wrap slds-m-top_medium slds-m-bottom_medium">
+            <div class="slds-p-vertical_xx-small slds-m-right_small">
+                <div class="slds-size_4-of-5">
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field1}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <!-- FALTA fieldValue -->
+                                        <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.extraBilling.amount}" currencyText="{!v.acquirerActivityWrapper.fees.extraBilling.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field2}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <!-- FALTA fieldValue -->
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.billing.amount}" currencyText="{!v.acquirerActivityWrapper.fees.billing.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field3}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <!-- FALTA fieldValue -->
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.cellnet.amount}" currencyText="{!v.acquirerActivityWrapper.fees.cellnet.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-p-vertical_xx-small slds-m-left_medium">
+                <div class="slds-size_4-of-5">
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field4}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.expenses.totalAmount.amount}" currencyText="{!v.acquirerActivityWrapper.expenses.totalAmount.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field5}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.expenses.mit.amount}" currencyText="{!v.acquirerActivityWrapper.expenses.mit.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td  class="color">
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Summary_Field6}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.acquirerActivityWrapper.basisPoints}"/>&nbsp;BPS
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FX</fullName>
+    <columns>RECORDTYPE</columns>
+    <columns>Platform__c</columns>
+    <columns>Product__c</columns>
+    <columns>Product_support__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Onboarding_Configuration__c.FX</value>
+    </filters>
+    <label>FX</label>
+</ListView>

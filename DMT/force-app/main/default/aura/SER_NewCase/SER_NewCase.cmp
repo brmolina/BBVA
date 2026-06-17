@@ -1,0 +1,105 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,force:hasSObjectName,force:lightningQuickActionWithoutHeader"
+  extends="c:SER_Connection"
+  access="global"
+  controller="SER_NewCase_CONTROLLER">
+  <lightning:workspaceAPI aura:id="workspace"/>
+
+  <aura:attribute name="recordId" type="Id" />
+  <aura:attribute name="userId" type="Id" access="public"/>
+  <aura:attribute name="gncRT" type="Id" access="public"/>
+  <aura:attribute name="steRT" type="Id" access="public"/>
+  <aura:attribute name="currentuser" type="User" access="public"/>
+  <aura:attribute name="newcaseid" type="String" access="public" default=""/>
+  <aura:attribute name="previousFocusedTab" type="String" access="public" default=""/>
+  <aura:attribute name="showBody" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="showSpinner" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="gncUser" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="steUser" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="strProduct" type="String" access="public" default=""/>
+  <aura:attribute name="strClient" type="String" access="public" default=""/>
+  <aura:attribute name="strrecordTypes" type="String" access="public" default=""/>
+  <aura:attribute name="incorrectGroup" type="Boolean" access="public" default=""/>
+  <aura:attribute name="strMailingGroupSTE" type="String" access="public" default=""/>
+  <aura:attribute name="stMailingGroupGNC" type="String" access="public" default=""/>
+  <aura:attribute name="strOutboundMailboxSTE" type="String" access="public" default=""/>
+  <aura:attribute name="strOutboundMailboxGNC" type="String" access="public" default=""/>
+  <aura:attribute name="hasGTBPermission" type="Boolean" access="public" default="false"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+
+  <aura:handler event="force:closeQuickAction" action="{! c.refresh }" />
+
+  <aura:if isTrue="{!v.showSpinner}">
+    <div role="status" class="slds-spinner slds-spinner_medium">
+      <span class="slds-assistive-text">Loading</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b">
+      </div>
+    </div>
+  </aura:if>
+
+  <aura:if isTrue="{!v.showBody}">
+    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container cls_modalcontainer_console_aligned" id="div_ModalContainer">
+        <div class="slds-modal__header">
+          <h1 id="header99" class="slds-text-heading--medium">New Case</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around--medium slds-form_compound slds-modal_large bodyHeight">
+          <lightning:recordEditForm aura:id="recordEditForm"
+            objectApiName="Case"
+            onsuccess="{!c.redirect}">
+            <lightning:messages />
+            <div class="slds-form slds-form_compound">
+              <fieldset class="slds-form-element">
+                <legend class="slds-form-element__label slds-text-title_caps">Case Information</legend>
+                <div class="slds-form-element__group">
+                  <div class="slds-form-element__row">      
+                    <lightning:inputField class="slds-hidden" aura:id="RecordTypeId" fieldName="RecordTypeId" value= "{!v.strrecordTypes}"/>
+                    <aura:if isTrue="{!v.gncUser}">
+                      <div class="slds-form-element slds-size_1-of-2">
+                        <lightning:inputField aura:id="AccountId" fieldName="AccountId"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 index10000">
+                        <lightning:inputField aura:id="Origin" fieldName="Origin"  class="index10000" />
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField aura:id="SER_MailingGroup__c" fieldName="SER_MailingGroup__c" value="{!v.stMailingGroupGNC}"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField  aura:id="SER_Outbound_Mailbox__c" fieldName="SER_Outbound_Mailbox__c" value="{!v.strOutboundMailboxGNC}"/>
+                      </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.steUser}">
+                      <div class="slds-form-element slds-size_1-of-2">
+                        <lightning:inputField aura:id="SER_Transactional_Reference__c" fieldName="SER_Transactional_Reference__c"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField aura:id="AccountId" fieldName="AccountId" value="{!v.strClient}"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField aura:id="SER_Product__c" fieldName="SER_Product__c" value="{!v.strProduct}"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField aura:id="SER_MailingGroup__c" fieldName="SER_MailingGroup__c" value="{!v.strMailingGroupSTE}"/>
+                      </div>
+                      <div class="slds-form-element slds-size_1-of-2 slds-hidden">
+                        <lightning:inputField  aura:id="SER_Outbound_Mailbox__c" fieldName="SER_Outbound_Mailbox__c" value="{!v.strOutboundMailboxSTE}"/>
+                      </div>
+                    </aura:if>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </lightning:recordEditForm>
+        </div>
+        <div class="slds-modal__footer">
+          <button class="slds-button slds-button--neutral" onclick="{!c.oncancel}">Cancel</button>
+          <button class="slds-button slds-button--brand" onclick="{!c.onsave}">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open">
+    </div>
+  </aura:if>
+</aura:component>

@@ -1,0 +1,104 @@
+.accordeon-heading-background {
+    --slds-c-accordion-summary-margin-bottom: 1% !important;
+    --slds-c-accordion-summary-border-radius: 5px;
+    --slds-c-accordion-summary-color-background: var(--slds-g-color-neutral-base-95, var(--lwc-colorBackground,rgb(243, 243, 243)));   
+}
+
+.accordeon-heading-background .slds-accordion__summary {
+    margin-bottom: 1%;
+}
+
+.dmt-table-title {
+    background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243)));   
+    font-weight: bold;
+}
+
+.status-indicator {
+    /* width: 35px; */
+    /* height: 35px; */
+    border-radius: 50%;
+    /*border: 2px solid #ccc; */
+    background-color: #555; 
+    margin: 1px;
+    
+}
+
+.red {
+    background-color: #555;
+}
+
+.yellow {
+    background-color: #555; 
+}
+
+.green {
+    background-color: #555; 
+}
+
+.grey {
+    background-color: #BDBDBD;
+    
+}
+
+.on1 {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2), inset 0px 0px 10px rgba(255, 255, 255, 0.7);
+    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2); 
+}
+
+.red.on {
+    /* background: linear-gradient(130deg, rgb(218, 56, 81) 0%, rgb(192, 71, 94) 35%, rgb(185, 42, 69) 100%);  */
+    background: linear-gradient(180deg, rgb(218, 56, 81) 0%, rgb(218, 56, 81) 35%, rgb(231, 125, 142) 100%);
+
+}
+
+.yellow.on {
+    /* background: linear-gradient(130deg, rgb(248, 205, 81) 0%, rgb(196, 151, 53) 35%, rgb(156, 108, 1) 100%); */
+    background: linear-gradient(180deg, rgb(248, 205, 81) 0%, rgb(248, 205, 81) 35%, rgb(250, 222, 142) 100%);
+
+}
+
+.green.on {
+    /* background: linear-gradient(130deg, rgb(72, 174, 100) 0%, rgb(56, 141, 79) 35%, rgb(39, 122, 62)100%); */
+    background: linear-gradient(180deg, rgb(72, 174, 100) 0%, rgb(72, 174, 100) 50%, rgb(136, 202, 154) 100%);
+}
+
+.traffic-light-container {
+    height: fit-content;
+    width: fit-content;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    place-items: center;
+}
+
+.dmt-tooltip-message {
+    visibility: hidden;
+}
+
+.dmt-tooltip:hover .dmt-tooltip-message {
+    visibility: visible;
+}
+
+.dmt-white-space-break-space {
+    white-space: break-spaces !important;
+}
+
+.dmt-warning .slds-icon-text-warning {
+    fill: rgb(248, 205, 81) !important;
+}
+.dmt-datatable-url{
+    pointer-events: auto;       
+    cursor: not-allowed;      
+}
+.dmt-datatable-url:hover{
+    cursor: not-allowed;
+}
+.dmt-datatable-url:active{
+    pointer-events: none; 
+}
+.fixed-button > button {
+    min-width: 200px !important;
+    text-align: center;
+}
+
+

@@ -1,0 +1,236 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="DES_IpOppController" access="global" >
+	<ltng:require scripts="{!$Resource.ipUtils}"/>
+	<aura:attribute name="codOwner" type="String"/>
+	<aura:attribute name="recordId" type="Id" />
+	<aura:attribute name="optyId" type="String"/>
+	<aura:attribute name="codUser" type="String"/>
+	<aura:attribute name="isVisible" type="boolean" default="true"/>
+	<aura:attribute name="isexpandedNeed" type="boolean" default="true"/>
+	<aura:attribute name="isexpandedSolution" type="boolean" default="true"/>
+	<aura:attribute name="isexpandedStatus" type="boolean" default="true"/>
+	<aura:attribute name="isexpandedIP" type="boolean" default="true"/>
+	<aura:attribute name="errorMessage" type="String" default=""/>
+	<aura:attribute name="opp" type="Object"/>
+	<aura:attribute name="ObjectType" type="Object"/>
+    <aura:attribute name="listOptionsCountry" type="List" default="[]"/>
+    <aura:attribute name="defaultOptionsCountry" type="List" default="[]"/>
+    <aura:attribute name="listOptionsBooking" type="List" default="[]"/>
+    <aura:attribute name="defaultOptionsBooking" type="String"/>
+    <aura:attribute name="countriesValues" type="String"/>
+    <aura:attribute name="bookingValues" type="String"/>
+    <aura:attribute name="countries" type="List" default="[]" />
+	<aura:attribute name="recordTypeId" type="Id" />
+    <aura:attribute name="isClosed" type="boolean" default="false"/>
+    <aura:attribute name="endpoint" type="String"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+
+	<aura:if isTrue="{!and(v.isVisible, v.opp != null)}">
+
+		<div aura:id="viewFormIP">
+			<div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView' + (v.isexpandedIP ? ' slds-is-open' : '')}">
+				<h3 class="slds-section__title slds-theme_shade">
+					<button aria-controls="divContent" aria-expanded="{!v.isexpandedIP}" onclick="{!c.changeStateIP}" class="slds-button slds-section__title-action">
+						<lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+						<span class="slds-truncate" title="Section Title">Details - Inside information</span>
+					</button>
+
+				</h3>
+				<div aria-hidden="{!!v.isexpandedIP}" class="slds-section__content" >
+
+                    <div class="slds-form slds-form_stacked ">
+
+						<div class="slds-grid slds-gutters_small full cols-1 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Description_rich__c.label}</span>
+									<aura:if isTrue="{!v.ObjectType.Opportunity.DES_Description_rich__c.helpText != null}">
+										<lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Opportunity.DES_Description_rich__c.helpText}"/>
+									</aura:if>
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:formattedText value="{!v.opp.needDescription}"/>
+											</div>
+											<lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Countries__c.label}</span>
+									<aura:if isTrue="{!v.ObjectType.Opportunity.DES_Countries__c.helpText != null}">
+										<lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Opportunity.DES_Countries__c.helpText}"/>
+									</aura:if>
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:formattedText value="{!v.countriesValues}"/>
+											</div>
+											<lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+							<div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Booking_Geography__c.label}</span>
+									<aura:if isTrue="{!v.ObjectType.Opportunity.DES_Booking_Geography__c.helpText != null}">
+										<lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Opportunity.DES_Booking_Geography__c.helpText}"/>
+									</aura:if>
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:formattedText value="{!v.bookingValues}"/>
+											</div>
+											<lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Description_reason_for_lost_deal__c.label}</span>
+									<aura:if isTrue="{!v.ObjectType.Opportunity.DES_Description_reason_for_lost_deal__c.helpText != null}">
+										<lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Opportunity.DES_Description_reason_for_lost_deal__c.helpText}"/>
+									</aura:if>
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:formattedText value="{!v.opp.descReasonLostDeal}"/>
+											</div>
+											<lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+							<div class="slds-col slds-grid slds-has-flexi-truncate  full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Comments__c.label}</span>
+									<aura:if isTrue="{!v.ObjectType.Opportunity.DES_Comments__c.helpText != null}">
+										<lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Opportunity.DES_Comments__c.helpText}"/>
+									</aura:if>
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:formattedText value="{!v.opp.additionalComments}"/>
+											</div>
+											<lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div aura:id="editFormIP" class="slds-hide">
+			<div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView' + (v.isexpandedIP ? ' slds-is-open' : '')}">
+				<h3 class="slds-section__title slds-theme_shade">
+					<button aria-controls="divContent" aria-expanded="{!v.isexpandedIP}" onclick="{!c.changeStateIP}" class="slds-button slds-section__title-action">
+						<lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+						<span class="slds-truncate" title="Section Title">Details - Inside information</span>
+					</button>
+
+				</h3>
+				<div aria-hidden="{!!v.isexpandedIP}" class="slds-section__content" >
+                    <lightning:recordEditForm
+                     recordId="{!v.recordId}"
+                     recordTypeId="{!v.recordTypeId}"
+           			 objectApiName="Opportunity">
+					<div class="slds-form slds-form_stacked ">
+						<div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label customRequired">{!v.ObjectType.Opportunity.DES_Description_rich__c.label}</span>
+
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:input required="true" name="input2" value="{!v.opp.needDescription}"/>
+											</div>
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_medium full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<lightning:inputField class="customRequired" aura:id="selectOptions" fieldName="DES_Countries__c" value="{!v.defaultOptionsCountry }"/>
+								</div>
+							</div>
+							<div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_medium  full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<lightning:inputField aura:id="bookingId" fieldName="DES_Booking_Geography__c" value="{!v.defaultOptionsBooking }"/>
+								</div>
+							</div>
+						</div>
+						<div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_medium full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Description_reason_for_lost_deal__c.label}</span>
+
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:input name="input8" value="{!v.opp.descReasonLostDeal}"/>
+											</div>
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+							<div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_medium  full forcePageBlockItem forcePageBlockItemView" role="listitem">
+								<div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+									<span class="slds-form-element__label">{!v.ObjectType.Opportunity.DES_Comments__c.label}</span>
+
+									<div class="slds-form-element__control">
+										<lightning:layout class="slds-hint-parent">
+											<div class="slds-form-element__static">
+												<lightning:input name="input6" value="{!v.opp.additionalComments}"/>
+											</div>
+										</lightning:layout>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				 </lightning:recordEditForm>
+
+
+				</div>
+			</div>
+			<lightning:layout horizontalAlign="center" class="slds-m-top_large">
+				<lightning:button variant="neutral" label="Cancel" title="Cancel Inside information Update" onclick="{!c.handleCancelIP}"/>
+				<lightning:button variant="brand" label="Save" title="Save Inside information" onclick="{!c.handleSaveIP}"/>
+			</lightning:layout>
+		</div>
+
+		<aura:set attribute="else">
+			<h1>
+                <h2>
+                    <div class="errorIP">
+                        <div class="slds-text-color_inverse slds-align_absolute-center">
+                            <lightning:icon iconName="utility:lock" variant="inverse" />
+                            <aura:unescapedHtml value="{!v.errorMessage}" />
+                        </div>
+                    </div>
+                </h2>
+            </h1>
+		</aura:set>
+	</aura:if>
+
+</aura:component>

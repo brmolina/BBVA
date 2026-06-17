@@ -1,0 +1,26 @@
+.THIS .table-test thead th span {
+  background-color: #fff;
+  border: 0;
+}
+
+.THIS .slds-form-element__help,
+.THIS .slds-assistive-text {
+  display: none !important;
+}
+
+.THIS .slds-table .slds-row-number::after {
+  content: counter(none) !important;
+  display: none !important;
+}
+
+.THIS .slds-table tr th:first-child {
+  width: 0 !important;
+}
+
+.THIS .slds-table tr td:first-child {
+  width: 0 !important;
+}
+
+.THIS .classButton {
+  height: 100%;
+}

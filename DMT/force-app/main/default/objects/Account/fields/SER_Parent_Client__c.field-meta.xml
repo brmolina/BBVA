@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Parent_Client__c</fullName>
+    <description>Parent account formula field to remove visibility on standard field</description>
+    <externalId>false</externalId>
+    <formula>Parent_Account_Name__c</formula>
+    <label>Parent client</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

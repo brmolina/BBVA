@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>operation_user_reason_acc_type__c</fullName>
+    <description>Motivo por el que el iniciado tiene que tener acceso a la operación</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Reason for being insider</label>
+    <length>2000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

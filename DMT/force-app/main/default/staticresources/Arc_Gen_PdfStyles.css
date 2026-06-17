@@ -1,0 +1,509 @@
+@media all {
+  div.saltopagina {
+    display: none;
+    top: 10;
+  }
+}
+
+@media print {
+  div.saltopagina {
+    display: block;
+    page-break-before: always;
+  }
+}
+
+* { 
+  font-family: Arial Unicode MS, sans-serif;  
+}
+
+@page {
+  margin-top: 3.5cm;
+
+  @top-center {
+    content: element(header);
+  }
+
+  @bottom-left {
+    content: element(footer);
+  }
+}
+
+@page rotated {
+  size: landscape;
+  margin-top: 3cm;
+  margin-left: 0.5cm;
+  margin-right: 0.5cm;
+
+  @top-center {
+    content: element(header);
+  }
+
+  @bottom-left {
+    content: element(footer);
+  }
+}
+
+.rotated {
+  page: rotated;
+  width: 10in;
+}
+
+.boldfnt {
+  font-weight: bold;
+  font-family: sans-serif;
+}
+
+.right {
+  text-align: right;
+}
+
+.leftAlign {
+  text-align: left;
+}
+
+.italicfnt {
+  font-style: italic;
+  font-family: sans-serif;
+}
+
+div.header {
+  position: running(header);
+}
+
+div.footer {
+  display: block;
+  padding: 5 px;
+  position: running(footer);
+}
+
+.pagenumber::before {
+  content: counter(page);
+}
+
+.pagecount::before {
+  content: counter(pages);
+}
+
+.contenedorencabezado {
+  overflow: hidden;
+  margin-top: 5 px;
+}
+
+.derechaencabezado {
+  float: right;
+  font-size: 10pt;
+  text-align: right;
+  color: #072146;
+  line-height: 150%;
+  width: 50%;
+}
+
+.izquierdaencabezado {
+  float: left;
+}
+
+.contenedorfirma {
+  overflow: hidden;
+}
+
+.derechafirma {
+  float: right;
+  width: 325px;
+  height: 60px;
+  font-size: 9pt;
+  color: # 404040;
+  line - height: 150 %;
+  text - align: center;
+}
+
+.izquierdafirma {
+  width: 325 px;
+  height: 60 px;
+  line - height: 150 %;
+  font - size: 9pt;
+  color: #404040;
+  text-align: center;
+}
+
+.boxed {
+  width: 100%;
+  border: 1px solid #dddbda;
+}
+
+.boxed td {
+  font-size: 7pt;
+}
+
+.boxed th {
+  font-size: 10pt;
+}
+
+.MnTitle {
+  font-size: 28pt;
+  color: #02a5a5;
+  margin: 0 auto;
+}
+
+.spaceBottom {
+  padding-bottom: 10px;
+}
+
+.SubTitle {
+  font-size: 12pt;
+  line-height: 115%;
+  color: #072146;
+  font-weight: bold;
+}
+
+h3 {
+  font - size: 16pt;
+  line - height: 150 %;
+  color: #09f;
+}
+
+h4 {
+  font-size: 12pt;
+  line-height: 150%;
+  color: # 0070 C0;
+}
+
+h5 {
+  font - size: 14pt;
+  color: #09f;
+}
+
+h6 {
+  font-size: 9pt;
+  color: # 595959;
+  text - align: justify;
+}
+
+h7 {
+  font - size: 16pt;
+  line - height: 100 %;
+  color: #06c;
+  font-weight: bold;
+}
+
+p {
+  text-align: justify;
+  line-height: 150%;
+  font-size: 10pt;
+  color: # 404040;
+}
+
+li {
+  line - height: 150 %;
+  font - size: 10pt;
+  color: #404040;
+  text-align: justify;
+}
+
+.titulotarifa {
+  width: 500pt;
+  border: solid windowtext 1pt;
+  background: # 1 F497D;
+  padding: 0.1 cm 3.5pt 0 cm 3.5pt;
+  font - size: 10pt;
+  color: white;
+  margin: 0 auto;
+  text - align: center;
+  font - weight: bold;
+}
+
+hr {
+  width: 325px;
+  color: # 404040;
+}
+
+.contenedorintro {
+  overflow: hidden;
+}
+
+.derechaintro {
+  float: right;
+  width: 580 px;
+  font - size: 10pt;
+  color: #404040;
+  line-height: 150%;
+  text-align: justify;
+}
+
+.izquierdaintro {
+  width: 65px;
+  height: 200px;
+  line-height: 150%;
+  font-size: 10pt;
+  color: # 404040;
+}
+
+.contenedorcontacto {
+  overflow: hidden;
+}
+
+.izquierdacontacto {
+  float: left;
+  width: 80 px;
+  height: 200 px;
+  line - height: 150 %;
+  font - size: 6pt;
+  color: #404040;
+}
+
+.derechacontacto {
+  float: right;
+  width: 270px;
+  font-size: 10pt;
+  color: # 404040;
+  line - height: 150 %;
+  text - align: justify;
+}
+
+.centrocontacto {
+  float: left;
+  width: 270 px;
+  font - size: 10pt;
+  color: #404040;
+  line-height: 150%;
+  text-align: justify;
+}
+
+.fuenteContactos {
+  font-size: 16pt;
+  line-height: 115%;
+  color: # 0070 C0;
+}
+
+.contactosub {
+  font - size: 12pt;
+  color: #0070c0;
+  font-weight: bold;
+}
+
+.contactotext {
+  color: # 365 F91;
+  text - align: left;
+}
+
+.contactoCorreo {
+  font - size: 9pt;
+  line - height: 115 %;
+  color: #00b0f0;
+}
+
+.DeclaimerEsp {
+  font-size: 7pt;
+  line-height: 115%;
+  color: # 474 B50;
+  text - align: justify;
+}
+
+.formatotabla {
+  border: 1 px solid #000;
+  border-collapse: collapse;
+  margin: auto;
+  width: 100%;
+  text-align: left;
+}
+
+.formatotabla td {
+  border-bottom: 1px #dddbda;
+  font-size: 8pt;
+  color: # 1 F497D;
+}
+
+.formatotabla th {
+  border-top: 1px #dddbda;
+  border-bottom: 1px #dddbda;
+  background: #f2f2f2;
+  font-size: 10pt;
+}
+
+.ffsstabla {
+  border: 1 px solid #000;
+  border-collapse: collapse;
+  margin: auto;
+  width: 99%;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ffsstabla td {
+  border-bottom: 1px #dddbda;
+  font-size: 6pt;
+  color: # 1 F497D;
+}
+
+.ffsstabla th {
+  background: #f2f2f2;
+  font-size: 6pt;
+  vertical-align: top;
+}
+
+.typtabla {
+  border: 1 px solid #000;
+  border-collapse: collapse;
+  margin: auto;
+  width: 100%;
+  text-align: left;
+}
+
+.typtabla td {
+  border-bottom: 1px solid #dddbda;
+  padding-left: 6px;
+  font-size: 7pt;
+}
+
+.typtabla th {
+  border-top: 1px #dddbda;
+  border-bottom: 1px #dddbda;
+  padding-left: 6px;
+  background: #f2f2f2;
+  font-size: 8pt;
+}
+
+.header-typology {
+  text-align: center !important;
+}
+
+.alttabla {
+  border: 1 px solid #000;
+  border-collapse: collapse;
+  margin: auto;
+  width: 98%;
+  text-align: left;
+}
+
+.alttabla th {
+  background: #00b0f0;
+  font-size: 10pt;
+  text-align: center;
+  width: auto;
+}
+
+.formatointabla {
+  border-collapse: collapse;
+  margin: auto;
+  text-align: right;
+}
+
+.par {
+  border: solid windowtext 1pt;
+  background: # DBE5F1;
+}
+
+.formatointabla td {
+  color: #1f497d;
+  border-bottom: 1px solid;
+}
+
+.formatointabla th {
+  border: solid windowtext 1pt;
+  background: #4f81bd;
+  padding-right: 3.5pt;
+  padding-left: 3.5pt;
+  font-size: 10pt;
+  color: # DBEEF3;
+  text - align: center;
+}
+
+.textoizquierda {
+  text-align: left !important;
+}
+
+.boxedfixed {
+  width: 100%;
+  border: 1px solid #dddbda;
+}
+
+.boxedfixed td {
+  font-size: 6pt;
+}
+
+.boxedfixed th {
+  font-size: 8pt;
+}
+
+.texto-parrilla {
+  font-size: 11px;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textRigth {
+  text-align: right !important;
+}
+
+.minTextSize {
+  font-size: 7pt !important;
+}
+
+.width40 {
+  width: 40% !important;
+}
+
+.width15 {
+  width: 15% !important;
+}
+
+.width30 {
+  width: 30% !important;
+}
+
+.width25 {
+  width: 25% !important;
+}
+.anchoIncmSt {
+  width: 53%;
+}
+
+.anchoCshAn {
+  width: 47%;
+}
+
+.maturTable {
+  width: 350px;
+  vertical-align: top;
+}
+
+.hideElement {
+  display: none;
+}
+
+.formatotablaGroup {
+  border: 1 px solid #000;
+  border-collapse: collapse;
+  margin: auto;
+  width: 100%;
+  text-align: left;
+}
+
+.formatotablaGroup td {
+  border-bottom: 1px solid #dddbda;
+  font-size: 7pt;
+}
+
+.formatotablaGroup th {
+  border-top: 1px #dddbda;
+  border-bottom: 1px #dddbda;
+  background: #f2f2f2;
+  font-size: 8pt;
+}
+
+.minTextTd {
+  font-size: 6pt;
+}
+
+.halfWidth {
+  width: 50%;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.onethirdWidth {
+  width: 33%;
+}

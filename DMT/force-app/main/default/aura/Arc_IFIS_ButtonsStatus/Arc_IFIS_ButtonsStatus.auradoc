@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Buttons status visibility component</b></h5>
+        <p><code>arce:Arc_IFIS_ButtonsStatus</code></p>
+    </aura:description>
+</aura:documentation>

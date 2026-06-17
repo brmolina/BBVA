@@ -1,0 +1,103 @@
+<template>
+ <div class="slds-form-element">
+<label class="slds-form-element__label">
+    <abbr class="slds-required" title="required">*</abbr>
+    {labelValue}
+    <template if:true={mitangt}>
+        <div class="slds-tooltip-trigger info-icon-wrapper">
+            <button
+                class="slds-button slds-button_icon slds-button_icon-bare slds-m-left_xx-small info-icon-btn"
+                aria-describedby="help-tooltip"
+                onmouseenter={handleTooltipShow}
+                onmouseleave={handleTooltipHide}
+                onfocus={handleTooltipShow}
+                onblur={handleTooltipHide}
+            >
+                <lightning-icon
+                    icon-name="utility:info"
+                    size="xx-small"
+                    class="info-icon"
+                ></lightning-icon>
+                <span class="slds-assistive-text">Help</span>
+            </button>
+            <template if:true={showTooltip}>
+                <div
+                    id="help-tooltip"
+                    class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left tooltip-custom"
+                    role="tooltip"
+                >
+                    <div class="slds-popover__body">
+                        Only clients belonging to the same entific as the line can be selected as guarantors.
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+</label>
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div class={comboboxClass} aria-expanded={isOpen} aria-haspopup="listbox" role="combobox">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <input
+                            type="text"
+                            class="slds-input slds-combobox__input"
+                            placeholder={placeholderValue}
+                            value={searchTerm}
+                            disabled={disabled}
+                            oninput={handleInput}
+                            onfocus={handleFocus}
+                            onblur={handleBlur}
+                        />
+                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                            <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
+                        </span>
+                    </div>
+                    <template if:true={isOpen}>
+                        <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                <template if:true={isLoading}>
+                                    <li class="slds-listbox__item">
+                                        <div class="slds-align_absolute-center slds-p-around_small">
+                                            <lightning-spinner alternative-text="Searching..." size="small"></lightning-spinner>
+                                        </div>
+                                    </li>
+                                </template>
+                                <template if:false={isLoading}>
+                                    <template if:true={hasResults}>
+                                        <template for:each={results} for:item="item">
+                                            <li key={item.id}
+                                                class="slds-listbox__item"
+                                                role="option"
+                                                data-id={item.id}
+                                                onmousedown={handleSelect}>
+                                                <span class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta">
+                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                        <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                                                    </span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-listbox__option-text">{item.name}</span>
+                                                        <span class="slds-listbox__option-meta">{item.alphaCode} · {item.fiscalId}</span>
+                                                    </span>
+                                                </span>
+                                            </li>
+                                        </template>
+                                    </template>
+                                    <template if:false={hasResults}>
+                                        <li class="slds-listbox__item">
+                                            <span class="slds-media slds-listbox__option slds-listbox__option_entity">
+                                                <span class="slds-media__body">
+                                                    <span class="slds-listbox__option-text">No results found</span>
+                                                </span>
+                                            </span>
+                                        </li>
+                                    </template>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+</template>

@@ -19,6 +19,10 @@
         <value xsi:type="xsd:string">g_multioperation_ind_type_c</value>
     </values>
     <values>
+        <field>LineType__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>isActive__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>

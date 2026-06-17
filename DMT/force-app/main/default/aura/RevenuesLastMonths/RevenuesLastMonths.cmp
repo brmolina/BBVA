@@ -1,0 +1,58 @@
+<aura:component controller="RevenuesLastMonthsCnt"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+    <ltng:require scripts="{! join(',',
+                            $Resource.Chart,
+                            $Resource.baseFichaGrupo)}" afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+
+
+    <aura:attribute name="recordId" type="String" default="false" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="timeRefresh" type="String" default="false" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+    <aura:attribute name="familyParam" type="String" default="" />
+    <aura:attribute name="monthsToDisplay" type="String" default="6" />
+
+    <!-- <aura:attribute name="dateEngloba" type="String" default="" /> -->
+    <aura:attribute name="showViewDetails" type="Boolean" access="public" default="true" />
+
+    <div>
+    <div class="boxsection slds-p-around_small" >
+        <h1 class="slds-text-heading_medium sectiontitle">Revenues {! v.familyParam} (Last {! v.monthsToDisplay } months)</h1>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium minHeight">
+            <aura:if isTrue="{!v.noData}">
+                <div class="slds-text-align_center mainText">
+                    <span class="slds-m-bottom_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+                </div>
+                <aura:set attribute="else">
+                    <div id="chartjs-tooltip" ></div>
+                    <div style="height: 50vh">
+                        <canvas aura:id="chart"></canvas>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+
+
+        <aura:if isTrue="{!!v.noData}">
+            <aura:if isTrue="{!v.showViewDetails}">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="6" smallDeviceSize="5" mediumDeviceSize="6" largeDeviceSize="6" flexibility="auto"
+                        class="slds-text-body_regular slds-align_absolute-left width95">
+                        <a href="" class="slds-text-link" onclick="{!c.navigateToMyComponent}">View
+                            Report</a>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="6" smallDeviceSize="5" mediumDeviceSize="6" largeDeviceSize="6" flexibility="auto"
+                        class="textAR" >
+                        <span class="weight700">As of Today at
+                            <ui:outputText value="{!v.timeRefresh}" />.&nbsp;
+                            <lightning:buttonIcon class="radiusbutton" iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh."
+                                size="small" />
+                        </span>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </aura:if>
+        </aura:if>
+    </div>
+    </div>
+</aura:component>

@@ -1,5 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import TITLE_TABLE from '@salesforce/label/c.dmt_cl_OneOffTransaction_Text';
+import { loadStyle } from 'lightning/platformResourceLoader';
+import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
 
 export default class Dmt_singular_treasury extends LightningElement {
 
@@ -142,6 +144,9 @@ export default class Dmt_singular_treasury extends LightningElement {
       this.maxTenorOptions = value;
       this.setColumns();
     }
+        connectedCallback(){
+      loadStyle(this, dataTableWithoutTruncate);
+    }
 
     lastSavedData = [];
     setColumns(){
@@ -168,7 +173,7 @@ export default class Dmt_singular_treasury extends LightningElement {
           { label: 'ACTIVE', fieldName: 'active', type:'boolean',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},editable:false
             },
             {
-              type:  'button',hideDefaultActions:true,
+              type:  'button-icon',hideDefaultActions:true,
               cellAttributes: { alignment: 'center' },
               initialWidth: 90,
               typeAttributes: 
@@ -184,7 +189,7 @@ export default class Dmt_singular_treasury extends LightningElement {
             }
             ,
           {
-              type:  'button',hideDefaultActions:true,
+              type:  'button-icon',hideDefaultActions:true,
               cellAttributes: { alignment: 'center' },
               initialWidth: 90,
               typeAttributes: 
@@ -223,7 +228,7 @@ export default class Dmt_singular_treasury extends LightningElement {
           { label: 'ACTIVE', fieldName: 'active', type:'boolean',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},editable:false
             },
             {
-              type:  'button',hideDefaultActions:true,
+              type:  'button-icon',hideDefaultActions:true,
               cellAttributes: { alignment: 'center' },
               initialWidth: 90,
               typeAttributes: 
@@ -239,7 +244,7 @@ export default class Dmt_singular_treasury extends LightningElement {
             }
             ,
           {
-              type:  'button',hideDefaultActions:true,
+              type:  'button-icon',hideDefaultActions:true,
               cellAttributes: { alignment: 'center' },
               initialWidth: 90,
               typeAttributes: 

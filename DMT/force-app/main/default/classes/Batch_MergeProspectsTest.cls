@@ -50,7 +50,7 @@ public class Batch_MergeProspectsTest {
     insert objLCLient;
       
     
-    final dwp_acmh__GBL_Account_Relationship__c relationship = utilClass.createAccRelationship(accGroup, accSub);
+    final AMH_GBL_Account_Relationship__c relationship = utilClass.createAccRelationship(accGroup, accSub);
     insert relationship;
 
     final User user1 = utilClass.createUser(userinfo.getProfileId());

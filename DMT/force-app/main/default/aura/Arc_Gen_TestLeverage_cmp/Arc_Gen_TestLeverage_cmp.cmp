@@ -1,0 +1,104 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_TestLeverage_controller" access="global">
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="customerName" type="String" access="global" description="Name of the current client"/>
+    <aura:attribute name="customerId" type="String" access="global" description="Account Number of the current client"/>
+    <aura:attribute name="message" type="String" access="global" description="Message obtained by the leveraged logic"/>
+    <aura:attribute name="success" type="String" access="global" description="If yes, the leveraged logic and the save records process were successful"/>
+    <aura:attribute name="leveragedIndBefore" type="String" access="global" description="Indicator result of the leveraged test before adjusments"/>
+    <aura:attribute name="leveragedTypeBefore" type="String" access="global" description="Type result of the leveraged test before adjusments"/>
+    <aura:attribute name="leveragedIndAfter" type="String" access="global" description="Indicator result of the leveraged test after adjusments"/>
+    <aura:attribute name="leveragedTypeAfter" type="String" access="global" description="Type result of the leveraged test after adjusments"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div class="slds-align_absolute-center">
+        <div class="slds-form slds-form_stacked " role="list" style="width: 550px;">
+            <div class="slds-grid slds-gutters_small">
+                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                        <span class="slds-form-element__label">
+                            {!$Label.c.Lc_arce_LeveragedIndBeforeAdj}</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="javascript:void(0);">{!v.leveragedIndBefore}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                        <span class="slds-form-element__label">{!$Label.c.Lc_arce_LeveragedTypeBeforeAdj}</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="javascript:void(0);">{!v.leveragedTypeBefore}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters_small">
+                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                        <span class="slds-form-element__label">
+                            {!$Label.c.Lc_arce_LeveragedIndAfterAdj}</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="javascript:void(0);">{!v.leveragedIndAfter}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-has-flexi-truncate slds-grid" role="listitem">
+                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                        <span class="slds-form-element__label">{!$Label.c.Lc_arce_LeveragedTypeAfterAdj}</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="javascript:void(0);">{!v.leveragedTypeAfter}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-around--x-small  slds-size_1-of-1 " aura:id="modalbody" id="modalbody">
+        <div class="slds-p-around--x-small slds-size_1-of-1 ">
+            <div class="{!v.success == 'yes' ? '':'slds-hide'}">
+                <section role="log" class="slds-chat">
+                    <ul class="slds-chat-list">
+                        <li class="slds-chat-listitem slds-chat-listitem_event">
+                            <div class="slds-chat-event" role="alert">
+                                <div class="slds-chat-event__rule"></div>
+                                <div class="slds-chat-event__body">
+                                    <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisSuccess}">
+                                        <lightning:icon iconName="utility:check" alternativeText="clear!" variant="Success"/>
+                                        <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisSuccess}</span>
+                                    </span>
+                                </div>
+                                <div class="slds-chat-event__rule"></div>
+                                <div class="slds-chat-event__agent-message">{!v.message}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+            <div class="{!v.success == 'no' ? '':'slds-hide'}">
+                <section role="log" class="slds-chat">
+                    <ul class="slds-chat-list">
+                        <li class="slds-chat-listitem slds-chat-listitem_event">
+                            <div class="slds-chat-event slds-has-error" role="alert">
+                                <div class="slds-chat-event__rule"></div>
+                                <div class="slds-chat-event__body">
+                                    <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                        <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                                        <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisError}</span>
+                                    </span>
+                                </div>
+                                <div class="slds-chat-event__rule"></div>
+                                <div class="slds-chat-event__agent-message">{!v.message}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</aura:component>

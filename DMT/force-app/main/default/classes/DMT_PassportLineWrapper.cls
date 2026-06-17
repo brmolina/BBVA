@@ -16,6 +16,7 @@ public with sharing class DMT_PassportLineWrapper {
         public String motorDesc;
         public String stateName;
         public Integer orderNumber;
+        public String requiredAtStatus; // Dynamic Stage Blocker
         public Profitability profitability;
 
         public List<Validation> validations;

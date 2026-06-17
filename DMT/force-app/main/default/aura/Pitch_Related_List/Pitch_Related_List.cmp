@@ -1,0 +1,99 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="Pitch_Related_List_Controller" access="global">
+
+  <aura:attribute name="breadcrumbsActive" type="Boolean"/>
+  <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+  <aura:attribute name="familyParam" type="String" default=""/>
+  <aura:attribute name="data" type="Object"/>
+  <aura:attribute name="columns" type="List"/>
+  <aura:attribute name="detailForm" type="Boolean" default="false"/>
+  <aura:attribute name="tableSize" type="String" default="5"/>
+  <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+
+  <aura:attribute name="record" type="Object"/>
+  <aura:attribute name="simpleRecord" type="Object"/>
+  <aura:attribute name="recordError" type="String"/>
+  <aura:attribute name="pageReference" type="Object"/>
+  <lightning:navigation aura:id="nav" />
+
+  <force:recordData aura:id="forceRecordCmp"
+    recordId="{!v.recordId}"
+    layoutType="{!v.layout}"
+    fields="Id, Name"
+    mode="VIEW"
+    targetRecord="{!v.record}"
+    targetFields="{!v.simpleRecord}"
+    targetError="{!v.error}"/>
+
+  <aura:if isTrue="{!!v.detailForm}">
+    <div class="slds-page-header customContainer">
+      <div class="slds-media">
+        <div class="slds-media__figure">
+          <span class="slds-icon_container slds-icon-standard-opportunity" title="Pitches">
+            <lightning:icon iconName="custom:custom82" size="medium" alternativeText="Report"/>
+          </span>
+        </div>
+        <div class="slds-media__body">
+          <p class="slds-text-body_small slds-line-height_reset">Pitches</p>
+          <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Opportunities in progress">Pitches ({!v.data[0].pitchNumber})</h1>
+        </div>
+      </div>
+    </div>
+
+    <aura:if isTrue="{!empty(v.data)}">
+      <div class="tableNoData customNoData">
+        {!$Label.c.DES_Chart_No_Data}
+      </div>
+      <aura:set attribute="else">
+        <lightning:datatable data="{!v.data}"
+          columns="{!v.columns}"
+          keyField="id"
+          hideCheckboxColumn="true"/>
+        <p class="customBox">
+          <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+        </p>
+      </aura:set>
+    </aura:if>
+
+    <aura:set attribute="else">
+      <div class="slds-page-header customDiv">
+        <lightning:layout>
+          <lightning:layoutItem class="slds-media__figure">
+            <lightning:icon iconName="custom:custom82" size="large" alternativeText="Report" />
+          </lightning:layoutItem>
+          <lightning:layoutItem class="slds-media__body">
+            <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Pitches ({!v.data[0].pitchNumber}) - {!v.familyParam}</h1>
+
+            <aura:if isTrue="{!v.breadcrumbsActive}">
+              <lightning:breadcrumbs>
+                <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                  label="{!v.simpleRecord.Name}"
+                  onclick="{! c.onClickButtonAcc}"
+                  title="Go back to the client"/>
+                <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                  label="{!v.familyParam}"
+                  onclick="{! c.onClickButtonFamily}"
+                  title="Go back the family section"/>
+              </lightning:breadcrumbs>
+            </aura:if>
+
+          </lightning:layoutItem>
+        </lightning:layout>
+      </div>
+
+      <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+        <div class="reportTabla">
+          <aura:if isTrue="{!empty(v.data)}">
+            {!$Label.c.DES_Chart_No_Data}
+            <aura:set attribute="else">
+              <lightning:datatable data="{!v.data}"
+                columns="{!v.columns}"
+                keyField="id"
+                hideCheckboxColumn="true"/>
+            </aura:set>
+          </aura:if>
+        </div>
+      </ui:scrollerWrapper>
+    </aura:set>
+  </aura:if>
+</aura:component>

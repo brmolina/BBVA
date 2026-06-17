@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_AvailableMailboxes__c</fullName>
+    <label>Available Mailboxes MPL</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <controllingField>SER_MailingGroup__c</controllingField>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Email BBVA Customer Service</fullName>
+                <default>false</default>
+                <label>Email BBVA Customer Service</label>
+            </value>
+            <value>
+                <fullName>Email Claim Support &amp; Investigations</fullName>
+                <default>false</default>
+                <label>Email Claim Support &amp; Investigations</label>
+            </value>
+            <value>
+                <fullName>Email CONTACT CENTER (Buzón A)</fullName>
+                <default>false</default>
+                <label>Email CONTACT CENTER (Buzón A)</label>
+            </value>
+            <value>
+                <fullName>Email EDITRAN</fullName>
+                <default>false</default>
+                <label>Email EDITRAN</label>
+            </value>
+            <value>
+                <fullName>Email FACTURA INTEGRAL</fullName>
+                <default>false</default>
+                <label>Email FACTURA INTEGRAL</label>
+            </value>
+            <value>
+                <fullName>Email Fixings &amp; Structures</fullName>
+                <default>false</default>
+                <label>Email Fixings &amp; Structures</label>
+            </value>
+            <value>
+                <fullName>Email Formularios</fullName>
+                <default>false</default>
+                <label>Email Formularios</label>
+            </value>
+            <value>
+                <fullName>Email INCIDENCIAS BBVANET CASH (Buzón B)</fullName>
+                <default>false</default>
+                <label>Email INCIDENCIAS BBVANET CASH (Buzón B)</label>
+            </value>
+            <value>
+                <fullName>Email OPINATOR</fullName>
+                <default>false</default>
+                <label>Email OPINATOR</label>
+            </value>
+            <value>
+                <fullName>Email PATRIMONIOS</fullName>
+                <default>false</default>
+                <label>Email PATRIMONIOS</label>
+            </value>
+            <value>
+                <fullName>Email PORTUGAL</fullName>
+                <default>false</default>
+                <label>Email PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>Email RED EXTERIOR</fullName>
+                <default>false</default>
+                <label>Email RED EXTERIOR</label>
+            </value>
+            <value>
+                <fullName>Email Social Media</fullName>
+                <default>false</default>
+                <label>Email Social Media</label>
+            </value>
+            <value>
+                <fullName>Email Social Network</fullName>
+                <default>false</default>
+                <label>Email Social Network</label>
+            </value>
+            <value>
+                <fullName>Email STE-PLUS</fullName>
+                <default>false</default>
+                <label>Email STE-PLUS</label>
+            </value>
+            <value>
+                <fullName>Email Validations</fullName>
+                <default>false</default>
+                <label>Email Validations</label>
+            </value>
+            <value>
+                <fullName>Email OneView</fullName>
+                <default>false</default>
+                <label>Email OneView</label>
+            </value>
+            <value>
+                <fullName>Email GNC</fullName>
+                <default>false</default>
+                <label>Email GNC</label>
+            </value>
+            <value>
+                <fullName>Email GTB</fullName>
+                <default>false</default>
+                <label>Email GTB</label>
+            </value>
+            <value>
+                <fullName>Email Swift</fullName>
+                <default>false</default>
+                <label>Email Swift</label>
+            </value>
+            <value>
+                <fullName>Email CONTACT CENTER Spain</fullName>
+                <default>false</default>
+                <label>Email CONTACT CENTER Spain</label>
+            </value>
+            <value>
+                <fullName>Global Client Service GCS</fullName>
+                <default>false</default>
+                <label>Global Client Service GCS</label>
+            </value>
+            <value>
+                <fullName>Global Client Service GNC</fullName>
+                <default>false</default>
+                <label>Global Client Service GNC</label>
+            </value>
+            <value>
+                <fullName>Global Client Service Pivot</fullName>
+                <default>false</default>
+                <label>Global Client Service Pivot</label>
+            </value>
+            <value>
+                <fullName>Peru Customer Service</fullName>
+                <default>false</default>
+                <label>Peru Customer Service</label>
+            </value>
+            <value>
+                <fullName>Email OTC Derivatives</fullName>
+                <default>false</default>
+                <label>Email OTC Derivatives</label>
+            </value>
+            <value>
+                <fullName>Email Customer Support GM</fullName>
+                <default>false</default>
+                <label>Email Customer Support GM</label>
+            </value>
+            <value>
+                <fullName>Email Middle Affirmations</fullName>
+                <default>false</default>
+                <label>Email Middle Affirmations</label>
+            </value>
+            <value>
+                <fullName>Email Derivatives Confirmations</fullName>
+                <default>false</default>
+                <label>Email Derivatives Confirmations</label>
+            </value>
+            <value>
+                <fullName>Email EMIR Reporting Delegation</fullName>
+                <default>false</default>
+                <label>Email EMIR Reporting Delegation</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>Client Solution</controllingFieldValue>
+            <valueName>Email GNC</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Client Solution</controllingFieldValue>
+            <controllingFieldValue>Customer &amp; Claim Support</controllingFieldValue>
+            <valueName>Email Claim Support &amp; Investigations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Email GTB</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Call Center</controllingFieldValue>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <controllingFieldValue>Editran</controllingFieldValue>
+            <valueName>Email BBVA Customer Service</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Call Center</controllingFieldValue>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email Formularios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email INCIDENCIAS BBVANET CASH (Buzón B)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email OPINATOR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email PORTUGAL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email RED EXTERIOR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email Social Network</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <controllingFieldValue>Editran</controllingFieldValue>
+            <valueName>Email Validations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email OneView</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>RRSS &amp; Validations</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <controllingFieldValue>Editran</controllingFieldValue>
+            <valueName>Email Swift</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EGS</controllingFieldValue>
+            <valueName>Global Client Service GCS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EGS</controllingFieldValue>
+            <valueName>Global Client Service GNC</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EGS</controllingFieldValue>
+            <valueName>Global Client Service Pivot</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EGS</controllingFieldValue>
+            <valueName>Peru Customer Service</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email CONTACT CENTER (Buzón A)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <controllingFieldValue>Editran</controllingFieldValue>
+            <valueName>Email EDITRAN</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email FACTURA INTEGRAL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email PATRIMONIOS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Specialist</controllingFieldValue>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email STE-PLUS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Fijaciones</controllingFieldValue>
+            <valueName>Email Fixings &amp; Structures</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Default STE</controllingFieldValue>
+            <valueName>Email CONTACT CENTER Spain</valueName>
+        </valueSettings>
+    </valueSet>
+    <visibleLines>10</visibleLines>
+</CustomField>

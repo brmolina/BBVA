@@ -36,11 +36,6 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 
                 this.setDefinition(data);
  this.registerEvents();
-                this.setAttribute(
-                  "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L3ZrYAK"
-                );
-                this.loadCustomStylesheetAttachement("00PKG000003Qjng2AC");
                 
                 
               }
@@ -79,12 +74,6 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName3,this.customEvent[3]);
 
           
-            this.customEventName4 = interpolateWithRegex(`refreshstate`,this._allMergeFields,this._regexPattern,"noparse");
-            this.customEvent[4] = this.handleEventAction.bind(this, data.events[4],4);
-
-            this.template.addEventListener(this.customEventName4,this.customEvent[4]);
-
-          
               }
 
               unregisterEvents(){
@@ -96,8 +85,6 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
 
             this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
-
-            this.template.removeEventListener(this.customEventName4,this.customEvent[4]);
 
               }
             

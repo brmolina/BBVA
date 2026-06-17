@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+                access="global" >
+    
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <c:DES_AP_CircleGauge_YTD recordId="{!v.recordId}" typeOfCircle="revenues"/>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:DES_AP_CircleGauge_YTD recordId="{!v.recordId}" typeOfCircle="crossBorder"/>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-grid slds-grid_vertical">
+                <div class="slds-col">
+                    <c:DES_AP_CircleGauge_YTD recordId="{!v.recordId}" typeOfCircle="revenues"/>
+                </div>
+                <div class="slds-col">
+                    <c:DES_AP_CircleGauge_YTD recordId="{!v.recordId}" typeOfCircle="crossBorder"/>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

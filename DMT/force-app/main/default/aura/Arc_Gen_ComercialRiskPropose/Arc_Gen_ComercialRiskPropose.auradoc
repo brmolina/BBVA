@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Show the comercial risk propose term</b></h5>
+        <p><code>c:Arc_Gen_ComercialRiskPropose</code></p>
+    </aura:description>
+</aura:documentation>

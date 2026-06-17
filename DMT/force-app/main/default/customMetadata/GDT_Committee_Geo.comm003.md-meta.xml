@@ -14,4 +14,8 @@
         <field>GDT_Geography__c</field>
         <value xsi:type="xsd:string">México</value>
     </values>
+    <values>
+        <field>GDT_Taxo_Id__c</field>
+        <value xsi:type="xsd:string">0402</value>
+    </values>
 </CustomMetadata>

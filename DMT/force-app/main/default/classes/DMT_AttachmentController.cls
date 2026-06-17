@@ -143,6 +143,16 @@ public with sharing class DMT_AttachmentController {
         }
         return false;
     }
+    @AuraEnabled
+    public static String getAttachmentBase64(String attachmentId) {
+        try {
+            
+            Attachment att = [SELECT Body FROM Attachment WHERE Id = :attachmentId LIMIT 1];
+            return EncodingUtil.base64Encode(att.Body);
+        } catch (Exception e) {
+            throw new AuraHandledException('No se pudo obtener el archivo: ' + e.getMessage());
+        }
+    }
     
     
 

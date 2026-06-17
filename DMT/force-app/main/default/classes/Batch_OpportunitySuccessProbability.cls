@@ -20,7 +20,7 @@ public without sharing class Batch_OpportunitySuccessProbability implements Data
     * Public Constructor
     */
     public Batch_OpportunitySuccessProbability() {
-        pQuery = 'SELECT Id, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.DES_Expected_Probability__c, success_probability_per__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE success_probability_per__c = null';
+        pQuery = 'SELECT Id, AMH_OpportunityId__c, AMH_OpportunityId__r.DES_Expected_Probability__c, success_probability_per__c FROM AMH_Denorm_Account_Opportunity__c WHERE success_probability_per__c = null';
     }
 
     /*
@@ -34,10 +34,10 @@ public without sharing class Batch_OpportunitySuccessProbability implements Data
     /*
     * Execute method
     */
-    public void execute(Database.BatchableContext bch, List<dwp_acmh__Denorm_Account_Opportunity__c> listOpps) {
-        List<dwp_acmh__Denorm_Account_Opportunity__c> lOppDenorm = new List<dwp_acmh__Denorm_Account_Opportunity__c> ();
-        for(dwp_acmh__Denorm_Account_Opportunity__c oppDenorm : listOpps) {
-            oppDenorm.success_probability_per__c = oppDenorm.dwp_acmh__OpportunityId__r.DES_Expected_Probability__c;
+    public void execute(Database.BatchableContext bch, List<AMH_Denorm_Account_Opportunity__c> listOpps) {
+        List<AMH_Denorm_Account_Opportunity__c> lOppDenorm = new List<AMH_Denorm_Account_Opportunity__c> ();
+        for(AMH_Denorm_Account_Opportunity__c oppDenorm : listOpps) {
+            oppDenorm.success_probability_per__c = oppDenorm.AMH_OpportunityId__r.DES_Expected_Probability__c;
             lOppDenorm.add(oppDenorm);
         }
         Database.update(lOppDenorm, false);

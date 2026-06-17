@@ -52,7 +52,543 @@
     </values>
     <values>
         <field>iaso__Mock_LTA__c</field>
-        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;opportunityId&quot;:&quot;ESCD25OPP00007498ES&quot;,&quot;version&quot;:&quot;1&quot;,&quot;auditDate&quot;:&quot;2025-12-17T11:33:33.262Z&quot;,&quot;features&quot;:[{&quot;id&quot;:&quot;200&quot;,&quot;name&quot;:&quot;General Validations&quot;,&quot;passportSanction&quot;:&quot;passport&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;motorDesc&quot;:&quot;Salesforce&quot;,&quot;stateName&quot;:&quot;RED&quot;,&quot;validations&quot;:[{&quot;state&quot;:&quot;RED&quot;,&quot;name&quot;:&quot;Rating is inconsistent&quot;,&quot;message&quot;:&quot;Opportunity Internal Rating is not consistent with Client Internal Rating.&quot;},{&quot;state&quot;:&quot;RED&quot;,&quot;name&quot;:&quot;Client Type is inconsistent&quot;,&quot;message&quot;:&quot;Opportunity Client Type is not consistent with Client Type.&quot;},{&quot;state&quot;:&quot;GREEN&quot;,&quot;name&quot;:&quot;Cross SELL Year is consistent&quot;,&quot;message&quot;:&quot;All Cross SELL records have a Year within 5 years from the Opportunity Initial Date.&quot;},{&quot;state&quot;:&quot;GREEN&quot;,&quot;name&quot;:&quot;Tenors Payment Date is consistent&quot;,&quot;message&quot;:&quot;Consistent Payment Date detected in Tenors for product type User-Defined&quot;},{&quot;state&quot;:&quot;GREEN&quot;,&quot;name&quot;:&quot;Maturity Date consistency&quot;,&quot;message&quot;:&quot;Opportunity Maturity Date is consistent with Opportunity Products Maturity Dates&quot;},{&quot;state&quot;:&quot;RED&quot;,&quot;name&quot;:&quot;Initial Date inconsistency&quot;,&quot;message&quot;:&quot;Opportunity Initial Date is not consistent with Opportunity Products Initial Dates&quot;},{&quot;state&quot;:&quot;GREEN&quot;,&quot;name&quot;:&quot;Notional Amount consistency&quot;,&quot;message&quot;:&quot;Opportunity Notional Amount is consistent with Opportunity Products Notional Amounts Sum&quot;}]},{&quot;id&quot;:&quot;341&quot;,&quot;name&quot;:&quot;OP14 - OPTIONALTest Opp&quot;,&quot;passportSanction&quot;:&quot;approval&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;orderNumber&quot;:201,&quot;stateName&quot;:&quot;WHITE&quot;,&quot;tasks&quot;:[{&quot;id&quot;:&quot;6&quot;,&quot;name&quot;:&quot;Risk Approval - Local&quot;,&quot;yesFlag&quot;:&quot;Approved&quot;,&quot;noFlag&quot;:&quot;Dismissed&quot;,&quot;naFlag&quot;:&quot;N/A&quot;,&quot;nextTask&quot;:&quot;1&quot;,&quot;status&quot;:&quot;OPEN&quot;},{&quot;id&quot;:&quot;1&quot;,&quot;name&quot;:&quot;Submit to Functional Support&quot;,&quot;yesFlag&quot;:&quot;N/A&quot;,&quot;noFlag&quot;:&quot;N/A&quot;,&quot;naFlag&quot;:&quot;N/A&quot;,&quot;nextTask&quot;:&quot;1&quot;,&quot;status&quot;:&quot;OPEN&quot;},{&quot;id&quot;:&quot;6&quot;,&quot;name&quot;:&quot;Risk Approval - Local&quot;,&quot;yesFlag&quot;:&quot;Approved&quot;,&quot;noFlag&quot;:&quot;Dismissed&quot;,&quot;naFlag&quot;:&quot;N/A&quot;,&quot;nextTask&quot;:&quot;1&quot;,&quot;status&quot;:&quot;OPEN&quot;},{&quot;id&quot;:&quot;8&quot;,&quot;name&quot;:&quot;Risk Approval - local and global&quot;,&quot;yesFlag&quot;:&quot;Approved&quot;,&quot;noFlag&quot;:&quot;Dismissed&quot;,&quot;naFlag&quot;:&quot;N/A&quot;,&quot;nextTask&quot;:&quot;1&quot;,&quot;status&quot;:&quot;OPEN&quot;},{&quot;id&quot;:&quot;9&quot;,&quot;name&quot;:&quot;Risk Approval - on behalf of the geography committee&quot;,&quot;yesFlag&quot;:&quot;Approved&quot;,&quot;noFlag&quot;:&quot;Dismissed&quot;,&quot;naFlag&quot;:&quot;N/A&quot;,&quot;nextTask&quot;:&quot;1&quot;,&quot;status&quot;:&quot;OPEN&quot;}]},{&quot;id&quot;:&quot;181&quot;,&quot;name&quot;:&quot;Profitability Engine&quot;,&quot;passportSanction&quot;:&quot;passport&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;motorDesc&quot;:&quot;Profitability Engine&quot;,&quot;orderNumber&quot;:401,&quot;stateName&quot;:&quot;GREEN&quot;,&quot;profitability&quot;:{&quot;audit&quot;:{&quot;engineVersion&quot;:&quot;0.7&quot;,&quot;isError&quot;:false},&quot;results&quot;:[{&quot;productId&quot;:&quot;00kKN000003W4mqYAC&quot;,&quot;economicCcf&quot;:50.0,&quot;regulatoryCcf&quot;:40.0,&quot;economicLgd&quot;:40.0,&quot;regulatoryLgd&quot;:40.0,&quot;taxRate&quot;:30.0,&quot;economicEad&quot;:1000.0,&quot;regulatoryEad&quot;:1000.0,&quot;averageLife&quot;:1.0000000000000002,&quot;spreadDbPbs&quot;:49.99999999999999,&quot;spreadFbPbs&quot;:0.0,&quot;fundingFbPbs&quot;:0.0,&quot;fundingDbPbs&quot;:4.999999999999999,&quot;bonificationFunding&quot;:0.0,&quot;countryRiskProvisionDbPbs&quot;:0.0,&quot;countryRiskProvisionFbPbs&quot;:0.0,&quot;expectedLossPbs&quot;:0.0,&quot;feesUpFrontPbs&quot;:0.0,&quot;periodicFeesPbs&quot;:0.0,&quot;bdi&quot;:2.7821499999999997,&quot;allInDb&quot;:0.0,&quot;allInFb&quot;:0.0,&quot;economicApr&quot;:1.223850702811257,&quot;regulatoryApr&quot;:4.029657117670305,&quot;economicCapital&quot;:4.591322248996021,&quot;regulatoryCapital&quot;:20.354854164817464,&quot;prospectedBdi&quot;:3.0975,&quot;prospectedEconomicCapital&quot;:0.0,&quot;prospectedRegulatoryCapital&quot;:0.0,&quot;raroec&quot;:0.6059583381690034,&quot;raroecNoxsell&quot;:1.2949428677762913,&quot;raroecProspected&quot;:0.0,&quot;rorc&quot;:0.1366823843331107,&quot;rorcNoxsell&quot;:0.0,&quot;rorcProspected&quot;:0.0,&quot;totalYears&quot;:[{&quot;year&quot;:2026,&quot;eadEcoYearly&quot;:1000.0,&quot;eadRegYearly&quot;:1000.0,&quot;rorcYearly&quot;:2.851957425266466,&quot;raroecYearly&quot;:12.741497911362831},{&quot;year&quot;:2027,&quot;eadEcoYearly&quot;:1000.0,&quot;eadRegYearly&quot;:1000.0,&quot;rorcYearly&quot;:0.1366823843331107,&quot;raroecYearly&quot;:0.6059583381690034}],&quot;feesOther&quot;:0.0,&quot;feesOtherPbs&quot;:0.0,&quot;feesDb&quot;:0.0,&quot;feesDbPbs&quot;:0.0,&quot;feesFb&quot;:0.0,&quot;feesFbPbs&quot;:0.0},{&quot;economicCcf&quot;:50.0,&quot;regulatoryCcf&quot;:40.0,&quot;economicLgd&quot;:40.0,&quot;regulatoryLgd&quot;:40.0,&quot;taxRate&quot;:30.0,&quot;economicEad&quot;:1000.0,&quot;regulatoryEad&quot;:1000.0,&quot;averageLife&quot;:1.0000000000000002,&quot;spreadDbPbs&quot;:49.99999999999999,&quot;spreadFbPbs&quot;:0.0,&quot;fundingFbPbs&quot;:0.0,&quot;fundingDbPbs&quot;:4.999999999999999,&quot;bonificationFunding&quot;:0.0,&quot;countryRiskProvisionDbPbs&quot;:0.0,&quot;countryRiskProvisionFbPbs&quot;:0.0,&quot;expectedLossPbs&quot;:0.0,&quot;feesUpFrontPbs&quot;:0.0,&quot;periodicFeesPbs&quot;:0.0,&quot;bdi&quot;:2.7821499999999997,&quot;allInDb&quot;:0.0,&quot;allInFb&quot;:0.0,&quot;economicApr&quot;:1.223850702811257,&quot;regulatoryApr&quot;:4.029657117670305,&quot;economicCapital&quot;:4.591322248996021,&quot;regulatoryCapital&quot;:20.354854164817464,&quot;prospectedBdi&quot;:3.0975,&quot;prospectedEconomicCapital&quot;:0.0,&quot;prospectedRegulatoryCapital&quot;:0.0,&quot;raroec&quot;:0.6059583381690034,&quot;raroecNoxsell&quot;:1.2949428677762913,&quot;raroecProspected&quot;:0.0,&quot;rorc&quot;:0.1366823843331107,&quot;rorcNoxsell&quot;:0.0,&quot;rorcProspected&quot;:0.0,&quot;totalYears&quot;:[{&quot;year&quot;:2026,&quot;eadEcoYearly&quot;:1000.0,&quot;eadRegYearly&quot;:1000.0,&quot;rorcYearly&quot;:2.851957425266466,&quot;raroecYearly&quot;:12.741497911362831},{&quot;year&quot;:2027,&quot;eadEcoYearly&quot;:1000.0,&quot;eadRegYearly&quot;:1000.0,&quot;rorcYearly&quot;:0.1366823843331107,&quot;raroecYearly&quot;:0.6059583381690034}],&quot;feesOther&quot;:0.0,&quot;feesOtherPbs&quot;:0.0,&quot;feesDb&quot;:0.0,&quot;feesDbPbs&quot;:0.0,&quot;feesFb&quot;:0.0,&quot;feesFbPbs&quot;:0.0}]}},{&quot;id&quot;:&quot;321&quot;,&quot;name&quot;:&quot;OPP03 -  Limit Test (Group Level)&quot;,&quot;passportSanction&quot;:&quot;passport&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;motorDesc&quot;:&quot;Limit Engine&quot;,&quot;stateName&quot;:&quot;GRAY&quot;,&quot;products&quot;:[{&quot;productId&quot;:&quot;00kKN000003W4mqYAC&quot;,&quot;stateName&quot;:&quot;GRAY&quot;,&quot;consumptionLimits&quot;:[{&quot;consumptionLastLevelId&quot;:&quot;90000&quot;,&quot;groupId&quot;:&quot;GXXXXXXXXXXXXXX&quot;,&quot;conditionDesc&quot;:&quot;No limits apply to this trade&quot;},{&quot;consumptionLastLevelId&quot;:&quot;70000&quot;,&quot;groupId&quot;:&quot;GXXXXXXXXXXXXXX&quot;,&quot;conditionDesc&quot;:&quot;No limits apply to this trade&quot;},{&quot;consumptionLastLevelId&quot;:&quot;50000&quot;,&quot;groupId&quot;:&quot;GXXXXXXXXXXXXXX&quot;,&quot;conditionDesc&quot;:&quot;No limits apply to this trade&quot;},{&quot;consumptionLastLevelId&quot;:&quot;20000&quot;,&quot;groupId&quot;:&quot;GXXXXXXXXXXXXXX&quot;,&quot;conditionDesc&quot;:&quot;No limits apply to this trade&quot;},{&quot;consumptionLastLevelId&quot;:&quot;20100&quot;,&quot;groupId&quot;:&quot;GXXXXXXXXXXXXXX&quot;,&quot;conditionDesc&quot;:&quot;No limits apply to this trade&quot;}]}]},{&quot;id&quot;:&quot;322&quot;,&quot;name&quot;:&quot;OPPM02 - Mitigant Limit Test (Client Level)&quot;,&quot;passportSanction&quot;:&quot;passport&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;motorDesc&quot;:&quot;Limit Engine&quot;,&quot;stateName&quot;:&quot;GRAY&quot;},{&quot;id&quot;:&quot;323&quot;,&quot;name&quot;:&quot;OPPM03 - Mitigant Limit Test (Group Level)&quot;,&quot;passportSanction&quot;:&quot;passport&quot;,&quot;active&quot;:&quot;Y&quot;,&quot;motorDesc&quot;:&quot;Limit Engine&quot;,&quot;stateName&quot;:&quot;GRAY&quot;}]}}</value>
+        <value xsi:type="xsd:string">{
+    &quot;data&quot;: {
+        &quot;opportunityId&quot;: &quot;ESCD26OPP00001111ES&quot;,
+        &quot;version&quot;: &quot;1&quot;,
+        &quot;auditDate&quot;: &quot;2026-01-27T10:40:25.121Z&quot;,
+        &quot;features&quot;: [
+            {
+                &quot;id&quot;: &quot;200&quot;,
+                &quot;name&quot;: &quot;General Validations&quot;,
+                &quot;passportSanction&quot;: &quot;passport&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;motorDesc&quot;: &quot;Salesforce&quot;,
+                &quot;stateName&quot;: &quot;RED&quot;,
+                &quot;validations&quot;: [
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Rating is consistent&quot;,
+                        &quot;message&quot;: &quot;Opportunity Internal Rating is consistent with Client Internal Rating.&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;RED&quot;,
+                        &quot;name&quot;: &quot;Client Type is inconsistent&quot;,
+                        &quot;message&quot;: &quot;Opportunity Client Type is not consistent with Client Type.&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Cross SELL Year is consistent&quot;,
+                        &quot;message&quot;: &quot;All Cross SELL records have a Year within 5 years from the Opportunity Initial Date.&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Tenors Payment Date is consistent&quot;,
+                        &quot;message&quot;: &quot;Consistent Payment Date detected in Tenors for product type User-Defined&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Maturity Date consistency&quot;,
+                        &quot;message&quot;: &quot;Opportunity Maturity Date is consistent with Opportunity Products Maturity Dates&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Initial Date consistency&quot;,
+                        &quot;message&quot;: &quot;Opportunity Initial Date is consistent with Opportunity Products Initial Dates&quot;
+                    },
+                    {
+                        &quot;state&quot;: &quot;GREEN&quot;,
+                        &quot;name&quot;: &quot;Notional Amount consistency&quot;,
+                        &quot;message&quot;: &quot;Opportunity Notional Amount is consistent with Opportunity Products Notional Amounts Sum&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;363&quot;,
+                &quot;name&quot;: &quot;OPP15 - Local Risk Approval&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 153,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;9&quot;,
+                                &quot;name&quot;: &quot;Risk C&amp;IB Spain - Spain Groups&quot;,
+                                &quot;entific&quot;: &quot;ES&quot;,
+                                &quot;branch&quot;: &quot;HO&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;365&quot;,
+                &quot;name&quot;: &quot;OPP365 - Local Risk Approval 2&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 154,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;9&quot;,
+                                &quot;name&quot;: &quot;Risk C&amp;IB Spain - Spain Groups&quot;,
+                                &quot;entific&quot;: &quot;ES&quot;,
+                                &quot;branch&quot;: &quot;HO&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;366&quot;,
+                &quot;name&quot;: &quot;OPP366 - Local Risk Approval 3&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 155,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;9&quot;,
+                                &quot;name&quot;: &quot;Risk C&amp;IB Spain - Spain Groups&quot;,
+                                &quot;entific&quot;: &quot;ES&quot;,
+                                &quot;branch&quot;: &quot;HO&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;341&quot;,
+                &quot;name&quot;: &quot;OP14 - OPTIONALTest Opp&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 201,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;9&quot;,
+                                &quot;name&quot;: &quot;Risk C&amp;IB Spain - Spain Groups&quot;,
+                                &quot;entific&quot;: &quot;ES&quot;,
+                                &quot;branch&quot;: &quot;HO&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;6&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - Local&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;364&quot;,
+                &quot;name&quot;: &quot;OPP20 - Global Busines Approval&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 203,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;7&quot;,
+                        &quot;name&quot;: &quot;Business Approval - global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;113&quot;,
+                                &quot;name&quot;: &quot;Global Banker C&amp;IB GTB Bilbao TEST&quot;,
+                                &quot;entific&quot;: &quot;CH&quot;,
+                                &quot;branch&quot;: &quot;SA&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;7&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;10&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of Holding WCRMC Committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;11&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of Holding GCRMC Committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;12&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of CRO&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;368&quot;,
+                &quot;name&quot;: &quot;OPP368 - Global Busines Approval 2&quot;,
+                &quot;passportSanction&quot;: &quot;approval&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;orderNumber&quot;: 368,
+                &quot;stateName&quot;: &quot;WHITE&quot;,
+                &quot;tasks&quot;: [
+                    {
+                        &quot;id&quot;: &quot;7&quot;,
+                        &quot;name&quot;: &quot;Business Approval - global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;,
+                        &quot;approvers&quot;: [
+                            {
+                                &quot;id&quot;: &quot;113&quot;,
+                                &quot;name&quot;: &quot;Global Banker C&amp;IB GTB Bilbao TEST&quot;,
+                                &quot;entific&quot;: &quot;CH&quot;,
+                                &quot;branch&quot;: &quot;SA&quot;,
+                                &quot;documentManagerEnable&quot;: &quot;Y&quot;
+                            }
+                        ]
+                    },
+                    {
+                        &quot;id&quot;: &quot;1&quot;,
+                        &quot;name&quot;: &quot;Submit to Functional Support&quot;,
+                        &quot;yesFlag&quot;: &quot;N/A&quot;,
+                        &quot;noFlag&quot;: &quot;N/A&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;7&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;8&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - local and global&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;9&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of the geography committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;10&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of Holding WCRMC Committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;11&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of Holding GCRMC Committee&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    },
+                    {
+                        &quot;id&quot;: &quot;12&quot;,
+                        &quot;name&quot;: &quot;Risk Approval - on behalf of CRO&quot;,
+                        &quot;yesFlag&quot;: &quot;Approved&quot;,
+                        &quot;noFlag&quot;: &quot;Dismissed&quot;,
+                        &quot;naFlag&quot;: &quot;N/A&quot;,
+                        &quot;nextTask&quot;: &quot;1&quot;,
+                        &quot;status&quot;: &quot;OPEN&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;181&quot;,
+                &quot;name&quot;: &quot;Profitability Engine&quot;,
+                &quot;passportSanction&quot;: &quot;passport&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;motorDesc&quot;: &quot;Profitability Engine&quot;,
+                &quot;orderNumber&quot;: 401,
+                &quot;stateName&quot;: &quot;GRAY&quot;
+            },
+            {
+                &quot;id&quot;: &quot;321&quot;,
+                &quot;name&quot;: &quot;OPP03 - Limit Test (Group Level)&quot;,
+                &quot;passportSanction&quot;: &quot;passport&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;motorDesc&quot;: &quot;Limit Engine&quot;,
+                &quot;stateName&quot;: &quot;GRAY&quot;
+            },
+            {
+                &quot;id&quot;: &quot;322&quot;,
+                &quot;name&quot;: &quot;OPPM02 - Mitigant Limit Test (Client Level)&quot;,
+                &quot;passportSanction&quot;: &quot;passport&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;motorDesc&quot;: &quot;Limit Engine&quot;,
+                &quot;stateName&quot;: &quot;GRAY&quot;,
+                &quot;products&quot;: [
+                    {
+                        &quot;productId&quot;: &quot;00kKK000003EviwYAC&quot;,
+                        &quot;stateName&quot;: &quot;GRAY&quot;
+                    }
+                ]
+            },
+            {
+                &quot;id&quot;: &quot;323&quot;,
+                &quot;name&quot;: &quot;OPPM03 - Mitigant Limit Test (Group Level)&quot;,
+                &quot;passportSanction&quot;: &quot;passport&quot;,
+                &quot;active&quot;: &quot;Y&quot;,
+                &quot;motorDesc&quot;: &quot;Limit Engine&quot;,
+                &quot;stateName&quot;: &quot;GRAY&quot;,
+                &quot;products&quot;: [
+                    {
+                        &quot;productId&quot;: &quot;00kKK000003EviwYAC&quot;,
+                        &quot;stateName&quot;: &quot;GRAY&quot;
+                    }
+                ]
+            }
+        ]
+    }
+}</value>
     </values>
     <values>
         <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
@@ -68,6 +604,6 @@
     </values>
     <values>
         <field>iaso__Retrieve_Mock_LTA__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
 </CustomMetadata>

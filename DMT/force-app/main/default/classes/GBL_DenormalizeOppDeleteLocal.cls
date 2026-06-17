@@ -13,7 +13,7 @@ public without sharing class GBL_DenormalizeOppDeleteLocal implements Database.B
   /* Two years Date */
   private Date twoYears = Date.newInstance(date.today().year()-1, 1, 1); //NOSONAR
   /* Query */
-  private String pQuery = 'SELECT Id FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE (dwp_acmh__OpportunityId__r.IsClosed = false OR (dwp_acmh__OpportunityId__r.IsClosed = true AND dwp_acmh__OpportunityId__r.CreatedDate >= :twoYears))'; //NOSONAR
+  private String pQuery = 'SELECT Id FROM AMH_Denorm_Account_Opportunity__c WHERE (AMH_OpportunityId__r.IsClosed = false OR (AMH_OpportunityId__r.IsClosed = true AND AMH_OpportunityId__r.CreatedDate >= :twoYears))'; //NOSONAR
 
   /*
   * Constructor
@@ -61,11 +61,11 @@ public without sharing class GBL_DenormalizeOppDeleteLocal implements Database.B
   * getExecuteBatchSize method
   */
   private Integer gtExecuteBatchSize() {
-    final List<dwp_acmh__GBL_Account_Multi_Hierarchy_denorm__mdt> lmdt = [SELECT Label, NamespacePrefix, DeveloperName, dwp_acmh__Delete_Batch_Size__c, dwp_acmh__Execute_Batch_Size__c, dwp_acmh__Lead_Lookup_Field_To_Account__c, dwp_acmh__Opportunity_Filter__c, dwp_acmh__Opportunity_Lookup_Field_To_Lead__c, dwp_acmh__Active__c FROM dwp_acmh__GBL_Account_Multi_Hierarchy_denorm__mdt WHERE dwp_acmh__Active__c = true LIMIT 1];
+    final List<AMH_GBL_Account_Multi_Hierarchy_denorm__mdt> lmdt = [SELECT Label, NamespacePrefix, DeveloperName, AMH_Delete_Batch_Size__c, AMH_Execute_Batch_Size__c, AMH_Lead_Lookup_Field_To_Account__c, AMH_Opportunity_Filter__c, AMH_Opportunity_Lookup_Field_To_Lead__c, AMH_Active__c FROM AMH_GBL_Account_Multi_Hierarchy_denorm__mdt WHERE AMH_Active__c = true LIMIT 1];
     Integer result=-1;
 
     if (lmdt.size() > 0) {
-      result = Integer.valueOf(lmdt[0].dwp_acmh__Execute_Batch_Size__c);
+      result = Integer.valueOf(lmdt[0].AMH_Execute_Batch_Size__c);
     }
     system.debug('getExecuteBatchSize(): ' + result);
     return result;

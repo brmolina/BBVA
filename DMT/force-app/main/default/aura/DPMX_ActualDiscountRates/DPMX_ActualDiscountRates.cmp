@@ -1,0 +1,150 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="acquirerActivityWrapper" type="Object"/>
+
+    <div class="slds-box slds-m-vertical_x-small">
+        <span class="slds-text-heading_small">
+            <strong>{!$Label.c.DPMX_ActualDiscountRates_Title}</strong>
+        </span>
+        <div class="slds-grid slds-m-top_medium slds-m-bottom_medium">
+            <div class="slds-m-right_small slds-p-vertical_xx-small">
+                <div class="slds-col">
+                    <table class="slds-table slds-table--col-bordered roundtable slds-m-right_small">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Family}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.acquirerActivityWrapper.familyAcquirer}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-m-left_medium slds-m-right_small slds-p-vertical_xx-small">
+                <div class="slds-col">
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Debit}</span>
+                                    </div> 
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.discount.debit.number_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Credit}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.discount.percentage.credit}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_International}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.discount.percentage.international}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                        <td class="color">
+                            <th scope="col">
+                                <div>
+                                    <span class="slds-truncate">{!$Label.c.DPMX_Result}</span>                          
+                                    <div class="slds-grid slds-text-heading--medium">
+                                        <div>
+                                            <lightning:icon class="slds-p-horizontal_xx-small slds-p-bottom_xx-small slds-p-top_none slds-m-left_none slds-m-right_xx-small slds-m-vertical_none" size="xx-small" iconName="{!v.acquirerActivityWrapper.ratesResultIcon}"/> 
+                                        </div>
+                                        <div>
+                                            <strong>
+                                                <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.acquirerActivityWrapper.ratesResult}"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-m-left_medium slds-m-right_small slds-p-vertical_xx-small">
+                <div class="slds-col">
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_ActualDiscountRates_Field1}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.discount.card.amount}" currencyText="{!v.acquirerActivityWrapper.discount.amount.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-m-left_medium slds-p-vertical_xx-small">
+                <div class="slds-col">
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td>
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_ActualDiscountRates_Field2}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.taxAcquirer.amount}" currencyText="{!v.acquirerActivityWrapper.taxAcquirer.currency_y}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td> <!--  -->
+                        <td class="color">
+                            <th scope="col">
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Profitability}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.yield}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </th>
+                        </td>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

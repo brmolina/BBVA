@@ -1,0 +1,59 @@
+<template>
+    <div class="slds-combobox_container" onclick={handleInsideClick}>
+        <div class={comboboxClass} role="combobox" aria-expanded={isOpen} aria-haspopup="listbox">
+            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                <button
+                    class="slds-input slds-combobox__input slds-combobox__input-value"
+                    type="button"
+                    onclick={toggle}
+                    disabled={disabled}
+                    title={displayText}
+                >
+                    <span class="slds-truncate">{displayText}</span>
+                </button>
+
+                <span class="slds-icon_container slds-input__icon slds-input__icon_right" title="Open">
+                    <lightning-icon icon-name="utility:down" size="x-small"></lightning-icon>
+                </span>
+            </div>
+
+            <template lwc:if={isOpen}>
+                <div class="slds-dropdown slds-dropdown_fluid slds-dropdown_length-7" role="listbox">
+                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                        <template lwc:if={hasOptions}>
+                            <template for:each={optionsWithChecked} for:item="opt">
+                                <li key={opt.value} class="slds-listbox__item" role="presentation">
+                                    <div
+                                        class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small onb-option"
+                                        role="option"
+                                        data-value={opt.value}
+                                        onclick={handleOptionClick}
+                                    >
+                                        <lightning-input
+                                            type="checkbox"
+                                            checked={opt._checked}
+                                            data-value={opt.value}
+                                            onchange={handleToggleValue}
+                                            onclick={handleCheckboxClick}
+                                            variant="label-hidden"
+                                        ></lightning-input>
+
+                                        <span class="slds-m-left_small slds-truncate">{opt.label}</span>
+                                    </div>
+                                </li>
+                            </template>
+                        </template>
+
+                        <template lwc:else>
+                            <li class="slds-listbox__item" role="presentation">
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                    <span class="slds-text-color_weak">No options</span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

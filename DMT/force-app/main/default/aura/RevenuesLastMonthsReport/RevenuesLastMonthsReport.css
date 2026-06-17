@@ -1,0 +1,76 @@
+.THIS .index9{
+    z-index: 9999999 !important;
+}
+.THIS .height77{
+    height: 77px;
+}
+
+.THIS .slds-button_icon-bare {
+    visibility: hidden;
+}
+
+.THIS tr[aria-level="1"] .slds-button__icon_small {
+    visibility: visible;
+}
+
+.THIS tr[aria-level="1"] {
+    font-size: 1.05em;
+    background-color: rgb(250, 250, 249);
+    font-weight: bold;
+    color: #00358C;
+}
+
+.THIS th :first-child {
+    font-weight: bold;
+
+}
+
+.THIS h1{
+    font-weight:bold;
+    font-size:1.3em;
+}
+
+.THIS [aria-level="1"] th {
+    font-weight: bold;
+    color: #00358C;
+}
+
+.THIS td > lightning-primitive-cell-wrapper  {
+    padding-right: 50%;
+}
+
+.THIS .slds-th__action {
+    font-size: 1.05em;
+}
+
+.THIS div[tabindex="-1"] {
+    background-color: white !important;
+    text-align: center;
+}
+/* SCROLL */
+.THIS.sWrapTest {
+    height:100vh !important;
+    width:100vw !important;
+    padding-bottom: 250px !important;
+}
+
+.THIS .sWrapTestDesktop {
+    height:100%;
+    width:100%;
+}
+
+.THIS.outerScroller {
+    border-radius: 11px;
+}
+
+.THIS.innerScroller {
+    border-radius: 10px;
+}
+.THIS .topClass {
+    margin-top:30px;
+    padding-top:10px;
+}
+.THIS .widthBottom {
+    width:700px;
+    margin-bottom:60px;
+}

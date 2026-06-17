@@ -1,0 +1,10 @@
+/* Layout */
+.onb-card {
+    border-radius: 1rem;
+    border: 1px solid var(--lwc-colorBorder);
+    box-shadow: 0 2px 4px 0 var(--lwc-colorShadow);
+    padding: var(--lwc-spacingMedium);
+    display: flex;
+    flex-direction: column;
+    background: var(--lwc-colorBackgroundAlt);
+}

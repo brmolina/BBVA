@@ -1,0 +1,148 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"  controller="Arc_Gen_NewModalFinanStatemController" access="global" >
+    <aura:attribute name="ratingSys" type="String" description="Rating System to know if is IFIS or Corpo" default="Corp"  />
+    <aura:attribute name="acctList" type="arce__Financial_Statements__c[]" description="List of the obtained FFSS with labels translated" access="global"/>
+    <aura:attribute name="ffssList" type="arce__Financial_Statements__c[]" description="List of the obtained FFSS"/>
+    <aura:attribute name="mycolumns" type="List" description="List of the table columns"/>
+    <aura:attribute name="preSelectedRows" type="List" description="List of the rows pre-selected"/>
+    <aura:attribute name="selectedRows" type="List" description="List of the rows selected"/>
+    <aura:attribute name="selectedRows2" type="List" description="Second List of the rows selected" access="global"/>
+    <aura:attribute name="rowsSelected" type="List" description="List of the rows selected"/>
+    <aura:attribute name="ratiosStatus" type="String" description="Status of the callout"/>
+    <aura:attribute name="ffssValidId" type="String" description="Id of the valid financial statement"/>
+    <aura:attribute name="ffssValid" type="String" description="If yes, the financial statement is valid"/>
+    <aura:attribute name="message" type="String" description="Message obtained of the service"/>
+    <aura:attribute name="msgTable" type="String" description="If yes, the balance tables were updated successfully" access="global"/>
+    <aura:attribute name="errorMsgTable" type="String" description="Display errors from FROM ratios WS"  access="global"/>
+    <aura:attribute name="ffssErrorMsg" type="String" default="" description="Display errors from FROM FFSS WS"/>
+    <aura:attribute name="spinnerLoading" type="Boolean" default="true" description="Indicates whether the FFSS are being saved in SF." />
+    <aura:attribute name="maxRowSelection" type="Integer" default="1" description="Max number of rows that you can select in the table"/>
+    <aura:attribute name="accHasAnalysisId" type="String" description="Display errors from FROM ratios WS"/>
+    <aura:attribute name="validLabel" type="String" description="Label of the value of a valid FFSS" />
+    <aura:attribute name="isFinancialRAIP" access="global" default="false" type="Boolean" description="Allows to select up to 2 FFSS more"/>
+    <aura:attribute name="modlSlctd" type="String" description="Rating tool selected in pre step triage custom" access="global" />
+    <aura:attribute name="ratingToolSelect" type="String" default="" description="Rating tool selected in pre step triage custom" />
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="errorMessage" type="String" access="global" />
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="currentPage" type="Integer"  default="1"/>
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="loadMoreOffset" type="Integer" default="0"/>
+    <aura:attribute name="ratingType" type="String" default="Rating" description="Indicates if the raip is a rating or a prerating" access="global" />
+    <aura:attribute name="variantRating" type="String" default="neutral" description="Variant of the rating buttons" />
+    <aura:attribute name="variantPreRating" type="String" default="neutral" description="Variant of the rating buttons"/>
+    <aura:attribute name="disabledRating" type="Boolean" default="false" />
+    <aura:attribute name="disabledPreRating" type="Boolean" default="false" />
+    <aura:attribute name="showRating" type="Boolean" default="false" />
+    <aura:attribute name="fromButton" type="Boolean" default="true" />
+    <aura:attribute name="nextDisabled" type="Boolean" default ="true" description="enable or disable next button" access ="global"/>
+    <aura:attribute name="show" type="Boolean" default ="true" description="show or hide modal" access ="global"/>
+    <aura:attribute name="cssClass" type="String" default ="slds-modal slds-fade-in-open slds-align_absolute-center" description="css class of section"/>
+    <aura:attribute name="cssClassbackdrop" type="String" default ="slds-backdrop slds-backdrop_open" description="css class of section"/>
+    <aura:attribute name="cssClassModal" type="String" default ="panel slds-fade-in-open slds-modal" description="css class of section"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.initEng}" description="Init variable"/>
+
+    <aura:registerEvent name="updateBlances" type="c:Arc_Gen_RAIP_UpdateBalances_evt"/>
+    <aura:registerEvent name="wizardEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+
+    <aura:method name="callTablesEngine" action="{!c.callTablesEngine}" />
+
+    <aura:if isTrue="{!v.show}">
+        <div class="{!v.cssClassModal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="{!v.cssClass}">
+                <div>
+                    <aura:if isTrue="{!v.fromButton}">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{! c.Cancel }"
+                                                alternativeText="close"
+                                                variant="bare-inverse"
+                                                class="slds-modal__close"/>
+                            <div class="title slds-text-heading--medium" >{!$Label.c.Arc_Gen_EEFF}</div>
+                        </header>
+                    </aura:if>
+                    <div class="slds-modal__content modal-content">
+                        <aura:if isTrue="{!v.spinnerLoading}">
+                            <div class="spinner-container">
+                                <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+                            </div>
+                        </aura:if>
+                        <div class="slds-card slds-card__header slds-grid">
+                            <div class="slds-grid slds-p-top_medium datatable">
+                                <lightning:datatable data="{!v.acctList}"
+                                                columns="{!v.mycolumns}"
+                                                keyField="arce__financial_statement_id__c"
+                                                selectedRows="{!v.selectedRows}"
+                                                onrowselection="{!c.updateSelectedRows}"
+                                                maxRowSelection="{!v.maxRowSelection}"
+                                                defaultSortDirection="{!v.defaultSortDirection}"
+                                                sortedDirection="{!v.sortDirection}"
+                                                sortedBy="{!v.sortedBy}"
+                                                onsort="{!c.handleSort}"
+                                                draftValues="{! v.draftValues }"
+                                                enableInfiniteLoading="{! v.enableInfiniteLoading }"
+                                                loadMoreOffset="{! v.loadMoreOffset }"
+                                                onloadmore="{! c.loadMoreData }"/>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-vertical_small slds-p-horizontal_medium">
+                            <lightning:button label="Pre-Rating" value="PreRating" disabled="{!v.disabledPreRating}" onclick="{!c.handleClickRating}" variant="{!v.variantPreRating}"></lightning:button>
+                            <aura:if isTrue="{!v.showRating}">
+                                <lightning:button label="Rating" value="Rating" disabled="{!v.disabledRating}" onclick="{!c.handleClickRating}" variant="{!v.variantRating}"></lightning:button>
+                            </aura:if>
+                        </div>
+
+                        <div class="{!v.msgTable == 'no' ? '':'slds-hide'}">
+                            <section role="log" class="slds-chat">
+                                <ul class="slds-chat-list">
+                                    <li class="slds-chat-listitem slds-chat-listitem_event">
+                                        <div class="slds-chat-event slds-has-error" role="alert">
+                                            <div class="slds-chat-event__rule"></div>
+                                            <div class="slds-chat-event__body">
+                                                <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                                    <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                                                    <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisError}</span>
+                                                </span>
+                                            </div>
+                                            <div class="slds-chat-event__rule"></div>
+                                            <div class="slds-chat-event__agent-message">{!v.errorMessage} <br/>
+                                                <aura:unescapedHtml value="{!v.errorMsgTable}" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </section>
+                        </div>
+                        <div class="{!v.ffssErrorMsg != '' ? '':'slds-hide'}">
+                            <section role="log" class="slds-chat">
+                                <ul class="slds-chat-list">
+                                    <li class="slds-chat-listitem slds-chat-listitem_event">
+                                        <div class="slds-chat-event slds-has-error" role="alert">
+                                            <div class="slds-chat-event__rule"></div>
+                                            <div class="slds-chat-event__body">
+                                                <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                                    <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                                                </span>
+                                            </div>
+                                            <div class="slds-chat-event__rule"></div>
+                                            <div class="slds-chat-event__agent-message">{!v.ffssErrorMsg}</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </section>
+                        </div>
+                        <aura:if isTrue="{!v.fromButton}">
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="brand" disabled="{!v.nextDisabled}" onclick="{!c.handleNext}">{!$Label.c.Arc_Gen_Next}</lightning:button>
+                            </footer>
+                        </aura:if>
+                    </div>
+                </div>
+            </section>
+            <div class="{!v.cssClassbackdrop}"></div>
+        </div>
+    </aura:if>
+</aura:component>

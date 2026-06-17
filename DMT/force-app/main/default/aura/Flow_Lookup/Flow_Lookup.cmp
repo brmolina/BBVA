@@ -1,0 +1,18 @@
+<aura:component controller="Util_PickList" implements="force:appHostable,force:hasRecordId,force:lightningQuickAction,lightning:availableForFlowScreens" access="global">
+    <aura:attribute name="selectedLookUpUserID" type="String" default=""/>
+    <aura:attribute name="selectedLookUpRecordID" type="String" default=""/>
+    <aura:attribute name="custom" type="Boolean" default="true"/>
+    <aura:attribute name="equals" type="Boolean" default="false"/>
+    <aura:attribute name="searchField" type="String" default=""/>
+    <aura:attribute name="objectAPIName" type="string" default=""/>
+    <aura:attribute name="label" type="String" default=""/>
+    <aura:attribute name="height" type="String" default="180px"/>
+    <aura:attribute name="selectedValue" type="string"/>
+    <aura:attribute name="showHelpText" type="Boolean" default="false"/>
+    <aura:attribute name="contentHelpText" type="string"/>
+    <aura:attribute name="ipUserFilter" type="string"/>
+    <aura:attribute name="iconName" type="string" default="standard:user" access="global"/>
+    <c:customLookup objectAPIName="{!v.objectAPIName}" IconName="{!v.iconName}" label="{!v.label}" selectedRecordId="{!v.selectedLookUpUserID}" custom="{!v.custom}" equals="{!v.equals}" searchField="{!v.searchField}" fieldName="{!v.searchField}"
+                    selectedValue="{!v.selectedValue}" showHelpText="{!v.showHelpText}" contentHelpText="{!v.contentHelpText}" ipUserFilter="{!v.ipUserFilter}"/>
+	<div style="{!'min-height:'+ v.height + ';'}"></div>
+</aura:component>

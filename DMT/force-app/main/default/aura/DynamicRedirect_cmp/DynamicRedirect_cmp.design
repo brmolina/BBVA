@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="nameTopic" label="Name Push Topic" />
+    <design:attribute name="relatedApiName" label="Related Api Name" />
+</design:component>

@@ -18,7 +18,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testIRPCross() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000024'; //BEeIG-GCB
     insert acc;
@@ -47,7 +47,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testARPCross() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000024'; //BEeIG-GCB
     insert acc;
@@ -76,7 +76,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testCRPCross() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000024'; //BEeIG-GCB
     insert acc;
@@ -106,7 +106,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testIRP() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;
@@ -135,7 +135,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testARP() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;
@@ -164,7 +164,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testCRP() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;
@@ -204,7 +204,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testIRPCountry() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;
@@ -236,7 +236,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testARPCountry() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;
@@ -268,7 +268,7 @@ public with sharing class Des_GetPermission_Locator_test {
   static void testCRPCountry() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     acc.DES_Tier__c = '00000010'; //BEeIG - Others
     insert acc;

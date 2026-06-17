@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_equator_princ_catg_type__c</fullName>
+    <label>Equator Principles Category</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Hydrogen&amp;EFuels</fullName>
+                <default>false</default>
+                <label>Hydrogen &amp;Efuels</label>
+            </value>
+            <value>
+                <fullName>Storage</fullName>
+                <default>false</default>
+                <label>Storage</label>
+            </value>
+            <value>
+                <fullName>CCUS</fullName>
+                <default>false</default>
+                <label>CCUS</label>
+            </value>
+            <value>
+                <fullName>Mobility</fullName>
+                <default>false</default>
+                <label>Mobility</label>
+            </value>
+            <value>
+                <fullName>A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>A</label>
+            </value>
+            <value>
+                <fullName>B</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>B</label>
+            </value>
+            <value>
+                <fullName>C</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>C</label>
+            </value>
+            <value>
+                <fullName>Hydrogen &amp; e-fuels</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hydrogen &amp; e-fuels</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

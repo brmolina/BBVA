@@ -34,7 +34,7 @@ public class SER_Lookup_CONTROLLER_TEST {
     filial.Name = 'Filial Test';
     filial.DES_Main_Parent__c = grupo.Id;
     filial.gf_bei_Id__c = 'Group BEI';
-    filial.SER_CClient__c = 'Codetest';
+    filial.g_customer_id__c = 'Codetest';
     insert filial;
   }
 

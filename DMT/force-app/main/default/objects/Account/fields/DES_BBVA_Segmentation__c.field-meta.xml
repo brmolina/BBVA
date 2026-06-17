@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_BBVA_Segmentation__c</fullName>
+    <label>BBVA Segmentation</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>B</fullName>
+                <default>false</default>
+                <label>BEC</label>
+            </value>
+            <value>
+                <fullName>C</fullName>
+                <default>false</default>
+                <label>CIB</label>
+            </value>
+            <value>
+                <fullName>NBC</fullName>
+                <default>false</default>
+                <label>NBC</label>
+            </value>
+            <value>
+                <fullName>L</fullName>
+                <default>false</default>
+                <label>LOCAL</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_crr_social_env_project_type__c</fullName>
+    <label>Portfolio Alignment</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>NA</fullName>
+                <default>false</default>
+                <label>NA</label>
+            </value>
+            <value>
+                <fullName>Positive</fullName>
+                <default>false</default>
+                <label>Positive</label>
+            </value>
+            <value>
+                <fullName>Negative</fullName>
+                <default>false</default>
+                <label>Negative</label>
+            </value>
+            <value>
+                <fullName>Non-supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Non-supportive</label>
+            </value>
+            <value>
+                <fullName>Supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Supportive</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

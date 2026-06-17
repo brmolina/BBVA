@@ -1,0 +1,44 @@
+<aura:component controller="DES_Alive_Opportunities_Home" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global">
+	
+	<aura:attribute name="countriesToDisplay" type="String" access="public"
+       description="Escribir el ***ISO CODE 3*** de los países que tienen que tener los miembros de la oportunidad para que se tenga en cuenta la oportunidad en el Report." />
+	
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+	<aura:attribute name="userISOCode" type="String"/>  
+    <aura:attribute name="familyProduct" type="String"/> 
+    <aura:attribute name="gmRolVery" type="Boolean"  default="false" />
+    <aura:attribute name="roleHierarchy" type="Boolean" default="true" access="public" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-page-header">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-standard-opportunity" title="Live Opportunities">
+					<lightning:icon iconName="standard:opportunity" size="large" alternativeText="Report"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">Opportunities</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Live Opportunities">Live Opportunities</h1>
+			</div>
+		</div>
+	</div>
+    
+    <aura:if isTrue="{! empty(v.myData)}">
+        <div class="tableNoData" style="padding:15px; text-align: center; border:1px #CDCDCD solid; border-radius:5px;">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+            <lightning:datatable data="{!v.myData}" 
+                                 columns="{!v.myColumns}" 
+                                 keyField="id"
+                                 hideCheckboxColumn="true"/> 
+            <p style="text-align:center; padding:10px 0px; border-bottom:1px solid #E4E4E4;border-left:1px solid #E4E4E4;border-right:1px solid #E4E4E4; border-radius:10px;">
+                <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Case_Type_B__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Section of the regulation of the Article 52, Section IV criterion that represents if the counterparty obtains 80% or more of its gross annual income from the same income source or provider.</description>
+    <label>Case Type B</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

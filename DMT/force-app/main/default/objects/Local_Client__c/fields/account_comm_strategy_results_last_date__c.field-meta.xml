@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>account_comm_strategy_results_last_date__c</fullName>
+    <label>Account Comm Strategy Results Last Date</label>
+    <summarizedField>Account_Commercial_Strategy_Results__c.year_month_day_date__c</summarizedField>
+    <summaryForeignKey>Account_Commercial_Strategy_Results__c.Local_Client_id__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

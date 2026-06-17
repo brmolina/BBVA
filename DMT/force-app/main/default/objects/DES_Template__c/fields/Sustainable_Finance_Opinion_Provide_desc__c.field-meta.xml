@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sustainable_Finance_Opinion_Provide_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Sustainable Finance Opinion Provided By</label>
+    <length>320</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

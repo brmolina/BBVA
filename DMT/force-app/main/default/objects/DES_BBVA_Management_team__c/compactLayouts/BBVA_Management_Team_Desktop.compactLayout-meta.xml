@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BBVA_Management_Team_Desktop</fullName>
+    <fields>Name</fields>
+    <fields>DES_Member_Role__c</fields>
+    <fields>DES_Local_Banker_Country__c</fields>
+    <fields>DES_User_email_text__c</fields>
+    <fields>DES_phone__c</fields>
+    <label>BBVA Management Team Desktop</label>
+</CompactLayout>

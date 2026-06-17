@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Code_Level__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( DMT_Classification_Level__c = &quot;Family&quot;,  DMT_Product_family__c , IF( DMT_Classification_Level__c = &quot;Subfamily&quot;
+																,DMT_Product_Subfamily__c,IF( DMT_Classification_Level__c = &quot;Category&quot;,DMT_Product_category__c,
+																	IF( DMT_Classification_Level__c = &quot;Subcategory&quot;,DMT_Product_Subcategory__c,
+																											IF( DMT_Classification_Level__c = &quot;Global Product&quot;,DMT_Global_Product_Id__c,&quot;&quot;)))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Code Level</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

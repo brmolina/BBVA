@@ -8,11 +8,18 @@ import LINE_CURRENCYISOCODE_FIELD from '@salesforce/schema/DMT_Line__c.CurrencyI
 import OPP_CURRENCYISOCODE_FIELD from '@salesforce/schema/Opportunity.CurrencyIsoCode';
 import CASE_CURRENCYISOCODE_FIELD from '@salesforce/schema/Case.CurrencyIsoCode';
 
+// New imports for PDF generation
+import preparePdfAssets from '@salesforce/apex/DMT_PdfService.preparePdfAssets';
+import generateFinalPdf from '@salesforce/apex/DMT_PdfService.generateFinalPdf';
+
+import { publish, MessageContext } from 'lightning/messageService';
+import DMT_VIEW_DATA_CHANNEL from '@salesforce/messageChannel/DmtViewData__c';
+
 export default class Dmt_view_lwc extends LightningElement {
     // ---------------- Public/Tracked API ----------------
     @track downloadInProgress = false;
 
-    @api viewType = null;               // 'Line_Treasury', 'Line', 'Opportunity', 'Case'
+    @api viewType = null;               // 'Line_Treasury', 'Line_Sanction', 'Line', 'Opportunity', 'Case'
     @api objectApiName = null;
     @api recordTypeApiName = null;
     @api currencyIsoCode = null;
@@ -31,7 +38,6 @@ export default class Dmt_view_lwc extends LightningElement {
     _prodId = null;
     @api
     set oppId(value) {
-        console.log('set oppId, ', value);
         if(value) {
             this._oppId = value;
             this.recordOrLineId = value;
@@ -81,6 +87,7 @@ export default class Dmt_view_lwc extends LightningElement {
     showDownloadPdf = true;
 
     jsonForPdf = '';
+    htmlForPdf = '';
     vfPageUrl = '';
 
     // Request token to avoid stale overwrites
@@ -109,6 +116,9 @@ export default class Dmt_view_lwc extends LightningElement {
     set recordId(value) {
         if(value){
             console.log('setRecordId, ', value);
+            if (String(value).startsWith('500')) {
+                this.publishToSibling = true;
+            }
             this._recordId = value;
             this.recordOrLineId = value;
             this._onIncomingRecordOrLineIdChange();
@@ -118,12 +128,16 @@ export default class Dmt_view_lwc extends LightningElement {
     // ----------------------------------------------------
     // Wires
     // ----------------------------------------------------
+    @wire(MessageContext)
+    messageContext;
+
+    publishToSibling = false;
+    
     @wire(getRecordUi, { recordIds: '$recordId', layoutTypes: ['Full'], modes: ['View'] })
     wiredRecordUi({ error, data }) {
         if (data) {
             this.recordOrLineId = this.recordId;
             const detectedApiName = data.records[this.recordId].apiName;
-            console.log('detectedApiname, ', detectedApiName);
             if (this.objectApiName !== detectedApiName) {
                 this.objectApiName = detectedApiName;
             }
@@ -133,12 +147,11 @@ export default class Dmt_view_lwc extends LightningElement {
             } else if (this.objectApiName === 'Opportunity') {
                 this.viewType = 'Opportunity';
                 this.recordTypeApiName = 'DMT_Opportunity'
-              //  this.oppId = this.recordId;
                 this.wiredFields = [OPP_CURRENCYISOCODE_FIELD];
             } else if (this.objectApiName === 'Case') {
+                this.publishToSibling = true;
                 this.wiredFields = [CASE_CURRENCYISOCODE_FIELD];
             }
-       //     this._onIncomingRecordOrLineIdChange();
             this.tryInit();
         } else if (error) {
             console.error('Error retrieving object info:', error);
@@ -155,7 +168,6 @@ export default class Dmt_view_lwc extends LightningElement {
             } else if (this.objectApiName === 'Case') {
                 this.currencyIsoCode = getFieldValue(data, CASE_CURRENCYISOCODE_FIELD);
             }
-         //   this._onIncomingRecordOrLineIdChange();
             this.tryInit();
         } else if (error) {
             console.error('Error retrieving record:', error);
@@ -173,6 +185,7 @@ export default class Dmt_view_lwc extends LightningElement {
         this.isLoading = true;
         this.isRendered = false;
         this.jsonForPdf = '';
+        this.htmlForPdf = '';
         return token;
     }
 
@@ -196,14 +209,16 @@ export default class Dmt_view_lwc extends LightningElement {
     // Readiness + init
     // ----------------------------------------------------
     isReady() {
-        console.log('isReady check this.selectedItems.length:', this._selectedItems.length);
-        console.log('isReady check this.recordOrLineId:', this.recordOrLineId);
-            console.log('isReady check this.recordTypeApiName:', this.recordTypeApiName);
-        console.log('isReady check this.objectApiName:', this.objectApiName);
-        console.log('isReady check this.viewType:', this.viewType);
         const hasLimitVisual = this._selectedItems.some(i => i.component === 'Limit Visual');
-        console.log('isReady check hasLimitVisual:', hasLimitVisual);
-        console.log('isReady check this.currencyIsoCode:', this.currencyIsoCode);
+        const hasProfitabilityVisual = this._selectedItems.some(i => i.component === 'Profitability Visual');
+        console.log('isReady() check - hasLimitVisual:', hasLimitVisual);
+        console.log('isReady() check - hasProfitabilityVisual:', hasProfitabilityVisual);
+        console.log('isReady() check - _selectedItems.length:', this._selectedItems.length);
+        console.log('isReady() check - recordOrLineId:', this.recordOrLineId);
+        console.log('isReady() check - recordTypeApiName:', this.recordTypeApiName);
+        console.log('isReady() check - objectApiName:', this.objectApiName);
+        console.log('isReady() check - viewType:', this.viewType);
+        console.log('isReady() check - currencyIsoCode:', this.currencyIsoCode);
         return (
             this._selectedItems.length > 0 &&
             this.recordOrLineId != null &&
@@ -243,6 +258,10 @@ export default class Dmt_view_lwc extends LightningElement {
                 case 'Line_Treasury':
                     this.objectApiName = 'DMT_Line__c';
                     this.recordTypeApiName = 'TreasurySettlement';
+                    break;
+                case 'Line_Sanction':
+                    this.objectApiName = 'DMT_Line__c';
+                    this.recordTypeApiName = 'Sanction';
                     break;
                 case 'Line':
                     this.objectApiName = 'DMT_Line__c';
@@ -294,8 +313,6 @@ export default class Dmt_view_lwc extends LightningElement {
     }
 
     async getItemsToDisplay() {
-        console.log('getItemsToDisplay recordOrLineId, ', this.recordOrLineId);
-        console.log('getItemsToDisplay objectApiName, ', this.objectApiName);
         try {
             const result = await getItemsToDisplay({ recordOrLineId: this.recordOrLineId, objectApiName: this.objectApiName});
             if (result) {
@@ -345,10 +362,8 @@ export default class Dmt_view_lwc extends LightningElement {
     // Items update
     // ----------------------------------------------------
     async updateItemsToDisplay() {
-        console.log('updateItemsToDisplay called');
         const prev = JSON.stringify(this.itemsToDisplay);
         const next = JSON.stringify(this._selectedItems);
-        console.log('updateItemsToDisplay, prev vs next:', prev, '---', next);
 
         if (prev !== next) {
             this.hasImage = false;
@@ -391,6 +406,7 @@ export default class Dmt_view_lwc extends LightningElement {
             }
 
             const hasLimitVisual = this._selectedItems.some(i => i.component === 'Limit Visual');
+            const hasProfitabilityVisual = this._selectedItems.some(i => i.component === 'Profitability Visual');
 
             // 2 For Limit Visual we need currency
             if (hasLimitVisual && !this.currencyIsoCode) {
@@ -402,7 +418,7 @@ export default class Dmt_view_lwc extends LightningElement {
             // 3️ FEATURES fetch (only if record changed or never fetched)
             let features = this.featuresData;
             const recordStable = this._featuresSourceId === this.recordOrLineId;
-            const shouldFetchFeatures = hasLimitVisual && (!recordStable || !features);
+            const shouldFetchFeatures = (hasLimitVisual || hasProfitabilityVisual) && (!recordStable || !features);
 
             if (shouldFetchFeatures) {
                 const resp = await getFeatures({ id: this.recordOrLineId });
@@ -419,7 +435,7 @@ export default class Dmt_view_lwc extends LightningElement {
             let allLimits = null;
             let profitability = null;
             this.hasImage = false;
-            if (hasLimitVisual && this.featuresData.length > 0) {
+            if ((hasLimitVisual|| hasProfitabilityVisual) && this.featuresData.length > 0) {
                 const build = this.buildChartInputs(this.featuresData);
                 if (myRun !== this._runId) return;
 
@@ -493,7 +509,17 @@ export default class Dmt_view_lwc extends LightningElement {
         } else {
             this.jsonForPdf = result.pdf || '';
             htmlToRender = result.html || '';
+            this.htmlForPdf = htmlToRender;
             this.isRendered = true;
+
+            if(this.publishToSibling) {
+                // 4. PUBLISH NATIVE LMS EVENT TO SIBLINGS
+                console.log('[dmt_view_lwc] Publishing payloads to LMS...');
+                publish(this.messageContext, DMT_VIEW_DATA_CHANNEL, {
+                    htmlPayload: htmlToRender,
+                    jsonPayload: this.jsonForPdf
+                });
+            }
         }
 
         if (!this._isStale(token) && htmlToRender) {
@@ -519,7 +545,7 @@ export default class Dmt_view_lwc extends LightningElement {
             hasImage = true;
             profitability = profitabilityFeature.profitability;
         }
-
+        console.log('isProfitability, ', JSON.stringify(features));
         // Subfeature charts (consumption limits)
         for (const key in features) {
             const f = features[key];
@@ -536,21 +562,27 @@ export default class Dmt_view_lwc extends LightningElement {
                 let dataPendingAuthorized = [];
                 let dataNewOpportunity = [];
 
+                const toNum = (v) => {
+                    const n = Number(v);
+                    return Number.isFinite(n) ? n : 0;
+                };
+
                 (f.consumptionLimits || []).forEach((cl) => {
                     if (cl && cl.stateName !== undefined) {
-                        conditions.push(cl.conditionDesc);
-                        currencies.push(cl.currencyId);
-                        labels.push(cl.limitDesc);
-                        limitLights.push(cl.stateName?.toUpperCase());
-                        targets.push(parseFloat(cl.amount?.currentApprovedAmount));
-                        dataDraw.push(
-                            parseFloat(cl.amount?.cmtContDisposedAmount) +
-                            parseFloat(cl.amount?.uncmtContDisposedAmount)
-                        );
-                        dataUndrawnCommitted.push(parseFloat(cl.amount?.cmtContNonDspsAmount));
-                        dataUndrawnUncommitted.push(parseFloat(cl.amount?.uncmtContNonDspsAmount));
-                        dataPendingAuthorized.push(parseFloat(cl.amount?.authorizedRiskAmount));
-                        dataNewOpportunity.push(parseFloat(cl.amount?.notSignedTrConsumptionAmount));
+                        conditions.push(cl?.conditionDesc || '');
+                        currencies.push(cl?.currencyId || this.currencyIsoCode || '');
+                        labels.push(cl?.limitDesc || '');
+                        limitLights.push((cl?.stateName || 'GRAY').toUpperCase());
+
+                        const cmtDisposed = toNum(cl?.amount?.cmtContDisposedAmount);
+                        const uncmtDisposed = toNum(cl?.amount?.uncmtContDisposedAmount);
+
+                        targets.push(toNum(cl?.amount?.currentApprovedAmount));
+                        dataDraw.push(cmtDisposed + uncmtDisposed);
+                        dataUndrawnCommitted.push(toNum(cl?.amount?.cmtContNonDspsAmount));
+                        dataUndrawnUncommitted.push(toNum(cl?.amount?.uncmtContNonDspsAmount));
+                        dataPendingAuthorized.push(toNum(cl?.amount?.authorizedRiskAmount));
+                        dataNewOpportunity.push(toNum(cl?.amount?.notSignedTrConsumptionAmount));
                     }
                 });
 
@@ -562,13 +594,14 @@ export default class Dmt_view_lwc extends LightningElement {
                     { "backgroundColor": "rgba(45, 204, 205, 1)", "data": dataPendingAuthorized, "hoverBackgroundColor": "rgba(45, 204, 205, 1)", "label": "Pending authorized" },
                     { "backgroundColor": "rgba(189, 189, 189, 1)", "data": dataNewOpportunity, "hoverBackgroundColor": "rgba(189, 189, 189, 1)", "label": "New Opportunity" }
                 ];
+
                 const limitsObj = {
                     conditions,
                     currencies,
                     datasets,
                     labels,
                     limitLights,
-                    originCurrency: this.currencyIsoCode,
+                    originCurrency: this.currencyIsoCode || '',
                     sections,
                     targetColor: 'red',
                     targets
@@ -577,7 +610,7 @@ export default class Dmt_view_lwc extends LightningElement {
                 allLimitsLocal.push(allLimitObj);
             }
         }
-
+        console.log('allLimitsLocal, ', JSON.stringify(allLimitsLocal));
         return { allLimits: allLimitsLocal.length ? allLimitsLocal : null, hasImage, profitability: profitability };
     }
 
@@ -619,10 +652,13 @@ export default class Dmt_view_lwc extends LightningElement {
                     console.error('[getImageB64] dmt_subfeature_chart component not found in template!');
                     return '';
                 }
-
+                console.log('image64AllLocal.length ', limit.length);
                 const promises = (limit || []).map(async (item, idx) => {
+                    console.log('item ', JSON.stringify(item));
                     try {
                         const result = await imageGenerator.getChartImage(200, 100, JSON.parse(JSON.stringify(item)));
+                        if (result) {
+                            console.log('result ', result);}
                         return result || null;
                     } catch (e) {
                         console.error(`[getImageB64] error generating image for index ${idx}:`, e);
@@ -631,11 +667,16 @@ export default class Dmt_view_lwc extends LightningElement {
                 });
 
                 const resolved = await Promise.all(promises);
+                console.log('resolved ', JSON.stringify(resolved)); 
                 resolved.forEach((res) => {
-                    if (res) image64AllLocal.push({ imgB64: res });
+                    if (res  && res !== null) {
+                        console.log('res ', res);
+                        image64AllLocal.push({ imgB64: res });
+                    }
+                        
                 });
             }
-
+            console.log('image64AllLocal ', JSON.stringify(image64AllLocal));
             return image64AllLocal.length > 0 ? image64AllLocal : '';
         } catch (e) {
             console.error('[getImageB64] exception:', e);
@@ -810,13 +851,14 @@ export default class Dmt_view_lwc extends LightningElement {
     }
 
     async downloadPdf() {
-        await this.generatePdf(JSON.parse(this.jsonForPdf || '{}'));
+        //await this.generatePdf(JSON.parse(this.jsonForPdf || '{}'));
+        await this.generatePdf(this.htmlForPdf);
     }
 
-    async generatePdf(parsedResponse) {
+    async generatePdf(rawHtml) {
         try {
-            const pdfGenerator = this.template.querySelector('c-pdf-generator');
-            pdfGenerator.jsonData = parsedResponse;
+/*              const pdfGenerator = this.template.querySelector('c-pdf-generator');
+            pdfGenerator.jsonData = rawHtml;
             pdfGenerator.output = 'blob';
             const pdfBlob = await pdfGenerator.generatePDF();
             if (pdfBlob) {
@@ -829,16 +871,53 @@ export default class Dmt_view_lwc extends LightningElement {
                 document.body.removeChild(a);
                 window.open(blobUrl, '_blank');
                 URL.revokeObjectURL(blobUrl);
+            } */ 
+            if (!rawHtml) {
+                throw new Error('[PDF] No HTML provided.');
+            }
+            // ── TX 1: persistir imágenes ────────────────────────────
+            console.log('[PDF] ⏳ TX1 — Persisting inline images...');
+            const prep = await preparePdfAssets({ originalHtml: rawHtml });
+            console.log('[PDF] ✅ TX1 — Temp docs created:', prep.documentIds?.length || 0);
+
+            // ── TX 2: generar PDF (Documents ya commiteados) ────────
+            console.log('[PDF] ⏳ TX2 — Generating PDF...');
+            const pdfBase64 = await generateFinalPdf({
+                finalHtml: prep.modifiedHtml,
+                docIds: prep.documentIds || []
+            });
+            console.info('[PDF] ✅ TX2 — PDF generated. Base64 size:', pdfBase64?.length || 0);
+
+            // ── Convertir base64 → Blob ─────────────────────────────
+            const byteChars = atob(pdfBase64);
+            const byteArray = new Uint8Array(byteChars.length);
+            for (let i = 0; i < byteChars.length; i++) {
+                byteArray[i] = byteChars.charCodeAt(i);
+            }
+
+            const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
+            console.log('[PDF] Final PDF Blob size (bytes):', pdfBlob.size); 
+            if (pdfBlob) {
+                    const blobUrl = URL.createObjectURL(pdfBlob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = 'DMT_ViewPDF.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.open(blobUrl, '_blank');
+                    URL.revokeObjectURL(blobUrl);
             }
         } catch (error) {
             console.error('Error in generatePdf:' + JSON.stringify(error));
             throw new Error('Failed to generate PDF.');
         } finally {
             this.downloadInProgress = false;
-            this.showDownloadpdf = false;
+            this.showDownloadPdf = false;
             if (this.recordId) {
                 window.location.reload();
             }
         }
     }
+       
 }

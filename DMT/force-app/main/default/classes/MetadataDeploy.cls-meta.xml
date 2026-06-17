@@ -6,10 +6,5 @@
         <minorNumber>11</minorNumber>
         <namespace>iaso</namespace>
     </packageVersions>
-    <packageVersions>
-        <majorNumber>4</majorNumber>
-        <minorNumber>40</minorNumber>
-        <namespace>qvcd</namespace>
-    </packageVersions>
     <status>Active</status>
 </ApexClass>

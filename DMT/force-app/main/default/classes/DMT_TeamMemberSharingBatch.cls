@@ -1,4 +1,4 @@
-global class DMT_TeamMemberSharingBatch implements Database.Batchable<SObject>, Database.Stateful {
+global without sharing class DMT_TeamMemberSharingBatch implements Database.Batchable<SObject>, Database.Stateful {
     
     // Para rastrear estadísticas y logs durante la ejecución
     global Integer recordsProcessed = 0;
@@ -14,7 +14,7 @@ global class DMT_TeamMemberSharingBatch implements Database.Batchable<SObject>, 
         String query = 'SELECT Id, Name, Line__c, User__c, AccessLevel__c, ' +
                        'Line__r.OwnerId ' + // Necesitamos el Owner para no crear shares duplicados o innecesarios.
                        'FROM DMT_TeamMember__c ' +
-                       'WHERE LastModiFiedDate >= LAST_WEEK ' + // Solo procesar los creados recientemente.
+                       'WHERE Line__r.LastModiFiedDate >= LAST_WEEK ' + // Solo procesar los creados recientemente.
                        'ORDER BY CreatedDate DESC';
         return Database.getQueryLocator(query);
     }

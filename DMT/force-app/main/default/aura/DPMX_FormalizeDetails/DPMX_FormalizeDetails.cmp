@@ -1,0 +1,1874 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="DPMX_FormalizeDetails_ctrl">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="authType" type="String" />
+    <aura:attribute name="authTypeName" type="String" />
+    <aura:attribute name="authSolicitudeName" type="String" />
+    <aura:attribute name="authTypeProduct" type="String" />
+    <aura:attribute name="authTypeRazSoc" type="String" />
+    <aura:attribute name="authTypeFam" type="String" />
+
+    <aura:attribute name="authBai" type="String" />
+    <aura:attribute name="authCredit" type="String" />
+    <aura:attribute name="authDebit" type="String" />
+    <aura:attribute name="authInternational" type="String" />
+    <aura:attribute name="authProfitability" type="String" />
+    <aura:attribute name="authResult" type="String" />
+    <aura:attribute name="authFamily" type="String" default="---" />
+    <aura:attribute name="isGs" type="Boolean" default="false" />
+
+    <aura:attribute name="dynamicPricingId" type="String" />
+
+    <aura:attribute name="debitBase" type="String" />
+    <aura:attribute name="creditBase" type="String" />
+    <aura:attribute name="internationalBase" type="String" />
+    <aura:attribute name="rentaBase" type="String" />
+    <aura:attribute name="baiBase" type="String" />
+
+    <aura:attribute name="archRespaldo__c" type="Boolean" default="false" />
+
+    <aura:attribute name="FirmODTUser__c" type="Boolean" default="false" />
+    <aura:attribute name="FirmOdtClient__c" type="Boolean" default="false" />
+    <aura:attribute name="NewODT__c" type="Boolean" default="false" />
+    <aura:attribute name="ScanODT__c" type="Boolean" default="false" />
+    <aura:attribute name="isDisable" type="Boolean" default="true" />
+
+    <aura:attribute name="debitTasa" type="String" />
+    <aura:attribute name="creditTasa" type="String" />
+    <aura:attribute name="internationalTasa" type="String" />
+
+    <aura:attribute name="DPMX_Company_Name__c" type="String" />
+    <aura:attribute name="DPMX_familia__c" type="String" />
+    <aura:attribute name="DPMX_NumeroCliente__c" type="String" />
+    <aura:attribute name="consultDate" type="String" />
+
+    <aura:attribute name="DPMX_debit" type="String" />
+    <aura:attribute name="DPMX_credit" type="String" />
+    <aura:attribute name="DPMX_International" type="String" />
+    <aura:attribute name="DPMX_Resultado" type="String" />
+    <aura:attribute name="DPMX_Rentabilidad" type="String" />
+    <aura:attribute name="DPMX_BAI" type="String" />
+
+    <aura:attribute name="DPMX_extraBillingRub" type="String" />
+    <aura:attribute name="DPMX_billingRub" type="String" />
+    <aura:attribute name="DPMX_cellnetRub" type="String" />
+
+    <aura:attribute name="DPMX_Date" type="String" />
+
+    <aura:attribute name="DPMX_monetaryCeiling" type="String" />
+    <aura:attribute name="DPMX_extraBilling" type="String" />
+    <aura:attribute name="DPMX_billing" type="String" />
+    <aura:attribute name="DPMX_cellnet" type="String" />
+    <aura:attribute name="DPMX_totalAmount" type="String" />
+    <aura:attribute name="DPMX_totalAmountSim" type="String" />
+    <aura:attribute name="DPMX_mit" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_debit_own" type="String" />
+    <aura:attribute name="DPMX_billing_debit_own" type="String" />
+    <aura:attribute name="DPMX_tickets_debit_own" type="String" />
+    <aura:attribute name="DPMX_percentage_debit_own" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_billing_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_tickets_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_percentage_debit_thirdParty" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_credit_own" type="String" />
+    <aura:attribute name="DPMX_billing_credit_own" type="String" />
+    <aura:attribute name="DPMX_tickets_credit_own" type="String" />
+    <aura:attribute name="DPMX_percentage_credit_own" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_billing_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_tickets_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_percentage_credit_thirdParty" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_international" type="String" />
+    <aura:attribute name="DPMX_billing_international" type="String" />
+    <aura:attribute name="DPMX_tickets_international" type="String" />
+    <aura:attribute name="DPMX_percentage_international" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_total" type="String" />
+    <aura:attribute name="DPMX_billing_total" type="String" />
+    <aura:attribute name="DPMX_tickets_total" type="String" />
+    <aura:attribute name="DPMX_percentage_total" type="String" />
+
+    <aura:attribute name="DPMX_terminal" type="String" />
+    <aura:attribute name="DPMX_pinPads" type="String" />
+    <aura:attribute name="DPMX_ecommerceCheckbox" type="String" />
+    <aura:attribute name="DPMX_devicesNumber" type="String" />
+
+    <aura:attribute name="DPMX_scenario" type="String" />
+
+    <aura:attribute name="DPMX_debitPorpio" type="String" />
+    <aura:attribute name="DPMX_creditPorpio" type="String" />
+    <aura:attribute name="DPMX_interPorpio" type="String" />
+    <aura:attribute name="DPMX_resultPorpio" type="String" />
+    <aura:attribute name="DPMX_rentPorpio" type="String" />
+    <aura:attribute name="DPMX_baiPorpio" type="String" />
+
+    <aura:attribute name="DPMX_oppPosExtra" type="String" />
+    <aura:attribute name="DPMX_oppCallnet" type="String" />
+    <aura:attribute name="DPMX_oppLowBilling" type="String" />
+
+    <aura:attribute name="DPMX_basisPoints" type="String" />
+
+    <aura:attribute name="DPMX_interchangeRates_debit" type="String" />
+    <aura:attribute name="DPMX_interchangeRates_credit" type="String" />
+    <aura:attribute name="DPMX_interchangeRates_International" type="String" />
+
+    <aura:attribute name="DPMX_discountRates_debit" type="String" />
+    <aura:attribute name="DPMX_discountRates_credit" type="String" />
+    <aura:attribute name="DPMX_discountRates_International" type="String" />
+
+    <aura:attribute name="DPMX_DescuentoMaximo" type="String" />
+
+    <aura:attribute name="formalizeExist" type="Boolean" default="false" />
+
+    <aura:attribute name="usersToODTLst" type="List" default="[]" />
+    <aura:attribute name="usersToODTNamesLst" type="List" default="[]" />
+    <aura:attribute name="existingUser" type="String" default="Seleccionar usuario" />
+
+    <aura:attribute name="disableButtons" type="Boolean" default="true" />
+
+    <aura:attribute name="DPMX_sel_debit" type="String" />
+    <aura:attribute name="DPMX_sel_credit" type="String" />
+    <aura:attribute name="DPMX_sel_International" type="String" />
+    <aura:attribute name="DPMX_sel_Rent" type="String" />
+    <aura:attribute name="DPMX_sel_Bai" type="String" />
+    <aura:attribute name="DPMX_sel_Result" type="String" />
+
+
+    <aura:attribute name="initDate" type="String" />
+    <aura:attribute name="revisionDate" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_2-of-3">
+            <div class="slds-box slds-box_small">
+                <div class="slds-page-header slds-m-bottom_x-large">
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media">
+                                <div class="slds-media__body">
+                                    <div class="slds-page-header__name">
+                                        <div class="slds-page-header__name-title">
+                                            <h1>
+                                                <span class="slds-page-header__title slds-truncate" title="Detalles de formalización">Detalles de formalización</span>
+                                            </h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Dynamic pricing</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Propietario</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Producto</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.authTypeName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.authSolicitudeName}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.authTypeProduct}</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Razón social</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Giro</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Tipo de tasa</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.authTypeRazSoc}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.authTypeFam}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.DPMX_sel_Result}</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <p> ‎ </p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Inicio de vigencia de la tasa:</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>Recordatorio de revisión de tasa:</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.initDate}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-3">
+                            <p>{!v.revisionDate}</p>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <p> ‎ </p>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="slds-hyphenate">Propuesta por autorizar</h1>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Tasa">Tasa</div>
+                                    </th>
+                                    <!--
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Cliente">Cliente</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Familia">Familia</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Resultado">Resultado</div>
+                                    </th>
+                                    -->
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Débito">Débito</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Crédito">Crédito</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Internacional">Internacional</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Rentabilidad">Rentabilidad</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="BAI">BAI</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            Tasa seleccionada
+                                        </div>
+                                    </td>
+                                    <!--
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.clientName}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authFamily}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authResult}" />
+                                        </div>
+                                    </td>
+                                    -->
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <aura:if isTrue="{!v.isGs}">
+                                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.authDebit}" currencyText="MXN" />
+                                                <aura:set attribute="else">
+                                                    <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authDebit}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authCredit}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authInternational}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.authProfitability}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.authBai}" currencyText="MXN" />
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            Tasa actual
+                                        </div>
+                                    </td>
+                                    <!--
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.clientName}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authTypeFam}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authResult}" />
+                                        </div>
+                                    </td>
+                                    -->
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <aura:if isTrue="{!v.isGs}">
+                                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.debitBase}" currencyText="MXN" />
+                                                <aura:set attribute="else">
+                                                    <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.debitBase}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.creditBase}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.internationalBase}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.rentaBase}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.baiBase}" currencyText="MXN" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <!--<div class="slds-scrollable_y" style="height:100rem;width:100rem" tabindex="0">-->
+                <div>
+                    <div class="slds-modal-body">
+                        <div class="slds-box slds-theme_default">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_3-of-4">
+                                    <div class="headParent">
+                                        <div class="headChild2">
+                                            <div>Nombre del grupo: {!v.DPMX_Company_Name__c} </div>
+                                            <div>Giro: {!v.DPMX_familia__c} </div>
+                                            <div>Número del cliente: {!v.DPMX_NumeroCliente__c} </div>
+                                            <div>Fecha: {!v.consultDate}</div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p> ‎ </p>
+                                        </div>
+                                    </div>
+                                    <body>
+                                        <table width="100%;" Style="border-collapse: collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <td Style="background-color: #004483; color:white;">
+                                                        <p class="Title">Tasa seleccionada</p>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr class="Headboard">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Resultado</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Rentabilidad</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">BAI</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="trParent">
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_sel_debit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_sel_credit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_sel_International}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_sel_Result}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_sel_Rent}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_sel_Bai}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Between tasa select and rest"></p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+    
+                                        <table width="100%;" Style="border-collapse: collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <td Style="background-color: #004483; color:white;">
+                                                        <p class="Title">Tasas de descuento pactadas en la última negociación</p>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Tasas descuento actuales</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr class="Headboard">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Resultado</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Rentabilidad</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">BAI</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="trParent">
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_debit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_credit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_International}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_Resultado}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_Rentabilidad}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_BAI}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Resumen de información del último mes del cliente - {!v.DPMX_Date}</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr class="Headboard">
+                                                                <td>
+                                                                    <p class="HeadboardTitle">TPV extra</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Baja facturación</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Red celular</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Gastos totales</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Gastos MIT y eBIND</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p>{!v.DPMX_extraBilling}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billing}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_cellnet}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_totalAmount}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_mit}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Información simulada del cliente</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Producto</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle"># Transacciones</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Facturación mensual</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Ticket promedio</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">% Mix</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_transaction_y_debit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billing_debit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_tickets_debit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_percentage_debit_own}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_transaction_y_credit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billing_credit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_tickets_credit_own}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_percentage_credit_own}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_transaction_y_international}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billing_international}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_tickets_international}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_percentage_international}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Total</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_transaction_y_total}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billing_total}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_tickets_total}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_percentage_total}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Dispositivos simulados</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Dispositivo</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">No. Dispositivos</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Terminal Punto de Venta</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_terminal}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Interredes con pinpad</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_pinPads}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Ecommerce</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_ecommerceCheckbox}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Total</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_devicesNumber}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Comisiones simuladas</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Rubro</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Monto</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro por baja facturación</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_extraBillingRub}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro por cada TPV extra</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_cellnetRub}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro de red celular</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_billingRub}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table width="100%;" Style="border-collapse: collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <td Style="background-color: #004483; color:white;">
+                                                        <p class="Title">Resultados de la simulación</p>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Tasas descuento propuestas</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <aura:iteration items="{!v.DPMX_scenario}" var="scenario" indexVar="index">
+                                                            <tbody>
+                                                                <tr Style="background-color: #eeeeee;">
+                                                                    <td>
+                                                                        <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p class="HeadboardTitle">Crédito</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p class="HeadboardTitle">Internacional</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p class="HeadboardTitle">Resultado</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p class="HeadboardTitle">Rentabilidad</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p class="HeadboardTitle">BAI</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <p class="padding-left">{!scenario.debit}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p>{!scenario.credit}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p>{!scenario.inter}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p>{!scenario.result}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p>{!scenario.rent}</p>
+                                                                    </td>
+                                                                    <td>
+                                                                        <p>{!scenario.bai}</p>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </aura:iteration>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Tasa personalizada</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Resultado</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Rentabilidad</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">BAI</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_debitPorpio}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_creditPorpio}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_interPorpio}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_resultPorpio}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_rentPorpio}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_baiPorpio}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Oportunidades</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Rubro</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Monto</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro por baja facturación</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_oppPosExtra}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro por cada TPV extra</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_oppCallnet}</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">Cobro de red celular</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_oppLowBilling}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table width="100%;" Style="border-collapse: collapse;">
+                                            <thead>
+                                                <tr>
+                                                    <td Style="background-color: #004483; color:white;">
+                                                        <p class="Title">Referencias</p>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p class="Title">Gastos</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Gastos totales</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Gastos MID y eBIND</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Basis points</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_totalAmountSim}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_mit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_basisPoints}</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="backgound-gray">
+                                                        <p style="font-weight: bold;">Información referente al giro</p>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding-bottom: 25px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <table width="100%;" Style="border-collapse: collapse;">
+                                                        <tbody>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Tipo</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_interchangeRates_debit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_interchangeRates_credit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_interchangeRates_International}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>Intercambio</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr Style="background-color: #eeeeee;">
+                                                                <td>
+                                                                    <p class="HeadboardTitlePadding-left">Débito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Crédito</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Internacional</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p class="HeadboardTitle">Tipo</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <p class="padding-left">{!v.DPMX_discountRates_debit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_discountRates_credit}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>{!v.DPMX_discountRates_International}</p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>Tasas máximas de descuento</p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </body>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col slds-size_1-of-3">
+            <aura:if isTrue="{!v.NewODT__c}">
+                <div class="slds-size_4-of-4 slds-m-right_xx-small">
+                    <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                        <div class="slds-box slds-size_4-of-4 slds-m-right_xx-small slds-m-left_xx-small">
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <strong><p>Requisitos</p></strong>
+                            </div>
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <lightning:input type="checkbox" aura:id="fimaRepresODT" checked="{!v.FirmOdtClient__c}" name="fimaRepresODT" label="Revisar que el apoderado legal este dado de alta en 32-70 (PU)" onchange="{!c.handleIsCheck}" />
+                            </div>
+
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <lightning:input type="checkbox" aura:id="firmaClienteODT" checked="{!v.FirmODTUser__c}" name="firmaClienteODT" label="Orden de Trabajo (ODT) firmada por el  representante legal del cliente." onchange="{!c.handleIsCheck}" />
+                            </div>
+
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <lightning:input type="checkbox" aura:id="scanODT" checked="{!v.ScanODT__c}" name="scanODT" label="Copia digital firmada de la ODT." onchange="{!c.handleIsCheck}" />
+                            </div>
+
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <lightning:input type="checkbox" aura:id="archRespaldo" checked="{!v.archRespaldo__c}" name="archRespaldo" label="Archivo de respaldo de la copia digital." onchange="{!c.handleIsCheck}" />
+                            </div>
+
+                            <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                                <lightning:button label="Guardar cambios" disabled="{!v.isDisable}" onclick="{!c.handleCheckODT}" variant="brand" />
+                                <lightning:button name="Rechazar" label="Rechazar" disabled="{!v.disableButtons}" onclick="{!c.handleRechazar}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-size_4-of-4 slds-m-right_xx-small">
+                        <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                            <div class="slds-box slds-size_4-of-4 slds-m-right_xx-small slds-m-left_xx-small">
+                                <span class="slds-page-header__title slds-truncate" title="Requisitos">Requisitos</span>
+                                <div>
+                                    Revisión de tasas e información de la solicitud de formalización.
+                                </div>
+                                <button class="slds-button slds-button_brand" disabled="{!v.disableButtons}" name="{!v.savebutton}" label="Autorizar" onclick="{!c.handleSave}">Autorizar</button>
+                                <lightning:button name="Rechazar" label="Rechazar" disabled="{!v.disableButtons}" onclick="{!c.handleRechazar}" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+        <div class="slds-scrollable_y" style="height:100rem;width:100rem" tabindex="0">
+            <div class="slds-modal-body">
+                <div class="slds-box slds-theme_default">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            <div class="slds-form-element">
+                                <lightning:select name="existingUser" aura:id="existingUser" label="Seleccionar usuario para crear la ODT:" required="true" value="{!v.existingUser}" onchange="{!c.handleFieldChange}">
+                                    <option value="{!v.existingUser}">{!v.existingUser}</option>
+                                    <aura:iteration items="{!v.usersToODTNamesLst}" var="usersToODT">
+                                        <option text="{!usersToODT}" value="{!usersToODT}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-form-element">
+                                <lightning:textarea name="cc" aura:id="cc" value="" label="Agrege algun correo para que quede en copia: " onchange="{!c.checkCC}" messageWhenValueMissing="Este campo es obliatorio." />
+                            </div>
+                            <!-- <div class="slds-form-element">
+                                <lightning:textarea name="asunto" aura:id="asunto" value="" label="Especifique asunto del correo: " messageWhenValueMissing="Este campo es obliatorio." />
+                            </div>-->
+                            <div class="slds-m-top_small slds-m-bottom slds-text-heading_small">
+                                <div class="slds-form-element slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                    <lightning:input aura:id="initDate" label="Inicio de vigencia de la tasa: " type="date" name="input1" min="{!v.minDate}" onchange="{!c.checDate}" />
+                                </div>
+                            </div>
+                            <div class="slds-m-top_small slds-m-bottom slds-text-heading_small">
+                                <div class="slds-form-element slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                    <lightning:input aura:id="revisionDate" label="Recordatorio de revisión de tasa: " disabled="{!v.isDateSlected}" onchange="{!c.checDateRevision}" type="date" name="input2" min="{!v.minDateRevision}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_3-of-4">
+                            <body>
+                                <table width="100%;" Style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <td Style="background-color: #004483; color:white;">
+                                                <p class="Title">Tasa seleccionada</p>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr class="Headboard">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Resultado</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Rentabilidad</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">BAI</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="trParent">
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_sel_debit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_sel_credit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_sel_International}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_sel_Result}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_sel_Rent}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_sel_Bai}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Between tasa select and rest"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table width="100%;" Style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <td Style="background-color: #004483; color:white;">
+                                                <p class="Title">Tasas de descuento pactadas en la última negociación</p>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Tasas descuento actuales</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr class="Headboard">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Resultado</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Rentabilidad</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">BAI</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="trParent">
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_debit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_credit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_International}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_Resultado}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_Rentabilidad}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_BAI}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Resumen de información del último mes del cliente - {!v.DPMX_Date}</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr class="Headboard">
+                                                        <td>
+                                                            <p class="HeadboardTitle">TPV extra</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Baja facturación</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Red celular</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Gastos totales</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Gastos MIT y eBIND</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p>{!v.DPMX_extraBilling}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_cellnet}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_totalAmount}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_mit}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Información simulada del cliente</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Producto</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle"># Transacciones</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Facturación mensual</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Ticket promedio</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">% Mix</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_debit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_debit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_debit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_debit_own}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <!--
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Débito ajeno</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_debit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_debit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_debit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_debit_thirdParty}</p>
+                                                        </td>
+                                                    </tr>
+                                                    -->
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_credit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_credit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_credit_own}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_credit_own}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <!--
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Crédito ajeno</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_credit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_credit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_credit_thirdParty}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_credit_thirdParty}</p>
+                                                        </td>
+                                                    </tr>
+                                                    -->
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_international}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_international}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_international}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_international}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Total</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_transaction_y_total}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing_total}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_tickets_total}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_percentage_total}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Dispositivos simulados</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Dispositivo</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">No. Dispositivos</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Terminal Punto de Venta</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_terminal}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Interredes con pinpad</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_pinPads}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Ecommerce</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_ecommerceCheckbox}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Total</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_devicesNumber}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Comisiones simuladas</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Rubro</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Monto</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro por baja facturación</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_extraBilling}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro por cada TPV extra</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_cellnet}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro de red celular</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_billing}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table width="100%;" Style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <td Style="background-color: #004483; color:white;">
+                                                <p class="Title">Resultados de la simulación</p>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Tasas descuento propuestas</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <aura:iteration items="{!v.DPMX_scenario}" var="scenario" indexVar="index">
+                                                    <tbody>
+                                                        <tr Style="background-color: #eeeeee;">
+                                                            <td>
+                                                                <p class="HeadboardTitlePadding-left">Débito</p>
+                                                            </td>
+                                                            <td>
+                                                                <p class="HeadboardTitle">Crédito</p>
+                                                            </td>
+                                                            <td>
+                                                                <p class="HeadboardTitle">Internacional</p>
+                                                            </td>
+                                                            <td>
+                                                                <p class="HeadboardTitle">Resultado</p>
+                                                            </td>
+                                                            <td>
+                                                                <p class="HeadboardTitle">Rentabilidad</p>
+                                                            </td>
+                                                            <td>
+                                                                <p class="HeadboardTitle">BAI</p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <p class="padding-left">{!scenario.debit}</p>
+                                                            </td>
+                                                            <td>
+                                                                <p>{!scenario.credit}</p>
+                                                            </td>
+                                                            <td>
+                                                                <p>{!scenario.inter}</p>
+                                                            </td>
+                                                            <td>
+                                                                <p>{!scenario.result}</p>
+                                                            </td>
+                                                            <td>
+                                                                <p>{!scenario.rent}</p>
+                                                            </td>
+                                                            <td>
+                                                                <p>{!scenario.bai}</p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </aura:iteration>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Tasa personalizada</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Resultado</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Rentabilidad</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">BAI</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_debitPorpio}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_creditPorpio}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_interPorpio}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_resultPorpio}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_rentPorpio}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_baiPorpio}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Oportunidades</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Rubro</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Monto</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro por baja facturación</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_oppPosExtra}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro por cada TPV extra</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_oppCallnet}</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">Cobro de red celular</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_oppLowBilling}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table width="100%;" Style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <td Style="background-color: #004483; color:white;">
+                                                <p class="Title">Referencias</p>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p class="Title">Gastos</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Gastos totales</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Gastos MID y eBIND</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Basis points</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_totalAmount}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_mit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_basisPoints}</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="backgound-gray">
+                                                <p style="font-weight: bold;">Información referente al giro</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-bottom: 25px;"></td>
+                                        </tr>
+                                        <tr>
+                                            <table width="100%;" Style="border-collapse: collapse;">
+                                                <tbody>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Tipo</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_interchangeRates_debit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_interchangeRates_credit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_interchangeRates_International}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>Intercambio</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr Style="background-color: #eeeeee;">
+                                                        <td>
+                                                            <p class="HeadboardTitlePadding-left">Débito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Crédito</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Internacional</p>
+                                                        </td>
+                                                        <td>
+                                                            <p class="HeadboardTitle">Tipo</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <p class="padding-left">{!v.DPMX_discountRates_debit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_discountRates_credit}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>{!v.DPMX_discountRates_International}</p>
+                                                        </td>
+                                                        <td>
+                                                            <p>Tasas máximas de descuento</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </body>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {!v.body}
+</aura:component>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>activity_status_type__c</fullName>
+    <label>SubStatus</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>case_status_type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>New</fullName>
+                <default>true</default>
+                <label>New</label>
+            </value>
+            <value>
+                <fullName>Working</fullName>
+                <default>false</default>
+                <label>Working</label>
+            </value>
+            <value>
+                <fullName>Pending Client</fullName>
+                <default>false</default>
+                <label>Pending Client</label>
+            </value>
+            <value>
+                <fullName>Pending IT</fullName>
+                <default>false</default>
+                <label>Pending IT</label>
+            </value>
+            <value>
+                <fullName>Resolved (pending VoBO)</fullName>
+                <default>false</default>
+                <label>Resolved (pending VoBO)</label>
+            </value>
+            <value>
+                <fullName>Closed</fullName>
+                <default>false</default>
+                <label>Closed</label>
+            </value>
+            <value>
+                <fullName>Open Tasks</fullName>
+                <default>false</default>
+                <label>Open Tasks</label>
+            </value>
+            <value>
+                <fullName>Escalated</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Escalated</label>
+            </value>
+            <value>
+                <fullName>Pending Information</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Pending Information</label>
+            </value>
+            <value>
+                <fullName>ReOpen</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ReOpen</label>
+            </value>
+            <value>
+                <fullName>Resolved</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Resolved</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>New</controllingFieldValue>
+            <valueName>New</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Working</controllingFieldValue>
+            <valueName>Working</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Working</controllingFieldValue>
+            <valueName>Pending Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Working</controllingFieldValue>
+            <valueName>Pending IT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Working</controllingFieldValue>
+            <controllingFieldValue>Resolved</controllingFieldValue>
+            <valueName>Open Tasks</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Resolved</controllingFieldValue>
+            <valueName>Resolved (pending VoBO)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Closed</controllingFieldValue>
+            <valueName>Closed</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

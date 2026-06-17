@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Close_OR_Transfer_AND_Dev_Validation</fullName>
+    <active>false</active>
+    <description>A case can&apos;t be transferred or closed and set as Development required at the same time</description>
+    <errorConditionFormula>AND(
+  !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+  $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+  ISCHANGED( SER_Development_required__c ) ,
+  SER_Development_required__c = True,
+ OR(
+  AND(
+  ISCHANGED(SER_Escalate__c ) ,
+  SER_Escalate__c = True
+  ),
+  AND(
+  ISCHANGED(SER_Close__c  ) ,
+  SER_Close__c  = True
+  )
+ )
+)</errorConditionFormula>
+    <errorMessage>A case can&apos;t be transferred or closed and set as Development required at the same time</errorMessage>
+</ValidationRule>

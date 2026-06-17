@@ -1,0 +1,501 @@
+<template>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-modal="true" aria-labelledby="close-approval-modal-title">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <h2 id="close-approval-modal-title" class="slds-modal__title slds-hyphenate">{modalTitle}</h2>
+            </header>
+
+            <div class="slds-modal__content slds-p-around_medium modal-content-wrap">
+
+                <template lwc:if={isLoading}>
+                    <div class="modal-loading-overlay" aria-live="polite" aria-busy="true">
+                        <lightning-spinner alternative-text="Closing approvals" size="large"></lightning-spinner>
+                        <div class="slds-m-top_small slds-text-heading_small">Closing approvals...</div>
+                    </div>
+                </template>
+
+                <template lwc:if={snapshotsInProgress}>
+                    <div class="modal-loading-overlay" aria-live="polite" aria-busy="true">
+                        <lightning-spinner alternative-text="Generating task views" size="large"></lightning-spinner>
+                        <div class="slds-m-top_small slds-text-heading_small">Generating views for selected tasks...</div>
+                    </div>
+                </template>
+
+                <template lwc:if={errorMessage}>
+                    <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <lightning-icon icon-name="utility:error" variant="inverse" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                        <span>{errorMessage}</span>
+                    </div>
+                </template>
+
+
+                <!-- Background snapshot worker. It stays mounted but does not display the generated view. -->
+                <div class="snapshot-worker-background" aria-hidden="true">
+                    <c-dmt_massive_snapshot_worker show-preview={showSnapshotWorkerPreview}></c-dmt_massive_snapshot_worker>
+                </div>
+
+                <template lwc:if={hasGlobalWarning}>
+                    <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_small" role="alert">
+                        <span class="slds-assistive-text">warning</span>
+                        <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" title="Warning">
+                            <lightning-icon icon-name="utility:warning" variant="inverse" size="x-small"></lightning-icon>
+                        </span>
+                        <template lwc:if={isCloseForReviewMode}>
+                            <h2>Warning: {reviewBlockedCount} task(s) cannot be closed for review due to business conditions.</h2>
+                        </template>
+                        <template lwc:else>
+                            <h2>Warning: Some tasks could not be closed because the selected result is not allowed for them.</h2>
+                        </template>
+                    </div>
+                </template>
+
+                <div class="slds-m-bottom_medium">
+                    <div class="toolbar-row">
+                        <div class="info-col">
+                            <div class="bulk-result-info-fixed" aria-label="Information">
+                                <lightning-icon
+                                    icon-name="utility:info"
+                                    size="xx-small"
+                                    alternative-text="Information">
+                                </lightning-icon>
+                                <span>Changes apply to all cells</span>
+                            </div>
+                        </div>
+
+                        <div class="result-col">
+                            <div class="bulk-result-input">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label">Result</label>
+                                    <div class="slds-form-element__control">
+                                        <template lwc:if={isCloseForReviewMode}>
+                                            <div class="result-badge-button bulk-result-trigger" aria-label="Result fixed to No">
+                                                <span class="result-trigger-anchor">
+                                                    <span class="square-badge badge-error">No</span>
+                                                </span>
+                                            </div>
+                                        </template>
+                                        <template lwc:else>
+                                            <button
+                                                type="button"
+                                                class="result-badge-button bulk-result-trigger"
+                                                onclick={handleToggleBulkResultDropdown}
+                                                aria-label="Select result">
+                                                <span class="result-trigger-anchor">
+                                                    <template lwc:if={bulkResult}>
+                                                        <span class={bulkResultBadgeClass}>{bulkResultDisplay}</span>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <span class="slds-text-color_weak">Select result</span>
+                                                    </template>
+                                                </span>
+                                                <lightning-icon
+                                                    icon-name="utility:down"
+                                                    size="xx-small"
+                                                    class="slds-m-left_xx-small icon-gray">
+                                                </lightning-icon>
+                                            </button>
+
+                                            <template lwc:if={openBulkResultDropdown}>
+                                                <div class="bulk-result-dropdown" onclick={handleBulkResultDropdownPanelClick}>
+                                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                                                        <li role="presentation">
+                                                            <button type="button" class="result-dropdown-option" data-value="Yes" onclick={handleBulkResultSelect}>
+                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
+                                                                    <span class="slds-media__body"><span class="square-badge badge-success">Yes</span></span>
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                        <li role="presentation">
+                                                            <button type="button" class="result-dropdown-option" data-value="No" onclick={handleBulkResultSelect}>
+                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
+                                                                    <span class="slds-media__body"><span class="square-badge badge-error">No</span></span>
+                                                                </span>
+                                                            </button>
+                                                            </li>
+                                                        <li role="presentation">
+                                                            <button type="button" class="result-dropdown-option" data-value="N/A" onclick={handleBulkResultSelect}>
+                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
+                                                                    <span class="slds-media__body"><span class="square-badge badge-na">N/A</span></span>
+                                                                </span>
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comment-col">
+                            <div class="bulk-comment-input">
+                                <div class="slds-form-element" style="width: 100%;">
+                                    <label class="slds-form-element__label">Comment</label>
+                                    <div class="slds-form-element__control">
+                                        <button
+                                            type="button"
+                                            class="bulk-comment-trigger"
+                                            onclick={handleToggleBulkCommentEditor}
+                                            aria-label="Edit comment">
+                                            <span class="slds-truncate">
+                                                <template lwc:if={bulkComment}>
+                                                    {bulkComment}
+                                                </template>
+                                                <template lwc:else>
+                                                    <span class="slds-text-color_weak">Insert comment</span>
+                                                </template>
+                                            </span>
+                                        </button>
+
+                                        <template lwc:if={openBulkCommentEditor}>
+                                            <div class="bulk-comment-popover" onclick={handleBulkCommentEditorClick}>
+                                                <textarea
+                                                    class="slds-textarea native-comment-textarea"
+                                                    placeholder="Insert comment"
+                                                    oninput={handleBulkCommentChange}
+                                                    onchange={handleBulkCommentChange}>{bulkComment}</textarea>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="approver-label-col">
+                                <div class="bulk-approver-label-input">
+                                    <div class="slds-form-element" style="width: 100%;">
+                                        <label class="slds-form-element__label">Approver Label</label>
+                                        <div class="slds-form-element__control">
+                                            <button
+                                                type="button"
+                                                class="bulk-comment-trigger"
+                                                onclick={handleToggleBulkApproverLabelEditor}
+                                                aria-label="Edit approver label">
+                                                <span class="slds-truncate">
+                                                    <template lwc:if={bulkApproverLabel}>
+                                                        {bulkApproverLabel}
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <span class="slds-text-color_weak">Insert label</span>
+                                                    </template>
+                                                </span>
+                                            </button>
+                                            <template lwc:if={openBulkApproverLabelEditor}>
+                                                <div class="bulk-approver-label-popover" onclick={handleBulkApproverLabelEditorClick}>
+                                                    <input
+                                                        type="text"
+                                                        class="native-approver-input"
+                                                        placeholder="Insert approver label"
+                                                        value={bulkApproverLabel}
+                                                        oninput={handleBulkApproverLabelChange}
+                                                        onchange={handleBulkApproverLabelChange} />
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <div class="bulk-actions-col">
+                            <div class="bulk-actions-row">
+                                <lightning-button
+                                    label="Apply Changes"
+                                    variant="brand"
+                                    icon-name="utility:check"
+                                    class="slds-m-left_x-small"
+                                    onclick={applyBulkChanges}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-scroll-wrapper">
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout massive-closure-table">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <template for:each={tableColumns} for:item="column" for:index="index">
+                                <th key={column.key} data-col-index={index} scope="col" class="resizable-header">
+                                    <button
+                                        type="button"
+                                        class="header-sort-button"
+                                        data-field={column.key}
+                                        onclick={handleSort}
+                                        title={column.label}>
+                                        <span class="slds-truncate header-label" title={column.label}>{column.label}</span>
+                                        <lightning-icon
+                                            icon-name={column.sortIcon}
+                                            size="xx-small"
+                                            alternative-text="Sort">
+                                        </lightning-icon>
+                                    </button>
+                                    <template lwc:if={column.isResizable}>
+                                        <button
+                                            type="button"
+                                            class="column-resizer"
+                                            data-index={index}
+                                            onmousedown={handleResizeStart}
+                                            title="Resize column"
+                                            aria-label="Resize column">
+                                        </button>
+                                    </template>
+                                </th>
+                            </template>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={displayedClosureData} for:item="row">
+                            <tr key={row.taskId} class={row.rowClass}>
+                                <td class="slds-cell-wrap">
+                                    <a href={row.caseUrl} target="_blank" class="slds-truncate" title={row.taskName}>{row.taskName}</a>
+                                    <template lwc:if={row.lineOppId}>
+                                        <div class="task-meta-small slds-truncate" title={row.lineOppId}><span class="task-meta-label">Id:</span> {row.lineOppId}</div>
+                                    </template>
+                                    <template lwc:if={row.client}>
+                                        <div class="task-meta-small slds-truncate" title={row.client}><span class="task-meta-label">Client:</span> {row.client}</div>
+                                    </template>
+                                </td>
+                                <td style="vertical-align: middle; padding: 0.25rem 0.5rem;" class="result-cell">
+    <div class="slds-grid slds-grid_vertical-align-center">
+
+        <template lwc:if={row.hasWarning}>
+            <lightning-icon
+                icon-name="utility:warning"
+                variant="warning"
+                size="x-small"
+                class="slds-m-right_x-small"
+                title={row.warningTitle}>
+            </lightning-icon>
+        </template>
+
+        <template lwc:if={isCloseForReviewMode}>
+            <div class="result-badge-button" data-id={row.taskId} aria-label="Result fixed to No">
+                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread" style="width: 100%;">
+                    <span class="result-trigger-anchor">
+                        <span class="square-badge badge-error">No</span>
+                    </span>
+                </div>
+            </div>
+        </template>
+        <template lwc:else>
+            <button
+                type="button"
+                class="result-badge-button"
+                data-id={row.taskId}
+                onclick={handleToggleDropdown}>
+
+                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread" style="width: 100%;">
+                    <span class="result-trigger-anchor">
+                        <template lwc:if={row.resultDisplay}>
+                            <span class={row.badgeClass}>{row.resultDisplay}</span>
+                        </template>
+                        <template lwc:else>
+                            <span class="slds-text-color_weak">Select...</span>
+                        </template>
+                    </span>
+
+                    <lightning-icon
+                        icon-name="utility:down"
+                        size="xx-small"
+                        class="slds-m-left_xx-small icon-gray">
+                    </lightning-icon>
+                </div>
+            </button>
+        </template>
+    </div>
+</td>
+                                <td class="slds-cell-wrap" style="vertical-align: top; padding-top: 0.5rem;">
+                                    <template lwc:if={row.isEditingComment}>
+                                        <div class="row-comment-popover" data-id={row.taskId} onclick={handleRowCommentEditorClick}>
+                                            <textarea
+                                                class="slds-textarea native-comment-textarea"
+                                                data-id={row.taskId}
+                                                placeholder="Add comment"
+                                                oninput={handleRowCommentChange}
+                                                onchange={handleRowCommentChange}>{row.comments}</textarea>
+                                        </div>
+                                    </template>
+                                    <template lwc:else>
+                                        <button
+                                            type="button"
+                                            class="row-comment-trigger"
+                                            data-id={row.taskId}
+                                            onclick={handleEditComment}
+                                            title="Click to edit comment">
+                                            <span class="slds-truncate row-comment-trigger-text">
+                                                <template lwc:if={row.comments}>{row.comments}</template>
+                                                <template lwc:else><span class="slds-text-color_weak slds-text-body_small">Add comment...</span></template>
+                                            </span>
+                                            <lightning-icon
+                                                icon-name="utility:edit"
+                                                size="xx-small"
+                                                class="slds-m-left_xx-small"
+                                                alternative-text="Edit">
+                                            </lightning-icon>
+                                        </button>
+                                    </template>
+                                </td>
+                                <td class="slds-cell-wrap" style="vertical-align: top; padding-top: 0.5rem;">
+                                    <template lwc:if={row.isEditingApproverLabel}>
+                                        <div class="row-comment-popover" data-id={row.taskId} onclick={handleRowApproverLabelEditorClick}>
+                                            <input
+                                                type="text"
+                                                class="row-approver-input"
+                                                data-id={row.taskId}
+                                                value={row.committeeLabel}
+                                                placeholder="Approver label"
+                                                oninput={handleApproverLabelChange}
+                                                onchange={handleApproverLabelChange} />
+                                        </div>
+                                    </template>
+                                    <template lwc:else>
+                                        <button
+                                            type="button"
+                                            class="row-comment-trigger"
+                                            data-id={row.taskId}
+                                            onclick={handleEditApproverLabel}
+                                            title="Click to edit approver label">
+                                            <span class="slds-truncate row-comment-trigger-text">
+                                                <template lwc:if={row.committeeLabel}>{row.committeeLabel}</template>
+                                                <template lwc:else><span class="slds-text-color_weak slds-text-body_small">Add label...</span></template>
+                                            </span>
+                                            <lightning-icon
+                                                icon-name="utility:edit"
+                                                size="xx-small"
+                                                class="slds-m-left_xx-small"
+                                                alternative-text="Edit">
+                                            </lightning-icon>
+                                        </button>
+                                    </template>
+                                </td>
+                                <td class="slds-cell-wrap" style="vertical-align: top; padding-top: 0.75rem;">
+                                    <div class="files-cell-content">
+                                        <span class="slds-truncate files-label files-label-anchor" title={row.filesLabel}>
+                                            <span class="files-count">{row.fileCount}</span>
+                                            <span class="files-suffix"> attached file(s)</span>
+                                        </span>
+                                        <button
+                                            type="button"
+                                            class="files-icon-button"
+                                            data-id={row.caseId}
+                                            onclick={handleToggleFilesDropdown}
+                                            title="View attached files"
+                                            aria-label="View attached files">
+                                            <lightning-icon
+                                                icon-name="utility:file"
+                                                size="x-small"
+                                                alternative-text="Attached files">
+                                            </lightning-icon>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="files-icon-button"
+                                            data-id={row.caseId}
+                                            onclick={handleRowUploadClick}
+                                            disabled={isUploadBusy}
+                                            title="Upload file"
+                                            aria-label="Upload file">
+                                            <template lwc:if={row.isUploading}>
+                                                <lightning-spinner size="xx-small" alternative-text="Uploading"></lightning-spinner>
+                                            </template>
+                                            <template lwc:else>
+                                                <lightning-icon
+                                                    icon-name="utility:upload"
+                                                    size="x-small"
+                                                    alternative-text="Upload file">
+                                                </lightning-icon>
+                                            </template>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                </div>
+
+                <input
+                    class="hidden-row-file-input"
+                    type="file"
+                    onchange={handleRowFileSelected}
+                    style="display: none;" />
+
+                <template lwc:if={isFileUploading}>
+                    <output class="upload-progress-banner" aria-live="polite">
+                        <lightning-spinner size="xx-small" alternative-text="Uploading"></lightning-spinner>
+                        <span class="upload-progress-text">Uploading <strong>{uploadingFileName}</strong>...</span>
+                    </output>
+                </template>
+            </div>
+
+            <!-- Floating dropdown rendered outside scroll container to avoid overflow clipping -->
+            <template lwc:if={openDropdownRow}>
+                <div class="row-result-dropdown slds-dropdown slds-dropdown_fluid slds-dropdown_left" style={dropdownStyle}>
+                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                        <template for:each={openDropdownRow.allowedOptions} for:item="opt">
+                            <li key={opt.value} class="slds-listbox__item" role="presentation">
+                                <button type="button" class="result-dropdown-option" data-id={openDropdownRow.taskId} data-value={opt.value} onclick={handleDropdownSelect}>
+                                    <span class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media_center">
+                                        <span class="slds-media__body">
+                                            <span class={opt.badgeClass} title={opt.displayLabel}>{opt.displayLabel}</span>
+                                        </span>
+                                    </span>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+
+            <template lwc:if={openFilesRow}>
+                <div class="files-dropdown slds-dropdown slds-dropdown_fluid slds-dropdown_left" style={filesDropdownStyle}>
+                    <div class="files-dropdown-header">
+                        <lightning-icon icon-name="utility:file" size="x-small" alternative-text="Files"></lightning-icon>
+                        <span class="slds-text-title_caps">Attached files</span>
+                        <template lwc:if={isFileOpening}>
+                            <span class="files-loading-inline">
+                                <lightning-spinner size="xx-small" alternative-text="Opening file"></lightning-spinner>
+                                <span class="files-loading-text">Opening {openingFileName}...</span>
+                            </span>
+                        </template>
+                    </div>
+                    <template lwc:if={openFilesRow.files.length}>
+                        <ul class="files-dropdown-list" role="presentation">
+                            <template for:each={openFilesRow.files} for:item="file">
+                                <li key={file.id} class="files-dropdown-item">
+                                    <button
+                                        type="button"
+                                        class="files-dropdown-item-button"
+                                        data-locator={file.contentLocator}
+                                        data-name={file.name}
+                                        onclick={handleOpenFileInNewTab}
+                                        disabled={isFileOpening}
+                                        title={file.name}>
+                                        <lightning-icon icon-name="utility:file" size="x-small" alternative-text="File"></lightning-icon>
+                                        <div class="files-dropdown-item-text">
+                                            <span class="slds-truncate" title={file.name}>{file.name}</span>
+                                            <template lwc:if={file.documentType}>
+                                                <span class="files-dropdown-subtext slds-truncate" title={file.documentType}>{file.documentType}</span>
+                                            </template>
+                                        </div>
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template lwc:else>
+                        <div class="files-dropdown-empty slds-text-color_weak">No files found</div>
+                    </template>
+                </div>
+            </template>
+
+            <footer class="slds-modal__footer modal-footer-centered">
+                <lightning-button label="Cancel" onclick={closeModal} class="slds-m-right_x-small" disabled={isLoading}></lightning-button>
+                <lightning-button label={confirmButtonLabel} variant="brand" onclick={handleConfirmAll} disabled={isConfirmDisabled}></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

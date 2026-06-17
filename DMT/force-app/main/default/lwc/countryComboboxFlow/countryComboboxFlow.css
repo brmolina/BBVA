@@ -1,46 +1,55 @@
-.content-container {
+/* .content-container {
     padding: 15px;
-}
+} */
 
-.section-container {
+/* .section-container {
     margin-bottom: 20px;
-}
+} */
 
-.full-width {
+/* .full-width {
     width: 100%;
-}
+} */
 
-.template-preview {
+/* .template-preview {
     border: 1px solid #e0e0e0;
     padding: 15px;
     background-color: #fafafa;
     border-radius: 5px;
-}
+} */
 
-.pill-container {
+/* .pill-container {
     margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-}
+} */
 
-.button-container {
+/* .button-container {
     text-align: center;
     margin-top: 20px;
-}
+} */
 
 /* Contenedor para alinear el combobox y el botón "Continuar" en una fila */
-.combobox-button-container {
+/* .combobox-button-container {
     display: flex;
     align-items: center;
-}
+} */
 
 /* Aumentar el ancho completo para el combobox */
-.combobox-button-container .full-width {
+/* .combobox-button-container .full-width {
     flex: 1;
-}
+} */
 
 /* Separar el botón a la derecha del combobox */
-.continue-button {
+/* .continue-button {
     margin-left: 8px;
+} */
+
+.template-preview-scroll {
+    max-height: 1000px; 
+    overflow-y: auto;
+    border: 1px solid #d8dde6;
+    padding: 1rem;
+    background: #fafafa;
+    border-radius: 0.25rem;
 }

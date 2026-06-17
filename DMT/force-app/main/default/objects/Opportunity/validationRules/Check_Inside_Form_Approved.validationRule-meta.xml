@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_Inside_Form_Approved</fullName>
+    <active>true</active>
+    <description>No permite pasar una Opp IP a approval sin formulario aprobado</description>
+    <errorConditionFormula>AND(
+OR(
+RecordType.Name = $Label.DES_RT_Inside_opp,
+RecordType.Name = $Label.DES_RT_Inside_GM_opp),
+oppy_cplc_form_apprv_number__c = 0,
+ISCHANGED(
+StageName),
+ISPICKVAL(StageName, &apos;Approval&apos;)
+)</errorConditionFormula>
+    <errorMessage>A Inside Form approved is necessary in order to advance the stage.</errorMessage>
+</ValidationRule>

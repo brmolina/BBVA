@@ -58,7 +58,7 @@
                                         <template lwc:if={col.first}>
                                             <td key={iteratorKey} data-id={group.value.subGroupId} id={group.value.subGroupId} class="groupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
                                                 <div class="slds-truncate" id={group.value.subGroupId} title={group.value.Name}>
-                                                    <c-dmt_main_table_cell row={group.value} index={col.index} column={col.value} tab={selectedTab} cellid={group.value.subGroupId} groupselected={groupsSelected} selectedcell={priorselectedRows} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
+                                                    <c-dmt_main_table_cell row={group.value} index={col.index} column={col.value} tab={selectedTab} cellid={group.value.subGroupId} groupselected={groupsSelected} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
                                                 </div>
                                             </td>
                                         </template>
@@ -74,7 +74,7 @@
                                             <template lwc:if={col.first}>
                                                 <td key={iteratorKey} data-id={l3group.value.level3GroupId} id={l3group.value.level3GroupId} class="l3GroupName fixed-row-name" role="gridcell" onclick={handleToggleGroup}>
                                                     <div class="slds-truncate" id={l3group.value.level3GroupId} title={l3group.value.Name}>
-                                                        <c-dmt_main_table_cell row={l3group.value} index={col.index} column={col.value} tab={selectedTab} cellid={l3group.value.level3GroupId} selectedcell={priorselectedRows} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
+                                                        <c-dmt_main_table_cell row={l3group.value} index={col.index} column={col.value} tab={selectedTab} cellid={l3group.value.level3GroupId} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow}  ></c-dmt_main_table_cell>
                                                     </div>
                                                 </td>
                                             </template>
@@ -89,13 +89,12 @@
                                             <template iterator:col={visibleColumns}>
                                                 <template lwc:if={col.first}>
                                                     <td key={iteratorKey} data-id={customerId} id={l3group.value.level3GroupId} class="clientName l3ClientName fixed-row-name" role="gridcell">
-                                                        <c-dmt_main_table_cell  row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                                        <c-dmt_main_table_cell  row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
                                                 </td>
-                                                    </td>
                                                 </template>
                                                 <template lwc:else>
                                                     <td key={iteratorKey} data-id={customerId} id={l3group.value.level3GroupId} role="gridcell">
-                                                        <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  ></c-dmt_main_table_cell>
+                                                        <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency}  ></c-dmt_main_table_cell>
                                                     </td>
                                                 </template>
                                             </template>
@@ -108,12 +107,12 @@
                                         <template iterator:col={visibleColumns}>
                                             <template lwc:if={col.first}>
                                                 <td key={iteratorKey} data-id={customerId} id={group.value.subGroupId} class="clientName fixed-row-name" role="gridcell">
-                                                    <c-dmt_main_table_cell row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                                    <c-dmt_main_table_cell row={client.value} data-customerid={customerId} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency} onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
                                                 </td>
                                             </template>
                                             <template lwc:else>
                                                 <td key={iteratorKey} data-id={customerId} id={group.value.subGroupId} role="gridcell">
-                                                    <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
+                                                    <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
                                                 </td>
                                             </template>
                                         </template>
@@ -126,12 +125,12 @@
                                     <template iterator:col={visibleColumns}>
                                         <template lwc:if={col.first}>
                                             <td key={iteratorKey} id={iteratorKey} data-id={customerId} class="topClient fixed-row-name" role="gridcell">
-                                                <c-dmt_main_table_cell  data-customerid={customerId}  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
+                                                <c-dmt_main_table_cell  data-customerid={customerId}  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency}  onupdatemainholder={handleMainHolderSelection}></c-dmt_main_table_cell>
                                             </td>
                                         </template>
                                         <template lwc:else>
                                             <td key={iteratorKey} id={iteratorKey} data-id={customerId} role="gridcell">
-                                                <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
+                                                <c-dmt_main_table_cell class="showcellclass"  row={client.value} index={col.index} column={col.value} tab={selectedTab} cellid={iteratorKey} selectedcell={priorselectedRows} is-lable-holder={isLableHolder} onselectclientdmt={selectRow} currencyrow={currency} ></c-dmt_main_table_cell>
                                             </td>
                                         </template>
                                     </template>
@@ -153,5 +152,5 @@
 
 
     {body}
-    <c-hpg_fetcher onfetchmore={handleFetchMoreEvent}></c-hpg_fetcher>
+    <c-dmt_fetcher onfetchmore={handleFetchMoreEvent}></c-dmt_fetcher>
 </template>

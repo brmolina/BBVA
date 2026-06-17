@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Tipo_de_cobertura__c</fullName>
+    <label>Coverage type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>DES_Member_Role__c</controllingField>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SINGLE</fullName>
+                <default>false</default>
+                <label>SINGLE</label>
+            </value>
+            <value>
+                <fullName>DUAL</fullName>
+                <default>false</default>
+                <label>DUAL</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Transaction Banker</controllingFieldValue>
+            <valueName>SINGLE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Transaction Banker</controllingFieldValue>
+            <valueName>DUAL</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sector__c</fullName>
+    <description>Sector associated with the contact.</description>
+    <label>Sector</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Consumer, Food, Beverages &amp; Tobacco</fullName>
+                <default>false</default>
+                <label>Consumer, Food, Beverages &amp; Tobacco</label>
+            </value>
+            <value>
+                <fullName>Consumer, Food manufacturers</fullName>
+                <default>false</default>
+                <label>Consumer, Food manufacturers</label>
+            </value>
+            <value>
+                <fullName>Consumer, Hotel, Holidays &amp; Gaming</fullName>
+                <default>false</default>
+                <label>Consumer, Hotel, Holidays &amp; Gaming</label>
+            </value>
+            <value>
+                <fullName>Consumer, Large Cap Discretionary</fullName>
+                <default>false</default>
+                <label>Consumer, Large Cap Discretionary</label>
+            </value>
+            <value>
+                <fullName>Consumer, Mid Cap Discretionary</fullName>
+                <default>false</default>
+                <label>Consumer, Mid Cap Discretionary</label>
+            </value>
+            <value>
+                <fullName>Consumer, Small Cap Consumer</fullName>
+                <default>false</default>
+                <label>Consumer, Small Cap Consumer</label>
+            </value>
+            <value>
+                <fullName>Consumer, Staples</fullName>
+                <default>false</default>
+                <label>Consumer, Staples</label>
+            </value>
+            <value>
+                <fullName>Financials, Banks</fullName>
+                <default>false</default>
+                <label>Financials, Banks</label>
+            </value>
+            <value>
+                <fullName>Financials, Diversified Financials</fullName>
+                <default>false</default>
+                <label>Financials, Diversified Financials</label>
+            </value>
+            <value>
+                <fullName>Financials, Insurance</fullName>
+                <default>false</default>
+                <label>Financials, Insurance</label>
+            </value>
+            <value>
+                <fullName>Financials, Property</fullName>
+                <default>false</default>
+                <label>Financials, Property</label>
+            </value>
+            <value>
+                <fullName>Financials, Small Cap Financials</fullName>
+                <default>false</default>
+                <label>Financials, Small Cap Financials</label>
+            </value>
+            <value>
+                <fullName>Generalist</fullName>
+                <default>false</default>
+                <label>Generalist</label>
+            </value>
+            <value>
+                <fullName>Healthcare, Mid cap Healthcare</fullName>
+                <default>false</default>
+                <label>Healthcare, Mid cap Healthcare</label>
+            </value>
+            <value>
+                <fullName>Healthcare, Pharma</fullName>
+                <default>false</default>
+                <label>Healthcare, Pharma</label>
+            </value>
+            <value>
+                <fullName>Indust., Airlines, Aerospace &amp; Defense</fullName>
+                <default>false</default>
+                <label>Indust., Airlines, Aerospace &amp; Defense</label>
+            </value>
+            <value>
+                <fullName>Indust., Building Mat. &amp; paper/packaging</fullName>
+                <default>false</default>
+                <label>Indust., Building Mat. &amp; paper/packaging</label>
+            </value>
+            <value>
+                <fullName>Indust., Capital Goods</fullName>
+                <default>false</default>
+                <label>Indust., Capital Goods</label>
+            </value>
+            <value>
+                <fullName>Indust., Construction &amp; engineering</fullName>
+                <default>false</default>
+                <label>Indust., Construction &amp; engineering</label>
+            </value>
+            <value>
+                <fullName>Indust., Small Caps Industrials</fullName>
+                <default>false</default>
+                <label>Indust., Small Caps Industrials</label>
+            </value>
+            <value>
+                <fullName>Indust., Support Services</fullName>
+                <default>false</default>
+                <label>Indust., Support Services</label>
+            </value>
+            <value>
+                <fullName>Latam- Consumption</fullName>
+                <default>false</default>
+                <label>Latam- Consumption</label>
+            </value>
+            <value>
+                <fullName>Latam- Financials</fullName>
+                <default>false</default>
+                <label>Latam- Financials</label>
+            </value>
+            <value>
+                <fullName>Latam- Industrials</fullName>
+                <default>false</default>
+                <label>Latam- Industrials</label>
+            </value>
+            <value>
+                <fullName>Latam- Infrastructure</fullName>
+                <default>false</default>
+                <label>Latam- Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Latam- Mining</fullName>
+                <default>false</default>
+                <label>Latam- Mining</label>
+            </value>
+            <value>
+                <fullName>Latam- Real State</fullName>
+                <default>false</default>
+                <label>Latam- Real State</label>
+            </value>
+            <value>
+                <fullName>Latam- TMTs</fullName>
+                <default>false</default>
+                <label>Latam- TMTs</label>
+            </value>
+            <value>
+                <fullName>Resources, Energy E&amp;P &amp; Oil Services</fullName>
+                <default>false</default>
+                <label>Resources, Energy E&amp;P &amp; Oil Services</label>
+            </value>
+            <value>
+                <fullName>Resources, Integrated Energy &amp; Services</fullName>
+                <default>false</default>
+                <label>Resources, Integrated Energy &amp; Services</label>
+            </value>
+            <value>
+                <fullName>Resources, Large Caps Metals &amp; Mining</fullName>
+                <default>false</default>
+                <label>Resources, Large Caps Metals &amp; Mining</label>
+            </value>
+            <value>
+                <fullName>Resources, Large Caps Utilities</fullName>
+                <default>false</default>
+                <label>Resources, Large Caps Utilities</label>
+            </value>
+            <value>
+                <fullName>Resources, Mic dap Utilities</fullName>
+                <default>false</default>
+                <label>Resources, Mic dap Utilities</label>
+            </value>
+            <value>
+                <fullName>Resources, Small Caps Metals &amp; Mining</fullName>
+                <default>false</default>
+                <label>Resources, Small Caps Metals &amp; Mining</label>
+            </value>
+            <value>
+                <fullName>TMT, Media</fullName>
+                <default>false</default>
+                <label>TMT, Media</label>
+            </value>
+            <value>
+                <fullName>TMT, Software and IT Services</fullName>
+                <default>false</default>
+                <label>TMT, Software and IT Services</label>
+            </value>
+            <value>
+                <fullName>TMT, Telecom &amp; Online</fullName>
+                <default>false</default>
+                <label>TMT, Telecom &amp; Online</label>
+            </value>
+            <value>
+                <fullName>TMT, Telecoms</fullName>
+                <default>false</default>
+                <label>TMT, Telecoms</label>
+            </value>
+            <value>
+                <fullName>None</fullName>
+                <default>false</default>
+                <label>None</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

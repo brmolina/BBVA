@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_NotEditCloseLine</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(AND(ISCHANGED(Status__c), ISPICKVAL(PRIORVALUE(Status__c), &apos;Closed&apos;),!ISCHANGED(End_Date__c), !$Permission.DMT_Line_God), true, false)</errorConditionFormula>
+    <errorMessage>Cannot change the status of the line</errorMessage>
+</ValidationRule>

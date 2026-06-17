@@ -1,0 +1,62 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global"
+  controller="DES_AP_BPAccessHandler_CTRL" >
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:attribute name="queryField" type="String" access="global"/>
+  <aura:attribute name="parentId" type="String" description="Referencia al registro" />
+  <!-- Objeto desde el que veo el componente -->
+  <aura:attribute name="parentObjectName" type="String" access="global"/>
+  <!-- Nombre del campo que relaciona el objeto desde el que veo la lista con el objeto del que sacaré los hijos -->
+  <aura:attribute name="parentObjectParentIdFieldName" type="String" access="global" default="participant_id__c" />
+
+  <!-- Nombre del objeto que se va a mostrar en la tabla -->
+  <aura:attribute name="childObjectName" type="String" default="DES_Booking__c" access="public"/>
+  <!-- Nombre del campo que relaciona el hijo con el objeto desde el que se ve el componente -->
+  <aura:attribute name="parentIdFieldName" type="String" default="DES_Client__c" access="global"/>
+
+  <aura:attribute name="sectionGroupingField" type="String" access="global"/>
+  <aura:attribute name="gridGroupingField" type="String" access="global"/>
+  <aura:attribute name="bpaccess" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="noAccessBPmsg" type="String" access="global" default=""/>
+  <aura:attribute name="currencyISOCode" type="String" access="global" />
+
+  <aura:attribute name="showtotals" type="Boolean" access="global" default="true" />
+  <aura:attribute name="showtable" type="Boolean" access="global" default="true" />
+  <aura:attribute name="lastValidatedVersion" type="Boolean" access="global" default="false" />
+
+  <aura:attribute name="edit" type="Boolean" access="public" default="false"/>
+  
+  <aura:attribute name="bpVersionId" type="String" access="global" default=""/>
+  <aura:handler event="bupl:BPVersionSelectorEvent" action="{!c.handleAppEvent}" />
+
+  <aura:if isTrue="{!v.bpaccess}">
+    <bupl:BPVersionSelector recordId="{!v.recordId}" queryField="{!v.queryField}"/>
+    <aura:if isTrue="{!v.edit}">
+      <bupl:BusinessPlanDisplay recordId="{!v.recordId}"
+                                parentObjectName="{!v.parentObjectName}"
+                                parentObjectParentIdFieldName="{!v.parentObjectParentIdFieldName}"
+                                parentIdFieldName="{!v.parentIdFieldName}"
+                                sectionGroupingField="{!v.sectionGroupingField}"
+                                gridGroupingField="{!v.gridGroupingField}"
+          						noAccessBPmsg="{!v.noAccessBPmsg}"
+                                showtotals="{!v.showtotals}"
+                                showtable="{!v.showtable}"
+                                bpVersionId="{!v.bpVersionId}"
+                                lastValidatedVersion="{!v.lastValidatedVersion}"/>
+      <aura:set attribute="else">
+        <bupl:BusinessPlanDisplay_ReadOnly recordId="{!v.recordId}" 
+                                           parentObjectName="{!v.parentObjectName}"
+                                           parentObjectParentIdFieldName="{!v.parentObjectParentIdFieldName}"
+                                           parentIdFieldName="{!v.parentIdFieldName}"
+                                           sectionGroupingField="{!v.sectionGroupingField}"
+                                           gridGroupingField="{!v.gridGroupingField}"
+                                           noAccessBPmsg="{!v.noAccessBPmsg}"
+                                           showtotals="{!v.showtotals}"
+                                           showtable="{!v.showtable}"
+                                           bpVersionId="{!v.bpVersionId}"
+                                           lastValidatedVersion="{!v.lastValidatedVersion}"/>
+      </aura:set>
+    </aura:if>
+  </aura:if>
+</aura:component>

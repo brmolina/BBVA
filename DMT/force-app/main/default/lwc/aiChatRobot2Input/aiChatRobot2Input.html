@@ -1,0 +1,35 @@
+<template>
+    <div class="input-container">
+        <div class="textarea-wrapper">
+            <textarea
+                class="text-input"
+                placeholder={placeholder}
+                oninput={autoResize}
+                onkeydown={handleKey}
+                disabled={disabled}
+                rows="1"
+            ></textarea>
+            
+            <!-- Reserved for future use: attachment button
+            <button class="icon-button add-button" title="Add attachment" onclick={handleAddClick}>
+                <span class="plus-icon-svg" lwc:dom="manual"></span>
+            </button>
+            -->
+        </div>
+        
+        <button 
+            class={sendButtonClass} 
+            title={sendButtonTitle} 
+            onclick={handleSendClick} 
+            disabled={sendDisabled}>
+            <span if:true={showStopIcon} class="stop-icon-svg" lwc:dom="manual"></span>
+            <!-- Reserved for future use: microphone icon
+            <span if:true={showMicrophoneIcon} class="microphone-icon-svg" lwc:dom="manual"></span>
+            -->
+            <span if:true={hasValue} class="send-icon-svg" lwc:dom="manual"></span>
+        </button>
+    </div>
+    <template if:true={exceedsCharLimit}>
+        <p class="char-limit-error">{charLimitMessage}</p>
+    </template>
+</template>

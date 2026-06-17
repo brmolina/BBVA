@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Due_Diligences</fullName>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>PARENT.CASE_NUMBER</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>SER_Email_received__c</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>SER_Type_GM__c</columns>
+    <columns>CASES.LAST_UPDATE_DATE_ONLY</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <columns>CASES.PRIORITY</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>SER_Type_GM__c</field>
+        <operation>equals</operation>
+        <value>Due diligence</value>
+    </filters>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>notEqual</operation>
+        <value>Closed</value>
+    </filters>
+    <label>DUE DILIGENCES</label>
+    <sharedTo>
+        <group>CUSTOMER_CLAIM_SUPPORT</group>
+    </sharedTo>
+</ListView>

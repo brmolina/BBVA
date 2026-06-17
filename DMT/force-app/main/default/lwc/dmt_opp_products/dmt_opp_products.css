@@ -1,0 +1,11 @@
+* {
+    
+}
+c-custom-data-table c-custom-date-row .slds-is-open {
+    min-height: 0 !important;
+}
+
+.spinner-container {
+    position: relative;
+    min-height: 100px; /* opcional, para que no colapse mientras carga */
+}

@@ -1,0 +1,88 @@
+<aura:component controller="CommercialOfferRelatedClientsCnt"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="sizeMembers" type="String" default="0" />
+    <aura:attribute name="members" type="List"/>
+    <aura:attribute name="membersRelated" type="List"/>
+    <aura:attribute name="detailForm" type="Boolean" default="false"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.detailForm}">
+         <div class="slds-page-header">
+            <lightning:layout>
+                <lightning:layoutItem class="slds-media__figure">
+                    <lightning:icon iconName="standard:account" size="large" alternativeText="Report" />
+                </lightning:layoutItem>
+                <lightning:layoutItem class="slds-media__body slds-p-top_medium">
+                    <h1 class="slds-page-header__title">Clients</h1>
+                </lightning:layoutItem>
+        	</lightning:layout>
+    	</div>
+        <lightning:datatable data="{!v.members}"
+                                     columns="{!v.columns}"
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/>
+    <aura:set attribute="else">
+        <article class="slds-card customBackground gridcell">
+            <div class="slds-box slds-grid customBackground gridcell">
+                
+            <!-- <div class="slds-card__header slds-grid customBackground"> -->
+                <!-- <header class="slds-media slds-media_center slds-has-flexi-truncate customBackground"> -->
+                  <div class="slds-media__figure">
+                      <span class="slds-icon_container slds-icon-standard-account" title="account">
+                        <lightning:icon size="small" iconName="standard:account" alternativeText="Clients" title="Clients"/>
+                      <span class="slds-assistive-text">Clients</span>
+                    </span>
+                  </div>
+                  <!-- <div class="slds-media__body"> -->
+                    <p class="slds-card__header-title">
+                      <a class="slds-card__header-link slds-truncate" title="Clients">
+                        <span>Clients ({!v.sizeMembers})</span>
+                      </a>
+                      <aura:if isTrue="{!v.Spinner}">
+                        <lightning:spinner alternativeText="Loading" />
+                      </aura:if>
+                    </p>
+                  <!-- </div> -->
+                <!-- </header> -->
+              <!-- </div> -->
+                
+            </div>
+            
+            <div class="slds-box slds-p-top_none slds-p-left_none">
+                
+                <aura:iteration items="{!v.membersRelated}" var="member">    
+                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                        <div class="slds-media__body">
+                                <p class="slds-m-left_small" title="{!member.clientName}"> 
+                                    <a href="#" onclick="{!c.navigateRecord}" id="{!member.cId}">{!member.clientName}</a>
+                                </p>
+                        
+                        
+                            <div class="slds-tile__detail">
+                                <dl class="slds-list_horizontal slds-wrap slds-m-left_small">
+                                  <dt class="slds-item_label slds-text-color_weak slds-truncate">Client Type:</dt>
+                                  <dd class="slds-item_detail slds-truncate">{!member.cType}</dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Global Banker:</dt>
+                                  <dd class="slds-item_detail slds-truncate">{!member.globalBanker}</dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Country:</dt>
+                                  <dd class="slds-item_detail slds-truncate">{!member.labelCountry}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </article>
+                </aura:iteration>
+            </div>
+            <aura:if isTrue="{!v.members != null}">
+                <div class="slds-box">
+                <a href="" onclick="{!c.navigateToMyComponent}" class="slds-align_absolute-center">View All</a>
+                </div>
+            </aura:if>     
+        </article>
+    </aura:set>
+  </aura:if>     
+    
+</aura:component>

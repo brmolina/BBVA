@@ -1,0 +1,10 @@
+<design:component>
+  <design:attribute name="inputClass" label="Class" description="Class to build table data" />
+  <design:attribute name="insert" label="Insert" description="Set boolean value to enable/disable insert" />
+  <design:attribute name="edit" label="Edit" description="Set boolean value to enable/disable edit" />
+  <design:attribute name="delete" label="Delete" description="Set boolean value to enable/disable delete" />
+  <design:attribute name="spliceColumn" label="Splicecolumn" description="String value to splice the column table" />
+  <design:attribute name="spliceRow" label="SpliceRow" description="String value to splice the column table" />
+  <design:attribute name="editName" label="Edit Name CMP" description="Name of the component to edit records" />
+  <design:attribute name="insertName" label="Insert Name CMP" description="Name of the component to insert records" />
+</design:component>

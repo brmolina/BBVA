@@ -1,0 +1,25 @@
+:host .action-button-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+
+
+:host .spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    z-index: 1;
+}
+.block-changes .slds-modal__container {
+    max-width: 30rem;
+    min-width: 0;
+    width: 90%;
+}

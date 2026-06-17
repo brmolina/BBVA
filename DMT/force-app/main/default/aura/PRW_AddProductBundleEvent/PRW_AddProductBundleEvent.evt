@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Event template">
+  <aura:attribute name="products" type="List" />
+  <aura:attribute name="productsSelected" type="List" />
+  <aura:attribute name="firstProdIds" type="List" />
+</aura:event>

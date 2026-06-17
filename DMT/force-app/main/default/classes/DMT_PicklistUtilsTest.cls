@@ -1,5 +1,5 @@
 @isTest
-private class DMT_PicklistUtilsTest {
+private without sharing class DMT_PicklistUtilsTest {
 
     @testSetup
     static void setupData() {
@@ -312,5 +312,68 @@ private class DMT_PicklistUtilsTest {
         System.assert(mapObj.containsKey('BB'));
         List<Object> aaList = (List<Object>) mapObj.get('AA');
         System.assertEquals(2, aaList.size());
+    }
+
+    @isTest
+    static void testCapitalizeString_Normal() {
+        DMT_PicklistUtils picklistUtils = new DMT_PicklistUtils();
+
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'arguments' => new List<Object>{ 'INDUSTRIALS & TRANSPORTATION' }
+        };
+        Map<String, Object> args = new Map<String, Object>{
+            'input'   => inputMap,
+            'output'  => new Map<String, Object>(),
+            'options' => new Map<String, Object>()
+        };
+
+        Test.startTest();
+        Map<String, Object> result = (Map<String, Object>) picklistUtils.call('capitalizeString', args);
+        Test.stopTest();
+
+        System.assertEquals(null, result.get('error'));
+        System.assertEquals('Industrials & transportation', (String) result.get('result'));
+    }
+
+    @isTest
+    static void testCapitalizeString_AlreadyLower() {
+        DMT_PicklistUtils picklistUtils = new DMT_PicklistUtils();
+
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'arguments' => new List<Object>{ 'already lowercase' }
+        };
+        Map<String, Object> args = new Map<String, Object>{
+            'input'   => inputMap,
+            'output'  => new Map<String, Object>(),
+            'options' => new Map<String, Object>()
+        };
+
+        Test.startTest();
+        Map<String, Object> result = (Map<String, Object>) picklistUtils.call('capitalizeString', args);
+        Test.stopTest();
+
+        System.assertEquals(null, result.get('error'));
+        System.assertEquals('Already lowercase', (String) result.get('result'));
+    }
+
+    @isTest
+    static void testCapitalizeString_Empty() {
+        DMT_PicklistUtils picklistUtils = new DMT_PicklistUtils();
+
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'arguments' => new List<Object>{ '' }
+        };
+        Map<String, Object> args = new Map<String, Object>{
+            'input'   => inputMap,
+            'output'  => new Map<String, Object>(),
+            'options' => new Map<String, Object>()
+        };
+
+        Test.startTest();
+        Map<String, Object> result = (Map<String, Object>) picklistUtils.call('capitalizeString', args);
+        Test.stopTest();
+
+        System.assertEquals(null, result.get('error'));
+        System.assertEquals('', (String) result.get('result'));
     }
 }

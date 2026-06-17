@@ -1,0 +1,50 @@
+<aura:component controller="ComponentNBC_Controller" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:lightningQuickActionWithoutHeader,force:hasSObjectName" access="global">
+<!--Attributes-->
+<aura:attribute name="dataToolkit" type="Object" />
+<aura:attribute name="waiting" type="Boolean" default="false" />
+<aura:attribute name="permissions" type="Object" />
+<aura:attribute name="recordId" type="String" />
+<aura:attribute name="editable" type="Boolean"/>
+<aura:attribute name="dialog" type="Boolean" default="false" />
+
+<!--Handlers-->
+<aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+<aura:html tag="style">
+    .slds-modal__container{
+        max-width: 70rem !important;
+        width:40rem !important;
+    }
+    .slds-modal__container .cuf-content {
+        padding:0 !important;
+    }
+    .slds-modal__container .slds-p-around--medium {
+        padding: 0rem !important;
+    }
+    .slds-modal__content {
+        height: unset !important;
+        max-height: unset !important;
+        border-bottom-left-radius: unset !important;
+        border-bottom-right-radius: unset !important;
+    }
+</aura:html>
+<div class="slds-col modal-header slds-modal__header">
+    <h2 class="title slds-text-heading--medium">Refresh Client Sustainability Information</h2>
+</div>
+
+<div class="slds-col modal-body" style="max-height: 400px; overflow-y: auto !important">
+
+    <aura:if isTrue="{!v.waiting}">
+        <lightning:spinner variant="brand" />
+    </aura:if>
+    <aura:if isTrue="{!v.editable}">
+        <div class="slds-p-around_medium"><b>Client Sustainability Info can be refreshed on this template, please select "Update" button.</b></div>
+    <aura:set attribute="else">
+        <div class="slds-p-around_medium"><b>This template cannot be refreshed, because it's status is different from 'Not Submitted'.</b></div>
+    </aura:set>
+    </aura:if>
+</div>
+<div class="slds-col modal-footer slds-modal__footer">
+    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeDialog }"/>
+    <lightning:button variant="brand" label="Update" title="Update" onclick="{!c.handleUpdate}" disabled="{!NOT(v.editable)}"/>
+</div>           
+</aura:component>

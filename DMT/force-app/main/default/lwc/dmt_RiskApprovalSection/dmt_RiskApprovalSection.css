@@ -2,15 +2,13 @@
     position: relative;
 }
 
-/* Forzamos el link a la MISMA línea que el radio "Line" */
 .line-link {
-    position: absolute;
-    left: 3.5rem;     /* mueve el texto a la derecha del radio */
-    top: 1.65rem;     /* baja hasta el segundo radio */
-    cursor: pointer;
+    margin-top: 0.25rem;
+    margin-left: 1.5rem;
+    font-size: 0.75rem;
     color: #0176d3;
-    text-decoration: underline;
-    font-size: 0.875rem;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .line-link:hover {

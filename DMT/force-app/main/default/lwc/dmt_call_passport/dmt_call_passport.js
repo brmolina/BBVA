@@ -12,7 +12,6 @@ export default class Dmt_call_passport extends LightningElement {
         this.showSpinnerPassport = true;
         this.message = 'Consulting customer groups.';
         this.groupedData = params.page === 1 ? [] : this.groupedData;
-
         fetchData(params).then( data => {
             if (data.success) {
                 this.groupedData = this.groupedData.concat(data.data);

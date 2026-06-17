@@ -22,7 +22,7 @@ public with sharing class PRW_TableBundleProductCtrl_Test {
   @testSetup
   static void setupTestData() {
     final List<Account> accounts = cuco.Test_Utils.createAccounts(3);
-    accounts.get(0).SER_CClient__c = 'DTestCuco1';
+    accounts.get(0).g_customer_id__c = 'DTestCuco1';
     insert accounts;
 
     final List<DES_Subsidiary_Group_Relation__c> lMatrix = new List<DES_Subsidiary_Group_Relation__c>();
@@ -46,8 +46,8 @@ public with sharing class PRW_TableBundleProductCtrl_Test {
   **/
   @isTest
   static void gtDataBundlesTest() {
-    final Account acc = [SELECT id, SER_CClient__c from Account LIMIT 1];
-    String laccountIds =  acc.SER_CClient__c ;
+    final Account acc = [SELECT id, g_customer_id__c from Account LIMIT 1];
+    String laccountIds =  acc.g_customer_id__c ;
     final PRW_TableBundleProductCtrl instance = PRW_TableBundleProductCtrl.gtInstance();
     system.debug(instance);
     Test.startTest();

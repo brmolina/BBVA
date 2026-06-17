@@ -24,9 +24,9 @@ public with sharing class DMT_PassportOtherProducts_Wrapper extends DMT_Wrapper_
         @AuraEnabled
         public String productCode;
         @AuraEnabled
-        public List<Provisions> currencyProvision {get;set;}
+        public List<Provisions> currencyProvision;
         @AuraEnabled
-        public List<Warranty> warranty {get;set;}
+        public List<Warranty> warranty;
         @AuraEnabled
         public String lastLevelId;
         @AuraEnabled
@@ -80,9 +80,9 @@ public with sharing class DMT_PassportOtherProducts_Wrapper extends DMT_Wrapper_
         @AuraEnabled
         public String comments;
         @AuraEnabled
-        public Boolean indRenovada {get;set;}
+        public Boolean indRenovada;
         @AuraEnabled
-        public List<ParentConsum> parentConsums {get;set;}
+        public List<ParentConsum> parentConsums;
     }
 
     public class Provisions
@@ -103,6 +103,10 @@ public with sharing class DMT_PassportOtherProducts_Wrapper extends DMT_Wrapper_
         public Decimal amount;
         @AuraEnabled
         public String lastLevelId;
+        @AuraEnabled
+        public Decimal minRaroEcWoFgPerct;
+        @AuraEnabled
+        public Decimal minRorWocFcgPerc;
     }
 
 }

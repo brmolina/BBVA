@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Entity__c</fullName>
+    <label>Entity</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BBVA BANCOMER</fullName>
+                <default>false</default>
+                <label>BBVA BANCOMER</label>
+            </value>
+            <value>
+                <fullName>BBVA COLOMBIA</fullName>
+                <default>false</default>
+                <label>BBVA COLOMBIA</label>
+            </value>
+            <value>
+                <fullName>BBVA CONTINENTAL</fullName>
+                <default>false</default>
+                <label>BBVA CONTINENTAL</label>
+            </value>
+            <value>
+                <fullName>COMPASS BANK</fullName>
+                <default>false</default>
+                <label>COMPASS BANK</label>
+            </value>
+            <value>
+                <fullName>BBVA BANCO PROVINCIAL</fullName>
+                <default>false</default>
+                <label>BBVA BANCO PROVINCIAL</label>
+            </value>
+            <value>
+                <fullName>BBVA PORTUGAL</fullName>
+                <default>false</default>
+                <label>BBVA PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>BBVA SA</fullName>
+                <default>false</default>
+                <label>BBVA SA</label>
+            </value>
+            <value>
+                <fullName>BBVA NY SECURITIES</fullName>
+                <default>false</default>
+                <label>BBVA NY SECURITIES</label>
+            </value>
+            <value>
+                <fullName>BBVA ARGENTINA</fullName>
+                <default>false</default>
+                <label>BBVA ARGENTINA</label>
+            </value>
+            <value>
+                <fullName>ALTURA</fullName>
+                <default>false</default>
+                <label>ALTURA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,16 +1,170 @@
 <template>
-    <c-dmt_fieldsection
-                record-id={recordId}
-                object-api-name="DMT_Line__c"
-                columns={approvalProcessDataColumns}>
-            </c-dmt_fieldsection>
-            <c-dmt_fieldsection
-                record-id={recordId}
-                object-api-name="DMT_Line__c"
-                columns={commentsColumns}>
-            </c-dmt_fieldsection>
-            <c-dmt_approverfield
-                label="Local Approver"
-                placeholder="Probando approvers">
-            </c-dmt_approverfield>
+    <lightning-record-view-form record-id={recordId} object-api-name="DMT_Line__c">
+        <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner slds-spinner_medium" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+    <template if:true={isLockedByOther}>
+            <div class="slds-shade" style="z-index: 10000; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); display: flex; align-items: center; justify-content: center;">
+                <div class="slds-box slds-theme_default slds-text-align_center" style="max-width: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    <lightning-icon icon-name="utility:lock" size="medium" class="slds-m-bottom_small"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-bottom_medium">Esta línea está siendo editada por otro usuario en este momento.</p>
+                    <lightning-button
+                        variant="brand"
+                        label="Volver a probar"
+                        onclick={handleRetry}
+                        icon-name="utility:refresh">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+        <template if:false={isEditing}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" padding="around-small">
+                    <div class="slds-form-element slds-form-element_edit slds-border_bottom">
+                        <span class="slds-form-element__label">Booking Unit Risk Approver (Local)</span>
+                        <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-grow">
+                                <span class="slds-form-element__static">{bookingRiskName}</span>
+                            </div>
+                            <template if:true={isAllowedEditing}>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClick} class="slds-no-flex"></lightning-button-icon>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="6" padding="around-small">
+                    <div class="slds-form-element">
+                        <span class="slds-form-element__label">Global Banker</span>
+                        <div class="slds-form-element__control">
+                            <lightning-output-field field-name="DMT_GlobalBanker__c" variant="label-hidden"></lightning-output-field>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="6" padding="around-small">
+                    <div class="slds-form-element slds-form-element_edit slds-border_bottom">
+                        <span class="slds-form-element__label">Financial Program Risk Approver (Global)</span>
+                        <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-grow">
+                                <span class="slds-form-element__static">{approverName}</span>
+                            </div>
+                             <template if:true={isAllowedEditing}>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClick} class="slds-no-flex"></lightning-button-icon>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="6" padding="around-small">
+                    <div class="slds-form-element slds-form-element_edit slds-border_bottom">
+                        <span class="slds-form-element__label">Approver Global Banker</span>
+                        <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-grow">
+                               <span class="slds-form-element__static">{approverGBName}</span>
+                            </div>
+                             <template if:true={isAllowedEditing}>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClick} class="slds-no-flex"></lightning-button-icon>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" padding="around-small">
+                    <div class="slds-form-element slds-form-element_edit slds-border_bottom">
+                        <span class="slds-form-element__label">Client Use</span>
+                        <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-grow">
+                                <lightning-output-field field-name="DMT_Client_Use__c" variant="label-hidden"></lightning-output-field>
+                            </div>
+                             <template if:true={isAllowedEditing}>
+                                <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClick} class="slds-no-flex"></lightning-button-icon>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <template if:false={isTreasury}>
+                    <lightning-layout-item size="12" padding="around-small">
+                        <div class="slds-form-element slds-form-element_edit slds-border_bottom">
+                            <span class="slds-form-element__label">Comments</span>
+                            <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-grow">
+                                    <lightning-output-field field-name="DMT_Comments__c" variant="label-hidden"></lightning-output-field>
+                                </div>
+                                <template if:true={isAllowedEditing}>
+                                    <lightning-button-icon icon-name="utility:edit" variant="bare" onclick={handleEditClick} class="slds-no-flex"></lightning-button-icon>
+                                </template>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
+        </template>
+
+        <template if:true={isEditing}>
+            <div class="slds-p-around_small slds-p-bottom_xx-large">
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="6" padding="around-small">
+                        <c-dmt_approverfield
+                            label="Booking Unit Risk Approver (Local)"
+                            field-api-name="DMT_Booking_Unit_Risk_Analyst__c"
+                            value-id={bookingRiskValueId}
+                            value-name={bookingRiskValueName}
+                            data-field="DMT_Booking_Unit_Risk_Analyst__c"
+                            onchangeedit={handleCustomFieldChange}
+                            onchange={handleCustomFieldClear}>
+                        </c-dmt_approverfield>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-output-field field-name="DMT_GlobalBanker__c"></lightning-output-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <c-dmt_approverfield
+                            label="Financial Program Risk Approver (Global)"
+                            field-api-name="DMT_Approver__c"
+                            value-id={approverValueId}
+                            value-name={approverValueName}
+                            data-field="DMT_Approver__c"
+                            onchangeedit={handleCustomFieldChange}
+                            onchange={handleCustomFieldClear}>
+                        </c-dmt_approverfield>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <c-dmt_approverfield
+                            label="Approver Global Banker"
+                            field-api-name="DMT_ApproverGlobalBanker__c"
+                            value-id={approverGBValueId}
+                            value-name={approverGBValueName}
+                            data-field="DMT_ApproverGlobalBanker__c"
+                            onchangeedit={handleCustomFieldChange}
+                            onchange={handleCustomFieldClear}>
+                        </c-dmt_approverfield>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+                <lightning-record-edit-form object-api-name="DMT_Line__c" record-id={recordId}>
+                    <lightning-input-field field-name="DMT_Client_Use__c" onchange={handleStandardFieldChange}></lightning-input-field>
+
+                    <template if:false={isTreasury}>
+                        <lightning-input-field field-name="DMT_Comments__c" onchange={handleStandardFieldChange}></lightning-input-field>
+                    </template>
+                </lightning-record-edit-form>
+            </div>
+
+            <div class="slds-docked-form-footer">
+                <lightning-button label="Cancel" onclick={handleCancelClick}></lightning-button>
+                <lightning-button label="Save" variant="brand" onclick={handleSaveClick} class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </template>
+    </lightning-record-view-form>
 </template>

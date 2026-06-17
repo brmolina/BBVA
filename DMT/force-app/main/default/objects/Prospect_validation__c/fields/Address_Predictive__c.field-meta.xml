@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Address_Predictive__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Allows you to activate the predictive search option with google places. If you activate it, it is mandatory to fill in the &quot;API Key Google Places&quot; field, in order for it to work.</description>
+    <inlineHelpText>Allows you to activate the predictive search option with google places. If you activate it, it is mandatory to fill in the &quot;API Key Google Places&quot; field, in order for it to work.</inlineHelpText>
+    <label>Address Predictive</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

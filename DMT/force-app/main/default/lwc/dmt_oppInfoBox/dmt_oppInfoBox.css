@@ -1,0 +1,59 @@
+.link-box {
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    padding: 12px;
+    background-color: #ececec;
+    display: inline-flex;
+    align-items: center;
+    min-height: 46px;
+    min-width: 250px;
+    width: 15vw; /* Adjust to roughly match your translated text width */
+}
+
+.text-content {
+    font-size: 13px;           /* Standard SLDS font size */
+    color: #080707;            /* Standard text color */
+}
+
+a {
+    color: #0176d3;            /* Standard Salesforce link blue */
+    font-weight: 500;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+lightning-icon {
+    /* 1. Forces the icon to that crisp Salesforce blue */
+    --sds-c-icon-color-foreground-default: #0176d3;
+    /* 2. Nudges ONLY the icon slightly upward */
+    position: relative;
+}
+
+/* Mimics the circular utility icon */
+.skeleton-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e5e5e5;
+    margin-right: 12px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Mimics the line of text */
+.skeleton-text {
+    height: 14px;
+    width: 220px; /* Width of the fake text line */
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* The subtle fading animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}

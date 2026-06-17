@@ -1,0 +1,135 @@
+<template>
+    <lightning-card>
+        <c-onb_autosave-banner-notification
+            menssage={label.AUTOSAVE_BANNER}
+            icon='utility:save'
+            variant='mainContainer'
+            title='Auto-save information'>
+        </c-onb_autosave-banner-notification>
+        <div class="slds-p-around_small">
+            <!-- ROW 1 -->
+            <div class="onb-row onb-row-two">
+                <div class="onb-card">
+                    <c-onb_onboarding-form
+                        all-required
+                        record-id={recordId}
+                        title={label.BUSSINESS_CASE_DETAILS}
+                        object-api-name={onboardingObjApiName}
+                        icon-name="standard:case"
+                        field-names={sections.businessCase.fields}
+                        field-custom-labels={sections.businessCase.labels}
+                        field-rules={rules.businessCase}>
+                    </c-onb_onboarding-form>
+                </div>
+
+                <div class="onb-card">
+                    <c-onb_onboarding-form
+                        all-required
+                        record-id={recordId}
+                        title={label.CLIENT_CONTACT}
+                        object-api-name={onboardingObjApiName}
+                        icon-name="standard:people"
+                        field-names={sections.clientContact.fields}
+                        field-custom-labels={sections.clientContact.labels}
+                        field-rules={rules.clientContact}>
+                    </c-onb_onboarding-form>
+                </div>
+            </div>
+
+            <!-- Entity Details ROW -->
+            <div class="onb-group slds-m-top_medium">
+                <div class="onb-row onb-row-two">
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            all-required
+                            onvaluechange={handleEntityTypeChange}
+                            record-id={recordId}
+                            title={label.ENTITY_DETAILS}
+                            object-api-name={onboardingObjApiName}
+                            icon-name="standard:contact_list"
+                            field-names={sections.entityLeft.fields}
+                            field-custom-labels={sections.entityLeft.labels}
+                            field-rules={rules.entityLeft}>
+                        </c-onb_onboarding-form>
+                    </div>
+
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            all-required
+                            record-id={recordId}
+                            object-api-name={onboardingObjApiName}
+                            field-names={sections.entityRight.fields}
+                            field-custom-labels={sections.entityRight.labels}
+                            field-rules={rules.entityRight}>
+                        </c-onb_onboarding-form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEAD OFFICE BRANCH SECTION -->
+            <template lwc:if={isBranchOpen}>
+                <div class={branchAnimClass}>
+                    <div class="onb-collapseInner">
+                        <div class="onb-group slds-m-top_medium">
+                            <div class="onb-row onb-row-two">
+                                <div class="onb-card onb-card-inside-group">
+                                    <c-onb_onboarding-form
+                                        all-required
+                                        record-id={recordId}
+                                        title={label.ONB_HEAD_OFFICE_BRANCH}
+                                        object-api-name={onboardingObjApiName}
+                                        icon-name="standard:account"
+                                        field-names={sections.branchLeft.fields}
+                                        field-custom-labels={sections.branchLeft.labels}
+                                        field-rules={rules.branchLeft}>
+                                    </c-onb_onboarding-form>
+                                </div>
+
+                                <div class="onb-card onb-card-inside-group">
+                                    <c-onb_onboarding-form
+                                        all-required
+                                        record-id={recordId}
+                                        object-api-name={onboardingObjApiName}
+                                        field-names={sections.branchRight.fields}
+                                        field-custom-labels={sections.branchRight.labels}
+                                        field-rules={rules.branchRight}>
+                                    </c-onb_onboarding-form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- RELATIONSHIP CONTACTS SECTION -->
+            <div class="onb-row slds-m-top_medium">
+                <div class="onb-card" style="width:100%">
+                    <c-onb_onboarding-table
+                        data-id="relatioshipContactTable"
+                        title={label.RELATIONSHIP_CONTACTS}
+                        empty-state-message={label.ONB_EMPTY_STATE_CONTACT_MSSG}
+                        label={columnsRelationShipContact.label}
+                        record-id={recordId}
+                        object-api-name={onboardingCntRltObjApiName}
+                        parent-field-api-name="OnboardingId__c"
+                        columns={columnsRelationShipContact}
+                        initial-rows={rows}
+                        add-label={label.BTN_ADD_PARTICIPANT}
+                        show-add=true
+                        show-delete=true
+                        create-record-on-add=true
+                        required-field-api-names={relationshipRequiredFields}
+                        onlookupchange={handleLookupChangeFromTable}
+                        modal-component-name={onboardingContactModalName}
+                        modal-button-label={label.ONB_BUTTOM_CREATE_CONTACT}
+                        onrefrescartabla={handleRefreshData}
+                        onrowcreated={handleRefreshData}
+                        onrowdeleted={handleRefreshData}
+                        onrowunlink={handleRefreshData}
+                        default-values={defaultContactValues}>
+                    </c-onb_onboarding-table>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

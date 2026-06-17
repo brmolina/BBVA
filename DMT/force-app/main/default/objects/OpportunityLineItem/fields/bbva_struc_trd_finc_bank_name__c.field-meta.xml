@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bbva_struc_trd_finc_bank_name__c</fullName>
+    <label>BBVA Participant Geographies</label>
+    <required>false</required>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>STF France</fullName>
+                <default>false</default>
+                <label>STF France</label>
+            </value>
+            <value>
+                <fullName>STF Germany</fullName>
+                <default>false</default>
+                <label>STF Germany</label>
+            </value>
+            <value>
+                <fullName>STF Hong Kong</fullName>
+                <default>false</default>
+                <label>STF Hong Kong</label>
+            </value>
+            <value>
+                <fullName>STF Italy</fullName>
+                <default>false</default>
+                <label>STF Italy</label>
+            </value>
+            <value>
+                <fullName>STF New York (Latam)</fullName>
+                <default>false</default>
+                <label>STF New York (Latam)</label>
+            </value>
+            <value>
+                <fullName>STF Spain</fullName>
+                <default>false</default>
+                <label>STF Spain</label>
+            </value>
+            <value>
+                <fullName>STF UK</fullName>
+                <default>false</default>
+                <label>STF UK</label>
+            </value>
+            <value>
+                <fullName>STF USA Compass</fullName>
+                <default>false</default>
+                <label>STF USA Compass</label>
+            </value>
+            <value>
+                <fullName>STF Bancomer</fullName>
+                <default>false</default>
+                <label>STF Bancomer</label>
+            </value>
+            <value>
+                <fullName>STF Japan</fullName>
+                <default>false</default>
+                <label>STF Japan</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

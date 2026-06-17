@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>moved_from__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>track profitability analysis origin when moving a participant to a new profitability analysis</description>
+    <label>Moved from</label>
+    <referenceTo>cuco__profitability_analysis__c</referenceTo>
+    <relationshipLabel>Profitability Analysis Participants (Moved from)</relationshipLabel>
+    <relationshipName>Profitability_Analysis_Participants</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -21,13 +21,13 @@ public class Task_Test {
   static void testSetup() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TEST1VAR;
+    acc.g_customer_id__c = TEST1VAR;
     acc.Name = TEST1VAR;
     acc.DES_Tier__c = '00000020';
     insert acc;
 
     final Account acc2 = tstClass.createClient();
-    acc2.SER_CClient__c = TEST2VAR;
+    acc2.g_customer_id__c = TEST2VAR;
     acc2.Name = TEST2VAR;
     acc2.DES_Tier__c = '00000020';
     insert acc2;

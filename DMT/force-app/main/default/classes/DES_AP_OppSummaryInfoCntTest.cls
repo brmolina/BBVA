@@ -34,9 +34,9 @@ public class DES_AP_OppSummaryInfoCntTest {
     public static final String TABLE = 'Table';
     
     /**
-	* @author Global Desktop
-	* @description Test
-	*/
+  * @author Global Desktop
+  * @description Test
+  */
     @isTest
     public static void accOppTest() {
 
@@ -114,26 +114,26 @@ public class DES_AP_OppSummaryInfoCntTest {
 
         insert oppList;
 
-        final list<dwp_acmh__Denorm_Account_Opportunity__c> denormOppList = new list<dwp_acmh__Denorm_Account_Opportunity__c>();
+        final list<AMH_Denorm_Account_Opportunity__c> denormOppList = new list<AMH_Denorm_Account_Opportunity__c>();
 
-        final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm1 = new dwp_acmh__Denorm_Account_Opportunity__c ();
-        oppDenorm1.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm1.dwp_acmh__OpportunityId__c = opp1.Id;
+        final AMH_Denorm_Account_Opportunity__c oppDenorm1 = new AMH_Denorm_Account_Opportunity__c ();
+        oppDenorm1.AMH_AccountId__c = acc1.Id;
+        oppDenorm1.AMH_OpportunityId__c = opp1.Id;
         denormOppList.add(oppDenorm1);
 
-        final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm2 = new dwp_acmh__Denorm_Account_Opportunity__c ();
-        oppDenorm2.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm2.dwp_acmh__OpportunityId__c = opp2.Id;
+        final AMH_Denorm_Account_Opportunity__c oppDenorm2 = new AMH_Denorm_Account_Opportunity__c ();
+        oppDenorm2.AMH_AccountId__c = acc1.Id;
+        oppDenorm2.AMH_OpportunityId__c = opp2.Id;
         denormOppList.add(oppDenorm2);
 
-        final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm3 = new dwp_acmh__Denorm_Account_Opportunity__c ();
-        oppDenorm3.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm3.dwp_acmh__OpportunityId__c = opp3.Id;
+        final AMH_Denorm_Account_Opportunity__c oppDenorm3 = new AMH_Denorm_Account_Opportunity__c ();
+        oppDenorm3.AMH_AccountId__c = acc1.Id;
+        oppDenorm3.AMH_OpportunityId__c = opp3.Id;
         denormOppList.add(oppDenorm3);
 
-        final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm4 = new dwp_acmh__Denorm_Account_Opportunity__c ();
-        oppDenorm4.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm4.dwp_acmh__OpportunityId__c = opp4.Id;
+        final AMH_Denorm_Account_Opportunity__c oppDenorm4 = new AMH_Denorm_Account_Opportunity__c ();
+        oppDenorm4.AMH_AccountId__c = acc1.Id;
+        oppDenorm4.AMH_OpportunityId__c = opp4.Id;
         denormOppList.add(oppDenorm4);
 
 

@@ -1,0 +1,210 @@
+.idEditing{
+    pointer-events: none;
+}
+
+.slds-tabs_default__nav {
+    flex-wrap: nowrap;
+}
+
+.slds-tabs_default__item {
+    margin-right: 0.25rem;
+    max-width: 14.1rem;
+    flex-shrink: 0;
+}
+
+.slds-tabs_default__overflow-button {
+    flex-shrink: 0;
+}
+
+.slds-tabs_default__overflow-button .slds-dropdown-trigger {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+}
+
+.slds-tabs_default__overflow-button button {
+    text-transform: uppercase;
+    padding: 0 1rem;
+    line-height: 2.75rem;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.slds-tabs_default__link {
+    text-transform: uppercase;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+.slds-dropdown__item a {
+    text-transform: uppercase;
+}
+
+.slds-tabs_default__overflow-buttonhover:after, .slds-tabs_default__overflow-button:hover:after {
+    background-color: transparent !important;
+}
+
+/* ── Tab indicator styles ──────────────────────────────────── */
+
+/* Flexbox layout for tab links: icon, label and badge are vertically centered */
+.tab-link-flex {
+    display: flex !important;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Tab label takes available space and truncates with ellipsis */
+.tab-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Warning icon — orange tint */
+.tab-icon-warning {
+    --sds-c-icon-color-foreground-default: #ff9f1a;
+    flex-shrink: 0;
+}
+
+/* Container for warning icon + superscript count */
+.tab-icon-with-sup {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 16px;
+    height: 20px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Superscript number at top-right of the warning icon */
+.tab-count-sup {
+    position: absolute;
+    top: -1px;
+    right: -2px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #e65100;
+    line-height: 1;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
+}
+.slds-spinner_overlay {
+  position: fixed;
+  z-index: 9999; /* por encima de todo */
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.6); /* semi-transparente, opcional */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Confidencial */
+
+.confidential-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 8999;
+}
+
+.confidential-modal-wrapper {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+}
+
+.confidential-modal {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    width: 650px;
+    max-width: 90vw;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+.confidential-close-btn {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: #333;
+    z-index: 9001;
+}
+
+.confidential-close-btn:hover {
+    background: #f0f0f0;
+}
+
+.confidential-modal-header {
+    padding: 28px 32px 12px;
+    text-align: center;
+    border-bottom: 2px solid #c0c8d8;
+}
+
+.confidential-modal-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c2b4b;
+    margin: 0;
+}
+
+.confidential-modal-body {
+    padding: 8px 32px 20px;
+    text-align: center;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.confidential-modal-body p {
+    font-size: 13px;
+    color: #444;
+    margin: 0 0 6px;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+.confidential-modal-footer {
+    padding: 12px 24px 20px;
+    display: flex;
+    justify-content: center;
+    border-top: 2px solid #c0c8d8;
+}
+
+.confidential-ok-btn {
+    border: 1px solid #5b7fa6;
+    background: transparent;
+    color: #1c2b4b;
+    font-size: 13px;
+    padding: 6px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.confidential-ok-btn:hover {
+    background: #f0f4fa;
+}

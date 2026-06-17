@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oportunidades_pendientes_NBC_LATAM</fullName>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>OPPORTUNITY.AMOUNT</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Committee_id__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Template_approved_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>DES_Booking_Geography__c</field>
+        <operation>contains</operation>
+        <value>Argentina,Chile,Colombia,Mexico,Peru,Uruguay,Venezuela</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>NBC_Decision_Taken_type__c</field>
+        <operation>equals</operation>
+    </filters>
+    <label>Oportunidades pendientes NBC - LATAM</label>
+    <sharedTo>
+        <role>S_P_TEAM</role>
+    </sharedTo>
+</ListView>

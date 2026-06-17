@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>iaso__Custom_Setting__c</field>
-        <value xsi:type="xsd:string">DMTO_Endpoint_INT</value>
+        <value xsi:type="xsd:string">DMTO_GetSnapshotEvaluationVersions_INT</value>
     </values>
     <values>
         <field>iaso__Description__c</field>
@@ -81,6 +81,15 @@
         &quot;eventDate&quot;: &quot;2027-02-20&quot;,
         &quot;description&quot;: &quot;another comment&quot;,
         &quot;categoryId&quot;: &quot;another category&quot;,
+        &quot;body&quot;: &quot;another text&quot;
+      },
+      {
+        &quot;id&quot;: &quot;V000J&quot;,
+        &quot;auditId&quot;: 123478,
+        &quot;user&quot;: &quot;O004246&quot;,
+        &quot;eventDate&quot;: &quot;2027-02-20&quot;,
+        &quot;description&quot;: &quot;another comment&quot;,
+        &quot;categoryId&quot;: &quot;Closed-Won&quot;,
         &quot;body&quot;: &quot;another text&quot;
       }
     ]

@@ -1,0 +1,27 @@
+<aura:component extensible="true" abstract="true">
+    <aura:attribute name="openCollapsible" type="Boolean" access="public" description="N/A - Internal use only"/>
+    <aura:attribute name="lstData" type="Object[]" access="public" description="N/A - Internal use only"/>
+    
+    <div class="slds-grid slds-wrap " style="width:100%">
+        <div class="slds-p-horizontal--small slds-size--1-of-16" >
+            <div class="{!(!v.openCollapsible eq true)?' rotate icon-fallback-text  spin forceIcon sectionChevronIcon':' rotate icon-fallback-text  spin forceIcon'}" aria-hidden="true"  data-aura-rendered-by="716:1546;a"  data-icon="" data-key="chevrondown" data-aura-class="forceIcon">
+                <lightning:buttonIcon class="slds-button__icon slds-button__icon--center" iconName="utility:chevrondown" variant="bare" onclick="{!c.collapse}" alternativeText="Close window." />
+            </div>
+        </div>
+        <div class="slds-p-horizontal--medium slds-size--5-of-6" style="text-align:left; padding-left:0px !important;">
+            <div style="text-align:left;" class="slds-media__body titleSpan">Detalle</div>
+        </div>
+    </div>
+        <aura:iteration items="{!v.lstData}" var="data">
+            
+        </aura:iteration>
+        
+    <aura:if isTrue="{!v.openCollapsible}">
+        <div class="{!(v.isCollapsed eq true)?'divProds collapse':'divProds'}">
+            <article class="slds-box slds-timeline__item_details slds-theme_shade slds-m-top_x-small slds-m-horizontal_xx-small slds-p-around_medium" id="task-item-expanded" aria-hidden="false">
+				{!v.body} 
+            </article>
+        </div>
+    </aura:if>
+    
+</aura:component>

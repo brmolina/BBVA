@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_mitigant__c</fullName>
+    <label>Mitigant</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Deposito Efectivo</fullName>
+                <default>false</default>
+                <label>Deposito Efectivo</label>
+            </value>
+            <value>
+                <fullName>Títulos de deuda de entidades aceptables</fullName>
+                <default>false</default>
+                <label>Títulos de deuda de entidades aceptables</label>
+            </value>
+            <value>
+                <fullName>Acciones o bonos convertibles</fullName>
+                <default>false</default>
+                <label>Acciones o bonos convertibles</label>
+            </value>
+            <value>
+                <fullName>Mercancía en B/L</fullName>
+                <default>false</default>
+                <label>Mercancía en B/L</label>
+            </value>
+            <value>
+                <fullName>Bancos</fullName>
+                <default>false</default>
+                <label>Bancos</label>
+            </value>
+            <value>
+                <fullName>Multilaterales</fullName>
+                <default>false</default>
+                <label>Multilaterales</label>
+            </value>
+            <value>
+                <fullName>Soberanas</fullName>
+                <default>false</default>
+                <label>Soberanas</label>
+            </value>
+            <value>
+                <fullName>IRUs</fullName>
+                <default>false</default>
+                <label>IRUs</label>
+            </value>
+            <value>
+                <fullName>Venta en secundario</fullName>
+                <default>false</default>
+                <label>Venta en secundario</label>
+            </value>
+            <value>
+                <fullName>clientes corporativos</fullName>
+                <default>false</default>
+                <label>clientes corporativos</label>
+            </value>
+            <value>
+                <fullName>ECAs</fullName>
+                <default>false</default>
+                <label>ECAs</label>
+            </value>
+            <value>
+                <fullName>Seguro Privado</fullName>
+                <default>false</default>
+                <label>Seguro Privado</label>
+            </value>
+            <value>
+                <fullName>Oro(Gold)</fullName>
+                <default>false</default>
+                <label>Oro(Gold)</label>
+            </value>
+            <value>
+                <fullName>Renta fija soberano</fullName>
+                <default>false</default>
+                <label>Renta fija soberano</label>
+            </value>
+            <value>
+                <fullName>Comfort Letter Fuerte</fullName>
+                <default>false</default>
+                <label>Comfort Letter Fuerte</label>
+            </value>
+            <value>
+                <fullName>Efectos y Descuentos comerciales</fullName>
+                <default>false</default>
+                <label>Efectos y Descuentos comerciales</label>
+            </value>
+            <value>
+                <fullName>Garantia Matriz</fullName>
+                <default>false</default>
+                <label>Garantia Matriz</label>
+            </value>
+            <value>
+                <fullName>Garantías hipotecarias</fullName>
+                <default>false</default>
+                <label>Garantías hipotecarias</label>
+            </value>
+            <value>
+                <fullName>Petroleo</fullName>
+                <default>false</default>
+                <label>Petroleo</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

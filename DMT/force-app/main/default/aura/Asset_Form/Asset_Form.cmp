@@ -1,0 +1,55 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader"
+    controller="Asset_Controller" access="global">
+    <aura:attribute name="fieldSetList" type="String[]" />
+    <aura:attribute name="fieldSetListAll" type="String[]" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="value1" type="string" />
+    <aura:attribute name="value2" type="string" />
+    <aura:attribute name="primaryRecord" type="string" default="{!v.value1}"/>
+    <aura:attribute name="secondaryRecord" type="string" default="{!v.value2}"/>
+    <aura:attribute name="saveMode" type="Boolean" default="false"/>
+    <aura:attribute name="editMode" type="Boolean" default="false"/>
+    <aura:attribute name="status" type="Boolean" default="false"/>
+    <aura:attribute name="primary" type="Boolean" default="false"/>
+    <aura:attribute name="secondary" type="Boolean" default="false"/>
+    <aura:attribute name="primaryChild" type="Boolean" default="false"/>
+    <aura:attribute name="secondaryChild" type="Boolean" default="false"/>
+    <aura:attribute name="ocultar" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:AssetSalesEvent" action="{!c.setSales}"/>
+    <aura:handler event="c:saveAssetTemplate" action="{!c.changeSaveField}"/>
+
+    <div class="slds-tabs_card">
+        <aura:if isTrue="{!!v.editMode}">
+            <lightning:recordViewForm aura:id="recordViewForm" recordId="{!v.recordId}" objectApiName="Asset_Template__c">
+                <div class="slds-grid slds-wrap">
+                    <lightning:messages />
+                    <aura:if isTrue="{!v.status}">
+                        <lightning:outputField fieldName="Rejection_Reason__c" />
+                    </aura:if>
+                        <aura:iteration items="{!v.fieldSetListAll}" var="obj" >
+                        <lightning:outputField fieldName="{!obj.fieldAPIName}" class="slds-col slds-size_1-of-2" />
+                    </aura:iteration>
+                </div>
+            </lightning:recordViewForm>
+            <aura:set attribute="else">
+                <lightning:recordEditForm aura:id="recordEditForm" recordId="{!v.recordId}" objectApiName="Asset_Template__c" onsubmit = "{!c.handleSubmit}">
+                    <lightning:messages />
+                    <div class="slds-grid slds-wrap">
+                        <aura:iteration items="{!v.fieldSetList}" var="obj" >
+                            <lightning:inputField fieldName="{!obj.fieldAPIName}" class="slds-col slds-size_1-of-2" />
+                        </aura:iteration>
+                    </div>
+                    <button type="submit" class="rigth-position" id="submitForm" hidden="hidden" ></button>
+                </lightning:recordEditForm>
+
+                <div class="{!if(v.ocultar, 'slds-hidden display-none cero-height','slds-grid slds-wrap slds-col slds-size_1-of-2 float-left')}" id="lookup1">
+                    <c:customLookupAssetForm aura:id="primary" value = "{!v.value1}" recordId="{!v.recordId}" editMode="{!v.editMode}" saveMode="{!v.saveMode}" objectName="User" custom ="primary" fieldName="Name" label="Primary Sales" iconName="standard:user" placeholder="Search..."/>
+                </div>
+                <div class="{!if(v.ocultar, 'slds-hidden display-none cero-height','slds-grid slds-wrap slds-col slds-size_1-of-2')}" id="lookup2">
+                    <c:customLookupAssetForm aura:id="secondary" value = "{!v.value2}" recordId="{!v.recordId}" editMode="{!v.editMode}" saveMode="{!v.saveMode}" ventas = "{!v.ventas}" objectName="UserRole" custom ="secondary" fieldName="Name" label="Secondary Sales" iconName="standard:user_role" placeholder="Search..."/>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

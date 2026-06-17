@@ -1,0 +1,66 @@
+<aura:component
+     implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+    access="global">
+
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="familyChecked" type="String" description="Familia de productos a mostrar" />
+    <aura:attribute name="countryParam" type="String" description="Country de client a filtrar" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:attribute name="showViewDetails" type="Boolean" default="true"/>
+    <lightning:navigation aura:id="nav" />
+
+    <lightning:layout multipleRows="true" class="slds-p-top_small
+    slds-m-top_small slds-box ">
+        <h1><strong>Risk Availability</strong></h1><br />
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-align_absolute-center slds-p-top_small slds-p-right_small width95">
+
+
+<!-- variant="scoped" -->
+            <lightning:tabset selectedTabId="Credit" class=" ">
+                <lightning:tab class="customTabs" label="Credit" id="Credit">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}"
+                            showViewDetails="{! v.showViewDetails}" typeAmount="Credit" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Derivatives" id="Derivatives">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}"
+                            showViewDetails="{! v.showViewDetails}" typeAmount="Derivatives" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Deposits" id="Deposits">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}"
+                            showViewDetails="{! v.showViewDetails}" typeAmount="Deposits" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Repos" id="Repos">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}"
+                            showViewDetails="{! v.showViewDetails}" typeAmount="Repos" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Settlement" id="Settlement">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}"
+                            recordId="{! v.recordId}" showViewDetails="{! v.showViewDetails}" typeAmount="Settlement" />
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="DVP" id="DVP">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:RiskAvailability familyChecked="{! v.familyChecked}" countryParam="{! v.countryParam}"
+                            recordId="{! v.recordId}" showViewDetails="{! v.showViewDetails}" typeAmount="DVP" />
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+        </lightning:layoutItem>
+    </lightning:layout>
+
+</aura:component>

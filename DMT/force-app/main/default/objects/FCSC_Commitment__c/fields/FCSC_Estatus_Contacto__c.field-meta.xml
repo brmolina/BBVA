@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Estatus_Contacto__c</fullName>
+    <label>Commitment Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Draft Commit</fullName>
+                <default>true</default>
+                <label>Draft Commit</label>
+            </value>
+            <value>
+                <fullName>Proposal in Preparation</fullName>
+                <default>false</default>
+                <label>Proposal in Preparation</label>
+            </value>
+            <value>
+                <fullName>Open Opportunity</fullName>
+                <default>false</default>
+                <label>Open Opportunity</label>
+            </value>
+            <value>
+                <fullName>Closed Lost</fullName>
+                <default>false</default>
+                <label>Closed Lost</label>
+            </value>
+            <value>
+                <fullName>Closed Won</fullName>
+                <default>false</default>
+                <label>Closed Won</label>
+            </value>
+            <value>
+                <fullName>Expired</fullName>
+                <default>false</default>
+                <label>Expired</label>
+            </value>
+            <value>
+                <fullName>Canceled</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Canceled</label>
+            </value>
+            <value>
+                <fullName>Client Contacted</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Client Contacted</label>
+            </value>
+            <value>
+                <fullName>Converted</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Converted</label>
+            </value>
+            <value>
+                <fullName>New</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,67 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+                controller="TopWonDealsController" access="global">
+                
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="numberRecords" type="Integer" description="Numero de registros relacionados" />
+    <aura:attribute name="generalView" type="Boolean" default="true" description="Indica si esta en la pagina de detalle" />
+    <aura:attribute name="numberRecordsView" type="String" default="5"/>
+    <aura:attribute name="header" type="Boolean" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:navigation aura:id="nav" />
+    
+    <div class="slds-page-header customContainer slds-m-top_x-large customHeader">
+            <div class="slds-media">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-opportunity" title="Top Won Deals">
+                        <lightning:icon iconName="standard:reward" size="medium" alternativeText="Report"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p class="slds-text-body_small slds-line-height_reset">Top Won Deals</p>
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Top Won Deals">Top Won Deals ({!v.numberRecords})</h1>
+                </div>
+            </div>
+        </div>
+    
+    <lightning:layout multipleRows="true" class="slds-p-top_small slds-box customBox2">
+        <!-- <h1><strong>Top Won Deals</strong></h1><br/> --> 
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-align_absolute-center slds-p-top_small slds-p-right_small width95">
+            
+            <lightning:tabset selectedTabId="Last6Months" class=" ">
+                <lightning:tab class="customTabs" label="Last 6 Months" id="Last6Months">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:TopWonDealsComponent recordId="{!v.recordId}" period="6months" numberRecords="{!v.numberRecordsView}" header="{!v.header}"/>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Last 3 Months" id="Last3Months">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:TopWonDealsComponent recordId="{!v.recordId}" period="3months" numberRecords="{!v.numberRecordsView}" header="{!v.header}"/>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Last Month" id="LastMonth">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:TopWonDealsComponent recordId="{!v.recordId}" period="1month" numberRecords="{!v.numberRecordsView}" header="{!v.header}"/>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="All" id="All">
+                    <div class="slds-align_absolute-center mainWrapper">
+                        <c:TopWonDealsComponent recordId="{!v.recordId}" period="All" numberRecords="{!v.numberRecordsView}" header="{!v.header}"/>
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+            
+            
+            
+        </lightning:layoutItem>
+        
+    </lightning:layout>         
+    
+    <aura:if isTrue="{!v.generalView}">
+        <p class="customBox">
+            <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+        </p>
+    </aura:if>
+    
+</aura:component>

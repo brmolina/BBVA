@@ -1,0 +1,59 @@
+.THIS .srollWrap {
+	height:100%;
+	width:100%;
+}
+
+.THIS .customCenter {
+	margin-top:30px;
+	padding-top:10px;
+}
+
+.THIS .customDiv {
+	width:700px;
+	margin-bottom:40px;
+}
+
+.THIS.mobileCustomDivWrapper {
+	height: 90%;
+}
+
+.THIS .mobileCustomDiv {
+	height: 110%;
+}
+
+.THIS .mobileCustomDivNoData {
+	padding:15px;
+	text-align: center;
+	border:1px #CDCDCD solid;
+	border-radius:5px;
+}
+
+.THIS .mobileCustomP {
+	text-align: center;
+	margin-top:30px;
+	padding-top:10px;
+}
+
+.THIS .mobileCustomDiv2 {
+	width:700px;
+	margin-bottom:60px;
+}
+
+.THIS .sWrapTest {
+	height:100vh;
+	width:100vw;
+	padding-bottom: 250px;
+}
+
+.THIS .sWrapTestDesktop {
+	height:100%;
+	width:100%;
+}
+
+.THIS.outerScroller {
+	border-radius: 11px;
+}
+
+.THIS.innerScroller {
+	border-radius: 10px;
+}

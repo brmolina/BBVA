@@ -1,0 +1,10 @@
+<design:component>
+	<design:attribute name="owner" label="owner"/>
+  <design:attribute name="codVisit" label="codVisit" />
+  <design:attribute name="operation" label="operation" required="true"/>
+  <design:attribute name="codBBVAParticipant" label="codBBVAParticipant" />
+  <design:attribute name="visitMemberUser" label="visitMemberUser" />
+  <design:attribute name="endpoint" label="endpoint" />
+  <design:attribute name="error" label="error" />
+  <design:attribute name="isError" label="isError" />
+</design:component>

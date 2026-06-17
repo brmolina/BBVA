@@ -1,6 +1,99 @@
 <template>
     <template lwc:if={isDataReceived}>
-        <c-dmt_custom_tree_grid model-data={dataFromApex} columns={columns} filters={filters} search=true></c-dmt_custom_tree_grid>
+        <div class="main-container" style={containerStyle}>
+            <div class="header-filters-row">
+                <div class="header-actions">
+                    <div class="action-control">
+                        <lightning-button-group>
+                           <lightning-button label={closeApprovalButtonLabel} variant={buttonCloseApprovalVariant} onclick={handleToggleClickCloseApproval}></lightning-button>
+                            <lightning-button label="Close for review" variant={closeForReviewButtonVariant} onclick={handleClickCloseForReview}></lightning-button>
+                        </lightning-button-group>
+                    </div>
+                </div>
+
+                <div class="header-inputs">
+                    <div class="header-input header-input-search">
+                        <c-search-bar-datatable is-lwc="true" info-name={allFlatDataForSearch} ondatasearch={handleSearch}>
+                        </c-search-bar-datatable>
+                    </div>
+
+                    <div class="header-input header-input-date">
+                        <c-dmt_date_intervale_search records={allFlatDataForSearch} ondateselect={handleDateFilter}>
+                        </c-dmt_date_intervale_search>
+                    </div>
+
+
+                    <template for:each={filters} for:item="filter" for:index="index">
+                        <div class="header-input header-input-filter" key={filter.label}>
+                            <c-dmt_multi_select_combobox label={filter.label} name={filter.fieldName}
+                                options={filter.computedOptions} onchange={handlePicklistChange} data-index={index}>
+                            </c-dmt_multi_select_combobox>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="content-box" style="position: relative;">
+                <template lwc:if={isFiltering}>
+                    <div class="spinner-overlay">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <div class="custom-tabs">
+                    <ul class="slds-tabs_default__nav" role="tablist">
+                        <li class={inProgressTabClass} role="presentation" data-tab="inProgress"
+                            onclick={handleTabClick}>
+                            <a class="slds-tabs_default__link" role="tab">{labels.DMT_TaskInProgress}</a>
+                        </li>
+                        <li class={returnedTabClass} role="presentation" data-tab="returned" onclick={handleTabClick}>
+                            <a class="slds-tabs_default__link" role="tab">{labels.DMT_ReturnedToRequester}</a>
+                        </li>
+                        <li class={closedTabClass} role="presentation" data-tab="closed" onclick={handleTabClick}>
+                            <a class="slds-tabs_default__link" role="tab">{labels.DMT_ClosedLines_Opportunities}</a>
+                        </li>
+                    </ul>
+                    <div class={inProgressPanelClass}>
+                        <c-dmt_custom_tree_grid model-data={inProgressData} columns={columns} search="false"
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                        </c-dmt_custom_tree_grid>
+                    </div>
+                    <div class={returnedPanelClass}>
+                        <c-dmt_custom_tree_grid model-data={returnedData} columns={columns} search="false"
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                        </c-dmt_custom_tree_grid>
+                    </div>
+                    <div class={closedPanelClass}>
+                        <c-dmt_custom_tree_grid model-data={closedData} columns={columns} search="false"
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                        </c-dmt_custom_tree_grid>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <template lwc:if={isSelectionActive}>
+            <div style="height: 80px; width: 100%;"></div>
+        </template>
+        <template lwc:if={isSelectionActive}>
+            <div class="slds-docked-form-footer">
+                <lightning-button
+                    label="Cancel"
+                    onclick={handleCancelSelection}
+                    class="slds-m-right_small">
+                </lightning-button>
+                <lightning-button
+                    label="Apply"
+                    variant="brand"
+                    onclick={handleApplySelection}>
+                </lightning-button>
+            </div>
+        </template>
+        <template lwc:if={isModalOpen}>
+            <c-dmt_massive_task_closure_modal
+                selected-keys={selectedRecordsToClose}
+                close-for-review={isCloseForReviewMode}
+                onclose={handleCloseModal}
+                onapply={handleApplyClosure}>
+            </c-dmt_massive_task_closure_modal>
+        </template>
     </template>
     <template lwc:else>
         <lightning-spinner alternative-text="Loading"></lightning-spinner>

@@ -1,0 +1,11 @@
+<aura:component
+    implements="dwp_dbpn:DynamicFlowWizardStep_itf,flexipage:availableForAllPageTypes,force:hasRecordId,lightning:actionOverride,force:hasSObjectName,force:lightningQuickActionWithoutHeader"
+    controller="Buttons_Onboarding_Controller" access="global">
+
+  <aura:attribute name="recordId" type="Id" />
+  <aura:attribute name="recordTypeId" type="Id" />
+  <aura:registerEvent name="appEvent" type="c:AssetSalesEvent"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+</aura:component>

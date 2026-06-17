@@ -1,0 +1,69 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_AutoRetailBehaviorTable_Ctrl">
+
+    <!-- Attributes -->
+    <aura:attribute name="accHasAnalysisId" type="String" access="global"                   description="Display errors from FROM ratios WS"    />
+    <aura:attribute name="tableType"        type="String" access="global" default=""        description="1 -> New, 2 -> Semi-New"               />
+    <aura:attribute name="year1"            type="String" access="global" default=""        description="Input Year 1"                          />
+    <aura:attribute name="year2"            type="String" access="global" default=""        description="Input Year 2"                          />
+    <aura:attribute name="insert"           type="boolean" access="global" default="true"    description="String value to enable/disable insert" />
+    <aura:attribute name="edit"             type="boolean" access="global" default="true"    description="String value to enable/disable edit"   />
+    <aura:attribute name="delete"           type="boolean" access="global" default="true"    description="String value to enable/disable delete" />
+    <aura:attribute name="selectedRowId"    type="string" access="global" default=""        description="String value to enable/disable delete" />
+    <aura:attribute name="standardYear1Id" type="String" access="global"  default=""        description="variable for agencyName" />
+    <aura:attribute name="standardYear2Id" type="String" access="global"  default=""        description="variable for agencyName" />
+    <aura:attribute name="spinner"         type="Boolean" access="global" default="true"   description="variable for agencyName" />
+    <!-- Table Attributes -->
+    <aura:attribute name="data"    type="Object" access="global" description="Contains information to build the rows of the table"   />
+    <aura:attribute name="columns" type="List"   access="global" description="Contains information to build the columns of the table"/>
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:registerEvent name="RefreshEvent" type="c:Arc_Gen_AutoRetailTable_evt"/>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <div class="{!v.spinner == true ? '':'slds-hide'}">
+        <div class="slds-align_absolute-center slds-p-around_x-large">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+    <div class="{!v.spinner == false ? '':'slds-hide'}">
+        <div style="width: 100%;">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered slds-table_col-bordered  slds-no-row-hover">
+                        <thead style="background:RGB(250, 250, 248);">
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col" tabindex="-1" style="width: 30%; Color: #3E3E3C; font-size: 12px;">
+                                <div class="slds-truncate" title="Header" align="center"></div>
+                            </th>
+                            <th class="" scope="col" tabindex="-1" style="width: 20%; Color: #3E3E3C; font-size: 14px;">
+                                <div class="slds-truncate" title="{!$Label.c.Lc_arce_autoRetailTable_TotalUnits}" align="center">{!$Label.c.Lc_arce_autoRetailTable_TotalUnits}</div>
+                            </th>
+                            <th class="" scope="col" tabindex="-1" style="width: 20%; Color: #3E3E3C; font-size: 14px;">
+                                <div class="slds-truncate" title="{!$Label.c.Lc_arce_autoRetailTable_StockRotation}" align="center">{!$Label.c.Lc_arce_autoRetailTable_StockRotation}</div>
+                            </th>
+                            <th class="" scope="col" tabindex="-1" style="width: 30%; Color: #3E3E3C; font-size: 12px;">
+                                <div class="slds-truncate" title="" align="center"></div>
+                            </th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-grid_align-end table-width-complete">
+                <lightning:datatable
+                    aura:id="autoRetailTable"
+                    columns="{! v.columns }"
+                    data="{! v.data }"
+                    keyField="agencyName"
+                    resizeColumnDisabled = "true"
+                    hideCheckboxColumn="true"
+                    onrowaction="{!c.handleRowAction}"
+                />
+            </div>
+        </div>
+    </div>
+</aura:component>

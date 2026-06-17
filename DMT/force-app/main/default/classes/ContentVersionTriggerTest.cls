@@ -6,11 +6,15 @@ public with sharing class ContentVersionTriggerTest {
         //Datos necesarios
         DES_UtilTestClass utilTestClass = new DES_UtilTestClass();
         String profileTest = utilTestClass.createProfile();
-
+		
         User userTest1 = utilTestClass.createUser(profileTest);
         //userTest1.ProfileId = [SELECT Id, Name FROM Profile WHERE Name = 'Desktop Integration' LIMIT 1].Id;
         insert userTest1;
+        CIB_Bypass__c bypassTest = new CIB_Bypass__c();
+        bypassTest.ExtensionsAllowed__c = 'png|jpeg|jpg|gif|svg|pdf|docx|xlsx|pptx|doc|xls|ppt|html|json';
+        insert bypassTest;
         //CIB_User_Org__c userSettings = utilTestClass.createCustomSetting();
+        
         //insert userSettings;
         Account acc = utilTestClass.createClient();
         insert acc;
@@ -89,6 +93,10 @@ public with sharing class ContentVersionTriggerTest {
         User userTest1 = utilTestClass.createUser(profileTest);
         //userTest1.ProfileId = [SELECT Id, Name FROM Profile WHERE Name = 'Desktop Integration' LIMIT 1].Id;
         insert userTest1;
+        CIB_Bypass__c bypassTest = new CIB_Bypass__c();
+        bypassTest.ExtensionsAllowed__c = 'png|jpeg|jpg|gif|svg|pdf|docx|xlsx|pptx|doc|xls|ppt|html|json';
+        bypassTest.SetupOwnerId = userTest1.Id;
+        insert bypassTest;
         //CIB_User_Org__c userSettings = utilTestClass.createCustomSetting();
         //insert userSettings;
         Account acc = utilTestClass.createClient();

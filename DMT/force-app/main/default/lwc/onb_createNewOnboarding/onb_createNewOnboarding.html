@@ -1,0 +1,161 @@
+<template>
+    <lightning-modal-header>
+        <div class="slds-text-heading_medium">{header}</div>
+    </lightning-modal-header>
+
+    <lightning-modal-body>
+        <template lwc:if={isNewClient}>
+            <div class="slds-m-bottom_small">
+                <lightning-button-icon icon-name="utility:chevronleft" alternative-text={labels.BACK} variant="bare"
+                    onclick={handleBack}>
+                </lightning-button-icon>
+
+                <lightning-button label={labels.RETURN} variant="base" class="slds-m-left_x-small" onclick={handleBack}>
+                </lightning-button>
+            </div>
+        </template>
+
+        <!-- Client info -->
+        <section class="slds-box slds-theme_default slds-m-bottom_medium">
+            <div class="slds-media slds-media_center slds-m-bottom_small">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="utility:user" size="small"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-text-title_bold">{labels.CLIENT_INFO}</h2>
+                </div>
+            </div>
+
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="12" medium-device-size="3" class="slds-p-right_small">
+                    <div class="slds-form-element">
+                        <span class="slds-form-element__label">{labels.CLIENT_NAME}</span>
+
+                        <div class="slds-form-element__control">
+                            <template lwc:if={hasClientName}>
+                                <div class="slds-form-element__static onb-staticValue">
+                                    {clientName}
+                                </div>
+                            </template>
+
+                            <template lwc:else>
+                                <lightning-input
+                                    type="text"
+                                    variant="label-hidden"
+                                    value={clientNameAux}
+                                    onchange={handleClientNameChange}
+                                    class="onb-clientNameInput"
+                                    required>
+                                </lightning-input>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+
+                <lightning-layout-item size="12" medium-device-size="3" class="slds-p-right_small">
+                    <div class="slds-form-element">
+                        <span class="slds-form-element__label">{labels.LEI}</span>
+                        <div class="slds-form-element__control">
+                            <template lwc:if={hasValidClientLei}>
+                                <div class="slds-form-element__static onb-staticValue">
+                                    {clientLei}
+                                </div>
+                            </template>
+
+                            <template lwc:elseif={showLeiInput}>
+                                <lightning-input
+                                    type="text"
+                                    variant="label-hidden"
+                                    value={clientLeiAux}
+                                    onchange={handleClientLeiChange}
+                                    disabled={leiCheckbox}
+                                    class="onb-clientInput"
+                                    maxlength={leiMaxLength}
+                                    required={isLeiRequired}>
+                                </lightning-input>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="12" medium-device-size="3" class="slds-p-right_small">
+                    <div class="slds-form-element">
+                        <span class="slds-form-element__label">CIF</span>
+                        <div class="slds-form-element__control">
+                            <lightning-input
+                                type="text"
+                                variant="label-hidden"
+                                value={clientCifAux}
+                                onchange={handleClientCifChange}
+                                class="onb-clientInput"
+                                maxlength={cifMaxLength}
+                                required={isCifRequired}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </lightning-layout-item>
+
+                <template lwc:if={hasLeiPending}>
+                    <lightning-layout-item size="12" medium-device-size="3" class="onb-leiPendingCol">
+                        <div class="onb-leiPendingInline">
+                            <span class="onb-leiPendingInlineLabel slds-form-element__label">
+                                {labels.ONB_LEI_PENDING_CREATE}
+                            </span>
+
+                            <div class="onb-leiPendingToggle">
+                                <lightning-input
+                                    type="toggle"
+                                    variant="label-hidden"
+                                    checked={leiCheckbox}
+                                    onchange={handleLeiCheckboxChange}
+                                    message-toggle-active="Yes"
+                                    message-toggle-inactive="No">
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+
+            </lightning-layout>
+        </section>
+
+        <!-- Two cards with equal height on medium+ -->
+        <lightning-layout multiple-rows class="onb-two-col">
+            <!-- General Information block -->
+            <lightning-layout-item size="12" medium-device-size="6"
+                class="slds-p-right_small slds-m-bottom_medium onb-col">
+                <section class="slds-box slds-theme_default onb-cardFill">
+                    <c-onb_onboarding-form object-api-name={onboardingObjApiName} record-id={recordId}
+                        title={labels.GENERAL_INFORMATION} icon-name="utility:settings" field-names={sections.generalInformation.fields}
+                        field-custom-labels={sections.generalInformation.labels} field-rules={generalFieldRules} all-required
+                        handle-save-on-wrapper onvaluechange={handleDynamicChange}>
+                    </c-onb_onboarding-form>
+                </section>
+            </lightning-layout-item>
+
+            <!-- Request Details block -->
+            <lightning-layout-item size="12" medium-device-size="6" class="slds-m-bottom_medium onb-col">
+                <section class="slds-box slds-theme_default onb-cardFill">
+                    <c-onb_onboarding-form object-api-name={onboardingObjApiName} record-id={recordId}
+                        title={labels.REQUEST_DETAILS} icon-name="utility:description" field-names={sections.requestDetails.fields}
+                        field-custom-labels={sections.requestDetails.labels} field-rules={requestFieldRules} all-required
+                        handle-save-on-wrapper onvaluechange={handleDynamicChange}>
+                    </c-onb_onboarding-form>
+
+                </section>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-modal-body>
+
+    <template lwc:if={showFooter}>
+        <lightning-modal-footer>
+            <lightning-button label={labels.CANCEL} variant="neutral" onclick={handleCancel}>
+            </lightning-button>
+
+            <lightning-button class="slds-m-left_small" label={labels.CREATE} variant="brand" onclick={handleCreate}
+                disabled={isCreateButtonDisabled}>
+            </lightning-button>
+        </lightning-modal-footer>
+    </template>
+</template>

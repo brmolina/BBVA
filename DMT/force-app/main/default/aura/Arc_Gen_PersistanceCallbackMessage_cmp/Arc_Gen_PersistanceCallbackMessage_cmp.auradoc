@@ -1,0 +1,21 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_PersistanceCallbackMessage_cmp</p>
+        <p><b>DESCRIPTION: </b>Component that shows a message error if the callback persistance service returns an error</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>subscription = String : Object to suscribe the platform event</li>
+                <li>accHasAnalysisId : String : Analyzed client record</li>
+                <li>showModal : Boolean : control field to handle visibility</li>
+                <li>spinnerStatus : Boolean : Spinner load variable</li>
+                <li>modalErrorTitle : String : Error tile to show in the modal</li>
+                <li>modalErrorMessage : String : Error message to show in the modal</li>
+                <li>modalErrorSecondMessage : String : Error second message to show in the modal</li>
+                <li>updateQVCD : Event : Salesforce ID of the ARCE to resume</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_PersistanceCallbackMessage_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_PersistanceCallbackMessage_cmp" ref="c:Arc_Gen_PersistanceCallbackMessage_cmp" label="Sync service persistance call">
+    </aura:example>
+</aura:documentation>

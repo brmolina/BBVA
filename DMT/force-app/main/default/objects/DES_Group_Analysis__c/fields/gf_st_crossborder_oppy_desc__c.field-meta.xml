@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_st_crossborder_oppy_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Main Cross Border opportunities to focus on for the next weeks</inlineHelpText>
+    <label>Main Cross Border opportunities</label>
+    <length>3000</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

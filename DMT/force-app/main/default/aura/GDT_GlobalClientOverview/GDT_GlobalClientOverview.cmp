@@ -1,0 +1,8 @@
+<aura:component controller = "GDT_GlobalClientOverview_Controller" implements="force:lightningQuickAction,force:hasRecordId" access="global">
+	<aura:attribute name="recordId" type="String" />
+    <aura:attribute name="recordHasId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue = "{!not(empty(v.recordHasId))}">
+    	<c:GDT_ArceOverview recordId="{!v.recordHasId}"/>
+    </aura:if>
+</aura:component>

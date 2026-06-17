@@ -1,0 +1,68 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+  <aura:attribute name="data" type="Object" />
+  <aura:attribute name="firstData" type="Object" />
+  <aura:attribute name="columns" type="List" />
+  <aura:attribute name="errors" type="Object" default="[]"/>
+  <aura:attribute name="draftValues" type="Object" default="[]"/>
+  <aura:attribute name="disabledAdd" type="Boolean" default="false"/>
+  <aura:attribute name="isSpecialCond" type="Boolean" default="false"/>
+  <aura:attribute name="isToAdd" type="Boolean" default="false"/>
+  <aura:attribute name="isToDelete" type="Boolean" default="false"/>
+  <aura:attribute name="conditionWrp" type="String"/>
+  <aura:attribute name="catalog" type="String"/>
+  <aura:attribute name="otherTable" type="String"/>
+  <aura:attribute name="loaded" type="Boolean" default="false" />
+
+  <aura:registerEvent name="PRW_EditTableEvent" type="c:PRW_EditTableEvent"/>
+  <aura:registerEvent name="PRW_RevenuesEvent" type="c:PRW_RevenuesEvent"/>
+  <aura:registerEvent name="PRW_OtherTableEvent" type="c:PRW_OtherTableEvent"/>
+
+  <aura:handler event="c:PRW_ServiceCUCOEvt" action="{!c.update}"/>
+  <aura:handler name="productSelectContinueEvt" event="c:PRW_AddProductEvent" action="{!c.handleProductsSelectContinue}"  includeFacets="true" phase="bubble" />
+  <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+  <aura:handler event="c:PRW_ResponseEvent" action="{!c.handleResponseEvent}"/>
+  <aura:handler event="c:PRW_OtherTableEvent" action="{!c.handleOtherTableData}"/>
+
+  <aura:if isTrue="{!v.loaded}">
+    <aura:if isTrue="{!empty(v.data)}">
+	  	<div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+        <aura:if isTrue="{!v.isSpecialCond}">
+            {!$Label.c.PRW_NoSpecialProduct}
+          <aura:set attribute="else">
+            {!$Label.c.PRW_NoFlatProduct}
+          </aura:set>
+      </aura:if>
+      </div>
+	  	<aura:set attribute="else">
+        <div id="tableData" class="classTableCmp">
+          <lightning:datatable
+            class="table-test"
+            data="{!v.data}"
+            columns="{!v.columns}"
+            keyField="id"
+            hideCheckboxColumn="true"
+            errors="{!v.errors}"
+            draftValues="{!v.draftValues}"
+            oncellchange="{!c.handleCellEdition}"
+            onrowaction="{!c.handleRowAction}"
+            suppressBottomBar="true"
+          />
+        </div>
+      </aura:set>
+	  </aura:if>
+    <div class="slds-p-vertical_small">
+      <aura:if isTrue="{!v.isSpecialCond}">
+        <lightning:button label="{!$Label.c.PRW_AddSpecialCondition}" iconName="utility:add" iconPosition="left" onclick="{!c.handleAdd}" disabled="{!v.disabledAdd}"/>
+        <aura:set attribute="else">
+          <lightning:button label="{!$Label.c.PRW_AddFlatProduct}" iconName="utility:add" iconPosition="left" onclick="{!c.handleAdd}" disabled="{!v.disabledAdd}"/>
+        </aura:set>
+      </aura:if>
+    </div>
+    <aura:set attribute="else">
+      <div class="classSpinner slds-m-around_medium">
+        <lightning:spinner alternativeText="Loading" size="small"/>
+      </div>
+    </aura:set>
+  </aura:if>
+  {!v.body}
+</aura:component>

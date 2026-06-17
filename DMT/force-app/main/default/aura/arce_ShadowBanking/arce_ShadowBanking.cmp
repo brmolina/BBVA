@@ -1,0 +1,462 @@
+<aura:component access="global" controller="arce_ShadowBankingCtrl" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId,force:hasSObjectName">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="groupType" type="String" />
+    <aura:attribute name="isFinancial" type="Boolean" default="false" />
+    <aura:attribute name="isInsuranceType" type="Boolean" default="false" />
+    <aura:attribute name="isCorpoType" type="Boolean" default="false" />
+    <aura:attribute name="isFundType" type="Boolean" default="false" />
+    <aura:attribute name="isScraTab" type="Boolean" default="false" />
+    <aura:attribute name="checkfirstSB" type="Boolean" default="false" />
+    <aura:attribute name="financialFirstCB" type="String" default="" />
+    <aura:attribute name="isDoInit" type="Boolean" default="false" />
+
+    <aura:attribute name="bankActSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="bankOrInsuranceCompanySB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="isEUBankCorpoComb" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="isEUInsuranceCorpoComb" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="isInsuranceCorpoComb" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="regulatedFundSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="MMFOrAIFsSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="InstitutionsSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="insuranceSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="financialSecondCB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="flowSelectSB" type="String" default="----" /> <!-- Option -->
+    <aura:attribute name="commentSB" type="String" default="" />
+
+    <aura:attribute name="isShadowBanking" type="String" default="----" />
+
+    <aura:attribute name="typeShabdowBanking" type="String" />
+    <aura:attribute name="localClient" type="Object" />
+
+    <aura:attribute name="countryIsInList" type="Boolean" default="true" />
+    <aura:attribute name="countryIsInListInsurance" type="Boolean" default="true" />
+    <aura:attribute name="countryIsInListCorpo" type="Boolean" default="true" />
+    <aura:attribute name="bankActivityCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isInsuranceCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isEUInsuranceCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isEUBankCorpo" type="Boolean" default="true" />
+    <aura:attribute name="MMFOrAIFsFunds" type="Boolean" default="false" />
+    <aura:attribute name="isEdit" type="Boolean" default="false" />
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true" />
+
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container {
+            width:  100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .scroll-box {
+            flex: 0 1 auto; 
+            overflow: auto;
+        }
+        .labelComboBox {
+            padding-top: 20px;
+            font-size: 12px;
+            color: rgb(160, 160, 160);
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+    </aura:html>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="scroll-box">
+                <div class="slds-modal__header slds-theme_default">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Shadow Banking</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning:tabset>
+                        <lightning:tab label="Shadow Banking" id="one" onactive="{!c.handleTabSimulationSelected}" iconName="standard:calculated_insights">
+                            <div id="ArceInfo">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>Representative client name</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>Alpha code</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>Fic Code</p>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>{!v.localClient.Cib_Client__r.Name}</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>{!v.localClient.Alpha_code__c}</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>{!v.localClient.Cib_Client__r.DES_ID_Fiscal__c}</p>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>Institution type</p>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!v.isFundType}">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <p>Country of residence</p>
+                                        </div>
+                                    </aura:if> -->
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>Country of residence</p>
+                                    </div>
+                                    <aura:if isTrue="{!v.isFinancial}">
+                                        <div class="slds-col slds-size_1-of-3" style="display: flex; align-items: center; gap: 0.25rem;">
+                                            <p style="margin: 0;">Non SB Countries</p>
+                                            <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />
+                                        </div>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isInsuranceType}">
+                                        <div class="slds-col slds-size_1-of-3" style="display: flex; align-items: center; gap: 0.25rem;">
+                                            <p style="margin: 0;">Non SB Countries</p>
+                                            <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>{!v.typeShabdowBanking}</p>
+                                    </div>
+                                    <!-- <aura:if isTrue="{!v.isFundType}">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <p>{!v.localClient.g_residence_country_id__c}</p>
+                                        </div>
+                                    </aura:if> -->
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <p>{!v.localClient.g_residence_country_id__c}</p>
+                                    </div>
+                                    <aura:if isTrue="{!v.isFinancial}">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <aura:if isTrue="{!v.countryIsInList}">
+                                                <p>YES</p>
+                                                <aura:set attribute="else">
+                                                    <p>NO</p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isInsuranceType}">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <aura:if isTrue="{!v.countryIsInListInsurance}">
+                                                    <p>YES</p>
+                                                    <aura:set attribute="else">
+                                                        <p>NO</p>
+                                                    </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                            <!-- Flow selection section start --> 
+                            <div id="selectFlow">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__label">
+                                        <span>Select Counterparty Type:</span>
+                                    </div>
+                                    <div class="slds-form-element__control tightControl">
+                                        <div class="slds-select_container">
+                                            <lightning:select onchange="{!c.flowSelectChange}" name="flowSelection" aura:id="flowSelection" value="{!v.flowSelectSB}">
+                                                <option value="1">Banks</option>
+                                                <option value="2">Insurance</option>
+                                                <option value="3">NBFI - Non Banking Financial Institutions</option>
+                                                <option value="4">Funds</option>
+                                                <option value="----" disabled="true" selected="true">Please select an option</option>
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Flow selection section end --> 
+                            <div id="info">
+
+                                <!-- Financial (1) activity start -->
+                                <!-- <aura:if isTrue="{!v.isFinancial}">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <p>Country of residence</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            Non SB Countries
+                                            <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <p>{!v.localClient.g_residence_country_id__c}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3">
+                                            <aura:if isTrue="{!v.countryIsInList}">
+                                                <p>YES</p>
+                                                <aura:set attribute="else">
+                                                    <p>NO</p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </aura:if> -->
+                                <!-- Financial (1) activity end -->
+
+                                <!-- Insurance (2) activity start -->
+                                <!-- <aura:if isTrue="{!v.isInsuranceType}">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p>Country of residence</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            Non SB Countries
+                                            <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <p>{!v.localClient.g_residence_country_id__c}</p>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <aura:if isTrue="{!v.countryIsInListInsurance}">
+                                                <p>YES</p>
+                                                <aura:set attribute="else">
+                                                    <p>NO</p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </aura:if> -->
+                                <!-- Insurance (2) activity end -->
+
+                                <!-- Financial Corpo (3) activity start -->
+                                <aura:if isTrue="{!v.isCorpoType}">
+                                    <!-- <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-4">
+                                            <p>Country of residence</p>
+                                        </div>
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                                        <div class="slds-col slds-size_1-of-4">
+                                            <p>{!v.localClient.g_residence_country_id__c}</p>
+                                        </div>
+                                    </div> -->
+                                    <div id="Banking activites">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>Banking activites</span>
+                                                <lightning:helptext onclick="{!c.handleActivitiesList}" icon-name="utility:info_alt" content="Click here for see the activities list." class="customIcon" id="activitiesListId" />
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+                                                <lightning:select name="Banking activites" onchange="{!c.bankingActivitiesChanges}" aura:id="existingSubs" value="{!v.bankActSB}">
+                                                    <option value="YES">YES</option>
+                                                    <option value="NO">NO</option>
+                                                    <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                </lightning:select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <aura:if isTrue="{!v.bankActivityCorpo}">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>Consolidates within a bank?</span>
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+                                                    <lightning:select name="existingSubs" onchange="{!c.bankOrInsuranceCompanyChanges}" aura:id="existingSubs" value="{!v.bankOrInsuranceCompanySB}">
+                                                        <option value="YES">YES</option>
+                                                        <option value="NO">NO</option>
+                                                        <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                    </lightning:select>
+                                                </div>
+                                            </div>
+                                                
+                                        </div>
+                                        <aura:if isTrue="{!v.isEUBankCorpo}">
+                                            <div id="isEUBankCorpodiv">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__label">
+                                                        <span>Is the parent within the Non Shadow Banking countries list?</span>
+                                                        <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />                                                
+                                                    </div>
+                                                    <div class="slds-form-element__control tightControl">
+                                                        <div class="slds-select_container">
+                                                            <lightning:select  name="isEUBankCorpocombo" onchange="{!c.belongEU}" aura:id="isEUBankCorpocombo" value="{!v.isEUBankCorpoComb}">
+                                                                <option value="YES">YES</option>
+                                                                <option value="NO">NO</option>
+                                                                <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                            </lightning:select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </aura:if>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isInsuranceCorpo}">
+                                        <div id="isInsuranceCorpo">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__label">
+                                                    <span>Consolidates within an Insurance company?</span>
+                                                </div>
+                                                <div class="slds-form-element__control tightControl">
+                                                    <div class="slds-select_container">
+                                                        <lightning:select name="isInsuranceCorpo" onchange="{!c.isInsuranceOnChange}" aura:id="isInsuranceCorpo" value="{!v.isInsuranceCorpoComb}">
+                                                            <option value="YES">YES</option>
+                                                            <option value="NO">NO</option>
+                                                            <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                        </lightning:select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isEUInsuranceCorpo}">
+                                        <div id="isEUInsuranceCorpo">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__label">
+                                                    <span>Is the parent within the Non Shadow Banking countries list?</span>
+                                                <lightning:helptext onclick="{!c.handleseeList}" icon-name="utility:info_alt" content="Click here for see the countries list." class="customIcon" id="IngresoBrutoToolTip" />
+                                                </div>
+                                                <div class="slds-form-element__control tightControl">
+                                                    <div class="slds-select_container">
+                                                        <lightning:select name="isEUInsuranceCorpo"  onchange="{!c.handleisEUInsuranceCorpoComb}" aura:id="isEUInsuranceCorpo" value="{!v.isEUInsuranceCorpoComb}">
+                                                            <option value="YES">YES</option>
+                                                            <option value="NO">NO</option>
+                                                            <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                        </lightning:select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:if>
+                                </aura:if>
+                                <!-- Financial Corpo (3) activity end -->
+                                <!-- Fund (4) activity start -->
+                                <aura:if isTrue="{!v.isFundType}">
+                                    <div id="Banking activites">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>MMF or AIFs</span>
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+													<lightning:select name="Banking activites" onchange="{!c.MMFOrAIFChanges}" aura:id="existingSubs" value="{!v.MMFOrAIFsSB}">
+														<option value="YES">YES</option>
+                                                        <option value="NO">NO</option>
+                                                        <option value="----" disabled="true" selected="true">Please select an option</option>
+													</lightning:select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <aura:if isTrue="{!v.MMFOrAIFsFunds}">
+                                        <div id="comboboxSBAdj">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__label">
+                                                    <span>Regulated funds (UCIT/1940/AIFMD or equivalents) in the EU, US or equivalent geografies?</span>
+                                                </div>
+                                                <div class="slds-form-element__control tightControl">
+                                                    <div class="slds-select_container">
+                                                        <lightning:select onchange="{!c.regulatedFundsChanges}" name="existingSubs" aura:id="existingSubs" value="{!v.regulatedFundSB}">
+                                                            <option value="YES">YES</option>
+                                                            <option value="NO">NO</option>
+                                                            <option value="----" disabled="true" selected="true">Please select an option</option>
+                                                        </lightning:select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:if>
+                                </aura:if>
+                                <!-- Fund (4) activity end -->
+                            </div>
+                            <aura:if isTrue="{!v.countryIsInList}">
+                                <aura:set attribute="else">
+                                    <div id="InstitutionsSB">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>Consolidates within a EU group or in a group established in a third country with regulatory equivalence?</span>
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+													<lightning:select onchange="{!c.bankingchange}" name="existingSubs" aura:id="existingSubs" value="{!v.InstitutionsSB}">
+														<option value="YES">YES</option>
+                                                        <option value="NO">NO</option>
+                                                        <option value="----" disabled="true" selected="true">Please select an option</option>
+													</lightning:select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            <aura:if isTrue="{!v.countryIsInListInsurance}">
+                                <aura:set attribute="else">
+                                    <div id="InsuranceSBSelect">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>Are credit premiums (NPI business) >20 of the total premiums?</span>
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+													<lightning:select onchange="{!c.insuranceChanges}" name="existingSubs" aura:id="existingSubs" value="{!v.insuranceSB}">
+														<option value="YES">YES</option>
+                                                        <option value="NO">NO</option>
+                                                        <option value="----" disabled="true" selected="true">Please select an option</option>
+													</lightning:select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            <div id="comboboxSB">
+                                <strong>Shadow Banking</strong>
+                                <p>{!v.isShadowBanking}</p>
+                            </div>
+                            <div>
+                                <div>
+                                    Apply override?
+                                </div>
+                                <lightning:input type="checkbox" aura:id="checkboxTerminal" checked="{!v.checkfirstSB}" name="checkboxTerminal" onchange="{!c.handleFirstCheck}" />
+                            </div>
+                            <aura:if isTrue="{!v.checkfirstSB}">
+                                <div id="comboboxSBAdj">
+                                    <div class="slds-form-element">
+                                            <div class="slds-form-element__label">
+                                                <span>Shadow Banking (adjusted)</span>
+                                            </div>
+                                            <div class="slds-form-element__control tightControl">
+                                                <div class="slds-select_container">
+													<lightning:select onchange="{!c.SBAdjustChange}" name="existingSubs" aura:id="existingSubs" value="{!v.financialSecondCB}">
+														<option value="YES">YES</option>
+                                                        <option value="NO">NO</option>
+                                                        <option value="----" disabled="true" selected="true">Please select an option</option>
+													</lightning:select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </aura:if>
+                            <lightning:textarea aura:id="commentarioTxt" onchange="{!c.commentSbChange}" name="Comments" label="Comments" value="{!v.commentSB}" />
+                        </lightning:tab>
+                    </lightning:tabset>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral slds-float_left" onclick="{!c.handleOnCancel}" aria-label="Close">Close</button>
+                <aura:if isTrue="{!v.isScraTab}">
+                    <button class="slds-button slds-button_brand" aria-label="Calculate" onclick="{!c.handleCalculate}">Calculate</button>
+                </aura:if>
+                <aura:if isTrue="{!v.isEdit}">
+                    <button class="slds-button slds-button_brand" disabled="{!v.disableSubmitBtn}" aria-label="Validate" onclick="{!c.handleOnSave}">Validate</button>
+                </aura:if>
+            </div>
+        </div>
+        {!v.body}
+    </section>
+</aura:component>

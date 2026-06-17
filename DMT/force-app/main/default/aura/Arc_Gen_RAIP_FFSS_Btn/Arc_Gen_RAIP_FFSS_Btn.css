@@ -1,0 +1,13 @@
+.THIS .spinner-container {
+  min-height: 300px;
+}
+
+.THIS .slds-table th,
+.THIS .slds-table td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.THIS .modal-content {
+  overflow: initial;
+}

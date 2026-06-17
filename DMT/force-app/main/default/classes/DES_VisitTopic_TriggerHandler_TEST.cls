@@ -186,6 +186,8 @@ private class DES_VisitTopic_TriggerHandler_TEST {
             opps.add(opp2);
             insert opps;
 
+            utilTestClass.createCustomSettingByPass();
+
             final ContentVersion contentVersion = new ContentVersion(
               Title = 'Penguins',
               PathOnClient = 'Penguins.jpg',

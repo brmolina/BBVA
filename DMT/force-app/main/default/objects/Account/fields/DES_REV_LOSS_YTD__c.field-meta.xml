@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_REV_LOSS_YTD__c</fullName>
+    <label>REV LOSS YTD</label>
+    <summarizedField>AMH_Denorm_Account_Opportunity__c.DES_Opportunity_Potential_Revenue_Rollup__c</summarizedField>
+    <summaryFilterItems>
+        <field>AMH_Denorm_Account_Opportunity__c.DES_Opportunity_Stage_Rollup__c</field>
+        <operation>equals</operation>
+        <value>Closed Lost, Opportunity Missed</value>
+    </summaryFilterItems>
+    <summaryForeignKey>AMH_Denorm_Account_Opportunity__c.AMH_AccountId__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

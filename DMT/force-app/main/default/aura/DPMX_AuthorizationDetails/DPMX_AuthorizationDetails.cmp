@@ -1,0 +1,204 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="DPMX_AuthorizationDetails_ctrl">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="authType" type="String" />
+    <aura:attribute name="authTypeName" type="String" />
+    <aura:attribute name="authSolicitudeName" type="String" />
+
+    <aura:attribute name="authBai" type="String" />
+    <aura:attribute name="authCredit" type="String" />
+    <aura:attribute name="authDebit" type="String" />
+    <aura:attribute name="authInternational" type="String" />
+    <aura:attribute name="authProfitability" type="String" />
+    <aura:attribute name="authResult" type="String" />
+    <aura:attribute name="authFamily" type="String" default="---" />
+    <aura:attribute name="isGs" type="Boolean" default="false" />
+
+    <aura:attribute name="debitBase" type="String" />
+    <aura:attribute name="creditBase" type="String" />
+    <aura:attribute name="internationalBase" type="String" />
+    <aura:attribute name="rentaBase" type="String" />
+    <aura:attribute name="baiBase" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-box slds-box_small">
+        <div class="slds-page-header slds-m-bottom_x-large">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1> 
+                                        <span class="slds-page-header__title slds-truncate" title="Detalles de autorización">Detalles de autorización</span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <p>Dynamic pricing</p>
+            </div>
+            <div class="slds-col slds-size_2-of-2">
+                <p>Propietario</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_medium">
+            <div class="slds-col slds-size_1-of-2">
+                <p>{!v.authTypeName}</p>
+            </div>
+            <div class="slds-col slds-size_2-of-2">
+                <p>{!v.authSolicitudeName}</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <p>Producto</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <p>Adquiriente</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-2">
+                <p> ‎ </p>
+            </div>
+        </div>
+        <div>
+            <h1 class="slds-hyphenate">Propuesta por autorizar</h1>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Tasa">Tasa</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Familia">Familia</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Resultado">Resultado</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Débito">Débito</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Crédito">Crédito</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Internacional">Internacional</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Rentabilidad">Rentabilidad</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="BAI">BAI</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <td>
+                            <div class="slds-truncate">
+                                Tasa seleccionada
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authFamily}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authResult}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <aura:if isTrue="{!v.isGs}">
+                                    <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.authDebit}" currencyText="MXN" />
+                                    <aura:set attribute="else">
+                                        <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authDebit}" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authCredit}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.authInternational}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.authProfitability}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.authBai}" currencyText="MXN" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="slds-hint-parent">
+                        <td>
+                            <div class="slds-truncate">
+                                Tasa actual
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authFamily}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="REFERENCE" fieldValue="{!v.authResult}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <aura:if isTrue="{!v.isGs}">
+                                    <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.debitBase}" currencyText="MXN" />
+                                    <aura:set attribute="else">
+                                        <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.debitBase}" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.creditBase}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="PERCENTAGE" fieldValue="{!v.internationalBase}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.rentaBase}" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.baiBase}" currencyText="MXN" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</aura:component>

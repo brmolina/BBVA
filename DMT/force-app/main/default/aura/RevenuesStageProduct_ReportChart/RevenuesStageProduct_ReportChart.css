@@ -1,0 +1,90 @@
+.THIS .content{
+    border:1px #CDCDCD solid; 
+    border-radius:5px; 
+    margin:5px;
+    padding:20px 10px 10px 10px;
+}
+.THIS h1{
+    font-weight:bold; 
+    font-size:1.3em;
+}
+
+.THIS.customBox {
+	padding:30px 30px 50px 30px;
+}
+
+.THIS .customP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .customDiv {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS .customHref {
+	float:left;
+}
+
+.THIS .customSpan {
+	float:right;
+}
+
+.THIS .customSpan2 {
+	margin-right:10px;
+}
+
+.THIS.mobileCustomDiv {
+	padding:30px 30px 50px 30px;
+	height:100%;
+	width:100%
+}
+
+.THIS .mobileCustomP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .mobileCustomDiv2 {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS .mobileCustomA {
+	float:left;
+}
+
+.THIS .mobileCustomSpan {
+	float:right;
+}
+
+.THIS .mobileCustomSpan2 {
+	margin-right:10px;
+}
+
+.THIS .boxsection {
+  border-radius: 0.75rem;
+  border: 2px solid #e5e5e5;
+  background-color:#FFF;
+}
+
+.THIS .sectiontitle {
+  color: #03234d;
+}
+
+.THIS .radiusbutton {
+  --slds-c-button-radius-border: 25px;
+}
+
+.THIS .weight700 {
+  font-weight: 700;
+  color: #5c5c5c;
+}
+
+.THIS .badgenodata {
+  --slds-c-badge-color-background: #f3f3f3;
+  --slds-c-badge-radius-border: 4px;
+}

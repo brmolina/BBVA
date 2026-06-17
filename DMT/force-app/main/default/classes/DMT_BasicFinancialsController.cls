@@ -44,7 +44,7 @@ public with sharing class DMT_BasicFinancialsController {
 
                     FROM DMT_Opportunity_Client__c 
                     WHERE DMT_MDE_Opportunity__c =: recordId
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 
@@ -89,7 +89,7 @@ public with sharing class DMT_BasicFinancialsController {
                         Account.Net_Debt_EBITDA_Next_Year_2_number__c
                     FROM Opportunity 
                     WHERE Id =: recordId
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 }

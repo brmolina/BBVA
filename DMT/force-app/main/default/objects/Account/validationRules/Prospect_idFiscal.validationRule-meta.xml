@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_idFiscal</fullName>
+    <active>true</active>
+    <errorConditionFormula>RecordTypeId = &quot;0124H000000kIh7&quot; &amp;&amp; ISBLANK(DES_ID_Fiscal__c)</errorConditionFormula>
+    <errorDisplayField>DES_ID_Fiscal__c</errorDisplayField>
+    <errorMessage>You need to fill the Id Fiscal</errorMessage>
+</ValidationRule>

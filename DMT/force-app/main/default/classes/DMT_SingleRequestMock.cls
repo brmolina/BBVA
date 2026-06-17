@@ -6,7 +6,7 @@
  * @Description: Mock class for tests
  */
 @isTest
-public class DMT_SingleRequestMock implements HttpCalloutMock {
+public with sharing class DMT_SingleRequestMock implements HttpCalloutMock {
 
     protected Integer code;
     protected String status;

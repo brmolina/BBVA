@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Fill_Other_missed_reason</fullName>
+    <active>true</active>
+    <description>Si el campo Missed Reason tiene valor &quot;Texto Abierto&quot; debe cumplimentarse el campo &quot;Other Reason&quot;</description>
+    <errorConditionFormula>AND(
+ISPICKVAL( DES_Missed_reason__c,&apos;Texto Abierto&apos;),
+ISBLANK( DES_Other_missed_reason__c )
+)</errorConditionFormula>
+    <errorDisplayField>DES_Other_missed_reason__c</errorDisplayField>
+    <errorMessage>Sorry, you can&apos;t do this yet. To move forward in a opportunity, please make sure that you have filled out the following fields: Other missed reason</errorMessage>
+</ValidationRule>

@@ -1,0 +1,53 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" extends="c:prcBaseUtil" controller="PrcPriceMatrixBrowser_Ctrl">
+    <aura:attribute name="opportunityId" access="public" type="String" />
+    <aura:attribute name="responseData" access="public" type="PRC_PFS_Response" />
+
+    <aura:attribute name="selectedPrice" access="private" type="PRC_PFS_Scenario" />
+    <aura:attribute name="initPriceId" access="private" type="String" default="22"/>
+	<aura:attribute name="matrixOptions" access="private" type="List"/>
+
+	<aura:attribute name="selectedMatrix" access="private" type="String" />
+    <aura:attribute name="selectedMatrixAxis1" access="private" type="String" />
+    <aura:attribute name="selectedMatrixAxis2" access="private" type="String" />
+    <aura:attribute name="matrixColumns" access="private" type="Integer" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="onPriceSelected" event="c:prcPriceSelected" action="{!c.onPriceSelected}"/>
+
+    <aura:method name="savePrice" action="{!c.savePrice}" description="Save selected price from Matrix" access="public"/>
+    <aura:registerEvent name="closemodal" type="c:PRC_CloseModal" />
+
+    <div class="mycontainer" >
+        <div class="slds-m-bottom_small">
+        	<p>Select an option from the sensitivity map</p>
+        </div>
+        <div class="header">
+        	<lightning:radioGroup name="radioButtonMatrix" label="" options="{! v.matrixOptions }"
+                              value="{! v.selectedMatrix }" type="button" onchange="{! c.onMatrixSelected }" />
+        	<BR/>
+        </div>
+
+        <!-- div class="menu">Menu</div -->
+
+        <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-2">
+                <c:prcPriceTiles scenarios="{!v.responseData.data.engineWorksWith.scenarios}" selectedPriceId="{!v.initPriceId}" matrixColumns="{!v.matrixColumns}" matrixAxis1="{!v.selectedMatrixAxis1}" matrixAxis2="{!v.selectedMatrixAxis2}"/>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:PrcPriceDetailRight matrixColumns="{!v.matrixColumns}" price="{!v.selectedPrice}" operations="{!v.responseData.data.engineWorksWith.operations}"/>
+            </div>
+    	</div>
+
+<!--         Mejor utilizar las clases de salesforce
+        <div class="leftColumn">
+        </div>
+        <div class="rightColumn">
+        </div>
+-->
+        <div class="footer">
+            <c:PrcPriceDetailBottom price="{!v.selectedPrice}" />
+        </div>
+
+    </div>
+
+</aura:component>

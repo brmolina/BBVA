@@ -1,0 +1,27 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+
+    <template if:true={hasRows}>
+        <div class="tableWrapper">
+            <div class="tableHeader">
+                <div class="tableCell headerCell nameColumn">Commitment Name</div>
+                <div class="tableCell headerCell">Commitment Status</div>
+                <div class="tableCell headerCell">Country</div>
+                <div class="tableCell headerCell">Business Line</div>
+                <div class="tableCell headerCell">Estimated closing date</div>
+            </div>
+
+            <template for:each={rows} for:item="row">
+                <div key={row.id} class={row.rowClass} data-id={row.id} onclick={handleRowClick}>
+                    <div class="tableCell nameColumn">{row.name}</div>
+                    <div class="tableCell">{row.status}</div>
+                    <div class="tableCell">{row.country}</div>
+                    <div class="tableCell">{row.businessLine}</div>
+                    <div class="tableCell">{row.estimatedClosingDate}</div>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>

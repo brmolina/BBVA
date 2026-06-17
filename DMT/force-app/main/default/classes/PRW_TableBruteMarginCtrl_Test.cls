@@ -17,9 +17,9 @@ public with sharing class PRW_TableBruteMarginCtrl_Test {
   @testSetup
   static void setupTestData() {
     final List<Account> accounts = cuco.Test_Utils.createAccounts(3);
-    accounts.get(0).SER_CClient__c = 'DTestCuco1';
-    accounts.get(1).SER_CClient__c = 'DTestCuco2';
-    accounts.get(2).SER_CClient__c = 'DTestCuco3';
+    accounts.get(0).g_customer_id__c = 'DTestCuco1';
+    accounts.get(1).g_customer_id__c = 'DTestCuco2';
+    accounts.get(2).g_customer_id__c = 'DTestCuco3';
     insert accounts;
 
     final List<DES_Subsidiary_Group_Relation__c> lMatrix = new List<DES_Subsidiary_Group_Relation__c>();
@@ -58,10 +58,10 @@ public with sharing class PRW_TableBruteMarginCtrl_Test {
   **/
   @isTest
   static void gtDataMarginTest() {
-    final List<Account> listAccount = [SELECT id, SER_CClient__c from Account LIMIT 3];
+    final List<Account> listAccount = [SELECT id, g_customer_id__c from Account LIMIT 3];
     String laccountIds = '';
     for(Account acc : listAccount) {
-      laccountIds = laccountIds + acc.SER_CClient__c + '-';
+      laccountIds = laccountIds + acc.g_customer_id__c + '-';
     }
     laccountIds = laccountIds.removeEnd('-');
     final List<cuco__profitability_sheet__c> cuco = [select id, cuco__gf_profitability_sheet_id__c, cuco__gf_prftbly_sheet_end_date__c, cuco__gf_prftbly_sheet_start_date__c from cuco__profitability_sheet__c LIMIT 1];

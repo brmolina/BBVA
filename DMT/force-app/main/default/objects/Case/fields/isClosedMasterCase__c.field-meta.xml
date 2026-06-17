@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isClosedMasterCase__c</fullName>
+    <description>El registro estará a true siempre que tenga un padre y este esté cerrado, ya sea Parent Case o Master Case.</description>
+    <formula>if( SER_Is_Master_Case__c, ISPICKVAL(Status, &quot;Closed&quot;),
+  
+if (ISPICKVAL(SER_Master_Case__r.Status, &quot;Closed&quot;),True,ISPICKVAL(Parent.Status, &quot;Closed&quot;)
+))</formula>
+    <label>isClosedMasterCase</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

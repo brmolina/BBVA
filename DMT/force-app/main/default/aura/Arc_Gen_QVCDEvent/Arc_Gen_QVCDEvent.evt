@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to manage the permission value to edit from the component called Arc_Gen_TabSet_CMP">
+    <aura:attribute name="permission" type="Boolean" description="Permissions value to edit" />
+</aura:event>

@@ -15,6 +15,10 @@
         <value xsi:type="xsd:string">ARS</value>
     </values>
     <values>
+        <field>DES_DisableAARequest__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
         <field>NBC_Region__c</field>
         <value xsi:type="xsd:string">LATAM</value>
     </values>

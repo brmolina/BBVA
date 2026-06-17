@@ -24,10 +24,10 @@ public with sharing class PRW_RecordCompactCtrlTest {
     system.debug(instance);
     final DES_UtilTestClass util = new DES_UtilTestClass();
     final Account acc = util.createClient();
-    acc.SER_CClient__c = '008789761';
+    acc.g_customer_id__c = '008789761';
     insert acc;
     final String data = '[{"id":1,"product":"Electrónico emitido","id_prod":"dypri.electronic.issued","simulatedP":3},{"id":2,"product":"Oficina emitida","id_prod":"dypri.bank.office.issued","simulatedP":3}]';
-    final Map<String, Object> respuesta = PRW_RecordCompactCtrl.calculatePrice(acc.SER_CClient__c, data, null, false);
+    final Map<String, Object> respuesta = PRW_RecordCompactCtrl.calculatePrice(acc.g_customer_id__c, data, null, false);
     system.debug(respuesta.get('products'));
     final String wrResponse = (String)respuesta.get('products');
     system.debug(wrResponse);

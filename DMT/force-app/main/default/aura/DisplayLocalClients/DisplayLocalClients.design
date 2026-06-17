@@ -1,0 +1,10 @@
+<design:component >
+    <design:attribute name="globalClientID"         label="Global Client Id"     required="true"/>
+    <design:attribute name="countryOfProspect"      label="Country of Prospect"  required="true"/>
+    <design:attribute name="selectedLClientId"      label="Local Client Id"      required="false"/>
+    <design:attribute name="selectedLClientName"    label="Local Client Name"    required="false"/>
+    <design:attribute name="selectedLClientCode"    label="Local Client Code"    required="false"/>
+    <design:attribute name="selectedLClientEntity"  label="Local Client Entity"  required="false"/>
+    <design:attribute name="selectedLClientCountry" label="Local Client Country" required="false"/>
+    <design:attribute name="selectedLClientAlpha"   label="Local Client Alpha"   required="false"/>
+</design:component>

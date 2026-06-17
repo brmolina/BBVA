@@ -1,0 +1,44 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId"
+  controller="OnboardingPlatformProduct_ctrl" access="global">
+
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="canEdit" type="Boolean" default="false"/>
+  <aura:attribute name="editMode" type="Boolean" default="false"/>
+  <aura:attribute name="editTierMode" type="Boolean" default="false"/>
+  <aura:attribute name="saveMode" type="Boolean" default="false"/>
+  <aura:attribute name="saveTierMode" type="Boolean" default="false"/>
+  <aura:attribute name="disableButton" type="Boolean" default="false"/>
+  <aura:attribute name="secondaryRecord" type="String" />
+  <aura:attribute name="lProductIDs" type="List"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <aura:registerEvent name="refreshEvent" type="c:saveAssetTemplate"/>
+  <aura:registerEvent name="appEvent" type="c:AssetSalesEvent"/>
+  <aura:handler name="refreshEvent" event="c:AssetTemplateEvents" action="{!c.handleProductRefresh}" />
+  <aura:handler event="c:AssetSalesEvent" action="{!c.handleEvent}"/>
+  <aura:handler event="c:AssetAddProdEvent" action="{!c.handleEvent}"/>
+  <aura:handler event="c:AssetSalesEditEvent" action="{!c.handleEvent}"/>
+  <aura:handler event="c:AssetSalesTierEvent" action="{!c.handleTierEvent}"/>
+
+
+  <c:Asset_Form recordId="{!v.recordId}" saveMode="{!v.saveMode}" editMode="{!v.editMode}" />
+  <br/>
+
+  <aura:iteration items="{!v.lProductIDs}" var="item">
+    <c:SelectPlatformProduct assetProductID="{!item}" editMode="{!v.editMode}" saveMode="{!v.saveMode}" editTierMode="{!v.editTierMode}" saveTierMode="{!v.saveTierMode}"/>
+  </aura:iteration>
+
+  <div class="{!if(!v.editMode,'slds-hide','slds-docked-form-footer footerCustom')}">
+    <lightning:button label="Cancel" title="Cancel" onclick="{!c.cancelHandler}" disabled="{!v.disableButton}"/>
+    <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.saveAll}" disabled="{!v.disableButton}"/>
+  </div>
+  <div class="{!if(!v.editTierMode,'slds-hide','slds-docked-form-footer footerCustom')}">
+    <lightning:button label="Cancel" title="Cancel" onclick="{!c.cancelHandler}" disabled="{!v.disableButton}"/>
+    <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.saveTier}" disabled="{!v.disableButton}"/>
+  </div>
+
+  <div class="{!if(v.editMode,'slds-m-top_xx-large','slds-hide')}">
+  </div>
+
+</aura:component>

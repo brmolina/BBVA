@@ -25,20 +25,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               pubsubEvent = [];
               customEvent = [];
-               
-        firstRender6 = true;
-        @wire(getRecord , {recordId: "$recordId" , fields:"Opportunity.Id",optionalFields: $cmp.getWireOptionalFields(data.events[6])})
-          wiredRecord6({ error, data }){
-            if (this.objectApiName === 'Opportunity'){
-              if(data && this.firstRender6){
-                this.firstRender6 = false;
-                return;
-              }else{
-                this.recordChangeEventHandler(error,data,6)
-              }
-            }
-          }
-        
+              
               connectedCallback() {
                 super.connectedCallback();
                 this.setThemeClass(data);
@@ -51,9 +38,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L5r8YAC"
+                  " card-0koKE000000L7ZmYAK"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003or5X2AQ");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ1Y2AW");
                 
                 
               }
@@ -75,7 +62,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
         this.pubsubEvent[1] = {
-          [interpolateWithRegex(`reloadparent`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[5],5)
+          [interpolateWithRegex(`reloadparent`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[6],6)
         };
         this.pubsubChannel1 = interpolateWithRegex(`opportunityProductTemplate`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
@@ -104,6 +91,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName3,this.customEvent[3]);
 
           
+            this.customEventName4 = interpolateWithRegex(`reloadParent`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[4] = this.handleEventAction.bind(this, data.events[5],5);
+
+            this.template.addEventListener(this.customEventName4,this.customEvent[4]);
+
+          
               }
 
               unregisterEvents(){
@@ -117,6 +110,8 @@ pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
             this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
 
             this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
+
+            this.template.removeEventListener(this.customEventName4,this.customEvent[4]);
 
               }
             

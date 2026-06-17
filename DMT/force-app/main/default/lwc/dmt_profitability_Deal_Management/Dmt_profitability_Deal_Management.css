@@ -1,27 +1,4 @@
-.styleSpinner{
-    background-color: unset;
-    height: 2rem;
-    right: -7rem;
-}
-.headerStyle {
-    top: 17px;
-    position: relative;
-    display: flex;
-    width: 18rem;
-    height: 5rem;
-    align-items: center;
-    left: 16rem;
-}  
-.THIS .loading {
-    position: relative;
-    display: inline-block;
-    margin-left: 28px;
-    margin-top: 0px;
-    vertical-align: middle;
-    white-space: nowrap;
-}
-.fontStyleLoad {
-    position: relative;
-    right: 62px;
-    top: -16px;  
+.slds-button .slds-button_icon .slds-modal__close{
+
+    display: none;
 }

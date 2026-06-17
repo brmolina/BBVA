@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Event for Opportunity status changes, to fire refreshView event for the rest of components in the recordPage</description>
+    <eventType>HighVolume</eventType>
+    <label>Opportunity Status Change</label>
+    <pluralLabel>Opportunity Status Changes</pluralLabel>
+    <publishBehavior>PublishImmediately</publishBehavior>
+</CustomObject>

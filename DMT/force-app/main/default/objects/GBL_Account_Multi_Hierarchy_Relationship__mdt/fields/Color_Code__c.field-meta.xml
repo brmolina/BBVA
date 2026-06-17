@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Color_Code__c</fullName>
+    <description>2-digit Color code from D3.schema20</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Enter a 2-digit color code from D3.SchemaCategory20 (https://bl.ocks.org/pstuffa/3393ff2711a53975040077b7453781a9)</inlineHelpText>
+    <label>Color Code</label>
+    <precision>2</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

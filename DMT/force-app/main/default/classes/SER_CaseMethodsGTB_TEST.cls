@@ -60,11 +60,9 @@ private class SER_CaseMethodsGTB_TEST {
         newCase.Subtype__c                = 'ACCESO';
         newCase.SER_Type_EST__c           = 'Acceso - FINET';
         newCase.SER_Subtype_STE__c        = 'Url Equivocada';
-        newCase.SER_Type_GM__c            = 'Otros';
-        newCase.SER_Subtype_GM__c         = 'Otros';
         newCase.SER_Classification__c     = 'Consulta';
         newCase.SuppliedEmail             = 'testemailaddress@example.com';
-        newCase.SER_Business_Case_Type__c = SER_Constant.BUSINESS_GTB;
+        newCase.SER_Business_Case_Type__c = 'GTB';
         newCase.origin                    = 'Email GTB';
         newCase.data_incidence_date__c    = Date.valueOf('2018-03-13');
         newCase.ClosedDate                = Date.valueOf('2018-03-17');

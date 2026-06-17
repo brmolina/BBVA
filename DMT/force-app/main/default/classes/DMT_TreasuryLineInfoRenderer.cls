@@ -24,16 +24,16 @@ public with sharing class DMT_TreasuryLineInfoRenderer implements DMT_ViewRender
                 + '<tr>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>End Date:</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.changeDateFormat(data.line.End_Date__c) + '</td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Line Term:</strong></td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.Line_Term__c) + '</td>'
-                + '</tr>'
-                + '<tr>'
+                // + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Line Term:</strong></td>'
+                // + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.Line_Term__c) + '</td>'
+                // + '</tr>'
+                // + '<tr>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Currency:</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode) + '</td>'
-                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Office:</strong></td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.DMT_Oficina__c) + '</td>'
                 + '</tr>'
                 + '<tr>'
+                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Office:</strong></td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.DMT_Oficina__c) + '</td>'
                + '</tr>'
                 + '</table>'
                 + '</div>'
@@ -65,8 +65,8 @@ public with sharing class DMT_TreasuryLineInfoRenderer implements DMT_ViewRender
                 value.add(DMT_FormattingUtils.checkNull(data.line.Booking_Geography__c));
                 name.add('Start Date:');
                 value.add(DMT_FormattingUtils.changeDateFormat(data.line.Start_Date__c));
-                name.add('Line Term:');
-                value.add(DMT_FormattingUtils.checkNull(data.line.Line_Term__c));
+                // name.add('Line Term:');
+                // value.add(DMT_FormattingUtils.checkNull(data.line.Line_Term__c));
                 name.add('Name:');
                 value.add(data.line.Name);
                 name.add('Currency:');

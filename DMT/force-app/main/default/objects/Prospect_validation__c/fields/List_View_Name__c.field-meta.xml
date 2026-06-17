@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>List_View_Name__c</fullName>
+    <description>Contains the API Name of the list view which is filtered by Non client record type and is used in Non Client custom tab.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains the API Name of the list view which is filtered by Non client record type and is used in Non Client custom tab.</inlineHelpText>
+    <label>List View Name</label>
+    <length>100</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

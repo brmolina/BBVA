@@ -1,0 +1,73 @@
+<template>
+    <div class="slds-form-element slds-lookup" data-select="single">
+        <label class="slds-form-element__label" for="nonc-mobile-lookup">{label}</label>
+
+        <div class="slds-form-element__control">
+            <template if:true={hasSelectedRecord}>
+                <div class="slds-pill-container">
+                    <lightning-pill label={selectedRecordName} onremove={handleClearSelection}>
+                        <lightning-icon icon-name={iconName} size="x-small" slot="media"></lightning-icon>
+                    </lightning-pill>
+                </div>
+            </template>
+
+            <template if:false={hasSelectedRecord}>
+                <div class="slds-input-has-icon slds-input-has-icon_left-right">
+                    <lightning-icon
+                        icon-name="utility:search"
+                        size="x-small"
+                        alternative-text="Search"
+                        class="slds-input__icon slds-input__icon_left"
+                    ></lightning-icon>
+                    <lightning-icon
+                        icon-name={iconName}
+                        size="x-small"
+                        alternative-text="Record"
+                        class="slds-input__icon slds-input__icon_right"
+                    ></lightning-icon>
+                    <input
+                        id="nonc-mobile-lookup"
+                        type="text"
+                        class="slds-input lookup-search-input"
+                        placeholder="Search..."
+                        value={searchKeyword}
+                        oninput={handleSearchInput}
+                        onfocus={handleSearchFocus}
+                        onblur={handleBlur}
+                    />
+                </div>
+            </template>
+        </div>
+
+        <template if:true={isOpen}>
+            <div class="lookup-dropdown slds-dropdown slds-dropdown_fluid">
+                <template if:true={isLoading}>
+                    <div class="lookup-spinner">
+                        <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+                    </div>
+                </template>
+
+                <template if:false={isLoading}>
+                    <template if:true={message}>
+                        <div class="lookup-message">{message}</div>
+                    </template>
+
+                    <template if:false={message}>
+                        <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                            <template for:each={listOfSearchRecords} for:item="record">
+                                <c-n-o-n-c-custom-lookup-result-l-w-c
+                                    key={record.Id}
+                                    record={record}
+                                    icon-name={iconName}
+                                    onrecordselected={handleRecordSelect}
+                                ></c-n-o-n-c-custom-lookup-result-l-w-c>
+                            </template>
+                        </ul>
+                    </template>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>
+
+<!--CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER-->

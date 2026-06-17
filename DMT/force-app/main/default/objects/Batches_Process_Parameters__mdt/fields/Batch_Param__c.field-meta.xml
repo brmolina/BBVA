@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Batch_Param__c</fullName>
+    <description>Sirve para guardar un parámetro que sea necesario para el constructor del Batch. Si se envían varios seguidos por ejemplo en formato JSON la clase que los recoge (por ejemplo el schedulable) tendrá que hacer el parseo correspondiente.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Batch Param</label>
+    <length>50</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Oportunidad_Origen__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Oportunidad desde la que se genera el Compromiso</description>
+    <label>Parent Opportunity</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Opportunity.AccountId</field>
+            <operation>equals</operation>
+            <valueField>$Source.FCSC_Client__c</valueField>
+        </filterItems>
+        <filterItems>
+            <field>Opportunity.StageName</field>
+            <operation>notEqual</operation>
+            <value>Closed Won, Closed Lost, Opportunity Missed</value>
+        </filterItems>
+        <filterItems>
+            <field>Opportunity.disclosure_info_type__c</field>
+            <operation>notEqual</operation>
+            <value>Confidential information</value>
+        </filterItems>
+        <filterItems>
+            <field>Opportunity.disclosure_info_type__c</field>
+            <operation>notEqual</operation>
+            <value>Inside information (IP/MNPI)</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Opportunity</referenceTo>
+    <relationshipLabel>Commitments</relationshipLabel>
+    <relationshipName>FCSC_Commitments</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

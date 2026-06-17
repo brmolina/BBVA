@@ -1,0 +1,1863 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tier_desc__c</fullName>
+    <label>Tier/Position in banking pool</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Tier 1</fullName>
+                <default>false</default>
+                <label>Tier 1</label>
+            </value>
+            <value>
+                <fullName>Tier 2</fullName>
+                <default>false</default>
+                <label>Tier 2</label>
+            </value>
+            <value>
+                <fullName>Tier 3</fullName>
+                <default>false</default>
+                <label>Tier 3</label>
+            </value>
+            <value>
+                <fullName>Tier 4</fullName>
+                <default>false</default>
+                <label>Tier 4</label>
+            </value>
+            <value>
+                <fullName>Tier 5</fullName>
+                <default>false</default>
+                <label>Tier 5</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <label>N/A</label>
+            </value>
+            <value>
+                <fullName>#1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>#1</label>
+            </value>
+            <value>
+                <fullName>-</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>-</label>
+            </value>
+            <value>
+                <fullName>0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>0</label>
+            </value>
+            <value>
+                <fullName>0% cuota</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>0% cuota</label>
+            </value>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1</label>
+            </value>
+            <value>
+                <fullName>1 (44% cuota local)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1 (44% cuota local)</label>
+            </value>
+            <value>
+                <fullName>1 - Fibra Terrafina</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1 - Fibra Terrafina</label>
+            </value>
+            <value>
+                <fullName>1 or 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1 or 2</label>
+            </value>
+            <value>
+                <fullName>1/2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1/2</label>
+            </value>
+            <value>
+                <fullName>1/5 (Naturgy Mx)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1/5 (Naturgy Mx)</label>
+            </value>
+            <value>
+                <fullName>1/Agente Verde</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1/Agente Verde</label>
+            </value>
+            <value>
+                <fullName>1/CO-AGENTE VERDE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1/CO-AGENTE VERDE</label>
+            </value>
+            <value>
+                <fullName>10th</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>10th</label>
+            </value>
+            <value>
+                <fullName>125</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>125</label>
+            </value>
+            <value>
+                <fullName>13% SoW</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>13% SoW</label>
+            </value>
+            <value>
+                <fullName>1er</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1er</label>
+            </value>
+            <value>
+                <fullName>1er (38.7% cuota)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1er (38.7% cuota)</label>
+            </value>
+            <value>
+                <fullName>1er Banco (~95%)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1er Banco (~95%)</label>
+            </value>
+            <value>
+                <fullName>1er banco (28% part)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1er banco (28% part)</label>
+            </value>
+            <value>
+                <fullName>1st</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1st</label>
+            </value>
+            <value>
+                <fullName>1st Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1st Tier</label>
+            </value>
+            <value>
+                <fullName>1st Tier | JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1st Tier | JLA</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2</label>
+            </value>
+            <value>
+                <fullName>2-3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2-3</label>
+            </value>
+            <value>
+                <fullName>23% en RCF; 12% ABL</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>23% en RCF; 12% ABL</label>
+            </value>
+            <value>
+                <fullName>2; 30%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2; 30%</label>
+            </value>
+            <value>
+                <fullName>2do</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2do</label>
+            </value>
+            <value>
+                <fullName>2do (24% ago19)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2do (24% ago19)</label>
+            </value>
+            <value>
+                <fullName>2do (global)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2do (global)</label>
+            </value>
+            <value>
+                <fullName>2nd Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2nd Tier</label>
+            </value>
+            <value>
+                <fullName>2º</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2º</label>
+            </value>
+            <value>
+                <fullName>2º tras Caixa-Bankia</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2º tras Caixa-Bankia</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3</label>
+            </value>
+            <value>
+                <fullName>37/675, i.e. 5.9%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>37/675, i.e. 5.9%</label>
+            </value>
+            <value>
+                <fullName>3er (15% cuota)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3er (15% cuota)</label>
+            </value>
+            <value>
+                <fullName>3er (4.9% cuota)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3er (4.9% cuota)</label>
+            </value>
+            <value>
+                <fullName>3er lugar (13.9%)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3er lugar (13.9%)</label>
+            </value>
+            <value>
+                <fullName>3ero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3ero</label>
+            </value>
+            <value>
+                <fullName>3rd</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3rd</label>
+            </value>
+            <value>
+                <fullName>3rd Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3rd Tier</label>
+            </value>
+            <value>
+                <fullName>3ro</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3ro</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4</label>
+            </value>
+            <value>
+                <fullName>4 de 7 (Naturgy Mx)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4 de 7 (Naturgy Mx)</label>
+            </value>
+            <value>
+                <fullName>4 on this deal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4 on this deal</label>
+            </value>
+            <value>
+                <fullName>4,3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4,3</label>
+            </value>
+            <value>
+                <fullName>4,4%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4,4%</label>
+            </value>
+            <value>
+                <fullName>4,7%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4,7%</label>
+            </value>
+            <value>
+                <fullName>4,7% of credit lines</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4,7% of credit lines</label>
+            </value>
+            <value>
+                <fullName>4.4%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4.4%</label>
+            </value>
+            <value>
+                <fullName>4.5</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4.5</label>
+            </value>
+            <value>
+                <fullName>4.5%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4.5%</label>
+            </value>
+            <value>
+                <fullName>4.7%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4.7%</label>
+            </value>
+            <value>
+                <fullName>4th (14%)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4th (14%)</label>
+            </value>
+            <value>
+                <fullName>4to</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4to</label>
+            </value>
+            <value>
+                <fullName>4to banco</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4to banco</label>
+            </value>
+            <value>
+                <fullName>4to banco local</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4to banco local</label>
+            </value>
+            <value>
+                <fullName>4to banco: 14% cuota</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4to banco: 14% cuota</label>
+            </value>
+            <value>
+                <fullName>5</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>5</label>
+            </value>
+            <value>
+                <fullName>5to</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>5to</label>
+            </value>
+            <value>
+                <fullName>5to (3.95% cuota)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>5to (3.95% cuota)</label>
+            </value>
+            <value>
+                <fullName>6/15</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>6/15</label>
+            </value>
+            <value>
+                <fullName>Adm Agent Book Runne</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Adm Agent Book Runne</label>
+            </value>
+            <value>
+                <fullName>Admin Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Admin Agent</label>
+            </value>
+            <value>
+                <fullName>Admin Agent (Tier 4)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Admin Agent (Tier 4)</label>
+            </value>
+            <value>
+                <fullName>Admon Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Admon Agent</label>
+            </value>
+            <value>
+                <fullName>Ag.Admon y Garantías</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ag.Admon y Garantías</label>
+            </value>
+            <value>
+                <fullName>Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Agent</label>
+            </value>
+            <value>
+                <fullName>Agent and Bookrunner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Agent and Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Agente Admon</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Agente Admon</label>
+            </value>
+            <value>
+                <fullName>All banks equal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>All banks equal</label>
+            </value>
+            <value>
+                <fullName>All banks same level</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>All banks same level</label>
+            </value>
+            <value>
+                <fullName>Amdin Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Amdin Agent</label>
+            </value>
+            <value>
+                <fullName>BBVA is not relevant</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA is not relevant</label>
+            </value>
+            <value>
+                <fullName>Banco Principal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Banco Principal</label>
+            </value>
+            <value>
+                <fullName>Banco de Relacion</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Banco de Relacion</label>
+            </value>
+            <value>
+                <fullName>Banco de Relación</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Banco de Relación</label>
+            </value>
+            <value>
+                <fullName>Banco no. 1 de 10</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Banco no. 1 de 10</label>
+            </value>
+            <value>
+                <fullName>Bilateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral</label>
+            </value>
+            <value>
+                <fullName>Bilateral Facility</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral Facility</label>
+            </value>
+            <value>
+                <fullName>Bilateral Financing</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral Financing</label>
+            </value>
+            <value>
+                <fullName>Bilateral Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral Lender</label>
+            </value>
+            <value>
+                <fullName>Bilateral Line</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral Line</label>
+            </value>
+            <value>
+                <fullName>Bilateral Loan</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bilateral Loan</label>
+            </value>
+            <value>
+                <fullName>Bookrunner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Bookrunner &amp; MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bookrunner &amp; MLA</label>
+            </value>
+            <value>
+                <fullName>Bookrunner / MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bookrunner / MLA</label>
+            </value>
+            <value>
+                <fullName>Bookrunners</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bookrunners</label>
+            </value>
+            <value>
+                <fullName>Bronze | 0.00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bronze | 0.00%</label>
+            </value>
+            <value>
+                <fullName>CIB - Platinum</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CIB - Platinum</label>
+            </value>
+            <value>
+                <fullName>CIB GOLD</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CIB GOLD</label>
+            </value>
+            <value>
+                <fullName>CIB-Gold</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CIB-Gold</label>
+            </value>
+            <value>
+                <fullName>CIB-PLATINUM</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CIB-PLATINUM</label>
+            </value>
+            <value>
+                <fullName>Club Deal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Club Deal</label>
+            </value>
+            <value>
+                <fullName>Co-Doc / Tier 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Co-Doc / Tier 3</label>
+            </value>
+            <value>
+                <fullName>Cons. basis: TOP 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cons. basis: TOP 2</label>
+            </value>
+            <value>
+                <fullName>Coordinator,BKR &amp;MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Coordinator,BKR &amp;MLA</label>
+            </value>
+            <value>
+                <fullName>Core Bank Tier II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Core Bank Tier II</label>
+            </value>
+            <value>
+                <fullName>Cuota Banquero 6%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cuota Banquero 6%</label>
+            </value>
+            <value>
+                <fullName>Cuota Global: 16%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cuota Global: 16%</label>
+            </value>
+            <value>
+                <fullName>Cuota: 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cuota: 0%</label>
+            </value>
+            <value>
+                <fullName>Estructurador&amp;verde</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Estructurador&amp;verde</label>
+            </value>
+            <value>
+                <fullName>Estructurador/Verde</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Estructurador/Verde</label>
+            </value>
+            <value>
+                <fullName>FSE T1 / FMC T2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FSE T1 / FMC T2</label>
+            </value>
+            <value>
+                <fullName>FSE Tier1 FMC Tier2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FSE Tier1 FMC Tier2</label>
+            </value>
+            <value>
+                <fullName>Final tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Final tier</label>
+            </value>
+            <value>
+                <fullName>First position 37%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>First position 37%</label>
+            </value>
+            <value>
+                <fullName>Full uptier -Tier 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Full uptier -Tier 3</label>
+            </value>
+            <value>
+                <fullName>Gold | 14% (4to).</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 14% (4to).</label>
+            </value>
+            <value>
+                <fullName>Gold | 19.73% (3ro)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 19.73% (3ro)</label>
+            </value>
+            <value>
+                <fullName>Gold | 35.6% (2do).</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 35.6% (2do).</label>
+            </value>
+            <value>
+                <fullName>Gold | 4.1% (3er)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 4.1% (3er)</label>
+            </value>
+            <value>
+                <fullName>Gold | 7% (4to)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 7% (4to)</label>
+            </value>
+            <value>
+                <fullName>Gold | 96% (1ro)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold | 96% (1ro)</label>
+            </value>
+            <value>
+                <fullName>Gold-10.6% (4to)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gold-10.6% (4to)</label>
+            </value>
+            <value>
+                <fullName>Growth Platinium</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Growth Platinium</label>
+            </value>
+            <value>
+                <fullName>I</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>I</label>
+            </value>
+            <value>
+                <fullName>II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>II</label>
+            </value>
+            <value>
+                <fullName>III</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>III</label>
+            </value>
+            <value>
+                <fullName>IV</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>IV</label>
+            </value>
+            <value>
+                <fullName>Invite T2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Invite T2</label>
+            </value>
+            <value>
+                <fullName>Invite T3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Invite T3</label>
+            </value>
+            <value>
+                <fullName>JBR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>JBR</label>
+            </value>
+            <value>
+                <fullName>JLA / Tier I</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>JLA / Tier I</label>
+            </value>
+            <value>
+                <fullName>Joint BR&amp;Green Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Joint BR&amp;Green Agent</label>
+            </value>
+            <value>
+                <fullName>Joint Bookrunner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Joint Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Joint Bookrunners</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Joint Bookrunners</label>
+            </value>
+            <value>
+                <fullName>Joint Lead Arranger</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Joint Lead Arranger</label>
+            </value>
+            <value>
+                <fullName>Joint Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Joint Lender</label>
+            </value>
+            <value>
+                <fullName>Last</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Last</label>
+            </value>
+            <value>
+                <fullName>Lead Arranger</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lead Arranger</label>
+            </value>
+            <value>
+                <fullName>Lead Arranger &amp; BR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lead Arranger &amp; BR</label>
+            </value>
+            <value>
+                <fullName>Lead Arranger(Tier2)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lead Arranger(Tier2)</label>
+            </value>
+            <value>
+                <fullName>Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lender</label>
+            </value>
+            <value>
+                <fullName>Lenders</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lenders</label>
+            </value>
+            <value>
+                <fullName>MIC-Tier 2/UNE-Tier1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MIC-Tier 2/UNE-Tier1</label>
+            </value>
+            <value>
+                <fullName>MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MLA</label>
+            </value>
+            <value>
+                <fullName>MLA - Tier II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MLA - Tier II</label>
+            </value>
+            <value>
+                <fullName>MLA / Arranger</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MLA / Arranger</label>
+            </value>
+            <value>
+                <fullName>MLA /Sust. Coordtr</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MLA /Sust. Coordtr</label>
+            </value>
+            <value>
+                <fullName>MLA/BANCO AGENTE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MLA/BANCO AGENTE</label>
+            </value>
+            <value>
+                <fullName>Manager</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Manager</label>
+            </value>
+            <value>
+                <fullName>Mandated Lead Arrang</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Mandated Lead Arrang</label>
+            </value>
+            <value>
+                <fullName>Mid tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Mid tier</label>
+            </value>
+            <value>
+                <fullName>N.A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N.A</label>
+            </value>
+            <value>
+                <fullName>N.A.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N.A.</label>
+            </value>
+            <value>
+                <fullName>N/A Bilateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A Bilateral</label>
+            </value>
+            <value>
+                <fullName>N/A Billateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A Billateral</label>
+            </value>
+            <value>
+                <fullName>N/A Club Deal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A Club Deal</label>
+            </value>
+            <value>
+                <fullName>N/A es Bilateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A es Bilateral</label>
+            </value>
+            <value>
+                <fullName>NA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>NA</label>
+            </value>
+            <value>
+                <fullName>NA / Bilateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>NA / Bilateral</label>
+            </value>
+            <value>
+                <fullName>Natixis/BBVA club</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Natixis/BBVA club</label>
+            </value>
+            <value>
+                <fullName>New Client</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New Client</label>
+            </value>
+            <value>
+                <fullName>New Invite Tier 4</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New Invite Tier 4</label>
+            </value>
+            <value>
+                <fullName>New Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New Lender</label>
+            </value>
+            <value>
+                <fullName>New entry Tier 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New entry Tier 3</label>
+            </value>
+            <value>
+                <fullName>New lender to Ardian</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New lender to Ardian</label>
+            </value>
+            <value>
+                <fullName>No Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No Tier</label>
+            </value>
+            <value>
+                <fullName>No change</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No change</label>
+            </value>
+            <value>
+                <fullName>No change as toptier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No change as toptier</label>
+            </value>
+            <value>
+                <fullName>No current exposure</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No current exposure</label>
+            </value>
+            <value>
+                <fullName>No tier division</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No tier division</label>
+            </value>
+            <value>
+                <fullName>No tiering exp.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No tiering exp.</label>
+            </value>
+            <value>
+                <fullName>None</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>None</label>
+            </value>
+            <value>
+                <fullName>Not Applicable</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Not Applicable</label>
+            </value>
+            <value>
+                <fullName>Not Defined | 47%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Not Defined | 47%</label>
+            </value>
+            <value>
+                <fullName>Not defined</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Not defined</label>
+            </value>
+            <value>
+                <fullName>Not defined/49% 1st.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Not defined/49% 1st.</label>
+            </value>
+            <value>
+                <fullName>Participant</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Participant</label>
+            </value>
+            <value>
+                <fullName>Participant/Tier III</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Participant/Tier III</label>
+            </value>
+            <value>
+                <fullName>Platinum</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum</label>
+            </value>
+            <value>
+                <fullName>Platinum 0.10% (4to)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 0.10% (4to)</label>
+            </value>
+            <value>
+                <fullName>Platinum 0.75% (6to)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 0.75% (6to)</label>
+            </value>
+            <value>
+                <fullName>Platinum 12.7% (2do)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 12.7% (2do)</label>
+            </value>
+            <value>
+                <fullName>Platinum 5.84% (4to)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 5.84% (4to)</label>
+            </value>
+            <value>
+                <fullName>Platinum 5.84%-4to</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 5.84%-4to</label>
+            </value>
+            <value>
+                <fullName>Platinum 80.6% (1ro)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum 80.6% (1ro)</label>
+            </value>
+            <value>
+                <fullName>Platinum | 11%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum | 11%</label>
+            </value>
+            <value>
+                <fullName>Platinum | 16.8% 3er</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum | 16.8% 3er</label>
+            </value>
+            <value>
+                <fullName>Platinum | 4to local</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum | 4to local</label>
+            </value>
+            <value>
+                <fullName>Platinum-4.18% (3ro)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum-4.18% (3ro)</label>
+            </value>
+            <value>
+                <fullName>Platinum/ 68% (1ro)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum/ 68% (1ro)</label>
+            </value>
+            <value>
+                <fullName>Platinum/4° (3.09%)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Platinum/4° (3.09%)</label>
+            </value>
+            <value>
+                <fullName>Prospect</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Prospect</label>
+            </value>
+            <value>
+                <fullName>Prospect client</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Prospect client</label>
+            </value>
+            <value>
+                <fullName>RCF: T3 l SBLC: T2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RCF: T3 l SBLC: T2</label>
+            </value>
+            <value>
+                <fullName>RCF: T3 | SBLC: T2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RCF: T3 | SBLC: T2</label>
+            </value>
+            <value>
+                <fullName>SMLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SMLA</label>
+            </value>
+            <value>
+                <fullName>Second Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Second Tier</label>
+            </value>
+            <value>
+                <fullName>Senior Co-Manager</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Senior Co-Manager</label>
+            </value>
+            <value>
+                <fullName>Similar to Tier 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Similar to Tier 3</label>
+            </value>
+            <value>
+                <fullName>Similar to Tier III</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Similar to Tier III</label>
+            </value>
+            <value>
+                <fullName>Sin deuda bancaria</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sin deuda bancaria</label>
+            </value>
+            <value>
+                <fullName>Sin posición</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sin posición</label>
+            </value>
+            <value>
+                <fullName>Single tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Single tier</label>
+            </value>
+            <value>
+                <fullName>Sole Arranger Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole Arranger Lender</label>
+            </value>
+            <value>
+                <fullName>Sole Arranger/Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole Arranger/Lender</label>
+            </value>
+            <value>
+                <fullName>Sole Bookrunner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Sole Bookrunner LA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole Bookrunner LA</label>
+            </value>
+            <value>
+                <fullName>Sole LA &amp; BR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole LA &amp; BR</label>
+            </value>
+            <value>
+                <fullName>Sole Lead Arranger</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole Lead Arranger</label>
+            </value>
+            <value>
+                <fullName>Sole/Arranger Lender</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sole/Arranger Lender</label>
+            </value>
+            <value>
+                <fullName>Sr. Co-Mgr / Tier II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sr. Co-Mgr / Tier II</label>
+            </value>
+            <value>
+                <fullName>Structuring Bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Structuring Bank</label>
+            </value>
+            <value>
+                <fullName>Sust and Admin Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sust and Admin Agent</label>
+            </value>
+            <value>
+                <fullName>T1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T1</label>
+            </value>
+            <value>
+                <fullName>T2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T2</label>
+            </value>
+            <value>
+                <fullName>T2/3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T2/3</label>
+            </value>
+            <value>
+                <fullName>T4</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T4</label>
+            </value>
+            <value>
+                <fullName>T5; Invite at T3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T5; Invite at T3</label>
+            </value>
+            <value>
+                <fullName>T6, invite T3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>T6, invite T3</label>
+            </value>
+            <value>
+                <fullName>TBD</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBD</label>
+            </value>
+            <value>
+                <fullName>TIER 1-TIER 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER 1-TIER 2</label>
+            </value>
+            <value>
+                <fullName>TIER 2-3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER 2-3</label>
+            </value>
+            <value>
+                <fullName>TIER 2-TIER 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER 2-TIER 3</label>
+            </value>
+            <value>
+                <fullName>TIER I</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER I</label>
+            </value>
+            <value>
+                <fullName>TIER II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER II</label>
+            </value>
+            <value>
+                <fullName>TIER III</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER III</label>
+            </value>
+            <value>
+                <fullName>TIER1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIER1</label>
+            </value>
+            <value>
+                <fullName>TOP 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOP 1</label>
+            </value>
+            <value>
+                <fullName>TOP 10</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOP 10</label>
+            </value>
+            <value>
+                <fullName>TOP 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOP 2</label>
+            </value>
+            <value>
+                <fullName>TOP 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOP 3</label>
+            </value>
+            <value>
+                <fullName>TOP 5</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOP 5</label>
+            </value>
+            <value>
+                <fullName>Tercer Banco</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tercer Banco</label>
+            </value>
+            <value>
+                <fullName>Tier  2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier  2</label>
+            </value>
+            <value>
+                <fullName>Tier 1 (10 banks)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 (10 banks)</label>
+            </value>
+            <value>
+                <fullName>Tier 1 (47% deuda)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 (47% deuda)</label>
+            </value>
+            <value>
+                <fullName>Tier 1 - CLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 - CLA</label>
+            </value>
+            <value>
+                <fullName>Tier 1 - MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 - MLA</label>
+            </value>
+            <value>
+                <fullName>Tier 1 / Bookrunner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 / Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Tier 1 / JBR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 / JBR</label>
+            </value>
+            <value>
+                <fullName>Tier 1 // Tier 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 // Tier 2</label>
+            </value>
+            <value>
+                <fullName>Tier 1 AF Tier 2 RCF</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 AF Tier 2 RCF</label>
+            </value>
+            <value>
+                <fullName>Tier 1 Commitment</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 Commitment</label>
+            </value>
+            <value>
+                <fullName>Tier 1 EUR195,4mill</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 EUR195,4mill</label>
+            </value>
+            <value>
+                <fullName>Tier 1 bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 bank</label>
+            </value>
+            <value>
+                <fullName>Tier 1 for all banks</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1 for all banks</label>
+            </value>
+            <value>
+                <fullName>Tier 1-2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1-2</label>
+            </value>
+            <value>
+                <fullName>Tier 1. Sole Coord.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1. Sole Coord.</label>
+            </value>
+            <value>
+                <fullName>Tier 1.5 (see below)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1.5 (see below)</label>
+            </value>
+            <value>
+                <fullName>Tier 1/ Tier 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1/ Tier 1</label>
+            </value>
+            <value>
+                <fullName>Tier 1A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1A</label>
+            </value>
+            <value>
+                <fullName>Tier 1B</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 1B</label>
+            </value>
+            <value>
+                <fullName>Tier 2  and Tier 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2  and Tier 1</label>
+            </value>
+            <value>
+                <fullName>Tier 2 - $50.0 Mn</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 - $50.0 Mn</label>
+            </value>
+            <value>
+                <fullName>Tier 2 - Syndicated</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 - Syndicated</label>
+            </value>
+            <value>
+                <fullName>Tier 2 / MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 / MLA</label>
+            </value>
+            <value>
+                <fullName>Tier 2 Passive JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 Passive JLA</label>
+            </value>
+            <value>
+                <fullName>Tier 2 Positioning</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 Positioning</label>
+            </value>
+            <value>
+                <fullName>Tier 2 of 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 2 of 3</label>
+            </value>
+            <value>
+                <fullName>Tier 3 (Bridge)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3 (Bridge)</label>
+            </value>
+            <value>
+                <fullName>Tier 3 (LA)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3 (LA)</label>
+            </value>
+            <value>
+                <fullName>Tier 3 (globally)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3 (globally)</label>
+            </value>
+            <value>
+                <fullName>Tier 3 of 4</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3 of 4</label>
+            </value>
+            <value>
+                <fullName>Tier 3 to Tier 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3 to Tier 2</label>
+            </value>
+            <value>
+                <fullName>Tier 3/ Manager</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 3/ Manager</label>
+            </value>
+            <value>
+                <fullName>Tier 5 of 5</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier 5 of 5</label>
+            </value>
+            <value>
+                <fullName>Tier I / II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I / II</label>
+            </value>
+            <value>
+                <fullName>Tier I / JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I / JLA</label>
+            </value>
+            <value>
+                <fullName>Tier I / MLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I / MLA</label>
+            </value>
+            <value>
+                <fullName>Tier I / Tier II</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I / Tier II</label>
+            </value>
+            <value>
+                <fullName>Tier I /Co-Doc Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I /Co-Doc Agent</label>
+            </value>
+            <value>
+                <fullName>Tier I JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I JLA</label>
+            </value>
+            <value>
+                <fullName>Tier I Lender &amp; JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I Lender &amp; JLA</label>
+            </value>
+            <value>
+                <fullName>Tier I | JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I | JLA</label>
+            </value>
+            <value>
+                <fullName>Tier I/JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier I/JLA</label>
+            </value>
+            <value>
+                <fullName>Tier II / Co-Doc</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier II / Co-Doc</label>
+            </value>
+            <value>
+                <fullName>Tier II / JLA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier II / JLA</label>
+            </value>
+            <value>
+                <fullName>Tier II-Post(TierI )</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier II-Post(TierI )</label>
+            </value>
+            <value>
+                <fullName>Tier II/ top 10</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier II/ top 10</label>
+            </value>
+            <value>
+                <fullName>Tier II/Co-Doc Agent</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier II/Co-Doc Agent</label>
+            </value>
+            <value>
+                <fullName>Tier III Current</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier III Current</label>
+            </value>
+            <value>
+                <fullName>Tier III Participant</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier III Participant</label>
+            </value>
+            <value>
+                <fullName>Tier IV</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier IV</label>
+            </value>
+            <value>
+                <fullName>Tier V</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier V</label>
+            </value>
+            <value>
+                <fullName>Tier VI</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier VI</label>
+            </value>
+            <value>
+                <fullName>Tier-1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier-1</label>
+            </value>
+            <value>
+                <fullName>Tier-1 bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier-1 bank</label>
+            </value>
+            <value>
+                <fullName>Tier-2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier-2</label>
+            </value>
+            <value>
+                <fullName>Tier1/ Top 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier1/ Top 3</label>
+            </value>
+            <value>
+                <fullName>Tier1/Bilateral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier1/Bilateral</label>
+            </value>
+            <value>
+                <fullName>Tier2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tier2</label>
+            </value>
+            <value>
+                <fullName>Tiering TBD $100 Mn</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tiering TBD $100 Mn</label>
+            </value>
+            <value>
+                <fullName>Top</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top</label>
+            </value>
+            <value>
+                <fullName>Top 4</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top 4</label>
+            </value>
+            <value>
+                <fullName>Top Tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top Tier</label>
+            </value>
+            <value>
+                <fullName>Top Tier Bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top Tier Bank</label>
+            </value>
+            <value>
+                <fullName>Top bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top bank</label>
+            </value>
+            <value>
+                <fullName>Top tier to borrower</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Top tier to borrower</label>
+            </value>
+            <value>
+                <fullName>UPTIER BANK 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>UPTIER BANK 1</label>
+            </value>
+            <value>
+                <fullName>Ultimo tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ultimo tier</label>
+            </value>
+            <value>
+                <fullName>Upper Tier 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Upper Tier 2</label>
+            </value>
+            <value>
+                <fullName>Uptier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Uptier</label>
+            </value>
+            <value>
+                <fullName>We&apos;re not in pool</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>We&apos;re not in pool</label>
+            </value>
+            <value>
+                <fullName>all same tier</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>all same tier</label>
+            </value>
+            <value>
+                <fullName>bank #2 (Peru)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>bank #2 (Peru)</label>
+            </value>
+            <value>
+                <fullName>n,a,</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>n,a,</label>
+            </value>
+            <value>
+                <fullName>n/a as new client</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>n/a as new client</label>
+            </value>
+            <value>
+                <fullName>n/a: not a main bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>n/a: not a main bank</label>
+            </value>
+            <value>
+                <fullName>tier 1 - club deal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>tier 1 - club deal</label>
+            </value>
+            <value>
+                <fullName>top 40</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>top 40</label>
+            </value>
+            <value>
+                <fullName>unknown</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>unknown</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asset_Contact_User_equal__c</fullName>
+    <description>Evaluate to TRUE an Asset Class from the User Logged is equal to one Asset Class from the User.</description>
+    <formula>OR(
+AND( INCLUDES(  Asset_Class__c  , &quot;FI&quot;) ,
+INCLUDES(  $User.Asset_Class__c  , &quot;FI&quot;)
+),
+
+AND( INCLUDES( Asset_Class__c , &quot;FX&quot;) ,
+INCLUDES( $User.Asset_Class__c , &quot;FX&quot;)
+),
+
+AND( INCLUDES( Asset_Class__c , &quot;Cash Equity&quot;) ,
+INCLUDES( $User.Asset_Class__c , &quot;EQ&quot;)
+)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Asset Contact&amp;User equal</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

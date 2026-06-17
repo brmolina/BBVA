@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lost_Deal_Reason__c</fullName>
+    <label>Lost Deal Reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>StageName</controllingField>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Bank Credit Commitment</fullName>
+                <default>false</default>
+                <label>Bank Credit Commitment</label>
+            </value>
+            <value>
+                <fullName>Client not interested</fullName>
+                <default>false</default>
+                <label>Client not interested</label>
+            </value>
+            <value>
+                <fullName>Deal failed</fullName>
+                <default>false</default>
+                <label>Deal failed</label>
+            </value>
+            <value>
+                <fullName>Limits not approved</fullName>
+                <default>false</default>
+                <label>Limits not approved</label>
+            </value>
+            <value>
+                <fullName>Local knowledge/presence</fullName>
+                <default>false</default>
+                <label>Local knowledge/presence</label>
+            </value>
+            <value>
+                <fullName>Missed deadline</fullName>
+                <default>false</default>
+                <label>Missed deadline</label>
+            </value>
+            <value>
+                <fullName>Pricing</fullName>
+                <default>false</default>
+                <label>Pricing</label>
+            </value>
+            <value>
+                <fullName>Product capabilities</fullName>
+                <default>false</default>
+                <label>Product capabilities</label>
+            </value>
+            <value>
+                <fullName>Rating BBVA</fullName>
+                <default>false</default>
+                <label>Rating BBVA</label>
+            </value>
+            <value>
+                <fullName>Restrictions/Covenants</fullName>
+                <default>false</default>
+                <label>Restrictions/Covenants</label>
+            </value>
+            <value>
+                <fullName>Rotation of banks</fullName>
+                <default>false</default>
+                <label>Rotation of banks</label>
+            </value>
+            <value>
+                <fullName>Service level</fullName>
+                <default>false</default>
+                <label>Service level</label>
+            </value>
+            <value>
+                <fullName>Tenors not approved</fullName>
+                <default>false</default>
+                <label>Tenors not approved</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

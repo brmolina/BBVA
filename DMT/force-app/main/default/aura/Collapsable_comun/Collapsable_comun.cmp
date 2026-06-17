@@ -1,0 +1,29 @@
+<aura:component extensible="true" abstract="true">
+	<aura:attribute name="isCollapsed" type="boolean" default="false"/>
+	<aura:attribute name="sectionTitle" type="String" default="Cambiar"/>
+	<aura:attribute name="slds-hide" type="boolean" default="true"/>
+	<aura:attribute name="styleSection" type="String" default="padding-left:0px !important;" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<div class="slds-hide" aura:id="slds-hide">
+		<div class="contdivProds">
+			<div class="slds-section-title--divider slds-media" style="{!v.styleSection}" >
+				<ui:button press="{!c.hideMe}" class="removeborder slds-button--inverse  slds-section__title titleSpan slds-button--icon ">
+					<div class="slds-grid slds-wrap " style="width:100%">
+						<div class="slds-p-horizontal--small slds-size--1-of-16" >
+							<div class="{!(v.isCollapsed eq true)?' rotate icon-fallback-text  spin forceIcon sectionChevronIcon':' rotate icon-fallback-text  spin forceIcon'}" aria-hidden="true"  data-aura-rendered-by="716:1546;a"  data-icon="" data-key="chevrondown" data-aura-class="forceIcon">
+								<lightning:icon class="slds-show" iconName="utility:chevrondown" size="xx-small"/>
+							</div>
+						</div>
+						<div class="slds-p-horizontal--medium slds-size--5-of-6" style="text-align:left; padding-left:0px !important;">
+							<div style="text-align:left;" class="slds-media__body titleSpan">{!v.sectionTitle}</div>
+						</div>
+					</div>
+				<span class="slds-assistive-text">Toggle</span>
+				</ui:button>
+			</div>
+			<div class="{!(v.isCollapsed eq true)?'divProds collapse':'divProds'}">
+				{!v.body}
+			</div>
+		</div>
+	</div>
+</aura:component>

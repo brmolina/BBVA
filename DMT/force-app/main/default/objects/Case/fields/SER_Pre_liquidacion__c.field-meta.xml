@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Pre_liquidacion__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicate whether the incident occurred before settlement.</description>
+    <label>Pre-liquidation</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

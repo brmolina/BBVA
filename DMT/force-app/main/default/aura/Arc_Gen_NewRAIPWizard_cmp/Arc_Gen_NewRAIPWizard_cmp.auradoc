@@ -1,0 +1,37 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_NewRAIPWizard_cmp</p>
+        <p><b>DESCRIPTION: </b>Wizard for the creation of a new RAIP (also used for selecting a new FFSS for a RAIP)</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>accHasAnalysisId = String : Standard Id of the arce__Account_has_Analysis__c.</li>
+                <li>recordId : String : Standard id of the current record" access="global</li>
+                <li>customerId : String : Standard id of the object Account</li>
+                <li>actualClient : Object : Account record of the actual client</li>
+                <li>analysisId : String : Standard Id of the object arce__Analysis__c</li>
+                <li>accHasAnalysisId : String : Standard Id of the object arce__Account_has_Analysis__c</li>
+                <li>changeFfssMode : Boolean : Indicates if the ffss is available to update</li>
+                <li>arceIdToResume : String : Salesforce ID of the ARCE to resume</li>
+
+                <li>initialized : Boolean : Indicates if the component is initialized</li>
+
+                <li>existentAnalysis : Boolean : Indicates if there is a previous analysis</li>
+                <li>clientNumber : String : Number of the client account</li>
+                <li>ffssValid : Boolean : indiates if the ffss is valid to calculate a rating</li>
+                <li>ffssSelected : Boolean : indicates if the ffss is selected</li>
+                <li>arceInScope : Boolean : Indicates if the arce is in scope</li>
+                <li>riskSegment : String : Is the segment of the arce</li>
+
+                <li>ratingTypeOptions : List" default="[{ 'label': 'Pre-rating', 'value': 'Prerating' }, { 'label': 'Rating', 'value': 'Rating' }]</li>
+                <li>ratingType : String : Indicates if the raip is a rating or a prerating</li>
+
+                <li>ratingToolStepEnabled : Boolean : Indicates if the rating tool modal is enabled</li>
+                <li>ratingToolOptions : List : List of the rating tools to show</li>
+                <li>ratingTool : String : Rating tool</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_NewRAIPWizard_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_NewRAIPWizard_cmp" ref="c:Arc_Gen_NewRAIPWizard_cmp" label="New RAIP Wizard">
+    </aura:example>
+</aura:documentation>

@@ -1,7 +1,17 @@
 <template>
-    <lightning-card title="Documents" icon-name="standard:file">
-
-        <div slot="actions">
+    <section class="wrap">
+        <!-- HEADER -->
+        <header class="header slds-grid slds-grid_vertical-align-center">
+            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+                <lightning-icon icon-name="standard:file" size="small"></lightning-icon>
+            </div>
+            <div class="slds-media__body slds-truncate">
+                <h2 class="slds-text-heading_small slds-truncate">Documents</h2>
+            </div>
+            </div>
+    
+            <div class="slds-no-flex slds-m-left_auto">
             <lightning-button
                 label="Upload Document"
                 icon-name="utility:upload"
@@ -9,43 +19,58 @@
                 onclick={handleUploadClick}
                 disabled={isUploadDisabled}>
             </lightning-button>
-        </div>
-
-        <div class="slds-p-around_medium drop-zone"
-             ondragover={handleDragOver}
-             ondragleave={handleDragLeave}
-             ondrop={handleDrop}>
-
-            <template if:true={isDragging}>
-                <div class="drop-overlay">
-                    <div class="slds-text-heading_medium">Drop file here to upload</div>
-                </div>
-            </template>
-
+            </div>
+        </header>
+    
+        <!-- BODY -->
+        <div class="body drop-zone"
+                ondragover={handleDragOver}
+                ondragleave={handleDragLeave}
+                ondrop={handleDrop}>
+    
             <template if:true={isLoading}>
-                <lightning-spinner alternative-text="Loading..."></lightning-spinner>
+            <lightning-spinner alternative-text="Loading..."></lightning-spinner>
             </template>
-
+    
             <template if:true={hasFiles}>
-                <div style="height: 300px;">
-                    <lightning-datatable
-                        key-field="id"
-                        data={files}
-                        columns={columns}
-                        onrowaction={handleRowAction}
-                        hide-checkbox-column>
-                    </lightning-datatable>
-                </div>
+            <div class="table-container">
+                <lightning-datatable
+                key-field="id"
+                data={files}
+                columns={columns}
+                onrowaction={handleRowAction}
+                hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+            </template>
+            <template if:true={isModaViewOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large pdf-modal-large">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Cerrar" onclick={closeModal}>
+                                <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                                <span class="slds-assistive-text">Cerrar</span>
+                            </button>
+                            <h2 class="slds-modal__title slds-hyphenate">
+                                Visualizando: {selectedFileName}
+                            </h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <c-preview-pdf pdf-data={pdfData}></c-preview-pdf>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
             </template>
 
             <template if:false={hasFiles}>
-                <div class="slds-text-align_center slds-text-color_weak slds-p-vertical_medium">
-                    No documents found. Drop a file here to upload.
-                </div>
+            <div class="slds-text-align_center slds-text-color_weak slds-p-vertical_medium">
+                No documents found. Drop a file here to upload.
+            </div>
             </template>
         </div>
-    </lightning-card>
-
+    </section>
+      
     <input
         type="file"
         class="hidden-file-input"
@@ -116,4 +141,5 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
+   
 </template>

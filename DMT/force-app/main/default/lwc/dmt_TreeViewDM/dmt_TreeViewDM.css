@@ -1,33 +1,39 @@
-/* Container with transition to smooth expand/collapse */
-.sidebar-container {
-    display: flex;
-    position: relative;
-    transition: all 0.3s ease;
-    overflow: hidden; /* prevents content bleed when collapsing */
-}
-
-/* Fixed width for the collapsed state to keep UI stable across resolutions */
-.sidebar-collapsed {
-    width: 3rem;
-    flex: 0 0 3rem;
-}
-
-/* Ensures collapsed header icons are vertically centered regardless of content */
-.collapsed-header {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0.75rem 0;
+:host {
+    display: block;
     height: 100%;
+    transition: width 0.5s ease-in-out; /* ← esto es todo */
 }
 
-/* Vertical stack used only in collapsed mode for a compact icon layout */
-.collapsed-icons-container {
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    
+}
+
+.container-custom {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.collapsed-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.75rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.custom-gce-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    object-fit: contain;
+    display: block;
 }
 
 /* Slight interaction feedback for collapsed header icons */
@@ -49,10 +55,9 @@
     object-fit: contain;
     margin-right: 0.5rem;
 }
-
-/* Icon used when collapsed — slightly larger for visibility in narrow layout */
-.custom-gce-icon {
-    width: 1.4rem;
-    height: 1.4rem;
-    object-fit: contain;
+.table-flex {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }

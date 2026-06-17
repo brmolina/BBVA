@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Approvers_View_Treasury__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Approver View for Line Treasury</description>
+    <inlineHelpText>Approver View for Line Treasury</inlineHelpText>
+    <label>Approvers View Treasury</label>
+    <referenceTo>DMT_ApproversView__c</referenceTo>
+    <relationshipLabel>Approvers (Approvers View Treasury)</relationshipLabel>
+    <relationshipName>Approvers1</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

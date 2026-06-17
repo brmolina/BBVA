@@ -18,8 +18,6 @@ public with sharing class DMT_HPG_Utils {
     static final String SUPRAGROUP_NAME = 'Supragroup';
     static final String GROUP_NAME = 'Group';
     static final String SHARED_GROUP_NAME = 'Shared Management Group';
-    static final String ACCESS_GCE_STD = 'STD';
-    static final String ACCESS_GCE_RISK = 'RISK';
     static final String TOTAL_CLIENTS = 'TOTAL CLIENTS';
     static final List<String> ADMIN_PROFILES = new List<String>{'System Administrator', 'Consultation IT'};
 
@@ -35,7 +33,7 @@ public with sharing class DMT_HPG_Utils {
         if (Test.isRunningTest()) {
             response = getMock(serviceName);
         } else {
-            response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
+            response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);system.debug('******* Responsesss from service: ' + response.getBody());
         }
         return response;
     }
@@ -50,7 +48,7 @@ public with sharing class DMT_HPG_Utils {
 
     // New overload for Map with insertLogs
     public static HttpResponse callService_DMT(String serviceName, Map<String, Object> request, Boolean insertLogs) {
-        request.put('userId', getFederationIdentifier());
+        request.put('userId', getFederationIdentifier());system.debug('******* Request to service AAAAAAAAAAAAA: ' + request);
         HttpResponse response = DMT_Integration_GenericService.invoke(serviceName, request);
         if (insertLogs) {
             DMT_Integration_GenericService.commitAllLogsViaBatch();
@@ -80,7 +78,7 @@ public with sharing class DMT_HPG_Utils {
         final String responseBody = (String)serviceDetails.get('iaso__Mock_LTA__c');
         final String requestMethod = (String)serviceDetails.get('iaso__Http_Method__c');
         response.setStatus('OK');
-        if (serviceName == 'HPG_UpdateOverrideConsumption' || serviceName == 'HPG_CreateOverrideConsumption' || serviceName == 'DMT_consumptionsReassign') {
+        if (serviceName == 'DMT_consumptionsReassign') {
             response.setStatusCode(204);
         }
         else if (serviceName == 'DMT_OpportunityCodes') {
@@ -118,6 +116,18 @@ public with sharing class DMT_HPG_Utils {
         return res;
     }
 
+    public static String getGroupName(Id clientId) {
+        DMT_HPG_GlobalPosition.Wrapper res = new DMT_HPG_GlobalPosition.Wrapper();
+        final String groupName;
+
+        String searchDate = DMT_HPG_Utils.lastDate();        
+        res = DMT_HPG_MainTableCustomController.fetchClientDataFromService(clientId, '1', '2', new List<String>{}, Date.valueOf(searchDate), 'N', null);
+        if(res.data != null && res.data.size() > 0) {
+            groupName = res.data[0].groupName;
+        }
+        return groupName;
+    }
+    
     public static String getAlphaCode(Id clientId) {
         List<Local_Client__c> localC = [SELECT Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c  =:clientId];
 
@@ -186,123 +196,176 @@ public with sharing class DMT_HPG_Utils {
         final String recordCode = getRecordCode(recordId);
         final Map<String,Object> groupObj = getGroupFromRecordCode(recordCode);
         final String groupCode = (String)groupObj.get('groupCode');
+        // final String groupName = (String)groupObj.get('groupName');
+        // final String subgroupId = (String)groupObj.get('subgroupId');
+        // final String supragroupId = (String)groupObj.get('supragroupId');
 
         res.put('recordCode', recordCode);
         res.put('groupCode', groupCode);
-        res.put('supragroupId', null);
-        res.put('subgroupId', null);
+        // res.put('groupName', groupName);
+        // res.put('supragroupId', supragroupId);
+        // res.put('subgroupId', subgroupId);
 
-        Map<String,Object> hierarchy = buildClientGroupStructure(groupCode);
-        res.putAll(hierarchy);
+        //Map<String,Object> hierarchy = buildClientGroupStructure(recordId);
+        //res.putAll(hierarchy);
         return res;
     }
 
-    public static Map<String,Object> getGroupFromClientAccount(String recordCode) { // CIBGLOBALD-2027
+    public static Map<String,Object> getGroupFromClientAccount(String recordId) { // CIBGLOBALD-2027
 
         final Map<String,Object> res = new Map<String,Object>();
+        final String recordCode = getRecordCode(recordId);
         final Map<String,Object> groupObj = getGroupFromRecordCode(recordCode);
         System.debug('groupObj--> ' + groupObj);
         final String groupCode = (String)groupObj.get('groupCode');
 
         res.put('recordCode', recordCode);
-        res.put('groupCode', groupCode);
-        res.put('supragroupId', null);
-        res.put('subgroupId', null);
+        // res.put('groupCode', groupCode);
+        // res.put('supragroupId', null);
+        // res.put('subgroupId', null);
 
-        Map<String,Object> hierarchy = buildClientGroupStructure(groupCode);
+        Map<String,Object> hierarchy = buildClientGroupStructure(recordId);
         res.putAll(hierarchy);
         return res;
     }
 
-    private static Map<String, Object> buildClientGroupStructure(String groupCode) { // CIBGLOBALD-2027
-        final Map<String, Object> res = new Map<String, Object>();
+    public static Map<String, Object> buildClientGroupStructure(String accountId) {
+    final Map<String, Object> res = new Map<String, Object>();
+    Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+    Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+    
+    // 1. Buscar la cuenta por su ID de Salesforce
+    List<Account> accounts = [SELECT Id, Name, DES_Structure_Type__c, DES_Group_Code__c, G_customer_ID__c, RecordTypeId, participant_id__c, participant_id__r.Name, participant_id__r.DES_Group_Code__c, participant_id__r.RecordTypeId
+                              FROM Account
+                              WHERE Id = :accountId
+                              WITH USER_MODE
+                              LIMIT 1];
+    
+    if (accounts.isEmpty()) {
+        return res;
+    }    
+    Account currentAcc = accounts[0];
 
-        // Query enough levels up and down to cover all structure types
-        List<Account> accounts = [SELECT Id, Name, DES_Structure_Type__c, DES_Group_Code__c, DES_Main_Parent__c,
-                DES_Main_Parent__r.Id, DES_Main_Parent__r.Name, DES_Main_Parent__r.DES_Structure_Type__c, DES_Main_Parent__r.DES_Group_Code__c,
-                DES_Main_Parent__r.DES_Main_Parent__r.Id, DES_Main_Parent__r.DES_Main_Parent__r.Name, DES_Main_Parent__r.DES_Main_Parent__r.DES_Structure_Type__c, DES_Main_Parent__r.DES_Main_Parent__r.DES_Group_Code__c,
-                //child accounts
-                (
-                    SELECT Id, Name, DES_Structure_Type__c, DES_Group_Code__c,
-                        //child accounts
-                        (
-                            SELECT Id, Name, DES_Structure_Type__c, DES_Group_Code__c
-                            FROM Clients1__r
-                        )
-                    FROM Clients1__r
-                )
-            FROM Account
-            WHERE DES_Group_Code__c = :groupCode
-            WITH SECURITY_ENFORCED
-            LIMIT 1
+    //Prospects
+    if(currentAcc.RecordTypeId == prospectGroupRtId) {
+        res.put('groupCode', currentAcc.DES_Group_Code__c);
+        res.put('groupName', currentAcc.Name);
+    } else if(currentAcc.RecordTypeId == prospectSubsidiaryRtId) {
+        if(currentAcc.participant_id__r != null && currentAcc.participant_id__r.RecordTypeId == prospectGroupRtId) { // Parent is a Prospect Group
+            res.put('groupCode', currentAcc.participant_id__r.DES_Group_Code__c);
+            res.put('groupName', currentAcc.participant_id__r.Name);
+        } else if (currentAcc.participant_id__c != null && (currentAcc.participant_id__r.RecordTypeId != prospectGroupRtId && currentAcc.participant_id__r.RecordTypeId != prospectSubsidiaryRtId)) { // Parent is not a Prospect
+            Map<String, Object> parentRes = buildClientGroupStructure(currentAcc.participant_id__c);
+            res.putAll(parentRes);
+        }
+    //No Prospects
+    } else {
+        //res.put('groupName', currentAcc.Name);
+        //res.put('groupId', currentAcc.Id);
+        res.put('structureType', currentAcc.DES_Structure_Type__c);
+        
+        // Guardar el código del nivel actual si corresponde (usando DES_Group_Code__c)
+        if (currentAcc.DES_Structure_Type__c == 'Supragroup') {
+            res.put('supragroupId', currentAcc.DES_Group_Code__c);
+            res.put('supragroupName', currentAcc.Name);
+        } else if (currentAcc.DES_Structure_Type__c == 'Group') {
+            res.put('groupCode', currentAcc.DES_Group_Code__c);
+            res.put('groupName', currentAcc.Name);
+        } else if (currentAcc.DES_Structure_Type__c == 'Subgroup') {
+            res.put('subgroupId', currentAcc.DES_Group_Code__c);
+            res.put('subgroupName', currentAcc.Name);
+        }
+        // Si es cliente, no guardamos código de grupo (solo su nombre ya está en groupName)
+        
+        // 2. Construir jerarquía hacia arriba (ancestros)
+        buildAncestorsHierarchy(currentAcc.Id, res);
+        
+        // 3. Construir jerarquía hacia abajo (descendientes directos e indirectos)
+        //buildDescendantsHierarchy(currentAcc.Id, res);
+        
+        // 4. Mantener compatibilidad con el campo level3
+        if (res.get('supragroupId') != null) {
+            res.put('level3Id', res.get('subgroupId'));
+            res.put('level3Name', res.get('subgroupName'));
+        }
+    }
+    return res;
+}
+
+public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res) {
+    Set<Id> visited = new Set<Id>();
+    Id currentId = accountId;
+
+    while (currentId != null && !visited.contains(currentId)) {
+        visited.add(currentId);
+
+        // 🔹 Traer TODAS las relaciones (sin LIMIT 1)
+        List<AMH_GBL_Account_Relationship__c> parentRels = [
+            SELECT AMH_Parent_Account__c,
+                   AMH_Parent_Account__r.Name,
+                   AMH_Parent_Account__r.DES_Structure_Type__c,
+                   AMH_Parent_Account__r.DES_Group_Code__c
+            FROM AMH_GBL_Account_Relationship__c
+            WHERE AMH_Child_Account__c = :currentId
+            WITH USER_MODE
         ];
 
-        if (accounts.isEmpty()) {
-            return res;
+        if (parentRels.isEmpty()) {
+            break;
         }
 
-        Account acc = accounts[0];
-        res.put('groupName', acc.Name);
-        res.put('groupId', acc.Id);
+        // 🔹 Elegir el mejor padre según prioridad
+        AMH_GBL_Account_Relationship__c selectedRel;
+        AMH_GBL_Account_Relationship__c subgroupRel;
+        AMH_GBL_Account_Relationship__c groupRel;
+        AMH_GBL_Account_Relationship__c supragroupRel;
 
-        // Determine the structure level and build hierarchy
-        String type = acc.DES_Structure_Type__c;
+        for (AMH_GBL_Account_Relationship__c rel : parentRels) {
+            String type = rel.AMH_Parent_Account__r.DES_Structure_Type__c;
 
-        if (type == 'Supragroup') {
-            // Current record is the top level
-            res.put('supragroupId', acc.DES_Group_Code__c);
-
-            // Go down two levels (Group → Subgroup)
-            for (Account groupChild : acc.Clients1__r) {
-                if (groupChild.DES_Structure_Type__c == 'Group') {
-                    res.put('groupCode', groupChild.DES_Group_Code__c);
-
-                    // Find subgroup under that group
-                    for (Account subChild : groupChild.Clients1__r) {
-                        if (subChild.DES_Structure_Type__c == 'Subgroup') {
-                            res.put('subgroupId', subChild.DES_Group_Code__c);
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-
-        } else if (type == 'Group') {
-            // Current record is a Group
-            res.put('groupCode', acc.DES_Group_Code__c);
-
-            // Go up one level for Supragroup
-            if (acc.DES_Main_Parent__r != null && acc.DES_Main_Parent__r.DES_Structure_Type__c == 'Supragroup') {
-                res.put('supragroupId', acc.DES_Main_Parent__r.DES_Group_Code__c);
-            }
-
-            // Go down one level for Subgroup
-            for (Account child : acc.Clients1__r) {
-                if (child.DES_Structure_Type__c == 'Subgroup') {
-                    res.put('subgroupId', child.DES_Group_Code__c);
-                    break;
-                }
-            }
-
-        } else if (type == 'Subgroup') {
-            // Current record is a Subgroup
-            res.put('subgroupId', acc.DES_Group_Code__c);
-
-            // Go up for Group
-            if (acc.DES_Main_Parent__r != null && acc.DES_Main_Parent__r.DES_Structure_Type__c == 'Group') {
-                res.put('groupCode', acc.DES_Main_Parent__r.DES_Group_Code__c);
-
-                // Go up again for Supragroup
-                if (acc.DES_Main_Parent__r.DES_Main_Parent__r != null &&
-                    acc.DES_Main_Parent__r.DES_Main_Parent__r.DES_Structure_Type__c == 'Supragroup') {
-                    res.put('supragroupId', acc.DES_Main_Parent__r.DES_Main_Parent__r.DES_Group_Code__c);
-                }
+            if (type == 'Subgroup' && subgroupRel == null) {
+                subgroupRel = rel;
+            } else if (type == 'Group' && groupRel == null) {
+                groupRel = rel;
+            } else if (type == 'Supragroup' && supragroupRel == null) {
+                supragroupRel = rel;
             }
         }
 
-        return res;
+        // 🔹 prioridad: Subgroup > Group > Supragroup
+        if (subgroupRel != null) {
+            selectedRel = subgroupRel;
+        } else if (groupRel != null) {
+            selectedRel = groupRel;
+        } else {
+            selectedRel = supragroupRel;
+        }
+
+        if (selectedRel == null) {
+            break;
+        }
+
+        Account parent = selectedRel.AMH_Parent_Account__r;
+        String parentType = parent.DES_Structure_Type__c;
+        String parentGroupCode = parent.DES_Group_Code__c;
+
+        // 🔹 Guardar valores (igual que lógica original)
+        if (parentType == 'Supragroup' && !res.containsKey('supragroupId')) {
+            res.put('supragroupId', parentGroupCode);
+            res.put('supragroupName', parent.Name);
+        } else if (parentType == 'Group' && !res.containsKey('groupCode')) {
+            res.put('groupCode', parentGroupCode);
+            res.put('groupName', parent.Name);
+        } else if (parentType == 'Subgroup' && !res.containsKey('subgroupId')) {
+            res.put('subgroupId', parentGroupCode);
+            res.put('subgroupName', parent.Name);
+        }
+
+        // 🔹 Subir al siguiente nivel
+        currentId = selectedRel.AMH_Parent_Account__c;
     }
+}
+
 
     @AuraEnabled
     public static String getSerializedGroupFromRecordCode(String recordCode) {
@@ -325,8 +388,11 @@ public with sharing class DMT_HPG_Utils {
         final Map<String, Object> request = new Map<String, Object>();
         request.put('queryString', 'clientIdentifier=' + recordCode);
         final DMT_GroupPositions.Wrapper groupPositions = DMT_GroupPositions.getGroupPositions(request);
-        if (groupPositions.success) {
+        if (groupPositions.success) {system.debug('groupPositions.data'+groupPositions.data);
             res.put('groupCode', groupPositions.data.groupId);
+            res.put('groupName', groupPositions.data.groupName);
+            res.put('subgroupId', groupPositions.data.subgroupId);
+            res.put('supragroupId', groupPositions.data.supragroupId);
         } else {
             throw new HandledException('Could not obtain group for record code ' + recordCode + ' from group-positions service: ' + groupPositions.errorMessage);
         }
@@ -339,55 +405,18 @@ public with sharing class DMT_HPG_Utils {
         return acmh.size() > 0;
     }*/
 
-    public static List<String> getCountriesToCompact(){
-        final Id userId = UserInfo.getUserId();
-        List<String> res = new List<String>();
-        final User userInfo = [Select Access_GCE__c, DES_Country__c, Profile.Name FROM User WHERE Id=:userId LIMIT 1];
-
-        final Boolean riskUser = UserInfo.Access_GCE__c == ACCESS_GCE_RISK;
-        //final Boolean riskUser = FeatureManagement.checkPermission(HPGR_ACCESSRISK_CUSTOM_PERMISSION);
-
-        if (!String.isBlank(userInfo.DES_Country__c)) {
-            String userCountry = userInfo.DES_Country__c;
-            List<hpgr__Geography_Visibility_Configuration__c> compacted = [SELECT hpgr__Risk_Compacted__c, hpgr__No_Risk_Compacted__c FROM hpgr__Geography_Visibility_Configuration__c WHERE hpgr__Geography__c =: userCountry LIMIT 1];
-            if (compacted.size() > 0) {
-                if (riskUser) {
-                    if (!String.isBlank(compacted[0].hpgr__Risk_Compacted__c)) {
-                        res = compacted[0].hpgr__Risk_Compacted__c.split(',');
-                    }
-                } else {
-                    if (!String.isBlank(compacted[0].hpgr__No_Risk_Compacted__c)) {
-                        res = compacted[0].hpgr__No_Risk_Compacted__c.split(',');
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
     public static List<String> getCountries2Anonymize() {
         final Id userId = UserInfo.getUserId();
         List<String> res = new List<String>();
-        final User userInfo = [Select Access_GCE__c, DES_Country__c, Profile.Name FROM User WHERE Id=:userId LIMIT 1];
-        final Boolean riskUser = UserInfo.Access_GCE__c == ACCESS_GCE_RISK;
-        //final Boolean riskUser = FeatureManagement.checkPermission(HPGR_ACCESSRISK_CUSTOM_PERMISSION);
+        final User userInfo = [Select DES_Country__c, Profile.Name FROM User WHERE Id=:userId LIMIT 1];
 
+        // following previous logic of hpgr__Geography_Visibility_Configuration__c records, if user has no country all are anonymized; if its MX, none; else only MX is anonymized
         if (String.isBlank(userInfo.DES_Country__c)) {
-            res = new List<String>{'ES', 'MX', 'PE', 'CO', 'TR', 'AR', 'VN', 'VE'};
+            res = DMT_Constants.ANON_ALL_COUNTRIES;
+        } else  if (userInfo.DES_Country__c == DMT_Constants.MEX) {
+            res = DMT_Constants.ANON_ANY;
         } else {
-            String userCountry = userInfo.DES_Country__c;
-            List<hpgr__Geography_Visibility_Configuration__c> anonym = [SELECT hpgr__Risk_Anonymized__c, hpgr__No_Risk_Anonymized__c FROM hpgr__Geography_Visibility_Configuration__c WHERE hpgr__Geography__c =: userCountry LIMIT 1];
-            if (anonym.size() > 0) {
-                if (riskUser) {
-                    if (!String.isBlank(anonym[0].hpgr__Risk_Anonymized__c)) {
-                        res = anonym[0].hpgr__Risk_Anonymized__c.split(',');
-                    }
-                } else {
-                    if (!String.isBlank(anonym[0].hpgr__No_Risk_Anonymized__c)) {
-                        res = anonym[0].hpgr__No_Risk_Anonymized__c.split(',');
-                    }
-                }
-            }
+            res = DMT_Constants.ANON_MX;
         }
         return res;
     }
@@ -395,63 +424,32 @@ public with sharing class DMT_HPG_Utils {
     public static Boolean userCanEdit() {
         final Id userId = UserInfo.getUserId();
         final User usr = [SELECT FederationIdentifier, Profile.Name FROM User WHERE Id = :userId LIMIT 1];
-        final Map<String, HPG_VisibilityUsers__mdt> users = HPG_VisibilityUsers__mdt.getAll();
+        final Map<String, DMT_VisibilityUsers__mdt> users = DMT_VisibilityUsers__mdt.getAll();
         return users.keyset().contains(usr.FederationIdentifier) || ADMIN_PROFILES.contains(usr.Profile.Name);
     }
 
-    public static DMT_HPG_Consumption.Wrapper anonymize(DMT_HPG_Consumption.Wrapper wrap) {
-        List<String> countries2Anonymize = getCountries2Anonymize();
-        for (DMT_HPG_Consumption.Data item : wrap.data) {
-            item.customerName = unNullValue(item.customerName, '');
-            if (countries2Anonymize.contains(item.countryId)  && !item.customerName.contains(TOTAL_CLIENTS)) {
-                item.customerName = hash('MD5', item.customerName);
-                item.taxpayerId = hash('MD5', item.taxpayerId);
-            }
-        }
-        return wrap;
-    }
 
     public static DMT_HPG_GlobalPosition.Wrapper anonymize(DMT_HPG_GlobalPosition.Wrapper wrap) {
         List<String> countries2Anonymize = getCountries2Anonymize();
         for (DMT_HPG_GlobalPosition.Data item : wrap.data) {
             item.customerName = unNullValue(item.customerName, '');
             if (countries2Anonymize.contains(item.countryId) && !item.customerName.contains(TOTAL_CLIENTS)) {
-                item.customerName = hash('MD5', item.customerName);
-                item.lei = hash('MD5', item.lei);
-                item.taxpayerId = hash('MD5', item.taxpayerId);
+                item.customerName = obfuscate(item.customerName);
+                item.lei = obfuscate(item.lei);
+                item.taxpayerId = obfuscate(item.taxpayerId);
             }
         }
         return wrap;
     }
 
-    public static DMT_HPG_CapitalProvision.Wrapper anonymize(DMT_HPG_CapitalProvision.Wrapper wrap) {
-        List<String> countries2Anonymize = getCountries2Anonymize();
-        for (DMT_HPG_CapitalProvision.Data item : wrap.data) {
-            item.customerName = unNullValue(item.customerName, '');
-            if (countries2Anonymize.contains(item.countryId) && !item.customerName.contains(TOTAL_CLIENTS)) {
-                item.customerName = hash('MD5', item.customerName);
-                item.taxpayerId = hash('MD5', item.taxpayerId);
-            }
-        }
-        return wrap;
-    }
-
-    public static DMT_HPG_ConnectedClients.Wrapper anonymize(DMT_HPG_ConnectedClients.Wrapper wrap) {
-        List<String> countries2Anonymize = getCountries2Anonymize();
-        for (DMT_HPG_ConnectedClients.Data item : wrap.data) {
-            item.customerName = unNullValue(item.customerName, '');
-            if (countries2Anonymize.contains(item.countryId) && !item.customerName.contains(TOTAL_CLIENTS)) {
-                item.customerName = hash('MD5', item.customerName);
-                item.taxpayerId = hash('MD5', item.taxpayerId);
-            }
-        }
-        return wrap;
-    }
-
-    public static String hash(String algo, String input) {
+    public static String obfuscate(String input) {
         String res;
         if (!String.isBlank(input)) {
-            res = input.replaceAll('[^\\s]','X');
+            if (input.startsWith(DMT_Constants.DMT_PROSPECT_PREFIX)) {
+                res = DMT_Constants.DMT_PROSPECT_PREFIX + input.substring(DMT_Constants.DMT_PROSPECT_PREFIX.length()).replaceAll('[^\\s]', 'X');
+            } else {
+                res = input.replaceAll('[^\\s]', 'X');
+            }
         }
         return res;
     }
@@ -463,7 +461,7 @@ public with sharing class DMT_HPG_Utils {
         }
         return res;
     }
-
+    @AuraEnabled(cacheable=true)
     public static String lastDate() {
         Date currentDate = Date.newInstance(1975, 5, 5);
         Map<String, Object> request = new Map<String, Object>();
@@ -521,29 +519,33 @@ public with sharing class DMT_HPG_Utils {
     * @param clientId: Account Id
     * @return String groupcode
     */
-    private static Map<String, Object> getRecordCodeFromAccount(Id recordId) {
+    public static Map<String, Object> getRecordCodeFromAccount(Id recordId) {
         final Map<String,Object> res = new Map<String, Object>{'recordCode' => '', 'errorMessage' => 'Could not obtain recordCode from Account Id ' + recordId, 'success' => false};
-        final List<Account> accountList = [SELECT Id, DES_Group_Code__c FROM Account WHERE Id =:recordId];
+        final List<Account> accountList = [SELECT Id, DES_Group_Code__c, RecordType.DeveloperName, g_customer_id__c FROM Account WHERE Id =:recordId];
         if (accountList.size() > 0 && accountList[0].DES_Group_Code__c != '' && accountList[0].DES_Group_Code__c != null) {
             res.put('recordCode', accountList[0].DES_Group_Code__c);
             res.put('errorMessage', '');
             res.put('success', true);
         } else {
-            List<Local_Client__c> localClientList = [SELECT Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c =:recordId];
-            if (localClientList.size() > 0 && localClientList[0].Alpha_code__c != '' && localClientList[0].Alpha_code__c != null) {
-                res.put('recordCode', localClientList[0].Alpha_code__c);
+            if (accountList[0].RecordType.DeveloperName == 'Prospect_Subsidiary') {
+                res.put('recordCode', accountList[0].g_customer_id__c);
                 res.put('errorMessage', '');
                 res.put('success', true);
+            } else {
+                List<Local_Client__c> localClientList = [SELECT Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c =:recordId];
+                if (localClientList.size() > 0 && localClientList[0].Alpha_code__c != '' && localClientList[0].Alpha_code__c != null) {
+                    res.put('recordCode', localClientList[0].Alpha_code__c);
+                    res.put('errorMessage', '');
+                    res.put('success', true);
+                }
             }
         }
         return res;
     }
 
     public static Map<String, Object> getCustomerHPGS(Map<String, Object> inputMap, Map<String, Object> outMap, Map<String, Object> options) {
-
         final List<String> requiredFields = new List<String>{ 'clientId', 'lastDate', 'customerId' };
         List<String> missingFields = new List<String>();
-
 
         // Validación de campos requeridos (null o vacíos)
         for (String field : requiredFields) {
@@ -551,7 +553,6 @@ public with sharing class DMT_HPG_Utils {
                 missingFields.add(field);
             }
         }
-
         if (!missingFields.isEmpty()) {
             outMap.put('serviceError', 'HPG Service Error - Missing or null required fields: ' + String.join(missingFields, ', '));
             return outMap;
@@ -567,7 +568,7 @@ public with sharing class DMT_HPG_Utils {
             (Id) inputMap.get('clientId'),
             countries,
             (String) inputMap.get('lastDate'),
-            'Y',
+            'N',
             '1',
             '100',
             null
@@ -582,7 +583,6 @@ public with sharing class DMT_HPG_Utils {
                 return outMap;
             }
         }
-
         outMap.put('serviceError', 'HPG Service Error - Customer not found in HPG Service');
         return outMap;
     }

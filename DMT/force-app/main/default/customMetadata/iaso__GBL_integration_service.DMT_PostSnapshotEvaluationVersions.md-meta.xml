@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>iaso__Custom_Setting__c</field>
-        <value xsi:type="xsd:string">DMTO_Endpoint_INT</value>
+        <value xsi:type="xsd:string">DMTO_PostSnapshotVersions_INT</value>
     </values>
     <values>
         <field>iaso__Description__c</field>

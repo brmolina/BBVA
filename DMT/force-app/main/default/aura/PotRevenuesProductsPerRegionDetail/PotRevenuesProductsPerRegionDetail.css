@@ -1,0 +1,30 @@
+.THIS .slds-button_icon-bare {
+    display: none;
+}
+
+/* SCROLL */
+.THIS.sWrapTest {
+    height:100vh !important;
+    width:100vw !important;
+    padding-bottom: 250px !important;
+}
+
+.THIS .sWrapTestDesktop {
+    height:100%;
+    width:100%;
+}
+
+.THIS.outerScroller {
+    border-radius: 11px;
+}
+
+.THIS.innerScroller {
+    border-radius: 10px;
+}
+.THIS.indexClass {
+    height: 77px;
+    z-index: 9999999;
+}
+.THIS.headerClass {
+    height:77px;
+}

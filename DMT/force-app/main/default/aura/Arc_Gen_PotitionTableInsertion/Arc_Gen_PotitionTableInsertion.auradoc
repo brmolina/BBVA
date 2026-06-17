@@ -1,0 +1,10 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component - Show the insertion modal for potition bank table component.</b></h5>
+    <p>apiNameObject - variable for objectApiName</p>
+    <p>recordTypeId - variable to select record layout</p>
+    <p>error - boolean to show error message</p>
+    <p>productos - List of products </p>
+    <p><code>c:Arc_Gen_PotitionTableInsertion</code></p>
+  </aura:description>
+</aura:documentation>

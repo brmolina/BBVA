@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Topic__c</fullName>
+    <description>Allows the user to assign a Case topic</description>
+    <label>Topic</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Alta Servicio</fullName>
+                <default>false</default>
+                <label>Alta Servicio</label>
+            </value>
+            <value>
+                <fullName>Ans</fullName>
+                <default>false</default>
+                <label>Ans</label>
+            </value>
+            <value>
+                <fullName>Caixa Postal</fullName>
+                <default>false</default>
+                <label>Caixa Postal</label>
+            </value>
+            <value>
+                <fullName>Claves Acceso</fullName>
+                <default>false</default>
+                <label>Claves Acceso</label>
+            </value>
+            <value>
+                <fullName>Clave Activacion</fullName>
+                <default>false</default>
+                <label>Clave Activacion</label>
+            </value>
+            <value>
+                <fullName>Documentacion e Informacion</fullName>
+                <default>false</default>
+                <label>Documentacion e Informacion</label>
+            </value>
+            <value>
+                <fullName>EST</fullName>
+                <default>false</default>
+                <label>EST</label>
+            </value>
+            <value>
+                <fullName>Excepciones</fullName>
+                <default>false</default>
+                <label>Excepciones</label>
+            </value>
+            <value>
+                <fullName>Fraudes</fullName>
+                <default>false</default>
+                <label>Fraudes</label>
+            </value>
+            <value>
+                <fullName>GDG</fullName>
+                <default>false</default>
+                <label>GDG</label>
+            </value>
+            <value>
+                <fullName>Gestores Autorizados</fullName>
+                <default>false</default>
+                <label>Gestores Autorizados</label>
+            </value>
+            <value>
+                <fullName>GIM Tecnicos</fullName>
+                <default>false</default>
+                <label>GIM Tecnicos</label>
+            </value>
+            <value>
+                <fullName>HSS</fullName>
+                <default>false</default>
+                <label>HSS</label>
+            </value>
+            <value>
+                <fullName>Inbound</fullName>
+                <default>false</default>
+                <label>Inbound</label>
+            </value>
+            <value>
+                <fullName>Incidencia</fullName>
+                <default>false</default>
+                <label>Incidencia</label>
+            </value>
+            <value>
+                <fullName>No Contar</fullName>
+                <default>false</default>
+                <label>No Contar</label>
+            </value>
+            <value>
+                <fullName>Oficina</fullName>
+                <default>false</default>
+                <label>Oficina</label>
+            </value>
+            <value>
+                <fullName>Outbound</fullName>
+                <default>false</default>
+                <label>Outbound</label>
+            </value>
+            <value>
+                <fullName>Pasarela</fullName>
+                <default>false</default>
+                <label>Pasarela</label>
+            </value>
+            <value>
+                <fullName>Peticiones (No Contar)</fullName>
+                <default>false</default>
+                <label>Peticiones (No Contar)</label>
+            </value>
+            <value>
+                <fullName>RBA</fullName>
+                <default>false</default>
+                <label>RBA</label>
+            </value>
+            <value>
+                <fullName>Reclamadas</fullName>
+                <default>false</default>
+                <label>Reclamadas</label>
+            </value>
+            <value>
+                <fullName>Sac Reclamaciones</fullName>
+                <default>false</default>
+                <label>Sac Reclamaciones</label>
+            </value>
+            <value>
+                <fullName>TCP</fullName>
+                <default>false</default>
+                <label>TCP</label>
+            </value>
+            <value>
+                <fullName>Token</fullName>
+                <default>false</default>
+                <label>Token</label>
+            </value>
+            <value>
+                <fullName>Troyano</fullName>
+                <default>false</default>
+                <label>Troyano</label>
+            </value>
+            <value>
+                <fullName>Alta Servicios</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Alta Servicios</label>
+            </value>
+            <value>
+                <fullName>CLAVES ACTIVACION</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CLAVES ACTIVACION</label>
+            </value>
+            <value>
+                <fullName>Claves de Acceso</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Claves de Acceso</label>
+            </value>
+            <value>
+                <fullName>DOCUMENTOS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>DOCUMENTOS</label>
+            </value>
+            <value>
+                <fullName>INCIDENCIAS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>INCIDENCIAS</label>
+            </value>
+            <value>
+                <fullName>TOKENS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TOKENS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

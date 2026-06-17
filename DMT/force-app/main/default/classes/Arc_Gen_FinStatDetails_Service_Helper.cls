@@ -25,6 +25,7 @@
 *             Get audit data from FFSS detail service
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.EmptyStatementBlock')
 public with sharing class Arc_Gen_FinStatDetails_Service_Helper {
     /**
     * @Description: String with the name of the service financial statement details (for clients)
@@ -78,7 +79,8 @@ public with sharing class Arc_Gen_FinStatDetails_Service_Helper {
             responseWrapper.gblSuccessOperation = true;
         } else {
             final String accountNumber = arce.Arc_Gen_CallEncryptService.getEncryptedClient((String)arce.Arc_Gen_AccHasAnalysis_Data.getAccountHasAnalysisAndCustomer(new List<String>{ahaId})[0].accWrapperObj.accNumber);
-            final String params = '{"accountNumber":"' + accountNumber + '","fsServiceId":"' + fsServiceId + '"}';
+            final String svcId = fsServiceId.startsWith('[') ? (String)((List<Object>)JSON.deserializeUntyped(fsServiceId)).get(0) : fsServiceId;
+            final String params = '{"accountNumber":"' + accountNumber + '","fsServiceId":"' + svcId + '"}';
             final String serviceName = getServiceName(ahaId);
             final HttpResponse response = arce.Arc_Gen_getIASOResponse.getServiceResponse(serviceName, params);
             if (response.getStatusCode() == serviceMessage.CODE_200) {
@@ -122,7 +124,10 @@ public with sharing class Arc_Gen_FinStatDetails_Service_Helper {
         final arce__Account_has_Analysis__c aha = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String> { ahaId })[0];
         final String clientId = arce.Arc_Gen_AccHasAnalysis_Data.getCorrectIdWAhas(aha);
         final arce.Arc_Gen_Account_Wrapper accWrapper = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id> {clientId}).get(clientId);
-        final String participantType = accWrapper.participantType;
+        String participantType = accWrapper.participantType;
+        if(aha.arce__RAR_rating_tool_id__c.contains('RTC')) {
+            participantType = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) ahaId});
+        }
 
         // Check if service is available for groups.
         if (participantType == PART_TYPE_GROUP) {

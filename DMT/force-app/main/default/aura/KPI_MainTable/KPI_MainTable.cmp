@@ -1,0 +1,51 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global" controller="KPI_MainTableController">
+
+  <!--Main columns atributes  -->
+  <aura:attribute name="columnsMain" type="List" />
+  <aura:attribute name="columnButton" type="List" />
+  <aura:attribute name="mainData" type="Object" />
+
+  <!-- navigation -->
+  <aura:attribute name="currentPage" type="Integer" default="1" />
+  <aura:attribute name="totalPages" type="Integer" default="0" />
+  <aura:attribute name="pageSize" type="Integer" default="10" />
+  <aura:attribute name="count" type="Integer" default="0" />
+  <aura:attribute name="disabledPrevious" type="Boolean" default="true" />
+  <aura:attribute name="disabledNext" type="Boolean" default="true" />
+  <aura:attribute name="displaying" type="String" default="Displaying..." />
+  <aura:attribute name="nextPage" type="Integer" default="1" />
+  <aura:attribute name="previousPage" type="Integer" default="1" />
+  <aura:attribute name="lastDetailOpened" type="Object" default="" />
+  <aura:attribute name="draftValues" type="Object" default="[]" />
+
+
+  <aura:attribute name="errors" type="Object" />
+  <aura:attribute name="noData" type="Boolean" />
+  <!--Register events  -->
+  <aura:registerEvent name="MainTableRendered" type="c:KPI_MainTable_evt" />
+  <aura:registerEvent name="KPI_Search_evt" type="c:KPI_Search_evt" />
+  <aura:registerEvent name="KPI_BookingCountry_evt" type="c:KPI_BookingCountry_evt" />
+
+  <!--Events Handler  -->
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+  <aura:if isTrue="{!v.noData}">
+    <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+      {!$Label.c.KPI_NoData}
+    </div>
+    <aura:set attribute="else">
+      <div id="mainKPITable" class="classTableCmp slds-p-around_small slds-scrollable scrollable" style="width:100%;">
+        <!-- <div id="mainKPITable" class="classTableCmp slds-p-around_small slds-scrollable scrollable_x " style="width:100%;"></div> -->
+        <div>
+          <lightning:datatable class="table-test slds-table_col-bordered" data="{!v.mainData}"
+            columns="{!v.columnsMain}" keyField="id" hideCheckboxColumn="true" errors="{!v.errors}"
+            suppressBottomBar="false" onrowaction="{!c.handleRowAction}" draftValues="{! v.draftValues }"
+            onsave="{! c.handleSaveEdition }" wrapTextMaxLines="3" columnsMode="fixed" showRowNumberColumn="false" />
+        </div>
+      </div>
+    </aura:set>
+  </aura:if>
+  {!v.body}
+</aura:component>

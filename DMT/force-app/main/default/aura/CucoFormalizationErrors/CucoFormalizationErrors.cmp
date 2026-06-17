@@ -1,0 +1,66 @@
+<aura:component  implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="CucoFormalizationErrorsController">
+
+    <aura:attribute name="allData" type="List" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="pageSize" type="Integer" default="10" />
+    <aura:attribute name="filteredData" type="List" />
+    <aura:attribute name="tableData" type="List" />
+    <aura:attribute name="pageSizeOptions" type="Integer[]" default="1,3,5,10" />
+    <aura:attribute name="currentPageNumber" type="Integer" default="1" />
+    <aura:attribute name="totalPages" type="Integer" default="1" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <aura:if isTrue="{!not(empty(v.allData))}">
+        <lightning:card>
+            <aura:set attribute="title">
+                <lightning:icon
+                                iconName="utility:warning"
+                                alternativeText="Warning!"
+                                variant="warning"/> {!$Label.c.Formalization_Errors}
+            </aura:set>
+            <aura:set attribute="actions">
+                <lightning:select
+                                label="{!$Label.c.Number_of_records_on_page}"
+                                value="{! v.pageSize }"
+                                onchange="{! c.onPageSizeChange }">
+                    <aura:iteration items="{! v.pageSizeOptions }" var="opt">
+                        <option text="{! opt }"></option>
+                    </aura:iteration>
+                </lightning:select>
+            </aura:set>
+            <lightning:datatable data="{!v.tableData }"
+                                columns="{!v.columns}"
+                                keyField="Id"
+                                onrowaction="{! c.handleRowAction }"
+                                hideCheckboxColumn="true"/>
+            <div class="slds-card__footer">
+                <lightning:button
+                                variant="base"
+                                iconName="utility:chevronleft"
+                                iconPosition="left"
+                                onclick="{! c.onPrev }"
+                                disabled="{! v.currentPageNumber == 1 }" />
+                <lightning:button
+                                variant="base"
+                                iconName="utility:chevronright"
+                                iconPosition="right"
+                                onclick="{! c.onNext }"
+                                disabled="{! v.currentPageNumber == v.totalPages }" />
+            </div>
+        </lightning:card>
+        <aura:set attribute="else">
+            <lightning:card>
+                <aura:set attribute="title">
+                    <lightning:icon
+                                iconName="utility:warning"
+                                alternativeText="Warning!"
+                                variant="warning"/> {!$Label.c.Formalization_Errors}
+                </aura:set>
+                <div class="slds-align_absolute-center">
+                    {!$Label.c.ErrorFound}
+                </div>
+            </lightning:card>
+        </aura:set>
+    </aura:if>
+</aura:component>

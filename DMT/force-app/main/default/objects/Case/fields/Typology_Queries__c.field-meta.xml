@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Typology_Queries__c</fullName>
+    <description>Nuevo campo &apos;Typology&apos; debido a cambios en la jerarquía de campos debido a que no se puede asociar dos campos a un solo Controlling (Limitación de Salesforce).</description>
+    <label>Typology</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Reason_Queries__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Circularization</fullName>
+                <default>false</default>
+                <label>Circularization</label>
+            </value>
+            <value>
+                <fullName>Bank accounts (DCE)</fullName>
+                <default>false</default>
+                <label>Bank accounts (DCE)</label>
+            </value>
+            <value>
+                <fullName>Bank accounts (OPPLUS)</fullName>
+                <default>false</default>
+                <label>Bank accounts (OPPLUS)</label>
+            </value>
+            <value>
+                <fullName>HK</fullName>
+                <default>false</default>
+                <label>HK</label>
+            </value>
+            <value>
+                <fullName>London</fullName>
+                <default>false</default>
+                <label>London</label>
+            </value>
+            <value>
+                <fullName>Madrid</fullName>
+                <default>false</default>
+                <label>Madrid</label>
+            </value>
+            <value>
+                <fullName>Frankfurt</fullName>
+                <default>false</default>
+                <label>Frankfurt</label>
+            </value>
+            <value>
+                <fullName>Madrid y otros</fullName>
+                <default>false</default>
+                <label>Madrid y otros</label>
+            </value>
+            <value>
+                <fullName>ABI (Italy)</fullName>
+                <default>false</default>
+                <label>ABI (Italy)</label>
+            </value>
+            <value>
+                <fullName>Trade finance</fullName>
+                <default>false</default>
+                <label>Trade finance</label>
+            </value>
+            <value>
+                <fullName>Cancellation</fullName>
+                <default>false</default>
+                <label>Cancellation</label>
+            </value>
+            <value>
+                <fullName>For trials</fullName>
+                <default>false</default>
+                <label>For trials</label>
+            </value>
+            <value>
+                <fullName>MTM</fullName>
+                <default>false</default>
+                <label>MTM</label>
+            </value>
+            <value>
+                <fullName>SIRO</fullName>
+                <default>false</default>
+                <label>SIRO</label>
+            </value>
+            <value>
+                <fullName>Italian State rate</fullName>
+                <default>false</default>
+                <label>Italian State rate</label>
+            </value>
+            <value>
+                <fullName>Treasuries</fullName>
+                <default>false</default>
+                <label>Treasuries</label>
+            </value>
+            <value>
+                <fullName>BIS</fullName>
+                <default>false</default>
+                <label>BIS</label>
+            </value>
+            <value>
+                <fullName>ICMA</fullName>
+                <default>false</default>
+                <label>ICMA</label>
+            </value>
+            <value>
+                <fullName>SMMA</fullName>
+                <default>false</default>
+                <label>SMMA</label>
+            </value>
+            <value>
+                <fullName>Reporting Italy</fullName>
+                <default>false</default>
+                <label>Reporting Italy</label>
+            </value>
+            <value>
+                <fullName>Documento de sintesi</fullName>
+                <default>false</default>
+                <label>Documento de sintesi</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Circularization</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Bank accounts (DCE)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Bank accounts (OPPLUS)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>HK</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>London</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Madrid</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Frankfurt</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Madrid y otros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>ABI (Italy)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Audit requests</controllingFieldValue>
+            <valueName>Trade finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Certificates</controllingFieldValue>
+            <valueName>Cancellation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Certificates</controllingFieldValue>
+            <valueName>For trials</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Certificates</controllingFieldValue>
+            <valueName>MTM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Certificates</controllingFieldValue>
+            <controllingFieldValue>Monthly reports</controllingFieldValue>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Others</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monthly reports</controllingFieldValue>
+            <valueName>SIRO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monthly reports</controllingFieldValue>
+            <valueName>Italian State rate</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monthly reports</controllingFieldValue>
+            <valueName>Treasuries</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <valueName>BIS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <valueName>ICMA</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <valueName>SMMA</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <valueName>Reporting Italy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Reports</controllingFieldValue>
+            <valueName>Documento de sintesi</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

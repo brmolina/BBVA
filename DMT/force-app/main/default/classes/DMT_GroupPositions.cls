@@ -57,5 +57,8 @@ public with sharing class DMT_GroupPositions {
         /* @Description: groupId */
         @AuraEnabled
         public String groupId {get;set;}
+        public String groupName {get;set;}
+        public String subgroupId {get;set;}
+        public String supragroupId {get;set;}
     }
 }

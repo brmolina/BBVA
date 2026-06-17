@@ -69,11 +69,35 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName0,this.customEvent[0]);
 
           
+            this.customEventName1 = interpolateWithRegex(`finishCaseConditionCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[1],1);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
+            this.customEventName2 = interpolateWithRegex(`approvalValidationCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[2] = this.handleEventAction.bind(this, data.events[2],2);
+
+            this.template.addEventListener(this.customEventName2,this.customEvent[2]);
+
+          
+            this.customEventName3 = interpolateWithRegex(`returnToProposalCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[3] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName3,this.customEvent[3]);
+
+          
               }
 
               unregisterEvents(){
                 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
+
+            this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
+
+            this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
 
               }
             

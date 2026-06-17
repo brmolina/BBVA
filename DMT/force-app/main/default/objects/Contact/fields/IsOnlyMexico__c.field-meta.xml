@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsOnlyMexico__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Campo creado para identificar los contactos que solo pertenecen a Mexico</description>
+    <label>IsOnlyMexico</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

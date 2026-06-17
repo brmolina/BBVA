@@ -1,4 +1,4 @@
-public class DMT_LogExceptionQueueable implements Queueable {
+public with sharing class DMT_LogExceptionQueueable implements Queueable {
     private final List<DMT_LogExceptionPayload> exceptions;
 
     public DMT_LogExceptionQueueable(List<DMT_LogExceptionPayload> exceptions) {

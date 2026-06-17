@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_Block_Closed_Won</fullName>
+    <active>true</active>
+    <description>Prevents DMT Opportunities related to Prospects from being closed as Won</description>
+    <errorConditionFormula>AND(
+    ISCHANGED(StageName),
+    ISPICKVAL(StageName, &quot;Closed Won&quot;),
+    RecordType.DeveloperName = &quot;DMT_Opportunity&quot;,
+    OR(
+        Account.RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;,
+        Account.RecordType.DeveloperName = &quot;Prospect_Group&quot;
+    ),
+    $Profile.Name != &quot;Desktop Integration&quot;,
+    $Profile.Name != &quot;System Administrator&quot;,
+    NOT($Permission.DMT_Line_God)
+)</errorConditionFormula>
+    <errorMessage>You cannot proceed with the closing process because this opportunity is related to a Prospect</errorMessage>
+</ValidationRule>

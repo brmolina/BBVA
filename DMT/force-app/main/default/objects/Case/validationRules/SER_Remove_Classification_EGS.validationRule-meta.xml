@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Remove_Classification_EGS</fullName>
+    <active>true</active>
+    <description>Una vez que se ha clasificado un caso de EGS no se puede volver a quitarle la clasificacion.</description>
+    <errorConditionFormula>AND(
+$Setup.CIB_Bypass__c.CIB_skip_validationrule__c = false,
+$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ISPICKVAL(SER_Business_Case_Type__c, &quot;EGS&quot;),
+NOT( ISPICKVAL( PRIORVALUE( SER_Classification__c ) , &quot;&quot;) ),
+NOT( ISPICKVAL( PRIORVALUE( SER_Classification__c ) , &quot;Discarded / Duplicated&quot;) ),
+ISPICKVAL( SER_Classification__c , &quot;&quot;)
+)</errorConditionFormula>
+    <errorMessage>Classification can&apos;t be set to &quot;--None--&quot; once it has been changed</errorMessage>
+</ValidationRule>

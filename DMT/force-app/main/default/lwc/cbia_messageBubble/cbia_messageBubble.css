@@ -1,0 +1,84 @@
+li abbr {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+li .slds-chat-message__body {
+    width: 100%;
+    max-width: 75%;
+}
+
+li .slds-chat-message__body span{
+    font-family: sans-serif;
+}
+
+li .slds-chat-message__body .slds-chat-message__meta {
+    font-family: sans-serif;
+    font-size: 12px;
+    margin-left: 0px;
+}
+
+.cib-just-cont-end{
+    justify-content: end;
+}
+
+.cib-in {
+    flex-direction: column;
+}
+
+.cib-out {
+    background: #f3f3f3;
+    border-radius: 5px;
+}
+
+.cib-in .cib-feedback{
+    min-width: 55px;
+    margin-top: auto;
+    padding-left: 0.6rem;
+}
+
+.mary-just-cont-end {
+    justify-content: end !important;
+}
+
+.cib-feedback lightning-icon{
+    cursor: pointer;
+}
+
+.slds-chat-message {
+    width: 100%;
+}
+
+.cib-in .slds-chat-message__text, .cib-out .slds-chat-message__text{
+    max-width: 100%;
+    width: 100%;
+}
+
+.slds-chat-message__text_outbound {
+    background-color: #03234D !important;
+}
+
+li .cib-hora-usuario{
+    text-align: right;
+}
+
+li .cib-hora-cibia{
+    text-align: left;
+}
+
+.cib-flex-row {
+    max-width: 100% !important;
+}
+
+.slds-chat-message__text {
+    white-space: normal;
+    font-size: 13px;
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+}
+
+.cib-error {
+  border: 1px solid red;
+  padding: 0.6rem !important;
+  max-width: 60% !important;
+}

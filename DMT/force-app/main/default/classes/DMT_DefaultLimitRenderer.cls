@@ -99,13 +99,13 @@ public with sharing class DMT_DefaultLimitRenderer implements DMT_ViewRenderer {
                     tableLimit.put('type', 'table');
                     contentListLimit.add(tableLimit);
                     componentLimit.put('content', contentListLimit);
-                    componentLimit.put('name', 'LIMIT VALIDATION');  
+                    componentLimit.put('name', 'Limit Validation');  
                 }
             }
             return componentLimit;
         } catch (Exception e){
             System.debug('Error in DMT_DefaultLimitRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultLimitRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultLimitRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

@@ -39,19 +39,19 @@ public without sharing class Batch_Total_Live_Won_Opps implements Database.Batch
         mapDenorm.put(acc.id, acc);
     }
 
-    final List<dwp_acmh__Denorm_Account_Opportunity__c> lAccOpp = [SELECT id,
-                                                                    dwp_acmh__AccountId__c,
-                                                                    dwp_acmh__OpportunityId__c,
-                                                                    convertCurrency(dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c),
-                                                                    dwp_acmh__OpportunityId__r.StageName,
-                                                                    dwp_acmh__OpportunityId__r.DES_Date_Won_Lost__c,
+    final List<AMH_Denorm_Account_Opportunity__c> lAccOpp = [SELECT id,
+                                                                    AMH_AccountId__c,
+                                                                    AMH_OpportunityId__c,
+                                                                    convertCurrency(AMH_OpportunityId__r.DES_Expected_Revenues__c),
+                                                                    AMH_OpportunityId__r.StageName,
+                                                                    AMH_OpportunityId__r.DES_Date_Won_Lost__c,
                                                                     convertCurrency(DES_Opportunity_Potential_Revenue_Rollup__c)
-                                                                    FROM dwp_acmh__Denorm_Account_Opportunity__c
-                                                                    WHERE dwp_acmh__AccountId__c  IN :mapDenorm.keySet()];
+                                                                    FROM AMH_Denorm_Account_Opportunity__c
+                                                                    WHERE AMH_AccountId__c  IN :mapDenorm.keySet()];
 
-    for(dwp_acmh__Denorm_Account_Opportunity__c oppDenorm : lAccOpp) {
-        mapDenorm.put(oppDenorm.dwp_acmh__AccountId__c, isLiveCheck(oppDenorm, mapDenorm.get(oppDenorm.dwp_acmh__AccountId__c)));
-        mapDenorm.put(oppDenorm.dwp_acmh__AccountId__c, isWonLastMonth(oppDenorm, mapDenorm.get(oppDenorm.dwp_acmh__AccountId__c)));
+    for(AMH_Denorm_Account_Opportunity__c oppDenorm : lAccOpp) {
+        mapDenorm.put(oppDenorm.AMH_AccountId__c, isLiveCheck(oppDenorm, mapDenorm.get(oppDenorm.AMH_AccountId__c)));
+        mapDenorm.put(oppDenorm.AMH_AccountId__c, isWonLastMonth(oppDenorm, mapDenorm.get(oppDenorm.AMH_AccountId__c)));
     }
 
     Database.update(mapDenorm.values(), false);
@@ -61,10 +61,10 @@ public without sharing class Batch_Total_Live_Won_Opps implements Database.Batch
   /*
   *Comprueba si viva
   */
-  private Account isLiveCheck(dwp_acmh__Denorm_Account_Opportunity__c idao, Account acc) {
-        if(idao.dwp_acmh__OpportunityId__r.StageName != Label.DES_Closed_Won && idao.dwp_acmh__OpportunityId__r.StageName != Label.DES_Closed_Lose && idao.dwp_acmh__OpportunityId__r.StageName != Label.DES_Draft) {
+  private Account isLiveCheck(AMH_Denorm_Account_Opportunity__c idao, Account acc) {
+        if(idao.AMH_OpportunityId__r.StageName != Label.DES_Closed_Won && idao.AMH_OpportunityId__r.StageName != Label.DES_Closed_Lose && idao.AMH_OpportunityId__r.StageName != Label.DES_Draft) {
             acc.customer_open_oppy_number__c = acc.customer_open_oppy_number__c + 1;
-            acc.customer_open_oppy_amount__c = acc.customer_open_oppy_amount__c + (idao.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c == null ? 0 : idao.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c);
+            acc.customer_open_oppy_amount__c = acc.customer_open_oppy_amount__c + (idao.AMH_OpportunityId__r.DES_Expected_Revenues__c == null ? 0 : idao.AMH_OpportunityId__r.DES_Expected_Revenues__c);
         }
         return acc;
   }
@@ -72,7 +72,7 @@ public without sharing class Batch_Total_Live_Won_Opps implements Database.Batch
   /*
   *Comprueba si ganada ultimo mes
   */
-  private Account isWonLastMonth(dwp_acmh__Denorm_Account_Opportunity__c idao, Account acc) {
+  private Account isWonLastMonth(AMH_Denorm_Account_Opportunity__c idao, Account acc) {
         final Date lastmonth = date.today().addmonths(-1);
         final Date firstOfLastMonth = date.newInstance(lastmonth.year(), lastmonth.month(), 1);
 
@@ -80,7 +80,7 @@ public without sharing class Batch_Total_Live_Won_Opps implements Database.Batch
         final Date lastDayLastMonth = Date.newInstance(firstOfLastMonth.year(), firstOfLastMonth.month(), numberOfDays);
 
         if((acc.RecordType.DeveloperName == Label.DES_RT_Group || acc.RecordType.DeveloperName == Label.DES_RT_SupraGroup || acc.RecordType.DeveloperName == 'DES_Commercial_Client' || acc.RecordType.DeveloperName == 'DES_Commercial_Client_BEC_Manually') &&
-        idao.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won && idao.dwp_acmh__OpportunityId__r.DES_Date_Won_Lost__c >= firstOfLastMonth && idao.dwp_acmh__OpportunityId__r.DES_Date_Won_Lost__c <= lastDayLastMonth) {
+        idao.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won && idao.AMH_OpportunityId__r.DES_Date_Won_Lost__c >= firstOfLastMonth && idao.AMH_OpportunityId__r.DES_Date_Won_Lost__c <= lastDayLastMonth) {
             acc.customer_won_oppy_number__c = acc.customer_won_oppy_number__c + 1;
             acc.customer_won_oppy_amount__c = acc.customer_won_oppy_amount__c + idao.DES_Opportunity_Potential_Revenue_Rollup__c;
         }

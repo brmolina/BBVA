@@ -1,0 +1,37 @@
+<aura:component controller="Util_PickList" implements="force:appHostable,force:hasRecordId,force:lightningQuickAction,lightning:availableForFlowScreens" access="global">
+    <aura:attribute name="selectedLookUpUserID" type="String" default=""/>
+    <aura:attribute name="selectedLookUpRecordID" type="String" default=""/>
+    <aura:attribute name="objInfo" type="Product2" default="{sobjectType : 'Product2'}" /><!-- VARIABLE QUE SE USA PARA EL OBJETO PRODUCTO -->
+    <aura:attribute name="objInfoBBVAMT" type="DES_BBVA_Management_team__c" default="{sobjectType : 'DES_BBVA_Management_team__c'}" /><!-- VARIABLE QUE SE USA PARA EL OBJETO BBVA MANAGEMENT TEAM -->
+    <aura:attribute name="existsGB" type="Boolean" default=""/>
+    <aura:attribute name="existsSGB" type="Boolean" default=""/>
+    <aura:attribute name="existsIH" type="Boolean" default=""/>
+
+    <aura:attribute name="productFamily" type="String" default=""/>
+    <aura:attribute name="optionsPF" type="List" default=""/>
+
+    <aura:attribute name="memberRole" type="String" default=""/>
+    <aura:attribute name="optionsRole" type="List" default=""/>
+
+    <aura:attribute name="memberScope" type="String" default=""/>
+    <aura:attribute name="optionsScope" type="List" default=""/>
+    <aura:attribute name="scopeSelected" type="String" default=""/>
+    <aura:attribute name="lookupObject" type="String" default=""/>
+
+    <aura:attribute name="memberCoverage" type="String" default=""/>
+    <aura:attribute name="optionsCoverage" type="List" default=""/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <c:customLookup objectAPIName="User" IconName="standard:user" label="User" selectedRecordId="{!v.selectedLookUpUserID}"/>
+    <lightning:combobox style="padding-top: 10px;" required="true" name="memberRole" label="Member Role" placeholder="-- None --" options="{! v.optionsRole }" onchange="{! c.handleChangeRole }"/>
+    <lightning:combobox style="padding-top: 10px;" required="true" aura:id="scope" name="memberScope" label="Scope" value="{!v.scopeSelected}" placeholder="-- None --" options="{! v.optionsScope }" onchange="{! c.handleChangeScope }"/>
+    <aura:if isTrue="{!v.memberRole eq $Label.c.DES_Role_Transactional_Banker}">
+    	<lightning:combobox style="padding-top: 10px;" required="true" name="memberCoverage" label="Coverage Type" value="-- None --" placeholder="-- None --" options="{! v.optionsCoverage }" onchange="{! c.handleChangeCoverage }"/>
+    </aura:if>
+    <aura:if isTrue="{!v.memberRole eq 'Product Specialist'}">
+        <lightning:combobox style="padding-top: 10px;" required="true" name="productFamily" label="Product Family" value="-- None --" placeholder="-- None --" options="{! v.optionsPF }" onchange="{! c.handleChangeProdFam }"/>
+        <c:customLookup productFamily="{!v.productFamily}" objectAPIName="Product2" IconName="standard:product2" label="PS Product" selectedRecordId="{!v.selectedLookUpRecordID}"/>
+    </aura:if>
+    <div style="min-height: 200px;"></div>
+</aura:component>

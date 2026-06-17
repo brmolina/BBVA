@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_PersistanceCallbackContainer_cmp</p>
+        <p><b>DESCRIPTION: </b>Component that shows a message error if the callback persistance service returns an error</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>view = Boolean : Indicator of message component visibility</li>
+                <li>accHasAnalysisId : String : Analyzed client record</li>
+                <li>qvcd:GBL_SelectItem_EVT : Event : handler of select chrome event</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_PersistanceCallbackContainer_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_PersistanceCallbackContainer_cmp" ref="c:Arc_Gen_PersistanceCallbackContainer_cmp" label="Sync service persistance call">
+    </aura:example>
+</aura:documentation>

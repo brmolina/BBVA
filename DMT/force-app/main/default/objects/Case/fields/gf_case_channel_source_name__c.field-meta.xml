@@ -1,0 +1,1222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_case_channel_source_name__c</fullName>
+    <label>Typology</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>case_channel_source_type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Acceso</fullName>
+                <default>false</default>
+                <label>Acceso</label>
+            </value>
+            <value>
+                <fullName>Activacion</fullName>
+                <default>false</default>
+                <label>Activacion</label>
+            </value>
+            <value>
+                <fullName>Activación de Token Digital</fullName>
+                <default>false</default>
+                <label>Activación de Token Digital</label>
+            </value>
+            <value>
+                <fullName>Administracion usuarios</fullName>
+                <default>false</default>
+                <label>Administracion usuarios</label>
+            </value>
+            <value>
+                <fullName>Alerta de Fraudes</fullName>
+                <default>false</default>
+                <label>Alerta de Fraudes</label>
+            </value>
+            <value>
+                <fullName>Alta funcionalidad</fullName>
+                <default>false</default>
+                <label>Alta funcionalidad</label>
+            </value>
+            <value>
+                <fullName>Alta producto</fullName>
+                <default>false</default>
+                <label>Alta producto</label>
+            </value>
+            <value>
+                <fullName>Alta proveedor en la plataforma</fullName>
+                <default>false</default>
+                <label>Alta proveedor en la plataforma</label>
+            </value>
+            <value>
+                <fullName>Alta servicio/cuenta</fullName>
+                <default>false</default>
+                <label>Alta servicio/cuenta</label>
+            </value>
+            <value>
+                <fullName>Anulación órdenes de pago</fullName>
+                <default>false</default>
+                <label>Anulación órdenes de pago</label>
+            </value>
+            <value>
+                <fullName>Asignación/baja de Token</fullName>
+                <default>false</default>
+                <label>Asignación/baja de Token</label>
+            </value>
+            <value>
+                <fullName>Bloqueo por deuda</fullName>
+                <default>false</default>
+                <label>Bloqueo por deuda</label>
+            </value>
+            <value>
+                <fullName>Bloqueo por VISALERT</fullName>
+                <default>false</default>
+                <label>Bloqueo por VISALERT</label>
+            </value>
+            <value>
+                <fullName>Cálculo solicitud descuento</fullName>
+                <default>false</default>
+                <label>Cálculo solicitud descuento</label>
+            </value>
+            <value>
+                <fullName>Cambio de Versión</fullName>
+                <default>false</default>
+                <label>Cambio de Versión</label>
+            </value>
+            <value>
+                <fullName>Carga factura en la plataforma</fullName>
+                <default>false</default>
+                <label>Carga factura en la plataforma</label>
+            </value>
+            <value>
+                <fullName>Carta Fianza</fullName>
+                <default>false</default>
+                <label>Carta Fianza</label>
+            </value>
+            <value>
+                <fullName>Chequeras</fullName>
+                <default>false</default>
+                <label>Chequeras</label>
+            </value>
+            <value>
+                <fullName>Cobros/Comisiones</fullName>
+                <default>false</default>
+                <label>Cobros/Comisiones</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior</fullName>
+                <default>false</default>
+                <label>Comercio Exterior</label>
+            </value>
+            <value>
+                <fullName>Conectividad</fullName>
+                <default>false</default>
+                <label>Conectividad</label>
+            </value>
+            <value>
+                <fullName>Conectividad fichero cliente</fullName>
+                <default>false</default>
+                <label>Conectividad fichero cliente</label>
+            </value>
+            <value>
+                <fullName>Configuración usuario-empresa</fullName>
+                <default>false</default>
+                <label>Configuración usuario-empresa</label>
+            </value>
+            <value>
+                <fullName>Consulta fichero</fullName>
+                <default>false</default>
+                <label>Consulta fichero</label>
+            </value>
+            <value>
+                <fullName>Consulta horario de procesos</fullName>
+                <default>false</default>
+                <label>Consulta horario de procesos</label>
+            </value>
+            <value>
+                <fullName>Consulta movimientos</fullName>
+                <default>false</default>
+                <label>Consulta movimientos</label>
+            </value>
+            <value>
+                <fullName>Contratación</fullName>
+                <default>false</default>
+                <label>Contratación</label>
+            </value>
+            <value>
+                <fullName>Datos</fullName>
+                <default>false</default>
+                <label>Datos</label>
+            </value>
+            <value>
+                <fullName>Débito Automático</fullName>
+                <default>false</default>
+                <label>Débito Automático</label>
+            </value>
+            <value>
+                <fullName>Desbloqueo y reseteos</fullName>
+                <default>false</default>
+                <label>Desbloqueo y reseteos</label>
+            </value>
+            <value>
+                <fullName>Descarga ficheros</fullName>
+                <default>false</default>
+                <label>Descarga ficheros</label>
+            </value>
+            <value>
+                <fullName>Employee Id</fullName>
+                <default>false</default>
+                <label>Employee Id</label>
+            </value>
+            <value>
+                <fullName>Envío de guías y formularios</fullName>
+                <default>false</default>
+                <label>Envío de guías y formularios</label>
+            </value>
+            <value>
+                <fullName>Estado de Cuenta</fullName>
+                <default>false</default>
+                <label>Estado de Cuenta</label>
+            </value>
+            <value>
+                <fullName>Estado de Ordenes de Pago</fullName>
+                <default>false</default>
+                <label>Estado de Ordenes de Pago</label>
+            </value>
+            <value>
+                <fullName>Exoneración/Baja/Digitalización de firmas</fullName>
+                <default>false</default>
+                <label>Exoneración/Baja/Digitalización de firmas</label>
+            </value>
+            <value>
+                <fullName>Factoring</fullName>
+                <default>false</default>
+                <label>Factoring</label>
+            </value>
+            <value>
+                <fullName>Fast cash</fullName>
+                <default>false</default>
+                <label>Fast cash</label>
+            </value>
+            <value>
+                <fullName>FFMM</fullName>
+                <default>false</default>
+                <label>FFMM</label>
+            </value>
+            <value>
+                <fullName>Firma Fichero</fullName>
+                <default>false</default>
+                <label>Firma Fichero</label>
+            </value>
+            <value>
+                <fullName>Formación</fullName>
+                <default>false</default>
+                <label>Formación</label>
+            </value>
+            <value>
+                <fullName>Funcionalidad local</fullName>
+                <default>false</default>
+                <label>Funcionalidad local</label>
+            </value>
+            <value>
+                <fullName>Gestión con Banca Automática</fullName>
+                <default>false</default>
+                <label>Gestión con Banca Automática</label>
+            </value>
+            <value>
+                <fullName>Gestión de Implementación</fullName>
+                <default>false</default>
+                <label>Gestión de Implementación</label>
+            </value>
+            <value>
+                <fullName>Gestiones Token</fullName>
+                <default>false</default>
+                <label>Gestiones Token</label>
+            </value>
+            <value>
+                <fullName>Gestion tokens</fullName>
+                <default>false</default>
+                <label>Gestion tokens</label>
+            </value>
+            <value>
+                <fullName>Global Help Desk</fullName>
+                <default>false</default>
+                <label>Global Help Desk</label>
+            </value>
+            <value>
+                <fullName>Histórico de Movimientos</fullName>
+                <default>false</default>
+                <label>Histórico de Movimientos</label>
+            </value>
+            <value>
+                <fullName>Identificación cargos/abonos</fullName>
+                <default>false</default>
+                <label>Identificación cargos/abonos</label>
+            </value>
+            <value>
+                <fullName>Incidencias con el Monitor</fullName>
+                <default>false</default>
+                <label>Incidencias con el Monitor</label>
+            </value>
+            <value>
+                <fullName>Indisponibilidad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Indisponibilidad</label>
+            </value>
+            <value>
+                <fullName>Información de la plataforma</fullName>
+                <default>false</default>
+                <label>Información de la plataforma</label>
+            </value>
+            <value>
+                <fullName>Información duplicada</fullName>
+                <default>false</default>
+                <label>Información duplicada</label>
+            </value>
+            <value>
+                <fullName>Información errónea</fullName>
+                <default>false</default>
+                <label>Información errónea</label>
+            </value>
+            <value>
+                <fullName>Información faltante</fullName>
+                <default>false</default>
+                <label>Información faltante</label>
+            </value>
+            <value>
+                <fullName>Informes</fullName>
+                <default>false</default>
+                <label>Informes</label>
+            </value>
+            <value>
+                <fullName>Interfaz GMM</fullName>
+                <default>false</default>
+                <label>Interfaz GMM</label>
+            </value>
+            <value>
+                <fullName>ISM</fullName>
+                <default>false</default>
+                <label>ISM</label>
+            </value>
+            <value>
+                <fullName>Leasing</fullName>
+                <default>false</default>
+                <label>Leasing</label>
+            </value>
+            <value>
+                <fullName>Letras y Facturas</fullName>
+                <default>false</default>
+                <label>Letras y Facturas</label>
+            </value>
+            <value>
+                <fullName>Límites servicios / Error de Parametría</fullName>
+                <default>false</default>
+                <label>Límites servicios / Error de Parametría</label>
+            </value>
+            <value>
+                <fullName>Mala atención call/mail center</fullName>
+                <default>false</default>
+                <label>Mala atención call/mail center</label>
+            </value>
+            <value>
+                <fullName>Modificación Parametrización</fullName>
+                <default>false</default>
+                <label>Modificación Parametrización</label>
+            </value>
+            <value>
+                <fullName>Modificación recaudos - caudales</fullName>
+                <default>false</default>
+                <label>Modificación recaudos - caudales</label>
+            </value>
+            <value>
+                <fullName>Monitor</fullName>
+                <default>false</default>
+                <label>Monitor</label>
+            </value>
+            <value>
+                <fullName>Movimientos del día</fullName>
+                <default>false</default>
+                <label>Movimientos del día</label>
+            </value>
+            <value>
+                <fullName>MT101</fullName>
+                <default>false</default>
+                <label>MT101</label>
+            </value>
+            <value>
+                <fullName>MT940</fullName>
+                <default>false</default>
+                <label>MT940</label>
+            </value>
+            <value>
+                <fullName>One Bank</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>One Bank</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <label>Otros</label>
+            </value>
+            <value>
+                <fullName>Pago/Informe CTS</fullName>
+                <default>false</default>
+                <label>Pago/Informe CTS</label>
+            </value>
+            <value>
+                <fullName>Pago AFP</fullName>
+                <default>false</default>
+                <label>Pago AFP</label>
+            </value>
+            <value>
+                <fullName>Pago de Servicios e Instituciones</fullName>
+                <default>false</default>
+                <label>Pago de Servicios e Instituciones</label>
+            </value>
+            <value>
+                <fullName>Pagos Masivos Online</fullName>
+                <default>false</default>
+                <label>Pagos Masivos Online</label>
+            </value>
+            <value>
+                <fullName>Pagos Masivos por Horarios</fullName>
+                <default>false</default>
+                <label>Pagos Masivos por Horarios</label>
+            </value>
+            <value>
+                <fullName>Pagos Recibidos</fullName>
+                <default>false</default>
+                <label>Pagos Recibidos</label>
+            </value>
+            <value>
+                <fullName>Pago SUNAT</fullName>
+                <default>false</default>
+                <label>Pago SUNAT</label>
+            </value>
+            <value>
+                <fullName>Parametrizacion</fullName>
+                <default>false</default>
+                <label>Parametrizacion</label>
+            </value>
+            <value>
+                <fullName>Posición Global en Línea</fullName>
+                <default>false</default>
+                <label>Posición Global en Línea</label>
+            </value>
+            <value>
+                <fullName>Posición Global Histórico</fullName>
+                <default>false</default>
+                <label>Posición Global Histórico</label>
+            </value>
+            <value>
+                <fullName>Primeros descartes</fullName>
+                <default>false</default>
+                <label>Primeros descartes</label>
+            </value>
+            <value>
+                <fullName>Problemas de ingreso a la Plataforma</fullName>
+                <default>false</default>
+                <label>Problemas de ingreso a la Plataforma</label>
+            </value>
+            <value>
+                <fullName>Proceso fichero cliente</fullName>
+                <default>false</default>
+                <label>Proceso fichero cliente</label>
+            </value>
+            <value>
+                <fullName>Proceso fichero rates</fullName>
+                <default>false</default>
+                <label>Proceso fichero rates</label>
+            </value>
+            <value>
+                <fullName>Rate(s) incorrecto(s)</fullName>
+                <default>false</default>
+                <label>Rate(s) incorrecto(s)</label>
+            </value>
+            <value>
+                <fullName>Recepción de ficheros</fullName>
+                <default>false</default>
+                <label>Recepción de ficheros</label>
+            </value>
+            <value>
+                <fullName>Recepción informes</fullName>
+                <default>false</default>
+                <label>Recepción informes</label>
+            </value>
+            <value>
+                <fullName>Recepción pago anticipado plataforma</fullName>
+                <default>false</default>
+                <label>Recepción pago anticipado plataforma</label>
+            </value>
+            <value>
+                <fullName>Recepción respuesta desde plataforma</fullName>
+                <default>false</default>
+                <label>Recepción respuesta desde plataforma</label>
+            </value>
+            <value>
+                <fullName>Recupero cheques</fullName>
+                <default>false</default>
+                <label>Recupero cheques</label>
+            </value>
+            <value>
+                <fullName>Recupero pagos masivos</fullName>
+                <default>false</default>
+                <label>Recupero pagos masivos</label>
+            </value>
+            <value>
+                <fullName>Reenvío claves F6</fullName>
+                <default>false</default>
+                <label>Reenvío claves F6</label>
+            </value>
+            <value>
+                <fullName>Respuestas</fullName>
+                <default>false</default>
+                <label>Respuestas</label>
+            </value>
+            <value>
+                <fullName>Revisión de TXT/estructura/Macro</fullName>
+                <default>false</default>
+                <label>Revisión de TXT/estructura/Macro</label>
+            </value>
+            <value>
+                <fullName>Salto pais</fullName>
+                <default>false</default>
+                <label>Salto pais</label>
+            </value>
+            <value>
+                <fullName>SFC</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SFC</label>
+            </value>
+            <value>
+                <fullName>Solicitud info</fullName>
+                <default>false</default>
+                <label>Solicitud info</label>
+            </value>
+            <value>
+                <fullName>Solicitud tokens</fullName>
+                <default>false</default>
+                <label>Solicitud tokens</label>
+            </value>
+            <value>
+                <fullName>Tarifarios</fullName>
+                <default>false</default>
+                <label>Tarifarios</label>
+            </value>
+            <value>
+                <fullName>Tarjetas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tarjetas</label>
+            </value>
+            <value>
+                <fullName>T-Cambio</fullName>
+                <default>false</default>
+                <label>T-Cambio</label>
+            </value>
+            <value>
+                <fullName>Time Out - Recaudos</fullName>
+                <default>false</default>
+                <label>Time Out - Recaudos</label>
+            </value>
+            <value>
+                <fullName>Token SW</fullName>
+                <default>false</default>
+                <label>Token SW</label>
+            </value>
+            <value>
+                <fullName>Transferencias al Exterior</fullName>
+                <default>false</default>
+                <label>Transferencias al Exterior</label>
+            </value>
+            <value>
+                <fullName>Transferencias Interbancarias</fullName>
+                <default>false</default>
+                <label>Transferencias Interbancarias</label>
+            </value>
+            <value>
+                <fullName>Transferencias Propio banco (Propia/3ro)</fullName>
+                <default>false</default>
+                <label>Transferencias Propio banco (Propia/3ro)</label>
+            </value>
+            <value>
+                <fullName>Upload fichero</fullName>
+                <default>false</default>
+                <label>Upload fichero</label>
+            </value>
+            <value>
+                <fullName>Validación de cuentas</fullName>
+                <default>false</default>
+                <label>Validación de cuentas</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Alta producto</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Alta servicio/cuenta</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Contratación</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <valueName>Datos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Formación</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Modificación Parametrización</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Otros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <valueName>Recepción informes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Alta proveedor en la plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Cálculo solicitud descuento</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Carga factura en la plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <valueName>Conectividad fichero cliente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Información de la plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <valueName>Proceso fichero cliente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Proceso fichero rates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Rate(s) incorrecto(s)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Recepción pago anticipado plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <valueName>Recepción respuesta desde plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <valueName>Informes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <valueName>Respuestas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Activación de Token Digital</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Anulación órdenes de pago</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Asignación/baja de Token</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Bloqueo por deuda</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Bloqueo por VISALERT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Cambio de Versión</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Carta Fianza</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Chequeras</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Cobros/Comisiones</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Comercio Exterior</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Configuración usuario-empresa</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Consulta horario de procesos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Débito Automático</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Desbloqueo y reseteos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Envío de guías y formularios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Estado de Cuenta</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Estado de Ordenes de Pago</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Exoneración/Baja/Digitalización de firmas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Factoring</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Fast cash</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>FFMM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Gestión con Banca Automática</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Gestión de Implementación</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Gestiones Token</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Histórico de Movimientos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Identificación cargos/abonos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>ISM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Leasing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Letras y Facturas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Límites servicios / Error de Parametría</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Mala atención call/mail center</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Modificación recaudos - caudales</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Movimientos del día</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>MT101</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>MT940</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pago/Informe CTS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pago AFP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pago de Servicios e Instituciones</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pagos Masivos Online</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pagos Masivos por Horarios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pagos Recibidos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Pago SUNAT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Posición Global en Línea</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Posición Global Histórico</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Primeros descartes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Problemas de ingreso a la Plataforma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Recupero cheques</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Recupero pagos masivos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Reenvío claves F6</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Revisión de TXT/estructura/Macro</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Tarifarios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>T-Cambio</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Time Out - Recaudos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Transferencias al Exterior</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Transferencias Interbancarias</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Transferencias Propio banco (Propia/3ro)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Validación de cuentas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Acceso</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Activacion</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Administracion usuarios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Alta funcionalidad</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Consulta fichero</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Consulta movimientos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Descarga ficheros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Firma Fichero</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Funcionalidad local</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Gestion tokens</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Salto pais</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Solicitud tokens</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Token SW</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Upload fichero</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Conectividad</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Employee Id</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Incidencias con el Monitor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Información duplicada</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Información errónea</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Información faltante</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <valueName>Recepción de ficheros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Global Help Desk</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Interfaz GMM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Monitor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Parametrizacion</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>Solicitud info</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

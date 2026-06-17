@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MiFID_categorisation__c</fullName>
+    <label>MiFID categorisation​</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Minorista</fullName>
+                <default>false</default>
+                <label>Minorista</label>
+            </value>
+            <value>
+                <fullName>Profesional</fullName>
+                <default>false</default>
+                <label>Profesional</label>
+            </value>
+            <value>
+                <fullName>Elegible</fullName>
+                <default>false</default>
+                <label>Elegible</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

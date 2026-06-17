@@ -1,0 +1,1 @@
+<aura:event type="APPLICATION" description="Event that triggers the reloading of tabset configuration."/>

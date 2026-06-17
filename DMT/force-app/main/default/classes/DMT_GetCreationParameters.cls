@@ -12,13 +12,11 @@ global with sharing class DMT_GetCreationParameters implements Callable{
 
     global Boolean invokeMethod(String methodName, Map<String, Object> inputs, Map<String, Object> output, Map<String, Object> options) {
         if (methodName == 'getCreationParametersList') {
-            List<String> roles = new List<String>();
-           
+            List<String> roles = new List<String>();system.debug('getcre'+ inputs);           
             for(Object obj : (List<Object>) inputs.get('roles')){
                 roles.add((String)obj);                    
             }
-            
-            output.put('result', getCreationParametersList(roles, (String)inputs.get('RecordTypeName')));
+            output.put('result', getCreationParametersList(roles, (String)inputs.get('RecordTypeName'), (Boolean)inputs.get('isSubsidiary'), (String)inputs.get('groupId'), (String)inputs.get('ClientId')));
         }if(methodName == 'getEntityValues'){
             String entific = (String)inputs.get('Entific');
             String initialCatalog = (String)inputs.get('initialCatalog');
@@ -95,26 +93,37 @@ global with sharing class DMT_GetCreationParameters implements Callable{
     }
 
     //This method retrieves the values of taxonomy that the user has access on his role
-    public String getCreationParametersList(list<String> roles, String RecordTypeName){
-       
-        List<DMT_Creation_Line_Parameters__mdt> creationParametersReturn = new List<DMT_Creation_Line_Parameters__mdt> ();
-        if(!roles.isEmpty()){
-            List<String> creationParameterValues = new List<String> ();
+    public String getCreationParametersList(final list<String> roles, final String RecordTypeName, final Boolean isSubsidiary, final String groupId, final String clientId) {
+        final List<DMT_Creation_Line_Parameters__mdt> creationParametersReturn = new List<DMT_Creation_Line_Parameters__mdt>();
 
-            List<DMT_Creation_Line_Parameters__mdt> allcreationParameters = [SELECT Id, DeveloperName, MasterLabel, Language, NamespacePrefix, Label, QualifiedApiName, SystemModstamp, DMT_Role__c, DMT_Value__c, DMT_Operation_Type__c FROM DMT_Creation_Line_Parameters__mdt WHERE DMT_Role__c IN: roles AND DMT_Operation_Type__c=: RecordTypeName];
-            
-            if(!allcreationParameters.isEmpty() && allcreationParameters != null){
-                for(DMT_Creation_Line_Parameters__mdt aux : allcreationParameters){
-                    if(!creationParameterValues.contains(aux.DMT_Value__c)){
+        if(!roles.isEmpty()) {
+            final Id groupRtId      = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+            final Id subsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+            final List<String> creationParameterValues = new List<String> ();
+            String clientType;
 
+            if (groupId != null || clientId != null) {
+                List<Account> acc = [SELECT Id, RecordType.Id FROM Account WHERE DES_Group_Code__c =: groupId OR g_customer_Id__C =: clientId LIMIT 1];
+                if(acc.size() > 0) {
+                    //Prospects
+                    if(acc[0].RecordType.Id == groupRtId || acc[0].RecordType.Id == subsidiaryRtId) {
+                        clientType = isSubsidiary == true || isSubsidiary == null ? 'Prospect Customer' : 'Prospect Group';
+                    //Clients
+                    } else {
+                        clientType = isSubsidiary == true || isSubsidiary == null ? 'Customer' : 'Group';
+                    }
+                }
+            }
+            final List<DMT_Creation_Line_Parameters__mdt> allcreationParameters = [SELECT Id, DeveloperName, MasterLabel, Language, NamespacePrefix, Label, QualifiedApiName, SystemModstamp, DMT_Role__c, DMT_Value__c, DMT_Operation_Type__c FROM DMT_Creation_Line_Parameters__mdt WHERE DMT_Role__c IN: roles AND DMT_Operation_Type__c=: RecordTypeName AND DMT_Client_Type__c=: clientType];
+            if(!allcreationParameters.isEmpty() && allcreationParameters != null) {
+                for(DMT_Creation_Line_Parameters__mdt aux : allcreationParameters) {
+                    if(!creationParameterValues.contains(aux.DMT_Value__c)) {
                         creationParametersReturn.add(aux);
                         creationParameterValues.add(aux.DMT_Value__c);
-
                     }
                 }
             }
         }
-
         return JSON.serialize(creationParametersReturn);
     }
 }

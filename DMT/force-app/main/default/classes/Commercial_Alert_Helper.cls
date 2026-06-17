@@ -169,9 +169,9 @@ public with sharing class Commercial_Alert_Helper {
       }
     }
 
-    final List<Account> accountsIds = new List <Account>([SELECT Id, SER_CClient__c
+    final List<Account> accountsIds = new List <Account>([SELECT Id, g_customer_id__c
                                                           FROM Account
-                                                          WHERE SER_CClient__c IN :setParticName]);
+                                                          WHERE g_customer_id__c IN :setParticName]);
 
     return fillmapExtId(accountsIds);
   }
@@ -184,8 +184,8 @@ public with sharing class Commercial_Alert_Helper {
     final Map<String, String> mapExtId = new Map <String, String>();
 
     for(Account iAccount : accountsIds) {
-      if(iAccount.SER_CClient__c != null && mapExtId.get(iAccount.SER_CClient__c) == null) {
-        mapExtId.put(iAccount.SER_CClient__c, iAccount.Id);
+      if(iAccount.g_customer_id__c != null && mapExtId.get(iAccount.g_customer_id__c) == null) {
+        mapExtId.put(iAccount.g_customer_id__c, iAccount.Id);
       }
     }
 
@@ -1393,14 +1393,14 @@ public with sharing class Commercial_Alert_Helper {
       }
 
       final Map<Id, Account> mapAccountId = new Map<Id, Account>([SELECT Id,
-                                                                    SER_CClient__c
+                                                                    g_customer_id__c
                                                                   FROM Account
                                                                   WHERE Id IN :setAccountId]);
 
       for(altm__Commercial_Alert__c iCommercialAlert : newList) {
         if(iCommercialAlert.altm__participant_id__c != null
-          && mapAccountId.get(iCommercialAlert.altm__participant_id__c).SER_CClient__c != null) {
-          iCommercialAlert.Name = iCommercialAlert.Name + '_' + mapAccountId.get(iCommercialAlert.altm__participant_id__c).SER_CClient__c;
+          && mapAccountId.get(iCommercialAlert.altm__participant_id__c).g_customer_id__c != null) {
+          iCommercialAlert.Name = iCommercialAlert.Name + '_' + mapAccountId.get(iCommercialAlert.altm__participant_id__c).g_customer_id__c;
         }
       }
     }
@@ -1412,16 +1412,16 @@ public with sharing class Commercial_Alert_Helper {
   public static void setNameOnUpdate(Map<Id, altm__Commercial_Alert__c> newMap, Map<Id, altm__Commercial_Alert__c> oldMap) {
     final Map <Id, altm__Commercial_Alert__c> mapAlerts = new Map <Id, altm__Commercial_Alert__c>([SELECT Id, //NOSONAR
                                                                                                     altm__participant_id__c,
-                                                                                                    altm__participant_id__r.SER_CClient__c
+                                                                                                    altm__participant_id__r.g_customer_id__c
                                                                                                   FROM altm__Commercial_Alert__c
                                                                                                   WHERE Id IN :newMap.values()]);
 
     for(altm__Commercial_Alert__c iCommercialAlert : newMap.values()) {
       if(USERNAME != AUTOMATED_PR && (PROFILENAME == Label.DES_ADMIN_PROFILE || PROFILENAME == Label.DES_INTEGRATION_PROFILE)
         && (oldMap.get(iCommercialAlert.Id).altm__participant_id__c != iCommercialAlert.altm__participant_id__c
-          || oldMap.get(iCommercialAlert.Id).altm__participant_id__r.SER_CClient__c != iCommercialAlert.altm__participant_id__r.SER_CClient__c
+          || oldMap.get(iCommercialAlert.Id).altm__participant_id__r.g_customer_id__c != iCommercialAlert.altm__participant_id__r.g_customer_id__c
           || oldMap.get(iCommercialAlert.Id).Name != iCommercialAlert.Name)) {
-        iCommercialAlert.Name = iCommercialAlert.Name + '_' + mapAlerts.get(iCommercialAlert.Id).altm__participant_id__r.SER_CClient__c;
+        iCommercialAlert.Name = iCommercialAlert.Name + '_' + mapAlerts.get(iCommercialAlert.Id).altm__participant_id__r.g_customer_id__c;
       }
     }
   }

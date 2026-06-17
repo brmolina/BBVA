@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_EXP_REV__c</fullName>
+    <label>EXP REV</label>
+    <summarizedField>Opportunity.ExpectedRevenue</summarizedField>
+    <summaryFilterItems>
+        <field>Opportunity.CloseDate</field>
+        <operation>greaterThan</operation>
+        <value>1/1/2017</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Opportunity.AccountId</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

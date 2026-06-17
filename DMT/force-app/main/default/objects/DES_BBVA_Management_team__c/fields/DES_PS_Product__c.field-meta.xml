@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_PS_Product__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>PS Product</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>You have to select a product from the current Product Family</errorMessage>
+        <filterItems>
+            <field>$Source.DES_PS_Product_Family__c</field>
+            <operation>equals</operation>
+            <valueField>Product2.Family</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Product2</referenceTo>
+    <relationshipLabel>BBVA Client team</relationshipLabel>
+    <relationshipName>BBVA_Client_team</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_lcl_strg_covrg_prdt_tm_type__c</fullName>
+    <label>Local Overall Strategy</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Grow</fullName>
+                <default>false</default>
+                <label>Grow</label>
+            </value>
+            <value>
+                <fullName>Maintain</fullName>
+                <default>false</default>
+                <label>Maintain</label>
+            </value>
+            <value>
+                <fullName>Service</fullName>
+                <default>false</default>
+                <label>Service</label>
+            </value>
+            <value>
+                <fullName>Exit</fullName>
+                <default>false</default>
+                <label>Exit</label>
+            </value>
+            <value>
+                <fullName>Onboard</fullName>
+                <default>false</default>
+                <label>Onboard</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

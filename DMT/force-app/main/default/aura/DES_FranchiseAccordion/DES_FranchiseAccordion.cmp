@@ -1,0 +1,816 @@
+<aura:component controller="DES_FranchiseAccordion_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+access="global">
+    
+	<aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="franchiseObject" type="List"/>
+    
+    <aura:attribute name="ptTrue" type="boolean"/>
+    <aura:attribute name="alturaTrue" type="boolean"/>
+    <aura:attribute name="bancomerTrue" type="boolean"/>
+    <aura:attribute name="colombiaTrue" type ="boolean"/>
+    <aura:attribute name="continentalTrue" type ="boolean"/>
+    <aura:attribute name="compassTrue" type ="boolean"/>
+    <aura:attribute name="provincialTrue" type ="boolean"/>
+    <aura:attribute name="activeSections" type="List" default="['A']" />
+    <aura:attribute name="bbvasaSalesRoom" type="String"/>
+    <aura:attribute name="ptSalesRoom" type="String"/>
+    <aura:attribute name="alturaSalesRoom" type="String"/>
+    <aura:attribute name="bancomerSalesRoom" type="String"/>
+    <aura:attribute name="colombiaSalesRoom" type="String"/>
+    <aura:attribute name="continentalSalesRoom" type="String"/>
+    <aura:attribute name="compassSalesRoom" type="String"/>
+    <aura:attribute name="provincialSalesRoom" type="String"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }" activeSectionName="{! v.activeSections }">
+        <lightning:accordionSection name="A" label="Franchise">
+ 			<div>
+            <ul class="slds-tabs--default__nav" role="tablist">
+                <li  aura:id="bbvasaId" class="slds-tabs--scoped__item slds-text-title--caps slds-active active-color" title="BBVASA" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.bbvasaTab}" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-default-1" id="bbvasa_linking">BBVASA</a></li>
+                
+                <aura:if isTrue="{!v.ptTrue}"> 
+                    <li  aura:id="ptId" class="slds-tabs--scoped__item slds-text-title--caps" title="PT" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.ptTab}" role="tab" tabindex="-1" aria-selected="true" aria-controls="tab-default-2" id="pt_linking">PT</a></li>
+                </aura:if>
+                <aura:if isTrue="{!v.alturaTrue}"> 
+                    <li  aura:id="alturaId" class="slds-tabs--scoped__item slds-text-title--caps" title="Altura" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.alturaTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-3" id="altura_linking">ALTURA</a></li>    
+                </aura:if>	
+                <aura:if isTrue="{!v.bancomerTrue}">
+                    <li aura:id="bancomerId" class="slds-tabs--scoped__item slds-text-title--caps" title="Bancomer" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.bancomerTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="bancomer_linking">BANCOMER</a></li>    
+                </aura:if>
+                <aura:if isTrue="{!v.colombiaTrue}">
+                    <li aura:id="colombiaId" class="slds-tabs--scoped__item slds-text-title--caps" title="Colombia" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.colombiaTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="colombia_linking">COLOMBIA</a></li>
+                </aura:if>
+                <aura:if isTrue="{!v.continentalTrue}">
+                    <li aura:id="continentalId" class="slds-tabs--scoped__item slds-text-title--caps" title="Continental" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.continentalTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="continental_linking">CONTINENTAL</a></li>
+                </aura:if>
+                <aura:if isTrue="{!v.compassTrue}">
+                    <li aura:id="compassId" class="slds-tabs--scoped__item slds-text-title--caps" title="Compass" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.compassTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="compass_linking">COMPASS</a></li>
+                </aura:if>
+                <aura:if isTrue="{!v.provincialTrue}">
+                    <li aura:id="provincialId" class="slds-tabs--scoped__item slds-text-title--caps" title="Provincial" role="presentation"><a class="slds-tabs--scoped__link" href="javascript:void(0);" onclick="{!c.provincialTab}" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-4" id="compass_linking">PROVINCIAL</a></li>
+                </aura:if>
+            </ul>
+            
+            <table class="slds-table slds-table_fixed-layout slds-page-header data-row">     
+                <thead>
+                    <tr> 
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--left" style="font-weight:bold;color:black" title="None">PRODUCT</div></th>
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--right" style="font-weight:bold;color:black" title="PY">PY</div></th>
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--right" style="font-weight:bold;color:black" title="PYTD">PYTD</div></th>
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--right" style="font-weight:bold;color:black" title="YTD">YTD</div></th>
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--right" style="font-weight:bold;color:black" title="MTD">MTD</div></th>
+                        <th scope="col" class="slds-size_1-of-6 franchiseData" style="background-color:#E0E6F8;width:20%;"><div class="slds-text-align--right" style="font-weight:bold;color:black" title="Last Trade">Last Trade</div></th>
+                    </tr>
+                </thead>
+            </table> 
+            
+            <ul class="slds-accordion">
+                
+                <li class="slds-accordion__list-item">
+                        
+                        <div class="slds-accordion__summary">   
+                            <h3 class="slds-text-heading_small slds-accordion__summary-heading"> 
+                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                    <div class="slds-button" onclick="{!c.sectionOne}" data-id="{!'busline'}" style="text-align:left">
+                                        <div class="slds-grid"  style="text-align:left;color:black">
+                                            <div id="{!'first_busline'}" class="slds-hide margin-icon"> 
+                                                <lightning:icon aura:id="{!'first_busline'}" class="icono" iconName="utility:chevronright" variant="error" size="x-small" alternativeText="Open"/>
+                                            </div>
+                                            <div id="{!'second_busline'}" class="margin-icon">
+                                                <lightning:icon aura:id="{!'second_busline'}"  class="slds-show icono" iconName="utility:chevrondown" variant="error" size="x-small" alternativeText="Close"/>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-6" style="font-weight:bold">
+                                                <span class="slds-truncate" style="font-weight:bold" title="Business Line">Business Line</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </h3>
+                            </h3>
+                        </div>
+        
+                        <table class="slds-table slds-table_fixed-layout slds-page-header data-row" id="{!'third_busline'}" data-name="{!'third_busline'}" style="background-color:white;width:100%" width="100%">
+                            
+                                <thead style="width:100%" width="100%" aura:id="{!'bbvasaDataId'}" data-name="{!'bbvasaDataId'}" id="{!'bbvasaDataId'}">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}"> 
+                                            <tr style="width:100%" width="100%">  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA SA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">     
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+                            
+                                <thead style="width:100%" aura:id="{!'ptDataId'}" data-name="{!'ptDataId'}" id="{!'ptDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">                              
+                                            <tr style="width:100%">  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA PORTUGAL'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                </thead>
+        
+                                <thead aura:id="{!'alturaDataId'}" data-name="{!'alturaDataId'}" id="{!'alturaDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'ALTURA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'bancomerDataId'}" data-name="{!'bancomerDataId'}" id="{!'bancomerDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA BANCOMER'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'colombiaDataId'}" data-name="{!'colombiaDataId'}" id="{!'colombiaDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA COLOMBIA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'continentalDataId'}" data-name="{!'continentalDataId'}" id="{!'continentalDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA CONTINENTAL'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'compassDataId'}" data-name="{!'compassDataId'}" id="{!'compassDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'COMPASS BANK'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'provincialDataId'}" data-name="{!'provincialDataId'}" id="{!'provincialDataId'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Business Line'}">   
+                                            <tr>  
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA BANCO PROVINCIAL'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>                                     
+                                            </tr>
+                                        
+                                    </aura:if>   
+                                </aura:iteration>
+                                    </thead>
+                        </table> 
+        
+                </li>
+                
+                
+                <li class="slds-accordion__list-item">
+                        
+                        <div class="slds-accordion__summary">   
+                            <h3 class="slds-text-heading_small slds-accordion__summary-heading"> 
+                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                    <div class="slds-button" onclick="{!c.sectionOne}" data-id="{!'assetClass'}" style="text-align:left">
+                                        <div class="slds-grid"  style="text-align:left;color:black">
+                                            <div id="{!'first_assetClass'}" class="slds-hide margin-icon"> 
+                                                <lightning:icon aura:id="{!'first_assetClass'}" class="icono" iconName="utility:chevronright" variant="error" size="x-small" alternativeText="Open"/>
+                                            </div>
+                                            <div id="{!'second_assetClass'}" class="margin-icon">
+                                                <lightning:icon aura:id="{!'second_assetClass'}"  class="slds-show icono" iconName="utility:chevrondown" variant="error" size="x-small" alternativeText="Close"/>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-6" style="font-weight:bold">
+                                                <span class="slds-truncate" style="font-weight:bold" title="Asset Class">Asset Class</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </h3>
+                            </h3>
+                        </div>
+                        
+                        <table class="slds-table slds-table_fixed-layout slds-page-header data-row slds-border_bottom" id="{!'third_assetClass'}" data-name="{!'third_assetClass'}" style="background-color:white">
+                            
+                                <thead aura:id="{!'bbvasaDataId'}" data-name="{!'bbvasaDataId'}" id="{!'bbvasaDataId_asset'}" style="width:100%">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA SA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+                                    
+                                <thead aura:id="{!'ptDataId'}" data-name="{!'ptDataId'}" id="{!'ptDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA PORTUGAL'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'alturaDataId'}" data-name="{!'alturaDataId'}" id="{!'alturaDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'ALTURA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'bancomerDataId'}" data-name="{!'bancomerDataId'}" id="{!'bancomerDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA BANCOMER'}">
+        
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+                                    
+                                <thead aura:id="{!'colombiaDataId'}" data-name="{!'colombiaDataId'}" id="{!'colombiaDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA COLOMBIA'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'continentalDataId'}" data-name="{!'continentalDataId'}" id="{!'continentalDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA CONTINENTAL'}">
+        
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'compassDataId'}" data-name="{!'compassDataId'}" id="{!'compassDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'COMPASS BANK'}">
+        
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+        
+                                <thead aura:id="{!'provincialDataId'}" data-name="{!'provincialDataId'}" id="{!'provincialDataId_asset'}" class="slds-hide">
+                                <aura:iteration items="{!v.franchiseObject}" var="franchise" indexVar="idx2"> 
+                                    <aura:if isTrue="{!franchise.DES_Type_of_vision__c == 'Asset Class'}"> 
+                                        
+                                            <tr>
+                                                <aura:if isTrue="{!franchise.DES_Entity__c == 'BBVA BANCO PROVINCIAL'}">
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--left margin-column" style="font-weight:bold;color:grey">{!franchise.DES_Vision__c}</div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PY_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_PYTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>  
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_YTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th> 
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedNumber value="{!franchise.DES_MTD_Franchise__c}" style="currency" currencyCode="EUR"/>
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col" class="slds-size_1-of-6 franchiseData">       
+                                                        <div class="slds-text-align--right">
+                                                            <lightning:formattedDateTime value="{!franchise.DES_Last_Trade_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                                        </div>
+                                                    </th> 
+                                                </aura:if>
+                                            </tr>
+                                        
+                                    </aura:if> 
+                                </aura:iteration>
+                                    </thead>
+                            
+                    </table> 
+        
+                </li>
+                <li class="slds-accordion__list-item">
+                    <table class="slds-table slds-table_fixed-layout slds-page-header data-row slds-border_bottom">
+                        <div id="{!'bbvasaSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div>
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.bbvasaSalesRoom}</div>              
+                        </div>
+                        <div id="{!'ptSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.ptSalesRoom} </div>
+                        </div>
+                        <div id="{!'alturaSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.alturaSalesRoom}</div>
+                        </div>
+                        <div id="{!'bancomerSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.bancomerSalesRoom}</div>
+                        </div> 
+                       <div id="{!'colombiaSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.colombiaSalesRoom}</div>
+                        </div>  
+                       <div id="{!'continentalSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.continentalSalesRoom}</div>
+                        </div>
+                        <div id="{!'compassSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.compassSalesRoom}</div>
+                        </div>
+                        <div id="{!'provincialSalesRoomDataId'}" class="slds-card__body slds-card__body_inner slds-text-align--left top-margin slds-hide margin-column" style="width:50%;float:left">
+                            <div style="font-size:11pt;font-weight:bold;color:black;margin:0px 0px 0px 27px;">Sales Rooms: </div> 
+                            <div style="color:black;font-size:10pt;margin:0px 0px 0px 27px;">{!v.provincialSalesRoom}</div>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner slds-text-align--right top-margin" style="width:50%;float:right;font-weight:bold;color:grey">Ariadna Results (D-1)</div>
+                    </table>
+                </li>
+            </ul>
+        	</div>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

@@ -1,0 +1,328 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-12-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller="GDT_Proposal_Path_Controller" access="global">
+    <!-- Atributos -->
+    <aura:attribute name="fieldValuesMap" type="Map" access="global"/> 
+    <aura:attribute name="isCheckboxChecked" type="Boolean" default="false" access="public" />
+    <aura:attribute name="comboBoxOptions5" type="List" default="[{'label': 'Yes', 'value': 'yes'}, {'label': 'No', 'value': 'no'}]" />
+   <aura:attribute name="comboBoxOptions6" type="List"
+        default="[{'label': 'Global Banker', 'value': 'GB'}, {'label': 'Industry Head', 'value': 'IH'}, {'label': 'First Risk Assessment Committee', 'value': 'FRAC'}]" />
+    <aura:attribute name="comboBoxOptions7" type="List"
+        default="[{'label': 'option 1', 'value': 'option1'}, {'label': 'option 2', 'value': 'option2'}]" />
+    <aura:attribute name="comboBoxOptions8" type="List"
+        default="[
+            {'label': 'Agreed with changes', 'value': '1'},
+            {'label': 'Agreed without changes', 'value': '2'},
+            {'label': 'Raise-confirm', 'value': '3'},
+            {'label': 'Disagree', 'value': '4'},
+            {'label': 'Return', 'value': '5'}
+        ]" />
+    <aura:attribute name="comboBoxOptions9" type="List"
+        default="[
+            {'label': 'Agree', 'value': '1'},
+            {'label': 'Agree with conditions', 'value': '2'},
+            {'label': 'Disagree', 'value': '3'},
+            {'label': 'Refer to Higher Committee for Decision', 'value': '4'},
+            {'label': 'Escalated by CIR', 'value': '5'}
+        ]" />
+    <aura:attribute name="comboBoxOptions10" type="List"
+        default="[
+            {'label': 'Industrials', 'value': 'Industrials'},
+            {'label': 'Energy', 'value': 'Energy'},
+            {'label': 'Consumer and Retail', 'value': 'ConsumerRetail'},
+            {'label': 'Construction and Infra', 'value': 'Construction'},
+            {'label': 'TMT', 'value': 'TMT'}
+        ]" />
+    <aura:attribute name="comboBoxOptions11" type="List"
+        default="[{'label': 'Agree', 'value': 'Agree'}, {'label': 'Disagree', 'value': 'Disagree'}]" />
+    <aura:attribute name="comboBoxOptions12" type="List"
+        default="[{'label': 'CGCC(CIB)', 'value': 'CGCC'}, {'label': 'GCRMC', 'value': 'GCRMC'}]" />
+    <aura:attribute name="comboBoxOptions13" type="List"
+        default="[{'label': 'CIB', 'value': 'CIB'}, {'label': 'HOLDING', 'value': 'HOLDING'}]" />
+    <aura:attribute name="isDateFilled" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="state" type="String" access="public"/> 
+    <aura:attribute name="substate" type="String" access="public"/>
+    <aura:attribute name="showComboBox6" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="showComboBox7" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="showComboBox8" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="showQuest2" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="showQuest3" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="showQuestion2" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="isDisabled" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="isGlobalBanker" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="regionOpt" type="List"/>
+    <aura:attribute name="levelOpt" type="List" />
+    <aura:attribute name="geographyOpt" type="List"/>
+    <aura:attribute name="committeeOpt" type="List" />
+    <aura:attribute name="descriptionOpt" type="List" />
+    <aura:attribute name="taxonomyOpt" type="List" />
+    <aura:attribute name="selectedValueBs" type="String" />
+    <aura:attribute name="selectedValueCm" type="String" />
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="selectedValueCommittee" type="String" />
+    <aura:attribute name="selectedValueContrast" type="String" />
+    <aura:attribute name="selectedValAppCommittee" type="String" />
+	<aura:attribute name="maxCharLimit" type="Integer" default="2000"/>
+    <aura:attribute name="charLengthsMap" type="Map" default="{}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <!-- Contenido -->
+    <div>
+        <!--(Estado 1 y Sub Estado 1) -->
+        <aura:if isTrue="{!v.state == '1' &amp;&amp; v.substate == '1'}">
+             <lightning:combobox name="isCibGroup" 
+                                label="CIB Group?" 
+                                options="{!v.comboBoxOptions5}" 
+                                value="{!v.fieldValuesMap.isCibGroup}" 
+                                onchange="{!c.handleComboBox5Change}"
+                                disabled="{!v.isDisabled}"/>
+
+            <!-- Mostrar comboBox6 si comboBox5 es "yes" -->
+            <aura:if isTrue="{!v.showComboBox6}">
+                <lightning:combobox name="GCRMCProgram" 
+                                    label="Does the Financial Program require approval by the GCC?" 
+                                    options="{!v.comboBoxOptions5}" 
+                                    onchange="{!c.handleComboBox6Change}" 
+                                    value="{!v.fieldValuesMap.GCRMCProgram}"
+                                    disabled="{!v.isDisabled}"/>
+                
+                <!-- Mostrar comboBox7 si comboBox6 tiene un valor específico -->
+                <aura:if isTrue="{!v.showComboBox7}"> 
+                    <lightning:combobox name="CGCCProgram"
+                                    label="Does the Financial Program require approval by the CGCC?"
+                                    options="{!v.comboBoxOptions5}" 
+                                    onchange="{!c.handleComboBox7Change}"
+                                    value="{!v.fieldValuesMap.CGCCProgram}"
+                                    disabled="{!v.isDisabled}"/>
+                    <!-- Mostrar comboBox8 si comboBox7 tiene un valor específico -->
+                    <aura:if isTrue="{!v.showComboBox8}">
+                        <label class="slds-form-element__label">
+                            Does the Commercial Proposal meet any of the following criteria?
+                        </label>
+
+                        <div class="slds-text-body_small slds-m-bottom_x-small slds-text-color_weak">
+                            <ul class="slds-list_dotted slds-m-left_medium">
+                                <li>
+                                    The client incurs any of the "activities that require special attention"
+                                    according to the M&amp;S framework
+                                </li>
+                                <li>
+                                    Profitability (RORC) of the group has been substandard for at least
+                                    the last 6 months
+                                </li>
+                                <li>
+                                    Commercial proposition not aligned with alignment plan or industry Whitebook
+                                </li>
+                                <li>
+                                    Customer TRI >= 7
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Combobox -->
+                        <lightning:combobox
+                            name="ComercialCriteria"
+                            options="{!v.comboBoxOptions5}"
+                            onchange="{!c.handleComboBox8Change}"
+                            value="{!v.fieldValuesMap.ComercialCriteria}"
+                            disabled="{!v.isDisabled}"/>
+                    
+                    </aura:if>
+                </aura:if>
+            </aura:if>
+            <lightning:combobox name="BusinessSanction" 
+                                    label="Business Approver" 
+                                    options="{!v.comboBoxOptions6}" 
+                                    value="{!v.fieldValuesMap.BusinessSanction}"
+                                    disabled="true"/>
+        </aura:if>
+
+        <!-- (Estado 1 y Sub Estado 2) -->
+        <aura:if isTrue="{!v.state == '1' &amp;&amp; v.substate == '2'}">
+            <lightning:combobox name="BusinessSanction" 
+                                label="Business Approver" 
+                                value="{!v.selectedValueBs}"
+                                disabled="true"
+                                options="{!v.comboBoxOptions6}" />
+            <aura:if isTrue="{!v.showQuest2}"> 
+                <lightning:combobox name="IHApproval" 
+                                label="Industry Head who reviewed this Commercial Proposal?"
+                                options="{!v.comboBoxOptions10}" 
+                                value="{!v.fieldValuesMap.IHApproval}"
+                                onchange="{!c.validateSecState}"
+                                disabled="{!v.isDisabled}" />
+            </aura:if>
+            <lightning:combobox name="BADecision" 
+                                label="Business Approver Decision?"
+                                options="{!v.comboBoxOptions9}" 
+                                value="{!v.fieldValuesMap.BADecision}" 
+                                onchange="{!c.validateSecState}" 
+                                disabled="{!v.isDisabled}"/>
+            <lightning:input 	type="date" 
+                                    name="BusinessSanctionDate"
+                                    label="Business approval date" 
+                                    value="{!v.fieldValuesMap.BusinessSanctionDate}" 
+                                    onchange="{!c.updateFieldValue}" 
+                                 	disabled="{!v.isDisabled}"/>
+                <lightning:textarea 
+                    name="BusinessSanctionDetails"
+                    label="Business approval details" 
+                    value="{!v.fieldValuesMap.BusinessSanctionDetails}"
+                    onchange="{!c.validateSecState}" 
+                    onkeyup="{!c.updateCharCount}"
+                    maxlength="{!v.maxCharLimit}"
+                    class="slds-m-top_small" 
+                    disabled="{!v.isDisabled}"/>
+            
+                <p class="slds-text-body_small slds-text-color_weak">
+                    {!v.charLengthsMap.BusinessSanctionDetails} / {!v.maxCharLimit} caracteres
+                </p>
+        </aura:if>
+
+        <!-- (Estado 1 y Sub Estado 3) -->
+        <aura:if isTrue="{!v.state == '1' &amp;&amp; v.substate == '3'}">
+            <p><strong>Ambit to Propose:</strong></p>
+            <lightning:combobox name="geographicalArea" 
+                                label="Geographical Area" 
+                                options="{!v.regionOpt}" 
+                                value="{!v.fieldValuesMap.geographicalArea}" 
+                                onchange="{!c.regionChange}"  
+                                disabled="{!v.isDisabled}"/>
+            <lightning:combobox name="ambit" 
+                                label="Ambit to Propose" 
+                                options="{!v.levelOpt}"  
+                                value="{!v.fieldValuesMap.ambit}" 
+                                onchange="{!c.levelChange}" 
+                                disabled="{!v.isDisabled}"/>
+            <lightning:combobox name="dmt" 
+                                label="DMT Group" 
+                                options="{!v.descriptionOpt}" 
+                                value="{!v.fieldValuesMap.dmt}" 
+                                onchange="{!c.validateThirdState}" 
+                                disabled="{!v.isDisabled}"/>
+        </aura:if>
+        <!-- (Estado 2 y Sub Estado 4) -->
+        <aura:if isTrue="{!v.state == '2' &amp;&amp; v.substate == '4'}">
+            <lightning:combobox name="localApprGeo" 
+                                label="Local Approval Geography?" 
+                                options="{!v.geographyOpt}" 
+                                value="{!v.fieldValuesMap.localApprGeo}" 
+                                onchange="{!c.geographyChange}"
+                                disabled="{!v.isDisabled}"/> 
+            <lightning:combobox name="localApprComit" 
+                                label="Local Approval Committee?" 
+                                options="{!v.committeeOpt}" 
+                                value="{!v.fieldValuesMap.localApprComit}" 
+                                onchange="{!c.updateFieldValue}"
+                                disabled="{!v.isDisabled}"/> 
+
+        </aura:if>
+        <!-- (Estado 2 y Sub Estado 5) -->
+        <aura:if isTrue="{!v.state == '2' &amp;&amp; v.substate == '5'}">
+            <p><strong>Ambit to Propose:</strong></p>
+            <lightning:combobox name="localApprComit" 
+                                label="Local Approval Committee"
+                                value="{!v.selectedValueCommittee}"
+                                options="{!v.committeeOpt}" 
+                                disabled="true"/> 
+            <lightning:combobox name="Decision" 
+                                label="Local Approval Committee Decision?" 
+                                options="{!v.comboBoxOptions9}" 
+                                value="{!v.fieldValuesMap.Decision}"
+                                onchange="{!c.validateFithState}"  
+                                disabled="{!v.isDisabled}"/>
+            <lightning:input 	name="dateSaction"
+                             	type="date" 
+                                label="Local Approval Committee date" 
+                                value="{!v.fieldValuesMap.dateSaction}" 
+                                onchange="{!c.updateFieldValue}" 
+                             	disabled="{!v.isDisabled}"/>
+            <lightning:textarea 
+                name="comment2Opinion"
+                label="Local Approval Committee details" 
+                data-field="comment2Opinion" 
+                value="{!v.fieldValuesMap.comment2Opinion}"
+                onchange="{!c.updateFieldValue}"
+                onkeyup="{!c.updateCharCount}"
+                maxlength="{!v.maxCharLimit}"
+                class="slds-m-top_small" 
+                disabled="{!v.isDisabled}"/>
+            
+            <p class="slds-text-body_small slds-text-color_weak">
+                {!v.charLengthsMap.comment2Opinion} / {!v.maxCharLimit} caracteres
+            </p>
+        </aura:if>
+        <!-- (Estado 2 y Sub Estado 6) -->
+        <aura:if isTrue="{!v.state == '2' &amp;&amp; v.substate == '6'}">
+            <lightning:combobox name="HoldingApproval" 
+                                label="Holding Approval Required?" 
+                                options="{!v.comboBoxOptions5}" 
+                                value="{!v.fieldValuesMap.HoldingApproval}" 
+                                onchange="{!c.handleHoldingApprovalChange}"/>
+            <aura:if isTrue="{!v.showQuestion2}">
+                <lightning:combobox name="HoldingCommit" 
+                                label="Holding Approval Committee?" 
+                                options="{!v.comboBoxOptions12}" 
+                                value="{!v.fieldValuesMap.HoldingCommit}" 
+                                onchange="{!c.validateContrastbyCommit}"/>
+                
+                <lightning:combobox name="ContrastPropose" 
+                                label="Contrast Unit to Propose"
+                                value="{!v.fieldValuesMap.ContrastPropose}"
+                                options="{!v.comboBoxOptions13}" 
+                                onchange="{!c.updateFieldValue}"  
+                                disabled="{!v.isDisabled}"/>
+            </aura:if>
+            
+        </aura:if>
+        <!--(Estado 3 y Sub Estado 7) -->
+        <aura:if isTrue="{!v.state == '3' &amp;&amp; v.substate == '7'}">
+            <lightning:combobox name="HoldingCommit" 
+                                label="Holding Approval Committee?" 
+                                options="{!v.comboBoxOptions12}"
+                                value="{!v.fieldValuesMap.HoldingCommit}" 
+                                disabled="false"
+                                onchange="{!c.validateSeventhState }" />
+        </aura:if>
+        <!--(Estado 3 y Sub Estado 8) -->
+        <aura:if isTrue="{!v.state == '3' &amp;&amp; v.substate == '8'}">
+            <lightning:combobox name="HoldingCommit" 
+                                label="Holding Approval Committee?"
+                                value="{!v.selectedValAppCommittee}"
+                                options="{!v.comboBoxOptions12}"
+                                disabled="true" />
+            <lightning:combobox name="DecisionHolding" 
+                                label="Holding Approval Committee Decision?" 
+                                options="{!v.comboBoxOptions9}" 
+                                value="{!v.fieldValuesMap.DecisionHolding}"
+                                onchange="{!c.validateEighthState}"  
+                                disabled="{!v.isDisabled}"/>
+            <lightning:input 	name="HoldingDateFinalize"
+                             	type="date" 
+                             	label="Holding Approval Committee date"  
+                                value="{!v.fieldValuesMap.HoldingDateFinalize}" 
+                             	onchange="{!c.updateFieldValue}" 
+                             	disabled="{!v.isDisabled}"/>
+            <div class="slds-m-top_small">
+                <lightning:textarea 
+                    name="commentSanction"
+                    label="Holding Approval Committee details" 
+                    value="{!v.fieldValuesMap.commentSanction}"
+                    onchange="{!c.updateFieldValue}" 
+                    onkeyup="{!c.updateCharCount}"
+                    maxlength="{!v.maxCharLimit}"
+                    class="slds-m-top_small" 
+                    disabled="{!v.isDisabled}"/>
+            
+                <p class="slds-text-body_small slds-text-color_weak">
+                    {!v.charLengthsMap.commentSanction} / {!v.maxCharLimit} caracteres
+                </p>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

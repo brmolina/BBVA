@@ -1,30 +1,30 @@
 public with sharing class PipelineEvolutionOpportunitiesCnt {
 
     @AuraEnabled
-  	public static String getData(String clientId){    
-    	Map<String, Map<String, Double>> mapMonth = new Map<String, Map<String, Double>>();
+    public static String getData(String clientId){    
+      Map<String, Map<String, Double>> mapMonth = new Map<String, Map<String, Double>>();
         Integer currentDay = Date.today().day(); 
         Integer currentMonth = Date.today().month();
         Integer currentYear = Date.today().year();
         Date todayMonth = Date.newInstance(currentYear, currentMonth, currentDay);
-  		Date firstDayMonth = Date.newInstance(currentYear, currentMonth, 1);
+      Date firstDayMonth = Date.newInstance(currentYear, currentMonth, 1);
         Date lastMonth = Date.newInstance(currentYear, currentMonth-1, 1);
         Date twoMonthsBefore = Date.newInstance(currentYear, currentMonth-2, 1);
         
         system.debug('>>>>> Clase PipelineEvolutionOpportunitiesCnt: ' + clientId);
         date d = system.today().addDays(-366);
         Set<Id> setIdOppsDenormClient = new Set<Id>();
-        list<dwp_acmh__Denorm_Account_Opportunity__c> denOppList = [SELECT dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name FROM dwp_acmh__Denorm_Account_Opportunity__c 
-                                                                    WHERE dwp_acmh__AccountId__c = :clientId
-                                                                    /*AND dwp_acmh__OpportunityId__r.CreatedDate < :twoMonthsBefore*/
-                                                                    /*dwp_acmh__OpportunityId__r.CreatedDate > :d*/ ORDER BY dwp_acmh__OpportunityId__r.CreatedDate ASC];
+        list<AMH_Denorm_Account_Opportunity__c> denOppList = [SELECT AMH_OpportunityId__c, AMH_OpportunityId__r.Name FROM AMH_Denorm_Account_Opportunity__c 
+                                                                    WHERE AMH_AccountId__c = :clientId
+                                                                    /*AND AMH_OpportunityId__r.CreatedDate < :twoMonthsBefore*/
+                                                                    /*AMH_OpportunityId__r.CreatedDate > :d*/ ORDER BY AMH_OpportunityId__r.CreatedDate ASC];
         system.debug('Valor de denOppList: ' +denOppList);
         
-        for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : denOppList){
-            if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-                setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+        for(AMH_Denorm_Account_Opportunity__c denOpp : denOppList){
+            if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+                setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
             }
-            system.debug('Valor de denOpp: ' +denOpp.dwp_acmh__OpportunityId__r.Name);
+            system.debug('Valor de denOpp: ' +denOpp.AMH_OpportunityId__r.Name);
         }
         
         List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>();
@@ -37,9 +37,9 @@ public with sharing class PipelineEvolutionOpportunitiesCnt {
                                         Opportunity.Account.Name,
                                         Opportunity.DES_Expected_Probability__c,
                                         Opportunity.StageName,
-            							Opportunity.CreatedDate,
-             							Opportunity.CloseDate,
-            							Opportunity.DES_Date_Won_Lost__c
+                          Opportunity.CreatedDate,
+                           Opportunity.CloseDate,
+                          Opportunity.DES_Date_Won_Lost__c
                                 FROM OpportunityLineItem
                                 WHERE ((Opportunity.StageName != :Label.DES_Draft AND OpportunityId IN :setIdOppsDenormClient)) ORDER BY Opportunity.CloseDate DESC
             ]);
@@ -62,85 +62,85 @@ public with sharing class PipelineEvolutionOpportunitiesCnt {
                     //Si son alive
                     if(opli.Opportunity.CreatedDate < firstDayMonth && opli.Opportunity.CloseDate > firstDayMonth && opli.Opportunity.DES_Date_Won_Lost__c == null){
                         if(thisMonth.get('Alive') == null){
-                    		thisMonth.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
+                        thisMonth.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                        	thisMonth.put('Alive', thisMonth.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
+                          thisMonth.put('Alive', thisMonth.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
                         }
                         mapMonth.put('Current Month',thisMonth);
                     }
                     //Si son creadas
                     if(opli.Opportunity.CreatedDate > firstDayMonth && opli.Opportunity.CreatedDate <= todayMonth){
                         if(thisMonth.get('Created') == null){
-                    		thisMonth.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
+                        thisMonth.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//thisMonth.put('Created', thisMonth.get('Created') + (20000));   
-                         	thisMonth.put('Created', thisMonth.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c)); 
-                    	} 
+                           //thisMonth.put('Created', thisMonth.get('Created') + (20000));   
+                           thisMonth.put('Created', thisMonth.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c)); 
+                      } 
                         mapMonth.put('Current Month',thisMonth);
-                	}
+                  }
                     //Si son ganadas
                     if(opli.Opportunity.DES_Date_Won_Lost__c > firstDayMonth && opli.Opportunity.DES_Date_Won_Lost__c <= todayMonth && opli.Opportunity.StageName == 'Closed Won'){
-                    	if(thisMonth.get('Won') == null){
-                    		thisMonth.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(thisMonth.get('Won') == null){
+                        thisMonth.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	thisMonth.put('Won', thisMonth.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
-                    	}  
+                           thisMonth.put('Won', thisMonth.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
+                      }  
                         mapMonth.put('Current Month',thisMonth);
                     }
                     //Si son perdidas
                     if(opli.Opportunity.DES_Date_Won_Lost__c > firstDayMonth && opli.Opportunity.DES_Date_Won_Lost__c <= todayMonth && opli.Opportunity.StageName == 'Closed Lost'){
-                    	if(thisMonth.get('Lost') == null){
-                    		//thisMonth.put('Lost', -500000);
-                    		thisMonth.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(thisMonth.get('Lost') == null){
+                        //thisMonth.put('Lost', -500000);
+                        thisMonth.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//thisMonth.put('Lost', thisMonth.get('Lost') - (2000));    
-                         	thisMonth.put('Lost', thisMonth.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));  
-                    	}  
+                           //thisMonth.put('Lost', thisMonth.get('Lost') - (2000));    
+                           thisMonth.put('Lost', thisMonth.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));  
+                      }  
                         mapMonth.put('Current Month',thisMonth);
                     }
-            	} 
+              } 
                 
                 
                 //Si son de hace un mes
                 if((opli.Opportunity.CreatedDate < lastMonth && opli.Opportunity.CloseDate > lastMonth) 
                    || (opli.Opportunity.CreatedDate > lastMonth) ){
                     //Si son Alive
-                	if(opli.Opportunity.CreatedDate < lastMonth && opli.Opportunity.CloseDate > lastMonth && opli.Opportunity.DES_Date_Won_Lost__c == null){
-                    	if(oneMonths.get('Alive') == null){
-                    		oneMonths.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
+                  if(opli.Opportunity.CreatedDate < lastMonth && opli.Opportunity.CloseDate > lastMonth && opli.Opportunity.DES_Date_Won_Lost__c == null){
+                      if(oneMonths.get('Alive') == null){
+                        oneMonths.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                        	oneMonths.put('Alive', oneMonths.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
+                          oneMonths.put('Alive', oneMonths.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
                         }
-                        mapMonth.put('Last Month',oneMonths);		       
+                        mapMonth.put('Last Month',oneMonths);           
                     }
                     //Si son creadas
                     if(opli.Opportunity.CreatedDate >= lastMonth && opli.Opportunity.CreatedDate < firstDayMonth){
                         if(oneMonths.get('Created') == null){
-                    		oneMonths.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
+                        oneMonths.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//oneMonths.put('Created', oneMonths.get('Created') + (20000)); 
-                         	oneMonths.put('Created', oneMonths.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c));    
-                    	} 
+                           //oneMonths.put('Created', oneMonths.get('Created') + (20000)); 
+                           oneMonths.put('Created', oneMonths.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c));    
+                      } 
                         mapMonth.put('Last Month',oneMonths);
-                	}
+                  }
                     //Si son ganadas
                     if(opli.Opportunity.DES_Date_Won_Lost__c >= lastMonth && opli.Opportunity.DES_Date_Won_Lost__c < firstDayMonth && opli.Opportunity.StageName == 'Closed Won'){
-                    	if(oneMonths.get('Won') == null){
-                    		oneMonths.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(oneMonths.get('Won') == null){
+                        oneMonths.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	oneMonths.put('Won', oneMonths.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
-                    	}  
+                           oneMonths.put('Won', oneMonths.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
+                      }  
                         mapMonth.put('Last Month',oneMonths);
                     }
                     //Si son perdidas
                     if(opli.Opportunity.DES_Date_Won_Lost__c >= lastMonth && opli.Opportunity.DES_Date_Won_Lost__c < firstDayMonth && opli.Opportunity.StageName == 'Closed Lost'){
-                    	if(oneMonths.get('Lost') == null){
-                    		//oneMonths.put('Lost', -500000);
-                    		oneMonths.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(oneMonths.get('Lost') == null){
+                        //oneMonths.put('Lost', -500000);
+                        oneMonths.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//oneMonths.put('Lost', oneMonths.get('Lost') - (2000));    
-                         	oneMonths.put('Lost', oneMonths.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));
-                    	}  
+                           //oneMonths.put('Lost', oneMonths.get('Lost') - (2000));    
+                           oneMonths.put('Lost', oneMonths.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));
+                      }  
                         mapMonth.put('Last Month',oneMonths);
                     }               
                 }
@@ -149,50 +149,50 @@ public with sharing class PipelineEvolutionOpportunitiesCnt {
                 if((opli.Opportunity.CreatedDate < twoMonthsBefore && opli.Opportunity.CloseDate > twoMonthsBefore) 
                    || (opli.Opportunity.CreatedDate > twoMonthsBefore) ){
                        
-                	//Si son Alive
-                	if(opli.Opportunity.CreatedDate < twoMonthsBefore && opli.Opportunity.CloseDate > twoMonthsBefore && opli.Opportunity.DES_Date_Won_Lost__c == null){
-                    	if(twoMonths.get('Alive') == null){
-                    		twoMonths.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
+                  //Si son Alive
+                  if(opli.Opportunity.CreatedDate < twoMonthsBefore && opli.Opportunity.CloseDate > twoMonthsBefore && opli.Opportunity.DES_Date_Won_Lost__c == null){
+                      if(twoMonths.get('Alive') == null){
+                        twoMonths.put('Alive', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                        	twoMonths.put('Alive', twoMonths.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
+                          twoMonths.put('Alive', twoMonths.get('Alive') + (opli.pre_oppy_revenue_next_12m_amount__c));    
                         }
-                        mapMonth.put('2 Months Ago',twoMonths);		       
+                        mapMonth.put('2 Months Ago',twoMonths);           
                     }
                     //Si son creadas
                     if(opli.Opportunity.CreatedDate >= twoMonthsBefore && opli.Opportunity.CreatedDate < lastMonth){
                         if(twoMonths.get('Created') == null){
-                    		twoMonths.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
+                        twoMonths.put('Created', opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//twoMonths.put('Created', twoMonths.get('Created') + (20000));    
-                         	twoMonths.put('Created', twoMonths.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c));   
-                    	} 
+                           //twoMonths.put('Created', twoMonths.get('Created') + (20000));    
+                           twoMonths.put('Created', twoMonths.get('Created') + (opli.pre_oppy_revenue_next_12m_amount__c));   
+                      } 
                         mapMonth.put('2 Months Ago',twoMonths);
-                	}
+                  }
                     //Si son ganadas
                     if(opli.Opportunity.DES_Date_Won_Lost__c >= twoMonthsBefore && opli.Opportunity.DES_Date_Won_Lost__c < lastMonth && opli.Opportunity.StageName == 'Closed Won'){
-                    	if(twoMonths.get('Won') == null){
-                    		twoMonths.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(twoMonths.get('Won') == null){
+                        twoMonths.put('Won', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	twoMonths.put('Won', twoMonths.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
-                    	}  
+                           twoMonths.put('Won', twoMonths.get('Won') - (opli.pre_oppy_revenue_next_12m_amount__c));    
+                      }  
                         mapMonth.put('2 Months Ago',twoMonths);
                     }
                     //Si son perdidas
                     if(opli.Opportunity.DES_Date_Won_Lost__c >= twoMonthsBefore && opli.Opportunity.DES_Date_Won_Lost__c < lastMonth && opli.Opportunity.StageName == 'Closed Lost'){
-                    	if(twoMonths.get('Lost') == null){
-                    		//twoMonths.put('Lost', -500000);
-                    		twoMonths.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
+                      if(twoMonths.get('Lost') == null){
+                        //twoMonths.put('Lost', -500000);
+                        twoMonths.put('Lost', -opli.pre_oppy_revenue_next_12m_amount__c);
                         }else{
-                         	//twoMonths.put('Lost', twoMonths.get('Lost') - (2000));  
-                         	twoMonths.put('Lost', twoMonths.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));   
-                    	}  
+                           //twoMonths.put('Lost', twoMonths.get('Lost') - (2000));  
+                           twoMonths.put('Lost', twoMonths.get('Lost') - (opli.pre_oppy_revenue_next_12m_amount__c));   
+                      }  
                         mapMonth.put('Last Month',twoMonths);
                     }    
                        
                 }
                 
             
-        	}          
+          }          
         }
         
         //Datos para la Review
@@ -231,13 +231,13 @@ public with sharing class PipelineEvolutionOpportunitiesCnt {
     
     
         @AuraEnabled
-    	public static String getOppProducts(String clientId){
-      	system.debug('>>>>> clientId: ' + clientId);
+      public static String getOppProducts(String clientId){
+        system.debug('>>>>> clientId: ' + clientId);
         date d = system.today().addDays(-366);
         Set<Id> setIdOppsDenormClient = new Set<Id>();
-        for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]){
-        	if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-            	setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+        for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]){
+          if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+              setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
             }
         }
             //Recojo todos los Opportunity Products que pertenezcan a alguna oportunidad de la cuenta de la tabla Desnormalizada

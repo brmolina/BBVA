@@ -8,7 +8,7 @@
 * unless it is already in a Closed state.
 * ----------------------------------------------------------------------------------------------------------
 */
-global class DMT_CloseLostOpportunityBatch implements Database.Batchable<SObject>, Database.Stateful {
+global without sharing class DMT_CloseLostOpportunityBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     // Start method to define the scope of the batch
     global Database.QueryLocator start(Database.BatchableContext BC) {

@@ -1,0 +1,66 @@
+<aura:component controller="CommOfferRelatedRevenuesCnt"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+
+	<ltng:require scripts="{! join(',',
+                            $Resource.Chart,
+                            $Resource.baseFichaGrupo)}" afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+
+    <aura:attribute name="noData" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String"/>
+    <aura:attribute name="revenues" type="String"/>
+    <aura:attribute name="recordId" type="String" default="false" />
+   	<aura:attribute name="showViewDetails" type="Boolean" access="public" default="false"/>
+   	<aura:attribute name="members" type="List"/>
+   	<aura:attribute name="columns" type="List"/>
+
+    <aura:if isTrue="{!v.showViewDetails}">
+    	<div class="slds-page-header">
+            <lightning:layout>
+                <lightning:layoutItem class="slds-media__figure">
+                    <lightning:icon iconName="standard:opportunity" size="large" alternativeText="Report" />
+                </lightning:layoutItem>
+                <lightning:layoutItem class="slds-media__body slds-p-top_medium">
+                    <h1 class="slds-page-header__title">Opportunities</h1>
+                </lightning:layoutItem>
+        	</lightning:layout>
+    	</div>
+    	
+        <lightning:datatable data="{!v.members}"
+                                     columns="{!v.columns}"
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/>
+                                     
+
+	    <aura:set attribute="else">
+	    <div class="slds-text-heading--small">
+        	<h1><strong>{!v.title}</strong></h1>
+        </div>
+	    <div class=" slds-size_1-of-1 slds-m-top_medium mainWrapper">
+        <aura:if isTrue="{!v.noData}">
+            <p class="mainText">
+                {!$Label.c.DES_Chart_No_Data}
+            </p>
+            <aura:set attribute="else">
+                <div class=" " >
+                    <canvas aura:id="chart" class="canvasPie"></canvas>
+                </div>
+            </aura:set>
+        </aura:if>
+    	</div>
+	    	<aura:if isTrue="{!!v.noData}">
+		        <div class=" ">
+		            <a href="" class="slds-text-link floatLeft" onclick="{!c.navigateToMyComponent}">View
+		                Report</a>
+		            <span class="floatRight spanFooter ">
+		                <span class="spanFooterDesc">As of Today at
+		                    <ui:outputText value="{!v.timeRefresh}" /></span>
+		                <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}"
+		                    alternativeText="Refresh." />
+		            </span>
+		        </div>
+			</aura:if>
+	    </aura:set>
+	</aura:if>  
+
+</aura:component>

@@ -3,11 +3,6 @@
     <apiVersion>48.0</apiVersion>
     <packageVersions>
         <majorNumber>1</majorNumber>
-        <minorNumber>4</minorNumber>
-        <namespace>dwp_acmh</namespace>
-    </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
         <minorNumber>5</minorNumber>
         <namespace>pith</namespace>
     </packageVersions>

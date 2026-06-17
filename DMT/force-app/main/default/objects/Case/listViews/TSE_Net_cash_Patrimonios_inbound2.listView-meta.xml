@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TSE_Net_cash_Patrimonios_inbound2</fullName>
+    <booleanFilter>1 AND 2 AND (3 OR 4)</booleanFilter>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>SER_Product__c</columns>
+    <columns>SER_Classification__c</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>CASES.CREATED_DATE_DATE_ONLY</columns>
+    <columns>CASES.LAST_UPDATE_DATE_ONLY</columns>
+    <columns>OWNER_NAME</columns>
+    <columns>SER_Priority_Flag__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>SER_Outbound_Mailbox__c</field>
+        <operation>equals</operation>
+        <value>Email Oneview</value>
+    </filters>
+    <filters>
+        <field>CASES.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Case.SER_STE_User,Case.SER_Transferred_STE_User</value>
+    </filters>
+    <filters>
+        <field>SER_Email_received__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>equals</operation>
+        <value>New</value>
+    </filters>
+    <label>TSE - Oneview_inbound</label>
+    <sharedTo></sharedTo>
+</ListView>

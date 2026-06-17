@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Past2_FY_Total_X_Sell_amount__c</fullName>
+    <externalId>false</externalId>
+    <formula>Past2_FY_Client_Resources_amount__c +
+Past2_FY_Cash_Management_amount__c +
+Past2_FY_Securities_Services_amount__c +
+Past2_FY_FX_CCS_amount__c +
+Past2_FY_Credit_Equity_amount__c +
+Past2_FY_DCM_amount__c +
+Past2_FY_ECM_M_A_Amount__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Past2 Fy Total X-Sell</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

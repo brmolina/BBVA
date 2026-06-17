@@ -47,7 +47,7 @@ public class PRC_PricingDetails_TEST {
     final DES_UtilTestClass utils = new DES_UtilTestClass();
     final Account acc = utils.createClient();
     acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Subsidiary;
-    acc.SER_CClient__c = 'Test';
+    acc.g_customer_id__c = 'Test';
     insert acc;
 
     final Opportunity opp = utils.createOpportunity(acc);

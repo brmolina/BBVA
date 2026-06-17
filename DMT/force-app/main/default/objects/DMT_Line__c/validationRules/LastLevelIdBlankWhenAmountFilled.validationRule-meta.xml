@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LastLevelIdBlankWhenAmountFilled</fullName>
+    <active>true</active>
+    <description>Typology of the risks of financial programs can not be empty.</description>
+    <errorConditionFormula>AND(ISBLANK(DMT_LastLevelId__c),NOT(ISBLANK(Amount__c)),RecordType.DeveloperName != &quot;TreasurySettlement&quot;)</errorConditionFormula>
+    <errorMessage>Typology risks can not be empty</errorMessage>
+</ValidationRule>

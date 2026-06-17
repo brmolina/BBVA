@@ -1,0 +1,116 @@
+<template>
+    <!-- Header del Flyout -->
+    <lightning-modal-header label={title}>
+        <div class="slds-media slds-media_center">
+        </div>
+    </lightning-modal-header>
+
+    <!-- Contenido Principal -->
+     <lightning-modal-body>
+    <div class="slds-modal__content slds-p-around_medium" if:true={lines}>
+
+        <!-- Barra de información -->
+        <!-- <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
+            <div class="slds-col">
+                <div class="slds-text-heading_small">
+                    <lightning-badge 
+                        label={changesInfo} 
+                        >
+                    </lightning-badge>
+                </div>
+            </div>
+            <div class="slds-col slds-text-align_right">
+                <div class="slds-text-body_regular">{pageInfo}</div>
+            </div>
+        </div> -->
+
+        <!-- Mensaje de error -->
+        <template if:true={hasError}>
+            <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium">
+                <span class="slds-assistive-text">Error</span>
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small">
+                    <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
+                </span>
+                <h2>{errorMessage}</h2>
+            </div>
+        </template>
+
+        <!-- DataTable -->
+        <div class="slds-box slds-theme_default" style="max-height: 40vh;display: flex;">
+            <lightning-datatable
+                key-field="Id"
+                data={currentPageData}
+                columns={columns}
+                selected-rows={currentPageSelectedRows}
+                onrowselection={handleRowSelection}
+                column-widths-mode="auto"
+                sorted-by="g_line_name_desc__c"
+                sorted-direction="asc">
+            </lightning-datatable>
+        </div>
+
+        <!-- Controles de paginación -->
+        <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+            <div class="slds-button-group" role="group">
+
+                <button class="slds-button slds-button_neutral"
+                        onclick={handlePreviousPage}
+                        disabled={firstPage}>
+                    Previous
+                </button>
+                <span class="slds-button slds-button_neutral slds-is-static">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <button class="slds-button slds-button_neutral"
+                        onclick={handleNextPage}
+                        disabled={lastPage}>
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <!-- Mensaje de límite alcanzado -->
+        <template if:true={reachedMaxChanges}>
+            <div class="slds-notify slds-notify_alert slds-theme_warning slds-m-top_medium">
+                <span class="slds-assistive-text">Warning</span>
+                <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small">
+                    <lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon>
+                </span>
+                <h2>Maximum {maxChanges} changes reached. You cannot select/deselect more records.</h2>
+            </div>
+        </template>
+
+    </div>
+    </lightning-modal-body>
+
+    <!-- Footer del Flyout -->
+    <footer class="slds-modal__footer slds-border_top">
+        <div class="slds-grid slds-grid_align-spread">
+            <div class="slds-col">
+                <div class="slds-text-body_small">
+                    Selected: {currentPageSelectedRows.length} of {currentPageData.length} records
+                </div>
+            </div>
+            <div class="slds-col slds-text-align_center">
+                <lightning-button
+                    label="Close"
+                    variant="brand"
+                    onclick={handleCancel}
+                    disabled={isLoading}
+                    class="slds-m-right_small">
+                </lightning-button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Spinner de carga -->
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner slds-spinner_medium" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,164 @@
+<!--
+  @Component Name     : Arc_Gen_ModalFinanStatem.cmp
+  @Description        : Functions to call FFSS and Ratios Engine, display results and errors
+  @Author             : ARCE TEAM
+  @Group              :
+  @Last Modified By   : amunguia.contractor@bbva.com
+  @Last Modified On   : 04-21-2022
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		           Modification
+  ==============================================================================
+  1.0    25/4/2019 12:10:00   diego.miguel.contractor@bbva.com     Initial Version
+  1.1    26/3/2020 12:43:00   juanignacio.hita.contractor@bbva.com Refactoring of the component
+  1.2    07/5/2020 10:00:00   joseluis.garcia4.contractor@bbva.com Remove toast when successful
+  1.3    26/5/2020 10:00:00   joseluis.garcia4.contractor@bbva.com Handle error when no FFSS is returned
+  1.4    07/7/2020 13:00:00   juanignacio.hita.contractor@bbva.com Added isHolding in AHA changed wrapper, added list of ffss translated
+  1.5    10/01/2021 13:00:00  ivan.cons@bbva.com                   Preselection enabled for FFSS in IRP cases when is enabled multiselection for financial screen.
+  1.6    15/04/2021 13:00:00  saimassimilianno.jordana.contractor@bbva.com  Add column Id to show the FFSS Id
+  1.7    07/05/2021 13:00:00  ivan.cons@bbva.com                   Reordered columns and removed Id left zeros
+  1.8    26/10/2021 13:00:00  juanignacio.hita.contractor@bbva.com Adds ratingToolSelect attribute
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  controller="Arc_Gen_ModalFinanStatemController" access="global" >
+    <aura:attribute name="acctList"         type="arce__Financial_Statements__c[]" description="List of the obtained FFSS with labels translated" access="global"/>
+    <aura:attribute name="ffssList"         type="arce__Financial_Statements__c[]" description="List of the obtained FFSS"/>
+    <aura:attribute name="mycolumns"        type="List"   description="List of the table columns"/>
+    <aura:attribute name="elementsEEFF"        type="List"   description="Financial statements elements"/>
+    <aura:attribute name="preSelectedRows"  type="List"   description="List of the rows pre-selected"/>
+    <aura:attribute name="selectedRows"     type="List"   description="List of the rows selected"/>
+    <aura:attribute name="selectedRows2"    type="List"   description="Second List of the rows selected" access="global"/>
+    <aura:attribute name="rowsSelected"     type="List"   description="List of the rows selected"/>
+    <aura:attribute name="ratiosStatus"     type="String" description="Status of the callout"/>
+    <aura:attribute name="ffssValidId"      type="String" description="Id of the valid financial statement"/>
+    <aura:attribute name="fsServiceId"      type="String" description="Id of the valid financial statement that retrieve the service of financial statements"/>
+    <aura:attribute name="ffssValid"        type="String" description="If yes, the financial statement is valid"/>
+    <aura:attribute name="message"          type="String" description="Message obtained of the service"/>
+    <aura:attribute name="msgTable"         type="String" description="If yes, the balance tables were updated successfully" access="global"/>
+    <aura:attribute name="errorMsgTable"    type="String" description="Display errors from FROM ratios WS"  access="global"/>
+    <aura:attribute name="ffssErrorMsg"     type="String" default="" description="Display errors from FROM FFSS WS"/>
+    <aura:attribute name="spinnerLoading"   type="Boolean" default="true" description="Indicates whether the FFSS are being saved in SF." />
+    <aura:attribute name="isRAIP"           type="Boolean" default="false" description="Display errors from FROM ratios WS"/>
+    <aura:attribute name="isRTC"           type="Boolean" default="false" description="Boolean to Know is a table of ffss of corporate"/>
+    <aura:attribute name="isCorp"           type="Boolean" default="false" description="Boolean to Know is a table of ffss of corporate"/>
+    <aura:attribute name="maxRowSelection"  type="Integer" default="3" description="Max number of rows that you can select in the table"/>
+    <aura:attribute name="btnStmIsDisabled" type="Boolean" default="true" description="Control disable of 'Add Statements' button" access="global"/>
+    <aura:attribute name="accHasAnalysisId" type="String" default="{!v.recordId}" description="Display errors from FROM ratios WS"/>
+    <aura:attribute name="proposalFolderArceId" type="String" access="Global"  description="Display errors from FROM ratios WS"/>
+    <aura:attribute name="validLabel"       type="String" description="Label of the value of a valid FFSS" />
+    <aura:attribute name="isFinancialRAIP"  access="global" default="false" type="Boolean" description="Allows to select up to 2 FFSS more"/>
+    <aura:attribute name="isProposal"  access="global" default="false" type="Boolean" description="Allows to select up to 2 FFSS more"/>
+    <aura:attribute name="ratingToolSelect" type="String" default="" description="Rating tool selected in pre step triage custom" />
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="anchorEEFF" type="String" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="errorMessage" type="String" access="global" />
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="currentPage"      type="Integer"  default="1"/>
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="loadMoreOffset" type="Integer" default="0"/>
+    <aura:attribute name="userCanEdit" type="Boolean" default="true" access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.initEng}" description="Init variable"/>
+
+    <aura:registerEvent name="ffssSelectionEvent" type="c:Arc_Gen_RAIP_SelectFFSS_evt"/>
+    <aura:registerEvent name="updateBlances" type="c:Arc_Gen_RAIP_UpdateBalances_evt"/>
+
+    <aura:method name="callTablesEngine" action="{!c.callTablesEngine}" />
+
+    <aura:html tag="style">
+        .slds-table_header-fixed_container, .slds-table--header-fixed_container{
+            background-color:white !important;
+        }
+    </aura:html>
+    <div class="slds-is-relative slds-m-bottom_small">
+        <aura:if isTrue="{!v.spinnerLoading}">
+            <lightning:spinner alternativeText="Saving..."></lightning:spinner>
+        </aura:if>
+        <div class="slds-card slds-card__header slds-grid">
+            <div class="slds-grid slds-p-top_medium" style="max-height: 300px">
+                <lightning:datatable data="{!v.acctList}"
+                                columns="{!v.mycolumns}"
+                                keyField="arce__financial_statement_id__c"
+                                selectedRows="{!v.selectedRows}"
+                                onrowselection="{!c.updateSelectedRows}"
+                                maxRowSelection="{!v.maxRowSelection}"
+                                defaultSortDirection="{!v.defaultSortDirection}"
+                                sortedDirection="{!v.sortDirection}"
+                                sortedBy="{!v.sortedBy}"
+                                onsort="{!c.handleSort}"
+                                errors="{! v.errors }"
+                                draftValues="{! v.draftValues }"
+                                onsave="{! c.handleSaveEdition }"
+                                showRowNumberColumn="false"
+                                enableInfiniteLoading="{! v.enableInfiniteLoading }"
+                                loadMoreOffset="{! v.loadMoreOffset }"
+                                onloadmore="{! c.loadMoreData }"/>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!!v.isRAIP}">
+        <lightning:button disabled="{!v.btnStmIsDisabled}" label="{!$Label.c.Lc_arce_AddStatements}" title="{!$Label.c.Lc_arce_AddStatements}" onclick="{!c.callTablesEngine}"/>
+    </aura:if>
+
+    <div class="{!v.msgTable == 'si' ? '':'slds-hide'}">
+        <section role="log" class="slds-chat">
+            <ul class="slds-chat-list">
+                <li class="slds-chat-listitem slds-chat-listitem_event">
+                    <div class="slds-chat-event" role="alert">
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__body">
+                            <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!v.ffssValid == 'no' ? '!$Label.c.Lc_arce_Warning' : '!$Label.c.Lc_arce_newAnalysisSuccess'}">
+                                <lightning:icon iconName="{!v.ffssValid == 'no' ? 'utility:warning' : 'utility:check'}" alternativeText="clear!" variant="{!v.ffssValid == 'no' ? 'Warning' : 'Success'}"/>
+                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisSuccess}</span>
+                            </span>
+                        </div>
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__agent-message">{!$Label.c.Lc_arce_UpdatedTables}</div>
+                        <div class="{!v.ffssValid == 'no' ? 'slds-chat-event__agent-message':'slds-hide'}">{!$Label.c.Lc_arce_NoValidFFSS}</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+    <div class="{!v.msgTable == 'no' ? '':'slds-hide'}">
+        <section role="log" class="slds-chat">
+            <ul class="slds-chat-list">
+                <li class="slds-chat-listitem slds-chat-listitem_event">
+                    <div class="slds-chat-event slds-has-error" role="alert">
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__body">
+                            <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisError}</span>
+                            </span>
+                        </div>
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__agent-message">{!v.errorMessage} <br/>
+                            <aura:unescapedHtml value="{!v.errorMsgTable}" />
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+    <div class="{!v.ffssErrorMsg != '' ? '':'slds-hide'}">
+        <section role="log" class="slds-chat">
+            <ul class="slds-chat-list">
+                <li class="slds-chat-listitem slds-chat-listitem_event">
+                    <div class="slds-chat-event slds-has-error" role="alert">
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__body">
+                            <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                            </span>
+                        </div>
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__agent-message">{!v.ffssErrorMsg}</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+</aura:component>

@@ -4,7 +4,7 @@
 * @Author             : Diego Miguel Tamarit - diego.miguel.contractor@bbva.com / dmiguelt@minsait.com
 * @Group              : ARCE
 * @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
-* @Last Modified On   : 07-08-2024
+* @Last Modified On   : 02-06-2026
 * @Modification Log   :
 *_________________________________________________________________________________
 *Version    Date           Author                                       Description
@@ -35,7 +35,7 @@
 *2.12       17/06/2021     juanignacio.hita.contractor@bbva.com         Rollback last commit  (PR: 1231)
 *2.13       24/05/2023     joseluis.miralles.contractor@bbva.com        Added method to get Projection Data
 -----------------------------------------------------------------------------------------*/
-@SuppressWarnings('PMD.CouplingBetweenObjects, PMD.ExcessivePublicCount, sf:ExcessiveClassLength, sf:TooManyMethods')
+@SuppressWarnings('PMD.CouplingBetweenObjects, PMD.ExcessivePublicCount, sf:ExcessiveClassLength, sf:TooManyMethods, PMD.CyclomaticComplexity, PMD.ExcessiveParameterList')
 @isTest
 public with sharing class Arc_UtilitysDataTest_tst {
     /** ------------------------------------------------------------------------------------------------
@@ -162,6 +162,7 @@ public with sharing class Arc_UtilitysDataTest_tst {
     public static User crearUsuario(String strLastName, String strProfileName, String strRol) {
         lstProfile = new List<Profile>();
         userRole = new List<UserRole> ();
+        Double random = Math.random();
         if(String.isNotBlank(strProfileName)) {
             lstProfile = [SELECT Id, Name FROM Profile WHERE Name = :strProfileName LIMIT 1];
         }
@@ -180,7 +181,6 @@ public with sharing class Arc_UtilitysDataTest_tst {
         usuario.TimeZoneSidKey        = 'America/Mexico_City';
         usuario.LocaleSidKey          = 'en_US';
         usuario.IsActive              = true;
-        usuario.ID_User__c            = String.valueOf((Math.random()*10000).round());
         if(!lstProfile.isEmpty()) {
             usuario.ProfileId         = lstProfile[0].Id;
         }
@@ -188,6 +188,7 @@ public with sharing class Arc_UtilitysDataTest_tst {
             usuario.UserRoleId        = userRole[0].Id;
         }
         usuario.CompanyName           = 'SulAmérica';
+        usuario.ID_User__c = 'Test' + email.substring(0, 3) + String.valueOf(random).substring(0, 3);
         return usuario;
     }
     /**
@@ -265,7 +266,7 @@ public with sharing class Arc_UtilitysDataTest_tst {
         sector.arce__sector_analisis_type__c = '2';
         sector.arce__analysis_section_list__c = 's-01-100;s-01-200;s-01-300;s-01-400;s-01-500;s-01-600';
         sector.arce__active_type__c = true;
-        sector.arce__unique_id__c = String.valueof(Integer.valueOf((Math.random() * 100000))); 
+        sector.arce__unique_id__c = String.valueof(Integer.valueOf((Math.random() * 100000)));
         if(devNamTipReg != null) {
             sector.RecordTypeId = getRecordTypeId('arce__Sector__c', devNamTipReg);
         }
@@ -1332,13 +1333,12 @@ public with sharing class Arc_UtilitysDataTest_tst {
     * ------------------------------------------------------------------------------------------------
     **/
     public static arce__AHA_Extension__c newExtensionForAHA(arce__Account_has_Analysis__c aha) {
-        final arce__AHA_Extension__c ahaExt = new arce__AHA_Extension__c();
-        insert ahaExt;
-        aha.arce__AHA_Extension__c = ahaExt.Id;
-        update aha;
-        return ahaExt;
-      }
-
+      final arce__AHA_Extension__c ahaExt = new arce__AHA_Extension__c();
+      insert ahaExt;
+      aha.arce__AHA_Extension__c = ahaExt.Id;
+      update aha;
+      return ahaExt;
+    }
     /**
     * ------------------------------------------------------------------------------------------------
     * @Description get Projection List
@@ -1366,5 +1366,32 @@ public with sharing class Arc_UtilitysDataTest_tst {
         pr3.arce__Account_has_Analysis__c = ahaId;
         projectionList.add(pr3);
         return projectionList;
+    }
+
+    /**
+    * -----------------------------------------------------------------------------------------------
+    * @description Method to create a new arce__Bypass__c record. This record is used to bypass:
+    *              - validation rules
+    *              - triggers
+    *              - flows
+    *              - process builders
+    *              - workflow rules
+    * -----------------------------------------------------------------------------------------------
+    * @autor       marcos.gimeno.tech@bbva.com
+    * @date        2024-08-14
+    * -----------------------------------------------------------------------------------------------
+    **/
+    public static void enableBypass() {
+        final String userId = UserInfo.getUserId();
+        final arce__Bypass__c bypass = new arce__Bypass__c(
+            Name = 'ARCE Bypass (Test)',
+            SetupOwnerId = userId,
+            arce__Bypass_Flows__c = true,
+            arce__Bypass_ProcessBuilders__c = true,
+            arce__Bypass_Triggers__c = true,
+            arce__Bypass_ValidationRules__c = true,
+            arce__Bypass_WorkflowRules__c = true
+        );
+        Database.insert(bypass, AccessLevel.SYSTEM_MODE);
     }
 }

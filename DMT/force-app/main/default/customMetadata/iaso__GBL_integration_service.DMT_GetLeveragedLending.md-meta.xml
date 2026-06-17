@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>iaso__Authentication_Service__c</field>
-        <value xsi:type="xsd:string">DMT_GrantingTicketAUS</value>
+        <value xsi:type="xsd:string">DMT_HPG_GrantingTicket_INT</value>
     </values>
     <values>
         <field>iaso__Blocked_Service__c</field>
@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>iaso__Custom_Setting__c</field>
-        <value xsi:type="xsd:string">DMT_HPGR_Endpoint_AUS</value>
+        <value xsi:type="xsd:string">DMT_HPG_CommonEndPoint</value>
     </values>
     <values>
         <field>iaso__Description__c</field>

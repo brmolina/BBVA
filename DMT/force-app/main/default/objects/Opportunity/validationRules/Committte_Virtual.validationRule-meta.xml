@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Committte_Virtual</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(gf_oppy_virtual_cmtee_ind_type__c &lt;&gt;
+				IF(Committee_id__r.RecordType.Name = &apos;Virtual NBC&apos;,true,gf_oppy_virtual_cmtee_ind_type__c),true,false)</errorConditionFormula>
+    <errorDisplayField>Committee_id__c</errorDisplayField>
+    <errorMessage>This opportunity was not marked for approval on a virtual NBC. Please mark the template as &quot;Virtual NBC&quot;</errorMessage>
+</ValidationRule>

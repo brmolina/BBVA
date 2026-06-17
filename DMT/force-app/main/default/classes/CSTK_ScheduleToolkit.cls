@@ -23,7 +23,7 @@ global class CSTK_ScheduleToolkit implements Schedulable { //NOSONAR
     Database.executeBatch(new cstk.ScriptEnvironmentalSales(), 20); //NOSONAR
     Database.executeBatch(new cstk.ScriptGhgEmissionBatch()); //NOSONAR
     System.enqueueJob(new CSTK_ScriptQueueable(), 10); //NOSONAR
-    System.scheduleBatch(new cstk.CompletenessPct(), 'Toolkit Completenes Calc', 45);
+    System.scheduleBatch(new cstk.CompletenessPct(), 'Toolkit Completenes Calc', 45, 100);
     System.scheduleBatch(new cstk.Controversies_Alerts_Batch(), 'Toolkit controversies alerts', 45, 130);
     //System.scheduleBatch(new cstk.OverallAwarenessQueueable(), 'Overall Awareness Calc', 45, 100); //NOSONAR
   }

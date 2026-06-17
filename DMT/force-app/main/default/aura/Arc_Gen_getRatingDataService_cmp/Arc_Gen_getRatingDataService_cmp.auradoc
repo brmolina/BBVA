@@ -1,0 +1,12 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Modal that calls the Rating engine service of the current analyzed client</b></h5>
+        <p>The call method has as input:</p>
+        <li>The id of the analyzed client</li>
+        <li>The account number of the current client</li>
+        <p><code>c:Arc_Gen_getRatingDataService_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_getRatingDataService_cmp" ref="c:Arc_Gen_getRatingDataService_cmp" label="Rating Data Service">
+        <p>Component to call out the rating engine service</p>
+    </aura:example>
+</aura:documentation>

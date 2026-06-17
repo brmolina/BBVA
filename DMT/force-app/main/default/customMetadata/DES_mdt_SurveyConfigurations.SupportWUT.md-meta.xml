@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Support WUT</label>
+    <protected>false</protected>
+    <values>
+        <field>DES_fld_CompletedReminder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>DES_fld_DaysToResetUsage__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>DES_fld_EmailBody__c</field>
+        <value xsi:type="xsd:string">&lt;html lang=&quot;es&quot; style=&quot;overflow-y: hidden;&quot;&gt;
+
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;WUT - Survey&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body style=&quot;margin:0; padding:0; background-color:#ffffff; font-family: Arial, Helvetica, sans-serif;&quot;&gt;
+
+  &lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; role=&quot;presentation&quot;&gt;
+    &lt;tr&gt;
+      &lt;td align=&quot;center&quot;&gt;
+
+        &lt;!-- Contenido principal --&gt;
+        &lt;table width=&quot;600&quot; cellpadding=&quot;20&quot; cellspacing=&quot;0&quot; role=&quot;presentation&quot; style=&quot;text-align:center;&quot;&gt;
+
+          &lt;tr&gt;
+            &lt;td&gt;
+
+              &lt;p style=&quot;margin:20px 0 10px 0; font-size:16px; color:#002D72;&quot;&gt;
+                En &lt;strong&gt;WUT&lt;/strong&gt; queremos conocer tu &lt;strong&gt;opinión&lt;/strong&gt; sobre el servicio de soporte que has usado recientemente
+              &lt;/p&gt;
+
+              &lt;p style=&quot;margin:0 0 25px 0; font-size:15px; color:#00A3A1;&quot;&gt;
+                &lt;em&gt;At WUT, we want to know your opinion about the support service you have recently used&lt;/em&gt;
+              &lt;/p&gt;
+
+              &lt;p style=&quot;margin:0; font-size:22px; color:#002D72; font-weight:bold;&quot;&gt;
+                ¡Ayúdanos a mejorar!
+              &lt;/p&gt;
+
+              &lt;p style=&quot;margin:5px 0 30px 0; font-size:20px; color:#00A3A1; font-style:italic;&quot;&gt;
+                Help us improve!
+              &lt;/p&gt;
+
+              &lt;!-- Botón --&gt;
+              &lt;a href=&quot;{{SURVEY_LINK}}&quot; style=&quot;
+                   background-color:#002D72;
+                   color:#ffffff;
+                   text-decoration:none;
+                   padding:14px 28px;
+                   border-radius:8px;
+                   font-size:16px;
+                   font-weight:bold;
+                   display:inline-block;
+                 &quot;&gt;
+                &lt;span style=&quot;color:#ffffff;&quot;&gt;
+                  Responder Encuesta -
+                &lt;/span&gt;
+
+                &lt;span style=&quot;color:#00A3A1; font-style:italic; font-weight:normal;&quot;&gt;
+                  Answer Survey
+                &lt;/span&gt;
+              &lt;/a&gt;
+
+            &lt;/td&gt;
+          &lt;/tr&gt;
+
+        &lt;/table&gt;
+
+        &lt;!-- Footer --&gt;
+        &lt;table width=&quot;600&quot; cellpadding=&quot;15&quot; cellspacing=&quot;0&quot; role=&quot;presentation&quot; style=&quot;background-color:#002D72;&quot;&gt;
+          &lt;tr&gt;
+            &lt;td style=&quot;font-size:11px; color:#ffffff; text-align:center; line-height:1.4;&quot;&gt;
+              La presente comunicación y su contenido van dirigidos a la plantilla de las sociedades del Grupo BBVA&lt;br&gt;
+              &lt;span style=&quot;color:#00A3A1;&quot;&gt;
+                This communication and its content are addressed to the staff of the BBVA Group companies.
+              &lt;/span&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/table&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</value>
+    </values>
+    <values>
+        <field>DES_fld_EmailSubject__c</field>
+        <value xsi:type="xsd:string">Tu opinion nos importa, NoteBookLM</value>
+    </values>
+    <values>
+        <field>DES_fld_EmailTemplate__c</field>
+        <value xsi:type="xsd:string">DES_lmt_SurveyWUTSupportTemplate</value>
+    </values>
+    <values>
+        <field>DES_fld_FriendlyReminder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>DES_fld_MinimalUse__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>DES_fld_Sender__c</field>
+        <value xsi:type="xsd:string">ans_clientcloud@bbva.com</value>
+    </values>
+    <values>
+        <field>DES_fld_SurveyDeveloperName__c</field>
+        <value xsi:type="xsd:string">encuesta_de_satisfaccion_notebookllm</value>
+    </values>
+</CustomMetadata>

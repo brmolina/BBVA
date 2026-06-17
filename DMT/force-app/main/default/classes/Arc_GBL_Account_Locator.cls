@@ -53,6 +53,7 @@
 *             Add bookingCountry parameter to getAccountInfoById method
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.AvoidGlobalModifier,PMD.ApexCRUDViolation,PMD.AvoidHardcodingId')
 global without sharing class Arc_GBL_Account_Locator implements  arce.Arc_Gen_Account_Interface {
     /**
         * @Description: String with value "Group"
@@ -79,9 +80,8 @@ global without sharing class Arc_GBL_Account_Locator implements  arce.Arc_Gen_Ac
     public Map<Id,arce.Arc_Gen_Account_Wrapper> getAccountInfoById(List<Id> listAccountId) {
         final Map<Id,arce.Arc_Gen_Account_Wrapper> mapWrapper = new Map<Id,arce.Arc_Gen_Account_Wrapper>();
         try {
-            final List<Account> lstAcc = [SELECT Id, CurrencyIsoCode, Name, AccountNumber, OwnerId, RecordTypeId,
-                company_economic_activity_id__c, bank_id__c, bbva_total_debt_amount__c, CreatedById,
-                NumberOfEmployees, LastModifiedById, ParentId, Rating, RecordType.DeveloperName
+            final List<Account> lstAcc = [SELECT Id, CurrencyIsoCode, Name, Site, AccountNumber, OwnerId, RecordTypeId, bank_id__c, CreatedById, NumberOfEmployees,
+                LastModifiedById, ParentId, Rating, RecordType.DeveloperName
                 FROM Account WHERE Id =:listAccountId];
             for(Account acc : lstAcc) {
                 final arce.Arc_Gen_Account_Wrapper wrapper = new arce.Arc_Gen_Account_Wrapper();
@@ -127,9 +127,8 @@ global without sharing class Arc_GBL_Account_Locator implements  arce.Arc_Gen_Ac
     public Map<String,arce.Arc_Gen_Account_Wrapper> getAccountByAccNumber(List<String> listAccountNum) {
         final Map<String,arce.Arc_Gen_Account_Wrapper> mapWrapper = new Map<String,arce.Arc_Gen_Account_Wrapper>();
         try {
-            final List<Account> lstAcc = [SELECT Id, CurrencyIsoCode, Name, AccountNumber, OwnerId, RecordTypeId,
-                company_economic_activity_id__c, bank_id__c, bbva_total_debt_amount__c, CreatedById,
-                NumberOfEmployees, LastModifiedById, ParentId, Rating
+            final List<Account> lstAcc = [SELECT Id, CurrencyIsoCode, Name, AccountNumber, OwnerId, RecordTypeId, bank_id__c, CreatedById, NumberOfEmployees,
+                LastModifiedById, ParentId, Rating
                 FROM Account WHERE AccountNumber IN: listAccountNum];
             for(Account acc : lstAcc) {
                 final arce.Arc_Gen_Account_Wrapper wrapper = new arce.Arc_Gen_Account_Wrapper();

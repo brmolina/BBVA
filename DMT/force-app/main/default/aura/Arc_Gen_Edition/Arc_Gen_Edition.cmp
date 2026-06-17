@@ -1,0 +1,63 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_Expandible_Table_Controller">
+  <aura:attribute name="recordId" type="Id" access="global" description="Contains the id of the record to edit" />
+  <aura:attribute name="accHasAId" type="Id" access="global" description="Contains the id of the account has analyis" />
+  <aura:attribute name="tipology" type="String" access="global" description="Contains the tipology of the table" />
+  <aura:attribute name="error" type="boolean" access="global" description="Used to control the error display" />
+  <aura:attribute name="producto" type="boolean" access="global" description="Indicate if its related with a product" />
+  <aura:attribute name="readOnly" type="boolean" access="global" description="Validates edit permission"/>
+  <aura:attribute name="recordtypeid" type="Id" access="global" description="Contains the id of the record type for typology"/>
+  <aura:attribute name="sumTypo" type="boolean" default="false" access="global" description="Boolean to control the calling of the method sumTypologies"/>
+  <aura:attribute name="insertSubmit" type="Boolean" default="false" description="Spinner status var"/>
+  <aura:attribute name="sumTyposId" type="String" access="global" description="Record id summed typology"/>
+  <aura:attribute name="changeStatus" type="Boolean" access="global" default="false" description="True if has change status of analysis when saved"/>
+
+  <lightning:overlayLibrary aura:id="overlayLib"/>
+  <c:Arc_Gen_EditPermChecker_serviceCmp aura:id="permChecker" />
+
+  <aura:if isTrue="{!v.error}">
+    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+      <span class="slds-assistive-text">{!$Label.c.Arc_Gen_Error}</span>
+      <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+        <lightning:icon iconName="utility:error" size="xx-small" variant="inverse" />
+      </span>
+      <h2>{!$Label.c.Arc_Gen_Error_Term}
+        <a href="javascript:void(0);"></a>
+      </h2>
+      <div class="slds-notify__close">
+        <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" onclick="{!c.closeError}" title="Close">
+          <lightning:icon iconName="utility:close" size="xx-small" variant="inverse" />
+          <span class="slds-assistive-text">{!$Label.c.Lc_arce_Close}</span>
+        </button>
+      </div>
+    </div>
+  </aura:if>
+  <aura:if isTrue ="{!v.producto}">
+    <div class="slds-form-element">
+      <label class="slds-form-element__label" for="showProduct">{!$Label.c.Arc_Gen_Product}</label>
+      <div class="slds-form-element__control">
+        <input id="showProduct" readonly="true" class="slds-input" type="text" value="{!v.tipology}"/>
+      </div>
+    </div>
+  </aura:if>
+  <aura:if isTrue="{!v.insertSubmit}">
+    <div class="slds-align_absolute-center" style="margin-top:15px;">
+      <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+          <span class="slds-assistive-text">Loading</span>
+          <div class="slds-spinner__dot-a"></div>
+          <div class="slds-spinner__dot-b"></div>
+      </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+  <lightning:recordForm aura:id="EditForm"
+      recordId= "{!v.recordId}"
+      onsubmit="{!c.saveFields}"
+      objectApiName="arce__limits_exposures__c"
+      mode="{!v.readOnly == true ? 'readonly' : 'edit'}"
+      columns="2"
+      layoutType="Full"
+      recordTypeId="{!v.recordtypeid}"
+      onsuccess="{!c.handleSaveSuccess}"
+      >
+  </lightning:recordForm>
+</aura:component>

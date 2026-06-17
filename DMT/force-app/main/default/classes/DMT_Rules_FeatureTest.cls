@@ -1,5 +1,5 @@
 @isTest
-private class DMT_Rules_FeatureTest {
+private without sharing class DMT_Rules_FeatureTest {
 
     @TestSetup
     static void setUp() {

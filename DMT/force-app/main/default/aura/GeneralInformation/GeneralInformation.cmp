@@ -1,0 +1,115 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+  <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+  <aura:attribute name="isOpen" type="boolean" default="false"/>
+  <aura:attribute name="activeSections" type="List" default="['A']" />
+  <aura:attribute name="GlobalInfor" type="Object" description="The record object to be displayed"/>
+  <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }" activeSectionName="{! v.activeSections }">
+    <lightning:accordionSection name="A" label="General Information">
+        <!-- Form que replica la funcionalidad de un pagelayout  -->
+      <lightning:recordViewForm aura:id="viewForm" recordId="{!v.recordId}" objectApiName="Account">
+        <div class="slds-media">
+          <div class="slds-media__body">
+            <lightning:layout multipleRows="true">
+              <div class="slds-col">
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="master_agreement_type__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="fixed_income_elec_platform_desc__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                    <lightning:layout class="slds-hint-parent">
+                      <lightning:buttonIcon class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default" iconName="utility:edit"  iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecord}"/>
+                    </lightning:layout>
+                    <lightning:outputField fieldName="SAL_Import_Currency__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="emir_desc__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="foreign_exch_elec_platform_desc__c" class="slds-form-element slds-form-element_readonly" />
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                    <lightning:layout class="slds-hint-parent">
+                      <lightning:buttonIcon class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default" iconName="utility:edit"  iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecord}"/>
+                    </lightning:layout>
+                    <lightning:outputField fieldName="SAL_Export_Currency__c" class="slds-form-element  slds-form-element_readonly"/>
+                  </div>
+                </div>
+              </div>
+              <div class="slds-col">
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="mifid_category_type__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="lei_id__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="emir_repapering_type__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col">
+                    <lightning:outputField fieldName="dfa_category_type__c" class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                    <lightning:layout class="slds-hint-parent">
+                      <lightning:buttonIcon class="slds-icon slds-input__icon slds-input__icon_right slds-icon-text-default" iconName="utility:edit"  iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecord}"/>
+                    </lightning:layout>
+                    <lightning:outputField fieldName="Phone"  class="slds-form-element slds-form-element_readonly"/>
+                  </div>
+                </div> 
+              </div>
+            </lightning:layout>
+          </div>
+        </div>
+      </lightning:recordViewForm>
+      <!-- Form de edicion de los campos que son editable -->
+      <lightning:recordEditForm aura:id="editForm" recordId="{!v.recordId}" objectApiName="Account" class="slds-hide" onsuccess="{!c.handleSuccess}">
+        <div class="slds-media">
+          <div class="slds-media__body">
+            <lightning:layout multipleRows="true">
+              <div class="slds-col">
+                <lightning:outputField fieldName="master_agreement_type__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="fixed_income_elec_platform_desc__c" class="slds-form-element"/>
+                <lightning:inputField fieldName="SAL_Import_Currency__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="emir_desc__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="foreign_exch_elec_platform_desc__c" class="slds-form-element"/>
+                <lightning:inputField fieldName="SAL_Export_Currency__c" class="slds-form-element"/>
+              </div>
+              <div class="slds-col">
+                <lightning:outputField fieldName="mifid_category_type__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="lei_id__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="emir_repapering_type__c" class="slds-form-element"/>
+                <lightning:outputField fieldName="dfa_category_type__c" class="slds-form-element"/>
+                <lightning:inputField fieldName="Phone" label="Phone" class="slds-form-element"/>
+              </div>
+            </lightning:layout>
+            <lightning:layout horizontalAlign="center" class="slds-m-top_large">
+              <lightning:button variant="neutral" label="Cancel" title="Cancel" type="text" onclick="{!c.handleCancel}"/>
+              <lightning:button variant="brand" label="Submit" title="Submit" type="submit"/>
+            </lightning:layout>
+          </div>
+        </div>
+      </lightning:recordEditForm>            
+    </lightning:accordionSection>
+  </lightning:accordion>
+</aura:component>

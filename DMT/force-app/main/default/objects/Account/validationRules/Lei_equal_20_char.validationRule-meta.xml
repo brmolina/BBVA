@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lei_equal_20_char</fullName>
+    <active>true</active>
+    <description>El campo LEI tiene que tener 20 caracteres</description>
+    <errorConditionFormula>AND(
+RecordType.DeveloperName = &quot;New_Client_Onboarding&quot;,
+OR(
+ISNEW(),
+ISCHANGED(lei_id__c)
+),
+NOT(
+OR(
+ISBLANK(lei_id__c),
+LEN(TRIM(lei_id__c)) = 20
+)
+)
+)</errorConditionFormula>
+    <errorMessage>The LEI must be exactly 20 characters long</errorMessage>
+</ValidationRule>

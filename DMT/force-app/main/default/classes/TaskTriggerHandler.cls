@@ -41,15 +41,23 @@ public with sharing class TaskTriggerHandler {
         }*/
     }
     timesExecuted ++;
+    List<Task> dmtTasks = DES_RecordType_Utils.filter((List<SObject>) Trigger.new, 'Task', 'DMT_Step_Approval');
+    if (dmtTasks.isEmpty()) {
     Task_Helper_Comm_Alert.changeCommAlertStatusInsert(newList);
+  }
   }
 
   /*---------------------------------------------------------------------------------------
     ON AFTER UPDATE
   ---------------------------------------------------------------------------------------*/
   public void onAfterUpdate(final List<Task> newList, Map<Id, Task> newMap, Map<Id, Task> oldMap) {
-    ActivitiesUtils.updateLineFromTask(newList);
+    
+    List<Task> dmtTasks = DES_RecordType_Utils.filter((List<SObject>) Trigger.new, 'Task', 'DMT_Step_Approval');
+    if (!dmtTasks.isEmpty()) {
+      ActivitiesUtils.updateLineFromTask(dmtTasks);
+    } else {
     Task_Helper_Comm_Alert.changeCommAlertStatusUpdate(newMap, oldMap);
+  }
   }
 
   /*---------------------------------------------------------------------------------------

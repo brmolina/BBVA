@@ -1,0 +1,38 @@
+<!--
+  @File Name          : Arc_Gen_GroupRiskDetailTable_cmp
+  @Description        : Group risk detail table component
+  @Author             : ARCE
+  @Group              : ARCE Team
+  @Changes   :
+  Ver       Date            Author      		                    Modification
+  ==============================================================================
+  1.0    18/10/2019         ARCE                             Initial Version
+  1.1    18/11/2020   juanignacio.hita.contractor@bbva.com   Refactoring component for generate the json dynamically.
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_GroupRiskDetailTable_controller" access="global" >
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="success" type="String" access="global" description="If yes, the service and the save records process were successful"/>
+    <aura:attribute name="spinner" type="Boolean" default="true" description="Indicates if the spinner is active"/>
+    <aura:attribute name="jsonTable" type="Object" access="global" description="Json string with the data table"/>
+    <aura:attribute name="objApiName" type="String" default="arce__Account_has_Analysis__c" description="Object api name"/>
+    <aura:attribute name="tableType" type="String" default="SIMPLE" description="Type of dynamic table"/>
+    <aura:attribute name="configurationId" type="String" access="global" description="recordId from the customer"/>
+    <aura:attribute name="message" type="String" access="global" description="Message information"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.spinner}">
+        <div class="slds-align_absolute-center slds-p-top_x-large">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            {!v.message}
+            {!v.body}
+        </aura:set>
+    </aura:if>
+
+</aura:component>

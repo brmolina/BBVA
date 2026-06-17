@@ -1,0 +1,10 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Modal that show message errors for validate customer button</b></h5>
+        <p>The modal shows a message of success/error and the field names of the error</p>
+        <p><code>c:Arc_Gen_ValidateCustomer</code></p>
+    </aura:description>
+    <aura:example name="ExampleName" ref="exampleComponentName" label="Label">
+        <p>Component that show a success/error message</p>
+    </aura:example>
+</aura:documentation>

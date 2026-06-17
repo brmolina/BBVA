@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Template_Lock_NBC_Decision</fullName>
+    <active>true</active>
+    <errorConditionFormula>(TEXT(opportunity_id__r.NBC_Decision_Taken_type__c) = $Label.NBC_Decision_Not_Recommended ||
+TEXT(opportunity_id__r.NBC_Decision_Taken_type__c) = $Label.NBC_Decision_Recommended) &amp;&amp;
+NOT(ISCHANGED(Template_approved_type__c)) &amp;&amp;
+NOT(ISCHANGED(Pending_approval_type__c))&amp;&amp;
+NOT($Permission.Templates_SP) &amp;&amp; $Profile.Name != &quot;System Administrator&quot; &amp;&amp; NOT(ISCHANGED(opportunity_nbc_comments_desc__c))</errorConditionFormula>
+    <errorMessage>You can&apos;t modify the template if the decision of the NBC Commitee is &apos;Recommended&apos; or &apos;Not Recommended&apos;.</errorMessage>
+</ValidationRule>

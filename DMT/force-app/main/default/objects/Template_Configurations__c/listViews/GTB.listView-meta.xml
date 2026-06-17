@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GTB</fullName>
+    <columns>NAME</columns>
+    <columns>Product_id__c</columns>
+    <columns>Booking_type__c</columns>
+    <columns>Amount_num__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Template_type__c</field>
+        <operation>equals</operation>
+        <value>GTB</value>
+    </filters>
+    <label>GTB</label>
+    <sharedTo>
+        <role>S_P_TEAM</role>
+    </sharedTo>
+</ListView>

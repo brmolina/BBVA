@@ -1,0 +1,75 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="VisitsCommercialActivityController" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!empty(v.data)}">
+
+        <div class="slds-box">
+            <div class="slds-text-align_center"><ui:outputText value="{!$Label.c.NoRelatedVisits}"/></div>
+        </div>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                <div aura:id="changeIt">
+                    <div class="customDiv customBackground slds-p-around_xxx-small">
+                        <table class="no-border">
+                            <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                <div class="slds-text-title--caps slds-truncate title">Total Visits (YTD)</div>
+                                <div class="horizontal slds-text-heading_small"><strong><ui:outputNumber value="{!v.data[0].returnTotalVisitsYTD}"/></strong></div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                <div class="slds-text-title--caps slds-truncate title">Visits Last 12 months</div>
+                                <div class="horizontal slds-text-heading_small"><strong><ui:outputText value="{!v.data[0].returnTotalVisitsYF}"/></strong></div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-p-around_xx-small">
+                                <div class="slds-text-title--caps slds-truncate title">% (YOY)</div>
+                                <aura:if isTrue="{!v.data[0].returnTotalVisitsYOY gt 0}">
+                                    <div class="horizontal slds-text-heading_small"><strong>+<ui:outputText value="{!v.data[0].returnTotalVisitsYOY}"/>%</strong></div>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!v.data[0].returnTotalVisitsYOY le 0}">
+                                            <div class="horizontal slds-text-heading_small"><strong><ui:outputText value="{!v.data[0].returnTotalVisitsYOY}"/>%</strong></div>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </th>
+                        </table>
+                    </div>
+                </div>
+                
+                
+                <aura:set attribute="else">
+                    <div aura:id="changeIt" style="height:100%; width:100%;">
+                        <div class="customDiv customBackground slds-p-around_xxx-small">
+                            <table class="no-border">
+                                <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                    <div class="slds-text-title--caps slds-truncate title">Total Visits (YTD)</div>
+                                    <div class="horizontal slds-text-heading_small"><strong><ui:outputNumber value="{!v.data[0].returnTotalVisitsYTD}"/></strong></div>
+                                </th>
+                                <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                    <div class="slds-text-title--caps slds-truncate title">Total Visits (FY)</div>
+                                    <div class="horizontal slds-text-heading_small"><strong><ui:outputText value="{!v.data[0].returnTotalVisitsYF}"/> </strong></div>
+                                </th>
+                                <th scope="col" class="slds-size_1-of-3 slds-truncate customBackground slds-p-around_xx-small">
+                                    <div class="slds-text-title--caps slds-truncate title">% (YOY)</div>
+                                    <aura:if isTrue="{!v.data[0].returnTotalVisitsYOY gt 0}">
+                                        <div class="horizontal slds-text-heading_small"><strong>+<ui:outputText value="{!v.data[0].returnTotalVisitsYOY}"/>%</strong></div>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!v.data[0].returnTotalVisitsYOY le 0}">
+                                                <div class="horizontal slds-text-heading_small"><strong><ui:outputText value="{!v.data[0].returnTotalVisitsYOY}"/>%</strong></div>
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                                </th>
+                            </table>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+</aura:component>

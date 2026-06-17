@@ -1,0 +1,16 @@
+<aura:component controller="Buttons_Onboarding_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName" access="GLOBAL">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordTypeId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <div class="slds_modal__container" style="z-index: 10000 !important">
+        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModalFlow }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+        <div class="slds-modal__content slds-p-around_medium" style="border-radius: 15px !important ; width: 500px !important" id="modal-content-id-1">
+            <lightning:flow aura:id="flowData" onstatuschange="{!c.changeStatus}"/>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

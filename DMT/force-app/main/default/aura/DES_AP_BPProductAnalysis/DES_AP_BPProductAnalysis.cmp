@@ -1,0 +1,42 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global"
+  controller="DES_AP_BPAccessHandler_CTRL" >
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <aura:attribute name="sectionGroupingField" type="String" access="global"/>
+  <aura:attribute name="gridGroupingField" type="String" access="global"/>
+  <aura:attribute name="bpaccess" type="Boolean" access="public" default="false"/>
+  <aura:attribute name="noAccessBPmsg" type="String" access="global" default=""/>
+  <aura:attribute name="currencyISOCode" type="String" access="global" />
+
+  <aura:attribute name="showtable" type="Boolean" access="global" default="true" />
+  <aura:attribute name="lastValidatedVersion" type="Boolean" access="global" default="false" />
+
+  <aura:attribute name="edit" type="Boolean" access="public" default="false"/>
+  
+  <aura:attribute name="bpVersionId" type="String" access="global" default=""/>
+  <aura:handler event="bupl:BPVersionSelectorEvent" action="{!c.handleAppEvent}" />
+<aura:attribute name="sectionList" type="List" />
+
+  <aura:if isTrue="{!v.bpaccess}">
+      <div class="versionSelect">
+          <bupl:BPVersionSelector recordId="{!v.recordId}" queryField="acpl__gf_account_planning_id__c" />
+      </div>
+	<lightning:accordion allowMultipleSectionsOpen="true" class="slds-box">
+        <aura:iteration items="{!v.sectionList}" var="section" indexVar="ind">
+          <div class="customDiv">
+              <lightning:accordionSection name="{!ind}" label="{!section}" class="slds-box slds-box_xx-small slds-m-top_xxx-small">
+              <c:DES_AP_ProductAnalysisDisplay_Grid sectionGroupingField="bupl__gf_booking_operation_cntry_id__c"
+              sectionGroupingFieldValue="{!section}"
+              parentId="{!v.recordId}"
+              gridGroupingField="bupl__solution_category_id__c"
+              bpVersionId="{!v.bpVersionId}"
+              lastValidatedVersion="{!v.lastValidatedVersion}"
+              editable = "{!v.edit}"/>
+              </lightning:accordionSection>
+          </div>
+        </aura:iteration>
+      </lightning:accordion>
+  </aura:if>
+</aura:component>

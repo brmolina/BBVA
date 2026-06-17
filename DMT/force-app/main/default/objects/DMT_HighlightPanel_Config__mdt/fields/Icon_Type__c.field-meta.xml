@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Icon_Type__c</fullName>
+    <description>Tipo de icono</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Icon Type</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>standard</fullName>
+                <default>true</default>
+                <label>standard</label>
+            </value>
+            <value>
+                <fullName>utility</fullName>
+                <default>false</default>
+                <label>utility</label>
+            </value>
+            <value>
+                <fullName>custom</fullName>
+                <default>false</default>
+                <label>custom</label>
+            </value>
+            <value>
+                <fullName>staticresource</fullName>
+                <default>false</default>
+                <label>staticresource</label>
+            </value>
+            <value>
+                <fullName>none</fullName>
+                <default>false</default>
+                <label>none</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

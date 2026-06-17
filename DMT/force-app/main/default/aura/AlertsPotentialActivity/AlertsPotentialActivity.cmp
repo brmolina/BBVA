@@ -1,0 +1,74 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="AlertsPotentialActivityController" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!empty(v.data)}">
+
+    	<!-- <div class="slds-box">
+         <div class="slds-text-align_center"><ui:outputText value="{!$Label.c.NoRelatedVisits}"/></div>
+        </div> -->
+    	<aura:set attribute="else">
+
+    	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+            <div aura:id="changeIt" class="Normal">
+
+                <table class="slds-card slds-table slds-table--col-bordered">
+                        <th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title--caps slds-truncate">Total Alerts</div>
+                            <div class="horizontal slds-text-heading--medium"><strong><ui:outputNumber value="{!v.data[0].totalAlert}"/></strong></div>
+                        </th>
+                    	<th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title--caps slds-truncate">Total Alerts Won</div>
+                            <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertWon}"/> </strong></div>
+                        </th>
+                    	<th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title--caps slds-truncate">Total Alerts Discarded</div>
+                            <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertDiscard}"/> </strong></div>
+                        </th>
+                    	<th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                            <div class="slds-text-title--caps slds-truncate">Total Alerts Expired</div>
+                            <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertExpired}"/> </strong></div>
+                        </th>
+                </table>
+
+            </div>
+
+
+            <aura:set attribute="else">
+            <div aura:id="changeIt" class="Normal" style="height:100%; width:100%;">
+
+                <table class="slds-card slds-table slds-table--col-bordered">
+                    <th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                        <div class="slds-text-title--caps slds-truncate">Total Alerts</div>
+                        <div class="horizontal slds-text-heading--medium"><strong><ui:outputNumber value="{!v.data[0].totalAlert}"/></strong></div>
+                    </th>
+                    <th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                        <div class="slds-text-title--caps slds-truncate">Total Alerts Won</div>
+                        <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertWon}"/> </strong></div>
+                    </th>
+                    <th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                        <div class="slds-text-title--caps slds-truncate">Total Alerts Discarded</div>
+                        <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertDiscard}"/> </strong></div>
+                    </th>
+                    <th scope="col" class="slds-size_1-of-4 slds-truncate cells-border customBackground">
+                        <div class="slds-text-title--caps slds-truncate">Total Alerts Expired</div>
+                        <div class="horizontal slds-text-heading--medium"><strong><ui:outputText value="{!v.data[0].totalAlertExpired}"/> </strong></div>
+                    </th>
+                </table>
+            </div>
+
+
+
+            </aura:set>
+   		 </aura:if>
+
+        </aura:set>
+    </aura:if>
+
+</aura:component>

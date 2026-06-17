@@ -1,0 +1,24 @@
+.THIS .rollbackWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.THIS .rollbackSpinner {
+  position: relative;
+  display: inline-block;
+  width: 3em;
+  height: 3em;
+  padding: 8px;
+}
+
+.THIS .errorsWrapper {
+  margin: 1em;
+}
+
+.THIS .errorAccordion .slds-accordion__summary {
+  background-color: var(--slds-g-color-error-base-60);
+}
+
+.THIS .errorAccordion .slds-accordion__content {
+  background-color: var(--slds-g-color-error-base-90);
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Commercial_Offer_Status</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISPICKVAL(coff__gf_commercial_offer_id__r.coff__gf_status_comm_offer_type__c, &apos;End&apos;)</errorConditionFormula>
+    <errorDisplayField>coff__gf_commercial_offer_id__c</errorDisplayField>
+    <errorMessage>Please notice you can not add registries in this stage, please move the Commercial Offer to the status &quot;in progress&quot; in order to add and opportunity or visit. Thanks</errorMessage>
+</ValidationRule>

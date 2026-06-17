@@ -1,0 +1,77 @@
+<aura:component controller="DES_APRevenuesEvolutionChartCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+	<ltng:require scripts="{! join(',',
+							$Resource.Chart,
+							$Resource.baseFichaGrupo)}"
+	afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+	<aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String"/>
+    <aura:attribute name="defaultSortDirection" type="String"/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="userISOCode" type="String"/>
+
+    
+	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+		<div class="slds-page-header">
+			<div class="slds-media">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container slds-icon-standard-opportunity" title="Revenues Evolution">
+						<lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+					</span>
+				</div>
+				<div class="slds-media__body">
+					<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Revenues Evolution">{!$Label.c.DES_Revenues_Evolution}</h1>
+					<p class="slds-text-body_small slds-line-height_reset">{!$Label.c.DES_Report}</p>
+				</div>
+			</div>
+		</div>
+	<aura:set attribute="else">
+		<div class="slds-page-header">
+			<lightning:layout>
+				<div class="slds-media__figure">
+					<span class="slds-icon_container slds-icon-standard-opportunity" title="Revenues Evolution">
+						<lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+					</span>
+				</div>
+				<lightning:layoutItem class="slds-media__body">
+					<h1 class="slds-page-header__title">{!$Label.c.DES_Revenues_Evolution}</h1>
+					<lightning:breadcrumbs>
+						<lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+							label="Mobile view"
+							onclick="{!c.onClickBefore}"
+							title="Go back"
+						/>
+					</lightning:breadcrumbs>
+				</lightning:layoutItem>
+			</lightning:layout>
+		</div>
+	</aura:set>
+	</aura:if>
+
+	<ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+		<div class="slds-align_absolute-center" style="margin-top:30px; padding-top:10px;">
+			<div style="width:700px;margin-bottom:60px;">
+				<c:DES_APRevenuesEvolutionChart recordId="{!v.recordId}" showViewDetails="false"/>
+			</div>
+		</div>
+		<div class="reportTabla">
+			<aura:if isTrue="{! empty(v.myData)}">
+				{!$Label.c.DES_Chart_No_Data}
+				<aura:set attribute="else">
+					<lightning:datatable data="{!v.myData}"
+						columns="{!v.myColumns}"
+						keyField="id"
+						sortedBy="{!v.sortedBy}"
+						sortedDirection="{!v.sortedDirection}"
+						defaultSortDirection="{!v.defaultSortDirection}"
+						onsort="{!c.updateColumnSorting}"
+						hideCheckboxColumn="true"/>
+				</aura:set>
+			</aura:if>
+		</div>
+	</ui:scrollerWrapper>
+
+</aura:component>

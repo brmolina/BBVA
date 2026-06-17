@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BBG_Reuters_chat</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>BBG/Reuters chat</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>{!requireScript(&quot;/soap/ajax/32.0/connection.js&quot;)}
+{!requireScript(&quot;/support/console/37.0/integration.js&quot;)}
+sforce.connection.sessionId = &apos;{!$Api.Session_ID}&apos;;
+var user =sforce.connection.getUserInfo();
+var url;
+
+var username = user.userName
+var result = sforce.connection.query(
+&quot;SELECT ID,Asset_Class__c from User WHERE User.username=&apos;&quot; + username + &quot;&apos;&quot;);
+debugger;
+var asset =result.getArray(&quot;records&quot;)[0].Asset_Class__c;
+var tod;
+var fecha = new Date(); 
+var mes =(fecha.getMonth()+1);
+tod =fecha.getDay()+&apos;/&apos;+mes+&apos;/&apos;+fecha.getFullYear();
+
+var accountId = &apos;{!Account.Id}&apos;;
+var cotactId = &apos;{!Contact.Id}&apos;;
+if(!cotactId) {
+cotactId = &apos;{!Lead.Id}&apos;;
+}
+if(asset != null){
+var a = asset.split(&apos;;&apos;);
+
+if(a.length==1){
+url = &apos;/00T/e?what_id=&apos;+accountId+&apos;&amp;who_id=&apos;+cotactId+&apos;&amp;retURL=%2F&apos;+accountId +&apos;&amp;00Nj0000002R5W3=&apos;+a[0]+&apos;&amp;tsk5=BBG/Reuters chat&amp;tsk12=Completed&amp;tsk4=&apos;+tod;
+}else{
+url = &apos;/00T/e?what_id=&apos;+accountId+&apos;&amp;who_id=&apos;+cotactId+&apos;&amp;retURL=%2F&apos;+accountId+&apos;&amp;tsk5=BBG/Reuters chat&amp;tsk12=Completed&amp;tsk4=&apos;+tod;
+}
+}else{
+url = &apos;/00T/e?what_id=&apos;+accountId+&apos;&amp;who_id=&apos;+cotactId+&apos;&amp;retURL=%2F&apos;+accountId+&apos;&amp;tsk5=BBG/Reuters chat&amp;tsk12=Completed&amp;tsk4=&apos;+tod;
+}
+
+ if (sforce.console.isInConsole()) { 
+openSubTab(url, &apos;New BBG/Reuters chat&apos;, true);
+} else { 
+window.parent.location.assign(url); 
+}
+
+function openSubTab(url, title, refreshOnClose) {
+	var refreshPrimaryTab = function() {
+	sforce.console.getEnclosingPrimaryTabId(function(result) { 
+	sforce.console.refreshPrimaryTabById(result.id, true);
+	});
+}
+
+sforce.console.getEnclosingPrimaryTabId(function(result) { 
+	var primaryTabId = result.id; 
+	sforce.console.openSubtab(primaryTabId, url, true, title, null, function(r) {
+	if (refreshOnClose)
+		sforce.console.addEventListener(sforce.console.ConsoleEvent.CLOSE_TAB,
+		refreshPrimaryTab, {tabId: r.id});
+	}); 
+});
+
+}</url>
+</WebLink>

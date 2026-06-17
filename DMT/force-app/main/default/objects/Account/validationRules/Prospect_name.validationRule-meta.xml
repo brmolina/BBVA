@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_name</fullName>
+    <active>true</active>
+    <errorConditionFormula>RecordTypeId = &quot;0124H000000kIh7&quot; &amp;&amp; LEN(Name) &gt; 50</errorConditionFormula>
+    <errorMessage>The name need to be shorter</errorMessage>
+</ValidationRule>

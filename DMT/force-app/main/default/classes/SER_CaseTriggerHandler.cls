@@ -179,6 +179,9 @@ public with sharing class SER_CaseTriggerHandler {
     }
 
     SER_CaseMethods.createLineVersionSnapshot(newList, oldMap);
+
+    // after all after update methods
+    DMT_AsyncOrchestrator.flush();
     
   }
 

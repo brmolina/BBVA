@@ -15,7 +15,7 @@ private class SER_CaseMethodsContact_TEST {
       ------------------------------------------------------------------------*/
   private static Case createCase() {
     String rtId;
-    rtId = SER_RecordTypeUtils.getRecordTypeByName('Case','SER_GM_User');
+    rtId = SER_RecordTypeUtils.getRecordTypeByName('Case','SER_Closed_Case_GM_User');
 
     Case newCase;
     newCase = new Case();
@@ -24,9 +24,12 @@ private class SER_CaseMethodsContact_TEST {
     newCase.Description               = 'TEST Description';
     newCase.Type                       = 'TEST Type';
     newCase.Subtype__c                  = 'TEST Subtype';
-    newCase.SER_Type_GM__c               = 'Certificados';
-    newCase.SER_Classification__c       = 'Consulta';
+    newCase.SER_Classification__c       = 'Monetary claim';
+    newCase.SER_Source_of_the_error__c  = 'CIB operations';
+    newCase.SER_Subtype_GM__c           = 'Cover message';
+    newCase.SER_Type_GM__c              = 'TMPG';
     newCase.SuppliedEmail              = 'test@test.com';
+    newCase.SER_Pre_liquidacion__c	= true;
     newCase.SER_Business_Case_Type__c = 'GM';
     insert newCase;
     return newCase;

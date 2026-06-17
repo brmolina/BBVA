@@ -17,7 +17,7 @@ public with sharing class Pitch_Related_List_Test {
   public static void test1() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account iAccount = tstClass.createClient();
-    iAccount.SER_CClient__c = 'test1';
+    iAccount.g_customer_id__c = 'test1';
     iAccount.Name = 'test1';
     iAccount.DES_Tier__c = '00000020'; // CIB-Platinum
     insert iAccount;

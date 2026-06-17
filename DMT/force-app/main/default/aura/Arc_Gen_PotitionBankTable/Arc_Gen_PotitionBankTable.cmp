@@ -1,0 +1,39 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_PotitionBankTable_Ctlr">
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:attribute name="rows" type="Object" access="global" description="Contains information to build the rows of the table"/>
+    <aura:attribute name="columns" type="List" access="global" description="Contains information to build the columns of the table"/>
+    <aura:attribute name="inputClass" type="String" access="global" default="default" description="Name of the class controller"/>
+    <aura:attribute name="insert" type="boolean" access="global" default="true" description="Boolean value to enable/disable insert" />
+    <aura:attribute name="edit" type="boolean" access="global" default="true"  description="Boolean value to enable/disable edit" />
+    <aura:attribute name="delete" type="boolean" access="global" default="true" description="Boolean value to enable/disable delete" />
+    <aura:attribute name="refreshVariable" type="boolean" access="global" default="false" description="Control the refresh of the table" />
+    <aura:attribute name="automaticFunction" type="String" access="global" default="false" description="Control the behavior of the table" />
+    <aura:attribute name="hideCheckboxColumn" type="Boolean" default="true" description="Whether to hide checkboxes in each row" />
+    <aura:attribute name="createGroupTDTable" type="Boolean" default="false" description="Whether to generate a second table" />
+    <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner status" />
+    <aura:handler name="change" value="{!v.refreshVariable}" action="{!c.refreshTable}"/>
+    <aura:handler event="c:Arc_Gen_PositionEvent" action="{!c.handleRefreshEvt}"/>
+    <aura:registerEvent name="tableLoadedEvent" type="c:Arc_Gen_TableLoadedEvent"/>
+    <lightning:overlayLibrary aura:id="overlayLibra"/>
+    <aura:if isTrue="{!v.spinnerStatus}">
+      <div class="slds-align_absolute-center" style="margin-top:15px;">
+          <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+              <span class="slds-assistive-text">Loading</span>
+              <div class="slds-spinner__dot-a"></div>
+              <div class="slds-spinner__dot-b"></div>
+          </div>
+      </div>
+      <aura:set attribute="else">
+        <div aura:id="PotitionBankTable" style="width: 100%;">
+          <lightning:treeGrid
+            columns="{!v.columns}"
+            data="{!v.rows}"
+            keyField="name"
+            hideCheckboxColumn="{!v.hideCheckboxColumn}"
+            onrowaction="{!c.handleRowAction}"
+          />
+        </div>
+        {!v.body}
+      </aura:set>
+    </aura:if>
+</aura:component>

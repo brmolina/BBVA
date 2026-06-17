@@ -16,7 +16,7 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
         noDataFromService: LABEL_ERROR_NO_DATA_FROM_SERVICE
     };
 
-    hasError = false;
+    hasError = true;
     errorMessage = '';
 
     @wire(CurrentPageReference)
@@ -31,7 +31,7 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
         return this.currentPageRef.state.c__recordAcc;
     }
 
-    connectedCallback() {
+    renderedCallback() {
         // Check if the style was already added to avoid duplicates
         if (!document.head.querySelector('#custom-modal-style')) {
             const style = document.createElement('style');
@@ -55,18 +55,17 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
             document.head.appendChild(style);
         }
         console.log('recordId que tal '+this.recordId);
+
         this.validateAndNavigate();
+
+        
     }
 
-    async validateAndNavigate() {
-        let clientId;
-        if (this.recordAcc) {
-            clientId = this.recordAcc;
-        } else {
-            let recordUrl = window.location.href.split('=')[2];
-            clientId = recordUrl.split('&')[0];
-        }
 
+    async validateAndNavigate() {
+        let recordClientId = new URL(window.location.href).searchParams.get('recordId');console.log('recordId test',recordClientId);
+        
+        let clientId = recordClientId != null && recordClientId != undefined ? recordClientId : this.recordAcc;
         //Check object and get client ID
         try {
           clientId = await getRecordAccountId({ recordId: clientId });
@@ -80,28 +79,29 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
         console.log('Validating record with ID:', clientId);
 
         // Wait for validateRecordCode to complete before proceeding
-        this.hasError = await this.validateRecordCode(clientId) || await this.validateGroupCode();
-        console.log('hasError:', this.hasError);
+            this.hasError =  await this.validateRecordCode(clientId) || await this.validateGroupCode();
+        
+            console.log('hasError:', this.hasError);
 
-        if (this.hasError) {
-            this.errorMessage = this.label.noDataFromService;
-            this.showToast('Error', this.errorMessage, 'error');
-            this.isLoading = false;
-            this.dispatchEvent(new CloseActionScreenEvent());
-
-        } else {
-            setTimeout(() => {
-                // Proceed with navigation
-                let urlMixin = {
-                    type: "standard__navItemPage",
-                    attributes: { apiName: "DMT_Page" },
-                    state: { c__recordId: clientId }
-                };
-
-                this[NavigationMixin.GenerateUrl](urlMixin).then(url => window.open(url, '_self'));
+            if (this.hasError) {
+                this.errorMessage = this.label.noDataFromService;
+                this.showToast('Error', this.errorMessage, 'error');
                 this.isLoading = false;
-            }, 1400);
-        }
+                this.dispatchEvent(new CloseActionScreenEvent());
+
+            } else {
+                setTimeout(() => {
+                    // Proceed with navigation
+                    let urlMixin = {
+                        type: "standard__navItemPage",
+                        attributes: { apiName: "DMT_Page" },
+                        state: { c__recordId: clientId }
+                    };
+
+                    this[NavigationMixin.GenerateUrl](urlMixin).then(url => window.open(url, '_self'));
+                    this.isLoading = false;
+                }, 1400);
+            }
     }
 
     async validateRecordCode(clientId) {

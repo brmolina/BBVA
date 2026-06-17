@@ -1,15 +1,11 @@
-import {
-    LightningElement,
-    track,
-    api
-} from 'lwc';
+import { LightningElement, track, api } from 'lwc';
+import DMT_No_Records from '@salesforce/label/c.DMT_No_Records';
 
 export default class Dmt_custom_tree_grid extends LightningElement {
 
     @api columns;
     @api columnsParent;
     @api columnsChildren;
-    @api modelData;
     @track processedData;
     @track processedFilters;
     @track processedDataForSearch = [];
@@ -20,17 +16,154 @@ export default class Dmt_custom_tree_grid extends LightningElement {
     @api filters;
     @api search;
     @api isExpanded = false;
+    @api headerTitle;
+    // DESARROLLO ACCIONES MASIVAS
+    _isSelectionMode = false;
+    isSelectAllActive = false;
+    @track selectedRows = [];
     selectedFilters = {};
+    _modelData;
+    _isVisible = true;
+    _lastAppliedMaxH = null;
+    _io = null;
+    _resizeTimer = null;
+    _resizeBound = false;
+    _roBound = false;
+    _observer;
+    @track columnWidths = {};
+
+    minColumnWidth = 45;
+    isResizingColumn = false;
+    resizingField = null;
+    startX = 0;
+    startWidth = 0;
+    boundResizeMove = null;
+    boundResizeEnd = null;
+
+    labels = {
+        DMT_No_Records
+    };
+
+    get columnsCount() {
+        const baseColumns = this.columns?.length || 1;
+        return this.isSelectionMode ? baseColumns + 1 : baseColumns;
+    }
+
+    get tableClass() {
+        const base = 'slds-table slds-table--bordered slds-box slds-max-medium-table--stacked-horizontal custom-table full-width-table';
+        return Object.keys(this.columnWidths || {}).length > 0 ? `${base} resizable-active` : base;
+    }
+
+    get columnsWithResize() {
+        return (this.columns || []).map(col => {
+            const width = this.columnWidths[col.fieldName];
+            return {
+                ...col,
+                widthStyle: width ? `width: ${width}px; min-width: ${width}px;` : ''
+            };
+        });
+    }
+
+    @api
+    get isSelectionMode() {
+        return this._isSelectionMode;
+    }
+
+    set isSelectionMode(value) {
+        const nextValue = Boolean(value);
+        const previousValue = this._isSelectionMode;
+        this._isSelectionMode = nextValue;
+
+        if (previousValue && !nextValue) {
+            this.isSelectAllActive = false;
+            this.selectedRows = [];
+            this.emitSelectionChange();
+        }
+    }
+
+    get visibleSelectableRowKeys() {
+        return (this.processedData || []).map(item => item.itemKey);
+    }
+
+    get areAllVisibleRowsSelected() {
+        const visibleKeys = this.visibleSelectableRowKeys;
+        if (visibleKeys.length === 0) {
+            return false;
+        }
+        return visibleKeys.every(key => this.selectedRows.includes(key));
+    }
+
+    get isSelectAllDisabled() {
+        return this.visibleSelectableRowKeys.length === 0;
+    }
+
+    @api
+    get modelData() {
+        return this._modelData;
+    }
+    set modelData(value) {
+        this._modelData = value;
+        if (value && this.columns) {
+            this.processedDataForSearch = [];
+            this.processData();
+        }
+    }
+
+    get containerClass() {
+        const base = 'slds-tree_container full-width-container slds-grid';
+        return this.notEmpty ? base : `${base} empty-mode`;
+    }
 
     /**
      * Opened at launch
      */
     connectedCallback() {
-        this.processData();
+        this.boundResizeMove = this.handleColumnResizeMove.bind(this);
+        this.boundResizeEnd = this.handleColumnResizeEnd.bind(this);
+
+        if (this._modelData && this.columns) {
+            this.processData();
+        }
+        const el = document.querySelector('.lwcAppFlexipage');
+        if (el) el.classList.add('dmt-case-tasks-active');
     }
 
-    get searchFiltersBar() {
-        return this.notEmpty && (this.search || (this.filters && this.filters.length > 0) );
+    renderedCallback() {
+        if (this.notEmpty && !this._observer) {
+            this.setupIntersectionObserver();
+        }
+    }
+
+    disconnectedCallback() {
+        this.removeColumnResizeListeners();
+
+        if (this._observer) {
+            this._observer.disconnect();
+        }
+        const el = document.querySelector('.oneContent.active.lafPageHost');
+        if (el) el.classList.remove('dmt-case-tasks-active');
+    }
+
+
+    setupIntersectionObserver() {
+        const sentinel = this.refs.scrollSentinel;
+
+        if (!sentinel) return;
+
+        const options = {
+            root: this.template.querySelector('.table-scroller'),
+            rootMargin: '100px',
+            threshold: 0.1
+        };
+
+        this._observer = new IntersectionObserver((entries) => {
+            const entry = entries[0];
+            if (entry.isIntersecting) {
+                this.dispatchEvent(new CustomEvent('loadmoredata'));
+            }
+        }, options);
+
+        this._observer.observe(sentinel);
     }
 
     processData() {
@@ -65,7 +198,7 @@ export default class Dmt_custom_tree_grid extends LightningElement {
                 itemAux.parentItemKey = parentItemKey;
             }
             newParentItemKey = item.itemKey;
-            delete itemCopy.subitems; 
+            delete itemCopy.subitems;
             this.processedDataForSearch.push(itemCopy);
             if (item.subitems && item.subitems.length > 0) {
                 itemAux.subitems = item.subitems.map(child => processNode(child, depth + 1, newParentItemKey));
@@ -76,11 +209,14 @@ export default class Dmt_custom_tree_grid extends LightningElement {
                 iconName: this.isExpanded ? 'utility:chevrondown' : 'utility:chevronright'
             }
         };
-        this.processedData = this.modelData.map(item => processNode(item, 0, undefined));
+
+        this.processedData = (this.modelData || []).map(item => processNode(item, 0, undefined));
+        this.notEmpty = this.processedData.length > 0;
         if (this.processedData.length > 0) {
             this.notEmpty = true;
         }
         this.originalProcessedData = [...this.processedData];
+        this.syncSelectAllWithVisibleRows();
         if (this.filters && this.filters.length > 0) {
             const filtersFields = this.filters.map(filter => filter.fieldName);
             this.processFilters(filtersFields, this.processedDataForSearch);
@@ -90,8 +226,8 @@ export default class Dmt_custom_tree_grid extends LightningElement {
 
     /**
      * This method is used to process the filters, setting the possible values through all the options that comes from the parent component
-     * @param {*} fieldNameArray 
-     * @param {*} arrayToFind 
+     * @param {*} fieldNameArray
+     * @param {*} arrayToFind
      */
     processFilters(fieldNameArray, arrayToFind) {
         let fieldValuesMap = {};
@@ -132,7 +268,7 @@ export default class Dmt_custom_tree_grid extends LightningElement {
             }
             return key;
         });
-        }   
+        }
 
         //The filters are loaded so we communicate to the html
         this.areFiltersLoaded = true;
@@ -140,7 +276,7 @@ export default class Dmt_custom_tree_grid extends LightningElement {
 
     /**
      * Method used to show the subItems
-     * @param {*} event 
+     * @param {*} event
      */
     toggleCase(event) {
         const itemKey = event.currentTarget.dataset.id;
@@ -159,7 +295,7 @@ export default class Dmt_custom_tree_grid extends LightningElement {
 
     /**
      * Method used to search within the table, it is called from an event from the databarsearch
-     * @param {*} event 
+     * @param {*} event
      */
     handleSearch(event) {
         const filteredFlatList = event.detail.dataFind;
@@ -193,6 +329,7 @@ export default class Dmt_custom_tree_grid extends LightningElement {
 
         // Filter the original tree structure
         this.processedData = filterTree(this.originalProcessedData, matchFn);
+        this.syncSelectAllWithVisibleRows();
         this.isDataProcessed = true;
 
         // Reload filters with the new processed data
@@ -264,8 +401,128 @@ export default class Dmt_custom_tree_grid extends LightningElement {
             this.processedData = [...resetData];
         }
 
+        this.syncSelectAllWithVisibleRows();
+
         // Trigger reactive updates
         this.isDataProcessed = false;
         this.isDataProcessed = true;
+    }
+
+    handleTableScroll(event) {
+    const target = event.target;
+
+        const isNearBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+
+        if (isNearBottom) {
+            this.dispatchEvent(new CustomEvent('loadmoredata'));
+        }
+    }
+
+    handleColumnResizeStart(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const fieldName = event.currentTarget.dataset.field;
+        const header = this.template.querySelector(`th[data-field="${fieldName}"]`);
+
+        if (!fieldName || !header) {
+            return;
+        }
+
+        this.isResizingColumn = true;
+        this.resizingField = fieldName;
+        this.startX = event.clientX;
+        this.startWidth = this.columnWidths[fieldName] || header.getBoundingClientRect().width;
+
+        this.addColumnResizeListeners();
+    }
+
+    handleColumnResizeMove(event) {
+        if (!this.isResizingColumn || !this.resizingField) {
+            return;
+        }
+
+        const deltaX = event.clientX - this.startX;
+        const nextWidth = Math.max(this.minColumnWidth, Math.round(this.startWidth + deltaX));
+
+        this.columnWidths = {
+            ...this.columnWidths,
+            [this.resizingField]: nextWidth
+        };
+    }
+
+    handleColumnResizeEnd() {
+        this.isResizingColumn = false;
+        this.resizingField = null;
+        this.removeColumnResizeListeners();
+    }
+
+    addColumnResizeListeners() {
+        globalThis.addEventListener('mousemove', this.boundResizeMove);
+        globalThis.addEventListener('mouseup', this.boundResizeEnd);
+    }
+
+    removeColumnResizeListeners() {
+        globalThis.removeEventListener('mousemove', this.boundResizeMove);
+        globalThis.removeEventListener('mouseup', this.boundResizeEnd);
+    }
+
+
+    // DESARROLLO ACCIONES MASIVAS
+
+    handleSelectAllChange(event) {
+        const shouldSelectAll = event.target.checked;
+        const visibleKeys = this.visibleSelectableRowKeys;
+        const visibleSet = new Set(visibleKeys);
+        this.isSelectAllActive = shouldSelectAll;
+
+        if (shouldSelectAll) {
+            const combined = new Set([...this.selectedRows, ...visibleKeys]);
+            this.selectedRows = [...combined];
+        } else {
+            this.selectedRows = this.selectedRows.filter(key => !visibleSet.has(key));
+        }
+
+        this.emitSelectionChange();
+    }
+
+    handleRowSelection(event) {
+        const { itemKey, isSelected } = event.detail;
+
+        if (isSelected) {
+            if (!this.selectedRows.includes(itemKey)) {
+                this.selectedRows = [...this.selectedRows, itemKey];
+            }
+        } else {
+            this.isSelectAllActive = false;
+            this.selectedRows = this.selectedRows.filter(id => id !== itemKey);
+        }
+
+        this.emitSelectionChange();
+    }
+
+    emitSelectionChange() {
+        this.dispatchEvent(new CustomEvent('selectionchange', {
+            detail: { selectedRows: this.selectedRows }
+        }));
+    }
+
+    syncSelectAllWithVisibleRows() {
+        if (!this.isSelectionMode || !this.isSelectAllActive) {
+            return;
+        }
+
+        const visibleKeys = this.visibleSelectableRowKeys;
+        if (!visibleKeys.length) {
+            return;
+        }
+
+        const previousCount = this.selectedRows.length;
+        const mergedSelection = new Set([...this.selectedRows, ...visibleKeys]);
+        this.selectedRows = [...mergedSelection];
+
+        if (this.selectedRows.length !== previousCount) {
+            this.emitSelectionChange();
+        }
     }
 }

@@ -15,6 +15,10 @@
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>hpgr__Allow_Manage_Transactions__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
         <field>hpgr__Allow_Reassign_Contracts__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
@@ -48,7 +52,7 @@
     </values>
     <values>
         <field>hpgr__Help_Site__c</field>
-        <value xsi:type="xsd:string">https://sites.google.com/bbva.com/wholesaleunderwritingtransform/inicio?authuser=1</value>
+        <value xsi:type="xsd:string">https://notebooklm.google.com/notebook/d1c45063-ef3b-41e1-8244-5403ba1f5b1f</value>
     </values>
     <values>
         <field>hpgr__IFRS9_Min_Dif_Between_Percentiles__c</field>
@@ -64,7 +68,7 @@
     </values>
     <values>
         <field>hpgr__Request_Support_Email__c</field>
-        <value xsi:type="xsd:string">gce-support@bbva.com</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>hpgr__Show_Additional_Info__c</field>
@@ -76,7 +80,7 @@
     </values>
     <values>
         <field>hpgr__Show_Approvals_Tab__c</field>
-        <value xsi:type="xsd:boolean">false</value>
+        <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
         <field>hpgr__Show_Capital_Provision_Summary_Tab__c</field>
@@ -107,8 +111,12 @@
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>hpgr__Show_Link_To_DMT_Line__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
         <field>hpgr__Show_Risk_Policy_Summary_Tab__c</field>
-        <value xsi:type="xsd:boolean">false</value>
+        <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
         <field>hpgr__Use_Local_Consumption_Last_Level_Info__c</field>

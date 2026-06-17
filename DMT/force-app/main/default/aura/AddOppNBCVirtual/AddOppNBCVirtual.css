@@ -1,0 +1,29 @@
+.THIS.estiloText{
+    text-align: center; 
+    margin-top: 2rem !important;
+}
+.THIS .estiloBuscar{
+    width: 50%; 
+    margin: auto;
+}
+.THIS span.color{
+    color:#FF0000;
+}
+.THIS .estiloLookUp{
+    min-height:40px;
+    margin-top:0px;
+}
+.THIS.estiloTabla{
+    margin-top: 2rem !important; 
+    width: 80%; 
+    margin: auto;
+}
+.THIS .estiloBoton{
+    margin-top: 1rem !important; 
+    width: 30%; 
+    margin: auto; 
+    margin-bottom: 2rem !important;
+}
+.THIS .leftPaddingClass {
+    padding-left: 2rem !important;
+}

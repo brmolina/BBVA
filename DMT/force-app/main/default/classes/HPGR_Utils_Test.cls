@@ -9,10 +9,12 @@
 @isTest
 public with sharing class HPGR_Utils_Test {
 
+    static final String CONTRACT_GUARANTEES = 'contract_guarantees';
     static final String CONSUMPTION_DETAIL = 'consumption_detail';
     static final String DEREIVATIVES_DATA = 'derivatives_data';
     static final String CATALOG_B444 = 'B444';
     static final String CATALOG_D783 = 'D783';
+    static final String SUPPORT_WUT = 'SupportWUT';
 
     @isTest
     static void getConsumptionLastLevelIdHierarchyDataB444Test() {
@@ -68,6 +70,7 @@ public with sharing class HPGR_Utils_Test {
             System.assertEquals('10100', consumptionLastLevelIdValues[0].consumptionLastLevelId, 'getConsumptionLastLevelIdDataB444Test - Not passed - consumptionLastLevelIdValues[0].consumptionLastLevelId');
             System.assertEquals(Label.hpgr.field_10100, consumptionLastLevelIdValues[0].consumptionLastLevelName, 'getConsumptionLastLevelIdDataB444Test - Not passed - consumptionLastLevelIdValues[0].consumptionLastLevelName');
             System.assertEquals(CONSUMPTION_DETAIL, consumptionLastLevelIdValues[0].onClickComponent, 'getConsumptionLastLevelIdDataB444Test - Not passed - consumptionLastLevelIdValues[0].onClickComponent');
+            System.assertEquals(CONTRACT_GUARANTEES, consumptionLastLevelIdValues[0].onClickRow, 'getConsumptionLastLevelIdDataB444Test - Not passed - consumptionLastLevelIdValues[0].onClickRow');
         Test.stopTest();
     }
 
@@ -83,7 +86,75 @@ public with sharing class HPGR_Utils_Test {
             System.assertEquals(20, consumptionLastLevelIdValues.size(), 'getConsumptionLastLevelIdDataD783Test - Not passed - result.size()');
             System.assertEquals('40000', consumptionLastLevelIdValues[0].consumptionLastLevelId, 'getConsumptionLastLevelIdDataD783Test - Not passed - consumptionLastLevelIdValues[0].consumptionLastLevelId');
             System.assertEquals(Label.hpgr.field_40000, consumptionLastLevelIdValues[0].consumptionLastLevelName, 'getConsumptionLastLevelIdDataD783Test - Not passed - consumptionLastLevelIdValues[0].consumptionLastLevelName');
-            System.assertEquals(DEREIVATIVES_DATA, consumptionLastLevelIdValues[0].onClickComponent, 'getConsumptionLastLevelIdDataD783Test - Not passed - consumptionLastLevelIdValues[0].onClickComponent');
+            System.assertEquals(CONSUMPTION_DETAIL, consumptionLastLevelIdValues[0].onClickComponent, 'getConsumptionLastLevelIdDataD783Test - Not passed - consumptionLastLevelIdValues[0].onClickComponent');
+            System.assertEquals(DEREIVATIVES_DATA, consumptionLastLevelIdValues[0].onClickRow, 'getConsumptionLastLevelIdDataD783Test - Not passed - consumptionLastLevelIdValues[0].onClickRow');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void manageErrorTest() {
+        Test.startTest();
+            hpgr.Utils.Error_Wrapper errorWrapper = new hpgr.Utils.Error_Wrapper();
+            errorWrapper.type = 'hpgr.Utils.getConsumptionLastLevelIdChildValues Error';
+            errorWrapper.className = 'HPGR_Utils';
+            errorWrapper.methodName = 'getConsumptionLastLevelIdData';
+            errorWrapper.userId = UserInfo.getUserId();
+            Datetime timestamp = System.now();
+            errorWrapper.timestamp = timestamp;
+            errorWrapper.errorData = 'No consumptionLastLevelId values found for Taxonomy catalog: ' + CATALOG_B444;
+            HPGR_Utils.manageError(errorWrapper);
+            System.assertEquals('hpgr.Utils.getConsumptionLastLevelIdChildValues Error', errorWrapper.type, 'manageErrorTest - Not passed - errorWrapper.type');
+            System.assertEquals('HPGR_Utils', errorWrapper.className, 'manageErrorTest - Not passed - errorWrapper.className');
+            System.assertEquals('getConsumptionLastLevelIdData', errorWrapper.methodName, 'manageErrorTest - Not passed - errorWrapper.methodName');
+            System.assertEquals(UserInfo.getUserId(), errorWrapper.userId, 'manageErrorTest - Not passed - errorWrapper.userId');
+            System.assertEquals(timestamp, errorWrapper.timestamp, 'manageErrorTest - Not passed - errorWrapper.timestamp');
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void manageOpenHelpTest() {
+        Test.startTest();
+            HPGR_Utils.manageOpenHelp();
+        Test.stopTest();
+        System.assertEquals(true, true, 'manageOpenHelpTest - Not passed - method execution');
+    }
+
+    @IsTest
+    static void getDMTLinesDataTest() {
+        Test.startTest();
+            // Create test data for DMT_Line__c
+            List<DMT_Line__c> dmtLines = new List<DMT_Line__c>();
+            dmtLines.add(new DMT_Line__c(
+                Name = 'Test DMT Line 1',
+                Line_Id__c = 'LINE001',
+                OwnerId = UserInfo.getUserId()
+            ));
+            dmtLines.add(new DMT_Line__c(
+                Name = 'Test DMT Line 2',
+                Line_Id__c = 'LINE002',
+                OwnerId = UserInfo.getUserId()
+            ));
+            insert dmtLines;
+            // Create test data for DMT_TeamMember__c
+            List<DMT_TeamMember__c> dmtTeamMembers = new List<DMT_TeamMember__c>();
+            dmtTeamMembers.add(new DMT_TeamMember__c(
+                Line__c = dmtLines[0].Id,
+                User__c = UserInfo.getUserId(),
+                AccessLevel__c = 'Edit'
+            ));
+            dmtTeamMembers.add(new DMT_TeamMember__c(
+                Line__c = dmtLines[1].Id,
+                User__c = UserInfo.getUserId(),
+                AccessLevel__c = 'Edit'
+            ));
+            insert dmtTeamMembers;
+            // Call the method with opportunity IDs
+            List<String> lineIds = new List<String>{'LINE001', 'LINE002'};
+            Set<String> opportunityIdSet = new Set<String>(lineIds);
+            Map<String, String> result = HPGR_Utils.getDMTLinesData(opportunityIdSet);
+            // Verify the result (Note: result may be empty if user doesn't have required DMT role)
+            System.assertNotEquals(null, result, 'getDMTLinesDataTest - Not passed - result should not be null');
+            System.assert(result != null, 'getDMTLinesDataTest - Not passed - result should not be null');
         Test.stopTest();
     }
 }

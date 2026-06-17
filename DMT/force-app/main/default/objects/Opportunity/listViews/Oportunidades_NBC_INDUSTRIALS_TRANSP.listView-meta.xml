@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oportunidades_NBC_INDUSTRIALS_TRANSP</fullName>
+    <booleanFilter>1 AND 2 AND 3 AND 4 AND (5 OR 6 OR  7 OR 8 OR 9)</booleanFilter>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>OPPORTUNITY.AMOUNT</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Committee_id__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Template_approved_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>NBC_Decision_Taken_type__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Automotive (OEMs),Auto parts suppliers,Auto dealers,Trucks &amp; Coaches dealers,Trucks &amp; Coaches,Motos and micro mobility,Industrial Engineering,Commercial services,Professional services,Aerospace,Defense,Agricultural and forestry machinery</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Heavy transport equipment (exc trucks and planes) (exc trucks and planes),Manufacture of Energy Efficient Equipment,Other electrical components,Clean Energies Equipment</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Iron&amp;steel making,Forming&amp;finishing of steel,Aluminium production,Other metals,Logistic services,Airport services,Port services,Rail services,Other transportation Operators,Road Infrastructure Operators,Passenger Air transportation</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Freight Air transportation,Renting and leasing of air transport equipment,Passenger Maritime transportation,Freight Maritime transportation,Freight Rail transportation,Interurban Passenger Rail transportation</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Urban and suburban passenger transportation,Freight Road transportation,Interurban Passenger Road transportation</value>
+    </filters>
+    <label>Oportunidades NBC - INDUSTRIALS &amp; TRANSP</label>
+</ListView>

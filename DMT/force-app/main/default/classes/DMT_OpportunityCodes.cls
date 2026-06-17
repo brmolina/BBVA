@@ -18,7 +18,7 @@ global with sharing class DMT_OpportunityCodes {
         Map<String, Object> mapRequest = new Map<String, Object>();
         List<String> returnList = new List<String>();
         List<String> listInput = flowInput[0];
-
+        
         mapRequest.put('origin', listInput[0]);
         mapRequest.put('operationType', listInput[1]);
         mapRequest.put('entific', listInput[2]);
@@ -30,7 +30,7 @@ global with sharing class DMT_OpportunityCodes {
 
         Wrapper res = new Wrapper();
 
-        final HttpResponse response = DMT_HPG_Utils.callService_DMT('DMT_OpportunityCodes', request, true);
+        final HttpResponse response = DMT_Utils.callService('DMT_OpportunityCodes', request);
 
         switch on response.getStatusCode() {
             when 201 {

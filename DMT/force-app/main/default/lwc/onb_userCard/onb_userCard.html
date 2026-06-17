@@ -1,0 +1,47 @@
+<template>
+    <lightning-card title={label.ONB_SALESPERSON_TITLE} icon-name="standard:contact">
+        <div class="slds-p-around_medium">
+
+            <template if:true={isLoading}>
+                <div class="slds-p-vertical_small slds-align_absolute-center">
+                    <lightning-spinner size="small" alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={hasUser}>
+                <div class="user-row">
+                    <div class="avatar">
+                        <lightning-avatar
+                            src={avatarSrc}
+                            size="medium"
+                            alternative-text={userName}>
+                        </lightning-avatar>
+                    </div>
+
+                    <div class="info">
+                        <a href={userUrl} target="_blank" rel="noopener noreferrer">
+                            {userName}
+                        </a>
+
+                        <p class="line">
+                            <span class="label">E-mail:&nbsp;</span>
+                            <lightning-formatted-email value={userEmail}></lightning-formatted-email>
+                        </p>
+
+                        <p class="line">
+                            <span class="label">Phone:&nbsp;</span>
+                            <lightning-formatted-phone value={userPhone}></lightning-formatted-phone>
+                        </p>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={noUser}>
+                <p class="empty">
+                    {label.ONB_NO_SALESPERSON}
+                </p>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

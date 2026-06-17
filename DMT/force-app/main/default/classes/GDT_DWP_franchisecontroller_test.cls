@@ -14,7 +14,7 @@ public class GDT_DWP_franchisecontroller_test {
   @testSetup   static void testsetup() {
             final Account testAccount = new Account();
             testAccount.Name='Test Account';
-            testAccount.SER_CClient__c='1234567';
+            testAccount.g_customer_id__c='1234567';
         
          
             insert testAccount;

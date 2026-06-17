@@ -45,7 +45,7 @@ private class SER_EmailMessageMethods_TEST {
                       SER_Is_Master_Case__c = false,
                       Status = 'Closed',
                       SER_Amount_finally_assumed__c = 18,
-                      SER_Classification__c = 'Incidencia',
+                      SER_Classification__c = 'Monetary claim',
                       SER_Remedy_Department__c = 'ANS SSTT',
                       Type = 'ACCESO',
                       Description = 'BLIZZ 98',
@@ -65,19 +65,33 @@ private class SER_EmailMessageMethods_TEST {
   public static Case createCase(String businessType) {
     final Case newCase = new Case();
     if(businessType == GMKTS) {
-      newCase.RecordTypeId= SER_RecordTypeUtils.getRecordTypeByName(CASOF,'SER_GM_User');
-    } else {newCase.RecordTypeId= SER_RecordTypeUtils.getRecordTypeByName(CASOF,'SER_STE_User');}
-    newCase.SER_Product__c           = 'BBVA FINET';
-    newCase.Subject                  = TESTSUBJECT;
-    newCase.Description              = 'TEST Description';
-    newCase.Type                     = 'ACCESO';
-    newCase.Subtype__c               = 'ACCESO';
-    newCase.SER_Type_EST__c          = 'Acceso - FINET';
-    newCase.SER_Subtype_STE__c       = 'Url Equivocada';
-    newCase.SER_Type_GM__c           = 'Otros';
-    newCase.SER_Subtype_GM__c        = 'Otros';
-    newCase.SER_Classification__c    = 'Consulta';
-    newCase.SuppliedEmail            = 'testemailaddress@example.com';
+      	newCase.RecordTypeId= SER_RecordTypeUtils.getRecordTypeByName(CASOF,'SER_GM_User');
+        newCase.SER_Product__c           = 'BBVA FINET';
+        newCase.Subject                  = TESTSUBJECT;
+        newCase.Description              = 'TEST Description';
+        newCase.Type                     = 'ACCESO';
+        newCase.Subtype__c               = 'ACCESO';
+        newCase.SER_Type_EST__c          = 'Acceso - FINET';
+        newCase.SER_Subtype_STE__c       = 'Url Equivocada';
+        newCase.SER_Type_GM__c           = 'TMPG';
+        newCase.SER_Subtype_GM__c        = 'Others';
+        newCase.SER_Source_of_the_error__c = 'CIB operations';
+        newCase.SER_Classification__c    = 'Monetary claim';
+        newCase.SER_Pre_liquidacion__c	= true;
+        newCase.SuppliedEmail            = 'testemailaddress@example.com';
+    } else {
+        newCase.RecordTypeId= SER_RecordTypeUtils.getRecordTypeByName(CASOF,'SER_STE_User');
+        newCase.SER_Product__c           = 'BBVA FINET';
+        newCase.Subject                  = TESTSUBJECT;
+        newCase.Description              = 'TEST Description';
+        newCase.Type                     = 'ACCESO';
+        newCase.Subtype__c               = 'ACCESO';
+        newCase.SER_Type_EST__c          = 'Acceso - FINET';
+        newCase.SER_Subtype_STE__c       = 'Url Equivocada';
+        newCase.SER_Classification__c    = 'Consulta';
+        newCase.SuppliedEmail            = 'testemailaddress@example.com';
+    }
+    
     if(businessType == GMKTS) {
       newCase.SER_Business_Case_Type__c = GMKTS;
     } else {newCase.SER_Business_Case_Type__c= STE;}

@@ -1,0 +1,31 @@
+<template>
+    <template lwc:if={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-modal="true" style="z-index: 9999;">
+            <div class="slds-modal__container">
+                
+                <!-- If we ever want a header, it goes here. Omitted to replicate existing layout -->
+
+                <div class="slds-modal__content slds-p-around_medium slds-text-align_center">
+                    <p class="slds-text-body_regular slds-m-bottom_x-small">
+                        {modalBodyText}
+                    </p>
+                    <p class="slds-text-body_regular slds-text-title_bold slds-m-bottom_medium">
+                        {modalQuestionText}
+                    </p>
+                </div>
+
+                <footer class="slds-modal__footer slds-modal__footer_directional">
+                    <div class="slds-grid slds-grid_align-center slds-gutters_x-small">
+                        <div class="slds-col slds-size_auto">
+                            <button class="slds-button slds-button_neutral" onclick={handleCancelClick}>{cancelButtonLabel}</button>
+                        </div>
+                        <div class="slds-col slds-size_auto">
+                            <button class="slds-button slds-button_brand" onclick={handleConfirmClick}>{confirmButtonLabel}</button>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" style="z-index: 9998;"></div>
+    </template>
+</template>

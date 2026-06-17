@@ -1,0 +1,41 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_PotitionInsertion_Ctlr" >
+  <aura:attribute name="apiNameObject" type="String" access="global" description="variable for objectApiName" />
+  <aura:attribute name="recordTypeId" type="Id" access="global" description="variable to select record layout" />
+  <aura:attribute name="error" type="boolean" access="global" description="boolean to show error message" />
+  <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner load variable"/>
+  <aura:attribute name="selectedChild" type="String" access="global" description="Contains the selected record" />
+  <aura:attribute name="listProducts" type="List" description="list of products" />
+  <aura:attribute name="editMode" type="String" description="Controls lightning recordform editability" default="readonly"/>
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <lightning:overlayLibrary aura:id="overlayLibra"/>
+  <aura:if isTrue="{!v.error}">
+    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+      <span class="slds-assistive-text">{!$Label.c.Arc_Gen_Error}</span>
+      <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+        <lightning:icon iconName="utility:error" size="xx-small" variant="inverse" />
+      </span>
+      <h2>{!$Label.c.Arc_Gen_Error_ProdId}
+        <a href="javascript:void(0);"></a>
+      </h2>
+      <div class="slds-notify__close">
+        <button class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" onclick="{!c.closeError}" title="Close">
+          <lightning:icon iconName="utility:close" size="xx-small" variant="inverse" />
+          <span class="slds-assistive-text">{!$Label.c.Lc_arce_Close}</span>
+        </button>
+      </div>
+    </div>
+  </aura:if>
+  <div>
+    <lightning:combobox name="products" label="{!$Label.c.Arc_Gen_Select_Product}" required="{!!empty(v.listProducts)}" aura:id="productSelect" options="{! v.listProducts }" onchange="{! c.handleChange }" spinnerActive="{!v.spinnerStatus}"/>
+  </div>
+    <lightning:recordForm
+      aura:id="myform"
+      recordId=""
+      recordTypeId="{!v.recordTypeId}"
+      columns="2"
+      onsubmit="{!c.onSubmit}"
+      onsuccess="{!c.handleSuccess}"
+      objectApiName="{!v.apiNameObject}"
+      layoutType="Full"
+      mode="{!v.editMode}"/>
+</aura:component>

@@ -5,11 +5,18 @@ public with sharing class DMT_ProfitabilityAxisSelectorController {
         @AuraEnabled public String value;
         @AuraEnabled public String dataType;
     }
+
+    public class ComboDTO {
+        @AuraEnabled public Id xId;
+        @AuraEnabled public Id yId;
+        @AuraEnabled public Id centerId;
+    }
     
     public class InitialOptionsResponse {
         @AuraEnabled public List<OptionDTO> xOptions = new List<OptionDTO>();
         @AuraEnabled public List<OptionDTO> yOptions = new List<OptionDTO>();
         @AuraEnabled public List<OptionDTO> centralOptions = new List<OptionDTO>();
+        @AuraEnabled public List<ComboDTO> combinations = new List<ComboDTO>();
     }
     
     /**
@@ -73,6 +80,14 @@ public with sharing class DMT_ProfitabilityAxisSelectorController {
                 if (centerIds.contains(a.Id)){
                     res.centralOptions.add(opt);
                 }
+            }
+            // also return the active combinations so the client can filter dependent selects
+            for (DMT_Profitability_Axis_Combination__c c : combos) {
+                ComboDTO cd = new ComboDTO();
+                cd.xId = c.gf_x_axis_value_number__c;
+                cd.yId = c.gf_y_axis_value_number__c;
+                cd.centerId = c.gf_center_axis_value_number__c;
+                res.combinations.add(cd);
             }
         }
         

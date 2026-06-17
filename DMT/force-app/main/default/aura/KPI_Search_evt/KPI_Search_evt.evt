@@ -1,0 +1,9 @@
+<aura:event type="APPLICATION" description="Search event, fired from search form">
+    <aura:attribute name="action" type="String" />
+    <aura:attribute name="businesArea" type="String[]" />
+    <aura:attribute name="sector" type="String[]" />
+    <aura:attribute name="KPICatalog" type="String[]" />
+    <aura:attribute name="client" type="String[]" />
+    <aura:attribute name="page" type="Integer" />
+    <aura:attribute name="size" type="Integer" />
+</aura:event>

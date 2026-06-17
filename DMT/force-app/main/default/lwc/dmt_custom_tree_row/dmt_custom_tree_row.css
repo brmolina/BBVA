@@ -28,6 +28,10 @@
     font-weight: bold;
 }
 
+tr td {
+    border-bottom: 1px solid #c9c9c9 !important;
+}
+
 .table_height {
     height: auto;
 }
@@ -59,6 +63,8 @@ thead th {
     min-height: 30px;
     height: 30px;
     text-align: left;
+    border-bottom: 2px solid #c9c9c9 !important;
+
 }
 
 .col-name {
@@ -221,6 +227,10 @@ tr:hover td.isSelected:hover {
     display: none;
 }
 
+td {
+    white-space : nowrap;
+}
+
 .shortWidth {
     max-width: 130px !important;
     overflow: hidden;
@@ -229,4 +239,21 @@ tr:hover td.isSelected:hover {
 
 .textEllipsis {
     text-overflow: ellipsis;
+}
+
+.modal-container {
+    --lwc-spacingMedium: 0.75rem;
+    --lwc-spacingLarge: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9000;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+}
+
+.modal-container:has(*) {
+    display: block;
 }

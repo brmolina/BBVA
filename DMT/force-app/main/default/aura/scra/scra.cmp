@@ -1,0 +1,97 @@
+<aura:component access="global" controller="arce_ShadowBankingCtrl" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId">
+    <aura:attribute name="groupType" type="String" />
+    <aura:attribute name="InstitutionType" type="String" default="Financial institution" />
+    <aura:attribute name="isFinancial" type="Boolean" default="false" />
+    <aura:attribute name="isInsuranceType" type="Boolean" default="false" />
+    <aura:attribute name="isCorpoType" type="Boolean" default="false" />
+    <aura:attribute name="isFundType" type="Boolean" default="false" />
+
+    <aura:attribute name="isDisabled" type="Boolean" default="true" />
+    <aura:attribute name="isScraTab" type="Boolean" default="false" />
+    <aura:attribute name="checkfirstSB" type="Boolean" default="false" />
+    <aura:attribute name="financialFirstCB" type="String" default="" />
+    <aura:attribute name="financialSecondCB" type="String" default="YES" />
+
+    <aura:attribute name="InstitutionsSB" type="String" default="YES" />
+    <aura:attribute name="insurenceSB" type="String" default="YES" />
+
+    <aura:attribute name="bankActSB" type="String" default="NO" />
+    <aura:attribute name="bankOrInsurensCompanySB" type="String" default="YES" />
+    <aura:attribute name="isEUBankCorpoComb" type="String" default="YES" />
+    <aura:attribute name="isEUInsuranceCorpoComb" type="String" default="YES" />
+    <aura:attribute name="isInsuranceCorpoComb" type="String" default="NO" />
+
+    <aura:attribute name="regulatedFundSB" type="String" default="YES" />
+    <aura:attribute name="MMFOrAIFsSB" type="String" default="YES" />
+
+    <aura:attribute name="isShadowBanking" type="String" default="----" />
+
+    <aura:attribute name="typeShabdowBanking" type="String" />
+    <aura:attribute name="localClient" type="Object" />
+
+    <aura:attribute name="nonSBCountriesResult" type="String" />
+
+    <aura:attribute name="countryIsInList" type="Boolean" default="true" />
+    <aura:attribute name="countryIsInListInsurence" type="Boolean" default="true" />
+    <aura:attribute name="countryIsInListCorpo" type="Boolean" default="true" />
+    <aura:attribute name="bankActivityCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isInsuranceCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isEUInsuranceCorpo" type="Boolean" default="false" />
+    <aura:attribute name="isEUBankCorpo" type="Boolean" default="true" />
+    <aura:attribute name="MMFOrAIFsFunds" type="Boolean" default="false" />
+    <aura:attribute name="isEdit" type="Boolean" default="false" />
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true" />
+    
+    <aura:attribute name="isDoInit" type="Boolean" default="false" />
+    <aura:attribute name="scra" type="String" />
+    <aura:attribute name="scraMark" type="String" />
+    <aura:attribute name="commentSCRA" type="String" default="" />
+
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 100%; max-width: 50rem; } .modal-body{ height : 100px !important; max-height: 100px !important; } .customFooter{ display: inline !important; } .cuf-content { padding: 0 0rem !important;
+        } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; }
+    </aura:html>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme_default">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">SCRA</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium">
+                <lightning:tabset>
+                    <lightning:tab label="SCRA" id="two" onactive="{!c.handleTabSimulationSelected}" iconName="standard:calculated_insights">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning:select aura:id="existingSubs1" onchange="{!c.scraChange}" label="SCRA" required="true" value="{!v.scra}">
+                                    <option value="YES">YES</option>
+                                    <option value="NO">NO</option>
+                                    <option value="----" disabled="true" selected="true">Please select an option</option>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning:select aura:id="existingSubs2" onchange="{!c.scraMarkChange}" label="Degree" required="true" value="{!v.scraMark}">
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="----" disabled="true" selected="true">Please select an option</option>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                <lightning:textarea aura:id="commentarioTxt" onchange="{!c.commentScraChange}" name="Comments" label="Comments" value="{!v.commentSCRA}"/>
+                            </div>
+                        </div>
+                    </lightning:tab>
+                </lightning:tabset>
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral slds-float_left" onclick="{!c.handleOnCancel}" aria-label="Close">Close</button>
+                <button class="slds-button slds-button_brand" aria-label="Validate" onclick="{!c.handleOnSave}">Validate</button>
+            </div>
+        </div>
+        {!v.body}
+    </section>
+</aura:component>

@@ -6,17 +6,62 @@
     justify-content: flex-end;
 }
 
+.slds-page-header__name {
+    margin-right: auto;
+}
+
+.header-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: auto;
+}
+
+.page-header-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #181818;
+}
+.header-icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+}
+
 .full-width-container {
     width: 100%;
     max-width: 100%;
-    overflow-x: auto;
+    min-width:100%;
+    padding-bottom: 12px;
+    overflow: visible;
 }
+
+.table-scroller {
+    width: 100%;
+    box-sizing: border-box;
+    scrollbar-gutter: stable both-edges;
+    overflow: auto;
+
+    /* AÑADIMOS LA VARIABLE AL CÁLCULO */
+    /* El valor 0px después de la coma es el valor por defecto si la variable falla */
+    height: calc(100vh - 400px - var(--footer-height, 0px) - 10px);
+
+    /* Asegúrate de seguir sin el min-height: 100%; que te daba problemas antes */
+    padding-bottom: 2rem;
+}
+
 
 .full-width-table {
     width: 100%;
+    min-width: max-content;
     table-layout: auto;
-    padding: 0px;
-    margin: 0px;
+}
+
+.full-width-table.resizable-active {
+    table-layout: fixed;
+    width: max-content;
+    min-width: max-content;
 }
 
 .case-row {
@@ -37,8 +82,6 @@
     margin: 0px;
 }
 
-/* height: calc( 100vh - (var(--lwc-heightHeader) + var(--lwc-heightContextBar) + (var(--lwc-templateGutters))) - 250px); */
-
 .maintable {
     height: auto;
 }
@@ -55,6 +98,41 @@ thead th {
     min-height: 30px;
     height: 30px;
     text-align: left;
+    border-bottom: 2px solid #c9c9c9 !important;
+    user-select: none;
+}
+
+.column-header-wrapper {
+    position: relative;
+    padding-right: 0.75rem;
+}
+
+.resize-handle {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    right: -0.35rem;
+    width: 0.7rem;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 70;
+}
+
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: #c9c9c9;
+}
+
+.resize-handle:hover::after {
+    background: #706e6b;
 }
 
 .col-name {
@@ -68,13 +146,25 @@ thead th {
     min-width: 80px !important;
 }
 
+.full-width-table.resizable-active .fixed-header {
+    max-width: none !important;
+    min-width: 45px !important;
+}
+
+.full-width-table.resizable-active td .slds-truncate,
+.full-width-table.resizable-active th .slds-truncate {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .fixed-row-name {
     left: 0;
     position: sticky;
     z-index:50;
     background: inherit;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
     max-width: 60ch;
     background-color: #ffffff;
@@ -217,4 +307,55 @@ tr:hover td.isSelected:hover {
 
 .showcellclass{
     display: none;
+}
+
+.empty-mode {
+    background: #ffffff;
+    border-radius: 0.25rem;
+    min-height: calc(100vh - 300px);
+}
+
+.empty-state-cell {
+    padding: 0 !important;
+    background: #fff;
+}
+
+
+.empty-state-cell > div {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.empty-row:hover td {
+    background: transparent !important;
+}
+
+.empty-mode .empty-state-cell {
+    height: var(--dmt-empty-height, 360px);
+    vertical-align: middle;
+}
+
+.empty-mode .slds-illustration{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.empty-mode .empty-svg{
+    width: min(520px, 70vw);
+    height: auto;
+    max-height: 32vh;
+}
+
+.empty-mode .slds-text-longform h3{
+    margin-top: 1rem;
+    line-height: 1.2;
+    font-size: 1.25rem;
+}
+
+.empty-mode tbody tr:hover td{
+    background: #fff !important;
 }

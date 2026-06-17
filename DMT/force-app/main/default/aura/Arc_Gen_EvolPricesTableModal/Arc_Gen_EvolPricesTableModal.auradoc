@@ -1,0 +1,3 @@
+<aura:documentation>
+  <aura:description>Component that show the edition modal for the evolution of the prices of main products table</aura:description>
+</aura:documentation>

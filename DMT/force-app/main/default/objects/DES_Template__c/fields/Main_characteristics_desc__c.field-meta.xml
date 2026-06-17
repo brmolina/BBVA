@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Main_characteristics_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Brief description of the deal presented, main transactional features and changes vs former facility if any</inlineHelpText>
+    <label>Main characteristics of  the deal</label>
+    <length>1319</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

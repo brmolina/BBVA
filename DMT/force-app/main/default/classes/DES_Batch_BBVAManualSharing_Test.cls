@@ -34,7 +34,7 @@ private class DES_Batch_BBVAManualSharing_Test {
         acc.DES_Revenue_Update_Engloba__c = '20180912';
         acc.RecordTypeId = recordType;
         acc.DES_Group_Code__c = code;
-        acc.SER_CClient__c = code;
+        acc.g_customer_id__c = code;
         return acc;
     }
 

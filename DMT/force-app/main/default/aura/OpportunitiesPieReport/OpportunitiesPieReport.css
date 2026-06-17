@@ -1,0 +1,29 @@
+.THIS .index9{
+    z-index: 9999999 !important;
+}
+.THIS .height77{
+    height: 83px !important;
+}
+/* SCROLL */
+.THIS.sWrapTest {
+    height:100vh !important;
+    width:100vw !important;
+    padding-bottom: 250px !important;
+}
+
+.THIS .sWrapTestDesktop {
+    height:100%;
+    width:100%;
+}
+
+.THIS.outerScroller {
+    border-radius: 11px;
+}
+
+.THIS.innerScroller {
+    border-radius: 10px;
+}
+
+.THIS.slds-page-header {
+    height: 83px !important;
+}

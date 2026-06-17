@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ALL_Currencies</fullName>
+    <columns>SER_Base_currency__c</columns>
+    <columns>SER_Counter_currency__c</columns>
+    <columns>SER_Currency_pair__c</columns>
+    <columns>SER_Exchange_rate__c</columns>
+    <columns>NAME</columns>
+    <columns>SER_Process_date__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>greaterThan</operation>
+        <value>3/1/2018 12:00 AM</value>
+    </filters>
+    <filters>
+        <field>SER_Currency_pair__c</field>
+        <operation>equals</operation>
+        <value>EUR/USD</value>
+    </filters>
+    <label>ALL Currencies</label>
+</ListView>

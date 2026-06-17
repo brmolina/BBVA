@@ -1,0 +1,36 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL">	
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <aura:attribute name="bGrafica" type="Boolean" default="false" />
+  <aura:attribute name="sFiltro" type="String" default="Total" />  
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="rows" type="List" />     
+  <center>
+    <div style="width:75%;">
+      <aura:if isTrue="{!v.bGrafica}">
+    	  <c:GraphicsGenerator_comp NombreCanvas="EVOLUCIÓN DEUDA SBS"
+        posicionLeyenda="right" 
+        NombreInforme="EVOLUCION_DEUDA_SBS"        
+        TipoGrafica="line"
+        Id="{!v.recordId}"
+        Colores="#004481,#f7893b,#da3851,#48ae64,#bdbdbd"
+        Filtro="{!v.sFiltro}"
+        
+        />
+      </aura:if>
+    </div>    
+    <lightning:select aura:id="selFiltro" name="selFiltro" label="Filtro"  onchange="{!c.filtroGrafica}" class="slds-size_1-of-2 slds-p-horizontal_x-small"  >
+                  <option value="Total">Total</option>
+                  <option value="DIRECTA">Directa</option>
+                  <option value="PRESTAMO">Prestamo</option>
+                  <option value="COMEX">Comex</option>
+                  <option value="LEASING">Leasing</option>
+                  <option value="DESCUENTO DE LETRAS">Descuento de Letras</option>
+                  <option value="FACTORING">Factoring</option>
+                  <option value="OTROS">Otros directas</option>
+                  <option value="INDIRECTA">Indirecta</option>
+                  <option value="AVALES Y FIANZAS">Fianzas</option>
+                  <option value="CARTA. CREDITO">Carta crédito</option> 
+                  <option value="ACEPTACIONES BANCARIAS (OTROS)">Otros indirectas</option>                              
+    </lightning:select>
+  </center>
+</aura:component>

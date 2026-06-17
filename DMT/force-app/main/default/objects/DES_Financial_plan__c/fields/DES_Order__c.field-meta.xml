@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Order__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( Name ,
+&apos;Long term financial risk without real guarantees&apos;, 1,
+&apos;Long term financial risk with real guarantees&apos;, 2,
+&apos;Short term financial and &amp; commercial risk&apos;,3,
+&apos;Signature risk&apos;,4,
+&apos;Treasury risk&apos;,5,
+&apos;Corporate risk total&apos;,6,
+&apos;Project finance&apos;,7,
+&apos;Group total&apos;,8,
+&apos;Issuer risk / RCD&apos;,9,
+&apos;Total PF + Issuer + RCD&apos;,10,
+&apos;Liquidation risk - free delivery&apos;,11,
+&apos;Liquidation risk - free delivery vs. payment&apos;,12,
+&apos;Overlimits, ACH&apos;,13,
+&apos;Equity&apos;,14,
+&apos;Fixed income insurance (Framework)&apos;,15,
+16)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Order</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

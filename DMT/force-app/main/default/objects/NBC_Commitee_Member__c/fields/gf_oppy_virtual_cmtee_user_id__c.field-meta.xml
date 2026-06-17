@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_oppy_virtual_cmtee_user_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Member</label>
+    <referenceTo>User</referenceTo>
+    <relationshipName>NBC_Commitee_Members</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

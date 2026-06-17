@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IXMAS_Status_Request_PROD</label>
+    <protected>false</protected>
+    <values>
+        <field>bbvacon__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">IXMAS_Status_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">IXMAS_Status_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Default_Integration_User__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>bbvacon__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json&quot;,&quot;X-Page&quot;: &quot;#X-Page#&quot;, &quot;X-Page-Size&quot;: &quot;#X-Page-Size#&quot;,&quot;X-Last-Updated-Months&quot;: &quot;#X-Last-Updated-Months#&quot;}</value>
+    </values>
+    <values>
+        <field>bbvacon__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>bbvacon__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;idUser&quot;: &quot;#idUser#&quot;,
+&quot;idRequestedBy&quot;: &quot;#idRequestedBy#&quot;
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;statusList&quot;: [
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;PENDING&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BIMBO&quot;,
+            &quot;lastUpdated&quot;: &quot;1771596088348&quot;,
+            &quot;idCompany&quot;: &quot;G00000000010767&quot;,
+            &quot;requestType&quot;: &quot;ADD&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;REPSOL&quot;,
+            &quot;lastUpdated&quot;: &quot;1771564446996&quot;,
+            &quot;idCompany&quot;: &quot;G00000000000351&quot;,
+            &quot;requestType&quot;: &quot;CANCEL&quot;,
+            &quot;idRole&quot;: &quot;RTB&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;CANCELLED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;(FONDOS GESTIONADOS) TELEFONICA&quot;,
+            &quot;lastUpdated&quot;: &quot;1770724223618&quot;,
+            &quot;idCompany&quot;: &quot;G20130902111802&quot;,
+            &quot;requestType&quot;: &quot;CANCEL&quot;,
+            &quot;idRole&quot;: &quot;RCMG&quot;,
+            &quot;comment&quot;: &quot;Petición aprobada automáticamente al ser solicitada por el propio autorizador/delegado&quot;,
+            &quot;status&quot;: &quot;CANCELLED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;(FONDOS GESTIONADOS) AMUNDI (CREDIT AGRICOLE)&quot;,
+            &quot;lastUpdated&quot;: &quot;1771516994317&quot;,
+            &quot;idCompany&quot;: &quot;G20140204133030&quot;,
+            &quot;subsidiaries&quot;: [
+                {
+                    &quot;nameCompany&quot;: &quot;ACAJOU&quot;,
+                    &quot;lastUpdated&quot;: &quot;1770305356953&quot;,
+                    &quot;idCompany&quot;: &quot;A12013915&quot;,
+                    &quot;requestType&quot;: &quot;ADD&quot;,
+                    &quot;idRole&quot;: &quot;RLB&quot;,
+                    &quot;comment&quot;: &quot;Petición aprobada automáticamente al ser solicitada por el propio autorizador/delegado&quot;,
+                    &quot;idParent&quot;: &quot;G20140204133030&quot;,
+                    &quot;status&quot;: &quot;ACCEPTED&quot;
+                },
+                {
+                    &quot;nameCompany&quot;: &quot;ACACIA&quot;,
+                    &quot;lastUpdated&quot;: &quot;1770304248942&quot;,
+                    &quot;idCompany&quot;: &quot;A25732150&quot;,
+                    &quot;requestType&quot;: &quot;ADD&quot;,
+                    &quot;idRole&quot;: &quot;RLB&quot;,
+                    &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+                    &quot;idParent&quot;: &quot;G20140204133030&quot;,
+                    &quot;status&quot;: &quot;ACCEPTED&quot;
+                }
+            ],
+            &quot;status&quot;: &quot;ACCEPTED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;AJUNTAMENT DE SABADELL&quot;,
+            &quot;idCompany&quot;: &quot;G00000000008534&quot;,
+            &quot;subsidiaries&quot;: [
+                {
+                    &quot;nameCompany&quot;: &quot;COMUNICACIONS AUDIOVISUALS DE SABADELL SL&quot;,
+                    &quot;lastUpdated&quot;: &quot;1770300126448&quot;,
+                    &quot;idCompany&quot;: &quot;A00487718&quot;,
+                    &quot;requestType&quot;: &quot;ADD&quot;,
+                    &quot;idRole&quot;: &quot;RRA&quot;,
+                    &quot;comment&quot;: &quot;Petición aprobada automáticamente al ser solicitada por el propio autorizador/delegado&quot;,
+                    &quot;idParent&quot;: &quot;G00000000008534&quot;,
+                    &quot;status&quot;: &quot;ACCEPTED&quot;
+                }
+            ]
+        },
+        {
+            &quot;nameCompany&quot;: &quot;BANCA PUEYO&quot;,
+            &quot;lastUpdated&quot;: &quot;1770299626361&quot;,
+            &quot;idCompany&quot;: &quot;G20100527163216&quot;,
+            &quot;requestType&quot;: &quot;CANCEL&quot;,
+            &quot;idRole&quot;: &quot;REQUIS&quot;,
+            &quot;comment&quot;: &quot;Request approved automatically because it is requested by the authorizer/delegate&quot;,
+            &quot;status&quot;: &quot;CANCELLED&quot;
+        },
+        {
+            &quot;nameCompany&quot;: &quot;SCOR&quot;,
+            &quot;idCompany&quot;: &quot;G20081107180739&quot;,
+            &quot;subsidiaries&quot;: [
+                {
+                    &quot;nameCompany&quot;: &quot;SCOR INVESTMENT PARTNERS SE&quot;,
+                    &quot;lastUpdated&quot;: &quot;1769419932931&quot;,
+                    &quot;idCompany&quot;: &quot;A27891294&quot;,
+                    &quot;requestType&quot;: &quot;CANCEL&quot;,
+                    &quot;idRole&quot;: &quot;RCREDF&quot;,
+                    &quot;comment&quot;: &quot;&quot;,
+                    &quot;idParent&quot;: &quot;G20081107180739&quot;,
+                    &quot;status&quot;: &quot;CANCELLED&quot;
+                }
+            ]
+        }
+    ],
+    &quot;pagination&quot;: {
+        &quot;page&quot;: 1,
+        &quot;pageSize&quot;: 20,
+        &quot;totalCount&quot;: 20,
+        &quot;totalPages&quot;: 1
+    }
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

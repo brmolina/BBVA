@@ -1,5 +1,5 @@
 @isTest
-private class DMT_UtilsTest {
+private without sharing class DMT_UtilsTest {
 
     @TestSetup
     static void makeData(){
@@ -34,6 +34,22 @@ private class DMT_UtilsTest {
         List<String> stringList = new List<String>{'elemento1', 'elemento2', 'elemento3'};
         String result = DMT_Utils.listToString(stringList, ',');
         System.assertEquals('elemento1,elemento2,elemento3', result);
+    }
+
+    @IsTest
+    static void testExtractFieldCustomValidationMessage() {
+        String errorMessage = 'We can\'t save this record because the "Case After Trigger Flow" process failed. Give your Salesforce admin these details. This error occurred when the flow tried to update records: FIELD_CUSTOM_VALIDATION_EXCEPTION: End Date should be the last day of the month.. You can look up ExceptionCode values in the SOAP API Developer Guide. Error ID: 1173228099-539608 (-1202116682) ';
+
+        String result = DMT_Utils.extractFieldCustomValidationMessage(errorMessage);
+
+        System.assertEquals('End Date should be the last day of the month.', result);
+    }
+
+    @IsTest
+    static void testExtractFieldCustomValidationMessageFallback() {
+        String result = DMT_Utils.extractFieldCustomValidationMessage('Generic platform error');
+
+        System.assertEquals('There is an incorrect value in the line, which is why the approval process cannot be completed.', result);
     }
 
     @IsTest
@@ -132,6 +148,27 @@ private class DMT_UtilsTest {
 
     }
 
+    @IsTest
+    static void testGlobalCall_extractFieldCustomValidationMessage() {
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'errorMessage' => 'FIELD_CUSTOM_VALIDATION_EXCEPTION: End Date should be the last day of the month.. You can look up ExceptionCode values in the SOAP API Developer Guide. Error ID: 1173228099-539608 (-1202116682)'
+        };
+        Map<String, Object> outputMap = new Map<String, Object>();
+        Map<String, Object> optionsMap = new Map<String, Object>();
+
+        Map<String, Object> args = new Map<String, Object>{
+            'input' => inputMap,
+            'output' => outputMap,
+            'options' => optionsMap
+        };
+
+        Object result = new DMT_Utils().call('extractFieldCustomValidationMessage', args);
+
+        System.assert(result instanceof Map<String, Object>, 'Result should be a map');
+        Map<String, Object> resultMap = (Map<String, Object>) result;
+        System.assertEquals('End Date should be the last day of the month.', (String) resultMap.get('result'));
+    }
+
      @IsTest
     static void testCheckUserHasGodAccess() {
         Id adminProfileId = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1].Id;
@@ -179,6 +216,7 @@ private class DMT_UtilsTest {
 
         System.runAs(testUser) {
             System.assertEquals(false, DMT_Utils.checkLineGodUser());
+            System.assertEquals(false, DMT_Utils.checkNotApprovalRequiredUser());
         }
     }
 

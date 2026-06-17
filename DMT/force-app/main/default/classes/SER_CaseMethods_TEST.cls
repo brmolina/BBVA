@@ -420,7 +420,7 @@ public with sharing class SER_CaseMethods_TEST {
     sernovaAcc = new Account();
     sernovaAcc.Name =  Label.SER_SernovaAccountNAME;
     sernovaAcc.Client_STAR_ID__C = Label.SER_SernovaAccountNAME;
-    sernovaAcc.SER_CClient__c = Label.SER_SernovaAccountNAME;
+    sernovaAcc.g_customer_id__c = Label.SER_SernovaAccountNAME;
     insert sernovaAcc;
 
     Account pruebaAcc;

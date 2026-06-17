@@ -1,0 +1,24 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_RatingStudiesTabSet_cmp</p>
+        <p><b>DESCRIPTION: </b>Component that contains a dynamic form of rating studios object</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>userId = String : User id Record</li>
+                <li>hasRecordId = String : Standard current record id</li>
+                <li>idSelect = String : recordId from the customer</li>
+                <li>actionType = String : recordId from the customer</li>
+                <li>configurationId = String : recordId from the customer</li>
+                <li>template = String : recordId from the customer</li>
+                <li>tableId = String : recordId from the customer</li>
+                <li>success = String" : If yes, the service and the save records process were successful</li>
+                <li>spinner = boolean : Indicates if the spinner is active</li>
+                <li>view = boolean : Indicates if the spinner is active</li>
+                <li>editButton = String : Edit button configuration</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_RatingStudiesTabSet_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_RatingStudiesTabSet_cmp" ref="c:Arc_Gen_RatingStudiesTabSet_cmp" label="Rating studies tabset">
+    </aura:example>
+</aura:documentation>

@@ -1,34 +1,196 @@
-import { LightningElement,api } from 'lwc';
-
-export default class Dmt_table_xsell extends LightningElement {
+import { LightningElement, api, track, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { publish, MessageContext, subscribe, unsubscribe } from 'lightning/messageService';
+import XSELL_SYNC_CHANNEL from '@salesforce/messageChannel/DmtXSellSync__c';
+import { CurrentPageReference } from 'lightning/navigation';
+import { getRecordUi } from 'lightning/uiRecordApi';
+import getXSellRecords from '@salesforce/apex/DMT_XSell.getXSellRecords';
+import getGeographyOptions from '@salesforce/apex/DMT_XSell.getGeographyOptions';
+import pubsub from 'omnistudio/pubsub';
+import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
   
+  export default class Dmt_table_xsell extends LightningElement {
+  
+    @wire(MessageContext)
+    messageContext;
+
+    subscription = null;
+
     @api tabletype;
-    @api totalamount;
-    @api conversionLabel;
     @api idListToDelete = [];
-    @api isEditMode=false;
-    @api isEditState=false;
     @api oppState;
     @api columnstablecopypaste = [];
-    _isReadOnlyUser = false;
     
-    /*get isEditMode() {
-      return this.isEditMode;
+    _isEditMode = false;
+    
+    @api
+    get isEditMode() { 
+      return this._isEditMode; 
     }
     set isEditMode(value) {
-      let isEditBool = (value === 'true') ? true
-                : (value === 'false') ? false
-                : value;
-      let isEditModeAux = (isEditBool === true || isEditBool === false)
-                ? !isEditBool
-                : true;
-      if(isEditModeAux){
-        this.setColumnsEdit()
-
-      }
+      const newEditMode = (typeof value === 'boolean') ? value : (String(value).toLowerCase() === 'true');
       
-      return isEditModeAux;
-    }*/
+      if (this._isEditMode !== newEditMode) {
+          this._isEditMode = newEditMode;
+          this.refreshButtonStates();
+      }
+    }
+
+    /**
+     * Dynamically updates row-level button disabled states whenever isEditMode changes.
+     * Ensures Delete/Add buttons lock/unlock instantly without needing an Apex refresh.
+     */
+    refreshButtonStates() {
+        if (!this.tableData || this.tableData.length === 0) return;
+        
+        console.log(`[XSELL-LWC] 🔄 Refreshing row button states. Edit Mode is now: ${this._isEditMode}`);
+        const isDraft = this._parentType === 'Account' ? true : (this.oppState == 'Draft');
+        
+        let updatedData = this.deepCloneArray(this.tableData);
+        
+        updatedData.forEach((item, index) => {
+            // Delete is strictly locked to Edit Mode
+            item.deleteDisabled = !this._isEditMode;
+            item.editRecordDisabled = !isDraft;
+            
+            // The Add (+) button is only active on the last row AND only in Edit Mode
+            if (index === updatedData.length - 1) {
+                item.buttonDisabled = !this._isEditMode || !isDraft;
+            } else {
+                item.buttonDisabled = true;
+            }
+        });
+        
+        // Re-assign to force the Lightning Datatable to re-render the rows
+        this.tableData = updatedData;
+    }
+    
+    _isReadOnlyUser = false;
+    currentYear = new Date().getFullYear();
+    _recordId;
+    _parentType;
+    currentRecordId; // Reactive variable to trigger the LDS wire
+
+    /**
+     * Hack to add empty space below the table on Account pages so the 
+     * OmniStudio sticky footer doesn't overlap the component.
+     */
+    get bottomSpacerStyle() {
+        return this._parentType === 'Account' ? 'height: 100px; display: block; width: 100%;' : 'display: none;';
+    }
+
+    connectedCallback() {
+        pubsub.register('Save', { DMT_CLIENT_GROUP_V2: this.handleFlexCardSave.bind(this) });
+        pubsub.register('Button', { Reload: this.handleGetXsellRecords.bind(this) });
+        pubsub.register('Button', { Edit: this.toggleEditMode.bind(this) });
+        if (!this.subscription) {
+          this.subscription = subscribe(
+              this.messageContext,
+              XSELL_SYNC_CHANNEL,
+              (message) => this.handleLmsMessage(message)
+          );
+      }
+    }
+
+    disconnectedCallback() {
+        pubsub.unregister('Save', { DMT_CLIENT_GROUP_V2: this.handleFlexCardSave.bind(this) });
+        pubsub.unregister('Button', { Reload: this.handleGetXsellRecords.bind(this) });
+        pubsub.unregister('Button', { Edit: this.toggleEditMode.bind(this) });
+        if (this.subscription) {
+            unsubscribe(this.subscription);
+            this.subscription = null;
+        }
+    }
+
+    toggleEditMode(isEditing) {
+        this._isEditMode = isEditing;
+    }
+
+    @wire(CurrentPageReference)
+    getStateParameters(currentPageReference) {
+        if (currentPageReference) {
+            const urlId = currentPageReference.state?.recordId || currentPageReference.state?.c__recordId || currentPageReference.attributes?.recordId;
+            if (urlId && this.currentRecordId !== urlId) {
+                this.currentRecordId = urlId;
+                this._recordId = urlId; // Preserve existing reference
+            }
+        }
+    }
+
+    _entityCode; // Stores the DMT_Entity__c for the Apex query
+    _isOptionsLoaded = false; // BUFFER FLAG
+    _pendingXSellData = null; // BUFFER DATA
+
+    // Step 1: Detect object type and extract Entity Code using LDS
+    @wire(getRecordUi, { recordIds: '$currentRecordId', layoutTypes: ['Full'], modes: ['View'] })
+    async wiredRecordUi({ error, data }) {
+        if (data) {
+            const record = data.records[this.currentRecordId];
+            this._parentType = record.apiName;
+            this._entityCode = record.fields.DMT_Entity__c ? record.fields.DMT_Entity__c.value : null;
+                        
+            try {
+                this.geographyOptions = await getGeographyOptions({ entityCode: this._entityCode });
+                this._isOptionsLoaded = true;
+                this.processTableData(); // UNBLOCK THE BUFFER NOW THAT WE HAVE LABELS
+            } catch (err) {
+                console.error('Error fetching Geography Options:', err);
+                this._isOptionsLoaded = true; // Unblock to prevent infinite freeze
+                this.processTableData();
+            }
+
+            this.handleGetXsellRecords(); // Native fetch for BOTH Account and Opportunity
+            
+        } else if (error) {
+            console.error('Error retrieving object info via LDS:', error);
+        }
+    }
+
+    _requestTotalsPending = false;
+
+    handleLmsMessage(message) {
+        console.log('[XSELL] LMS RECEIVED:',JSON.stringify(message));
+
+        console.log(
+            '[REQUEST_TOTALS] current tableData',
+            JSON.stringify(this.tableData)
+        );
+
+        if (message.action === 'REQUEST_TOTALS') {
+
+            if (!this.tableData || this.tableData.length === 0) {
+                this._requestTotalsPending = true;
+                return;
+            }
+
+            this.broadcastToSibling(
+                this._cleanForParent(this.tableData)
+            );
+        }
+    }
+
+    async handleGetXsellRecords() {
+        console.log('[XSELL-LWC] 1. handleGetXsellRecords initiated for ID:', this._recordId);
+        
+        // CRITICAL FIX: Removed "this.isEditMode = false;" 
+        // We MUST respect the @api isEditMode state passed by the parent on page load.
+        
+        this.idListToDelete = [];
+        this._pendingXSellData = null; 
+
+        try {
+            const dataResult = await getXSellRecords({ parentId: this._recordId });
+            console.log('[XSELL-LWC] 2. Apex getXSellRecords returned:', JSON.stringify(dataResult));
+            
+            // DIRECT HANDOFF: Feed the buffer and force processing
+            this._pendingXSellData = dataResult;
+            this.processTableData();
+            
+        } catch (error) {
+            console.error('[XSELL-LWC] ERROR fetching Native Data:', error);
+        }
+    }
+
     @api 
     get isReadOnlyUser(){ 
       return this._isReadOnlyUser; 
@@ -36,171 +198,63 @@ export default class Dmt_table_xsell extends LightningElement {
     set isReadOnlyUser(value){
         if (value === 'true') {
               this._isReadOnlyUser = true; 
-        }else if (value === 'false') { 
+        } else if (value === 'false') { 
             this._isReadOnlyUser = false;
-        }else if (typeof value === 'boolean') {
+        } else if (typeof value === 'boolean') {
           this._isReadOnlyUser = value;
-        }else {
+        } else {
               this._isReadOnlyUser = Boolean(value); 
         } 
     }
-    opportunityvalue;
-    currencyvalue;
-    defaultLimitvalue;
+    
     bookingGeography;
-    tableData;
-    
-    @api
-    get currency() {
-      return this.currencyvalue;
-    }
-    set currency(value) {
-      console.log('Set currency value: ' + value)
-      console.log('this.currencyvalue before: ' + this.currencyvalue)
-      const previusvalue = this.currencyvalue;
-      console.log('this.previesvalue: ' + previusvalue)
-      this.currencyvalue = value;
-      console.log('this.currencyvalue after: ' + this.currencyvalue)
-     
+    geographyOptions = [];
+    @track tableData = [];
 
-      console.log(this.table);
-      const updatedColumns = this.columns.map(col => {
-        if (col.fieldName === 'g_notional_amount__c') {
-          return {
-            ...col,
-            typeAttributes: {
-              ...col.typeAttributes,
-              currencyCode: value
-            }
-          };
-        }
-        return col;
-      });
+    /**
+     * Injects the parsed geography taxonomy options and resolves the display 
+     * labels for the current table rows. Required for the genericrecordpicker 
+     * and read-only text displays.
+     */
+    injectGeographyData() {
+      if (!this.tableData || this.tableData.length === 0) return;
       
-    this.columns = updatedColumns;
-    console.log(this.columns)
-    this.table = this.tableData;
-    if(previusvalue && this.currency != this.previusvalue){
-      this.isEditMode = true;
-      this.columns = [
-                  {
-                    fieldName:"Year__c",
-                    label:"YEAR",
-                    type: this.isEditMode ? "custominputRow": "text",
-                    editable:false,
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    typeAttributes:
-                    {
-                      value: { fieldName: 'Year__c'},
-                      inputValue: { fieldName: 'Year__c'},
-                      context: { fieldName: 'Id' }
-                    }
-                  },
-                  {
-                    fieldName:"g_notional_amount__c",
-                    label:"NOTIONAL AMOUNT",
-                    type: this.isEditMode ? "custominputRow" : 'currency',
-                    editable:false,
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    typeAttributes:
-                    {
-                      currencyCode: this.currency,
-                      step: '0.001',
-                      value: { fieldName: 'g_notional_amount__c'},
-                      inputValue: { fieldName: 'g_notional_amount__c'},
-                      context: { fieldName: 'Id' }
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:delete',
-                      label: ' ', 
-                      name: 'deleteRecord', 
-                      title: '', 
-                      disabled: {fieldName: 'deleteDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:edit',
-                      label: ' ', 
-                      name: 'editRecord', 
-                      title: '', 
-                      disabled: {fieldName: 'editRecordDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:add',
-                      label: '    ', 
-                      name: 'addRecord', 
-                      title: '        ', 
-                      disabled: {fieldName: 'buttonDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  }
-                ];
-    }
-    console.log('this.table');
-    
-     this.setColumnsEdit()
-    }
+      this.tableData = this.tableData.map(row => {
+        let label = row.Booking_Geography__c || '';
+        if (this.geographyOptions && this.geographyOptions.length > 0) {
+          let matchedOpt = this.geographyOptions.find(opt => opt.value === row.Booking_Geography__c);
+          if (matchedOpt) {
+            label = matchedOpt.label;
+          } else {
+             console.warn(`[MAPPER-DEBUG] WARNING: No label match found in options for code: ${row.Booking_Geography__c}`);
+          }
+        }
 
-    @api
-    get opportunity() {
-      return this.opportunityvalue;
-    }
-    set opportunity(value) {
-      console.log('this.opportunityvalue before: ' + this.opportunityvalue)
-      console.log('Set opp value: ' + value)
-      this.opportunityvalue = value;
-      console.log('this.opportunityvalue after: ' + this.opportunityvalue)
+        return {
+          ...row,
+          GeographyLabel__c: label,
+          geographyOptions: this.geographyOptions
+        };
+      });
     }
     
     @api
-    get table() {
+    get xSellList() {
       return this.tableData;
     }
 
-    set table(value) {
+    // Centralized processor that only runs when BOTH the data and the options are ready
+    processTableData() {
+      console.log(`[XSELL-LWC] 3. processTableData called. OptionsLoaded: ${this._isOptionsLoaded}, PendingData exists: ${!!this._pendingXSellData}`);
+        
+      if (!this._isOptionsLoaded || !this._pendingXSellData) {
+          console.log('[XSELL-LWC] 3a. BUFFER ACTIVE: Waiting for either options or data to finish loading.');
+          return;
+      }
+
+      let value = this._pendingXSellData;
       let normalizedData;
+      console.log('[XSELL-LWC] 4. Processing Raw Data:', JSON.stringify(value));
     
       try {
         if (typeof value === 'string') {
@@ -213,591 +267,673 @@ export default class Dmt_table_xsell extends LightningElement {
             normalizedData = [];
           }
         } else if (Array.isArray(value)) {
-          console.log('normalizedData1: ' + normalizedData)
-                    console.log('value: ' + normalizedData)
-
           normalizedData = value.filter(item => typeof item === 'object' && item !== null);
         } else if (typeof value === 'object' && value !== null) {
           normalizedData = [value];
         } else {
-          console.warn('Formato inesperado para table:', value);
           normalizedData = [];
         }
       } catch (e) {
         console.error('Error al procesar table:', e);
         normalizedData = [];
       }
-            console.log('AML0');
-      let isEditBool = (this.isEditMode == 'true') ? true
-                : (this.isEditMode == 'false') ? false
-                : this.isEditMode;
-        this.isEditMode = (isEditBool === true)
-                ? true :  (isEditBool === false) ? false :  this.isEditMode
 
-      console.log('isEditBool: ' + isEditBool);
-      console.log('this.isEditMode: ' + this.isEditMode);
-      console.log('normalizedData:', JSON.stringify(normalizedData, null, 2));
-      console.log('AML1');
-      console.log('currencyJuan: ', this.currencyvalue);
-      console.log('opportunityJuan: ', this.opportunityvalue);
+      console.log(
+            '[PROCESS] rebuilding tableData',
+            JSON.stringify(normalizedData)
+        );
+      
       if (normalizedData.length > 0) {
         const newArray = normalizedData.map((item, index) => {
           const newItem = { ...item };
+          const isDraft = this._parentType === 'Account' ? true : (this.oppState == 'Draft');
+          
+          // Explicitly tie the disabled state to the component's _isEditMode flag
+          newItem.deleteDisabled = !this._isEditMode;
+          newItem.editRecordDisabled = !isDraft;
+          
+          // CRITICAL FIX: Lock the Add button if in View Mode OR if not a Draft
           if (index === normalizedData.length - 1) {
-            console.log('this.isReadOnlyUser ' +this.isReadOnlyUser);
-            newItem.buttonDisabled = this.isReadOnlyUser == this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true
-            newItem.editRecordDisabled = this.isReadOnlyUser == this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true
-            newItem.deleteDisabled = this.isReadOnlyUser == this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true
-            //newItem.deleteDisabled = newItem.g_currency__c == null;
-            if (!newItem.Id) {
-              newItem.Id = "0";
-              newItem.g_currency__c = this.currencyvalue;
-              newItem.opportunity =  this.opportunityvalue;
-              if(newItem.Id == '0' &&  newItem.g_notional_amount__c == null && newItem.Year__c == null && this.isEditMode){
-                console.log('····Row.id 0')
-                const currentYear = new Date().getFullYear();
-                newItem.Year__c = currentYear.toString();
-              }
-            }
-            newItem.deleteDisabled = newItem.g_currency__c = null;
-
+            newItem.buttonDisabled = !this._isEditMode || !isDraft;
+          } else {
+            newItem.buttonDisabled = true;
           }
-           newItem.buttonDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true
-            newItem.editRecordDisabled = this.oppState == 'Draft'|| this.oppState == 'Ready to close' ? false : true
-            newItem.deleteDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close'? false : true
-          newItem.g_currency__c = this.currencyvalue;
-          console.log(item)
-          console.log('editRecordDisabled get Table--> ' + newItem.editRecordDisabled);
+          
+          // CRITICAL: Restore unique temporary IDs so datatable rows don't corrupt
+          if (!newItem.Id || newItem.Id === "0") {
+            newItem.Id = "NEW_" + Date.now() + Math.floor(Math.random() * 10000) + index;
+            if (this._parentType === 'Account') {
+                newItem.account = this._recordId;
+            } else {
+                newItem.opportunity = this._recordId;
+            }
+          }
+
+          newItem.aviableItem = false; 
           return newItem;
         });
-        const tempNewArray = this.tableData;
         this.tableData = newArray;
-        if(tempNewArray != newArray){
-          /*this.dispatchEvent(new CustomEvent('tableRiskchange', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              data: this.tableData,
-              tabletype: this.tableData[0]?.tabletype || ''
-            }
-          }));*/
-        }
-        
+        this.injectGeographyData();
       } else {
-        this.tableData = [];
+        const isDraft = this._parentType === 'Account' ? true : (this.oppState == 'Draft');
+        
+        this.tableData = [{
+            Id: "NEW_" + Date.now() + Math.floor(Math.random() * 10000), // Restore unique ID
+            Booking_Geography__c: "",
+            GeographyLabel__c: "",
+            XSELL_Value_PY__c: null,
+            XSELL_Value_CY__c: null,
+            XSELL_Value_NY__c: null,
+            XSELL_Value_NY1__c: null,
+            initRead: true,
+            tabletype: 'Derivatives',
+            buttonDisabled: !this._isEditMode || !isDraft,
+            deleteDisabled: true, // Ghost row: Delete is ALWAYS disabled
+            editRecordDisabled: !isDraft,
+            aviableItem: false,
+            geographyOptions: this.geographyOptions || [],
+            opportunity: this._parentType === 'Account' ? null : this._recordId,
+            account: this._parentType === 'Account' ? this._recordId : null
+        }];
+      }
+
+      console.log('[XSELL-LWC] 5. Table Data built successfully. Final array size:', this.tableData.length);
+      
+
+      if (this._requestTotalsPending) {
+            this._requestTotalsPending = false;
+
+            this.broadcastToSibling(
+                this._cleanForParent(this.tableData)
+            );
       }
       
-         
-
-        this.setColumnsEdit()
-
-      
+      /* setTimeout(() => {
+        // Fire to sibling IMMEDIATELY on load so it has the state.
+        // The timeout prevents race conditions where the sibling hasn't rendered yet.
+        const cleanData = this._cleanForParent(this.tableData);
+        console.log('[XSELL] Broadcasting initial totals:',JSON.stringify(cleanData));
+          this.broadcastToSibling(cleanData);
+      }, 10000); */
     }
     
-    @api
-    get  defaultLimit() {
-      return this.defaultLimitvalue;
+    /**
+     * Dispatches a unique event to notify the parent framework/FlexCard 
+     * to swap between the View and Edit mode components without conflicting with other tables.
+     */
+    notifyEditMode(value) {
+        if (this._parentType === 'Account') {
+            pubsub.fire('DMT_CLIENT_GROUP_V2', 'xsellEditMode', { editMode: value });
+        } else {
+            this.dispatchEvent(new CustomEvent('xsellEditModeTab', {
+                detail   : { editMode: value },
+                bubbles  : true,
+                composed : true
+            }));
+        }
     }
-    set defaultLimit(value) {
-      this.defaultLimitvalue = value;
-      if(value.toLowerCase() === 'true'){
-        this.handledefaultLimit();
-      }
+    
+    broadcastToSibling(cleanData) {
+
+      // Remove completely empty placeholder rows before sending to LMS
+      const filteredData = (cleanData || []).filter(row => {
+          const hasGeo =
+              row.Booking_Geography__c &&
+              String(row.Booking_Geography__c).trim() !== '';
+
+          const hasNumbers =
+              row.XSELL_Value_PY__c != null ||
+              row.XSELL_Value_CY__c != null ||
+              row.XSELL_Value_NY__c != null ||
+              row.XSELL_Value_NY1__c != null;
+
+          return hasGeo || hasNumbers;
+      });
+
+     // const filteredData = cleanData || [];
+
+      let totals = { PY: 0, CY: 0, NY: 0, NY1: 0 };
+
+      filteredData.forEach(row => {
+          totals.PY += (Number(row.XSELL_Value_PY__c) || 0);
+          totals.CY += (Number(row.XSELL_Value_CY__c) || 0);
+          totals.NY += (Number(row.XSELL_Value_NY__c) || 0);
+          totals.NY1 += (Number(row.XSELL_Value_NY1__c) || 0);
+      });
+
+      console.log('[XSELL-LWC] Publishing filtered rows:',JSON.stringify(filteredData));
+
+      publish(this.messageContext, XSELL_SYNC_CHANNEL, {
+          PY: totals.PY,
+          CY: totals.CY,
+          NY: totals.NY,
+          NY1: totals.NY1,
+          xsellData: filteredData,
+          xsellDelete: this.idListToDelete
+      });
     }
+
     handleRowAction(event) {
         const action = event.detail.action;
         const row = event.detail.row;
+
         switch (action.name) {
             case 'editRecord':
-                console.log('typeof this.isEditMode -->' +typeof this.isEditMode);
-                if(typeof this.isEditMode == 'string'){      
-                    let isEditBool = (this.isEditMode == 'true') ? true
-                    : (this.isEditMode == 'false') ? false
-                    : this.isEditMode;
-                    this.isEditMode = (isEditBool === true || isEditBool === false)
-                    ? !isEditBool
-                    : true;
-                    console.log('Edit 1');
-                    console.log('editModeTable: ' + this.isEditMode);
-                    this.dispatchEvent(new CustomEvent('editModeTable',  { bubbles:true, composed:true,detail:{ editmodetable:this.isEditMode}} ));
-                    console.log('Edit 2')
-                    this.setColumnsEdit()
-              }
+                this.isEditMode = true;
+                this.notifyEditMode(true);
                 break;
+                
             case 'deleteRecord':
-                console.log('Delete 0')
-                if(typeof this.idListToDelete == 'string'){
-                  this.idListToDelete = []
+                if (typeof this.idListToDelete === 'string') {
+                  this.idListToDelete = [];
                 }
-                console.log(this.idListToDelete)
+                
+                // Prevent temporary 'NEW_' IDs from sneaking into the Apex delete list
+                if (row.Id && String(row.Id).length >= 15 && row.Id !== '0' && !String(row.Id).startsWith('NEW_')) {
+                    this.idListToDelete = [...this.idListToDelete, row.Id];
+                }
 
-                this.idListToDelete = [...this.idListToDelete, row.Id];
-
-                const tableType = this.tableData[0]['tabletype'];
+                const tableType = this.tableData[0] ? this.tableData[0]['tabletype'] : 'Derivatives';
                 let copyData = this.tableData.filter(function(item) {
-                    return item.Id !== row.Id
-                })
-                console.log('Delete  2')
-                let sendcopyData = this.copiarLista(copyData);
-                if(sendcopyData[0]){
-                  sendcopyData[sendcopyData.length-1]['buttonDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['pickDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['deleteDisabled'] = false;
-                  sendcopyData[0]['buttonDisabled'] = true;
+                    return item.Id !== row.Id;
+                });
+                
+                let sendcopyData = this.deepCloneArray(copyData);
+                if (sendcopyData.length > 0) {
+                  sendcopyData.forEach(item => item.buttonDisabled = true);
                   
+                  sendcopyData[sendcopyData.length - 1].buttonDisabled = false;
+                  sendcopyData[sendcopyData.length - 1].pickDisabled = false;
+                  sendcopyData[sendcopyData.length - 1].deleteDisabled = false;
                 }
-                console.log('this.sendcopyData: ' + JSON.stringify(sendcopyData))
-                console.log('Delete  3')
+                
                 if(sendcopyData.length == 0){
-                  
-                  const newItem = new Object();;
+                  const newItem = new Object();
                   newItem.buttonDisabled = false;
                   newItem.pickDisabled = false;
-                  newItem.Id = "0";
-                  newItem.g_currency__c = this.currencyvalue;
-                  newItem.opportunity =  this.opportunityvalue;                      
-                  newItem.deleteDisabled = newItem.g_currency__c = null;
-                  newItem.g_currency__c = this.currencyvalue;
-                  
+                  newItem.Id = "NEW_" + Date.now() + Math.floor(Math.random() * 10000); // Restore unique ID
+                  if (this._parentType === 'Account') {
+                      newItem.account = this._recordId;
+                  } else {
+                      newItem.opportunity = this._recordId;
+                  }                    
+                  newItem.deleteDisabled = true; // Ghost row: Delete is ALWAYS disabled
                   sendcopyData.push(newItem);
-                  console.log('this.sendcopyData996: '+ sendcopyData)
-                          }
-                this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:{data:sendcopyData, tabletype:tableType, idlistdelete:this.idListToDelete}} ));
-                this.isEditMode = true;
-                              this.setColumnsEdit()
-
-            this.dispatchEvent(new CustomEvent('editModeTable',  { bubbles:true, composed:true,detail:{ editmodetable:this.isEditMode}} ));
-
+                }
+                
+                // UPDATE LOCAL STATE IMMEDIATELY so the row disappears from the screen
+                this.tableData = sendcopyData;
+                this.injectGeographyData();
+                
+                const cleanDeleteData = this._cleanForParent(sendcopyData);
+                this.broadcastToSibling(cleanDeleteData);
+                if(this._parentType === 'Account'){
+                    this.notifyEditMode(true);
+                }
                 break;
+                
             case 'addRecord':
-              const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
-              let copyDataNew;
-              let sendcopyDataNew;
-              if(row.Id == '0' &&  row.g_notional_amount__c == null && row.Year__c == null){
-                console.log('····Row.id 0')
-                const currentYear = new Date().getFullYear();
-                const tablelenght = this.tableData.length;
-                copyDataNew = [
-                {
-                  "Year__c": currentYear.toString(),
-                  "Id": tablelenght.toString(),
-                  "g_notional_amount__c": 0,
-                  "g_currency__c":this.currencyvalue,
-                  "initRead":true,
-                  "tabletype":'Derivatives',
-                  "opportunity":this.opportunityvalue,
-                  "deleteDisabled": this.oppState == 'Draft' || this.oppState == 'Ready to close'? false : true,
-                  'buttonDisabled': this.oppState == 'Draft' || this.oppState == 'Ready to close'? false : true 
-                }
-              ];
-              }else{
-                let yearString = this.tableData[index]["Year__c"];
-                let yearAsInteger = parseInt(yearString);
-                let nextYear = yearAsInteger + 1;
-                let nextYearString = nextYear.toString();
-              const tablelenght = this.tableData.length +1;
-
-                copyDataNew = [
-                  ...this.tableData.slice(0, index+1),
-                  {
-                    "Year__c": nextYearString,
-                    "Id": tablelenght.toString(),
-                    "g_notional_amount__c": 0,
-                    "g_currency__c":this.tableData[0]["g_currency__c"],
-                    "initRead":true,
-                    "tabletype":this.tableData[index]["tabletype"],
-                    "opportunity":this.tableData[0]["opportunity"],
-                    "deleteDisabled": false,
-                    'buttonDisabled':true
-                  },
-                  ...this.tableData.slice(index+1)
-                ];
-                sendcopyDataNew = this.copiarLista(copyDataNew);
-                sendcopyDataNew[sendcopyDataNew.length-2]['buttonDisabled'] = true;
-                sendcopyDataNew[sendcopyDataNew.length-1]['buttonDisabled'] = true;
-                sendcopyDataNew[sendcopyDataNew.length-2]['pickDisabled'] = true;
-                sendcopyDataNew[sendcopyDataNew.length-1]['pickDisabled'] = false;
-                sendcopyDataNew[sendcopyDataNew.length-2]['deleteDisabled'] = true;
-                sendcopyDataNew[sendcopyDataNew.length-1]['deleteDisabled'] = false;
+              const newTempId = 'NEW_' + Date.now() + Math.floor(Math.random() * 1000); 
+              let sendcopyDataNew = this.deepCloneArray(this.tableData);
+              
+              // ALWAYS push to the end to prevent DOM recycling glitches
+              sendcopyDataNew.push({
+                  "Id": newTempId,
+                  "Booking_Geography__c": "",
+                  "GeographyLabel__c": "",
+                  "XSELL_Value_PY__c": null,
+                  "XSELL_Value_CY__c": null,
+                  "XSELL_Value_NY__c": null,
+                  "XSELL_Value_NY1__c": null,
+                  "initRead": true,
+                  "tabletype": sendcopyDataNew.length > 0 ? sendcopyDataNew[sendcopyDataNew.length - 1]["tabletype"] : 'Derivatives',
+                  "opportunity": this._parentType === 'Account' ? null : this._recordId,
+                  "account": this._parentType === 'Account' ? this._recordId : null,
+                  "deleteDisabled": false,
+                  "buttonDisabled": false,
+                  "pickDisabled": false,
+                  "editRecordDisabled": false,
+                  "aviableItem": false,
+                  "geographyOptions": this.geographyOptions
+              });
+              
+              // Only the last row gets the add button
+              for (let i = 0; i < sendcopyDataNew.length; i++) {
+                  sendcopyDataNew[i].buttonDisabled = (i !== sendcopyDataNew.length - 1);
+                  sendcopyDataNew[i].pickDisabled = (i !== sendcopyDataNew.length - 1);
               }
-              this.setColumnsEdit()
+
+              console.log(
+                  '[ADD] rows after add',
+                  JSON.stringify(sendcopyDataNew)
+              );
+              
+              this.tableData = sendcopyDataNew;
+              this.injectGeographyData();
+
               this.isEditMode = true;
-            this.dispatchEvent(new CustomEvent('editModeTable',  { bubbles:true, composed:true,detail:{ editmodetable:this.isEditMode}} ));
-            this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:  {data:sendcopyDataNew?sendcopyDataNew:copyDataNew, tabletype:sendcopyDataNew?sendcopyDataNew[0]['tabletype']:copyDataNew[0]['tabletype'], idlistdelete:this.idListToDelete}} ));
-            
+             // this.notifyEditMode(true);
 
-            break;
+              const cleanAddData = this._cleanForParent(sendcopyDataNew);
+              this.broadcastToSibling(cleanAddData);
+              break;
         }
     }
-    setColumnsEdit(){
-      this.columns = [
-                  {
-                    fieldName:"Year__c",
-                    label:"YEAR",
-                    type: this.isEditMode ? "custominputRow": "text",
-                    editable:false,
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    typeAttributes:
-                    {
-                      value: { fieldName: 'Year__c'},
-                      inputValue: { fieldName: 'Year__c'},
-                      fieldName: 'Year__c',
+    /**
+     * Dynamically builds the datatable columns array based on current component state.
+     * Toggles the Geography column between standard text (View Mode) and genericrecordpicker (Edit Mode).
+     */
+    get columns() {
+      const isEdit = this._isEditMode;
 
-                      context: { fieldName: 'Id' }
-                    }
-                  },
-                  {
-                    fieldName:"g_notional_amount__c",
-                    label:"NOTIONAL AMOUNT",
-                    type: this.isEditMode ? "custominputRow" : 'currency',
-                    editable:false,
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    typeAttributes:
-                    {
-                      currencyCode: this.currency,
-                      step: '0.001',
-                      value: { fieldName: 'g_notional_amount__c'},
-                      inputValue: { fieldName: 'g_notional_amount__c'},
-                      context: { fieldName: 'Id' },
-                      fieldName: 'g_notional_amount__c',
-
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:delete',
-                      label: ' ', 
-                      name: 'deleteRecord', 
-                      title: '', 
-                      disabled: {fieldName: 'deleteDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:edit',
-                      label: ' ', 
-                      name: 'editRecord', 
-                      title: '', 
-                      disabled: {fieldName: 'editRecordDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  },
-                  {
-                    type: 'button',
-                    hideDefaultActions:true,
-                    cellAttributes:
-                    {
-                      alignment: 'center'
-                    },
-                    initialWidth: 60,
-                    typeAttributes: 
-                    {
-                      iconName: 'utility:add',
-                      label: '    ', 
-                      name: 'addRecord', 
-                      title: '        ', 
-                      disabled: {fieldName: 'buttonDisabled'},
-                      iconPosition: 'center', 
-                      value: 'test'
-                    }
-                  }
-                ];
+      return [
+        {
+          fieldName: "GeographyLabel__c", // 1. Force label at the datatable root cell level
+          label: "Geography",
+          type: isEdit ? "genericrecordpicker" : "text",
+          editable: false,
+          hideDefaultActions: true,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: {
+            placeholder: 'Select Geography...',
+            options: { fieldName: 'geographyOptions' },
+            value: { fieldName: 'GeographyLabel__c' }, // 2. THE FIX: Force label into the picker's internal text binding
+            label: { fieldName: 'GeographyLabel__c' },
+            inputValue: { fieldName: 'GeographyLabel__c' },
+            fieldName: 'Booking_Geography__c', // 3. Keep this as the code! The event handler needs this to trigger the update.
+            context: { fieldName: 'Id' },
+            disabled: false
+          }
+        },
+        {
+          fieldName: "XSELL_Value_PY__c",
+          label: `FY${this.currentYear - 1}`,
+          type: isEdit ? "custominputRow" : 'number',
+          editable: false,
+          hideDefaultActions: true,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: {
+            step: '0.01',
+            value: { fieldName: 'XSELL_Value_PY__c' },
+            inputValue: { fieldName: 'XSELL_Value_PY__c' },
+            fieldName: 'XSELL_Value_PY__c',
+            context: { fieldName: 'Id' },
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        },
+        {
+          fieldName: "XSELL_Value_CY__c",
+          label: `FY${this.currentYear}`,
+          type: isEdit ? "custominputRow" : 'number',
+          editable: false,
+          hideDefaultActions: true,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: {
+            step: '0.01',
+            value: { fieldName: 'XSELL_Value_CY__c' },
+            inputValue: { fieldName: 'XSELL_Value_CY__c' },
+            fieldName: 'XSELL_Value_CY__c',
+            context: { fieldName: 'Id' },
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        },
+        {
+          fieldName: "XSELL_Value_NY__c",
+          label: `FY${this.currentYear + 1}`,
+          type: isEdit ? "custominputRow" : 'number',
+          editable: false,
+          hideDefaultActions: true,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: {
+            step: '0.01',
+            value: { fieldName: 'XSELL_Value_NY__c' },
+            inputValue: { fieldName: 'XSELL_Value_NY__c' },
+            fieldName: 'XSELL_Value_NY__c',
+            context: { fieldName: 'Id' },
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        },
+        {
+          fieldName: "XSELL_Value_NY1__c",
+          label: `FY${this.currentYear + 2}`,
+          type: isEdit ? "custominputRow" : 'number',
+          editable: false,
+          hideDefaultActions: true,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: {
+            step: '0.01',
+            value: { fieldName: 'XSELL_Value_NY1__c' },
+            inputValue: { fieldName: 'XSELL_Value_NY1__c' },
+            fieldName: 'XSELL_Value_NY1__c',
+            context: { fieldName: 'Id' },
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        },
+        {
+          type: 'button',
+          hideDefaultActions: true,
+          initialWidth: 60,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: { iconName: 'utility:delete', label: ' ', name: 'deleteRecord', title: '', disabled: {fieldName: 'deleteDisabled'}, iconPosition: 'center', value: 'test', variant: 'base' }
+        },
+        {
+          type: 'button',
+          hideDefaultActions: true,
+          initialWidth: 60,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: { iconName: 'utility:edit', label: ' ', name: 'editRecord', title: '', disabled: {fieldName: 'editRecordDisabled'}, iconPosition: 'center', value: 'test', variant: 'base' }
+        },
+        {
+          type: 'button',
+          hideDefaultActions: true,
+          initialWidth: 60,
+          cellAttributes: { alignment: 'center' },
+          typeAttributes: { iconName: 'utility:add', label: ' ', name: 'addRecord', title: ' ', disabled: {fieldName: 'buttonDisabled'}, iconPosition: 'center', value: 'test', variant: 'base' }
+        }
+      ];
     }
-    picklistChanged(event) {
-      console.log('PicklistChanged');
+
+    /**
+     * Catches the specific event fired by genericrecordpicker.
+     * Updates the taxonomy code and label so it successfully attaches to the outbound payload.
+     */
+    handleRecordPickerChange(event) {
       event.stopPropagation();
-      let dataRecieved = event.detail.data;
-      let updatedItem;
-      // Comentado por error SONAR
-      /*if( dataRecieved.fieldname === 'Year__c'){
-          updatedItem = { Id: dataRecieved.context, Year__c: dataRecieved.value ? dataRecieved.value : dataRecieved.inputValue};
-      }else{
-          updatedItem = { Id: dataRecieved.context, Year__c: dataRecieved.value ? dataRecieved.value : dataRecieved.inputValue};
-      }*/
-      updatedItem = { Id: dataRecieved.context, Year__c: dataRecieved.value ? dataRecieved.value : dataRecieved.inputValue};
-      //this.updateDraftValues(updatedItem);
-      this.updateDataValues(updatedItem);
-
-  }
-
-    /*updateDataValues(updateItem) {
-      let copyData = this.copiarLista(this.tableData);
-      console.log('copyData:', JSON.stringify(copyData, null, 2));
-      console.log('updateItem:', JSON.stringify(updateItem, null, 2));
-      copyData.forEach(item => {
-            if (item.Id.toString() === updateItem.Id.toString()) {
-                for (let field in updateItem) {
-                    item[field] = updateItem[field];
-                }
-            }
-      });
-      copyData[copyData.length-1]['buttonDisabled'] = false;
-      this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:  {data:copyData, tabletype:copyData[0]['tabletype']}} ));
-  }
-
-  updateDataValues(updateItem) {
-      let copyData = this.copiarLista(this.tableData);
-      console.log('copyData:', JSON.stringify(copyData, null, 2));
-      console.log('updateItem:', JSON.stringify(updateItem, null, 2));
-      const indexToUpdate = copyData.findIndex(item => item.Id === updateItem.Id);
-      if (indexToUpdate !== -1) {
-        copyData[indexToUpdate] = {
-          ...copyData[indexToUpdate],
-          ...updateItem 
-        };
-      }
+      const { context, value, label, fieldname } = event.detail.data;
       
-      copyData[copyData.length-1]['buttonDisabled'] = false;
-      this.tableData = copyData;
-      this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:  {data:copyData, tabletype:copyData[0]['tabletype']}} ));
-  }*/
+      if (fieldname === 'Booking_Geography__c') {
+        this.updateDataValues({
+          Id: context,
+          Booking_Geography__c: value,
+          GeographyLabel__c: label || ''
+        });
+      }
+    }
 
-  updateDataValues(updateItem) {
-    let copyData = this.copiarLista(this.tableData);
-    console.log('copyData2:', JSON.stringify(copyData, null, 2));
-    console.log('updateItem2:', JSON.stringify(updateItem, null, 2));
+    /**
+     * Merges draft edits (text inputs, picklists) into the main tableData state.
+     * Intercepts letters/special characters, showing a toast and forcing a UI re-render.
+     */
+    updateDataValues(updateItem) {
+      
+      const numFields = ['XSELL_Value_PY__c', 'XSELL_Value_CY__c', 'XSELL_Value_NY__c', 'XSELL_Value_NY1__c'];
+      let hasInvalidChars = false;
+      let invalidFields = [];
 
-    const indexToUpdate = copyData.findIndex(item => item.Id === updateItem.Id);
-
-    if (indexToUpdate !== -1) {
-      // Merge fields while preserving existing data
-      for (let key in updateItem) {
-        if (updateItem[key] !== undefined) {
-          copyData[indexToUpdate][key] = updateItem[key];
+      // Validate numeric fields against letters and invalid special characters
+      for (let field of numFields) {
+        if (updateItem[field] !== undefined && updateItem[field] !== null && updateItem[field] !== '') {
+          // If string contains anything other than digits, dots, commas, or minus signs
+          if (/[^\d.,-]/.test(String(updateItem[field]))) {
+            hasInvalidChars = true;
+            invalidFields.push(field);
+            delete updateItem[field]; // Strip the bad data
+          }
         }
       }
-    }
 
-    // Ensure the last row allows adding
-    if (copyData.length > 0) {
-      copyData[copyData.length - 1]['buttonDisabled'] = false;
-    }
+      if (hasInvalidChars) {
+        this.dispatchEvent(new ShowToastEvent({
+          title: 'Invalid Input',
+          message: 'Please enter a valid number. Letters are not allowed.',
+          variant: 'warning'
+        }));
+        
+        // Force LWC to clear the user's typed letters by breaking the old reference
+        // and temporarily setting a dummy value, then reverting to the known valid value.
+        let tempCopy = this.deepCloneArray(this.tableData);
+        const idx = tempCopy.findIndex(item => item.Id === updateItem.Id);
+        
+        if (idx !== -1) {
+            let originalVals = {};
+            invalidFields.forEach(f => {
+                originalVals[f] = tempCopy[idx][f];
+                tempCopy[idx][f] = ' '; // Dummy delta to trigger reactivity
+            });
+            this.tableData = tempCopy;
 
-    this.tableData = copyData;
+            // Revert back to original valid values on the next event loop tick
+            setTimeout(() => {
+                let revertCopy = this.deepCloneArray(this.tableData);
+                invalidFields.forEach(f => {
+                    revertCopy[idx][f] = originalVals[f] || null;
+                });
+                this.tableData = revertCopy;
+            }, 50); // 50ms delay ensures the DOM cycle processes the dummy delta
+        }
 
-    this.dispatchEvent(new CustomEvent('tableRiskchange', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        data: copyData,
-        tabletype: copyData[0]?.tabletype || '',
-         idlistdelete:this.idListToDelete
+        // If stripping the bad data left us with just the { Id }, abort the update entirely
+        if (Object.keys(updateItem).length === 1) return;
       }
       
-    }));
-  }
+      let copyData = this.deepCloneArray(this.tableData);
+      const indexToUpdate = copyData.findIndex(item => item.Id === updateItem.Id);
 
-
-
-  copiarLista(listaOriginal) {
-    return listaOriginal.map(elemento => {
-      if (typeof elemento === 'object' && elemento !== null) {
-        return JSON.parse(JSON.stringify(elemento));
-      } else {
-        return elemento; // Devolver una copia directa para valores primitivos
+      if (indexToUpdate !== -1) {
+        for (let key in updateItem) {
+          if (updateItem[key] !== undefined) {
+            copyData[indexToUpdate][key] = updateItem[key];
+          }
+        }
       }
-    });
-  }
 
-  /*
-  handleChangeCell(event){
-    let dataRecieved = event.detail.draftValues;
-    console.log('dataRecieved:', JSON.stringify(dataRecieved, null, 2));
-    let updatedItem;
-        updatedItem = { Id: dataRecieved[0].Id, Year__c: dataRecieved[0].Year__c, g_notional_amount__c: dataRecieved[0].g_notional_amount__c };
-    this.updateDataValues(updatedItem);
-  }*/
+      if (copyData.length > 0) {
+        copyData[copyData.length - 1]['buttonDisabled'] = false;
+      }
+      
+      // UNLOCK DELETE BUTTON: If user typed data into an empty row, enable the delete button
+      copyData.forEach(row => {
+          const hasData = row.Booking_Geography__c || row.XSELL_Value_PY__c != null || row.XSELL_Value_CY__c != null || row.XSELL_Value_NY__c != null || row.XSELL_Value_NY1__c != null;
+          if (hasData && this._isEditMode) {
+              row.deleteDisabled = false;
+          }
+      });
 
-  handleChangeCell(event) {
-    let dataRecieved = event.detail.draftValues[0];
-    console.log('dataRecieved:', JSON.stringify(dataRecieved, null, 2));
+      this.tableData = copyData;
 
-    const updatedItem = { Id: dataRecieved.Id };
+      // MANDATORY GEOGRAPHY REMINDER
+      const isMissingGeo = copyData.some(row => {
+          const hasNumbers = row.XSELL_Value_PY__c != null || row.XSELL_Value_CY__c != null || row.XSELL_Value_NY__c != null || row.XSELL_Value_NY1__c != null;
+          const noGeo = !row.Booking_Geography__c || String(row.Booking_Geography__c).trim() === '';
+          return hasNumbers && noGeo;
+      });
 
-    if ('Year__c' in dataRecieved) {
-      updatedItem.Year__c = dataRecieved.Year__c;
+      if (isMissingGeo) {
+          this.dispatchEvent(new ShowToastEvent({
+              title: 'Geography Required',
+              message: 'Please remember to select a Geography for your Cross Sell entries.',
+              variant: 'warning'
+          }));
+      }
+
+      // NO redundant publish here. Just send data to the unified broadcast.
+      const cleanData = this._cleanForParent(copyData);
+      this.broadcastToSibling(cleanData);
     }
 
-    if ('g_notional_amount__c' in dataRecieved) {
-      updatedItem.g_notional_amount__c = dataRecieved.g_notional_amount__c;
+    /**
+     * Sanitizes the data array before dispatching it to the FlexCard.
+     * Strips UI-only state (like geographyOptions) to prevent payload bloat, 
+     * nullifies temporary IDs, maps the Opportunity ID, and formats numeric fields.
+     */
+    _cleanForParent(rows) {
+      const isRealId = (v) => !!v && v !== '0' && !String(v).startsWith('NEW_') && String(v).length >= 15;
+      
+      return (rows || []).map(row => {
+        // Destructure to remove UI-specific properties from the outbound payload
+        const {
+          geographyOptions, buttonDisabled, deleteDisabled, editRecordDisabled, 
+          pickDisabled, initRead, tabletype, aviableItem, GeographyLabel__c, 
+          opportunity, account, ...cleanRow 
+        } = row;
+
+        /* if (isRealId(cleanRow.Id)) {
+          cleanRow.updateKeyId = cleanRow.Id;
+        } */
+
+        // Force string values into floats for Apex mapping
+        const numFields = ['XSELL_Value_PY__c', 'XSELL_Value_CY__c', 'XSELL_Value_NY__c', 'XSELL_Value_NY1__c'];
+        numFields.forEach(f => {
+          if (cleanRow[f] === '' || cleanRow[f] === null || cleanRow[f] === undefined) {
+             cleanRow[f] = null;
+          } else if (typeof cleanRow[f] === 'string' || typeof cleanRow[f] === 'number') {
+             let valStr = String(cleanRow[f]).trim();
+             
+             if (valStr.includes(',') && valStr.includes('.')) {
+                 // Has both: the last one is the decimal
+                 const lastComma = valStr.lastIndexOf(',');
+                 const lastDot = valStr.lastIndexOf('.');
+                 if (lastComma > lastDot) {
+                     valStr = valStr.replace(/\./g, '').replace(',', '.');
+                 } else {
+                     valStr = valStr.replace(/,/g, '');
+                 }
+             } else if (valStr.includes(',')) {
+                 // Only commas
+                 const commaCount = (valStr.match(/,/g) || []).length;
+                 if (commaCount > 1) {
+                     valStr = valStr.replace(/,/g, ''); // Multiple commas = thousands separator
+                 } else {
+                     valStr = valStr.replace(',', '.'); // Single comma = decimal
+                 }
+             } else if (valStr.includes('.')) {
+                 // Only dots
+                 const dotCount = (valStr.match(/\./g) || []).length;
+                 if (dotCount > 1) {
+                     valStr = valStr.replace(/\./g, ''); // Multiple dots = thousands separator
+                 }
+                 // Single dot is natively parsed as a decimal by parseFloat, so do nothing.
+             }
+             
+             cleanRow[f] = parseFloat(valStr) || null; 
+          }
+        });
+
+        // Attach the required Salesforce fields based on context
+        if (this._parentType === 'Account') {
+            cleanRow.Account__c = this._recordId;
+        } else {
+            cleanRow.Opportunity__c = this._recordId;
+        }
+        cleanRow.sobjectType = 'DMT_X_Sell__c';
+
+        return cleanRow;
+      });
     }
 
-    this.updateDataValues(updatedItem);
-  }
-  textInputChanged(event) {
+    /**
+     * Utility method to create a deep clone of the array of objects.
+     * Prevents direct mutation of tracked reactive properties.
+     */
+    deepCloneArray(originalArray) {
+      return originalArray.map(element => {
+        if (typeof element === 'object' && element !== null) {
+          return JSON.parse(JSON.stringify(element));
+        } else {
+          return element; 
+        }
+      });
+    }
+
+    /**
+     * Standard handler for native datatable cell changes.
+     * Captures draft values directly from the datatable payload and merges them.
+     */
+    handleChangeCell(event) {
+      let dataRecieved = event.detail.draftValues[0];
+      const updatedItem = { Id: dataRecieved.Id };
+
+      if ('Booking_Geography__c' in dataRecieved) { updatedItem.Booking_Geography__c = dataRecieved.Booking_Geography__c; }
+      if ('XSELL_Value_PY__c' in dataRecieved) { updatedItem.XSELL_Value_PY__c = dataRecieved.XSELL_Value_PY__c; }
+      if ('XSELL_Value_CY__c' in dataRecieved) { updatedItem.XSELL_Value_CY__c = dataRecieved.XSELL_Value_CY__c; }
+      if ('XSELL_Value_NY__c' in dataRecieved) { updatedItem.XSELL_Value_NY__c = dataRecieved.XSELL_Value_NY__c; }
+      if ('XSELL_Value_NY1__c' in dataRecieved) { updatedItem.XSELL_Value_NY1__c = dataRecieved.XSELL_Value_NY1__c; }
+
+      this.updateDataValues(updatedItem);
+    }
+
+    textInputChanged(event) {
       let dataRecieved = event.detail.data;
-      console.log('dataRecieved: ' + JSON.stringify(dataRecieved))
-      let updatedItem;
-      updatedItem = { Id: dataRecieved.context};
+      let updatedItem = { Id: dataRecieved.context};
       updatedItem[dataRecieved.fieldname]= dataRecieved.value;
       this.updateDataValues(updatedItem);
     }
-  handledefaultLimit(){
-    var guidanceData;
-    if(this.tableData !== undefined)
-    {
-      if(this.tableData[0]['tabletype'] === 'Derivatives'){
-        guidanceData = [    {
-          "deleteDisabled": true,
-          "Year__c": "2026",
-          "Id": "0",
-          "pickDisabled": true,
-          "initRead": "true",
-          "buttonDisabled": true,
-          "line": this.tableData[0]['line'],
-          "g_notional_amount__c": this.totalamount,
-          "tabletype": "Derivatives"
-        },{
-            "deleteDisabled": true,
-            "Year__c": "2026",
-            "Id": "1",
-            "pickDisabled": true,
-            "initRead": "true",
-            "buttonDisabled": true,
-            "line": this.tableData[0]['line'],
-            "g_notional_amount__c": (this.totalamount*3)/4,
-            "tabletype": "Derivatives"
-          } ,{
-            "deleteDisabled": true,
-            "Year__c": "2026",
-            "Id": "2",
-            "pickDisabled": true,
-            "initRead": "true",
-            "buttonDisabled": true,
-            "line": this.tableData[0]['line'],
-            "g_notional_amount__c": this.totalamount/2,
-            "tabletype": "Derivatives"
-          },{
-            "deleteDisabled": true,
-            "Year__c": "2026",
-            "Id": "3",
-            "pickDisabled": true,
-            "initRead": "true",
-            "buttonDisabled": true,
-            "line": this.tableData[0]['line'],
-            "g_notional_amount__c": (this.totalamount*2.5)/10,
-            "tabletype": "Derivatives"
-          }];
-      }
-      this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:  {data:guidanceData, tabletype:guidanceData[0]['tabletype'], idlistdelete:this.idListToDelete}} ));
+
+    /**
+     * Intercepts the PubSub payload dispatched by the Account FlexCard Save button.
+     * Sanitizes arrays, ensures Account relationship, and executes the Apex DML.
+     */
+    _isSaving = false;
+    async handleFlexCardSave(payload) {
+        // Cross-talk protection & Double-click prevention
+        if (this._parentType !== 'Account' || this._isSaving) {
+            return; 
+        }
+
+        this._isSaving = true;
+
+        // Clean the local datatable state for Apex
+        let rawData = this._cleanForParent(this.tableData);
+        let dataToUpsert = [];
+        let missingGeo = false;
+
+        rawData.forEach(row => {
+            const hasGeo = row.Booking_Geography__c && String(row.Booking_Geography__c).trim() !== '';
+            const hasNumbers = row.XSELL_Value_PY__c != null || row.XSELL_Value_CY__c != null || row.XSELL_Value_NY__c != null || row.XSELL_Value_NY1__c != null;
+
+            if (hasGeo || hasNumbers) {
+                if (!hasGeo && hasNumbers) {
+                    missingGeo = true;
+                }
+                dataToUpsert.push(row);
+            }
+        });
+
+        // MANDATORY FIELD VALIDATION: Booking Geography
+        if (missingGeo) {
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Missing Required Field',
+                message: 'Cross SELL update ABORTED. Please select a Geography for all Cross Sell rows before saving.',
+                variant: 'error',
+                mode: 'sticky'
+            }));
+            this._isSaving = false;
+            return;
+        }
+
+        // Passed validation, safe to exit edit mode
+        this.isEditMode = false;
+
+        // Only fire Apex if there is actual data to process
+        if (dataToUpsert.length > 0 || this.idListToDelete.length > 0) {
+            try {
+                
+                await saveXSellRecords({ 
+                    recordsToUpsert: dataToUpsert, 
+                    recordsToDelete: this.idListToDelete 
+                });
+                
+                // Clear the local delete list after successful save
+                this.idListToDelete = [];
+
+                // Reload fresh data from database to reset the baseline UI state
+                this.handleGetXsellRecords();
+                
+            } catch (error) {
+                console.error('[DEBUG] Apex Save Error:', error);
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error saving Cross Sell Data',
+                    message: error.body ? error.body.message : error.message,
+                    variant: 'error'
+                }));
+                this.isEditMode = true; // Revert to edit mode if save fails
+            }
+        }
+        
+        this._isSaving = false;
     }
-  }
-  columns = [
-      {
-        fieldName:"Year__c",
-        label:"YEAR",
-        type: this.isEditMode ? "custominputRow": "text",
-        editable:false,
-        hideDefaultActions:true,
-        cellAttributes:
-        {
-          alignment: 'center'
-        },
-        typeAttributes:
-        {
-          value: { fieldName: 'Year__c'},
-          context: { fieldName: 'Id' }
-        }
-      },
-      {
-        fieldName:"g_notional_amount__c",
-        label:"NOTIONAL AMOUNT",
-        type: this.isEditMode ? "custominputRow" : 'currency',
-        editable:false,
-        hideDefaultActions:true,
-        cellAttributes:
-        {
-          alignment: 'center'
-        },
-        typeAttributes:
-        {
-          currencyCode: this.currency,
-          step: '0.001'
-        }
-      },
-      {
-        type: 'button',
-        hideDefaultActions:true,
-        cellAttributes:
-        {
-          alignment: 'center'
-        },
-        initialWidth: 60,
-        typeAttributes: 
-        {
-          iconName: 'utility:delete',
-          label: ' ', 
-          name: 'deleteRecord', 
-          title: '', 
-          disabled: {fieldName: 'deleteDisabled'},
-          iconPosition: 'center', 
-          value: 'test'
-        }
-      },
-      {
-        type: 'button',
-        hideDefaultActions:true,
-        cellAttributes:
-        {
-          alignment: 'center'
-        },
-        initialWidth: 60,
-        typeAttributes: 
-        {
-          iconName: 'utility:edit',
-          label: ' ', 
-          name: 'editRecord', 
-          title: '', 
-          disabled: {fieldName: 'editRecordDisabled'},
-          iconPosition: 'center', 
-          value: 'test'
-        }
-      },
-      {
-        type: 'button',
-        hideDefaultActions:true,
-        cellAttributes:
-        {
-          alignment: 'center'
-        },
-        initialWidth: 60,
-        typeAttributes: 
-        {
-          iconName: 'utility:add',
-          label: '    ', 
-          name: 'addRecord', 
-          title: '        ', 
-          disabled: {fieldName: 'buttonDisabled'},
-          iconPosition: 'center', 
-          value: 'test'
-        }
-      }
-    ];
 }

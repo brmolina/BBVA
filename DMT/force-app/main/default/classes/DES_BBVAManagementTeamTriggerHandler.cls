@@ -1511,7 +1511,7 @@ public without sharing class DES_BBVAManagementTeamTriggerHandler {
 
     for(Account iAccount : [SELECT Id,
                             DES_Group_Code__c,
-                            SER_CClient__c
+                            g_customer_id__c
                           FROM Account
                           WHERE Id IN :setAccountId]) {
       if(iAccount.DES_Group_Code__c != null

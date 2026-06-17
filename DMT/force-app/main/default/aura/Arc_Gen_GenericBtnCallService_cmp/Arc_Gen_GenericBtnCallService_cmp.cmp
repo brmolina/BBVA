@@ -1,0 +1,46 @@
+<!--
+@Component Name     : Arc_Gen_GenericBtnCallService_cmp.cmp
+@Description        : Generic aura component showing a button to call a local implementation of an IASO service
+@Author             : juanignacio.hita.contractor@bbva.com
+@Group              : ARCE
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0       18/12/2020    juanignacio.hita.contractor@bbva.com      Initial Version
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_GenericBtnCallService_controller" access="global">
+    <aura:attribute name="hasRecordId"  type="String"  access="global" default="{!v.recordId}" description="Standard current record id"                                       />
+    <aura:attribute name="message"      type="String"  access="global"                         description="Message obtained by the service"                                  />
+    <aura:attribute name="errorCode"    type="String"  access="global"                         description="Details of the error obtained by the service"                     />
+    <aura:attribute name="errorTitle"   type="String"  access="global"                         description="Details of the error obtained by the service"                     />
+    <aura:attribute name="success"      type="String"  access="global"                         description="If yes, the service and the save records process were successful" />
+    <aura:attribute name="spinner"      type="Boolean" access="global" default="true"          description="Indicates if the spinner is active"                               />
+    <aura:attribute name="analysisObj"  type="Object"  access="global"                         description="Analysis object"                                                  />
+    <aura:attribute name="confName"     type="String"  access="global"                         description="Local class service implementation"                               />
+    <aura:attribute name="successCodes" type="String"  access="global" default="200"           description="Service code with success"                                        />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="Init variable"/>
+
+    <div class="slds-p-around--x-small  slds-size_1-of-1 " aura:id="modalbody" id="modalbody">
+        <div class="slds-p-around--x-small slds-size_1-of-1 ">
+            <div class="slds-align_absolute-center">
+                <aura:if isTrue="{!v.spinner}">
+                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                        <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </aura:if>
+                <div class="{!v.success == 'yes' ? '':'slds-hide'}">
+                    <arce:Arc_Gen_ChatMessages_cmp title="{!$Label.c.Arc_Gen_Record_Update_Success}"
+                        assistiveText="{!$Label.c.Lc_arce_newAnalysisSuccess}" variant="Success"
+                        message="{!v.message}" />
+                </div>
+                <div class="{!v.success == 'no' ? '':'slds-hide'}">
+                    <arce:Arc_Gen_ChatMessages_cmp title="{!v.errorTitle}" assistiveText="Error" variant="Error"
+                        message="{!v.message}" secondMessage="{!v.errorCode}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

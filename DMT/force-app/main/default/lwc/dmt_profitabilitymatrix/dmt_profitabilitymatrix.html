@@ -1,18 +1,18 @@
 <template>
     <template if:true={dataLoaded}>
         <div class="slds-text-align_center slds-p-bottom_small matrix-title">
-            <h2 class="matrix-title__heading">{centralValueName} SCENARIOS</h2>
+            <h2 class="matrix-title__heading">{centralValueName} {label.scenariosText}</h2>
         </div>
         <div class="container-full">
             <div class="matrix-container">
                 <!-- Mostrar los nombres de las variables y sus valores máximos y mínimos -->
                 <div class="axis-label y-axis">
-                    <strong >{yAxisName} (Min: {yAxisMin}, Max: {yAxisMax})</strong>
+                    <strong >{yAxisName} ({label.minText}: {yAxisMin}, {label.maxText}: {yAxisMax})</strong>
                 </div>
                 <div class="show-columns" style="display: flex; flex-direction: column;">
                     <div class="axis-labels">
                         <div class="axis-label">
-                            <strong>{xAxisName} (Min: {xAxisMin}, Max: {xAxisMax})</strong>
+                            <strong>{xAxisName} ({label.minText}: {xAxisMin}, {label.maxText}: {xAxisMax})</strong>
                         </div>
                     </div>  
                     <div class="matrix-wrapper">
@@ -50,16 +50,16 @@
                     
                 </div>
                 <div class="slds-p-around_xxx-small copy-btn">
-                    <lightning-button-icon icon-name="utility:copy_to_clipboard"  variant="border-filled" alternative-text="Export to Excel" title="Export to Excel" onclick={handleExportToExcel}></lightning-button-icon>
+                    <lightning-button-icon icon-name="utility:copy_to_clipboard"  variant="border-filled" alternative-text={label.exportToExcelText} title={label.exportToExcelText} onclick={handleExportToExcel}></lightning-button-icon>
                 </div>
             </div>
         </div>
     </template>
     <template if:true={errorMatrix}>
     <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
-        <span class="slds-assistive-text">Error</span>
-        <span class="slds-icon_container slds-icon-utility-error" title="Error">
-            <lightning-icon icon-name="utility:error" alternative-text="Error" size="small" class="slds-m-right_x-small" variant="inverse"></lightning-icon>
+        <span class="slds-assistive-text">{label.ErrorText}</span>
+        <span class="slds-icon_container slds-icon-utility-error" title={label.ErrorText}>
+            <lightning-icon icon-name="utility:error" alternative-text={label.ErrorText} size="small" class="slds-m-right_x-small" variant="inverse"></lightning-icon>
         </span>
         <h2>{messageError}</h2>
     </div>

@@ -22,7 +22,7 @@ global without sharing class Commercial_Alert_UpdateToMatured_BATCH implements D
   * Constructor 2.
   */
   global Commercial_Alert_UpdateToMatured_BATCH() {
-    this.query = 'SELECT Id, altm__alert_stage_type__c, altm__owner_access_alert_id__c FROM altm__Commercial_Alert__c WHERE altm__alert_stage_type__c = \'Pending\' and altm__commercial_alert_end_date__c <= TODAY AND owner.isactive = true AND altm__participant_id__c != null';
+    this.query = 'SELECT Id, altm__alert_stage_type__c, altm__owner_access_alert_id__c FROM altm__Commercial_Alert__c WHERE altm__alert_stage_type__c = \'Pending\' and altm__commercial_alert_end_date__c <= TODAY AND owner.isactive = true AND altm__participant_id__c != null and RecordType.Name != \'Commercial Task Toolkit\' ';
   }
 
   /**

@@ -1,0 +1,25 @@
+<template>
+    <div class="containerRoot slds-m-top_x-small">
+        <!-- Filters + Actions (ONE ROW, stable widths) -->
+        <div class="slds-grid slds-gutters slds-nowrap">
+            <!-- Search -->
+            <div class="slds-col slds-size_3-of-12">
+                <lightning-input type="search" label={labels.DMT_FilterResultText} placeholder={labels.DMT_SearchWithTreePointsText}  value={searchText}
+                    onkeyup={handleSearchKeyUp} onchange={handleSearchChange}>
+                </lightning-input>
+            </div>
+
+            <!-- Status -->
+            <div class="slds-col slds-size_3-of-12">
+                <lightning-combobox data-key="status" label={labels.DMT_SelectOppStatus} placeholder={labels.DMT_SelectStatusText}
+                    options={picklistOptions.status} value={filters.status} onchange={handlePicklistChange}>
+                </lightning-combobox>
+            </div>
+
+        </div>
+
+        <!-- Custom Datatable -->
+        <c-dmt-deal-managment-table table-data={filteredTableData} table-columns={tableColumns} class="table-flex " is-loading-data={isLoading}
+            is-expanded-side-bar={isExpandedSideBar} text-no-records={labels.DMT_No_Available_Opportunities} ondatatableactionresult={handleRenewOpportunity}></c-dmt-deal-managment-table>
+    </div>
+</template>

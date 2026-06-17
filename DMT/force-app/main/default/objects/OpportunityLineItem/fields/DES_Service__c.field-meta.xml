@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Service__c</fullName>
+    <label>Service</label>
+    <required>false</required>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Collections - PoS</fullName>
+                <default>false</default>
+                <label>Collections - PoS</label>
+            </value>
+            <value>
+                <fullName>Collections - Others</fullName>
+                <default>false</default>
+                <label>Collections - Others</label>
+            </value>
+            <value>
+                <fullName>Forfaits - Other fees</fullName>
+                <default>false</default>
+                <label>Forfaits - Other fees</label>
+            </value>
+            <value>
+                <fullName>Liquidity - Cash pooling &amp; cash netting</fullName>
+                <default>false</default>
+                <label>Liquidity - Cash pooling &amp; cash netting</label>
+            </value>
+            <value>
+                <fullName>Liquidity - Current account</fullName>
+                <default>false</default>
+                <label>Liquidity - Current account</label>
+            </value>
+            <value>
+                <fullName>Vostro Accounts</fullName>
+                <default>false</default>
+                <label>Vostro Accounts</label>
+            </value>
+            <value>
+                <fullName>Payments</fullName>
+                <default>false</default>
+                <label>Payments</label>
+            </value>
+            <value>
+                <fullName>Corporate Cards</fullName>
+                <default>false</default>
+                <label>Corporate Cards</label>
+            </value>
+            <value>
+                <fullName>Stocks</fullName>
+                <default>false</default>
+                <label>Stocks</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

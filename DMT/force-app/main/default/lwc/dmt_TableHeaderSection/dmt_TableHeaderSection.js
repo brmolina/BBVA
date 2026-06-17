@@ -46,7 +46,6 @@ export default class Dmt_TableHeaderSection extends LightningElement {
         return this._isreadonlyuser;
     }
     set isreadonlyuser(value) {
-        console.log('DMT_TableHeaderSection: Setting isreadonlyuser to', value);
         this._isreadonlyuser = this.normalizeBoolean(value);
     }
     @api
@@ -58,7 +57,7 @@ export default class Dmt_TableHeaderSection extends LightningElement {
     }
 
     get customStyle(){
-        return this.withoutformat === true ? this.customstyle : 'text-transform: uppercase;'+this.customstyle;
+        return this.withoutformat === true ? this.customstyle : this.customstyle;
     }
 
 }

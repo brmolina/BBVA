@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_record_id__c</fullName>
+    <label>RecordType</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ficha de grupo</fullName>
+                <default>false</default>
+                <label>Ficha de grupo</label>
+            </value>
+            <value>
+                <fullName>Ficha de cliente</fullName>
+                <default>false</default>
+                <label>Ficha de cliente</label>
+            </value>
+            <value>
+                <fullName>Ficha de grupo y Ficha de cliente</fullName>
+                <default>false</default>
+                <label>Ficha de grupo y Ficha de cliente</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

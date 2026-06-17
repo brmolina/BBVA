@@ -1,0 +1,82 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_CreateTask_Controller" access="global">
+    <aura:attribute name="buttonOrModal" type="boolean" access="global" default="false" description="boolean to change component between button or modal"/>
+    <aura:attribute name="error" type="boolean" access="global" description="boolean to show error message"/>
+    <aura:attribute name="messageError" type="String" access="global" description="message of error"/>
+    <aura:attribute name="createTask" type="Task" default="{'sobjectType' : 'Task'}" description="record variable with fields to show"/>
+    <aura:attribute name="subjectList" type="List" description="list of picklist values"/>
+    <aura:attribute name="typeList" type="List" description="list of picklist values"/>
+    <aura:attribute name="priorityList" type="List" description="list of picklist values"/>
+    <aura:attribute name="statusList" type="List" description="list of picklist values"/>
+    <aura:attribute name="ownerIds" type="List" description="Ids selected on the seeker"/>
+    <aura:attribute name="listFieldLabels" type="List" description="list of picklist labels"/>
+    <aura:attribute name="formName" type="String" access="global" default="c:Arc_Gen_CreateTask_CMP" description="Name of the form component to create records of Tasks" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <aura:if isTrue="{!v.buttonOrModal}">
+        <aura:if isTrue="{!v.error}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">{!$Label.c.Arc_Gen_Error}</span>
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+                <lightning:icon iconName="utility:error" size="xx-small" variant="inverse"/>
+            </span>
+            <h2>{!v.messageError}
+            </h2>
+            </div>
+        </aura:if>
+        <div class="seeker_cmp">
+            <div>
+                {!$Label.c.Arc_Gen_SearchUsers}
+            </div>
+                <sekr:seeker_cmp aura:id="seekerInput" class="seeker_cmp"  customMetadata="Arc_Gen_Tasks" maxResults="5" isMultiEntry="true" MasterLabel="Subscribers:" placeHolderLabel="{!$Label.c.Arc_Gen_Search}" submitLabel="{!$Label.dyfr.Save}" onseekersubmit="{!c.getSeekerUser}"/>
+            <div class="separator"></div>
+            <div>
+                {!$Label.c.Arc_Gen_SearchArce}
+            </div>
+                <sekr:seeker_cmp aura:id="seekerInput" class="seeker_cmp" customMetadata="Arc_Gen_ARCES" maxResults="5" isMultiEntry="false" MasterLabel="Subscribers:" placeHolderLabel="{!$Label.c.Arc_Gen_Search}" submitLabel="{!$Label.dyfr.Save}" onseekersubmit="{!c.getSeekerArce}"/>
+            <div class="separator"></div>
+            <lightning:select label="{!v.listFieldLabels[0]}" value="{!v.createTask.Subject}">
+                <option value=""></option>
+                <aura:iteration items="{!v.subjectList}" var="sub">
+                    <option value="{!sub}">{!sub}</option>
+                </aura:iteration>
+            </lightning:select>
+            <div class="separator"></div>
+            <lightning:select label="{!v.listFieldLabels[1]}" value="{!v.createTask.Type}">
+                <option value=""></option>
+                <aura:iteration items="{!v.typeList}" var="type">
+                    <option value="{!type}">{!type}</option>
+                </aura:iteration>
+            </lightning:select>
+            <div class="separator"></div>
+            <lightning:input type="Date" label="{!v.listFieldLabels[2]}" value="{!v.createTask.ActivityDate}"/>
+            <div class="separator"></div>
+            <lightning:input type="Text" label="{!v.listFieldLabels[3]}" value="{!v.createTask.Description}"/>
+            <div class="separator"></div>
+            <lightning:select label="{!v.listFieldLabels[4]}" value="{!v.createTask.Priority}">
+                <option value=""></option>
+                <aura:iteration items="{!v.priorityList}" var="priority">
+                    <option value="{!priority}">{!priority}</option>
+                </aura:iteration>
+            </lightning:select>
+            <div class="separator"></div>
+            <lightning:select label="{!v.listFieldLabels[5]}" value="{!v.createTask.Status}">
+                <option value=""></option>
+                <aura:iteration items="{!v.statusList}" var="status">
+                    <option value="{!status}">{!status}</option>
+                </aura:iteration>
+            </lightning:select>
+            <div class="separator"></div>
+            <div class="separator"></div>
+            <div class="slds-align_absolute-center">
+                <lightning:button label="{!$Label.dyfr.Save}" variant="brand" onclick="{!c.doSave}"/>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!!v.buttonOrModal}">
+        <div class="slds-l-around--x-large">
+            <div class="slds-m-around--x-large slds-modal__container">
+                <lightning:button class="custom-button" variant="Neutral" label="{!$Label.c.Arc_Gen_New_Task}" title="{!$Label.c.Arc_Gen_New_Task}" onclick="{!c.handleShowModal}" />
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

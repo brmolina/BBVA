@@ -531,7 +531,7 @@ public class Arc_Gen_RatingAsIndepProcess_test {
         final String analysisId = analysis.Id;
         final arce__Account_has_Analysis__c accHasAnalysis = [SELECT Id, Name FROM arce__Account_has_Analysis__c WHERE arce__Analysis__c = :analysisId LIMIT 1];
         Test.startTest();
-        final List<Arc_Gen_RatingAsIndepProcess_controller.WfValue> result = Arc_Gen_RatingAsIndepProcess_controller.checkRatingType(accHasAnalysis.Id, '2019',false);
+        final List<Arc_Gen_RatingAsIndepProcess_controller.WfValue> result = Arc_Gen_RatingAsIndepProcess_controller.checkRatingType(accHasAnalysis.Id, '2021RTC_GEN',false);
         System.assert(result[0].value == RATING_LITERAL || result[0].value =='Prerating', 'newRatingTyByModl Error: There is no Wf object');
         Test.stopTest();
     }

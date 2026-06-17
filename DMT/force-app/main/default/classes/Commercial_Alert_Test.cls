@@ -16,12 +16,12 @@ public class Commercial_Alert_Test {
   static void testSetup() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = 'test1';
+    acc.g_customer_id__c = 'test1';
     acc.Name = 'test1';
     insert acc;
 
     final Account acc2 = tstClass.createClient();
-    acc2.SER_CClient__c = TEST2VAR;
+    acc2.g_customer_id__c = TEST2VAR;
     acc2.Name = TEST2VAR;
     insert acc2;
 
@@ -106,7 +106,7 @@ public class Commercial_Alert_Test {
       insert listUser;
 
       final Account acc3 = tstClass.createClient();
-      acc3.SER_CClient__c = 'test3';
+      acc3.g_customer_id__c = 'test3';
       acc3.Name = 'test3';
       insert acc3;
       System.debug('::::::::::acc3: ' + acc3);

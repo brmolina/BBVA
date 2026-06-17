@@ -1,6 +1,9 @@
 import { LightningElement,api } from 'lwc';
 import {loadStyle } from 'lightning/platformResourceLoader';
 import CustomDataTableResource from '@salesforce/resourceUrl/datatableOverrides';
+import DERIVATIVES_LABEL from '@salesforce/label/c.dmt_cl_CounterpartyRisk_Text';
+import DEPOS_LABEL from '@salesforce/label/c.dmt_cl_DeposRiskLine_Text';
+import EQUITIES_LABEL from '@salesforce/label/c.dmt_cl_EquitiesWrong_Text';
 
 export default class Dmt_risk_limit_table extends LightningElement {
     @api startDate;
@@ -18,59 +21,68 @@ export default class Dmt_risk_limit_table extends LightningElement {
     }
     @api columnstablecopypaste = [];
     @api isReadOnlyUser;
-    @api titletable;
+    //titletable = "TITLE";
 
     @api
     get table() {
       return this.tableData;
     }
 
-    set table(value) {
-      console.log('Original:', value); 
-      let normalizedData;
-    
-      try {
-        if (typeof value === 'string') {
-          const parsed = JSON.parse(value);
-          if (Array.isArray(parsed)) {
-            normalizedData = parsed;
-          } else if (typeof parsed === 'object' && parsed !== null) {
-            normalizedData = [parsed];
-          } else {
-            normalizedData = [];
-          }
-        } else if (Array.isArray(value)) {
-          normalizedData = value.filter(item => typeof item === 'object' && item !== null);
-        } else if (typeof value === 'object' && value !== null) {
-          normalizedData = [value];
-        } else {
-          console.warn('Formato inesperado para table:', value);
-          normalizedData = [];
-        }
-      } catch (e) {
-        console.error('Error al procesar table:', e);
-        normalizedData = [];
-      }
-    
-      console.log('Normalizado:', normalizedData);
-    
-      if (normalizedData.length > 0) {
-        const newArray = normalizedData.map((item, index) => {
-          const newItem = { ...item };
-          newItem.isEditableAmount = !newItem.isDisabled;
-          if (index === normalizedData.length - 1 && newItem.isDisabled != true) {
-            newItem.buttonDisabled = false;
-            newItem.pickDisabled = false;
-            newItem.deleteDisabled = false;
-          }
-          return newItem;
-        });
-    
-        this.tableData = newArray;
+    get titletable() {
+      if( this.tableData && this.tableData[0]) {
+        return this.tableData[0]['tabletype'] == "Equities" ? EQUITIES_LABEL: (this.tableData[0]['tabletype'] == "Depos" ? DEPOS_LABEL: DERIVATIVES_LABEL)
       } else {
-        this.tableData = [];
+        return DERIVATIVES_LABEL;
       }
     }
+
+    set table(value) {
+      console.log('Original:', value);
+      let normalizedData;
+      const maxTermValue = this.termoptions[this.termoptions.length - 1].value;
+
+      try {
+          if (typeof value === 'string') {
+              const parsed = JSON.parse(value);
+              if (Array.isArray(parsed)) {
+                  normalizedData = parsed;
+              } else if (typeof parsed === 'object' && parsed !== null) {
+                  normalizedData = [parsed];
+              } else {
+                  normalizedData = [];
+              }
+          } else if (Array.isArray(value)) {
+              normalizedData = value.filter(item => typeof item === 'object' && item !== null);
+          } else if (typeof value === 'object' && value !== null) {
+              normalizedData = [value];
+          } else {
+              console.warn('Formato inesperado para table:', value);
+              normalizedData = [];
+          }
+      } catch (e) {
+          console.error('Error al procesar table:', e);
+          normalizedData = [];
+      }
+
+      console.log('Normalizado:', normalizedData);
+
+      if (normalizedData.length > 0) {
+          const newArray = normalizedData.map((item, index) => {
+              const newItem = { ...item };
+              newItem.isEditableAmount = !newItem.isDisabled;
+              if (index === normalizedData.length - 1 && newItem.isDisabled != true) {
+                  newItem.buttonDisabled = newItem.endTerm === maxTermValue || newItem.endTerm === "";
+                  newItem.pickDisabled = false;
+                  newItem.deleteDisabled = false;
+              }
+              return newItem;
+          });
+
+          this.tableData = newArray;
+      } else {
+          this.tableData = [];
+      }
+  }
     /*
     set table(value) {
       console.log('Original:'+value);
@@ -78,7 +90,7 @@ export default class Dmt_risk_limit_table extends LightningElement {
       console.log('copyData:'+copyData);
       // Validar que sea array
     if (Array.isArray(copyData) && copyData.length > 0 && typeof copyData[copyData.length - 1] === 'object') {
-        console.log('Es un Objeto');  
+        console.log('Es un Objeto');
         copyData[copyData.length - 1]['buttonDisabled'] = false;
         copyData[copyData.length - 1]['pickDisabled'] = false;
         if(copyData.length > 1){
@@ -121,60 +133,62 @@ export default class Dmt_risk_limit_table extends LightningElement {
         cellAttributes: { alignment: 'center' }, typeAttributes: {
           placeholder: 'Select...', options: this.termoptions, fieldName: 'initTerm' // list of all picklist options
           , value: { fieldName: 'initTerm' } // default value for picklist
-          , context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'initRead' }, isDisabled : { fieldName: 'isDisabled' } 
+          , context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'initRead' }, isDisabled : { fieldName: 'isDisabled' }
       }},{fieldName:"endTerm",label:"END TERM",type:"picklist",editable:true, hideDefaultActions:true,
             cellAttributes: { alignment: 'center' }, typeAttributes: {
               placeholder: 'Select...', options: this.termoptions, fieldName: 'endTerm' // list of all picklist options
               , value: { fieldName: 'endTerm' } // default value for picklist
-              , context: { fieldName: 'Id' } ,optionslimit: { fieldName: 'initTerm' }, readonlyAttr : { fieldName: 'pickDisabled' }, isDisabled : { fieldName: 'isDisabled' }  
+              , context: { fieldName: 'Id' } ,optionslimit: { fieldName: 'initTerm' }, readonlyAttr : { fieldName: 'pickDisabled' }, isDisabled : { fieldName: 'isDisabled' }
           }},
         {fieldName:"amount",label:"AMOUNT", type: 'currency',editable: { fieldName: 'isEditableAmount' } , hideDefaultActions:true,
             cellAttributes: { alignment: 'center' } , typeAttributes: { currencyCode: value, step: '0.001' }},
             {
-                type:  'button',hideDefaultActions:true,
+                type:  'button-icon',hideDefaultActions:true,
                 cellAttributes: { alignment: 'center' },
                 initialWidth: 90,
-                typeAttributes: 
+                typeAttributes:
                 {
                   iconName: 'utility:delete',
-                  label: ' ', 
-                  name: 'deleteRecord', 
-                  title: '', 
+                  label: ' ',
+                  name: 'deleteRecord',
+                  title: '',
+                  variant: "brand-outlined",
                   disabled: {fieldName: 'deleteDisabled'},
-                  iconPosition: 'center', 
+                  iconPosition: 'center',
                   value: 'test'
                 }
               }
               ,
             {
-                type:  'button',hideDefaultActions:true,
+                type:  'button-icon',hideDefaultActions:true,
                 cellAttributes: { alignment: 'center' },
                 initialWidth: 90,
-                typeAttributes: 
+                typeAttributes:
                 {
                   iconName: 'utility:add',
-                  label: '    ', 
-                  name: 'addRecord', 
-                  title: '        ', 
+                  label: '    ',
+                  name: 'addRecord',
+                  title: '        ',
+                  variant: "brand-outlined",
                   disabled: {fieldName: 'buttonDisabled'},
-                  iconPosition: 'center', 
+                  iconPosition: 'center',
                   value: 'test'
                 }
               }];
 
     }
-    
-    termoptions = [{ label: 'Select...', value: '' },{label:"0D",value:"0"},{label:"2D",value:"2"},{label:"3D",value:"3"},{label:"4D",value:"4"},{label:"7D",value:"7"},{label:"10D",value:"10"},{label:"15D",value:"15"},{label:"20D",value:"20"},{label:"1M",value:"30"},{label:"45D",value:"45"},{label:"2M",value:"60"},{label:"3M",value:"90"},{label:"4M",value:"120"},{label:"5M",value:"150"},{label:"6M",value:"180"},{label:"9M",value:"270"},{label:"1Y",value:"365"},{label:"18M",value:"548"},{label:"2Y",value:"730"},{label:"3Y",value:"1095"},{label:"4Y",value:"1460"},{label:"5Y",value:"1825"},{label:"6Y",value:"2190"},{label:"7Y",value:"2555"},{label:"8Y",value:"2920"},{label:"9Y",value:"3285"},{label:"10Y",value:"3650"},{label:"11Y",value:"4015"},{label:"12Y",value:"4380"},{label:"13Y",value:"4745"},{label:"14Y",value:"5110"},{label:"15Y",value:"5475"},{label:"16Y",value:"5840"},{label:"17Y",value:"6205"},{label:"18Y",value:"6570"},{label:"19Y",value:"6935"},{label:"20Y",value:"7300"},{label:"21Y",value:"7665"},{label:"22Y",value:"8030"},{label:"25Y",value:"9125"},{label:"27Y",value:"9855"},{label:"30Y",value:"10950"},{label:"32Y",value:"11680"},{label:"35Y",value:"12775"},{label:"37Y",value:"13505"},{label:"40Y",value:"14600"},{label:"42Y",value:"15330"},{label:"45Y",value:"16425"}];
+
+    termoptions = [{ label: 'Select...', value: '' },{label:"0D",value:"0"},{label:"2D",value:"2"},{label:"3D",value:"3"},{label:"4D",value:"4"},{label:"7D",value:"7"},{label:"10D",value:"10"},{label:"15D",value:"15"},{label:"20D",value:"20"},{label:"1M",value:"30"},{label:"45D",value:"45"},{label:"2M",value:"60"},{label:"3M",value:"90"},{label:"4M",value:"120"},{label:"5M",value:"150"},{label:"6M",value:"180"},{label:"9M",value:"270"},{label:"1Y",value:"365"},{label:"18M",value:"548"},{label:"2Y",value:"730"},{label:"3Y",value:"1095"},{label:"4Y",value:"1460"},{label:"5Y",value:"1825"},{label:"6Y",value:"2190"},{label:"7Y",value:"2555"},{label:"8Y",value:"2920"},{label:"9Y",value:"3285"},{label:"10Y",value:"3650"},{label:"11Y",value:"4015"},{label:"12Y",value:"4380"},{label:"13Y",value:"4745"},{label:"14Y",value:"5110"},{label:"15Y",value:"5475"},{label:"16Y",value:"5840"},{label:"17Y",value:"6205"},{label:"18Y",value:"6570"},{label:"19Y",value:"6935"},{label:"20Y",value:"7300"},{label:"22Y",value:"8030"},{label:"25Y",value:"9125"},{label:"27Y",value:"9855"},{label:"30Y",value:"10950"},{label:"32Y",value:"11680"},{label:"35Y",value:"12775"},{label:"37Y",value:"13505"},{label:"40Y",value:"14600"},{label:"42Y",value:"15330"},{label:"45Y",value:"16425"}];
     columns = [{fieldName:"initTerm",label:"INIT TERM",type:"picklist",editable:true, hideDefaultActions:true,
         cellAttributes: { alignment: 'center' }, typeAttributes: {
           placeholder: 'Select..', options: this.termoptions, fieldName: 'initTerm' // list of all picklist options
           , value: { fieldName: 'initTerm' } // default value for picklist
-          , context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'initRead' } 
+          , context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'initRead' }
       }},{fieldName:"endTerm",label:"END TERM",type:"picklist",editable:true, hideDefaultActions:true,
             cellAttributes: { alignment: 'center' }, typeAttributes: {
               placeholder: 'Select...', options: this.termoptions, fieldName: 'endTerm' // list of all picklist options
               , value: { fieldName: 'endTerm' } // default value for picklist
-              , context: { fieldName: 'Id' } ,optionslimit: { fieldName: 'initTerm' }, readonlyAttr : { fieldName: 'pickDisabled' } 
+              , context: { fieldName: 'Id' } ,optionslimit: { fieldName: 'initTerm' }, readonlyAttr : { fieldName: 'pickDisabled' }
           }},
         {fieldName:"amount",label:"AMOUNT", type: 'currency',editable:true, hideDefaultActions:true,
             cellAttributes: { alignment: 'center' } , typeAttributes: { currencyCode: this.currency, step: '0.001' }},
@@ -182,14 +196,14 @@ export default class Dmt_risk_limit_table extends LightningElement {
                 type:  'button',hideDefaultActions:true,
                 cellAttributes: { alignment: 'center' },
                 initialWidth: 90,
-                typeAttributes: 
+                typeAttributes:
                 {
                   iconName: 'utility:delete',
-                  label: ' ', 
-                  name: 'deleteRecord', 
-                  title: '', 
+                  label: ' ',
+                  name: 'deleteRecord',
+                  title: '',
                   disabled: {fieldName: 'deleteDisabled'},
-                  iconPosition: 'center', 
+                  iconPosition: 'center',
                   value: 'test'
                 }
               }
@@ -198,14 +212,14 @@ export default class Dmt_risk_limit_table extends LightningElement {
                 type:  'button',hideDefaultActions:true,
                 cellAttributes: { alignment: 'center' },
                 initialWidth: 90,
-                typeAttributes: 
+                typeAttributes:
                 {
                   iconName: 'utility:add',
-                  label: '    ', 
-                  name: 'addRecord', 
-                  title: '        ', 
+                  label: '    ',
+                  name: 'addRecord',
+                  title: '        ',
                   disabled: {fieldName: 'buttonDisabled'},
-                  iconPosition: 'center', 
+                  iconPosition: 'center',
                   value: 'test'
                 }
               }];
@@ -232,80 +246,81 @@ export default class Dmt_risk_limit_table extends LightningElement {
     handleRowAction(event) {
         const action = event.detail.action;
         const row = event.detail.row;
+        const maxTermValue = this.termoptions[this.termoptions.length - 1].value;
+
         switch (action.name) {
             case 'deleteRecord':
                 const tableType = this.tableData[0]['tabletype'];
-                
+
                 if (this.tableData.length === 1) {
-                  this.totalamount = '';
-
-                  const resetRow = {
-                    ...this.tableData[0],
-                    totalamount: '',
-                    initTerm: "0",
-                    endTerm: "2",
-                    amount: null,
-                    deleteDisabled: false,
-                    buttonDisabled: false
-                  };
-
-                  const newTable = [resetRow];
-
-                  this.dispatchEvent(new CustomEvent('tableRiskchange', {
-                    bubbles: true,
-                    composed: true,
-                    detail: {
-                      data: newTable,
-                      tabletype: tableType
-                    }
-                }));
+                    this.totalamount = '';
+                    const resetRow = {
+                        ...this.tableData[0],
+                        totalamount: '',
+                        initTerm: "0",
+                        endTerm: "2",
+                        amount: null,
+                        deleteDisabled: false,
+                        buttonDisabled: false
+                    };
+                    const newTable = [resetRow];
+                    this.dispatchEvent(new CustomEvent('tableRiskchange', {
+                        bubbles: true,
+                        composed: true,
+                        detail: { data: newTable, tabletype: tableType }
+                    }));
                 } else {
-                let copyData = this.tableData.filter(function(item) {
-                    return item.Id !== row.Id
-                })
-                let sendcopyData = this.copiarLista(copyData);
-                if(sendcopyData[0]){
-                  sendcopyData[sendcopyData.length-1]['buttonDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['pickDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['deleteDisabled'] = false;
-                }
-
-                  this.dispatchEvent(new CustomEvent('tableRiskchange',  { 
-                    bubbles:true, 
-                    composed:true,
-                    detail:{
-                      data:sendcopyData, 
-                      tabletype:tableType
+                    let copyData = this.tableData.filter(function(item) {
+                        return item.Id !== row.Id;
+                    });
+                    let sendcopyData = this.copiarLista(copyData);
+                    if (sendcopyData[0]) {
+                        sendcopyData[sendcopyData.length-1]['buttonDisabled'] = false;
+                        sendcopyData[sendcopyData.length-1]['pickDisabled'] = false;
+                        sendcopyData[sendcopyData.length-1]['deleteDisabled'] = false;
                     }
-                  }));
+                    this.dispatchEvent(new CustomEvent('tableRiskchange', {
+                        bubbles: true,
+                        composed: true,
+                        detail: { data: sendcopyData, tabletype: tableType }
+                    }));
                 }
                 break;
+
             case 'addRecord':
-              const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
-              let copyDataNew = [
-                ...this.tableData.slice(0, index+1),
-                {
-                  "initTerm": this.tableData[index]["endTerm"],
-                  "endTerm": "",
-                  "Id": this.tableData.length,
-                  "amount": null,
-                  "initRead":true,
-                  "tabletype":this.tableData[index]["tabletype"],
-                  "line":this.tableData[0]["line"],
-                  "currency":this.tableData[0]["currency"],
-                  "deleteDisabled": false,
-                  'buttonDisabled':true
-                },
-                ...this.tableData.slice(index+1)
-              ];
-              let sendcopyDataNew = this.copiarLista(copyDataNew);
-              sendcopyDataNew[sendcopyDataNew.length-2]['buttonDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-1]['buttonDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-2]['pickDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-1]['pickDisabled'] = false;
-              sendcopyDataNew[sendcopyDataNew.length-2]['deleteDisabled'] = false;
-              sendcopyDataNew[sendcopyDataNew.length-1]['deleteDisabled'] = false;
-            this.dispatchEvent(new CustomEvent('tableRiskchange',  { bubbles:true, composed:true,detail:  {data:sendcopyDataNew, tabletype:sendcopyDataNew[0]['tabletype']}} ));
+                const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
+                const currentEndTerm = this.tableData[index]["endTerm"];
+
+                if (currentEndTerm === maxTermValue || currentEndTerm === "") return;
+
+                let copyDataNew = [
+                    ...this.tableData.slice(0, index+1),
+                    {
+                        "initTerm": this.tableData[index]["endTerm"],
+                        "endTerm": "",
+                        "Id": this.tableData.length,
+                        "amount": null,
+                        "initRead": true,
+                        "tabletype": this.tableData[index]["tabletype"],
+                        "line": this.tableData[0]["line"],
+                        "currency": this.tableData[0]["currency"],
+                        "deleteDisabled": false,
+                        'buttonDisabled': true
+                    },
+                    ...this.tableData.slice(index+1)
+                ];
+                let sendcopyDataNew = this.copiarLista(copyDataNew);
+                sendcopyDataNew[sendcopyDataNew.length-2]['buttonDisabled'] = true;
+                sendcopyDataNew[sendcopyDataNew.length-1]['buttonDisabled'] = true;
+                sendcopyDataNew[sendcopyDataNew.length-2]['pickDisabled'] = true;
+                sendcopyDataNew[sendcopyDataNew.length-1]['pickDisabled'] = false;
+                sendcopyDataNew[sendcopyDataNew.length-2]['deleteDisabled'] = false;
+                sendcopyDataNew[sendcopyDataNew.length-1]['deleteDisabled'] = false;
+                this.dispatchEvent(new CustomEvent('tableRiskchange', {
+                    bubbles: true,
+                    composed: true,
+                    detail: { data: sendcopyDataNew, tabletype: sendcopyDataNew[0]['tabletype'] }
+                }));
                 break;
         }
     }

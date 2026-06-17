@@ -25,7 +25,7 @@ public class TemplateBuilder_ProfSheets_Test {
         Account accountParent = UnitTestUtils.GetStandardAccount();
         accountParent.Name = 'Account Test 0';
         accountParent.OwnerId = UserInfo.getUserId();
-        accountParent.SER_CClient__c = '000000010';
+        accountParent.g_customer_id__c = '000000010';
         accountParent.DES_BBVA_Segmentation__c = 'C';
         accountParent.DES_Structure_Type__c = 'Group';
         insert accountParent;
@@ -34,7 +34,7 @@ public class TemplateBuilder_ProfSheets_Test {
         accountChild.ParentId = accountParent.Id;
         accountChild.Name = 'Account Test Child 0';
         accountChild.OwnerId = UserInfo.getUserId();
-        accountChild.SER_CClient__c = '000000011';
+        accountChild.g_customer_id__c = '000000011';
         accountChild.DES_BBVA_Segmentation__c = 'C';
         accountChild.DES_Structure_Type__c = 'Subsidiary';
         accountChild.DES_Entity_Type__c = 'Subsidiary';
@@ -45,7 +45,7 @@ public class TemplateBuilder_ProfSheets_Test {
         Contact con = UnitTestUtils.GetContact(accountParent.Id);
         insert con;
 
-        final dwp_acmh__GBL_Account_Relationship__c relationship = utilClass.createAccRelationship(accountParent, accountChild);
+        final AMH_GBL_Account_Relationship__c relationship = utilClass.createAccRelationship(accountParent, accountChild);
         insert relationship;
 
         final List<cuco__profitability_sheet__c> profSheets = cuco.Test_Utils.createProfSheet(1, accountParent);

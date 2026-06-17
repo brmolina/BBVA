@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_RiskTypeLocked__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, this prevents the trigger from updating DMT_Risk_Type__c and bypasses all taxonomy calculations. This field is automatically set to true if a user manually updates the Risk Type.</description>
+    <label>DMT_RiskTypeLocked</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,25 @@
+<template>
+    <li class={liClaseMensaje}>
+        <div class={divClaseChatMessage}>
+            <div class={divClaseBodyMessage}>
+                <div class={divClaseMensaje}>
+                    <lightning-formatted-rich-text value={messageAsHtml} disable-linkify
+                        class="message-text-area"></lightning-formatted-rich-text>
+                </div>
+                <template if:true={mensajeEntrante}>
+                    <div class="slds-chat-message__meta cib-hora-cibia">
+                        <template if:true={mensajeEntrante}>
+                            <span class="cib-feedback">
+                                <lightning-icon title="Like" icon-name="utility:like" size="x-small"
+                                    onclick={handleFeedbackOK}></lightning-icon>
+                                <span style="margin: 5px;"></span>
+                                <lightning-icon title="Dislike" icon-name="utility:dislike" size="x-small"
+                                    onclick={handleFeedbackKO}></lightning-icon>
+                            </span>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </li>
+</template>

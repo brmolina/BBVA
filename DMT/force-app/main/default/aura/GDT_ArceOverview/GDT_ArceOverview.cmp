@@ -1,0 +1,76 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 01-26-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller="GDT_Arc_Gen_Hierarchy_Controller" implements="force:lightningQuickAction,force:hasRecordId">
+    <aura:attribute name="acctList" type="List" default="[]"/>
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'All', 'value': 'All'},
+    {'label': 'Name', 'value': 'name'},
+    {'label': 'Type', 'value': 'participantType'},
+    {'label': 'Booking Country Code', 'value': 'country'},
+    {'label': 'Rating', 'value': 'rating'},
+    {'label': 'Date', 'value': 'dateEEFF'},
+    {'label': 'State', 'value': 'state'},
+    ]"/>
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="data" type="List" />
+    <aura:attribute name="filter" type="String" />
+    <aura:attribute name="filterField" type="String" />
+    <aura:attribute name="styleHier" type="String" default="height: 150px"/>
+    <aura:attribute name="channel" type="String" default="mhmgNodeClicked" />
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="notifications" type="List" />
+    <aura:attribute name="showTable" type="Boolean" default="false"/>
+    <aura:attribute name="showHierarchy" type="Boolean" default="false"/>
+    <aura:attribute name="enableMode" type="Boolean" default="false"/>
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 90rem !important;
+        width:90% !important;
+        }
+    </aura:html>
+    <dwp_mhmg:eventListener onnodeClicked="{!c.handleNodeClicked}"/>
+    <div class="input-group">
+        <lightning:input type="toggle" label="Group Summary" name="GroupResume" checked="{!v.showTable}"/>
+    </div>
+    <aura:if isTrue="{!v.showTable}">
+      <div class="c-container slds-m-horizontal_none slds-box slds-p-around_none">
+
+        <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-small">
+          <lightning:layoutItem flexibility="auto" alignmentBump="left">
+            <lightning:combobox name="filterBy" value="All" placeholder="Select Field" class="custom-box" options="{! v.options }" onchange="{! c.handleChange }" />
+          </lightning:layoutItem>
+          <lightning:layoutItem flexibility="auto" size="3">
+            <lightning:input type="search" placeholder="Search..." onchange="{!c.filter}" value="{!v.filter}" />
+        </lightning:layoutItem>
+      </lightning:layout>
+
+  </div>
+      <div style="{!v.styleHier}">
+        <lightning:datatable data="{! v.acctList }"
+                              columns="{! v.mycolumns }"
+                              keyField="ident"
+                              class="slds-table slds-table--bordered slds-table--cell-buffer slds-table--striped"
+                              defaultSortDirection="{!v.defaultSortDirection}"
+                              sortedDirection="{!v.sortDirection}"
+                              sortedBy="{!v.sortedBy}"
+                              onsort="{!c.handleSort}"
+                              hideCheckboxColumn="true"/>
+      </div>
+    </aura:if>
+    <div class="input-group">
+      <lightning:input type="toggle" label="Group ARCEs Overview" name="Hierarchy" checked="{!v.showHierarchy}" onchange="{! c.handleToggle }"/>
+  </div>
+  <aura:if isTrue="{!v.showHierarchy}">
+    <dwp_mhmg:hierarchyManager recordId="{!v.recordId}" title="Group ARCEs Overview" configuration="Arce" orientation="top-to-bottom" mode="full" enabledrag="{!v.enableMode}" debugmode="{!v.enableMode}" />
+  </aura:if>
+</aura:component>

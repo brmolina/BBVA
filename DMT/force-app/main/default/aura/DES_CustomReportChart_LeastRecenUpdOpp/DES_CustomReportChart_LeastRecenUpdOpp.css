@@ -1,0 +1,9 @@
+.THIS .tableNoData {
+    padding:15px;
+    text-align: center;
+}
+
+.THIS .slds-table--header-fixed_container
+{overflow-y:hidden!important;overflow-x:hidden!important;}
+.THIS .slds-slds-scrollable_x
+{overflow-y:hidden!important;overflow-x:hidden!important;}

@@ -1,0 +1,13 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that shows tabs depending by sector of the customer. </b></h5>
+        <p>The variable view variable for visibility</p>
+        <p>The variable idSelect is the recordId from the customer</p>
+        <p>The variable sectionsLts variable que controla la seccion visible</p>
+        <p>The variable permissionEdit controls the editing permissions</p>
+        <p><code>c:Arc_Gen_ProposeInPreparation_CMP</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ProposeInPreparation_CMP" ref="c:Arc_Gen_ProposeInPreparation_CMP" label="Propose">
+        <p>Component that shows tabs depending by sector of the customer.</p>
+    </aura:example>
+</aura:documentation>

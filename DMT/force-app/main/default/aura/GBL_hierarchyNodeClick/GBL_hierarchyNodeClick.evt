@@ -1,0 +1,7 @@
+<aura:event type="APPLICATION" description="Account Hierarchy Node clicked">
+  <aura:attribute name="accountId" type="String" description="Id of the Account clicked"/>
+  <aura:attribute name="selectedVision" type="String" description="Hierarchy Vision Selected"/>
+  <aura:attribute name="selectedHTypes" type="List" description="Hierarchy Types Selected"/>
+  <aura:attribute name="visibleNodeIds" type="List" />
+
+</aura:event>

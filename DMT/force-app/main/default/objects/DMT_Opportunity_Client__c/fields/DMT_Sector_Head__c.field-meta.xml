@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Sector_Head__c</fullName>
+    <label>Sector Head</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Carlos Zuloaga - Supportive</fullName>
+                <default>false</default>
+                <label>Carlos Zuloaga - Supportive</label>
+            </value>
+            <value>
+                <fullName>Carlos Zuloaga - Not Supportive</fullName>
+                <default>false</default>
+                <label>Carlos Zuloaga - Not Supportive</label>
+            </value>
+            <value>
+                <fullName>Carlos Zuloaga - Conditioned</fullName>
+                <default>false</default>
+                <label>Carlos Zuloaga - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Beatriz Roa - Supportive</fullName>
+                <default>false</default>
+                <label>Beatriz Roa - Supportive</label>
+            </value>
+            <value>
+                <fullName>Beatriz Roa - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Beatriz Roa - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Beatriz Roa - Conditioned</fullName>
+                <default>false</default>
+                <label>Beatriz Roa - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Iñigo Leivar - Supportive</fullName>
+                <default>false</default>
+                <label>Iñigo Leivar - Supportive</label>
+            </value>
+            <value>
+                <fullName>Iñigo Leivar - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Iñigo Leivar - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Iñigo Leivar - Conditioned</fullName>
+                <default>false</default>
+                <label>Iñigo Leivar - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Supportive</fullName>
+                <default>false</default>
+                <label>Ksenia Nekrasova - Supportive</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Ksenia Nekrasova - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Conditioned</fullName>
+                <default>false</default>
+                <label>Ksenia Nekrasova - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Iván Poza - Supportive</fullName>
+                <default>false</default>
+                <label>Iván Poza - Supportive</label>
+            </value>
+            <value>
+                <fullName>Iván Poza - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Iván Poza - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Iván Poza - Conditioned</fullName>
+                <default>false</default>
+                <label>Iván Poza - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Gonzalo Fernandez-Turegano - Supportive</fullName>
+                <default>false</default>
+                <label>Gonzalo Fernandez-Turegano - Supportive</label>
+            </value>
+            <value>
+                <fullName>Gonzalo Fernandez-Turegano - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Gonzalo Fernandez-Turegano - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Gonzalo Fernandez-Turegano - Conditioned</fullName>
+                <default>false</default>
+                <label>Gonzalo Fernandez-Turegano - Conditioned</label>
+            </value>
+            <value>
+                <fullName>TBA - Supportive</fullName>
+                <default>false</default>
+                <label>TBA - Supportive</label>
+            </value>
+            <value>
+                <fullName>TBA - Not Supportiv</fullName>
+                <default>false</default>
+                <label>TBA - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>TBA - Conditioned</fullName>
+                <default>false</default>
+                <label>TBA - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Olga Eguilior - Supportive</fullName>
+                <default>false</default>
+                <label>Olga Eguilior - Supportive</label>
+            </value>
+            <value>
+                <fullName>Olga Eguilior - Not Supportiv</fullName>
+                <default>false</default>
+                <label>Olga Eguilior - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Olga Eguilior - Conditioned</fullName>
+                <default>false</default>
+                <label>Olga Eguilior - Conditioned</label>
+            </value>
+            <value>
+                <fullName>NA</fullName>
+                <default>true</default>
+                <label>NA</label>
+            </value>
+            <value>
+                <fullName>Miguel Otamendi - Supportive</fullName>
+                <default>false</default>
+                <label>Miguel Otamendi - Supportive</label>
+            </value>
+            <value>
+                <fullName>Miguel Otamendi - Not Supportive</fullName>
+                <default>false</default>
+                <label>Miguel Otamendi - Not Supportive</label>
+            </value>
+            <value>
+                <fullName>Miguel Otamendi - Conditioned</fullName>
+                <default>false</default>
+                <label>Miguel Otamendi - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Cristina Querejeta - Supportive</fullName>
+                <default>false</default>
+                <label>Cristina Querejeta - Supportive</label>
+            </value>
+            <value>
+                <fullName>Cristina Querejeta - Not Supportive</fullName>
+                <default>false</default>
+                <label>Cristina Querejeta - Not Supportive</label>
+            </value>
+            <value>
+                <fullName>Cristina Querejeta - Conditioned</fullName>
+                <default>false</default>
+                <label>Cristina Querejeta - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Luis Enrique Rodríguez - Supportive</fullName>
+                <default>false</default>
+                <label>Luis Enrique Rodríguez - Supportive</label>
+            </value>
+            <value>
+                <fullName>Luis Enrique Rodríguez - Not Supportive</fullName>
+                <default>false</default>
+                <label>Luis Enrique Rodríguez - Not Supportive</label>
+            </value>
+            <value>
+                <fullName>Luis Enrique Rodríguez - Conditioned</fullName>
+                <default>false</default>
+                <label>Luis Enrique Rodríguez - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Manuel Franch- Supportive</fullName>
+                <default>false</default>
+                <label>Manuel Franch- Supportive</label>
+            </value>
+            <value>
+                <fullName>Manuel Franch- Not Supportiv</fullName>
+                <default>false</default>
+                <label>Manuel Franch- Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Manuel Franch- Conditioned</fullName>
+                <default>false</default>
+                <label>Manuel Franch- Conditioned</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_rwa_reglty_thsd_amount__c</fullName>
+    <description>Regulatory risk-weighted assets obtained from the calculations.</description>
+    <externalId>false</externalId>
+    <label>Regulatory RWA Credit Risk (thousands)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

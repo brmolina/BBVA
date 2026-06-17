@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>application/x-zip-compressed</contentType>
+    <description>Contains a Javascript library to transform Markdown-formatted text into HTML
+https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js
+More libraries analyzed in https://jira.globaldevtools.bbva.com/browse/CIBGLOBALD-1311</description>
+</StaticResource>

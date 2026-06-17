@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Group__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <inlineHelpText>Please select an existing Group or Commercial Group. The &quot;New Client&quot; option will allow to create Commercial Clients or Commercial Group only, not Groups.</inlineHelpText>
+    <label>Group</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>1 OR (2 AND 3)</booleanFilter>
+        <filterItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Group</value>
+        </filterItems>
+        <filterItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Commercial Client</value>
+        </filterItems>
+        <filterItems>
+            <field>Account.DES_Structure_Type__c</field>
+            <operation>equals</operation>
+            <value>Group</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Prospects</relationshipLabel>
+    <relationshipName>Prospects</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Lookup</type>
+</CustomField>

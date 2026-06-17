@@ -1,0 +1,29 @@
+.THIS .mainText {
+    height:200px;
+    text-align:center;
+    padding-top:100px;
+}
+.THIS .floatRight {
+    float:right;
+}
+.THIS .floatLeft {
+    float:left;
+}
+.THIS .spanFooterDesc {
+    margin-right:10px;
+}
+.THIS .footerContainer {
+    width:100%;
+    margin-top:10px;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+.THIS .canvasPie {
+    height: 300px !important;
+    width: 100%;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+.THIS .customBackground {
+    background-color: rgb(243, 242, 242);
+}

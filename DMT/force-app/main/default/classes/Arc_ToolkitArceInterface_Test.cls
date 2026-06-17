@@ -467,4 +467,52 @@ private class Arc_ToolkitArceInterface_Test {
         System.assertNotEquals(null, top5ActResult, 'Result should not be null');
         System.assert(top5ActResult.size() > 0, 'Results should not be empty');
     }
+
+    /**
+    * -----------------------------------------------------------------------------------------------
+    * @description Test method for Arc_ToolkitArceInterface.getCamn
+    * -----------------------------------------------------------------------------------------------
+    * @autor    santiago.vidal.contractor@bbva.com
+    * @date     09-01-2026
+    * -----------------------------------------------------------------------------------------------
+    **/
+    @IsTest
+    private static void testGetCamn() {
+        final String dateStr = String.valueOf(Date.today().year());
+        final Map<String, Object> parameters = new Map<String, Object>{
+            'statusId' => '13',
+            'stage' => '3',
+            'submittedType' => new List<String>{'1', '2'},
+            'groupCode' => new List<String>{'A000000002'},
+            'ratingToolId' => new List<String>{'2012P1IRP', '2021RTC_GEN'}
+        };
+
+        Callable callable = (Callable) Type.forName(callableClass).newInstance();
+        List<Map<String, Object>> getCamnResult = (List<Map<String, Object>>) callable.call('getCamn', parameters);
+		
+        System.assertNotEquals(null, getCamnResult, 'Result should not be null');
+        System.assert(getCamnResult.size() > 0, 'Results should not be empty');
+    }
+
+    /**
+    * -----------------------------------------------------------------------------------------------
+    * @description Test method for Arc_ToolkitArceInterface.getCamn
+    * -----------------------------------------------------------------------------------------------
+    * @autor    santiago.vidal.contractor@bbva.com
+    * @date     09-01-2026
+    * -----------------------------------------------------------------------------------------------
+    **/
+    @IsTest
+    private static void testGetTopActivities() {
+        List<arce__Account_has_Analysis__c> ahaList = [SELECT Id FROM arce__Account_has_Analysis__c];
+        List<Id> ahaIdList = new List<Id>(new Map<Id, SObject>(ahaList).keySet());
+        final Map<String, Object> parameters = new Map<String, Object>{
+            'ahaIdList' => ahaIdList
+        };
+
+        Callable callable = (Callable) Type.forName(callableClass).newInstance();
+        Map<String, Object> getTopActResult = (Map<String, Object>) callable.call('getTopActivities', parameters);
+		
+        System.assertNotEquals(null, getTopActResult, 'Result should not be null');
+    }
 }

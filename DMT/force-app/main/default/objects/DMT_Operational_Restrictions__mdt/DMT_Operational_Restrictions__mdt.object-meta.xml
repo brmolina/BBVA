@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Values of the operational restrictions</description>
+    <label>DMT_Operational_Restrictions</label>
+    <pluralLabel>DMT_Operational_Restrictions</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

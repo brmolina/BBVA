@@ -1,0 +1,12 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>A component that shows a table with the structure of the  group</b></h5>
+    <p>showtable - boolean to show or hide the table</p>
+    <p>showmessage - boolean to show or hide a message</p>
+    <p>data - variable to show the rows of the table</p>
+    <p>columns - variable to show the columns of the table</p>
+    <p>errorMessage - an error message retrieve by the controller</p>
+    <p>currentId - The  id of the current account or group account</p>
+    <p><code>c:Arc_Gen_BackLogTable</code></p>
+  </aura:description>
+</aura:documentation>

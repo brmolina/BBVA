@@ -1,0 +1,50 @@
+<aura:component controller="dtde.GBL_DynamicRelatedTableController"
+	  implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+	  access="global">
+    
+	<!-- These are the attributes for the input parameters-->
+    <aura:attribute name="recordId" type="String" access="public" 
+        description="recordId" />
+    
+	<aura:attribute name="TableHeading" type="String" access="public" 
+        description="A free text showed in the table heading" />
+    <aura:attribute name="fieldsToDisplay" type="String" access="public"
+       description="Which fields display, entering the API fields of the Object seperated by commas (field1,field2,field3)" />
+    <aura:attribute name="inNumberOfDecimals" type="String" access="public"
+       description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+    <aura:attribute name="cssClassName" type="String" default="Vertical_Clear" access="public"
+       description="Choose a class name for the table: 'Horizontal_Grey_Space', 'Horizontal_Grey_No_Space', 'Vertical_Clear or Vertical_Grey','Row','Vertical_fourColumns'" />
+	<aura:attribute name="noRecordscustomLabelAPIname" type="String" access="public" 
+        description="A Custom Label's API Name to display when no records was found. If no Custom Label is filled then when there's no records appears the following text 'There are no records for this object'. See 'Custom Labels' in Salesforce documentation for more information." />
+	<aura:attribute name="tableMessage" type="String" access="public" 
+        description="A Custom Label's API Name to display below the table" />
+    <aura:attribute name="rowTitle" type="String" access="public" 
+        description="A Custom message to display as table title" />
+    
+	<aura:attribute name="TableHeading1" type="String" access="public" 
+        description="A free text showed in the table heading" />
+    <aura:attribute name="fieldsToDisplay1" type="String" access="public"
+       description="Which fields display, entering the API fields of the Object seperated by commas (field1,field2,field3)" />
+    <aura:attribute name="inNumberOfDecimals1" type="String" access="public"
+       description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+    <aura:attribute name="cssClassName1" type="String" default="Vertical_Clear" access="public"
+       description="Choose a class name for the table: 'Horizontal_Grey_Space', 'Horizontal_Grey_No_Space', 'Vertical_Clear or Vertical_Grey','Row','Vertical_fourColumns'" />
+	<aura:attribute name="noRecordscustomLabelAPIname1" type="String" access="public" 
+        description="A Custom Label's API Name to display when no records was found. If no Custom Label is filled then when there's no records appears the following text 'There are no records for this object'. See 'Custom Labels' in Salesforce documentation for more information." />
+	<aura:attribute name="tableMessage1" type="String" access="public" 
+        description="A Custom Label's API Name to display below the table" />
+    <aura:attribute name="rowTitle1" type="String" access="public" 
+        description="A Custom message to display as table title" />
+    
+    
+        <div class="slds-grid slds-m-right_x-small slds-m-top_x-small">
+            <div class="slds-col boxsection slds-p-around_small slds-size--1-of-2">
+                <c:DES_DetailsTable TableHeading="{!v.TableHeading}" fieldsToDisplay="{!v.fieldsToDisplay}" inNumberOfDecimals="{!v.inNumberOfDecimals}"
+                                    cssClassName="{!v.cssClassName}" noRecordscustomLabelAPIname="{!v.noRecordscustomLabelAPIname}" tableMessage="{!v.tableMessage}" rowTitle="{!v.rowTitle}" sObjectName="{!v.sObjectName}" recordId="{!v.recordId}"/>
+            </div>
+            <div class="slds-col boxsection slds-p-around_small slds-m-left_x-small slds-size--1-of-2">
+                <c:DES_DetailsTable TableHeading="{!v.TableHeading1}" fieldsToDisplay="{!v.fieldsToDisplay1}" inNumberOfDecimals="{!v.inNumberOfDecimals1}"
+                                    cssClassName="{!v.cssClassName1}" noRecordscustomLabelAPIname="{!v.noRecordscustomLabelAPIname1}" tableMessage="{!v.tableMessage1}" rowTitle="{!v.rowTitle1}" sObjectName="{!v.sObjectName}" recordId="{!v.recordId}"/>
+            </div>
+        </div>
+</aura:component>

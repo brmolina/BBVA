@@ -4,4 +4,17 @@
     <isExposed>true</isExposed>
     <masterLabel>DMT_CLIENT_GROUP_EDIT_V3</masterLabel>
     <runtimeNamespace>omnistudio</runtimeNamespace>
-    </LightningComponentBundle>
+    <targets>
+      <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        </targets>
+      <targetConfigs>
+    <targetConfig targets="lightning__RecordPage">
+                        <property name="debug" type="Boolean"></property>
+                        <property name="recordId" type="String"></property>
+                      </targetConfig><targetConfig targets="lightning__AppPage">
+                      <property name="debug" type="Boolean"></property>
+                      <property name="recordId" type="String"></property>
+                    </targetConfig>
+    </targetConfigs></LightningComponentBundle>

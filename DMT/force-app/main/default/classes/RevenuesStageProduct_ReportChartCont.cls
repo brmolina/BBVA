@@ -27,12 +27,12 @@ public with sharing class RevenuesStageProduct_ReportChartCont {//NOSONAR
     system.debug('>>>>> FUNCION getData. ID CLIENTE : ' + clientId);
     final date d = system.today().addDays(-366);//NOSONAR
     final Set<Id> setIdOppsDenormClient = new Set<Id>();//NOSONAR
-    final list<dwp_acmh__Denorm_Account_Opportunity__c> denOppList = [SELECT dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId
-                                                                                                                                                                                                               AND dwp_acmh__OpportunityId__r.CreatedDate > :d];
+    final list<AMH_Denorm_Account_Opportunity__c> denOppList = [SELECT AMH_OpportunityId__c, AMH_OpportunityId__r.Name FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId
+                                                                                                                                                                                                               AND AMH_OpportunityId__r.CreatedDate > :d];
 
-    for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : denOppList) {
-      if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-        setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+    for(AMH_Denorm_Account_Opportunity__c denOpp : denOppList) {
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)) {
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
       }
     }
 
@@ -191,9 +191,9 @@ public with sharing class RevenuesStageProduct_ReportChartCont {//NOSONAR
     system.debug('>>>>> clientId: ' + clientId);
     final date d = system.today().addDays(-366);//NOSONAR
     final Set<Id> setIdOppsDenormClient = new Set<Id>();//NOSONAR
-    for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]) {
-      if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-        setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+    for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]) {
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)) {
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
       }
     }
 

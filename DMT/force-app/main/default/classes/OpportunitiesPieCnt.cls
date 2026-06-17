@@ -25,9 +25,9 @@ public with sharing class OpportunitiesPieCnt {
     *   @author: GlobalDesktop - APC
     *   @Method: getData
     *   @Description:
-                Denorm AccOpp - dwp_acmh__Denorm_Account_Opportunity__c
-                dwp_acmh__OpportunityId__c - Lookup a Opp
-                dwp_acmh__AccountId__c - Lookup a Acc
+                Denorm AccOpp - AMH_Denorm_Account_Opportunity__c
+                AMH_OpportunityId__c - Lookup a Opp
+                AMH_AccountId__c - Lookup a Acc
                 DES_Opportunity_Expected_Probability__c
 
                 En Opp:
@@ -50,10 +50,10 @@ public with sharing class OpportunitiesPieCnt {
             System.debug('::::::stageOption ' + stageOption);
 
             Set<Id> setIdOppsDenormClient = new Set<Id>();
-            for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c
-                                                            FROM dwp_acmh__Denorm_Account_Opportunity__c
-                                                            WHERE dwp_acmh__AccountId__c = : clientId]) {
-                setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+            for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c
+                                                            FROM AMH_Denorm_Account_Opportunity__c
+                                                            WHERE AMH_AccountId__c = : clientId]) {
+                setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
             }
             System.debug('::::::setIdOppsDenormClient : ' + setIdOppsDenormClient);
 
@@ -113,10 +113,10 @@ public with sharing class OpportunitiesPieCnt {
             System.debug('::::::getRowsData init');
 
             Set<Id> setIdOppsDenormClient = new Set<Id>();
-            for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c
-                                                            FROM dwp_acmh__Denorm_Account_Opportunity__c
-                                                            WHERE dwp_acmh__AccountId__c = : clientId]) {
-                setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+            for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c
+                                                            FROM AMH_Denorm_Account_Opportunity__c
+                                                            WHERE AMH_AccountId__c = : clientId]) {
+                setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
             }
             System.debug('::::::setIdOppsDenormClient : ' + setIdOppsDenormClient);
 
@@ -476,66 +476,66 @@ public with sharing class OpportunitiesPieCnt {
     * WrapperClass to build the JSON to be sent to client-side to display table
     */
      public class WrapperClass {
-	/*
-	* oppName
-	*/
+  /*
+  * oppName
+  */
       final private String oppName; //NOSONAR
     /*
-	* prodName
-	*/
+  * prodName
+  */
       final private String prodName; //NOSONAR
       /*
-	* prodFamily
-	*/
+  * prodFamily
+  */
       final private String prodFamily; //NOSONAR
       /*
-	* oliName
-	*/
+  * oliName
+  */
       final private String oliName; //NOSONAR
-	/*
-	* expRevenue
-	*/
+  /*
+  * expRevenue
+  */
       final private Decimal expRevenue; //NOSONAR
       /*
-	* potRevenue
-	*/
+  * potRevenue
+  */
       final private Decimal potRevenue; //NOSONAR
       /*
-	* expProb
-	*/
+  * expProb
+  */
       final private String expProb; //NOSONAR
 
-	/*
-	* urlOpp
-	*/
+  /*
+  * urlOpp
+  */
       final private String urlOpp; //NOSONAR
     /*
-	* urlOli
-	*/
+  * urlOli
+  */
       final private String urlOli; //NOSONAR
-	/*
-	* urlAccount
-	*/
+  /*
+  * urlAccount
+  */
       final private String urlAccount; //NOSONAR
-	/*
-	* oppAccountName
-	*/
+  /*
+  * oppAccountName
+  */
       final private String oppAccountName; //NOSONAR
-	/*
-	* stageName
-	*/
+  /*
+  * stageName
+  */
       final private String stageName; //NOSONAR
-	/*
-	* closeDate
-	*/
+  /*
+  * closeDate
+  */
       final private Date closeDate; //NOSONAR
     /*
-	* countryBooking
-	*/
+  * countryBooking
+  */
       final private String countryBooking; //NOSONAR
     /*
-	* owner
-	*/
+  * owner
+  */
       final private String owner; //NOSONAR
     /*
     * Constructor

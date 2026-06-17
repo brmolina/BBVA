@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>editable_field_type__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Flag to manage the correct path to edit Desktop Contacts.
+The path enables this field and later it will be closed (changed to false) by a workflow rule</description>
+    <label>editable_field_type</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

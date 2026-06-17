@@ -1,4 +1,4 @@
-global without sharing class DMT_ApprovalChangeStep_Helper {
+global with sharing class DMT_ApprovalChangeStep_Helper {
 
     /*public static Map<String, Object> getFieldsFromApproveView(List<String> fields,Map<String, List<String>> fieldMapFromObject,String allFields) {
         String allFieldsAux = allFields;

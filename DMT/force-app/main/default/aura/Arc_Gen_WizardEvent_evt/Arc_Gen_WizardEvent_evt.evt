@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event used to control the New ARCE wizard behaviour" access="global">
+    <aura:attribute name="eventType" type="String"  description="String Key of the type of update in the modal "/>
+    <aura:attribute name="parameters" type="Object"  description="List of parameters to update the modal "/>
+</aura:event>

@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="breadcrumbsActive" label="breadcrumbsActive" default="True"/>
+	<design:attribute name="filial" label="Subsidiary" default="false"/>
+</design:component>

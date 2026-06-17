@@ -1,0 +1,147 @@
+<aura:component controller="dtde.GBL_DetailsTable_Ctrl"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+                access="global" >
+    <aura:attribute name="TableHeading" type="String" access="public" 
+        description="A free text showed in the table heading" />
+    <aura:attribute name="fieldsToDisplay" type="String" access="public"
+       description="Which fields display, entering the API fields of the Object seperated by commas (field1,field2,field3)" />
+    <aura:attribute name="inNumberOfDecimals" type="String" access="public"
+       description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+    <aura:attribute name="cssClassName" type="String" default="Vertical_Clear" access="public"
+       description="Choose a class name for the table: 'Horizontal_Grey_Space', 'Horizontal_Grey_No_Space', 'Vertical_Clear or Vertical_Grey','Row'" />
+<aura:attribute name="noRecordscustomLabelAPIname" type="String" access="public" 
+        description="A Custom Label's API Name to display when no records was found. If no Custom Label is filled then when there's no records appears the following text 'There are no records for this object'. See 'Custom Labels' in Salesforce documentation for more information." />
+    
+    <aura:attribute name="fieldsArray" type="Object" access="private" />
+    <aura:attribute name="complexObject" type="Object" access="private" />
+    <aura:attribute name="fieldLabels" type="String[]" access="private" />
+    <aura:attribute name="detailsComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="showComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="Vertical_Clear" type="Boolean" default="0" access="private" />
+    <aura:attribute name="Horizontal_Grey_Space" type="Boolean" access="private" />
+    <aura:attribute name="Horizontal_Grey_No_Space" type="Boolean" access="private" />
+    <aura:attribute name="Vertical_Grey" type="Boolean" access="private" />
+    <aura:attribute name="Row" type="Boolean" default="0" access="private" />
+    <aura:attribute name="RowFields" type="Boolean" default="0" access="private" />
+	<aura:attribute name="fieldLabelSize" type="Integer" access="private" />    
+    <aura:attribute name="noRecordsReturned" type="Boolean" access="private" default="false"/>
+    <aura:attribute name="NoRecordsLabelMessage" type="String" access="private"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+<div class="slds-grid slds-wrap">
+  <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-box">
+    <span>
+        
+    <aura:if isTrue="{!v.showComponent}">
+         <aura:if isTrue="{!v.Vertical_Clear}">
+            <div aura:id="changeIt" >
+                <table class="slds-card slds-table slds-resizable slds-table--col-bordered">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td border="1">
+                            <tr >
+                                 <div>
+                                  <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal slds-text-heading--medium"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                                </div>
+                            </tr>   
+                        </td>
+                    </aura:iteration>
+                </table>
+            </div>
+         </aura:if>
+        
+        <aura:if isTrue="{!v.Horizontal_Grey_Space}">
+            <div aura:id="changeIt" >
+                <table class="slds-table slds-resizable ">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card horizontal" border="1">
+                            <div >
+                                <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                </b></div>
+                           </div>
+                        </td>
+                        <aura:renderIf isTrue="{!v.fieldLabelSize != x}">
+                            <td>
+                            </td>
+                        </aura:renderIf>
+                    </aura:iteration>
+                </table>
+            </div>
+         </aura:if>
+
+        <aura:if isTrue="{!v.Horizontal_Grey_No_Space}">
+            <div aura:id="changeIt" >
+                <table class="slds-card slds-table slds-resizable slds-table--col-bordered">
+                    <tr>
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card horizontal" border="1">
+                            <div>
+                                <div class=" horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                            </div>
+                        </td>
+                    </aura:iteration>
+                    </tr>
+                </table>
+            </div>
+         </aura:if>
+
+        <aura:if isTrue="{!v.Vertical_Grey}">
+            <div aura:id="changeIt" >
+                <table class="slds-table slds-resizable">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card" >
+                            <tr>
+                                 <div>
+                                  <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                                </div>
+                            </tr>   
+                        </td>
+                    </aura:iteration>
+                </table>
+            </div>
+        </aura:if>
+            
+        <aura:if isTrue="{!v.Row}"><br/>
+            <aura:if isTrue="{!v.noRecordsReturned}">
+					{!v.noRecordscustomLabelAPIname} 
+            <aura:set attribute="else">
+	           <div aura:id="changeIt" class="slds-table--bordered slds-card slds-resizable" role="banner">
+                    <table class="slds-card slds-table slds-resizable slds-table--row-bordered" role="grid">
+                        <tr class="slds-text-title_caps">
+                          <th scope="col">
+                            <div>Waterfall value creation</div>
+                          </th>
+                          <th scope="col">
+                            <div></div>
+                          </th>
+                        </tr>
+                        <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels" >
+                            <tr class="dataRow">
+                                <td scope="col" ><div class="horizontal ">{!fieldLabels}</div></td>
+                                <td scope="col" class="slds-float_right horizontal"><div class="slds-truncate"><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/></div></td>
+                            </tr>   
+                        </aura:iteration>
+                    </table>
+            	</div>
+             </aura:set>
+            </aura:if> 
+         </aura:if>
+            
+    </aura:if>
+        
+	</span>
+  </div>
+    
+  <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+    <!-- c:DES_CustomReportChart -->
+  </div>
+</div>        
+
+</aura:component>

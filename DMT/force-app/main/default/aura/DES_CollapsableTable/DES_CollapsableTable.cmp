@@ -1,0 +1,133 @@
+<!-- 
+Parameter API name of the related object // relationship name
+Parameter API names of the fields to display (field1,field2,field3)
+Parameter API name of the lookup/master field to the parent object*?????????
+Parameter Developer name of the record type for which the componente should be displayed
+Parameter CSS Styling
+Parameter Developer name of the record type of related object to filter by // not needed if in where 
+
+API name of field to filter by*****WHERE Clause
+Value of the field to filter by*****WHERE Clause
+API name of the field to sort by (default)*****WHERE Clause
+Sort order (ascending, descending)*****WHERE Clause
+Number of records to display first view*****WHERE Clause
+-->
+
+ <aura:component controller="dtde.GBL_DynamicRelatedTableController"
+	  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+	  access="global" >
+	<!-- <aura:component controller="DES_GlobalController"
+	  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+	  access="global" > -->
+            
+            
+	<!-- These are the attributes for the input parameters-->
+	<aura:attribute name="TableHeading" type="String" access="public" 
+        description="A free text showed in the table heading" />
+	<aura:attribute name="relatedObjectName" type="String" access="public" 
+        description="Enter the Developername of the related object that you want to display." />
+	<aura:attribute name="fieldsToDisplay" type="String" access="public" 
+        description="Enter Fields separated by commas (field1,field2,field3)." />
+	<aura:attribute name="totalRowFieldsToDisplay" type="String" default="" access="public" 
+        description="Show a total row at the bottom of the table with the sum of the column data. Enter individual fields of the related object separated by commas (field1,field3), the values of these fields will appear in the total row. If it is empty, then the total row will not appear. " />
+	<aura:attribute name="labelsToDisplayFromParent" type="String" access="public" 
+        description="This is an advanced setting, it allows that the column heading displays a field of the Parent Object. Enter Fields of the Parent object separated by commas (field1,field2,field3). If you don't want to overwritte the field then you can write '-'. Example: '-,-,Name,-'." />
+	<aura:attribute name="inNumberOfDecimals" type="String" access="public" 
+        description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+	<aura:attribute name="linkToDetail" type="Boolean" default="true" access="public" 
+        description="The fields with 'Name' API Name, has a link to the related Object details. Be careful, this just apply when it exists a field in the list of 'Fields of the Related Object' with API name 'Name'." />
+	<aura:attribute name="parentRecordTypesForDisplay" type="String" access="public"
+        description="If the component is just showed for certain Record Types you can fill a list of Record Types with the developername separated by commas (recordtype1,recordtype2,...). If it is empty, then the component is showed always. See 'Record Type' in Salesforce documentation for more information." />
+	<aura:attribute name="customLabelAPIname" type="String" access="public" 
+        description="A Custom Label's API Name to display where the component is not displayed because it is no for this Record Type. If no Custom Label is filled then the component is not shown. See 'Custom Labels' and 'Record Type' in Salesforce documentation for more information." />
+	<aura:attribute name="noRecordscustomLabelAPIname" type="String" access="public" 
+        description="A Custom Label's API Name to display when no records was found. If no Custom Label is filled then when there's no records appears the following text 'There are no records for this object'. See 'Custom Labels' in Salesforce documentation for more information." />
+	<aura:attribute name="WhereClause" type="String" access="public" 
+        description="The 'where' clause to filter the object data. Example: 'where amount > 20000'" />	    
+
+	<!-- These are the component attributes -->
+	<aura:attribute name="labelMessage" type="String" access="private" /> 
+	<aura:attribute name="NoRecordsLabelMessage" type="String" access="private" />
+	<aura:attribute name="showComponentForRecType" type="Boolean" access="private" />
+	<aura:attribute name="noRecordsReturned" type="Boolean" access="private" />
+	<aura:attribute name="childObjects" type="sObject[]" access="private" />
+	<aura:attribute name="parentSobject" type="sObject[]" access="private" />
+	<aura:attribute name="fieldNames" type="String[]" access="private" />
+	<aura:attribute name="fieldLabels" type="String[]" access="private" />
+	<aura:attribute name="fieldDescription" type="String[]" access="private" />
+	<aura:attribute name="complexObject" type="Object" access="private" />
+	<aura:attribute name="showTotalsRow" type="Boolean" default="false" access="private" />
+	<aura:attribute name="showNoComponentMessage" type="Boolean" default="false" access="private" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+	<aura:if isTrue="{!v.showComponentForRecType}">
+
+    <div class="slds-page-header" style="cursor: pointer;" onclick="{!c.sectionOne}">
+      <section class="slds-clearfix">
+        <div class="slds-float--left ">
+            <lightning:icon class="slds-show icono" aura:id="articleOne" iconName="utility:chevronright" size="x-small" alternativeText="Indicates chevronright"/>
+            <lightning:icon class="slds-hide icono" aura:id="articleOne" iconName="utility:chevrondown" size="x-small" alternativeText="Indicates chevrondown"/>
+        </div>
+        <div class="slds-m-left--large titulo">{!v.TableHeading}</div>
+      </section>
+    </div>
+	<div class="slds-table--bordered  slds-card slds-resizable slds-hide slds-p-around--medium" role="banner " aura:id="articleOne">
+    <aura:if isTrue="{!v.noRecordsReturned}">
+        {!v.noRecordscustomLabelAPIname}
+    <aura:set attribute="else">    
+        <aura:if isTrue="{!v.TableHeading== 'Financial Plan'}"><br/>
+            <ui:button class="slds-float_right" label="Preview PDF" press="{!c.openPDF}"/><br/><br/>
+            <aura:set attribute="else">
+            <ui:button class="slds-float_right" label="More Details" press="{!c.openActionWindow}"/><br/><br/>
+            </aura:set>
+          </aura:if>
+		<table class="slds-table slds-table--bordered slds-table--fixed-layout" role="grid">
+			<tbody>
+				<tr class="slds-text-heading--label ">
+					<!--<th scope="col"><span class="slds-truncate">LINK</span></th>-->
+					<aura:iteration indexVar="i" items="{!v.fieldLabels}" var="fieldLabels">
+						<th scope="col"><div class="slds-truncate">{!fieldLabels}</div></th>
+					</aura:iteration>
+				</tr>
+
+				<aura:iteration indexVar="x" items="{!v.childObjects}" var="childObject" >
+					<tr>
+					<aura:iteration indexVar="i" items="{!v.fieldNames}" var="Fields">
+						<td style="overflow: hidden; text-overflow: ellipsis">
+							<c:GBL_DynamicTableField_Comp aura:id="fieldInfo" fieldIndex="{!i}" mapObject="{!v.complexObject}" Field='{!v.fieldNames}' numberOfDecimals="{!v.inNumberOfDecimals}" linkToDetail="{!v.linkToDetail}" mindex="{!x}" />
+						</td> 
+					</aura:iteration>
+					</tr> 
+				</aura:iteration>
+
+				<aura:if isTrue="{!v.noRecordsReturned}">
+					{!v.NoRecordsLabelMessage}	                                        
+				</aura:if>
+			</tbody>
+
+			<aura:if isTrue="{!v.showTotalsRow}">
+				<tr class="slds-card slds-resizable">
+					<aura:iteration indexVar="i" items="{!v.fieldNames}" var="Fields" >
+						<td><c:GBL_DynamicRelatedRow_Comp aura:id="micm" numberOfDecimals="{!v.inNumberOfDecimals}" mapObject="{!v.complexObject}" fieldName='{!Fields}'/></td>
+					</aura:iteration>
+				</tr>
+			</aura:if>
+		</table>
+        </aura:set>
+		</aura:if>
+	</div>
+
+	<!--<aura:set attribute="else">	                        	
+		<aura:if isTrue="{!v.showNoComponentMessage}">
+			{!v.labelMessage}
+		<aura:set attribute="else">	                                	
+			<aura:if isTrue="{!v.noRecordsReturned}">
+				{!v.NoRecordsLabelMessage}
+			</aura:if>
+		</aura:set>
+		</aura:if>
+	</aura:set>-->
+	</aura:if>
+
+</aura:component>

@@ -1,0 +1,22 @@
+<template>
+    <div class="language-selector-container">
+        <div class="language-buttons" role="group" aria-label={label.aiChatRobot2_LanguageSelector_Aria}>
+            <button 
+                class={spanishButtonClass}
+                onclick={handleSpanishClick}
+                aria-pressed={isSpanish}
+                type="button"
+            >
+                Spanish
+            </button>
+            <button 
+                class={englishButtonClass}
+                onclick={handleEnglishClick}
+                aria-pressed={isEnglish}
+                type="button"
+            >
+                {label.aiChatRobot2_Language_English}
+            </button>
+        </div>
+    </div>
+</template>

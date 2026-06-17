@@ -1,0 +1,48 @@
+({
+	getTableData : function(cmp) {
+		var action = cmp.get('c.getDataTable');
+        action.setParams({ clientId : cmp.get("v.recordId") });
+		action.setCallback(this, $A.getCallback(function (response) {
+			var state = response.getState();
+			if (state === "SUCCESS") {
+                var resultData = JSON.parse(response.getReturnValue());
+				console.log('>>>>> resultData.potRevenue: ' + resultData[0].potRevenue);
+                console.log(resultData);
+				cmp.set('v.myData', resultData);
+			} else if (state === "ERROR") {
+				var errors = response.getError();
+				console.error(errors);
+			}
+		}));
+		$A.enqueueAction(action);
+	},    
+    sortData: function (cmp, fieldName, sortDirection) {
+        var data = cmp.get("v.myData");
+        var reverse = sortDirection !== 'asc';
+        //sorts the rows based on the column header that's clicked
+        data.sort(this.sortBy(fieldName, reverse))
+        cmp.set("v.myData", data);
+    },
+    sortBy: function (field, reverse, primer) {
+        var key = primer ?
+            function(x) {return primer(x[field])} :
+            function(x) {return x[field]};
+        //checks if the two rows should switch places
+        reverse = !reverse ? 1 : -1;
+        return function (a, b) {
+            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        }
+    },
+    getUserISOCode: function(cmp){
+        var action = cmp.get("c.getCurrentUserISOCode");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var storeResponse = response.getReturnValue();
+               // set current user information on userInfo attribute
+                cmp.set("v.userISOCode", storeResponse);
+            }
+        });
+        $A.enqueueAction(action);
+    }
+})

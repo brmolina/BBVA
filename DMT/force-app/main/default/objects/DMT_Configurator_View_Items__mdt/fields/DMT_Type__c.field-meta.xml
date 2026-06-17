@@ -25,6 +25,11 @@
                 <default>false</default>
                 <label>Opportunity</label>
             </value>
+            <value>
+                <fullName>Line_Sanction</fullName>
+                <default>false</default>
+                <label>Line Sanction</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

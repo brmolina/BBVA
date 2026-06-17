@@ -24,11 +24,6 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               @track _sessionApiVars = {};
               @track Label={dmt_cl_ProfitabilityConVariables_Text:"Profitability configuration variables",
         dmt_cl_ProfitabilityMatrixVariables_Text:"Profitability matrix variables",
-        dmt_cl_ProfSelectXAsis:"Select X Axis",
-        dmt_cl_ProfMin_Text:"Min",
-        dmt_cl_ProfRange:"Range",
-        dmt_cl_ProfSelectYAsis:"Select Y Axis",
-        dmt_cl_ProfSelectCentralAsis:"Select central axis",
         dmt_cl_ProfCalculateButton_Text:"Calculate",
         dmt_cl_ProfMatrixMessage_Text:"Changes have been made to the matrix variables, please calculate again."
         };
@@ -72,12 +67,20 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName0,this.customEvent[0]);
 
           
+            this.customEventName1 = interpolateWithRegex(`amountsUpdated`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[2],2);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
 
               }
             

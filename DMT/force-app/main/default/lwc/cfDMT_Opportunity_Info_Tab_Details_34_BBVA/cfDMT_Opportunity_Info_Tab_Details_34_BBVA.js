@@ -36,11 +36,6 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 
                 this.setDefinition(data);
  this.registerEvents();
-                this.setAttribute(
-                  "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L4pzYAC"
-                );
-                this.loadCustomStylesheetAttachement("00PKG000003SPcK2AW");
                 
                 
               }
@@ -65,25 +60,10 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`DMT_Opportunity_Info_Tab_Details`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
-        this.pubsubEvent[1] = {
-          [interpolateWithRegex(`event`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[5],5)
-        };
-        this.pubsubChannel1 = interpolateWithRegex(`close_lwc`,this._allMergeFields,this._regexPattern,"noparse");
-        pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
-
-            this.customEventName0 = interpolateWithRegex(`line_saved`,this._allMergeFields,this._regexPattern,"noparse");
-            this.customEvent[0] = this.handleEventAction.bind(this, data.events[6],6);
-
-            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
-
-          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
-pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
-
-            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
               }
             

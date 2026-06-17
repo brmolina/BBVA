@@ -28,7 +28,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                   }
               @track record;
               @track _sessionApiVars = {};
-              
+              @track Label={dmt_cl_Clients_Filter_Text:"CLIENTS FILTER",
+        dmt_cl_DataFrom_Text:"Data from:",
+        dmt_cl_LinesTab_Text:"LINES",
+        dmt_cl_OpportunitiesTab_Text:"OPPORTUNITIES",
+        dmt_cl_ProfitabilityTestTab_Text:"PROFITABILITY TEST",
+        dmt_cl_SelectLineType_Text:"Select the type of Line:",
+        dmt_cl_SelectLineStatus_text:"Select Line Status:",
+        dmt_cl_SelectOpportunityStatus_Text:"Select Opportunity Status:",
+        dmt_cl_recalculationLine:"Refresh",
+        dmt_cl_toastRecalculationErrorMessage:"An error occurred while refreshing. Please try again later.",
+        dmt_cl_toastRecalculationSuccessMessage:"The refresh has been successfully completed."
+        };
               pubsubEvent = [];
               customEvent = [];
               
@@ -39,14 +50,15 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                
+                this.customLabels = this.Label;
+                      
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L3RGYA0"
+                  " card-0koKN0000008X5kYAE"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003QhOq2AK");
+                this.loadCustomStylesheetAttachement("00PKN00000479Zg2AI");
                 
                 
               }

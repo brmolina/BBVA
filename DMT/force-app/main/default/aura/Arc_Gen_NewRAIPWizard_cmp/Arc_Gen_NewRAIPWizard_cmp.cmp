@@ -1,0 +1,226 @@
+<!--
+  @Component Name     : Arc_Gen_NewAnalysis_modal.cmp
+  @Description        : Wizard for the creation of a new RAIP (also used for selecting a new FFSS for a RAIP).
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : amunguia.contractor@bbva.com
+  @Last Modified On   : 06-22-2021
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    XX/04/2020                  ARCE TEAM     		        Initial Version
+  1.1    06/05/2020      joseluis.garcia4.contractor@bbva.com   Adds triage engine call.
+  1.2    19/05/2020      joseluis.garcia4.contractor@bbva.com   Add resume ARCE functionality for RAIP.
+  1.3    19/05/2020      joseluis.garcia4.contractor@bbva.com   "Only pre-rating available" text converted to label.
+  1.4    19/05/2020      joseluis.garcia4.contractor@bbva.com   Show risk segment in out-of-scope text.
+  1.5    18/12/2020      juanignacio.hita.contractor@bbva.com   Add call to risk filter service, callRiskFilterService method.
+  1.6    01/03/2021      juanpedro.benito.contractor@bbva.com   Add new step for IRP v2 Workflow.
+  1.65   08/03/2021      saimassimilianno.jordana.contractor@bbva.com   Fixing EEFF button behavior with new IRP workflow (helper).
+  1.69   19/04/2021      amunguia.contractor@bbva.com   show messages by platform event
+  1.66   30/03/2021      saimassimilianno.jordana.contractor@bbva.com   Add Arc_Gen_IRPTypeSelector component to see new select tool view.
+  1.67   11/05/2021      saimassimilianno.jordana.contractor@bbva.com   Add new parameter tu Arc_Gen_IRPTypeSelector component to select rarRatingTool for CRP flow.
+  1.68   12/05/2021      otiliaramona.veres.contractor@bbva.com Created a new method in the helper file to avoid duplicated code from the controller file.
+  1.69   20/08/2021      saimassimilianno.jordana.contractor@bbva.com Fixing FFSS Button behavior with globalRunWay new development.
+  1.70   04/10/2021      otiliaramona.veres.contractor@bbva.com Added alert on EEFF less tahn 100 mil €
+  1.71   05/10/2021      juanignacio.hita.contractor@bbva.com    Adds step triage custom configuration
+  1.72   02/11/2021      juanignacio.hita.contractor@bbva.com    Add checkRatingToolId to show or hidde options rating buttons.
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" controller="Arc_Gen_RatingAsIndepProcess_controller" >
+    <aura:attribute name="recordId" type="String" default="{!v.recordId}" description="Standard id of the current record" access="global"/>
+    <aura:attribute name="customerId" type="String" access="public" description="Standard id of the object Account"/>
+    <aura:attribute name="actualClient" type="Object" access="public" description="Account record of the actual client"/>
+    <aura:attribute name="analysisId" type="String" access="public" description="Standard Id of the object arce__Analysis__c"/>
+    <aura:attribute name="accHasAnalysisId" type="String" access="public" description="Standard Id of the object arce__Account_has_Analysis__c"/>
+    <aura:attribute name="changeFfssMode" type="Boolean" default="false" description="Indicates if the ffss is available to update"/>
+    <lightning:empApi aura:id="empApi" />
+    <aura:attribute name="arceIdToResume" type="String" default="" description="Salesforce ID of the ARCE to resume" />
+    <aura:attribute name="channel" type="String" default="/event/arce__persistanceCallbackEvent__e" />
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="notifications" type="List" />
+    <aura:attribute name="isDisabled" type="Boolean" default ="false" description=""/>
+
+    <aura:attribute name="initialized" type="Boolean" default="false" description="Indicates if the component is initialized"/>
+    <aura:attribute name="existentAnalysis" type="Boolean" description="Indicates if there is a previous analysis"/>
+    <aura:attribute name="clientNumber" type="String" description="Number of the client account"/>
+    <aura:attribute name="ffssValid" type="Boolean" description="indiates if the ffss is valid to calculate a rating"/>
+    <aura:attribute name="ffssSelected" type="Boolean" description="indicates if the ffss is selected"/>
+    <aura:attribute name="arceInScope" type="Boolean" description="Indicates if the arce is in scope"/>
+    <aura:attribute name="riskSegment" type="String" description="Is the segment of the arce"/>
+
+    <aura:attribute name="ratingTypeOptions" type="List"  description="Rating type options" />
+    <aura:attribute name="ratingType" type="String" default="Rating" description="Indicates if the raip is a rating or a prerating"/>
+    <aura:attribute name="ratingToolStepEnabled" type="Boolean" description="Indicates if the rating tool modal is enabled"/>
+    <aura:attribute name="ratingToolOptions" type="List" description="List of the rating tools to show"/>
+    <aura:attribute name="ratingTool" type="String" description="Rating tool"/>
+    <aura:attribute name="ratingToolSlctd" type="String" description="Rating tool"/>
+    <aura:attribute name="ratingToolSlctdOver" type="String" description="Rating tool overwrite value"/>
+    <aura:attribute name="ratingToolOptionsOver" type="List" description="Overwrite list of the rating tools to show"/>
+
+    <aura:attribute name="globalRunWayStepEnabled" type="Boolean" default="false" description="Indicates if the globalRunWay step is enabled"/>
+    <aura:attribute name="blockLocalOption" type="Boolean" default="false" description="Indicates if the redirect to global org option is enabled"/>
+    <aura:attribute name="blockYES" type="Boolean" description="Indicates if the redirect to global org option is enabled"/>
+    <aura:attribute name="redirectToExternalOrg" type="String" description="Indicates if next button redirects to global org"/>
+    <aura:attribute name="orgURL" type="String" description="Indicates url to login the global org"/>
+    <aura:attribute name="vfURL" type="String" description="Indicates url to the visualforce page in the global org"/>
+    <aura:attribute name="globalCustomerId" type="String" description="Indicates url to the visualforce page in the global org"/>
+
+
+    <aura:attribute name="isRAIPSelectWorkflow" type="Boolean" default="false" description="indicates RAIPSelectWorkflow metadata value"/>
+    <aura:attribute name="RAIPSelectComboValue" type="String" default="00"/>
+    <aura:attribute name="IRPRarRatingTool" type="String"/>
+    <aura:attribute name="options" type="List" access="global"/>
+    <aura:attribute name="dataCorp" type="object"/>
+    <aura:attribute name="corpRenewal" type="String"/>
+
+
+    <aura:attribute name="currentStep" type="String" default="globalRunWay" description="Indicates the current step of the modal"/>
+    <aura:attribute name="optionsMdls" type="List"/>
+    <aura:attribute name="modlSlctd" type="String" default="2012P1"/>
+    <aura:attribute name="irpTypeSlctd" type="String"/>
+    <aura:attribute name="rtngToolSlctd" type="String"/>
+    <aura:attribute name="overRtngToolSlctd" type="String" description="Overwrite rating tool value"/>
+
+    <aura:attribute name="preStepTriage" default="false" type="Boolean" description="indicates pre step triage config is enabled"/>
+    <aura:attribute name="postStepTriage" default="false" type="Boolean" description="indicates post step triage config is enabled"/>
+    <aura:attribute name="stepTriageConfig" type="String" description="indicates step triage config name activated"/>
+    <aura:attribute name="interfaceFlowTriage" type="String" description="name interface flow step triage"/>
+    <aura:attribute name="rtngToolType" type="String" default="TOOL" description="rating tool type selected"/>
+    <aura:attribute name="warningEEFF" type="List" />
+    <aura:attribute name="profilingSet" type="String"/>
+    <aura:attribute name="typeSelected" type="String" description="Type of analysis selected in newModal"/>
+
+    <aura:attribute name="isSalesEngine" type="Boolean" description="indiates if the the sales service is OK" />
+    <aura:attribute name="isCallSales" type="Boolean" default="false"  description="indiates if the the sales service is OK" />
+    <aura:attribute name="showErrorSales" type="Boolean" description="indiates if show sales message" />
+    <aura:attribute name="ffssSelectedEngine" type="String" description="indicates if the ffss is selected" default="false" />
+    <aura:attribute name="engineError" type="String" description="Message to show if the engine service failed" />
+    <aura:attribute name="loading" type="Boolean" default="false" description="Indcates that a process is running" />
+    <aura:attribute name="msgTable" type="String" description="If yes, the balance tables were updated successfully"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="ffssSelectionEvent" event="c:Arc_Gen_RAIP_SelectFFSS_evt" action="{!c.handleFfssSelection}" />
+    <aura:handler name="change" value="{!v.RAIPSelectComboValue}" action="{!c.handleChange}"/>
+    <aura:handler name="change" value="{!v.IRPRarRatingTool}" action="{!c.handleChange}"/>
+
+    <aura:registerEvent name="wizardEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+
+    <aura:method name="onNext" action="{!c.handleNext}" />
+    <aura:method name="onBack" action="{!c.handleBack}" />
+    <aura:if isTrue="{!v.initialized}">
+
+        <!-- Step 1. globalRunWay. -->
+        <aura:if isTrue="{!v.currentStep == 'globalRunWay'}">
+            <div class="slds-form slds-m-horizontal_x-large slds-m-vertical_medium">
+                <fieldset class="slds-form-element">
+                    <div class="slds-align_absolute-center">
+                        <legend class="slds-form-element__legend slds-form-element__label">{!$Label.c.Arc_Gen_RAIP_GBL_redirect_Question}
+                            <lightning:helptext content="{!$Label.c.Arc_Gen_RAIP_GBL_redirect_tooltip}"/>
+                        </legend>
+                    </div>
+                    <div class="slds-clearfix slds-align_absolute-left">
+                        <div class="slds-form-element__control">
+                            <lightning:input type="radio" label="{!$Label.c.Arc_Gen_RAIP_GBL_redirect_Yes}" name="options" value="2" onchange="{!c.handleRedirectChange}" disabled="{!v.blockYES}"/>
+                            <lightning:input type="radio" label="{!$Label.c.Arc_Gen_RAIP_GBL_redirect_No}" name="options" value="1" onchange="{!c.handleRedirectChange}" disabled="{!v.blockLocalOption}"/>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <form id="Formulario" aura:id="Formulario" target="_blank" method="POST" action="{!v.vfURL}">
+                <input id="customerId" type="hidden" name="customerId" value="{!v.globalCustomerId}"/>
+            </form>
+        </aura:if>
+
+        <!-- Step 2A. (Optional) Rating type tool selection (manual pre-triage) -->
+        <aura:if isTrue="{!v.currentStep == 'preTool'}">
+            <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                <lightning:combobox name="sector" label="{!$Label.c.Arc_Gen_RatingModel}" value="{!v.ratingToolSlctd}" placeholder="{!$Label.c.Arc_Gen_ChooseOption}" options="{!v.ratingToolOptions}" onchange="{!c.handleRatingToolChange}" disabled="{!v.isDisabled}"/>
+                <br/><br/><br/>
+            </div>
+        </aura:if>
+
+        <!-- Step 2. FFSS and rating type selection. -->
+        <aura:if isTrue="{!v.currentStep == 'ffss'}">
+            <div class=" slds-form-element slds-col slds-size_1-of-1 slds-p-around_none slds-m-around_none">
+                <c:Arc_Gen_ModalFinanStatem aura:id="ffss-table" accHasAnalysisId="{!v.accHasAnalysisId}" isRAIP="True" ratingToolSelect="{!v.ratingToolSlctd}" msgTable="{!v.msgTable}"/>
+            </div>
+            <aura:if isTrue="{!v.ffssSelected}">
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-vertical_small slds-p-horizontal_medium">
+                    <aura:if isTrue="{!v.ffssValid}">
+                        <lightning:radioGroup name="radioButtonGroup" variant="label-hidden" onchange="{!c.handleRatingTypeChange}"
+                            label="Select a rating type: " options="{!v.ratingTypeOptions}" value="{!v.ratingType}" type="button" />
+
+                        <aura:set attribute="else">
+                            <em>{!$Label.c.Arc_Gen_PreratingOnlyAvailable}</em>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!not(empty(v.warningEEFF))}">
+                <div class="slds-m-horizontal_medium" role="alert">
+                    <div id="warningId" class="container-alert">
+                        <div>
+                            <lightning:icon iconName="utility:notification" title="alert" size="x-small"/>
+                        </div>
+                        <div>
+                            <aura:iteration items="{!v.warningEEFF}" var="item">
+                                <p>{!item}</p>
+                            </aura:iteration>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.loading}">
+                <div class="slds-is-relative slds-var-p-vertical_x-large spinner-container" aura:id="group-spinner">
+                    <lightning:spinner alternativeText="{!$Label.c.Lc_arce_Loading}" size="small"/>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.showErrorSales}">
+                <aura:if isTrue="{!!v.isSalesEngine}">
+                    <arce:Arc_Gen_ChatMessages_cmp title=""
+                    assistiveText="{!v.engineError}" variant="Error"
+                    message="{!v.engineError}" />
+                </aura:if>
+            </aura:if>
+        </aura:if>
+
+        <!-- Step 3. Rating model selection (to be replaced with triage call). -->
+        <aura:if isTrue="{!v.currentStep == 'tool'}">
+            <aura:if isTrue="{!v.stepTriageConfig == 'BOTH'}">
+                    <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                        <lightning:combobox name="sector" label="Rating tool" value="{!v.ratingToolSlctd}" placeholder="{!$Label.c.Arc_Gen_ChooseOption}" options="{!v.ratingToolOptions}" onchange="{!c.handleRatingToolChange}" disabled="{!v.isDisabled}"/>
+                        <br/>
+                        <lightning:combobox name="ratingOverwrite" label="Rating tool overwrite" value="{!v.ratingToolSlctdOver}" placeholder="{!$Label.c.Arc_Gen_ChooseOption}" options="{!v.ratingToolOptionsOver}" onchange="{!c.handleOverRatingToolChange}" disabled="false"/>
+                    </div>
+                <aura:set attribute="else">
+                    <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                        <lightning:combobox name="sector" label="Rating tool" value="{!v.ratingToolSlctd}" placeholder="{!$Label.c.Arc_Gen_ChooseOption}" options="{!v.ratingToolOptions}" onchange="{!c.handleRatingToolChange}" disabled="{!v.isDisabled}"/>
+                        <br/><br/><br/>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </aura:if>
+
+        <!-- Step 1OR New IRP Process selection. -->
+        <aura:if isTrue="{!v.currentStep == 'selectRAIPWf'}">
+            <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                <c:Arc_Gen_IRPTypeSelector participantType="{!v.actualClient.participantType}" optionsWF="{!v.options}" processSelected="{!v.RAIPSelectComboValue}" model="{!v.modlSlctd}" rarRtngSelected="{!v.IRPRarRatingTool}" isDisabled="{!v.isDisabled}"/>
+            </div>
+        </aura:if>
+
+        <!-- Renew or create new corp analysis. -->
+        <aura:if isTrue="{!v.currentStep == 'corpRenewal'}">
+            <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                <c:Arc_Gen_CorpRenewal data="{!v.dataCorp}" isRenew="{!v.corpRenewal}"/>
+            </div>
+        </aura:if>
+
+        <!-- Step 1OR Model Selection. -->
+        <aura:if isTrue="{!v.currentStep == 'selectModel'}">
+            <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                <lightning:combobox name="model" label="Select Model" disabled="{!v.isDisabled}" value="{!v.modlSlctd}" options="{!v.optionsMdls}" onchange="{!c.selectModl}"/>
+                <br/><br/><br/>
+            </div>
+        </aura:if>
+    </aura:if>
+</aura:component>

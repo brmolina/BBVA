@@ -1,0 +1,37 @@
+<template>
+    <div class="list-root" onscroll={onScroll}>
+        <template if:true={hasMessages}>
+            <template for:each={messagesWithFlags} for:item="m">
+                <template if:true={m._isReport}>
+                    <c-ai-chat-robot2-inline-report
+                        key={m.id}
+                        hide-expand-button={hideExpandButton}
+                        onopeninmodal={handleOpenReportInModal}>
+                    </c-ai-chat-robot2-inline-report>
+                </template>
+                <template if:false={m._isReport}>
+                    <c-ai-chat-robot2-message 
+                        key={m.id} 
+                        message={m} 
+                        is-welcome={m._isWelcome} 
+                        show-actions={showActionsFlag}
+                        conversation-id={conversationId}
+                        user-id={userId}
+                        user-country={userCountry}
+                        user-segment={userSegment}>
+                    </c-ai-chat-robot2-message>
+                </template>
+            </template>
+        </template>
+
+
+        <template if:true={isThinking}>
+            <div class="typing thinking">
+                <span class="sparkles-svg" lwc:dom="manual"></span>
+                <span class="thinking-label" aria-live="polite">{label.aiChatRobot2_Thinking}</span>
+            </div>
+        </template>
+        <!-- Persistent bottom anchor to ensure reliable scrollIntoView -->
+        <div class="bottom-anchor" data-anchor="bottom" aria-hidden="true"></div>
+    </div>
+</template>

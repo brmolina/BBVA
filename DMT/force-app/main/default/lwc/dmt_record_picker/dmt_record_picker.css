@@ -1,0 +1,15 @@
+:host {
+    display: block;
+    /* Force the component to stay within the 32px height of the table row */
+    height: 32px;
+    /* Remove any default margins that push the cell boundaries */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Ensure the standard record picker doesn't add its own internal spacing */
+lightning-record-picker {
+    height: 32px;
+    --slds-c-input-spacing-horizontal-start: 12px;
+    margin-bottom: 0 !important;
+}

@@ -25,21 +25,21 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
     @AuraEnabled
     public static String getData(String clientId) {
         try {
-		    final Set<Id> setIdOpps = new Set<Id>();
-		    for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]) {
-		  		if(!setIdOpps.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-		        	setIdOpps.add(denOpp.dwp_acmh__OpportunityId__c);
-		  		}
-	    	}
+        final Set<Id> setIdOpps = new Set<Id>();
+        for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]) {
+          if(!setIdOpps.contains(denOpp.AMH_OpportunityId__c)) {
+              setIdOpps.add(denOpp.AMH_OpportunityId__c);
+          }
+        }
 
-    		system.debug('>>>>> setIdOpps : ' + setIdOpps);
+        system.debug('>>>>> setIdOpps : ' + setIdOpps);
         //Rec0j0 todos los 0pportunity Pr0ducts que pertenezcan a alguna 0p0rtunidad de la cu3nta de la t4bla Desn0rmalizada
         final List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                      SELECT DES_Product_Family__c,
                                             Opportunity.region_name__c,
                                             toLabel(Opportunity.DES_Booking_Geography__c),
                                             convertCurrency(pre_oppy_revenue_next_12m_amount__c),
-            								convertCurrency(DES_Expected_Revenue__c),
+                            convertCurrency(DES_Expected_Revenue__c),
                                             OpportunityId,
                                             Opportunity.Name,
                                             Opportunity.AccountId,
@@ -62,16 +62,16 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
                 if(opli.DES_Expected_Revenue__c != null) {
                   mapGeoFamilyExpReve(opli,mapPais);
                 }
-          		setFams.add(opli.DES_Product_Family__c);
-       		}
+              setFams.add(opli.DES_Product_Family__c);
+           }
         }//FIN !listOppProduct.isEmpty()
 
         mapFamCol = getFamilyColor(setFams);
-	    final WrapperGlobalData wrapperGlobal = new WrapperGlobalData(mapFamCol, mapPais);
-	    return JSON.serialize(wrapperGlobal);
+      final WrapperGlobalData wrapperGlobal = new WrapperGlobalData(mapFamCol, mapPais);
+      return JSON.serialize(wrapperGlobal);
         } catch(Exception exc) {
-			throw new AuraHandledException(Label.DES_Error + exc);
-		}
+      throw new AuraHandledException(Label.DES_Error + exc);
+    }
     }
 
     /*
@@ -82,14 +82,14 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
         //Mapa que tiene como key la Famlia y como value el Potencial revenue asociado
         final Map<String, Double> mapFPPR;//NOSONAR
         if(opli.Opportunity.DES_Booking_Geography__c != null && opli.DES_Product_Family__c!=null) {
-        	System.debug('opli = '+opli);
+          System.debug('opli = '+opli);
             if(mapPais.get(opli.Opportunity.DES_Booking_Geography__c) == null) {
-            	mapFPPR = new Map<String, Double>();
+              mapFPPR = new Map<String, Double>();
                 mapFPPR.put(opli.DES_Product_Family__c,  opli.DES_Expected_Revenue__c);
                 mapPais.put(opli.Opportunity.DES_Booking_Geography__c, mapFPPR);
             } else {
                 if (mapPais.get(opli.Opportunity.DES_Booking_Geography__c).get(opli.DES_Product_Family__c) == null) {
-                	mapFPPR = mapPais.get(opli.Opportunity.DES_Booking_Geography__c);
+                  mapFPPR = mapPais.get(opli.Opportunity.DES_Booking_Geography__c);
                     mapFPPR.put(opli.DES_Product_Family__c,  opli.DES_Expected_Revenue__c);
                     mapPais.put(opli.Opportunity.DES_Booking_Geography__c, mapFPPR);
                 } else {
@@ -99,7 +99,7 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
                     mapPais.put(opli.Opportunity.DES_Booking_Geography__c, mapFPPR);
                 }
            }
-    	}
+      }
     }
     /*
     * @author Global Desktop
@@ -112,11 +112,11 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
         system.debug('listFamColor: ' + listFamColor);
 
         if(!listFamColor.isEmpty()) {
-        	for(Product_Family__mdt fam : listFamColor) {
-        		if(fam.DeveloperName != null && fam.Color__c != null && mapFamColor.get(fam.DeveloperName) == null) {
-                	mapFamColor.put(fam.DeveloperName, fam.Color__c);
+          for(Product_Family__mdt fam : listFamColor) {
+            if(fam.DeveloperName != null && fam.Color__c != null && mapFamColor.get(fam.DeveloperName) == null) {
+                  mapFamColor.put(fam.DeveloperName, fam.Color__c);
                 }
-           	}
+             }
         }
         return mapFamColor;
     }
@@ -156,7 +156,7 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
     }
 
 
-	/*
+  /*
     * @author Global Desktop
     * @description Recoge los datos de los productos de las oportunidades relacionadas con el cliente
     */
@@ -165,16 +165,16 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
         system.debug('>>>>> clientId: ' + clientId);
         final date lastyear = system.today().addDays(-366);
         final Set<Id> setIdOpps = new Set<Id>();
-    	for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]) {
-      		if(!setIdOpps.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-        		setIdOpps.add(denOpp.dwp_acmh__OpportunityId__c);
-      		}
-    	}
+      for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]) {
+          if(!setIdOpps.contains(denOpp.AMH_OpportunityId__c)) {
+            setIdOpps.add(denOpp.AMH_OpportunityId__c);
+          }
+      }
         //Rec0j0 todos los 0pportunity Pr0ducts que pertenezcan a alguna 0p0rtunidad de la cu3nta de la t4bla Desn0rmalizada
         final List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                     SELECT  DES_Product_Family__c,
                                             convertCurrency(pre_oppy_revenue_next_12m_amount__c),
-            								convertCurrency(DES_Expected_Revenue__c),
+                            convertCurrency(DES_Expected_Revenue__c),
                                             Product2Id,
                                             Product2.Name,
                                             OpportunityId,
@@ -198,7 +198,7 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
         return JSON.serialize(listWrapper);
     }//FIN getOppProduct
 
-	/*
+  /*
     * @author Global Desktop
     * @description Recoge el Iso code del usuario logado
     */
@@ -208,7 +208,7 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
     }
 
 
-	/*
+  /*
     * @author Global Desktop
     * @description Construye la wrapper list que se devuelve al componente lightning
     */
@@ -261,7 +261,7 @@ public with sharing class PotRevenuesByRegionProductCnt {//NOSONAR
       * createdDate para crear el createdDate
       */
       final private DateTime createdDate;
-	/*
+  /*
     * Met0d0 para crear el wrapp
     */
       public WrapperClass(Opportunity opp, String oppName, Product2 product, String prodName, String prodFam, Decimal potRevenue, Decimal expRevenue) {

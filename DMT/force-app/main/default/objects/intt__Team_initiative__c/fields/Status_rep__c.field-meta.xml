@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_rep__c</fullName>
+    <description>Status from the Parent Initiative or the Account Campaign for reports</description>
+    <externalId>false</externalId>
+    <formula>IF(
+ NOT( ISBLANK( intt__campaign_id__c ) )
+,
+  TEXT( intt__campaign_id__r.Status )
+,
+  TEXT( intt__gf_group_campaign_id__r.cond__Campaign_status_approval_type__c )
+)</formula>
+    <label>Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

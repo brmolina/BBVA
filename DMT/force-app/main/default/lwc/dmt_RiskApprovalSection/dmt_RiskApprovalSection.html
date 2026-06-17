@@ -1,25 +1,36 @@
 <template>
-    <div class="radio-container">
+    <div>
 
-        <!-- Radio Group -->
-        <lightning-radio-group
-            name="riskType"
-            options={options}
-            value={selectedOption}
-            type="radio"
-            onchange={handleOptionChange}
-            disabled={isReadOnly}>
+        <!-- Botones tipo radio -->
+        <lightning-button-group>
+            <lightning-button
+                label="Limit"
+                data-value="Limit"
+                onclick={handleLimitClick}
+                variant={variantLimit}
+                disabled={isReadOnly}>
 
-        </lightning-radio-group>
+            </lightning-button>
 
-        <!-- Link alineado con el radio "Line" -->
+            <lightning-button
+                label="Line"
+                data-value="Line"
+                onclick={handleLineLinkClick}
+                variant={variantLine}
+                disabled={isReadOnly}>
+
+            </lightning-button>
+            
+        </lightning-button-group>
         <template if:true={showLine}>
-            <span
-                class="line-link"
-                onclick={handleLineLinkClick}>
-                {lineName}
-            </span>
-        </template>
+                <span
+                    class="line-link"
+                    onclick={handleLineLinkClick}>
+                    {lineName}
+                </span>
+            </template>
+        <!-- Link alineado con el radio "Line" -->
+       
 
     </div>
 </template>

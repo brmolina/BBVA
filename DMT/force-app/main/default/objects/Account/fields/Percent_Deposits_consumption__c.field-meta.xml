@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Percent_Deposits_consumption__c</fullName>
+    <description>% ​Deposits consumption / Deposits limit</description>
+    <formula>if( Deposits_limit__c &lt;&gt; 0,( Derivatives_consumption__c / Deposits_limit__c ) * 100 ,0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>% ​Deposits consumption / Deposits limit</inlineHelpText>
+    <label>% ​Deposits consumption</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Percent</type>
+</CustomField>

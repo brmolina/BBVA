@@ -1,0 +1,125 @@
+<aura:component controller="Close_Lost_Opportunity_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes" access="GLOBAL">
+  <aura:attribute name="recordId" type="Id"/>
+  <aura:attribute name="confirm_opportunity" type="Boolean" default="false"/>
+  <aura:attribute name="save_disabled" type="Boolean" default="true"/>
+  <aura:attribute name="isModalOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen2" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isMoreThan10M" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="status_of_action" type="String" default="StageName"/>
+  <aura:attribute name="status_of_action_options" type="List" default="[]"/>
+  <aura:attribute name="status_of_action_value" type="Object"/>
+
+  <aura:attribute name="reasons_lost" type="String" default="DES_Reasons_Lost__c"/>
+  <aura:attribute name="reasons_lost_options" type="List" default="[]"/>
+  <aura:attribute name="reasons_lost_value" type="Object"/>
+
+  <aura:attribute name="opportunity" type="Object"/>
+
+  <aura:attribute name="description_value" type="String" access="private"/>
+  <aura:attribute name="nodescription" type="String" access="private" default="false"/>
+
+  <!-- <aura:attribute name="fieldsParam" type="String" default="gf_nps_sv_cust_prfsnl_seg_desc__c,gf_nps_survey_cust_tier_desc__c,gf_nps_sv_cust_rev_ind_type__c"/> -->
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+  <aura:if isTrue="{!v.isModalOpen}">
+    <div class="modal-custom-style">
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+              onclick="{!c.closeModal}"
+              alternativeText="close"
+              variant="bare-inverse"
+              class="slds-modal__close"/>
+              <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Close Lost</h2>
+          </header>
+
+          <aura:if isTrue="{!v.isOpen}">
+            <lightning:recordEditForm aura:id="recordEditForm"
+                recordId="{!v.recordId}"
+                objectApiName="Opportunity"
+                onsubmit="{!c.continue}">
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <lightning:select name="status_of_action" label="Status of Action" aura:id="status_of_action" required="true" disabled="true" value="{!v.status_of_action_value}">
+                  <aura:iteration items="{!v.status_of_action_options}" var="status_of_action_option">
+                    <option text="{!status_of_action_option.label}" value="{!status_of_action_option.value}" selected="{!'Closed Lost'==status_of_action_option.value}"/>
+                  </aura:iteration>
+                </lightning:select>
+                <br/>
+
+                <lightning:select name="reasons_lost" label="Reasons Lost" aura:id="reasons_lost" required="true" value="{!v.reasons_lost_value}">
+                  <aura:iteration items="{!v.reasons_lost_options}" var="reasons_lost_option">
+                    <option text="{!reasons_lost_option.label}" value="{!reasons_lost_option.value}" selected="{!reasons_lost_option.selected}"/>
+                  </aura:iteration>
+                </lightning:select>
+                <br/>
+
+                <lightning:textarea aura:id="description" name="description" required="true" value="{!v.description_value}" label="Additional description for lost deal"/>
+                <br/>
+
+                <footer class="slds-modal__footer bottom">
+                  <lightning:button class="slds-float_left" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                  <lightning:button variant="brand" label="Continue" title="Continue" type="submit"/>
+                </footer>
+              </div>
+            </lightning:recordEditForm>
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen2}">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+              <p style="color:#bf0201; text-align: center">Remember that an opportunity cannot be modified or deleted after it's been closed.</p>
+              <br/>
+
+              <table style="margin-left: 5%" class="table">
+                <tr>
+                  <td><p>Opportunity Name</p></td>
+                  <td><p>{!v.opportunity.name}</p></td>
+                </tr>
+                <tr>
+                  <td><p>Booking Geography</p></td>
+                  <td><p>{!v.opportunity.booking}</p></td>
+                </tr>
+                <tr>
+                  <td><p>Currency</p></td>
+                  <td><p>{!v.opportunity.iCurrency}</p></td>
+                </tr>
+                <tr>
+                  <td><p>Total Potential Revenues</p></td>
+                  <td><p>{!v.opportunity.totalPotentialRev}</p></td>
+                </tr>
+                <tr>
+                  <td><p>Total Expected Revenues</p></td>
+                  <td><p>{!v.opportunity.totalExpectedRev}</p></td>
+                </tr>
+              </table>
+              <br/>
+
+              <lightning:input style="margin-left: 5%"
+                value="{!v.confirm_opportunity}"
+                checked="{!v.confirm_opportunity}"
+                type="checkbox"
+                aura:id="confirm_opportunity"
+                label="All the details from the opportunity are correct"
+                onchange="{!c.save_enable}"
+                name="confirm_opportunity"/>
+              <br/>
+
+              <aura:if isTrue="{!v.isMoreThan10M}">
+                <p style="color:#bf0201; text-align: center">Potential Revenues next 12 months are over 10M EUR/USD. Please, check if this information is correct before closing the opportunity.</p>
+                <br/>
+              </aura:if>
+
+              <footer class="slds-modal__footer bottom">
+                <lightning:button class="slds-float_left" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                <lightning:button variant="brand" label="Save" title="Save" disabled="{!v.save_disabled}" onclick="{!c.closeModalOnFinish}"/>
+              </footer>
+            </div>
+          </aura:if>
+        </div>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+</aura:component>

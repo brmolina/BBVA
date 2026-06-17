@@ -22,11 +22,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_Renew_Line:"Renew Line:",
-        dmt_cl_Line_Type:"Line Type",
-        dmt_cl_NameLine:"Name",
-        dmt_cl_Products_renew:"Products to renew:"
-        };
+              
               pubsubEvent = [];
               customEvent = [];
               
@@ -37,10 +33,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                this.customLabels = this.Label;
-                      
-                          this.fetchUpdatedCustomLabels();
-                      
+                
                 this.setDefinition(data);
  this.registerEvents();
                 

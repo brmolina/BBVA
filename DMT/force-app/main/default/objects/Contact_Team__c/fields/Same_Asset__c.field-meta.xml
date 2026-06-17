@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Same_Asset__c</fullName>
+    <description>Like the field Same Asset from the object User. If the active user and the user used in the association have the same asset, the checkbox is check.</description>
+    <formula>OR( 
+AND( INCLUDES( User__r.Asset_Class__c , &quot;FI&quot;) , 
+INCLUDES( $User.Asset_Class__c  , &quot;FI&quot;) 
+), 
+
+AND( INCLUDES( User__r.Asset_Class__c , &quot;FX&quot;) , 
+INCLUDES( $User.Asset_Class__c  , &quot;FX&quot;) 
+), 
+
+AND( INCLUDES( User__r.Asset_Class__c , &quot;EQ&quot;) , 
+INCLUDES( $User.Asset_Class__c  , &quot;EQ&quot;) 
+) 
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Same Asset</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

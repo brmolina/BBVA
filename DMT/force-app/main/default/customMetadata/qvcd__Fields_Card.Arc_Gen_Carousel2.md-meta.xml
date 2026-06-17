@@ -59,6 +59,10 @@
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>qvcd__GBL_Tooltip__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>qvcd__GBL_Type_Icon__c</field>
         <value xsi:type="xsd:string">01</value>
     </values>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>origin_currenIso_Name__c</fullName>
+    <description>Nombre Moneda</description>
+    <externalId>false</externalId>
+    <formula>IF( Origin_currenIsoCode__c ==&apos;PEN&apos;, &apos;PEN&apos;,&apos;OTRO&apos;)</formula>
+    <label>origin_currenIso_Name</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

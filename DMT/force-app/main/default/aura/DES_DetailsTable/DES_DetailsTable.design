@@ -1,0 +1,23 @@
+<design:component label="DES Details Table">
+  <design:attribute name="TableHeading" label="Heading for the related table"
+      default="Example of Table Heading" />
+    <design:attribute name="fieldsToDisplay" label="Fields"
+      required="true" />
+  <design:attribute name="inNumberOfDecimals" label="Format Decimals"
+      datasource="Unformatted,0,1,2"
+      default="2" />
+  <design:attribute name="cssClassName" label="The class name to format the table"
+      datasource="Horizontal_Grey_Space,Horizontal_Grey_No_Space,Vertical_Clear,Vertical_Grey,Row,Vertical_fourColumns,Vertical_fourColumnsFamilyProducts"
+      default="Horizontal_Grey_No_Space" />
+  <design:attribute name="noRecordscustomLabelAPIname" label="Custom Label for no records"
+      default="" />
+  <design:attribute name="tableMessage" label="Table Message"
+      default="" />
+  <design:attribute name="rowTitle" label="Row Title"
+      default="" />
+  <design:attribute name="rowSubitle" label="Row Subtitle"
+      default="" />
+  <design:attribute name="prettyHeader" label="Pretty header"
+      default="false" />
+    <design:attribute name="filial" label="Subsidiary" default="false"/>
+</design:component>

@@ -15,12 +15,12 @@ global with sharing class DES_OppExpRevenuesTime_Controller {
         system.debug('>>>>> FUNCION getData. ID CLIENTE : ' + clientId);
         date d = system.today().addDays(-366);
         Set<Id> setIdOppsDenormClient = new Set<Id>();
-		for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]){
-			if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-				setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
-			}
-		}
-		system.debug('>>>>> setIdOppsDenormClient : ' + setIdOppsDenormClient);
+    for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]){
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
+      }
+    }
+    system.debug('>>>>> setIdOppsDenormClient : ' + setIdOppsDenormClient);
         //Recojo todos los Opportunity Products que pertenezcan a alguna oportunidad de la cuenta de la tabla Desnormalizada 
         List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                     SELECT  DES_Product_Family__c,
@@ -67,9 +67,9 @@ global with sharing class DES_OppExpRevenuesTime_Controller {
         if(!listOppProduct.isEmpty()){
 
             for(OpportunityLineItem opli : listOppProduct){
-            	system.debug('>>>>> opli.OpportunityId : ' + opli.OpportunityId);
-            	system.debug('>>>>> opli.pre_oppy_revenue_next_12m_amount__c : ' + opli.pre_oppy_revenue_next_12m_amount__c);
-            	system.debug('>>>>> opli.Opportunity.DES_Expected_Probability__c : ' + opli.Opportunity.DES_Expected_Probability__c);
+              system.debug('>>>>> opli.OpportunityId : ' + opli.OpportunityId);
+              system.debug('>>>>> opli.pre_oppy_revenue_next_12m_amount__c : ' + opli.pre_oppy_revenue_next_12m_amount__c);
+              system.debug('>>>>> opli.Opportunity.DES_Expected_Probability__c : ' + opli.Opportunity.DES_Expected_Probability__c);
                 //Si tiene informado el potential revenue
                 if(opli.pre_oppy_revenue_next_12m_amount__c != null && opli.Opportunity.DES_Expected_Probability__c != null){
                     if(opli.Opportunity.StageName == Label.DES_Proposal
@@ -160,11 +160,11 @@ global with sharing class DES_OppExpRevenuesTime_Controller {
         system.debug('>>>>> clientId: ' + clientId);
         date d = system.today().addDays(-366);
         Set<Id> setIdOppsDenormClient = new Set<Id>();
-		for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]){
-			if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-				setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
-			}
-		}
+    for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]){
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
+      }
+    }
         //Recojo todos los Opportunity Products que pertenezcan a alguna oportunidad de la cuenta de la tabla Desnormalizada 
         List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                     SELECT  DES_Product_Family__c,

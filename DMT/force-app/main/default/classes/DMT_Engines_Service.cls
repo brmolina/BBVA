@@ -5,7 +5,7 @@ Fecha: 2024-02-27
 
 // Clase para proporcionar servicios relacionados con los motores HPG
 @JsonAccess(serializable='always' deserializable='always')
-public class DMT_Engines_Service {
+public with sharing class DMT_Engines_Service {
 
     // Método para invocar un método específico
     public static Boolean invokeMethod(String methodName, Map<String, Object> args) {
@@ -18,9 +18,7 @@ public class DMT_Engines_Service {
                 outputMapBool = true;
             }
         } catch (Exception e) {
-            System.debug('JACG' + e.getLineNumber());
-            System.debug('Exception --> ' + e.getMessage());
-            DES_Exception_Utils.logException(e,'DMT_Engines_Service', 'invokeMethod', 'DMT', '');
+            system.debug('Exception --> ' + e.getMessage());
         }
         return outputMapBool;
     }

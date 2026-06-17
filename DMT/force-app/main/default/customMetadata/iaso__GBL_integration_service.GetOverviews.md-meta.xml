@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GetOverviews</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">CGUR_GrantingTicketAUS</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">CGUR_EndpointAUS</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">https://catalogs.platform.bbva.com/apicatalog/business/apis/apis-finances-cgur/versions/global-0.17.0/resources/cgurapioverviewsv0/</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">#jsonInput#</value>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: {
+    &quot;overviewResponses&quot;: [
+      {
+        &quot;rank&quot;: &quot;1&quot;,
+        &quot;deal&quot;: &quot;36077782&quot;,
+        &quot;counterparty&quot;: &quot;1BSRSTO&quot;,
+        &quot;mtM&quot;: 3411129514.24,
+        &quot;mtmCurrency&quot;: &quot;CLP&quot;,
+        &quot;payOff&quot;: &quot;Cross Currency Swap&quot;,
+        &quot;bpv&quot;: 12148356.11,
+        &quot;maturityDate&quot;: &quot;2030-07-14&quot;,
+        &quot;notional&quot;: 15201592500,
+        &quot;mtmPercentage&quot;: 50.56
+      },
+      {
+        &quot;rank&quot;: &quot;2&quot;,
+        &quot;deal&quot;: &quot;62556522&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 3288995281.07,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 27487761,
+        &quot;maturityDate&quot;: &quot;2035-04-15&quot;,
+        &quot;notional&quot;: 39000000000,
+        &quot;mtmPercentage&quot;: 9.52
+      },
+      {
+        &quot;rank&quot;: &quot;3&quot;,
+        &quot;deal&quot;: &quot;56389399&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 1986617784.71,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 13109444.71,
+        &quot;maturityDate&quot;: &quot;2031-04-14&quot;,
+        &quot;notional&quot;: 26600000000,
+        &quot;mtmPercentage&quot;: 5.75
+      },
+      {
+        &quot;rank&quot;: &quot;4&quot;,
+        &quot;deal&quot;: &quot;52256330&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 1418845813.43,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 5328899.46,
+        &quot;maturityDate&quot;: &quot;2028-07-13&quot;,
+        &quot;notional&quot;: 21000000000,
+        &quot;mtmPercentage&quot;: 4.11
+      },
+      {
+        &quot;rank&quot;: &quot;5&quot;,
+        &quot;deal&quot;: &quot;60698645&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 1331358455.21,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 8269109.16,
+        &quot;maturityDate&quot;: &quot;2030-01-13&quot;,
+        &quot;notional&quot;: 22000000000,
+        &quot;mtmPercentage&quot;: 3.85
+      },
+      {
+        &quot;rank&quot;: &quot;6&quot;,
+        &quot;deal&quot;: &quot;60699385&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 1327814956.26,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 8269109.16,
+        &quot;maturityDate&quot;: &quot;2030-01-13&quot;,
+        &quot;notional&quot;: 22000000000,
+        &quot;mtmPercentage&quot;: 3.84
+      },
+      {
+        &quot;rank&quot;: &quot;7&quot;,
+        &quot;deal&quot;: &quot;33919724&quot;,
+        &quot;counterparty&quot;: &quot;038290001&quot;,
+        &quot;mtM&quot;: 1275821950.81,
+        &quot;mtmCurrency&quot;: &quot;CLP&quot;,
+        &quot;payOff&quot;: &quot;Cross Currency Swap&quot;,
+        &quot;bpv&quot;: 2476355.11,
+        &quot;maturityDate&quot;: &quot;2030-01-13&quot;,
+        &quot;notional&quot;: 3823568550,
+        &quot;mtmPercentage&quot;: 57.31
+      },
+      {
+        &quot;rank&quot;: &quot;8&quot;,
+        &quot;deal&quot;: &quot;33915648&quot;,
+        &quot;counterparty&quot;: &quot;1BSRSTO&quot;,
+        &quot;mtM&quot;: 1255632451.59,
+        &quot;mtmCurrency&quot;: &quot;CLP&quot;,
+        &quot;payOff&quot;: &quot;Cross Currency Swap&quot;,
+        &quot;bpv&quot;: 2442044.84,
+        &quot;maturityDate&quot;: &quot;2030-01-13&quot;,
+        &quot;notional&quot;: 3766923090,
+        &quot;mtmPercentage&quot;: 18.61
+      },
+      {
+        &quot;rank&quot;: &quot;9&quot;,
+        &quot;deal&quot;: &quot;56392105&quot;,
+        &quot;counterparty&quot;: &quot;HMIRCHC&quot;,
+        &quot;mtM&quot;: 1239852786.73,
+        &quot;mtmCurrency&quot;: &quot;COP&quot;,
+        &quot;payOff&quot;: &quot;IRS&quot;,
+        &quot;bpv&quot;: 7942611.98,
+        &quot;maturityDate&quot;: &quot;2033-04-17&quot;,
+        &quot;notional&quot;: 13000000000,
+        &quot;mtmPercentage&quot;: 3.59
+      },
+      {
+        &quot;rank&quot;: &quot;10&quot;,
+        &quot;deal&quot;: &quot;33937625&quot;,
+        &quot;counterparty&quot;: &quot;1BSRSTO&quot;,
+        &quot;mtM&quot;: 1186341930.21,
+        &quot;mtmCurrency&quot;: &quot;CLP&quot;,
+        &quot;payOff&quot;: &quot;Cross Currency Swap&quot;,
+        &quot;bpv&quot;: 2777360.21,
+        &quot;maturityDate&quot;: &quot;2030-01-14&quot;,
+        &quot;notional&quot;: 3795367760,
+        &quot;mtmPercentage&quot;: 17.58
+      }
+    ]
+  },
+  &quot;pagination&quot;: {
+    &quot;links&quot;: {
+      &quot;last&quot;: &quot;43&quot;,
+      &quot;next&quot;: &quot;2&quot;
+    },
+    &quot;page&quot;: 1,
+    &quot;totalPages&quot;: 43,
+    &quot;totalElements&quot;: 426,
+    &quot;pageSize&quot;: 10
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/overviews</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

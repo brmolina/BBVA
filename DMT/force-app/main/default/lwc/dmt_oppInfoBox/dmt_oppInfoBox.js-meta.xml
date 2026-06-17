@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>DMT Product Scope Link</masterLabel>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage, lightning__HomePage">
+            <property name="metadataRecordName"
+                      type="String"
+                      label="Custom Metadata Record Name"
+                      description="Enter the DeveloperName of the dmt_webLinks__mdt record."
+                      required="true"/>
+            <property name="infoText"
+                      type="String"
+                      label="Info Message Text"
+                      description="Optional. Overrides the default custom label text shown before the link."/>
+            <property name="applyIconTopOffset"
+                      type="Boolean"
+                      label="Apply Icon Top Offset"
+                      description="When enabled, moves the info icon slightly upward (top: -1vh)."
+                      default="true"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

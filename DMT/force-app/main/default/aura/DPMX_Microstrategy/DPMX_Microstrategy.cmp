@@ -1,0 +1,13 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <div class="slds-modal__container slds-align_absolute-center slds-size_xx-large"> 
+        <div class="slds-text-align_center slds-text-heading_medium slds-m-top_small">
+            <p>{!$Label.c.DPMX_Microstrategy_Text1}</p>
+        </div>
+        <div class="slds-text-align_center slds-m-top_small">
+            <p>{!$Label.c.DPMX_Microstrategy_Text2}</p>
+        </div>
+        <div class="slds-text-align_center slds-m-top_small">
+            <p><lightning:button class="slds-button slds-button_brand" label="{!$Label.c.DPMX_Microstrategy_Link_Label}" onclick="{!c.openLink}"/></p>
+        </div>
+    </div>
+</aura:component>

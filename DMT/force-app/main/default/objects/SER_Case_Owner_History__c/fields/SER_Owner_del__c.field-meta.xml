@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Owner_del__c</fullName>
+    <externalId>false</externalId>
+    <formula>If( 
+BEGINS(SER_Case__r.OwnerId , &quot;00G&quot;), 
+SER_Case__r.Owner:Queue.Name, SER_Case__r.Owner:User.FirstName  &amp;&quot; &quot;&amp; SER_Case__r.Owner:User.LastName
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Owner</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

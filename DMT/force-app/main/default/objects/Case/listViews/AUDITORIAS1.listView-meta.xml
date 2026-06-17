@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AUDITORIAS1</fullName>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>OWNER_NAME</columns>
+    <columns>SER_Email_received__c</columns>
+    <columns>SER_Priority_Flag__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>SER_Case_age_days__c</columns>
+    <columns>SER_Settlement_Date__c</columns>
+    <columns>SER_Subtype_GM__c</columns>
+    <columns>SER_Close__c</columns>
+    <columns>SER_Discarded__c</columns>
+    <columns>SER_Duplicated__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>SER_Subtype_GM__c</field>
+        <operation>equals</operation>
+        <value>Audit requests</value>
+    </filters>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>notEqual</operation>
+        <value>Closed</value>
+    </filters>
+    <label>00 AUDITORIAS</label>
+    <sharedTo>
+        <group>CUSTOMER_CLAIM_SUPPORT</group>
+    </sharedTo>
+</ListView>

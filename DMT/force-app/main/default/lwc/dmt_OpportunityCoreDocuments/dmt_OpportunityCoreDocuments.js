@@ -2,29 +2,41 @@ import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import OPP_ID_FIELD from '@salesforce/schema/Opportunity.DMT_Opp_Id__c';
-import getDocuments from '@salesforce/apex/DMT_OpportunityCoreDocuments.getExpedientFolders';
-import uploadFileToApex from '@salesforce/apex/DMT_OpportunityCoreDocuments.uploadFile';
-import downloadFile from '@salesforce/apex/DMT_OpportunityCoreDocuments.downloadFile';
+import getDocuments from '@salesforce/apex/DMT_OpportunityCoreDocuments.getDocuments';
+import getDownloadHeaders from '@salesforce/apex/DMT_OpportunityCoreDocuments.getDownloadHeaders';
+import getUploadHeaders from '@salesforce/apex/DMT_OpportunityCoreDocuments.getUploadHeaders';
+import getUploadEndpoint from '@salesforce/apex/DMT_OpportunityCoreDocuments.getUploadEndpoint';
+import getDownloadEndpoint from '@salesforce/apex/DMT_OpportunityCoreDocuments.getDownloadEndpoint';
 import updateFileMetadata from '@salesforce/apex/DMT_OpportunityCoreDocuments.updateFileMetadata';
 
 const COLUMNS = [
+    { 
+        label: 'View', 
+        type: 'button-icon', 
+        initialWidth: 50,
+        cellAttributes: { style: 'text-align: center;' },
+        typeAttributes: {
+            iconName: 'action:preview',
+            title: 'Click to View',
+            name: 'download',
+            variant: 'border-filled',
+            alternativeText: 'View',
+        }
+    },
     {
         label: 'File Name',
-        type: 'button',
-        typeAttributes: {
-            label: { fieldName: 'name' },
-            name: 'download',
-            variant: 'base',
-            title: 'Click to download',
-            iconName: { fieldName: 'iconName' },
-            iconPosition: 'left'
-        },
+        type: 'text',
+        fieldName: 'name',
+        initialWidth: 400,
         cellAttributes: {
+            iconName: { fieldName: 'iconName' }, 
+            iconPosition: 'left',
             class: 'file-name-cell'
         },
         wrapText: true
     },
     { label: 'Document Type', fieldName: 'documentTypeLabel', type: 'text', initialWidth: 300 }
+
 ];
 
 const DOC_TYPES = [
@@ -59,6 +71,8 @@ export default class Dmt_OpportunityCoreDocuments extends LightningElement {
     @track isModalOpen = false;
     @track selectedFile = null;
     @track selectedDocType = '';
+    @track isModaViewOpen = false;
+    @track pdfData;
 
     columns = COLUMNS;
     docTypeOptions = DOC_TYPES;
@@ -124,11 +138,13 @@ export default class Dmt_OpportunityCoreDocuments extends LightningElement {
         try {
             const data = await getDocuments({ opportunityId: this.dmtOppId });
             if (data && data.success) {
+                console.log('core documenr child getDocuments-->');
                 let allFiles = [];
                 if (data.data && Array.isArray(data.data)) {
                     data.data.forEach(folder => {
                         if (folder.children && Array.isArray(folder.children)) {
                             const folderFiles = folder.children.map(child => {
+                                console.log('core documenr child -->', JSON.stringify(child));
                                 const docTypeEntry = DOC_TYPES.find(dt => dt.value === child.documentType);
                                 return {
                                     ...child,
@@ -160,7 +176,7 @@ export default class Dmt_OpportunityCoreDocuments extends LightningElement {
     }
 
     get hasFiles() {
-        return this.files && this.files.length > 0;
+        return  this.files && this.files.length > 0;
     }
 
     get isUploadDisabled() {
@@ -278,70 +294,99 @@ export default class Dmt_OpportunityCoreDocuments extends LightningElement {
     }
 
     async uploadFile(file) {
-        console.log('DEBUG: Starting upload via Apex proxy');
-        console.log('DEBUG: File:', file.name, file.size, file.type);
+        const endpoint = await getUploadEndpoint();
+        const headers = await getUploadHeaders();
 
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.onload = async () => {
-                try {
-                    const fileContent = fileReader.result.split(',')[1];
+        const formData = new FormData();
+        formData.append('file', file);
 
-                    const fileId = await uploadFileToApex({
-                        fileName: file.name,
-                        base64Data: fileContent,
-                        fileType: file.type || 'application/octet-stream'
-                    });
+        //Send the mapped "active" folder details to the backend
+        formData.append('opportunityId', this.dmtOppId);
+        formData.append('folderId', this.dmtOppId);
 
-                    console.log('DEBUG: Upload successful, fileId:', fileId);
-                    resolve(fileId);
-                } catch (error) {
-                    console.error('Upload failed:', error);
-                    reject(error);
-                }
-            };
-            fileReader.onerror = (error) => reject(error);
-            fileReader.readAsDataURL(file);
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: headers,
+            body: formData
         });
+
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+
+        const result = await response.json();
+        // Assuming the response structure matches the mock: { data: { fileId: "..." } }
+        if (result && result.data && result.data.fileId) {
+            return result.data.fileId;
+        } else {
+            throw new Error('File ID not found in upload response');
+        }
     }
 
     // --- DOWNLOAD ---
 
     async handleRowAction(event) {
+        this.isModaViewOpen = true;
         const actionName = event.detail.action.name;
         const row = event.detail.row;
-
+        console.log('actionName --> ', actionName);
+        console.log('row --> ', JSON.stringify(row) );
         if (actionName === 'download') {
-            this.isLoading = true;
-            try {
-                const base64Content = await downloadFile({ contentLocator: row.contentLocator });
-                this.downloadBase64File(base64Content, row.name);
-                this.showToast('Success', 'File downloaded successfully', 'success');
-            } catch (error) {
-                const msg = error.body ? error.body.message : error.message;
-                this.showToast('Error', 'Could not download file: ' + msg, 'error');
-            } finally {
-                this.isLoading = false;
+
+            const endpoint = await getDownloadEndpoint({
+                contentLocator: row.contentLocator
+            });
+            const headers = await getDownloadHeaders();
+
+            const response = await fetch(endpoint, {
+                method: 'GET',
+                headers: headers
+            });
+
+            if (!response.ok) {
+                throw new Error(response.statusText);
             }
+
+            const blob = await response.blob();
+
+            await this.previewPdf(blob);
+            this.selectedFileName = row.name;
+            
+            this.showToast('Success', 'File downloaded successfully', 'success');
+
         }
     }
+    async previewPdf(blob) {
+        try {
+            this.pdfData = await  this.blobToBase64(blob);
 
-    downloadBase64File(base64Data, fileName) {
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+            await Promise.resolve();
+
+            const previewPdf = this.template.querySelector('c-preview-pdf');
+            if (previewPdf) {
+                previewPdf.preview(this.pdfData);
+            } else {
+                console.error('previewPdf component not found in CD.');
+            }
+        } catch (error) {
+            console.error('Error in previewPdf CD:', error);
+            throw new Error('Failed to preview PDF in CD.');
         }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
+    }
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result.split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+    closeModal() {
+        this.isModaViewOpen = false;
+        this.pdfData = null;
     }
 
     showToast(title, message, variant) {

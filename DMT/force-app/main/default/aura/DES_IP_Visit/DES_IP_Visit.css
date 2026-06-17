@@ -1,0 +1,31 @@
+.THIS .slds-button__icon_hint{
+	fill: rgb(236, 235, 234);
+}
+
+.THIS .slds-button_icon-bare {
+	color: rgb(236, 235, 234);
+}
+
+.THIS .icono-ayuda .slds-button__icon {
+	color: rgb(176, 173, 171);
+}
+
+.THIS label.slds-form-element__label.slds-no-flex {
+      display : none;
+      visibility : hidden;
+}
+
+.THIS .errorIP {
+    padding: 0.5rem; 
+    background: rgba(27, 82, 151, 1);
+}
+
+.THIS .customRequired {
+    font-weight: 400;
+}
+.THIS .customRequired:before {
+    content: "*";
+    margin: 0 0.125rem 0 0.125rem;
+    color: rgb(194, 57, 52);
+    float: left;
+}

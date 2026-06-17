@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Soft_Delete</fullName>
+    <availability>online</availability>
+    <description>First try to delete a Prospect. The user that pulse this contact make it invisible and the admin can then hard delete it after the necessary approbations.</description>
+    <displayType>button</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Soft Delete</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/19.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/10.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/10.0/apex.js&quot;)}
+
+var confirmar = confirm(&quot;Delete prospect?&quot;);
+if (confirmar){ 
+	var c = new sforce.SObject(&quot;Lead&quot;); 
+	c.id = &quot;{!Lead.Id}&quot;; 
+	c.Logical_Delete__c=true;
+	c.OwnerId = &quot;{!$Setup.Application_Settings_Hierarchy__c.System_Admin_ID__c}&quot;;
+	result = sforce.connection.update([c]); 
+
+	window.location.reload();
+}</url>
+</WebLink>

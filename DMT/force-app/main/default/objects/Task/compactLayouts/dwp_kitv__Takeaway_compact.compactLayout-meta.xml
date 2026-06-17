@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Takeaway_compact</fullName>
+    <fields>dwp_kitv__visit_id__c</fields>
+    <fields>Subject</fields>
+    <fields>WhatId</fields>
+    <fields>OwnerId</fields>
+    <fields>dwp_kitv__Takeaway_client__c</fields>
+    <fields>ActivityDate</fields>
+    <fields>dwp_kitv__visit_done__c</fields>
+    <label>Takeaway compact</label>
+</CompactLayout>

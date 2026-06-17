@@ -1,0 +1,358 @@
+<template>
+    <div class="slds-container_large">
+        <!-- Error handling -->
+        <template if:true={showError}>
+            <div class="slds-illustration slds-illustration_small slds-m-top_large slds-m-bottom_large">
+                <div class="slds-text-color_error slds-p-around_large">
+                    <p class="slds-text-heading_small slds-m-bottom_medium">Error Loading Data</p>
+                    <p>{errorMessage}</p>
+                    <lightning-button
+                        label="Retry"
+                        variant="brand"
+                        onclick={handleRetry}
+                        class="slds-m-top_medium">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading state -->
+        <template if:true={isLoading}>
+            <div class="slds-is-relative" style="min-height: 400px;">
+                <div class="slds-spinner_container">
+                    <lightning-spinner
+                        alternative-text="Loading data"
+                        size="large">
+                    </lightning-spinner>
+                </div>
+            </div>
+        </template>
+
+        <!-- Main content -->
+        <template if:false={isLoading}>
+            <!-- View State -->
+            <template if:false={isEditingMode}>
+                <div class="slds-m-bottom_x-small">
+                    <lightning-card title="Opportunity Information" icon-name="standard:opportunity">
+                        <div class="slds-var-p-around_medium">
+                            <!-- Basic Information Section -->
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Opportunity Name</div>
+                                        <div class="slds-form-element__static">{opportunityData.Name}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Stage</div>
+                                        <div class="slds-form-element__static">{opportunityData.StageName}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Entific</div>
+                                        <div class="slds-form-element__static">{opportunityData.Entific}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Entity</div>
+                                        <div class="slds-form-element__static">{opportunityData.EntityName}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Initial Date</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_DATE_Initial_Date__c}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Maturity Date</div>
+                                        <div class="slds-form-element__static">{opportunityData.MaturityDate}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Currency</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_Currency__c}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Notional Amount</div>
+                                        <div class="slds-form-element__static">{formattedNotionalAmount}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Product & Capital Section -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Product Area</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_Product_Area__c}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Capital Action</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_Capital_Action__c}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Fields -->
+                                <div class="slds-col slds-size_1-of-1 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Contingent Commitments</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_ContingentCommitments__c}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Booking Name</div>
+                                        <div class="slds-form-element__static">{opportunityData.BookingName}</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-text-title_caps slds-m-bottom_xx-small">Tenor</div>
+                                        <div class="slds-form-element__static">{opportunityData.DMT_Tenor__c}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Button (if user has permissions) -->
+                        <div class="slds-var-p-around_medium slds-border_top">
+                            <template if:false={opportunityData.isReadOnlyUser}>
+                                <lightning-button
+                                    label="Edit"
+                                    icon-name="utility:edit"
+                                    variant="brand"
+                                    onclick={handleEditClick}>
+                                </lightning-button>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <!-- X-Sell Section -->
+                <template if:true={hasXSellData}>
+                    <lightning-card title="Cross SELL" icon-name="standard:products">
+                        <div class="slds-var-p-around_medium">
+                            <p>Currency: {opportunityData.defaultCurrency}</p>
+                            <!-- X-Sell table would go here -->
+                            <template if:true={opportunityData.OppXSell}>
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Year</div></th>
+                                            <th scope="col"><div class="slds-truncate">Notional Amount</div></th>
+                                            <th scope="col"><div class="slds-truncate">Currency</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={opportunityData.OppXSell} for:item="xsell">
+                                            <tr key={xsell.Id} class="slds-hint-parent">
+                                                <td data-label="Year"><div class="slds-truncate">{xsell.Year__c}</div></td>
+                                                <td data-label="Notional Amount"><div class="slds-truncate">{xsell.g_notional_amount__c}</div></td>
+                                                <td data-label="Currency"><div class="slds-truncate">{xsell.g_currency__c}</div></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </template>
+            </template>
+
+            <!-- Edit State -->
+            <template if:true={isEditingMode}>
+                <lightning-card title="Edit Opportunity Information" icon-name="standard:opportunity">
+                    <div class="slds-var-p-around_medium">
+                        <div class="slds-grid slds-wrap">
+                            <!-- Basic Information Section -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Opportunity Name"
+                                    value={formData.Name}
+                                    onchange={handleFieldChange}
+                                    data-field="Name"
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Stage"
+                                    value={formData.StageName}
+                                    disabled>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Entific"
+                                    value={formData.Entific}
+                                    disabled>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Entity"
+                                    value={formData.EntityName}
+                                    disabled>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="date"
+                                    label="Initial Date"
+                                    value={formData.DMT_DATE_Initial_Date__c}
+                                    onchange={handleDateChange}
+                                    data-field="DMT_DATE_Initial_Date__c"
+                                    required>
+                                </lightning-input>
+                                <template if:true={validationErrors.initialDate}>
+                                    <div class="slds-text-color_error slds-m-top_x-small">
+                                        {validationErrors.initialDate}
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="date"
+                                    label="Maturity Date"
+                                    value={formData.MaturityDate}
+                                    onchange={handleDateChange}
+                                    data-field="MaturityDate"
+                                    required>
+                                </lightning-input>
+                                <template if:true={validationErrors.maturityDate}>
+                                    <div class="slds-text-color_error slds-m-top_x-small">
+                                        {validationErrors.maturityDate}
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-combobox
+                                    label="Currency"
+                                    value={formData.DMT_Currency__c}
+                                    options={currencyOptions}
+                                    onchange={handleComboboxChange}
+                                    data-field="DMT_Currency__c"
+                                    required>
+                                </lightning-combobox>
+                                <template if:true={validationErrors.currency}>
+                                    <div class="slds-text-color_error slds-m-top_x-small">
+                                        {validationErrors.currency}
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="number"
+                                    label="Notional Amount"
+                                    value={formData.NotionalAmountValue}
+                                    onchange={handleFieldChange}
+                                    data-field="NotionalAmountValue">
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Product Area"
+                                    value={formData.DMT_Product_Area__c}
+                                    onchange={handleFieldChange}
+                                    data-field="DMT_Product_Area__c"
+                                    required>
+                                </lightning-input>
+                                <template if:true={validationErrors.productArea}>
+                                    <div class="slds-text-color_error slds-m-top_x-small">
+                                        {validationErrors.productArea}
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Capital Action"
+                                    value={formData.DMT_Capital_Action__c}
+                                    onchange={handleFieldChange}
+                                    data-field="DMT_Capital_Action__c">
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-1 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Contingent Commitments"
+                                    value={formData.DMT_ContingentCommitments__c}
+                                    onchange={handleFieldChange}
+                                    data-field="DMT_ContingentCommitments__c">
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Booking Name"
+                                    value={formData.BookingName}
+                                    disabled>
+                                </lightning-input>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_x-small">
+                                <lightning-input
+                                    type="text"
+                                    label="Tenor"
+                                    value={formData.DMT_Tenor__c}
+                                    disabled>
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer with buttons -->
+                    <div class="slds-var-p-around_medium slds-border_top">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <lightning-button
+                                    label="Cancel"
+                                    variant="neutral"
+                                    onclick={handleCancelClick}>
+                                </lightning-button>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12 slds-text-align_right">
+                                <lightning-button
+                                    label="Save"
+                                    icon-name="utility:save"
+                                    variant="brand"
+                                    onclick={handleSaveClick}
+                                    disabled={isSaving}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                        <template if:true={validationErrors.general}>
+                            <div class="slds-text-color_error slds-m-top_medium">
+                                {validationErrors.general}
+                            </div>
+                        </template>
+                    </div>
+                </lightning-card>
+            </template>
+        </template>
+    </div>
+</template>

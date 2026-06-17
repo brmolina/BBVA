@@ -1,0 +1,135 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens" access="global" controller="Create_opp_controller">
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="clientName" type="String" default=""/>
+    <aura:attribute name="clientOwner" type="String" default=""/>
+    <aura:attribute name="clientCountry" type="String" default=""/>
+    <aura:attribute name="rtId" type="String" default=""/>
+    <aura:attribute name="mainParent" type="String" default=""/>
+
+    <aura:attribute name="disclosureVal" type="String" default=""/>
+    <aura:attribute name="form1Val" type="String" default=""/>
+    <aura:attribute name="form2Val" type="String" default=""/>
+    <aura:attribute name="nameVal" type="String" default=""/>
+    <aura:attribute name="descriptionVal" type="String" default=""/>
+    <aura:attribute name="bookingVal" type="String" default=""/>
+    <aura:attribute name="countriesVal" type="String" default=""/>
+    <aura:attribute name="currencyVal" type="String" default=""/>
+    <aura:attribute name="closedateVal" type="Date" default=""/>
+    <aura:attribute name="formatDate" type="Date" default=""/>
+    <aura:attribute name="probabilityVal" type="Decimal" default=""/>
+
+    <aura:attribute name="optionsForm" type="List" default="[]"/>
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String" default=""/>
+    <aura:attribute name="preguntas" type="Map"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     
+    <aura:if isTrue="{!v.showError}">
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div class="slds-notify slds-notify_toast slds-theme_error slds-col slds-size_1-of-1" role="status">
+                <span class="slds-assistive-text">ERROR</span>
+                <div class="slds-notify__content slds-col slds-size_1-of-1">
+                    <p class="slds-text-heading_small">Review the errors on this page.</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                <p class="slds-text-color_error">{!v.errorMessage}</p>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!or(v.rtId == '', v.preguntas == null)}">
+        <div class="spinnerdiv">
+            <lightning:spinner alternativeText="Loading" aura:id="spinnerId"  variant="brand"/>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!and(v.rtId != '', v.preguntas != null)}">
+        <lightning:recordEditForm objectApiName="Opportunity" recordTypeId="{!v.rtId}">
+            <lightning:messages />
+            
+            <p class="slds-p-horizontal_x-small slds-p-vertical_x-small head">
+                <div class="slds-grid slds-gutters slds-wrap"><br/>
+                    <div class="slds-col slds-size_2-of-2 slds-p-bottom_small">
+                        <lightning:formattedText class="slds-text-heading_small slds-p-bottom_small titleHead" value="{!v.clientName}"/>
+                    </div>
+                    <div class="slds-col slds-col slds-size_1-of-4 slds-size_1-of-1">
+                        <div class="slds-col slds-col">
+                            <div class="slds-text-body_regular slds-p-bottom_xx-small weight600">Opportunity owner</div>
+                            <div class="slds-text-body_regular slds-p-bottom_xx-small">{!v.clientOwner}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-col slds-size_1-of-4 slds-size_1-of-1">
+                        <div class="slds-text-body_regular slds-p-bottom_xx-small weight600">Group</div>
+                        <div class="slds-text-body_regular slds-p-bottom_xx-small">{!v.mainParent}</div>
+                    </div>
+                    <div class="slds-col slds-col slds-size_1-of-4 slds-size_1-of-1">
+                        <div class="slds-text-body_regular slds-p-bottom_xx-small weight600">Country</div>
+                        <div class="slds-text-body_regular slds-p-bottom_xx-small">{!v.clientCountry}</div>
+                    </div>
+                    <div class="slds-col slds-col slds-size_1-of-4"></div>
+                </div>
+            </p><br/>
+            <aura:if isTrue="{!v.disclosureVal eq $Label.c.DES_OP_Inside}">
+                <p class="slds-p-horizontal_x-small slds-p-vertical_x-small">
+                    <div class="slds-grid slds-gutters slds-wrap"><br/>
+                        <div aura:id="divform1" class="slds-col slds-size_1-of-1 slds-form-element">
+                            <lightning:formattedText value="{!v.preguntas.Q1_1}" class="customRequired"/>
+                            <lightning:combobox aura:id="form1Field" name="form1" placeholder="-- None --" options="{! v.optionsForm }" class="radiusInp"/>
+                            <div class="slds-form-element__help slds-hidden" aura:id="error-form1">Complete this field</div>
+                        </div>
+                        <div aura:id="divform2" class="slds-col slds-size_1-of-1 slds-form-element">
+                            <lightning:formattedText value="{!v.preguntas.Q2_1}" class="customRequired"/>
+                            <lightning:combobox aura:id="form2Field"  name="form2"  placeholder="-- None --" options="{! v.optionsForm }" class="radiusInp"/>
+                            <div class="slds-form-element__help slds-hidden" aura:id="error-form2">Complete this field</div>
+                        </div>
+                    </div>
+                </p>
+            </aura:if>
+            
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div aura:id="divdisclosure" class="slds-col slds-size_1-of-2 slds-size_1-of-1">
+                    <lightning:inputField fieldName="disclosure_info_type__c" class="customRequired radiusInp" aura:id="disclosureField" onchange="{!c.handleChangeDisclosure}" value=""/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-disclosure">Complete this field</div>
+                </div>
+                
+                <div aura:id="divname" class="slds-col slds-p-top_xx-small slds-medium-size_1-of-2 slds-size_1-of-1">
+                    <label for="nameField" class="slds-text-color_weak small fontext"><span style="color:#C9514D;">* </span>Opportunity Name</label>
+                    <lightning:inputField fieldName="Name" aura:id="nameField" required="true" variant="label-hidden" class="radiusInp"/>
+                </div>
+                <div aura:id="divdescription" class="slds-col slds-size_1-of-1 slds-form-element">
+                    <lightning:inputField fieldName="DES_Description_rich__c" class="customRequired radiusInp" aura:id="descriptionField"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-description">Complete this field</div>
+                </div>
+                <div aura:id="divcountries" class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-right_small">
+                    <lightning:inputField fieldName="DES_Countries__c" class="customRequired radiusInp" aura:id="countriesField"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-countries">Complete this field</div>
+                </div>
+                <aura:if isTrue="{!v.disclosureVal eq $Label.c.DES_OP_Inside}">
+                    <div aura:id="divbooking" class="slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-left_small slds-form-element">
+                        <lightning:inputField fieldName="DES_Booking_Geography__c" class="customRequired radiusInp" aura:id="bookingField"/>
+                        <div class="slds-form-element__help slds-hidden" aura:id="error-booking">Complete this field</div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-left_small slds-form-element">
+                            <lightning:inputField fieldName="DES_Booking_Geography__c" aura:id="bookingField2" class="radiusInp"/>
+                        </div>
+                    </aura:set>
+                </aura:if>
+                <div aura:id="divcurrency" class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-right_small slds-form-element">
+                    <lightning:inputField fieldName="CurrencyIsoCode" class="customRequired radiusInp" aura:id="currencyField"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-currency">Complete this field</div>
+                </div>
+                <div aura:id="divdate" class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-right_small slds-form-element">
+                    <lightning:inputField fieldName="CloseDate" aura:id="closedateField" value="{!v.formatDate}" class="radiusInp"/>
+                </div>
+            </div>
+        </lightning:recordEditForm>
+        <div aura:id="actionButtonBar" class="slds-clearfix slds-p-top_medium slds-col slds-size_1-of-1 slds-border_top slds-p-around_none">
+            <div class="slds-float_right slds-p-top_small">
+                <lightning:button aura:id="NEXT" label="Create Opportunity" variant="brand" onclick="{!c.saveForm}" class="radiusBtn"/>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>customer_stock_exchange_name__c</fullName>
+    <label>Global Stock Exchanges</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BCBA (Bolsa De Comercio de Buenos Aires, Argentina)</fullName>
+                <default>false</default>
+                <label>BCBA (Bolsa De Comercio de Buenos Aires, Argentina)</label>
+            </value>
+            <value>
+                <fullName>BIST (Borsa Istanbul, Turkey)</fullName>
+                <default>false</default>
+                <label>BIST (Borsa Istanbul, Turkey)</label>
+            </value>
+            <value>
+                <fullName>BME(Bolsa de Madrid, Spain)</fullName>
+                <default>false</default>
+                <label>BME(Bolsa de Madrid, Spain)</label>
+            </value>
+            <value>
+                <fullName>BMV (Bolsa Mexicana de Valores, Mexico)</fullName>
+                <default>false</default>
+                <label>BMV (Bolsa Mexicana de Valores, Mexico)</label>
+            </value>
+            <value>
+                <fullName>BVC (Bolsa de Valores de Colombia, Colombia)</fullName>
+                <default>false</default>
+                <label>BVC (Bolsa de Valores de Colombia, Colombia)</label>
+            </value>
+            <value>
+                <fullName>BVL (Bolsa de Valores de Lima, Peru)</fullName>
+                <default>false</default>
+                <label>BVL (Bolsa de Valores de Lima, Peru)</label>
+            </value>
+            <value>
+                <fullName>BVS (Santiago Exchange, Chile)</fullName>
+                <default>false</default>
+                <label>BVS (Santiago Exchange, Chile)</label>
+            </value>
+            <value>
+                <fullName>Euronext (Euronext, Eurozone/Amsterdam)</fullName>
+                <default>false</default>
+                <label>Euronext (Euronext, Eurozone/Amsterdam)</label>
+            </value>
+            <value>
+                <fullName>FWB (Frankfurt Stock Exchange, Germany)</fullName>
+                <default>false</default>
+                <label>FWB (Frankfurt Stock Exchange, Germany)</label>
+            </value>
+            <value>
+                <fullName>HKSE (Hong Kong Stock Exchange, Hong Kong)</fullName>
+                <default>false</default>
+                <label>HKSE (Hong Kong Stock Exchange, Hong Kong)</label>
+            </value>
+            <value>
+                <fullName>LSE (London Stock Exchange, United Kingdom)</fullName>
+                <default>false</default>
+                <label>LSE (London Stock Exchange, United Kingdom)</label>
+            </value>
+            <value>
+                <fullName>MTA (Borsa Italiana&apos;s Main Market, Italy)</fullName>
+                <default>false</default>
+                <label>MTA (Borsa Italiana&apos;s Main Market, Italy)</label>
+            </value>
+            <value>
+                <fullName>NASDAQ (NASDAQ, United States)</fullName>
+                <default>false</default>
+                <label>NASDAQ (NASDAQ, United States)</label>
+            </value>
+            <value>
+                <fullName>NYSE (New York Stock Exchange, United States)</fullName>
+                <default>false</default>
+                <label>NYSE (New York Stock Exchange, United States)</label>
+            </value>
+            <value>
+                <fullName>TSE (Tokyo Stock Exchange, Japan)</fullName>
+                <default>false</default>
+                <label>TSE (Tokyo Stock Exchange, Japan)</label>
+            </value>
+            <value>
+                <fullName>SSE (Shanghai Stock Exchange)</fullName>
+                <default>false</default>
+                <label>SSE (Shanghai Stock Exchange)</label>
+            </value>
+            <value>
+                <fullName>TSX (Toronto Stock Exchange)</fullName>
+                <default>false</default>
+                <label>TSX (Toronto Stock Exchange)</label>
+            </value>
+            <value>
+                <fullName>SZSE (Shenzhen Stock Exchange)</fullName>
+                <default>false</default>
+                <label>SZSE (Shenzhen Stock Exchange)</label>
+            </value>
+            <value>
+                <fullName>BSE (Bombay Stock Exchange)</fullName>
+                <default>false</default>
+                <label>BSE (Bombay Stock Exchange)</label>
+            </value>
+            <value>
+                <fullName>Private</fullName>
+                <default>false</default>
+                <label>Private</label>
+            </value>
+            <value>
+                <fullName>OTC</fullName>
+                <default>false</default>
+                <label>OTC</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -28,8 +28,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                   }
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_Participant_Selection:"PARTICIPANT SELECTION"
-        };
+              
               pubsubEvent = [];
               customEvent = [];
               
@@ -40,17 +39,14 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                this.customLabels = this.Label;
-                      
-                          this.fetchUpdatedCustomLabels();
-                      
+                
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L5PrYAK"
+                  " card-0koKE000000L72tYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003oXL02AM");
+                this.loadCustomStylesheetAttachement("00PKE000001ZPzO2AW");
                 
                 
               }
@@ -65,6 +61,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
 
               registerEvents() {
                 
+        this.pubsubEvent[0] = {
+          [interpolateWithRegex(`refresh`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[4],4)
+        };
+        this.pubsubChannel0 = interpolateWithRegex(`linestab`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
+
             this.customEventName0 = interpolateWithRegex(`tableProductChanges`,this._allMergeFields,this._regexPattern,"noparse");
             this.customEvent[0] = this.handleEventAction.bind(this, data.events[0],0);
 
@@ -92,7 +94,8 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               }
 
               unregisterEvents(){
-                
+                pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
             this.template.removeEventListener(this.customEventName1,this.customEvent[1]);

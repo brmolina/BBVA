@@ -959,7 +959,7 @@ public class CommercialAlertTriggerHandlerTest {
         acc.DES_Revenue_Update_Engloba__c = '20180912';
         acc.RecordTypeId = recordType;
         acc.DES_Group_Code__c = code;
-        acc.SER_CClient__c = code;
+        acc.g_customer_id__c = code;
         insert acc;
         return acc;
     }
@@ -1106,15 +1106,6 @@ public class CommercialAlertTriggerHandlerTest {
         final DES_WS_AlertBatches denormAlert = DES_WS_AlertBatches.gtInstance();
         final Id idJobResultadodenorm = DES_WS_AlertBatches.runRelationBatch();
         system.debug('idJobResultadoGF -> ' + idJobResultadodenorm + ' ' + denormAlert);
-        final DES_WS_NotificationAlertGF notifyGF = DES_WS_NotificationAlertGF.gtInstance();
-        final Id idJobResultadoGF = DES_WS_NotificationAlertGF.runRelationBatch();
-        system.debug('idJobResultadoGF -> ' + idJobResultadoGF + ' ' + notifyGF);
-        final DES_WS_NotificationAlertGM notifyGM = DES_WS_NotificationAlertGM.gtInstance();
-        final Id idJobResultadoGM = DES_WS_NotificationAlertGM.runRelationBatch();
-        system.debug('idJobResultadoGM -> ' + idJobResultadoGM + ' ' + notifyGM);
-        final DES_WS_NotificationAlertGTB notifyGTB = DES_WS_NotificationAlertGTB.gtInstance();
-        final Id idJobResultadoGTB = DES_WS_NotificationAlertGTB.runRelationBatch();
-        system.debug('idJobResultadoGTB -> ' + idJobResultadoGTB + ' ' + notifyGTB);
         //System.abortJob(batchInstanceId);
     }//FIN EXECUTE BATCH
 

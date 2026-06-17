@@ -137,10 +137,16 @@ public class Arc_Gen_NAHA_Ctrl_Test {
         analyzedGrp.arce__customer_arce_scope_type__c = '1';
         analyzedGrp.arce__group_asset_header_type__c = '1';
         update (analyzedGrp);
+        final arce__AHA_Extension__c ahaExt = Arc_UtilitysDataTest_tst.newExtensionForAHA(analyzedGrp);
+        ahaExt.arce__group_corporative__c = false;
+        update ahaExt;
         final arce__Account_has_Analysis__c analyzedClient = setAnalyzedClient(childAccount.accId,analysis.Id);
         analyzedClient.arce__customer_arce_scope_type__c = '1';
         analyzedClient.arce__group_asset_header_type__c = '2';
         update (analyzedClient);
+        final arce__AHA_Extension__c ahaExt2 = Arc_UtilitysDataTest_tst.newExtensionForAHA(analyzedClient);
+        ahaExt2.arce__group_corporative__c = false;
+        update ahaExt2;
         Return analyzedClient;
     }
     /**
@@ -197,6 +203,7 @@ public class Arc_Gen_NAHA_Ctrl_Test {
     static void testingService() {
         final Arc_Gen_NAHACtrl controller = new Arc_Gen_NAHACtrl();
         final arce__Account_has_Analysis__c analyzedClient = getAnalyzedClient('Test Customer', '12345678', 'ARCE Test');
+        analyzedClient.arce__RAR_rating_tool_id__c = 'RTC';
         analyzedClient.arce__customer_arce_scope_type__c = '1';
         update (analyzedClient);
         final List<sObject> iasoCnfList = Arc_UtilitysDataTest_tst.crearIasoUrlsCustomSettings();

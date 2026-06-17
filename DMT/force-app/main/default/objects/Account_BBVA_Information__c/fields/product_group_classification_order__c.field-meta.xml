@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>product_group_classification_order__c</fullName>
+    <description>orden clasificacion</description>
+    <externalId>false</externalId>
+    <formula>IF( type__c =&apos;01&apos;,CASE(UPPER( product_group_classification_id__c ),&apos;DIRECTA&apos;,1,&apos;INDIRECTA&apos;,2,0),0)</formula>
+    <label>Classification order</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

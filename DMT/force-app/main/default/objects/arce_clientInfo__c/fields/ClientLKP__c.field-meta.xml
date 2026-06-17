@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClientLKP__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>ClientLKP</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Client Info</relationshipLabel>
+    <relationshipName>Client_Info</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Prospect_HPG_Sync__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates whether this Prospect has been successfully synced to HPG. True if the record exists in HPG; false if it has not yet been created in HPG.</description>
+    <label>Prospect HPG Sync</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

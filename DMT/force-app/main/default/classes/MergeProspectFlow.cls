@@ -46,7 +46,7 @@ public without sharing class MergeProspectFlow {
 
     final List<Account> clientToMerge = new List<Account>([
       SELECT Id, Name, DES_ID_Fiscal__c, participant_id__c, customer_stock_exchange_name__c, gf_customer_prospect_id__c, DES_Contact__c,
-      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Group_Code__c
+      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Group_Code__c, DES_Main_Parent__c, g_customer_id__c
       FROM Account WHERE Id = :mgList[0].idClient
     ]);
 
@@ -125,15 +125,18 @@ public without sharing class MergeProspectFlow {
 
       updateAnalysis(arceIds, false, clientToMerge.get(0), mgList.get(0));
     }
-    final DES_Arc_ProspectController.WrapperService wrap = new DES_Arc_ProspectController.WrapperService(prospect.get(0), mgList[0].lClientAlpha, false);
-    callWSConvert(JSON.serialize(wrap));
-    deleteGroupsPros(prospect.get(0).participant_id__c, mgList[0].idProspect);    
+    updateCustomAssociationsForMerge(mgList[0].idProspect, clientToMerge.get(0));
+
+    //final DES_Arc_ProspectController.WrapperService wrap = new DES_Arc_ProspectController.WrapperService(prospect.get(0), mgList[0].lClientAlpha, false);
+    //System.enqueueJob(new MergeProspectConvertQueueable(JSON.serialize(wrap)));
+    System.debug('** Antes de llamar al DMT_ProspectCallService -> ' + JSON.serialize(mgList[0]));
+    DMT_ProspectCallService.callMergeProspectService(clientToMerge.get(0).g_customer_id__c, prospect.get(0).gf_customer_prospect_id__c, clientToMerge.get(0).DES_Group_Code__c);
+    deleteGroupsPros(prospect.get(0).participant_id__c, mgList[0].idProspect, clientToMerge.get(0));    
   }
 
   /*
   * Private method to add record to List
   */
-  @Future(callout=true)
   public static void callWSConvert(String wrapJson) {
     final DES_Arc_ProspectController.WrapperService wrap = (DES_Arc_ProspectController.WrapperService) JSON.deserialize(wrapJson, DES_Arc_ProspectController.WrapperService.class);
     if(wrap.pros.DES_Prospect_status__c == Label.Prospect_created) {
@@ -142,6 +145,18 @@ public without sharing class MergeProspectFlow {
       DES_Arc_ProspectController.callConvertProspect(wrap.pros.Name, wrap.pros.DES_ID_Fiscal__c, wrap.pros.gf_customer_prospect_id__c, wrap.alphacode);
     }
   }
+
+  /*private class MergeProspectConvertQueueable implements Queueable, Database.AllowsCallouts {
+    private final String wrapJson;
+
+    public MergeProspectConvertQueueable(String wrapJson) {
+      this.wrapJson = wrapJson;
+    }
+
+    public void execute(QueueableContext context) {
+      callWSConvert(wrapJson);
+    }
+  }*/
 
   /*
   * Private method to add record to List
@@ -333,77 +348,77 @@ public without sharing class MergeProspectFlow {
     final String sobjType = String.valueOf(record.getSObjectType());
     switch on sobjType {
       when 'cstk__Emission_record__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
       when 'cstk__EmissionTarget__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
       when 'cstk__Environmental_sales__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
       when 'cstk__General_Data__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
       when 'cstk__Rating__c' {
-        record.put('cstk__Unique_id__c', setUniqueId((String) record.get('cstk__Unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__Unique_id__c', setUniqueId((String) record.get('cstk__Unique_id__c'), toolUnique));
       }
       when 'cstk__Sector_Auto__c' {
-        record.put('cstk__sector_auto_id__c', setUniqueId((String) record.get('cstk__sector_auto_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_auto_id__c', setUniqueId((String) record.get('cstk__sector_auto_id__c'), toolUnique));
       }
       when 'cstk__Sector_Autoparts__c' {
-        record.put('cstk__sector_autoparts_id__c', setUniqueId((String) record.get('cstk__sector_autoparts_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_autoparts_id__c', setUniqueId((String) record.get('cstk__sector_autoparts_id__c'), toolUnique));
       }
       when 'cstk__Sector_Aviation__c' {
-        record.put('cstk__sector_aviation_id__c', setUniqueId((String) record.get('cstk__sector_aviation_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_aviation_id__c', setUniqueId((String) record.get('cstk__sector_aviation_id__c'), toolUnique));
       }
       when 'cstk__Sector_Cement__c' {
-        record.put('cstk__sector_cement_id__c', setUniqueId((String) record.get('cstk__sector_cement_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_cement_id__c', setUniqueId((String) record.get('cstk__sector_cement_id__c'), toolUnique));
       }
       when 'cstk__Sector_Energy__c' {
-        record.put('cstk__sector_energy_id__c', setUniqueId((String) record.get('cstk__sector_energy_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_energy_id__c', setUniqueId((String) record.get('cstk__sector_energy_id__c'), toolUnique));
       }
       when 'cstk__Sector_Generic__c' {
-        record.put('cstk__sector_generic_id__c', setUniqueId((String) record.get('cstk__sector_generic_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_generic_id__c', setUniqueId((String) record.get('cstk__sector_generic_id__c'), toolUnique));
       }
       when 'cstk__Sector_Heavy_Industry__c' {
-        record.put('cstk__sector_heavy_industry_id__c', setUniqueId((String) record.get('cstk__sector_heavy_industry_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_heavy_industry_id__c', setUniqueId((String) record.get('cstk__sector_heavy_industry_id__c'), toolUnique));
       }
       when 'cstk__Sector_Real_State__c' {
-        record.put('cstk__sector_real_state_id__c', setUniqueId((String) record.get('cstk__sector_real_state_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_real_state_id__c', setUniqueId((String) record.get('cstk__sector_real_state_id__c'), toolUnique));
       }
       when 'cstk__Sector_Shipping__c' {
-        record.put('cstk__sector_shipping_id__c', setUniqueId((String) record.get('cstk__sector_shipping_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_shipping_id__c', setUniqueId((String) record.get('cstk__sector_shipping_id__c'), toolUnique));
       }
       when 'cstk__Sector_Steel__c' {
-        record.put('cstk__sector_steel_id__c', setUniqueId((String) record.get('cstk__sector_steel_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_steel_id__c', setUniqueId((String) record.get('cstk__sector_steel_id__c'), toolUnique));
       }
       when 'cstk__Sector_Utilities__c' {
-        record.put('cstk__sector_utility_id__c', setUniqueId((String) record.get('cstk__sector_utility_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__sector_utility_id__c', setUniqueId((String) record.get('cstk__sector_utility_id__c'), toolUnique));
       }
       when 'cstk__Strategy__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
       when 'cstk__Top_5_geographies__c' {
-        record.put('cstk__Unique_id__c', setUniqueId((String) record.get('cstk__Unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__Unique_id__c', setUniqueId((String) record.get('cstk__Unique_id__c'), toolUnique));
       }
       when 'cstk__tri__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
-        record.put('cstk__account__c', accountId);
+        record.put('cstk__toolkit_id__c', null);
+        record.put('cstk__account__c', null);
       }
       when 'cstk__tri_autoparts__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
-        record.put('cstk__account__c', accountId);
+        record.put('cstk__toolkit_id__c', null);
+        record.put('cstk__account__c', null);
       }
       when 'cstk__tri_generic__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
-        record.put('cstk__account__c', accountId);
+        record.put('cstk__Toolkit_id__c', null);
+        record.put('cstk__account__c', null);
       }
       when 'cstk__tri_multisector__c' {
-        record.put('cstk__gf_tri_request_date_account_id_id__c', setUniqueId((String) record.get('cstk__gf_tri_request_date_account_id_id__c'), prospectUnique, toolUnique));
-        record.put('cstk__gf_account_code_id__c', accountId);
+        record.put('cstk__toolkit_id__c', null);
+        record.put('cstk__gf_account_code_id__c', null);
       }
       when 'cstk__Water_Biodiversity__c' {
-        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), prospectUnique, toolUnique));
+        record.put('cstk__unique_id__c', setUniqueId((String) record.get('cstk__unique_id__c'), toolUnique));
       }
     }
 
@@ -413,8 +428,11 @@ public without sharing class MergeProspectFlow {
   /*
   * Private method to update unique_id__c field of objects related to toolkit.
   */
-  private static String setUniqueId(String uniqueIdOld, String target, String replacement) {
-    String uniqueIdCurrent = String.isNotBlank(replacement) ? uniqueIdOld.replace(target, replacement) : uniqueIdOld;
+  private static String setUniqueId(String uniqueIdOld, String replacement) {
+    String uniqueIdCurrent = uniqueIdOld;
+    if (uniqueIdOld.length() > 15 && String.isNotBlank(replacement)) {
+      uniqueIdCurrent = uniqueIdOld.substring(0, uniqueIdOld.length() - 15) + replacement;
+    }
     return uniqueIdCurrent;
   }
 
@@ -432,7 +450,7 @@ public without sharing class MergeProspectFlow {
   /**
   * Private method to delete prospect group
   */
-  private static void deleteGroupsPros(String groupId, String idProspect) {
+  private static void deleteGroupsPros(String groupId, String idProspect, Account clientToMerge) {
     final List <Account> accsToDelete = new List <Account>();
     final List<Account> prosNotConvert = new List<Account>([
       SELECT Id, DES_ID_Fiscal__c, participant_id__c FROM Account WHERE participant_id__c = :groupId AND participant_id__r.RecordType.DeveloperName = 'Prospect_Group' AND RecordType.DeveloperName = 'Prospect_Subsidiary'
@@ -447,6 +465,23 @@ public without sharing class MergeProspectFlow {
     }
 
     if(prosNotConvert.size() == 1) {
+      //Comprobamos si el prospect group tiene toolkit
+      Integer prospectGroupHasToolkit = [SELECT COUNT() FROM cstk__Toolkit__c WHERE cstk__account_id__c = :groupId];
+      
+      if (prospectGroupHasToolkit > 0) {
+        //En caso de tener toolkit, se comprueba si el grupo del cliente con el que se va a mergear tiene toolkit 
+        Integer finalGroupHasToolkit = [SELECT COUNT() From cstk__Toolkit__c WHERE cstk__account_id__c = :clientToMerge.DES_Main_Parent__c];
+        cstk__Toolkit__c toolkitProspect = [SELECT Id, cstk__toolkit_unique_id__c FROM cstk__Toolkit__c WHERE cstk__account_id__c = :groupId];
+        if (finalGroupHasToolkit > 0) {
+          //En caso de que el grupo final tenga toolkit, se elimina el toolkit del prospect group
+          delete toolkitProspect;
+        } else {
+          //En caso de que el grupo final no tenga toolkit, se actualiza el toolkit del prospect group al grupo final
+          Account prospectToMerge = [SELECT ID, gf_customer_prospect_id__c, DES_Group_Code__c from Account WHERE ID = : idProspect LIMIT 1];
+          Account toolkitGroupAccount = [SELECT ID, Name, DES_Group_Code__c, gf_customer_prospect_id__c FROM Account WHERE ID = : clientToMerge.DES_Main_Parent__c LIMIT 1];
+          updateToolkitRelationships(toolkitProspect, prospectToMerge, toolkitGroupAccount);
+        }
+      }  
       final Account accAux = new Account(Id = groupId);
       accsToDelete.add(accAux);
     }
@@ -511,6 +546,172 @@ public without sharing class MergeProspectFlow {
     if(!arceDelete.isEmpty()) {
       delete arceDelete;
     }
+  }
+
+  /**
+  * @description Actualiza Custom_Association__c y Custom_Association_Client__c del Prospect con datos del cliente final en lineas
+  * Actualiza Custom_Association_Opportunity__c y DMT_Opportunity_Client__c del Prospect con datos del cliente final en oportunidades
+  * @param prospectId Id del prospect
+  * @param clientToMerge Account del cliente final
+  */
+  private static void updateCustomAssociationsForMerge(Id prospectId, Account clientToMerge) {
+    // 1. Reasignar primero las lineas que apuntan directamente al prospect.
+    final List<DMT_Line__c> linesToUpdate = [
+      SELECT Id, Client__c, Custom_Association__c
+      FROM DMT_Line__c
+      WHERE Client__c = :prospectId
+    ];
+
+    final Set<Id> customAssociationIds = new Set<Id>();
+    for (DMT_Line__c line : linesToUpdate) {
+      line.Client__c = clientToMerge.Id;
+      if (line.Custom_Association__c != null) {
+        customAssociationIds.add(line.Custom_Association__c);
+      }
+    }
+
+    // 2. Obtener el g_customer_id__c del Prospect
+    final List<Account> prospectAccounts = [
+      SELECT Id, g_customer_id__c
+      FROM Account
+      WHERE Id = :prospectId
+      LIMIT 1
+    ];
+
+    if (prospectAccounts.isEmpty()) {
+      System.debug('log::Prospect not found');
+      return;
+    }
+
+    final String prospectCustomerId = prospectAccounts[0].g_customer_id__c;
+
+    if (String.isBlank(prospectCustomerId)) {
+      System.debug('log::Prospect g_customer_id__c is blank, fallback to line associations');
+    }
+
+    // 3. Consultar Local_Client__c del clientToMerge
+    final List<Local_Client__c> localClientList = [
+      SELECT Id, Alpha_code__c 
+      FROM Local_Client__c 
+      WHERE Cib_Client__c = :clientToMerge.Id 
+      LIMIT 1
+    ];
+    final Local_Client__c localClient = !localClientList.isEmpty() ? localClientList[0] : null;
+
+    // 4. Obtener groupStructure y determinar el código del grupo
+    final Map<String, Object> groupStructure = DMT_HPG_Utils.buildClientGroupStructure(clientToMerge.Id);
+
+    String groupCode = null;
+    if (groupStructure.get('supragroupId') != null) {
+      groupCode = (String) groupStructure.get('supragroupId');
+    } else if (groupStructure.get('groupCode') != null) {
+      groupCode = (String) groupStructure.get('groupCode');
+    }
+
+    // 5. Extraer g_entific_id__c del clientToMerge
+    final String entificId = String.isNotBlank(clientToMerge.g_customer_id__c) && clientToMerge.g_customer_id__c.length() >= 2 ? clientToMerge.g_customer_id__c.substring(0, 2) : null;
+
+    // 6. Buscar el Account del Group usando el código determinado
+    Id groupAccountId = null;
+    if (String.isNotBlank(groupCode)) {
+      final List<Account> groupAccounts = [
+        SELECT Id 
+        FROM Account 
+        WHERE DES_Group_Code__c = :groupCode 
+        LIMIT 1
+      ];
+      if (!groupAccounts.isEmpty()) {
+        groupAccountId = groupAccounts[0].Id;
+      }
+    }
+
+    // 7. Consultar y actualizar Custom_Association__c (Líneas)
+    List<Custom_Association__c> customAssociationsLine = new List<Custom_Association__c>();
+    if (String.isNotBlank(prospectCustomerId)) {
+      customAssociationsLine = [
+        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
+        FROM Custom_Association__c
+        WHERE g_customer_id__c = :prospectCustomerId
+          AND DMT_Line__c != null
+      ];
+    } else if (!customAssociationIds.isEmpty()) {
+      customAssociationsLine = [
+        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
+        FROM Custom_Association__c
+        WHERE Id IN :customAssociationIds
+      ];
+    }
+    
+    for (Custom_Association__c ca : customAssociationsLine) {
+      ca.Group__c = groupAccountId;
+      ca.g_customer_id__c = clientToMerge.g_customer_id__c;
+      ca.g_group_id__c = groupCode;
+    }
+
+    // 8. Consultar y actualizar Custom_Association_Opportunity__c (Oportunidades)
+    List<Custom_Association_Opportunity__c> customAssociationsOpp = new List<Custom_Association_Opportunity__c>();
+    if (String.isNotBlank(prospectCustomerId)) {
+      customAssociationsOpp = [
+        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
+        FROM Custom_Association_Opportunity__c
+        WHERE g_customer_id__c = :prospectCustomerId
+          AND Opportunity__c != null
+      ];
+    }
+    
+    for (Custom_Association_Opportunity__c cao : customAssociationsOpp) {
+      cao.Group__c = groupAccountId;
+      cao.g_customer_id__c = clientToMerge.g_customer_id__c;
+      cao.g_group_id__c = groupCode;
+    }
+
+    // 9. Consultar y actualizar Custom_Association_Client__c (Lineas)
+    List<Custom_Association_Client__c> customAssociationClients = new List<Custom_Association_Client__c>();
+    if (String.isNotBlank(prospectCustomerId)) {
+      customAssociationClients = [
+        SELECT Id, Name, Alpha_Code_Client__c, Local_Client_Child__c, g_customer_id__c, g_entific_id__c
+        FROM Custom_Association_Client__c
+        WHERE g_customer_id__c = :prospectCustomerId
+      ];
+    } else if (!customAssociationIds.isEmpty()) {
+      customAssociationClients = [
+        SELECT Id, Name, Alpha_Code_Client__c, Local_Client_Child__c, g_customer_id__c, g_entific_id__c
+        FROM Custom_Association_Client__c
+        WHERE Custom_Association__c IN :customAssociationIds
+      ];
+    }
+    
+    for (Custom_Association_Client__c cac : customAssociationClients) {
+      if (localClient != null) {
+        cac.Alpha_Code_Client__c = localClient.Alpha_code__c;
+        cac.Local_Client_Child__c = localClient.Id;
+      }
+      cac.g_customer_id__c = clientToMerge.g_customer_id__c;
+      cac.g_entific_id__c = entificId;
+      cac.Name = clientToMerge.Name;
+    }
+
+    // 10. Consultar y actualizar DMT_Opportunity_Client__c (Oportunidades)
+    List<DMT_Opportunity_Client__c> opportunityClients = new List<DMT_Opportunity_Client__c>();
+    if (String.isNotBlank(prospectCustomerId)) {
+      opportunityClients = [
+        SELECT Id, Alpha_Code_Client__c
+        FROM DMT_Opportunity_Client__c
+        WHERE Alpha_Code_Client__c = :prospectCustomerId
+      ];
+    }
+    
+    for (DMT_Opportunity_Client__c oc : opportunityClients) {
+      if (localClient != null) {
+        oc.Alpha_Code_Client__c = localClient.Alpha_code__c;
+      }
+    }
+
+    updateList(linesToUpdate);
+    updateList(customAssociationsLine);
+    updateList(customAssociationsOpp);
+    updateList(customAssociationClients);
+    updateList(opportunityClients);
   }
 
   /*

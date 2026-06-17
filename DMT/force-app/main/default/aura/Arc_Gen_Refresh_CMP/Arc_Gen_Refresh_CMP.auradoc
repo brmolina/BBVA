@@ -1,0 +1,13 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Call engine systems to update miniArce Data. Calls engine only for the miniArce selected</b></h5>
+        <p>refreshSpinner Control spiner on refresh</p>
+        <p>refreshMessage Message to be displayed while refreshing</p>
+        <p>retToPreparing If true will return to preparing arce after refresh</p>
+        <p>isVisibleBtnContinue Controls visibility of the button continue</p>
+        <p>strCurrentStage Contains the current ArceStage</p>
+    </aura:description>
+    <aura:example name="ExampleName" ref="exampleComponentName" label="Label">
+        <p>This is an example</p>
+    </aura:example>
+</aura:documentation>

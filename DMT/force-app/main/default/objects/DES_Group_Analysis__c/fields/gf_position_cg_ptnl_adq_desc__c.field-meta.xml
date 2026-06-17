@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_position_cg_ptnl_adq_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>This question must be completed only if there is no previous Account Planning exercise for this client carried out on Global Desktop</inlineHelpText>
+    <label>Any potential acquisition w/ the client?</label>
+    <length>2000</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

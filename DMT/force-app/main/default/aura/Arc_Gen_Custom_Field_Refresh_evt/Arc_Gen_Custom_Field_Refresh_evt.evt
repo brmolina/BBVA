@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event used to refresh calculator component.">
+    <aura:attribute name="param" type="String"  description="String parameter for universal use."/>
+</aura:event>

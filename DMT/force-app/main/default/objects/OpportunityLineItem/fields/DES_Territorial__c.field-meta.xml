@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Territorial__c</fullName>
+    <label>OLD Territorial</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Centro</fullName>
+                <default>false</default>
+                <label>Centro</label>
+            </value>
+            <value>
+                <fullName>Este</fullName>
+                <default>false</default>
+                <label>Este</label>
+            </value>
+            <value>
+                <fullName>Norte</fullName>
+                <default>false</default>
+                <label>Norte</label>
+            </value>
+            <value>
+                <fullName>Noreste</fullName>
+                <default>false</default>
+                <label>Noreste</label>
+            </value>
+            <value>
+                <fullName>Sur</fullName>
+                <default>false</default>
+                <label>Sur</label>
+            </value>
+            <value>
+                <fullName>Cataluña</fullName>
+                <default>false</default>
+                <label>Cataluña</label>
+            </value>
+            <value>
+                <fullName>N.A.</fullName>
+                <default>false</default>
+                <label>N.A.</label>
+            </value>
+            <value>
+                <fullName>CIB</fullName>
+                <default>false</default>
+                <label>CIB</label>
+            </value>
+            <value>
+                <fullName>Latam</fullName>
+                <default>false</default>
+                <label>Latam</label>
+            </value>
+            <value>
+                <fullName>Otro (ECA y banco)</fullName>
+                <default>false</default>
+                <label>Otro (ECA y banco)</label>
+            </value>
+            <value>
+                <fullName>Deudor destino</fullName>
+                <default>false</default>
+                <label>Deudor destino</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

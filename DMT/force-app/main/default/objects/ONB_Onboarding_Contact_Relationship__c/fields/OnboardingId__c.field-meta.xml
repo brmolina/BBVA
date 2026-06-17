@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OnboardingId__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>OnboardingId</label>
+    <referenceTo>ONB_Onboarding__c</referenceTo>
+    <relationshipLabel>Onboarding Contact Relationship</relationshipLabel>
+    <relationshipName>Onboarding_Contact_Relationship</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

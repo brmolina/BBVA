@@ -1,5 +1,5 @@
 @IsTest
-public class DMT_Callout_LeveragedLending_Test {
+public without sharing class DMT_Callout_LeveragedLending_Test {
 
     // ----------------------------------------------------
     // TestSetup: settings mínimos
@@ -16,7 +16,10 @@ public class DMT_Callout_LeveragedLending_Test {
             DMT_Test_DataFactory.setIasoCustomSetting('DMT_GrantingTicket', 'https://validation.ok', 'ServicesPartition', false)
         );
 
-        insert settingsToInsert;
+        //insert settingsToInsert;
+        // Inserta respetando permisos del Systema actual
+        Database.insert(settingsToInsert, AccessLevel.SYSTEM_MODE);
+
     }
 
     // ----------------------------------------------------

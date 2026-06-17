@@ -1,0 +1,3 @@
+<aura:documentation>
+    <aura:description>Component that displays a message when overlays are not enabled for an ARCE or org.</aura:description>
+</aura:documentation>

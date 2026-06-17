@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_RORC_Start_Before_Contacted_Client</fullName>
+    <active>true</active>
+    <description>Valida que el valor de RORC inicial se haya ingresado, antes de cambiar el estatus del Commitment a &quot;Proposal in Preparation&quot;</description>
+    <errorConditionFormula>AND(
+ ISCHANGED(FCSC_Estatus_Contacto__c ), 
+ OR(
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Proposal in Preparation&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Open Opportunity&quot;)
+  ),
+ ISBLANK(FCSC_RORC_Inicio_Compromiso__c ) 
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_RORC_Inicio_Compromiso__c</errorDisplayField>
+    <errorMessage>RORC Start Commitment is empty</errorMessage>
+</ValidationRule>

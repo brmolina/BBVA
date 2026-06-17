@@ -3,6 +3,7 @@ import { LightningElement, track, api, wire } from 'lwc';
 import DMT_Styles from "@salesforce/resourceUrl/DMT_Styles";
 import { loadStyle } from "lightning/platformResourceLoader";
 import TITLE_TABLE from '@salesforce/label/c.dmt_cl_OperationalRestrc_Text';
+import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
 
 export default class ProductRestricTable extends LightningElement {
 
@@ -10,7 +11,8 @@ export default class ProductRestricTable extends LightningElement {
     bookingGeography;
     productOptions;
     maxTenorOptions;
-    columns;
+    @track columns;
+    allColumns;
     @api columnstablecopypaste = []
     @api isReadOnlyUser;
     labels = {
@@ -108,31 +110,7 @@ export default class ProductRestricTable extends LightningElement {
 
     lastSavedData = [];
     setColumns(){
-      if (this.bookingGeography == 'CO') {
-        this.columns = [
-           { label: 'PRODUCT GROUP', fieldName: 'products',  type: 'url',
-            typeAttributes: {
-              label: { fieldName: 'products' },
-              tooltip: { fieldName: 'title' },
-          }, cellAttributes:{
-            alignment: "left",
-            class: "dmt-datatable-url",
-          },hideDefaultActions:true ,editable: false},
-          { label: 'DERIVATIVES LINE', fieldName: 'derivativesLine', type:'customselectRow',hideDefaultActions:true, cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'derivativesEdit'}, checkedItem: { fieldName: 'derivativesLine' }, fieldName: 'derivativesLine', context: { fieldName: 'Id' }
-          }},
-          { label: 'FD LINE: ' +this.fdAmount, fieldName: 'lineFD', type:'customselectRow',hideDefaultActions:true ,cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'FDEdit'}, checkedItem: { fieldName: 'lineFD' }, fieldName: 'lineFD', context: { fieldName: 'Id' }
-            }},
-          { label: 'DVP LINE: ' +this.dvpAmount, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'DVPEdit'}, checkedItem: { fieldName: 'lineDVP' }, fieldName: 'lineDVP', context: { fieldName: 'Id' }
-          }}
-      ];
-      } else if ( this.bookingGeography == 'AR' ) {
-        this.columns = [
+        this.allColumns = [
           { label: 'PRODUCT GROUP', fieldName: 'products',  type: 'url',
             typeAttributes: {
               label: { fieldName: 'products' },
@@ -146,48 +124,43 @@ export default class ProductRestricTable extends LightningElement {
             typeAttributes: {
               aviableItem: {fieldName: 'derivativesEdit'}, checkedItem: { fieldName: 'derivativesLine' }, fieldName: 'derivativesLine', context: { fieldName: 'Id' }
           }},
-          { label: 'MATURITY TERM', fieldName: 'maxTerm', type:'picklist',hideDefaultActions:true, typeAttributes: { isDisabled : { fieldName: 'isDisabled' },
+          { label: 'MATURITY TERM', fieldName: 'maxTerm', hidden: { fieldName: 'MTDisabled' }, type:'picklist',hideDefaultActions:true, typeAttributes: { isDisabled : { fieldName: 'isDisabled' },
               placeholder: 'Select...', options: this.termoptions, fieldName: 'maxTerm' // list of all picklist options
               , value: { fieldName: 'maxTerm' } // default value for picklist
               , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
           },cellAttributes:{class: {fieldName:'deriVisible'}}},
-          { label: 'DVP LINE: ' +this.dvpAmount, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},
+          { label: 'FD LINE: ' +this.fdAmount, hidden:{ fieldName: 'FDDisabled' }, fieldName: 'lineFD', type:'customselectRow',hideDefaultActions:true ,cellAttributes:{style: 'text-align: center;'},
+            typeAttributes: {
+              aviableItem: {fieldName: 'FDEdit'}, checkedItem: { fieldName: 'lineFD' }, fieldName: 'lineFD', context: { fieldName: 'Id' }
+            }},
+          { label: 'DVP LINE: ' +this.dvpAmount, hidden: { fieldName: 'DVPDisabled' }, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},
             typeAttributes: {
               aviableItem: {fieldName: 'DVPEdit'}, checkedItem: { fieldName: 'lineDVP' }, fieldName: 'lineDVP', context: { fieldName: 'Id' }
           }}
       ];
 
-      }
-       else {
-        this.columns = [
-          { label: 'PRODUCT GROUP', fieldName: 'products',  type: 'url',
-            typeAttributes: {
-              label: { fieldName: 'products' },
-              tooltip: { fieldName: 'title' },
-          }, cellAttributes:{
-            alignment: "left",
-            class: "dmt-datatable-url",
-          }
-          ,hideDefaultActions:true ,editable: false},
-          { label: 'DERIVATIVES LINE', fieldName: 'derivativesLine', type:'customselectRow',hideDefaultActions:true, cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'derivativesEdit'}, checkedItem: { fieldName: 'derivativesLine' }, fieldName: 'derivativesLine', context: { fieldName: 'Id' }
-          }},
-          { label: 'MATURITY TERM', fieldName: 'maxTerm', type:'picklist',hideDefaultActions:true, typeAttributes: { isDisabled : { fieldName: 'isDisabled' },
-              placeholder: 'Select...', options: this.termoptions, fieldName: 'maxTerm' // list of all picklist options
-              , value: { fieldName: 'maxTerm' } // default value for picklist
-              , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
-          },cellAttributes:{class: {fieldName:'deriVisible'}}},
-          { label: 'FD LINE: ' +this.fdAmount, fieldName: 'lineFD', type:'customselectRow',hideDefaultActions:true ,cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'FDEdit'}, checkedItem: { fieldName: 'lineFD' }, fieldName: 'lineFD', context: { fieldName: 'Id' }
-            }},
-          { label: 'DVP LINE: ' +this.dvpAmount, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},
-            typeAttributes: {
-              aviableItem: {fieldName: 'DVPEdit'}, checkedItem: { fieldName: 'lineDVP' }, fieldName: 'lineDVP', context: { fieldName: 'Id' }
-          }}
-      ];
-      }
+        if (!this.tableData || this.tableData.length === 0) {
+            this.columns = this.allColumns.filter(col => !col.hidden);
+            return;
+        }
+
+        this.columns = this.allColumns.filter(col => {
+            if (!col.hidden) {
+                return true; 
+            }
+
+            const fieldToCheck = col.hidden.fieldName;
+
+          
+            const shouldBeHidden = this.tableData.every(row => {
+                
+                return !!row[fieldToCheck]; 
+            });
+
+
+            return !shouldBeHidden;
+        });
+      this.columns = [...this.columns];
     
 }
     renderedCallback() {
@@ -202,6 +175,7 @@ export default class ProductRestricTable extends LightningElement {
     }
     connectedCallback() {
         
+      loadStyle(this, dataTableWithoutTruncate);
 
         //sample data
         // this.data = [{ 'Id': '12345', 'productType': 'codeFX', 'maxTenorWC': '1Y', 'maxTenorWOC': '1Y' }, { 'Id': '4321', 'productType': 'codeE', 'maxTenorWC': '5Y', 'maxTenorWOC': '1Y' }]
@@ -215,28 +189,29 @@ export default class ProductRestricTable extends LightningElement {
             if (item.Id === updateItem.Id) {
                 for (let field in updateItem) {
                     item[field] = updateItem[field];//console.log('updateItem[field]',updateItem[field])
+                    let productsValue = this.tableData.filter(dataRow => dataRow["Id"] == updateItem['Id'])[0]['productsValue'];
                     if(field == 'derivativesLine' && updateItem[field]){
-                      if(item['FDEdit']){
+                      if(item['FDEdit'] && item['FDdependentDerivatives']){
                         item['lineFD'] = true;
                       }
-                      if(item['DVPEdit']){
+                      if(item['DVPEdit'] && item['DVPdependentDerivatives']){
                         item['lineDVP'] = true;
                       }
+
                      }
-                    let productsValue = this.tableData.filter(dataRow => dataRow["Id"] == updateItem['Id'])[0]['productsValue'];
+                    
                     if(field == 'derivativesLine' && this.bookingGeography == 'ES' && (productsValue == 'REPA' || productsValue == 'REAC')){
                       item['lineFD'] = updateItem[field];
                       item['lineDVP'] = updateItem[field];
                     }
-                    // if(productsValue == 'FOEX' && this.bookingGeography == 'ES' && ( field == 'lineFD' || field == 'lineDVP')){
-                    //   item['lineFD'] = updateItem[field];
-                    //   item['lineDVP'] = updateItem[field];
-                    // }
+                    if(productsValue == 'FOEX' && this.bookingGeography == 'MX' && field == 'derivativesLine'){
+                       //item['lineFD'] = updateItem[field];
+                       item['lineDVP'] = updateItem[field];
+                     }
                       //if(item['lineFD'] && this.fdAmountvalue.replace(/\D/g, "") == 0){//console.log('fdAmountvalue',this.fdAmountvalue.replace(/\D/g, ""))
                       if(item['lineFD'] && this.fdAmountvalue == 0){
                         item['setAttentionFD'] = 'slds-theme_error';
                       }
-                      //if(item['lineDVP'] && this.dvpAmountvalue.replace(/\D/g, "") == 0){
                       if(item['lineDVP'] && this.dvpAmountvalue == 0){
                         item['setAttentionDVP'] = 'slds-theme_error';
                       }
@@ -362,15 +337,6 @@ export default class ProductRestricTable extends LightningElement {
     }
 
     checkProductsByGeography() {
-      if (this.bookingGeography == 'CO') {
-        this.removeProductsFromTableData('DBIC','REAC', 'REPA', 'EQSP', 'NDFX');
-      } else if (this.bookingGeography == 'PE') {
-        this.removeProductsFromTableData('DBIC', 'NDFX');
-      } else if (this.bookingGeography == 'AR') {
-        this.removeProductsFromTableData('DBIC', 'REAC', 'REPA', 'DELE');
-      } else if (this.bookingGeography == 'ES') {
-        this.removeProductsFromTableData('NDFX');
-      }
 
       
       this.tableData = this.tableData.map((item) => ({

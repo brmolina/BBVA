@@ -1,0 +1,54 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+    <aura:attribute name="recordError" access="private" type="String" />
+
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.price.priceId}"
+                      targetFields="{!v.price}"
+                      targetError="{!v.recordError}"
+                      fields="profitabilityMetrics[0].deal,profitabilityMetrics[1].deal,
+                              allIn.onBalance,allIn.offBalance,term.value,term.unit,averageLifeInYears"
+                      />
+
+    <div>
+        <table class="tableStyle">
+            <tr>
+                <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">RAR</h1>
+                    <h1 class="truncate text-black text-large">{! if(v.price.profitabilityMetrics[0].id == 'RAR',v.price.profitabilityMetrics[0].deal,v.price.profitabilityMetrics[1].deal)}</h1>
+                    <br/>
+                </td>
+                <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">RORC</h1>
+                    <h1 class="truncate text-black text-large">{! if(v.price.profitabilityMetrics[0].id == 'RORC',v.price.profitabilityMetrics[0].deal,v.price.profitabilityMetrics[1].deal)}</h1>
+                    <br/>
+                </td>
+                <!-- <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">All-in OnB</h1>
+                    <h1 class="truncate text-black text-large">{onBalance}</h1>
+                    <br/>
+                </td> -->
+            </tr>
+        </table>
+        <table class="tableStyle">
+            <tr>
+                <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">Term&nbsp;({!v.price.term.unit})</h1>
+                    <h1 class="truncate text-black text-large">{! v.price.term.value}&nbsp;{!v.price.term.unit}</h1>
+                    <br/>
+                </td>
+                <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">All-in OffB</h1>
+                    <h1 class="truncate text-black text-large">{!v.price.allIn.offBalance}</h1>
+                    <br/>
+                </td>
+                <td>
+                    <h1 class="truncate text-medium line-spacing-small text-grey2">Average live (years)</h1>
+                    <h1 class="truncate text-black text-large">{!v.price.averageLifeInYears}</h1>
+                    <br/>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</aura:component>

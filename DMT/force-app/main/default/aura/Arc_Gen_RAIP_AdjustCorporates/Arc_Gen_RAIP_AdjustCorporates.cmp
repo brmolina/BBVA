@@ -1,0 +1,96 @@
+<!--**
+  * @File Name          : Arc_Gen_RAIP_AdjustCorporates
+  * @Description        : Adjust Corporate button aura component
+  * @Author             : ARCE
+  * @Group              : ARCE
+  *=======================================================================================================================
+  * Ver                  Date                         Author                         Modification
+  *=======================================================================================================================
+  * 1.0               27/04/2022                                                     Initial version
+  **-->
+<aura:component controller="Arc_Gen_RAIP_AdjCorpoButton_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="showbutton"    type="Boolean" default="false" description="Buttons visibility section"/>
+    <aura:attribute name="spinnerStatus" type="Boolean" default="true"  description="Spinner load variable"/>
+    <aura:attribute name="warningMsg"    type="String"  description="Redirect warning message section variable"/>
+    <aura:attribute name="errorMsg"      type="Boolean" default="false" description="Redirect warning section variable"/>
+    <aura:attribute name="orgURL"        type="String"                  description="Org url redirection"/>
+    <aura:attribute name="vfURL"         type="String"                  description="Visual force url redirection"/>
+    <aura:attribute name="messageError"  type="String"                  description="Message error catch"/>
+    <aura:attribute name="globalCustomerId"  type="String"              description="Indicates url to the visualforce page in the global org"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModal }"
+                                        alternativeText="{!$Label.qvcd.Button_Modal_Cancel}" variant="bare-inverse"
+                                        class="slds-modal__close" />
+                <h2 id="modal-heading" class="slds-text-heading_medium slds-hyphenate">
+                    <ui:outputText value="{!$Label.c.Arc_Gen_AdjCorpoTitle}"></ui:outputText>
+                </h2>
+                </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <div class="slds-grid slds-wrap">
+                    <aura:if isTrue="{!v.showbutton}">
+                        <div class="slds-text-heading_small slds-text-align_center">
+                            <ui:outputText value="{!$Label.c.Arc_Gen_AdjCorpoConfirm}"></ui:outputText>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-m-top_medium slds-m-bottom_medium">
+                            <div class="slds-text-align_center slds-var-m-around_small">
+                                <lightning:button class="slds-button slds-button_brand slds-button_stretch"
+                                                variant="brand"
+                                                label="{!$Label.c.Arc_Gen_Yes}"
+                                                title="{!$Label.c.Arc_Gen_Yes}"
+                                                onclick="{! c.handleYes }"/>
+                            </div>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-m-top_medium slds-m-bottom_medium">
+                            <div class="slds-text-align_center slds-var-m-around_small">
+                                <lightning:button class="slds-button slds-button_brand slds-button_stretch"
+                                                variant="brand"
+                                                label="{!$Label.c.Arc_Gen_No}"
+                                                title="{!$Label.c.Arc_Gen_No}"
+                                                onclick="{! c.handleNo }"/>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.warningMsg != 'null'}">
+                            <div class="slds-size_1-of-1">
+                                <div id="warningMsg" class="slds-notify slds-notify_alert slds-alert_warning slds-align_absolute-center" role="alert">
+                                    <span class="slds-assistive-text">warning</span>
+                                    <h2>
+                                        <ui:outputText value="{!v.warningMsg}"></ui:outputText>
+                                    </h2>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </aura:if>
+                    <aura:if isTrue="{!v.errorMsg}">
+                        <div class="slds-size_1-of-1">
+                            <div id="errorMsg" class="slds-notify slds-notify_alert slds-alert_error slds-align_absolute-center" role="alert">
+                                <span class="slds-assistive-text">error</span>
+                                <h2>{!v.messageError}</h2>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.spinnerStatus}">
+                        <div class="slds-size_1-of-1">
+                            <div class="slds-align_absolute-center">
+                                <div id="spinnerContainer" class="slds-spinner_container">
+                                    <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <form id="Formulario" aura:id="Formulario" target="_blank" method="POST" action="{!v.vfURL}">
+                        <input id="customerId" type="hidden" name="customerId" value="{!v.globalCustomerId}"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

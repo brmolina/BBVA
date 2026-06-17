@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_task_execution_team_name__c</fullName>
+    <label>Resolution Team</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Global Client Service</fullName>
+                <default>false</default>
+                <label>Global Client Service</label>
+            </value>
+            <value>
+                <fullName>Global Direct Channels GMM</fullName>
+                <default>false</default>
+                <label>Global Direct Channels GMM</label>
+            </value>
+            <value>
+                <fullName>Global Comm Cards</fullName>
+                <default>false</default>
+                <label>Global Comm Cards</label>
+            </value>
+            <value>
+                <fullName>Global Param</fullName>
+                <default>false</default>
+                <label>Global Param</label>
+            </value>
+            <value>
+                <fullName>FUCIB</fullName>
+                <default>false</default>
+                <label>FUCIB</label>
+            </value>
+            <value>
+                <fullName>Global Supply Chain Finance</fullName>
+                <default>false</default>
+                <label>Global Supply Chain Finance</label>
+            </value>
+            <value>
+                <fullName>Global Net Cash Support</fullName>
+                <default>false</default>
+                <label>Global Net Cash Support</label>
+            </value>
+            <value>
+                <fullName>Peru Customer Service</fullName>
+                <default>false</default>
+                <label>Peru Customer Service</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

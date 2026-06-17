@@ -20,7 +20,7 @@
 * |2021-05-26 amunguia.contractor@bbva.com the mapping is based on the type of field.
 * ------------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('sf:TooManyMethods')
+@SuppressWarnings('sf:TooManyMethods,PMD.AvoidGlobalModifier')
 global class Arc_GBL_EmpRatingDetailsMapping implements arce.Arc_GBL_RatingDetailsMapping_Interface {
     /**
     * @Description: Instance of the data access class
@@ -233,6 +233,7 @@ global class Arc_GBL_EmpRatingDetailsMapping implements arce.Arc_GBL_RatingDetai
     * @param String projectionId
     * @example setRating(Map<String, Object> ratingMap, String ratingType, arce__Account_has_Analysis__c accHasAnalysis, arce__rating__c rating)
     **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     global void setRating(Map<String, Object> ratingMap, String ratingType, arce__Account_has_Analysis__c accHasAnalysis, arce__rating__c rating) {
       setRating(ratingMap, ratingType, accHasAnalysis, rating, null);
     }
@@ -337,6 +338,17 @@ global class Arc_GBL_EmpRatingDetailsMapping implements arce.Arc_GBL_RatingDetai
     global AggregateResult getRelativeWeightSum(String parentId) {
       return null;
     }
+
+    /**
+    * @description Nullifies fields for overlay sections deactivated by the engine response, based on arce__Clean_Overlay_Values__mdt config.
+    * @param overlayOld Snapshot of the overlay before the engine response was applied
+    * @param overlayNew Overlay after the engine response (fields are nulled in-place)
+    * @param aha Account_has_Analysis__c used for rating-tool filtering
+    */
+    global void cleanDeactivatedOverlaySections( arce__Overlay__c overlayOld, arce__Overlay__c overlayNew, arce__Account_has_Analysis__c aha) {
+        System.debug('Not implemented');
+    }
+
     /** @Description: ENUM TYPE */
     public enum TYPE {DATETIME_X, BOOLEAN_X, DOUBLE_X, CURRENCY_X}
 }

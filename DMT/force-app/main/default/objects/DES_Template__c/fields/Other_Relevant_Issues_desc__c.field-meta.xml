@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_Relevant_Issues_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Legal, compliance, regulatory, tax, conflict of interest, Reg W, Interest Rate Period Comments, etc</inlineHelpText>
+    <label>Other Relevant Issues</label>
+    <length>836</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

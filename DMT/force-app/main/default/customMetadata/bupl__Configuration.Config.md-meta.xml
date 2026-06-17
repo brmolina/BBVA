@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Config</label>
+    <protected>false</protected>
+    <values>
+        <field>bupl__Apply_Filter__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>bupl__Field_values__c</field>
+        <value xsi:type="xsd:string">,D</value>
+    </values>
+    <values>
+        <field>bupl__Filter_Object__c</field>
+        <value xsi:type="xsd:string">Des_Booking__c</value>
+    </values>
+    <values>
+        <field>bupl__Filter_Question__c</field>
+        <value xsi:type="xsd:string">Booking scope</value>
+    </values>
+    <values>
+        <field>bupl__Filter_values__c</field>
+        <value xsi:type="xsd:string">Booking CIB,Booking CIB + Rest</value>
+    </values>
+    <values>
+        <field>bupl__Form_fields__c</field>
+        <value xsi:type="xsd:string">acpl__AA_answer_text__c,acpl__gf_account_planning_id__c,acpl__gf_ap_question_form_desc__c</value>
+    </values>
+    <values>
+        <field>bupl__Form_object__c</field>
+        <value xsi:type="xsd:string">acpl__AP_Question__c</value>
+    </values>
+    <values>
+        <field>bupl__Object_Fields__c</field>
+        <value xsi:type="xsd:string">DES_Country__c,SOLUTION_CATEGORY_NAME__c,Current_Year_Last_Year__c,gf_headquarter_perimeter_type__c,DES_Year__c,DES_Client__c</value>
+    </values>
+    <values>
+        <field>bupl__Reference_Fields__c</field>
+        <value xsi:type="xsd:string">bupl__gf_booking_operation_cntry_id__c,bupl__solution_category_desc__c,bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.id</value>
+    </values>
+    <values>
+        <field>bupl__Reference_Object__c</field>
+        <value xsi:type="xsd:string">bupl__BusinessPlan_Item__c</value>
+    </values>
+</CustomMetadata>

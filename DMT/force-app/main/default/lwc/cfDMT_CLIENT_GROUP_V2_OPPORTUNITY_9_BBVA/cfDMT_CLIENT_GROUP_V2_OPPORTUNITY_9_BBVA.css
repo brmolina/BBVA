@@ -1,0 +1,20 @@
+button[class="slds-button slds-p-horizontal_x-small accordion-header"]{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    background: var(--lwc-colorBackground,lightgrey);
+    color: var(--lwc-color,#6b6969);
+}
+.accordion-header[omnistudio-block_block_slds] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: left;
+    background: var(--lwc-colorBackground, lightgrey);
+    color: var(--lwc-color, #6b6969);
+}
+.label-color-onexpand[omnistudio-block_block_slds] {
+     color: var(--lwc-color, #6b6969);
+}

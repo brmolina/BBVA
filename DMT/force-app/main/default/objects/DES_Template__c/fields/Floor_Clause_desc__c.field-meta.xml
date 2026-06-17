@@ -1,0 +1,1540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Floor_Clause_desc__c</fullName>
+    <label>Liquidity Score</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>LS1</fullName>
+                <default>false</default>
+                <label>LS1</label>
+            </value>
+            <value>
+                <fullName>LS2</fullName>
+                <default>false</default>
+                <label>LS2</label>
+            </value>
+            <value>
+                <fullName>LS3</fullName>
+                <default>false</default>
+                <label>LS3</label>
+            </value>
+            <value>
+                <fullName>LS4</fullName>
+                <default>false</default>
+                <label>LS4</label>
+            </value>
+            <value>
+                <fullName>NA</fullName>
+                <default>false</default>
+                <label>NA</label>
+            </value>
+            <value>
+                <fullName>&quot;Floor&quot; - means a rate of interest equal to zero percent (0%)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>&quot;Floor&quot; - means a rate of interest equal to zero percent (0%)</label>
+            </value>
+            <value>
+                <fullName>&quot;In no event shall (a) the Base Rate be less than 1.00% per annum.&quot;</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>&quot;In no event shall (a) the Base Rate be less than 1.00% per annum.&quot;</label>
+            </value>
+            <value>
+                <fullName>&quot;In no event shall the successor rate be less than zero.&quot;</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>&quot;In no event shall the successor rate be less than zero.&quot;</label>
+            </value>
+            <value>
+                <fullName>&quot;Means the benchmark rate floor&quot;</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>&quot;Means the benchmark rate floor&quot;</label>
+            </value>
+            <value>
+                <fullName>0% floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>0% floor</label>
+            </value>
+            <value>
+                <fullName>0,50% SOFR floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>0,50% SOFR floor</label>
+            </value>
+            <value>
+                <fullName>0.00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>0.00%</label>
+            </value>
+            <value>
+                <fullName>1.00% LIBOR Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1.00% LIBOR Floor</label>
+            </value>
+            <value>
+                <fullName>100% of the debt is hedged</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>100% of the debt is hedged</label>
+            </value>
+            <value>
+                <fullName>3M euribor curve; 0% floor on euribor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3M euribor curve; 0% floor on euribor</label>
+            </value>
+            <value>
+                <fullName>Adjusted Term SOFR Rate shall be 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Adjusted Term SOFR Rate shall be 0</label>
+            </value>
+            <value>
+                <fullName>All-in floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>All-in floor</label>
+            </value>
+            <value>
+                <fullName>Aplicable al tramo de Sabadell y Santander (L3). El tramo de BBVA es a tasa fija</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Aplicable al tramo de Sabadell y Santander (L3). El tramo de BBVA es a tasa fija</label>
+            </value>
+            <value>
+                <fullName>Applicable</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Applicable</label>
+            </value>
+            <value>
+                <fullName>Avoidance of doubt the initial Floor for the Adjusted Term SOFR Rate shall be 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Avoidance of doubt the initial Floor for the Adjusted Term SOFR Rate shall be 0</label>
+            </value>
+            <value>
+                <fullName>BBSY Bid &lt; 0, aplicará 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBSY Bid &lt; 0, aplicará 0%</label>
+            </value>
+            <value>
+                <fullName>BP has introduced RFR rates for US$ and £. EURIBOR, SOFR and SONIA all have floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BP has introduced RFR rates for US$ and £. EURIBOR, SOFR and SONIA all have floor</label>
+            </value>
+            <value>
+                <fullName>Bas rate + Margin &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bas rate + Margin &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>Base Rate + Margin = 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Base Rate + Margin = 0</label>
+            </value>
+            <value>
+                <fullName>Base rate &gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Base rate &gt;=0</label>
+            </value>
+            <value>
+                <fullName>Base rate is either the adjuster term SOFR Rate + applicable margin.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Base rate is either the adjuster term SOFR Rate + applicable margin.</label>
+            </value>
+            <value>
+                <fullName>CLAUSULA EURIBOR CERO + DIFERENCIAL</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CLAUSULA EURIBOR CERO + DIFERENCIAL</label>
+            </value>
+            <value>
+                <fullName>CLAUSULA SOFR 6 MESES CERO + MARGEN</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CLAUSULA SOFR 6 MESES CERO + MARGEN</label>
+            </value>
+            <value>
+                <fullName>Compounded SOFR  with floor on SOFR + CAS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Compounded SOFR  with floor on SOFR + CAS</label>
+            </value>
+            <value>
+                <fullName>Customary to this type of deals</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Customary to this type of deals</label>
+            </value>
+            <value>
+                <fullName>Daily Rate (RFR)&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Daily Rate (RFR)&gt;=0</label>
+            </value>
+            <value>
+                <fullName>Daily Rate + Margin &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Daily Rate + Margin &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>Daily Rate+CAS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Daily Rate+CAS</label>
+            </value>
+            <value>
+                <fullName>Documentation to be finalised</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Documentation to be finalised</label>
+            </value>
+            <value>
+                <fullName>ETL: EURIBOR floor: 0% p.a.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ETL: EURIBOR floor: 0% p.a.</label>
+            </value>
+            <value>
+                <fullName>EUR: EURIBOR + Margin / USD: Term SOFR + Margin + USD Premium / GBP: Compounded SO</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EUR: EURIBOR + Margin / USD: Term SOFR + Margin + USD Premium / GBP: Compounded SO</label>
+            </value>
+            <value>
+                <fullName>EURIBOR &amp; €STR &gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR &amp; €STR &gt;=0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR (or CIBOR, as applicable) with zero per cent base rate floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR (or CIBOR, as applicable) with zero per cent base rate floor</label>
+            </value>
+            <value>
+                <fullName>EURIBOR + Margen + Ajuste de Sostenibilad &gt;0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR + Margen + Ajuste de Sostenibilad &gt;0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR + Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR + Margin</label>
+            </value>
+            <value>
+                <fullName>EURIBOR + Margin or SONIA+CAS+margin floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR + Margin or SONIA+CAS+margin floor</label>
+            </value>
+            <value>
+                <fullName>EURIBOR + margin floor of 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR + margin floor of 0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR 0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR 0 is applicable only over the deal amount not covered by an IRS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR 0 is applicable only over the deal amount not covered by an IRS</label>
+            </value>
+            <value>
+                <fullName>EURIBOR 3 MESES + margen ( 0 floor)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR 3 MESES + margen ( 0 floor)</label>
+            </value>
+            <value>
+                <fullName>EURIBOR = 0, discount of 3,52 bps has been applied to the funding cost.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR = 0, discount of 3,52 bps has been applied to the funding cost.</label>
+            </value>
+            <value>
+                <fullName>EURIBOR &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR &gt;= 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR &gt;= 3</label>
+            </value>
+            <value>
+                <fullName>EURIBOR Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR Floor</label>
+            </value>
+            <value>
+                <fullName>EURIBOR Floor at 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR Floor at 0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR floor at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR floor at zero</label>
+            </value>
+            <value>
+                <fullName>EURIBOR floor clause applies</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR floor clause applies</label>
+            </value>
+            <value>
+                <fullName>EURIBOR floored at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR floored at zero</label>
+            </value>
+            <value>
+                <fullName>EURIBOR or Term SOFR as applicable subject to a zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR or Term SOFR as applicable subject to a zero floor</label>
+            </value>
+            <value>
+                <fullName>EURIBOR zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR zero floor</label>
+            </value>
+            <value>
+                <fullName>EURIBOR+Margin&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR+Margin&gt;=0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR, Term SOFR or other RfR with floor in 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR, Term SOFR or other RfR with floor in 0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR&gt;= 0;  RfR+CAS&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR&gt;= 0;  RfR+CAS&gt;=0</label>
+            </value>
+            <value>
+                <fullName>EURIBOR&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EURIBOR&gt;=0</label>
+            </value>
+            <value>
+                <fullName>En linea con el crédito actual</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>En linea con el crédito actual</label>
+            </value>
+            <value>
+                <fullName>EnBW agreed to a Euribor floor with the three GloCos.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EnBW agreed to a Euribor floor with the three GloCos.</label>
+            </value>
+            <value>
+                <fullName>Euribor (floor 0%) + Margen Aplicable</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor (floor 0%) + Margen Aplicable</label>
+            </value>
+            <value>
+                <fullName>Euribor + Margen + Ut fees &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor + Margen + Ut fees &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>Euribor + Margin floor at 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor + Margin floor at 0</label>
+            </value>
+            <value>
+                <fullName>Euribor 0 floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor 0 floor</label>
+            </value>
+            <value>
+                <fullName>Euribor 3m se conserara 0 si es negativo</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor 3m se conserara 0 si es negativo</label>
+            </value>
+            <value>
+                <fullName>Euribor &gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor &gt;=0</label>
+            </value>
+            <value>
+                <fullName>Euribor Floor en 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor Floor en 0</label>
+            </value>
+            <value>
+                <fullName>Euribor and Term SOFR --&gt; Floor 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor and Term SOFR --&gt; Floor 0</label>
+            </value>
+            <value>
+                <fullName>Euribor floor @ 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor floor @ 0</label>
+            </value>
+            <value>
+                <fullName>Euribor floor en 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor floor en 0%</label>
+            </value>
+            <value>
+                <fullName>Euribor plus applicable margin shall be subject to a floor of 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor plus applicable margin shall be subject to a floor of 0%</label>
+            </value>
+            <value>
+                <fullName>Euribor zero clause</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor zero clause</label>
+            </value>
+            <value>
+                <fullName>Euribor+Margin zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor+Margin zero floor</label>
+            </value>
+            <value>
+                <fullName>Euribor/Libor floor at zero. Enhanced €STR applies for the swingline until Jan &apos;22</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor/Libor floor at zero. Enhanced €STR applies for the swingline until Jan &apos;22</label>
+            </value>
+            <value>
+                <fullName>Euribor/Libor zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor/Libor zero floor</label>
+            </value>
+            <value>
+                <fullName>Euribor/Stibor/Libor floor at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor/Stibor/Libor floor at zero</label>
+            </value>
+            <value>
+                <fullName>Euribor/Stibor/Libor floor at zero. Enhanced €STR applies until 2022 (swingline)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor/Stibor/Libor floor at zero. Enhanced €STR applies until 2022 (swingline)</label>
+            </value>
+            <value>
+                <fullName>Euribor&gt;0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor&gt;0</label>
+            </value>
+            <value>
+                <fullName>Euribor&gt;=0 ; RfR+CAS&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Euribor&gt;=0 ; RfR+CAS&gt;=0</label>
+            </value>
+            <value>
+                <fullName>Fed Funds cannot be below zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Fed Funds cannot be below zero</label>
+            </value>
+            <value>
+                <fullName>Fix Rate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Fix Rate</label>
+            </value>
+            <value>
+                <fullName>Floor 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor 0%</label>
+            </value>
+            <value>
+                <fullName>Floor Clause Included</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor Clause Included</label>
+            </value>
+            <value>
+                <fullName>Floor a nivel SOFR + margen</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor a nivel SOFR + margen</label>
+            </value>
+            <value>
+                <fullName>Floor at 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor at 0%</label>
+            </value>
+            <value>
+                <fullName>Floor at Daily Rate + Margin &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor at Daily Rate + Margin &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>Floor clause applies</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor clause applies</label>
+            </value>
+            <value>
+                <fullName>Floor clause in all currencies - undrawn facility</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor clause in all currencies - undrawn facility</label>
+            </value>
+            <value>
+                <fullName>Floor clause is the aggregate of margin and term reference rate (EURIBOR).</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor clause is the aggregate of margin and term reference rate (EURIBOR).</label>
+            </value>
+            <value>
+                <fullName>Floor clause will be settled at Euribor + Spread = 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor clause will be settled at Euribor + Spread = 0</label>
+            </value>
+            <value>
+                <fullName>Floor en el SOFR + CSA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor en el SOFR + CSA</label>
+            </value>
+            <value>
+                <fullName>Floor for reference rates at 0% in case Euribor/EUR-Midswap &lt; 0.00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor for reference rates at 0% in case Euribor/EUR-Midswap &lt; 0.00%</label>
+            </value>
+            <value>
+                <fullName>Floor in Euribor + Margin (EUR) / Term reference Rate + Margin + CAS (USD)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor in Euribor + Margin (EUR) / Term reference Rate + Margin + CAS (USD)</label>
+            </value>
+            <value>
+                <fullName>Floor means 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor means 0%</label>
+            </value>
+            <value>
+                <fullName>Floor means the benchmark rate floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor means the benchmark rate floor</label>
+            </value>
+            <value>
+                <fullName>Floor not applicable if fixed rate. If floating, floor included</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor not applicable if fixed rate. If floating, floor included</label>
+            </value>
+            <value>
+                <fullName>Floor of Euribor + margin for floating rate tranche</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor of Euribor + margin for floating rate tranche</label>
+            </value>
+            <value>
+                <fullName>Floor on : Euribor+Floor / RFR+CAS+Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on : Euribor+Floor / RFR+CAS+Margin</label>
+            </value>
+            <value>
+                <fullName>Floor on Euribor or Term Reference Rate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on Euribor or Term Reference Rate</label>
+            </value>
+            <value>
+                <fullName>Floor on Euribor or Term SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on Euribor or Term SOFR</label>
+            </value>
+            <value>
+                <fullName>Floor on IBOR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on IBOR</label>
+            </value>
+            <value>
+                <fullName>Floor on Index + Premium (as the case may be)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on Index + Premium (as the case may be)</label>
+            </value>
+            <value>
+                <fullName>Floor on Sonia</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on Sonia</label>
+            </value>
+            <value>
+                <fullName>Floor on index + CAS (when applicable)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on index + CAS (when applicable)</label>
+            </value>
+            <value>
+                <fullName>Floor on the Reference Term Rate for EUR/AUD and on the Daily Rate for GBP/USD</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on the Reference Term Rate for EUR/AUD and on the Daily Rate for GBP/USD</label>
+            </value>
+            <value>
+                <fullName>Floor on the combination of the IBOR+Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor on the combination of the IBOR+Margin</label>
+            </value>
+            <value>
+                <fullName>Floor shall be 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Floor shall be 0%</label>
+            </value>
+            <value>
+                <fullName>For the avoidance of doubt the initial Floor shall be 0.00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>For the avoidance of doubt the initial Floor shall be 0.00%</label>
+            </value>
+            <value>
+                <fullName>Hard-wired LIBOR successor provision, to be agreed</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hard-wired LIBOR successor provision, to be agreed</label>
+            </value>
+            <value>
+                <fullName>Hedged amount E3M + Margin. Unhedged amount E3M</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hedged amount E3M + Margin. Unhedged amount E3M</label>
+            </value>
+            <value>
+                <fullName>Hedged portion EURIBOR plus margin &gt;= 0 ,   Unhedged:  Euribor floor 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hedged portion EURIBOR plus margin &gt;= 0 ,   Unhedged:  Euribor floor 0</label>
+            </value>
+            <value>
+                <fullName>IBOR floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>IBOR floor</label>
+            </value>
+            <value>
+                <fullName>If Benchmark is less than 0, margin to be reduced by amount not to exceed 0.10%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If Benchmark is less than 0, margin to be reduced by amount not to exceed 0.10%</label>
+            </value>
+            <value>
+                <fullName>If EURIBOR is less than zero, it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If EURIBOR is less than zero, it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If LIBOR is below zero, it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If LIBOR is below zero, it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If Reference rate is below 0, it&apos;ll be deemed to be zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If Reference rate is below 0, it&apos;ll be deemed to be zero.</label>
+            </value>
+            <value>
+                <fullName>If SOFR + CAS is set below zero, it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If SOFR + CAS is set below zero, it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If SOFR is below zero, it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If SOFR is below zero, it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If SOFR is below zero, it will be deemed to be zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If SOFR is below zero, it will be deemed to be zero.</label>
+            </value>
+            <value>
+                <fullName>If TONA &lt;0%, the TONA 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If TONA &lt;0%, the TONA 0%</label>
+            </value>
+            <value>
+                <fullName>If Term SOFR is below zero, it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If Term SOFR is below zero, it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If any such rates are below zero, EURIBOR &amp; LIBOR will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If any such rates are below zero, EURIBOR &amp; LIBOR will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If that rate is less than zero, EURIBOR shall be deemed to be zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If that rate is less than zero, EURIBOR shall be deemed to be zero.</label>
+            </value>
+            <value>
+                <fullName>If the TIIE Rate shall be less than zero, such rate shall be deemed to be zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If the TIIE Rate shall be less than zero, such rate shall be deemed to be zero.</label>
+            </value>
+            <value>
+                <fullName>If the applicable EURIBOR is less than zero, it shall be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If the applicable EURIBOR is less than zero, it shall be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If the applicable SOFR is less than zero, it shall be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If the applicable SOFR is less than zero, it shall be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If the rate shall be less than zero it shall be deemed zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If the rate shall be less than zero it shall be deemed zero.</label>
+            </value>
+            <value>
+                <fullName>If the relevant rate is less than zero, it shall be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If the relevant rate is less than zero, it shall be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>If utilisation&lt;33% and EURIBOR&lt;zero,interest reduced by 50% EURIBOR. If not zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>If utilisation&lt;33% and EURIBOR&lt;zero,interest reduced by 50% EURIBOR. If not zero</label>
+            </value>
+            <value>
+                <fullName>Index + margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Index + margin</label>
+            </value>
+            <value>
+                <fullName>Index + margin floor at 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Index + margin floor at 0</label>
+            </value>
+            <value>
+                <fullName>Interest (EURIBOR + margin) cannot be below zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Interest (EURIBOR + margin) cannot be below zero</label>
+            </value>
+            <value>
+                <fullName>Interest Rate: Euribor 6 months (floor zero) + Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Interest Rate: Euribor 6 months (floor zero) + Margin</label>
+            </value>
+            <value>
+                <fullName>Interest rates floored at EURIBOR - margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Interest rates floored at EURIBOR - margin</label>
+            </value>
+            <value>
+                <fullName>LIBOR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR</label>
+            </value>
+            <value>
+                <fullName>LIBOR + Margin &gt;= 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR + Margin &gt;= 0</label>
+            </value>
+            <value>
+                <fullName>LIBOR Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR Floor</label>
+            </value>
+            <value>
+                <fullName>LIBOR and TIIE positive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR and TIIE positive</label>
+            </value>
+            <value>
+                <fullName>LIBOR+Spread</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR+Spread</label>
+            </value>
+            <value>
+                <fullName>LIBOR&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LIBOR&gt;=0</label>
+            </value>
+            <value>
+                <fullName>Libor + Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor + Margin</label>
+            </value>
+            <value>
+                <fullName>Libor + margin Floor TBC</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor + margin Floor TBC</label>
+            </value>
+            <value>
+                <fullName>Libor Rate subject to a floor of 0,00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor Rate subject to a floor of 0,00%</label>
+            </value>
+            <value>
+                <fullName>Libor fallback TBD (to be negotiated in Credit Agreement if Hardwire Approach)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor fallback TBD (to be negotiated in Credit Agreement if Hardwire Approach)</label>
+            </value>
+            <value>
+                <fullName>Libor floor of 75bps</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor floor of 75bps</label>
+            </value>
+            <value>
+                <fullName>Libor+ Margin + ut fees &gt; 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor+ Margin + ut fees &gt; 0%</label>
+            </value>
+            <value>
+                <fullName>Libor+margin floor @ 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor+margin floor @ 0</label>
+            </value>
+            <value>
+                <fullName>Libor+margin&gt;0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Libor+margin&gt;0</label>
+            </value>
+            <value>
+                <fullName>Los préstamos ECA siempre llevan suelo cero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Los préstamos ECA siempre llevan suelo cero</label>
+            </value>
+            <value>
+                <fullName>Los tramos variables no llevan Euribor floor en 0 (si Euribor+Margen &gt;0)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Los tramos variables no llevan Euribor floor en 0 (si Euribor+Margen &gt;0)</label>
+            </value>
+            <value>
+                <fullName>Margin + Euribor Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Margin + Euribor Floor</label>
+            </value>
+            <value>
+                <fullName>Margin + rate floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Margin + rate floor</label>
+            </value>
+            <value>
+                <fullName>Margin+Euribor Zero Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Margin+Euribor Zero Floor</label>
+            </value>
+            <value>
+                <fullName>Market standard</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Market standard</label>
+            </value>
+            <value>
+                <fullName>Minimum adjusted Libor of 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Minimum adjusted Libor of 0%</label>
+            </value>
+            <value>
+                <fullName>N</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A</label>
+            </value>
+            <value>
+                <fullName>NY Law</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>NY Law</label>
+            </value>
+            <value>
+                <fullName>No es habitual que la Badlar tenga un floor en las tasas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No es habitual que la Badlar tenga un floor en las tasas</label>
+            </value>
+            <value>
+                <fullName>No euribor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No euribor</label>
+            </value>
+            <value>
+                <fullName>No floor as per existing VMED financing</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No floor as per existing VMED financing</label>
+            </value>
+            <value>
+                <fullName>Not applicable</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Not applicable</label>
+            </value>
+            <value>
+                <fullName>On Ibor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>On Ibor</label>
+            </value>
+            <value>
+                <fullName>On Term Reference + margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>On Term Reference + margin</label>
+            </value>
+            <value>
+                <fullName>On the 5Y:: EURIBOR +margin Floor at zero. On the 3Y, EURIBOR floor at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>On the 5Y:: EURIBOR +margin Floor at zero. On the 3Y, EURIBOR floor at zero</label>
+            </value>
+            <value>
+                <fullName>Pricing and Floor Clause are based on SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Pricing and Floor Clause are based on SOFR</label>
+            </value>
+            <value>
+                <fullName>RFR + CAS capped at zero, applied on a daily basis</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RFR + CAS capped at zero, applied on a daily basis</label>
+            </value>
+            <value>
+                <fullName>RFR rates for US$ and £. EURIBOR, and RFR+CAS, have floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RFR rates for US$ and £. EURIBOR, and RFR+CAS, have floor</label>
+            </value>
+            <value>
+                <fullName>RFR&gt;0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RFR&gt;0</label>
+            </value>
+            <value>
+                <fullName>Raising the CDS floor under the five-year to 50 bps (currently 10 bps)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Raising the CDS floor under the five-year to 50 bps (currently 10 bps)</label>
+            </value>
+            <value>
+                <fullName>Reference Rate: 3M Term SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Reference Rate: 3M Term SOFR</label>
+            </value>
+            <value>
+                <fullName>Reference rate &gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Reference rate &gt;=0</label>
+            </value>
+            <value>
+                <fullName>Replacement Libor with term SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Replacement Libor with term SOFR</label>
+            </value>
+            <value>
+                <fullName>Replacement of LIBOR for Term SOFR + Credit Spread Adjustment of 10bps (1M &amp; 3 M)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Replacement of LIBOR for Term SOFR + Credit Spread Adjustment of 10bps (1M &amp; 3 M)</label>
+            </value>
+            <value>
+                <fullName>RfR+CAS&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RfR+CAS&gt;=0</label>
+            </value>
+            <value>
+                <fullName>SIMEST never accepts zero floor clauses</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SIMEST never accepts zero floor clauses</label>
+            </value>
+            <value>
+                <fullName>SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR</label>
+            </value>
+            <value>
+                <fullName>SOFR + CSA (10bps) + 25 bps Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR + CSA (10bps) + 25 bps Floor</label>
+            </value>
+            <value>
+                <fullName>SOFR 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR 0%</label>
+            </value>
+            <value>
+                <fullName>SOFR &gt; 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR &gt; 0</label>
+            </value>
+            <value>
+                <fullName>SOFR Floor of 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR Floor of 0%</label>
+            </value>
+            <value>
+                <fullName>SOFR can&apos;t be less than zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR can&apos;t be less than zero</label>
+            </value>
+            <value>
+                <fullName>SOFR cannot be less than 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR cannot be less than 0%</label>
+            </value>
+            <value>
+                <fullName>SOFR&gt;0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR&gt;0</label>
+            </value>
+            <value>
+                <fullName>SOFR&gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SOFR&gt;=0</label>
+            </value>
+            <value>
+                <fullName>SONIA + MARGIN &gt; 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SONIA + MARGIN &gt; 0</label>
+            </value>
+            <value>
+                <fullName>SONIA + Margin at 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SONIA + Margin at 0%</label>
+            </value>
+            <value>
+                <fullName>STIBOR (Floor at Base Rate + Margin)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>STIBOR (Floor at Base Rate + Margin)</label>
+            </value>
+            <value>
+                <fullName>Se negociará con el cliente su inclusión</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Se negociará con el cliente su inclusión</label>
+            </value>
+            <value>
+                <fullName>Se utiliza tipo CIRR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Se utiliza tipo CIRR</label>
+            </value>
+            <value>
+                <fullName>See below</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>See below</label>
+            </value>
+            <value>
+                <fullName>Shall Euribor + Margin be less than zero it will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Shall Euribor + Margin be less than zero it will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>Si Euribor &lt; 0%, entonces 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Si Euribor &lt; 0%, entonces 0%</label>
+            </value>
+            <value>
+                <fullName>Si Euribor es negativo, aplica 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Si Euribor es negativo, aplica 0%</label>
+            </value>
+            <value>
+                <fullName>Si el Euribor or SOFR aplicable es inferior a 0 se conserará 0.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Si el Euribor or SOFR aplicable es inferior a 0 se conserará 0.</label>
+            </value>
+            <value>
+                <fullName>Si es variable, E&lt;0 será 0. Si tipo fijo N/A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Si es variable, E&lt;0 será 0. Si tipo fijo N/A</label>
+            </value>
+            <value>
+                <fullName>Subject to be agreed</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Subject to be agreed</label>
+            </value>
+            <value>
+                <fullName>TBD</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBD</label>
+            </value>
+            <value>
+                <fullName>TIIE &lt;0 ; TIIE = 0 bp or 1 bp</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIIE &lt;0 ; TIIE = 0 bp or 1 bp</label>
+            </value>
+            <value>
+                <fullName>TIIE negativa será igual a cero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TIIE negativa será igual a cero</label>
+            </value>
+            <value>
+                <fullName>TLA/CAPEX: 0%; USD TLB; 0.5% floor (no CAS) - market standard</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TLA/CAPEX: 0%; USD TLB; 0.5% floor (no CAS) - market standard</label>
+            </value>
+            <value>
+                <fullName>TLs : Euribor + Margin Floor - Revolving Facilities: Euribor Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TLs : Euribor + Margin Floor - Revolving Facilities: Euribor Floor</label>
+            </value>
+            <value>
+                <fullName>TODOS LOS CONVENIOS CESCE LLEVAN CLAUSULA CERO</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TODOS LOS CONVENIOS CESCE LLEVAN CLAUSULA CERO</label>
+            </value>
+            <value>
+                <fullName>Tasa fija</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tasa fija</label>
+            </value>
+            <value>
+                <fullName>Tasa fija en PEN, con floor clause ante conversión a USD.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tasa fija en PEN, con floor clause ante conversión a USD.</label>
+            </value>
+            <value>
+                <fullName>Term Facilities: Euribor + Margin Floor; RCF and DSRF: Euribor Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term Facilities: Euribor + Margin Floor; RCF and DSRF: Euribor Floor</label>
+            </value>
+            <value>
+                <fullName>Term Rate / RFR+ CAS at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term Rate / RFR+ CAS at zero</label>
+            </value>
+            <value>
+                <fullName>Term Reference Rate / Aggregate RFR and the applicable Baseline CAS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term Reference Rate / Aggregate RFR and the applicable Baseline CAS</label>
+            </value>
+            <value>
+                <fullName>Term Reference Rate for EUR tranche is EURIBOR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term Reference Rate for EUR tranche is EURIBOR</label>
+            </value>
+            <value>
+                <fullName>Term SOFR + Premium floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term SOFR + Premium floor</label>
+            </value>
+            <value>
+                <fullName>Term SOFR 0%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term SOFR 0%</label>
+            </value>
+            <value>
+                <fullName>Term SOFR plus CAS to be subject to a zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Term SOFR plus CAS to be subject to a zero floor</label>
+            </value>
+            <value>
+                <fullName>The Base Rate or the Term SOFR Rate will never be less than 0.00% per annum.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The Base Rate or the Term SOFR Rate will never be less than 0.00% per annum.</label>
+            </value>
+            <value>
+                <fullName>The LIBOR will not be floored at zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The LIBOR will not be floored at zero</label>
+            </value>
+            <value>
+                <fullName>The aggregate of Margin and EURIBOR (or LIBOR) will be deemed to be zero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The aggregate of Margin and EURIBOR (or LIBOR) will be deemed to be zero</label>
+            </value>
+            <value>
+                <fullName>The combination of Sonia &amp; Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The combination of Sonia &amp; Margin</label>
+            </value>
+            <value>
+                <fullName>The credit agreement will include a floor clause</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The credit agreement will include a floor clause</label>
+            </value>
+            <value>
+                <fullName>The initial Floor for Adjusted Term SOFR Rate shall be 0.00%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The initial Floor for Adjusted Term SOFR Rate shall be 0.00%</label>
+            </value>
+            <value>
+                <fullName>The interest rate ( margin + rate) is subject to a 0% floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The interest rate ( margin + rate) is subject to a 0% floor</label>
+            </value>
+            <value>
+                <fullName>The interest rate floating is hedged at 100%.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The interest rate floating is hedged at 100%.</label>
+            </value>
+            <value>
+                <fullName>The sum of the Margin and Base Rate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The sum of the Margin and Base Rate</label>
+            </value>
+            <value>
+                <fullName>The sum, EURIBOR 6 months + Margin, floored at zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>The sum, EURIBOR 6 months + Margin, floored at zero.</label>
+            </value>
+            <value>
+                <fullName>To be confirmed, undisclosed at this stage</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>To be confirmed, undisclosed at this stage</label>
+            </value>
+            <value>
+                <fullName>To be negotiated</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>To be negotiated</label>
+            </value>
+            <value>
+                <fullName>Tramo A: Tasa fija en PEN, Tramo B: Tasa fija en PEN (sintético implícito)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tramo A: Tasa fija en PEN, Tramo B: Tasa fija en PEN (sintético implícito)</label>
+            </value>
+            <value>
+                <fullName>Tramo A: Tasa fija en PEN, Tramo B: Tasa variable S+spread en USD</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tramo A: Tasa fija en PEN, Tramo B: Tasa variable S+spread en USD</label>
+            </value>
+            <value>
+                <fullName>Transitioning from LIBOR to Day 1 SOFR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Transitioning from LIBOR to Day 1 SOFR</label>
+            </value>
+            <value>
+                <fullName>UK Law</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>UK Law</label>
+            </value>
+            <value>
+                <fullName>USD : Floor on Term SOFR + Margin + CAS EUR: Floor on EURIBOR+Margin</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>USD : Floor on Term SOFR + Margin + CAS EUR: Floor on EURIBOR+Margin</label>
+            </value>
+            <value>
+                <fullName>Unhdg p.: Euribor 6m floored at 0;Hdgd p,: Euribor 6m floored at -0,5%</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Unhdg p.: Euribor 6m floored at 0;Hdgd p,: Euribor 6m floored at -0,5%</label>
+            </value>
+            <value>
+                <fullName>We don&apos;t have the full documentation yet, so tbd</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>We don&apos;t have the full documentation yet, so tbd</label>
+            </value>
+            <value>
+                <fullName>Y</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Y</label>
+            </value>
+            <value>
+                <fullName>YES</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>YES</label>
+            </value>
+            <value>
+                <fullName>Yes, Euribor &gt;=0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Yes, Euribor &gt;=0</label>
+            </value>
+            <value>
+                <fullName>Zero Clause Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero Clause Floor</label>
+            </value>
+            <value>
+                <fullName>Zero Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero Floor</label>
+            </value>
+            <value>
+                <fullName>Zero LIBOR Floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero LIBOR Floor</label>
+            </value>
+            <value>
+                <fullName>Zero all-in interest rate, if benchmark plus margin &lt; 0</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero all-in interest rate, if benchmark plus margin &lt; 0</label>
+            </value>
+            <value>
+                <fullName>Zero floor clause included</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero floor clause included</label>
+            </value>
+            <value>
+                <fullName>Zero floor language</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero floor language</label>
+            </value>
+            <value>
+                <fullName>Zero interest but no Zero floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero interest but no Zero floor</label>
+            </value>
+            <value>
+                <fullName>Zero-interest floor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Zero-interest floor</label>
+            </value>
+            <value>
+                <fullName>at IPC level</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>at IPC level</label>
+            </value>
+            <value>
+                <fullName>at SOFR + CAS (43bps)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>at SOFR + CAS (43bps)</label>
+            </value>
+            <value>
+                <fullName>cláusula estándar</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>cláusula estándar</label>
+            </value>
+            <value>
+                <fullName>euribor floor, not accounted for in RORC and RAROEC calculation</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>euribor floor, not accounted for in RORC and RAROEC calculation</label>
+            </value>
+            <value>
+                <fullName>floor on {Index+margin+CAS}</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>floor on {Index+margin+CAS}</label>
+            </value>
+            <value>
+                <fullName>floor sobre EURIBOR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>floor sobre EURIBOR</label>
+            </value>
+            <value>
+                <fullName>if the reference rate is less than zero, shall be deemed to be zero.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>if the reference rate is less than zero, shall be deemed to be zero.</label>
+            </value>
+            <value>
+                <fullName>on base rate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>on base rate</label>
+            </value>
+            <value>
+                <fullName>unsecured</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>unsecured</label>
+            </value>
+            <value>
+                <fullName>“Floor” means a rate of interest equal to 0.0%.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>“Floor” means a rate of interest equal to 0.0%.</label>
+            </value>
+            <value>
+                <fullName>“Floor” means a rate of interest equal to 0.00%.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>“Floor” means a rate of interest equal to 0.00%.</label>
+            </value>
+            <value>
+                <fullName>“Floor” means, for any benchmark rate under this Credit Agreement, zero (0.00%).</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>“Floor” means, for any benchmark rate under this Credit Agreement, zero (0.00%).</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

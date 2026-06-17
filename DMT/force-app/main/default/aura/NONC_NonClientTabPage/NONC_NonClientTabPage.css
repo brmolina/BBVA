@@ -1,0 +1,18 @@
+.THIS .windowViewMode-normal {
+  background-color: rgb(243, 242, 242) !important;
+}
+
+.THIS .forceBrandBand {
+  background-color: rgb(243, 242, 242) !important;
+}
+
+.THIS.tab-section .slds-button.slds-button_neutral {
+  float: right !important;
+}
+
+.THIS .button-new {
+  position: absolute;
+  right: 1rem;
+  top: 0.6rem;
+  z-index: 8000;
+}

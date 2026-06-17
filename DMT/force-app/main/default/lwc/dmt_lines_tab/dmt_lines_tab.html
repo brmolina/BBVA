@@ -1,54 +1,96 @@
 <template>
+    <template lwc:if={isLoading}>
+        <div class="slds-spinner_container">
+            <div class="slds-spinner slds-spinner_medium" role="status">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+    <template lwc:else>
     <template lwc:if={isViewDisabled}>
         <c-dmt_no_access_message></c-dmt_no_access_message>
     </template>
     <template lwc:else>
-        <c-dmt_custom_path_line >
+        <c-dmt_highlight_panel object-api-name="DMT_Line__c" status={lineStatus} record-id={recordId} onclick={handleClickPath}></c-dmt_highlight_panel>
+        <c-dmt_custom_path_line record-id={recordId} onclick={handleClickPath}>
 
         </c-dmt_custom_path_line>
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1 row row-main">
-        <div class="column slds-size_1-of-1 slds-medium-size_8-of-12 slds-large-size_8-of-12 region-main slds-p-around_xx-small">
+        <div class="column slds-size_1-of-1 slds-medium-size_8-of-12 slds-large-size_8-of-12 region-main slds-p-top_xx-small">
                         <div class="slds-tabs_card">
-        <lightning-tabset>
-        <lightning-tab label="Line Info" title="Line info title">
-            <c-cf-summary-treasury_-flexcard record-id={recordId}></c-cf-summary-treasury_-flexcard>
-            <c-dmt_upload_file record-id={recordId}></c-dmt_upload_file>
+        <lightning-tabset active-tab-value={selectedTab}>
+        <lightning-tab label="LINE INFO" title="Line info title" value="lineinfo" onactive={handleClickTab}>
+            <c-cf-summary-treasury_-flexcard oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-summary-treasury_-flexcard>
+            <c-dmt_document_manager_for_core_document record-id={recordId}></c-dmt_document_manager_for_core_document>
         </lightning-tab>
-        <lightning-tab label="Client" title="Client title">
+        <lightning-tab label="CLIENT" title="Client title" value="client" onactive={handleClickTab}>
                         <c-dmt_fieldsection
                 record-id={recordId}
                 object-api-name="DMT_Line__c"
                 columns={clientColumns}>
             </c-dmt_fieldsection>
-            <c-cf-select-clients-in-line record-id={recordId}></c-cf-select-clients-in-line>
+            <c-dmt-select-clients-in-line-migrated oneditingtab={handleEditing} record-id={recordId} line-status={lineStatus} currency={lineCurrency} key={updateKey}></c-dmt-select-clients-in-line-migrated>
         </lightning-tab>
-        <lightning-tab label="Products">
+        <lightning-tab label="CLIENT LEGACY (TEMP)" title="Client legacy comparison" value="clientlegacy" onactive={handleClickTab}>
+            <c-cf-select-clients-in-line_43_-b-b-v-a oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-select-clients-in-line_43_-b-b-v-a>
+        </lightning-tab>
+        <lightning-tab label="PRODUCTS" value="products" onactive={handleClickTab}>
             <template lwc:if={treasuryTemplate}>
-            <c-cf-risk-tables-line record-id={recordId}></c-cf-risk-tables-line>
+            <c-cf-risk-tables-line oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-risk-tables-line>
             </template>
             <template lwc:else>
-            <c-cf-product-sanction-template record-id={recordId}></c-cf-product-sanction-template>
+            <c-cf-product-sanction-template oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-product-sanction-template>
             </template>
-            
+
         </lightning-tab>
-        <lightning-tab label="Participants">
-            <c-cf-interveners-line-template record-id={recordId}></c-cf-interveners-line-template>
+        <lightning-tab label="PARTICIPANTS" value="participants" onactive={handleClickTab}>
+            <c-cf-interveners-line-template oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-interveners-line-template>
         </lightning-tab>
-        <lightning-tab label="Approval Process Data">
-            <c-dmt_approval_process_data record-id={recordId}></c-dmt_approval_process_data>
-            <c-dmt_features_selected record-id={recordId}></c-dmt_features_selected>
+        <lightning-tab label="APPROVAL PROCESS DATA" value="approvalprocessdata" onactive={handleClickTab}>
+            <c-dmt_approval_process_data oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-dmt_approval_process_data>
+            <c-dmt_features_selected record-id={recordId} key={updateKey}></c-dmt_features_selected>
         </lightning-tab>
-        <lightning-tab label="Versions">
+        <lightning-tab label="VERSIONS" value="versions" onactive={handleClickTab}>
             <c-dmt_line-versions record-id={recordId}></c-dmt_line-versions>
         </lightning-tab>
+            <template if:true={isLockedByOther}>
+            <div class="slds-shade" style="z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); display: flex; align-items: center; justify-content: center;">
+                <div class="slds-box slds-theme_default slds-text-align_center" style="max-width: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    <lightning-icon icon-name="utility:lock" size="medium" class="slds-m-bottom_small"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-bottom_medium">{modalMessage}</p>
+                    <lightning-button
+                        variant="brand"
+                        label="Try again"
+                        onclick={handleRetry}
+                        icon-name="utility:refresh">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+        <template if:true={isLockEditing}>
+            <div class="slds-shade" style="z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(128, 128, 128, 0.5); display: flex; align-items: center; justify-content: center;">
+                <div class="slds-box slds-theme_default slds-text-align_center" style="max-width: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    <lightning-icon icon-name="utility:ban" size="medium" class="slds-m-bottom_small"></lightning-icon>
+                    <p class="slds-text-heading_small slds-m-bottom_medium">{modalMessage}</p>
+                    <lightning-button
+                        variant="brand"
+                        label="Try again"
+                        onclick={handleRetry}
+                        icon-name="utility:refresh">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
     </lightning-tabset>
                         </div>
 
     </div>
     <div class="column slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 region-sidebar-right slds-p-around_xx-small">
-        <c-cf-D-M-T_-small_-passport_v2></c-cf-D-M-T_-small_-passport_v2>
+        <c-cf-D-M-T_-small_-passport_v2 record-id={recordId}></c-cf-D-M-T_-small_-passport_v2>
     </div>
         </div>
     </template>
-
+</template>
 </template>

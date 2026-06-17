@@ -1,0 +1,58 @@
+<aura:component extends="arce:Arc_IFIS_Aura_Utils" access="global" controller="Arc_IFIS_ButtonsFinalize_Ctrl">
+    <aura:attribute name="ahaId" type="String" default="" description="Indicates the id of the current record" access="global" />
+    <aura:attribute name="ratingId" type="String" default="" description="Id of the rating__c object associated with the account has analysis in context" access="global"/>
+    <aura:attribute name="modalHeader" type="String" default="" description="Indicates the title of the modal" access="global" />
+    <aura:attribute name="showModal" type="Boolean" default="false" description="Indicates to show or to hide the modal" access="global"/>
+    <aura:attribute name="isLoading" type="boolean" default="false" description="Indicates if the spinner is active" access="global"/>
+    <aura:attribute name="errorMessage" type="String" default="" description="Message to show to the user if the process fails" access="global"/>
+    <aura:attribute name="selectedUserId" type="String"  default="" description="Value user selected" access="global"/>
+    <aura:attribute name="selectedAmbitId" type="String"  default="" description="Value ambit selected" access="global"/>
+    <aura:attribute name="validateDescr" type="String"  default="" description="Description for validate action" access="global" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+
+                <lightning:buttonIcon iconName="utility:close" onclick="{!c.handleClose}" alternativeText="{!$Label.arce.Arc_IFIS_Cancel_Close}"
+                    variant="bare-inverse" class="slds-modal__close" />
+
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!v.modalHeader}</h1>
+                </div>
+
+                <div class="slds-modal__content slds-var-p-horizontal_medium slds-var-p-vertical_large" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.isLoading}">
+
+                        <div class="slds-p-around_x-large">
+                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                <span class="slds-assistive-text">{!$Label.arce.Arc_IFIS_Loading}</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                        <aura:set attribute="else">
+                            <p class="slds-align_absolute-center">{!$Label.arce.Arc_IFIS_BtnFinalize_Confirmation}</p>
+                        </aura:set>
+                    </aura:if>
+                </div>
+
+                <div class="slds-modal__footer">
+                    <lightning:button
+                        variant="neutral"
+                        label="{!$Label.arce.Arc_IFIS_Cancel}"
+                        title="{!$Label.arce.Arc_IFIS_Cancel}"
+                        onclick="{!c.handleClose}" />
+                    <lightning:button
+                        variant="brand"
+                        label="{!$Label.arce.Arc_IFIS_Finalize}"
+                        title="{!$Label.arce.Arc_IFIS_Finalize}"
+                        onclick="{!c.handleSave}" />
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+</aura:component>

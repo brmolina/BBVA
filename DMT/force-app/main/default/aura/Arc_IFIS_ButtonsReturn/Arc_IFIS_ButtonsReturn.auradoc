@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Return button component</b></h5>
+        <p><code>arce:Arc_IFIS_ButtonsReturn</code></p>
+    </aura:description>
+</aura:documentation>

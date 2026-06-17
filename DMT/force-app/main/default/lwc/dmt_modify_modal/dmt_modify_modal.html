@@ -1,0 +1,258 @@
+<template>
+    <lightning-modal-header label="Modify lines"></lightning-modal-header>
+
+    <lightning-modal-body>
+        <template lwc:if={isLoading}>
+            <section class="modal-loading-state">
+                <lightning-spinner
+                    alternative-text={loadingMessage}
+                    size="medium"
+                    variant="brand">
+                </lightning-spinner>
+
+                <div class="loading-copy">
+                    <p class="loading-title">{loadingMessage}</p>
+                    <p class="loading-subtitle">
+                        Espera mientras se procesan las lineas seleccionadas.
+                    </p>
+                </div>
+            </section>
+        </template>
+
+        <template lwc:else>
+            <template lwc:if={hasRows}>
+                <template lwc:if={hasTableGroups}>
+                    <div class="lines-container">
+                        <template for:each={tableGroups} for:item="table">
+                            <article key={table.key} class="line-table-card">
+                                <header class="line-table-card-header">
+                                    <h3 class="line-table-title">{table.title}</h3>
+                                    <span class="line-table-subtitle">{table.lineCount} lineas</span>
+                                </header>
+
+                                <div class="table-container">
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer edit-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="line-column-header">Line</th>
+
+                                                <template lwc:if={table.hasRiskRows}>
+                                                    <th scope="col" class="product-column-header">Product name</th>
+                                                </template>
+
+                                                <template for:each={table.columns} for:item="column">
+                                                    <th key={column.key} scope="col">
+                                                        <div class="column-header-actions">
+                                                            <span>{column.label}</span>
+
+                                                            <template lwc:if={column.canBulkApply}>
+                                                                <lightning-button-icon
+                                                                    icon-name="utility:edit_form"
+                                                                    alternative-text="Edicion masiva"
+                                                                    title="Edicion masiva"
+                                                                    size="xx-small"
+                                                                    variant="bare"
+                                                                    class="bulk-column-trigger"
+                                                                    data-table-key={table.templateType}
+                                                                    data-column-key={column.key}
+                                                                    data-source-object-api-name={column.sourceObjectApiName}
+                                                                    data-field={column.fieldApiName}
+                                                                    onclick={handleOpenBulkEditor}>
+                                                                </lightning-button-icon>
+                                                            </template>
+                                                        </div>
+
+                                                        <template lwc:if={column.isBulkEditorOpen}>
+                                                            <section class="bulk-popover" role="dialog">
+                                                                <div class="bulk-popover-field-row">
+                                                                    <span class="bulk-popover-title">{column.label}</span>
+                                                                    <lightning-helptext
+                                                                        content={column.helpText}>
+                                                                    </lightning-helptext>
+                                                                </div>
+
+                                                                <template lwc:if={column.isPicklist}>
+                                                                    <lightning-combobox
+                                                                        variant="label-hidden"
+                                                                        label={column.label}
+                                                                        value={column.bulkValue}
+                                                                        options={column.options}
+                                                                        data-table-key={table.templateType}
+                                                                        data-column-key={column.key}
+                                                                        data-source-object-api-name={column.sourceObjectApiName}
+                                                                        data-field={column.fieldApiName}
+                                                                        onchange={handleBulkInputChange}>
+                                                                    </lightning-combobox>
+                                                                </template>
+
+                                                                <template lwc:else>
+                                                                    <template lwc:if={column.isCheckbox}>
+                                                                        <lightning-input
+                                                                            type="checkbox"
+                                                                            variant="label-hidden"
+                                                                            label={column.label}
+                                                                            checked={column.bulkChecked}
+                                                                            data-table-key={table.templateType}
+                                                                            data-column-key={column.key}
+                                                                            data-source-object-api-name={column.sourceObjectApiName}
+                                                                            data-field={column.fieldApiName}
+                                                                            onchange={handleBulkInputChange}>
+                                                                        </lightning-input>
+                                                                    </template>
+
+                                                                    <template lwc:else>
+                                                                        <lightning-input
+                                                                            type={column.inputType}
+                                                                            variant="label-hidden"
+                                                                            label={column.label}
+                                                                            value={column.bulkValue}
+                                                                            data-table-key={table.templateType}
+                                                                            data-column-key={column.key}
+                                                                            data-source-object-api-name={column.sourceObjectApiName}
+                                                                            data-field={column.fieldApiName}
+                                                                            onchange={handleBulkInputChange}>
+                                                                        </lightning-input>
+                                                                    </template>
+                                                                </template>
+
+                                                                <div class="bulk-popover-actions">
+                                                                    <lightning-button
+                                                                        label="Cancel"
+                                                                        variant="neutral"
+                                                                        onclick={handleCloseBulkEditor}>
+                                                                    </lightning-button>
+
+                                                                    <lightning-button
+                                                                        label="Apply"
+                                                                        variant="brand"
+                                                                        class="slds-m-left_x-small"
+                                                                        data-table-key={table.templateType}
+                                                                        data-column-key={column.key}
+                                                                        onclick={handleApplyBulkChange}>
+                                                                    </lightning-button>
+                                                                </div>
+                                                            </section>
+                                                        </template>
+                                                    </th>
+                                                </template>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <template for:each={table.tableRows} for:item="rowRecord">
+                                                <tr key={rowRecord.key}>
+                                                    <template lwc:if={rowRecord.showGroupCells}>
+                                                        <td rowspan={rowRecord.groupSize} class="grouped-name-cell line-cell-wrap">
+                                                            <a href={rowRecord.lineUrl} target="_blank" class="line-link-cell">
+                                                                {rowRecord.lineName}
+                                                            </a>
+                                                        </td>
+                                                    </template>
+
+                                                    <template lwc:if={table.hasRiskRows}>
+                                                        <td class="row-label-cell product-cell-wrap">{rowRecord.rowLabel}</td>
+                                                    </template>
+
+                                                    <template for:each={rowRecord.cells} for:item="cell">
+                                                        <td key={cell.key} class={cell.cellClass}>
+                                                            <template lwc:if={cell.editable}>
+                                                                <template lwc:if={cell.isPicklist}>
+                                                                    <lightning-combobox
+                                                                        variant="label-hidden"
+                                                                        label={cell.label}
+                                                                        value={cell.value}
+                                                                        options={cell.options}
+                                                                        required={cell.required}
+                                                                        data-line-record-id={rowRecord.lineRecordId}
+                                                                        data-row-type={rowRecord.rowType}
+                                                                        data-record-id={rowRecord.recordId}
+                                                                        data-section-key={rowRecord.sectionKey}
+                                                                        data-source-object-api-name={cell.sourceObjectApiName}
+                                                                        data-field={cell.fieldApiName}
+                                                                        onchange={handleTableInputChange}>
+                                                                    </lightning-combobox>
+                                                                </template>
+
+                                                                <template lwc:else>
+                                                                    <template lwc:if={cell.isCheckbox}>
+                                                                        <lightning-input
+                                                                            type="checkbox"
+                                                                            variant="label-hidden"
+                                                                            label={cell.label}
+                                                                            checked={cell.checked}
+                                                                            required={cell.required}
+                                                                            data-line-record-id={rowRecord.lineRecordId}
+                                                                            data-row-type={rowRecord.rowType}
+                                                                            data-record-id={rowRecord.recordId}
+                                                                            data-section-key={rowRecord.sectionKey}
+                                                                            data-source-object-api-name={cell.sourceObjectApiName}
+                                                                            data-field={cell.fieldApiName}
+                                                                            onchange={handleTableInputChange}>
+                                                                        </lightning-input>
+                                                                    </template>
+
+                                                                    <template lwc:else>
+                                                                        <lightning-input
+                                                                            type={cell.inputType}
+                                                                            variant="label-hidden"
+                                                                            label={cell.label}
+                                                                            value={cell.value}
+                                                                            required={cell.required}
+                                                                            data-line-record-id={rowRecord.lineRecordId}
+                                                                            data-row-type={rowRecord.rowType}
+                                                                            data-record-id={rowRecord.recordId}
+                                                                            data-section-key={rowRecord.sectionKey}
+                                                                            data-source-object-api-name={cell.sourceObjectApiName}
+                                                                            data-field={cell.fieldApiName}
+                                                                            onchange={handleTableInputChange}>
+                                                                        </lightning-input>
+                                                                    </template>
+                                                                </template>
+                                                            </template>
+
+                                                            <template lwc:else>
+                                                                <span class="readonly-cell-value">{cell.displayValue}</span>
+                                                            </template>
+                                                        </td>
+                                                    </template>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </article>
+                        </template>
+                    </div>
+                </template>
+
+                <template lwc:else>
+                    <div class="empty-state">
+                        No hay tablas disponibles para modificar.
+                    </div>
+                </template>
+            </template>
+
+            <template lwc:else>
+                <div class="empty-state">
+                    No hay lineas disponibles para modificar.
+                </div>
+            </template>
+        </template>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <lightning-button
+            label="Cancel"
+            variant="neutral"
+            onclick={handleCancel}>
+        </lightning-button>
+
+        <lightning-button
+            class="slds-m-left_small"
+            label="Save"
+            variant="brand"
+            disabled={isLoading}
+            onclick={handleSave}>
+        </lightning-button>
+    </lightning-modal-footer>
+</template>

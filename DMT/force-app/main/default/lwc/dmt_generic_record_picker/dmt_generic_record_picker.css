@@ -1,25 +1,30 @@
 :host {
     display: block;
+    --slds-c-input-shadow-focus: none; 
+    padding: 0 0.2rem;
 }
 
 .slds-form-element {
     position: relative;
 }
 
-.slds-dropdown {
-    position: absolute;
-    left: 0;
-    right: 0;
-    z-index: 9000;
-    max-height: 220px;
-    overflow-y: auto;
-}
-
-.custom-dropdown {
-    z-index: 9999999 !important;
-}
-
+/* Base Dropdown Style - Cleaned up to include visual styles */
 .dropdown {
-    max-height: 160px;
+    position: fixed !important; 
+    z-index: 999999;
+    max-height: 200px;
     overflow-y: auto;
+    background: white;
+    border: 1px solid #c9c7c5;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Visual Style for the Keyboard Highlighted Item */
+.slds-has-focus {
+    background-color: #f3f2f2; /* Light Gray */
+    cursor: pointer;
+    font-weight: 500; 
 }

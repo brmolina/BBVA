@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>participant_employee_dept_desc__c</fullName>
+    <externalId>false</externalId>
+    <formula>dwp_kitv__user_id__r.EMPLOYEE_DEPARTMENT_DESC__c</formula>
+    <label>BBVA participant department</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

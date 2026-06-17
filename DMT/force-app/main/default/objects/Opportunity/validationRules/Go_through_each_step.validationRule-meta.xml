@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Go_through_each_step</fullName>
+    <active>true</active>
+    <errorConditionFormula>(
+    (
+        ISPICKVAL(StageName, &quot;Approval&quot;) &amp;&amp;
+        !ISPICKVAL(PRIORVALUE(StageName), &quot;Proposal&quot;)
+    )
+    ||
+    (
+        ISPICKVAL(StageName, &quot;Ready to close&quot;) &amp;&amp;
+        !ISPICKVAL(PRIORVALUE(StageName), &quot;Approval&quot;) 
+    )
+    ||
+    (
+        ISPICKVAL(StageName, &quot;Closed Won&quot;) &amp;&amp;
+        !OR(
+            ISPICKVAL(PRIORVALUE(StageName), &quot;Ready to close&quot;)
+        )
+    )
+)
+&amp;&amp; ISCHANGED(StageName)
+&amp;&amp; $Profile.Name != &quot;Desktop Integration&quot; 
+&amp;&amp; $Profile.Name != &quot;System Administrator&quot;
+&amp;&amp; !$Permission.DMT_Line_God
+&amp;&amp; !DMT_Cancel__c &amp;&amp; DMT_RecordTypeName__c == &quot;DMT Opportunity&quot;</errorConditionFormula>
+    <errorMessage>It is mandatory to go through all the states of the opportunity in the indicated order.</errorMessage>
+</ValidationRule>

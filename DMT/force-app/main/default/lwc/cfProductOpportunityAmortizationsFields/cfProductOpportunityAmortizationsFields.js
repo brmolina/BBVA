@@ -22,7 +22,8 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              
+              @track Label={DMT_Lifetime_Expected_Drawn:"Lifetime Expected Drawn (%)"
+        };
               pubsubEvent = [];
               customEvent = [];
               
@@ -33,14 +34,15 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                
+                this.customLabels = this.Label;
+                      
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6RPYA0"
+                  " card-0koKE000000L8pqYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pUkQ2AU");
+                this.loadCustomStylesheetAttachement("00PKE000001v5K32AI");
                 
                 
               }

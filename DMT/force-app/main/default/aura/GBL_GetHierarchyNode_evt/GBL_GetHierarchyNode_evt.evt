@@ -1,0 +1,1 @@
+<aura:event type="APPLICATION" description="Trigger Event to capture current node clicked in the MultiHierarchy Component"/>

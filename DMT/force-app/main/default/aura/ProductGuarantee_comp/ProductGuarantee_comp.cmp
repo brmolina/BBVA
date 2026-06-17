@@ -1,0 +1,63 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL" controller="Product_cls">
+	<aura:attribute name="rows" type="Object[]" />
+	<aura:attribute name="recordId" type="Id" />
+	<aura:attribute name="PGuarantee" type="Object[]" />
+	<aura:attribute name="title" type="String" default="Añadir garantía"/>
+	<aura:attribute name="showModal" type="Boolean" default="false" />
+	<aura:attribute name="errMessage" type="String" default=""/>
+	<aura:attribute name="refreshTable" type="Boolean" default="false" />
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+	<aura:renderIf isTrue="{!v.refreshTable}">
+	<aura:if isTrue="{!v.refreshTable}">
+		<table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout" role="grid">
+			<thead>
+				<tr>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Garantia">Garantia</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Modalidad">Modalidad</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Estado Gtia">Estado Gtia</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Plazo formalizar">Plazo formalizar</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="N° Gtia  CRGA	">N° Gtia  CRGA	</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Importe Gtia">Importe Gtia</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<aura:iteration items="{!v.rows}" var="row" indexVar="rowIndex">
+					<tr class="slds-is-sortable slds-is-resizable" style="overflow-x:auto;"> 
+						<th role="gridcell" class="slds-is-sortable slds-is-resizable">
+							<div class="slds-truncate" title="{!row.guarantee_desc__c}">{!row.guarantee_desc__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guarantee_modality_type__c}">{!row.guarantee_modality_type__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guarantee_status_type__c}">{!row.guarantee_status_type__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guarantee_term_number__c}">{!row.guarantee_term_number__c}&nbsp;{!row.guarantee_periodicity_type__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guarantee_id__c}">{!row.guarantee_id__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guaranteed_amount__c +'.00'}">
+								<ui:outputCurrency currencyCode="{!row.CurrencyIsoCode +' '}" value="{!row.amount}" />
+							</div>
+						</th>
+					</tr>
+				</aura:iteration>
+			</tbody>
+		</table>
+	</aura:if>
+</aura:renderIf></aura:component>

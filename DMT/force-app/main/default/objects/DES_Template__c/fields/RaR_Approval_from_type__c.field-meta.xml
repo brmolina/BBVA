@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RaR_Approval_from_type__c</fullName>
+    <label>RORC / RAROEC Approval from</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>COPOR</fullName>
+                <default>false</default>
+                <label>COPOR</label>
+            </value>
+            <value>
+                <fullName>CTA</fullName>
+                <default>false</default>
+                <label>CTA</label>
+            </value>
+            <value>
+                <fullName>Pending COPOR</fullName>
+                <default>false</default>
+                <label>Pending COPOR</label>
+            </value>
+            <value>
+                <fullName>Pending CTA</fullName>
+                <default>false</default>
+                <label>Pending CTA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

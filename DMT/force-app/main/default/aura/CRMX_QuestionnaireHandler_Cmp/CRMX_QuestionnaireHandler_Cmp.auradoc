@@ -1,0 +1,18 @@
+<aura:documentation>
+    <aura:description>
+        <p>This component displays a dynamic form based on a questionnaire associated with an account.</p>
+
+        <p><strong>Attributes:</strong></p>
+        <ul>
+            <li><strong>recordId:</strong> ID of the current record in context, usually the account ID in the Lightning Page.</li>
+            <li><strong>templateCuestionarios:</strong> Name of the questionnaire template that will be used as the basis for generating the dynamic form.</li>
+            <li><strong>view:</strong> Indicates whether the dynamic form is displayed in read-only mode (<em>true</em>) or editable (<em>false</em>).</li>
+            <li><strong>editButton:</strong> JSON-formatted configuration of the edit button, defining its style and state.</li>
+        </ul>
+
+        <p><strong>Events:</strong> Triggers the <code>onSave</code> event when the user saves the dynamic form.</p>
+
+        <p><strong>Usage Example:</strong></p>
+        <p>Placed in the Lightning Page of the <code>Account</code> object to display dynamic questionnaires for business-type customers.</p>
+    </aura:description>
+</aura:documentation>

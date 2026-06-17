@@ -1,0 +1,30 @@
+<aura:component controller="GDT_Block_Studies_Proposal_Controller"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId"
+    access="global">
+	
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="allData" type="List" />
+    <aura:attribute name="pagedData" type="List" />
+    <aura:attribute name="currentPage" type="Integer" default="1" />
+    <aura:attribute name="pageSize" type="Integer" default="10" />
+    <aura:attribute name="totalPages" type="Integer" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card title="Proposal Block Studies">
+        <lightning:datatable
+            keyField="Id"
+            data="{!v.pagedData}"
+            columns="{!v.columns}"
+            hideCheckboxColumn="true"
+            resizeColumnDisabled="true"
+        />
+
+        <div class="slds-p-around_medium slds-text-align_center">
+            <lightning:button label="Prev" onclick="{!c.prevPage}" disabled="{!v.currentPage == 1}" />
+            <span class="slds-p-horizontal_small">Page {!v.currentPage} of {!v.totalPages}</span>
+            <lightning:button label="Next" onclick="{!c.nextPage}" disabled="{!v.currentPage == v.totalPages}" />
+        </div>
+    </lightning:card>
+</aura:component>

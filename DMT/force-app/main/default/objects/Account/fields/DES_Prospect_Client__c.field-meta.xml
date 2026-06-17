@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Prospect_Client__c</fullName>
+    <formula>OR(RecordType.DeveloperName  = &apos;DES_Prospect_Desktop&apos;,RecordType.DeveloperName  = &apos;DES_Prospect_Group_Desktop&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Prospect Client</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

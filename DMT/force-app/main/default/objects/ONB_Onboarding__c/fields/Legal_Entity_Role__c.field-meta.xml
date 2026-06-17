@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Legal_Entity_Role__c</fullName>
+    <label>Legal Entity Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Advisory</fullName>
+                <default>false</default>
+                <label>Advisory</label>
+            </value>
+            <value>
+                <fullName>Agent in syndicated loan</fullName>
+                <default>false</default>
+                <label>Agent in syndicated loan</label>
+            </value>
+            <value>
+                <fullName>Borrower Loan Trading</fullName>
+                <default>false</default>
+                <label>Borrower Loan Trading</label>
+            </value>
+            <value>
+                <fullName>Client/Counterparty</fullName>
+                <default>false</default>
+                <label>Client/Counterparty</label>
+            </value>
+            <value>
+                <fullName>Guarantor</fullName>
+                <default>false</default>
+                <label>Guarantor</label>
+            </value>
+            <value>
+                <fullName>Investment Manager</fullName>
+                <default>false</default>
+                <label>Investment Manager</label>
+            </value>
+            <value>
+                <fullName>Participant in syndicated loan</fullName>
+                <default>false</default>
+                <label>Participant in syndicated loan</label>
+            </value>
+            <value>
+                <fullName>Secondary Loan Market participant</fullName>
+                <default>false</default>
+                <label>Secondary Loan Market participant</label>
+            </value>
+            <value>
+                <fullName>Silent clients</fullName>
+                <default>false</default>
+                <label>Silent clients</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

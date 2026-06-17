@@ -1,0 +1,40 @@
+/* Layout */
+.onb-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lwc-spacingSmall);
+}
+
+.onb-row-two > .onb-card {
+    flex: 1 1 100%;
+}
+
+@media (min-width: 48rem) {
+    .onb-row-two > .onb-card {
+        flex: 1 1 0;
+    }
+}
+
+.onb-card {
+    border-radius: 1rem;
+    border: 1px solid var(--lwc-colorBorder);
+    box-shadow: 0 2px 4px 0 var(--lwc-colorShadow);
+    padding: var(--lwc-spacingMedium);
+    display: flex;
+    flex-direction: column;
+    background: var(--lwc-colorBackgroundAlt);
+}
+
+.onb-group {
+    border-radius: 1rem;
+    border: 1px solid var(--lwc-colorBorder);
+    box-shadow: 0 2px 4px 0 var(--lwc-colorShadow);
+    padding: var(--lwc-spacingSmall);
+    background: var(--lwc-colorBackgroundAlt);
+}
+
+.onb-card-inside-group {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validation_Ended</fullName>
+    <active>true</active>
+    <description>valida quien puede terminar la iniciativa</description>
+    <errorConditionFormula>AND(
+$User.Id &lt;&gt; OwnerId
+,
+EndDate &gt; TODAY()
+,
+TEXT(Status) =&apos;Ended&apos;
+,
+ISCHANGED(Status)
+)</errorConditionFormula>
+    <errorMessage>only the owner can end the initiative</errorMessage>
+</ValidationRule>

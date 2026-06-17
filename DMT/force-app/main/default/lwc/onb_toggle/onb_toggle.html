@@ -1,0 +1,25 @@
+<template>
+    <div class="slds-form-element slds-grid slds-grid_vertical-align-start">
+        <label class="slds-form-element__label slds-text-color_weak slds-grid slds-grid_vertical-align-center slds-p-top_xxx-small">
+            <abbr class="slds-required" title="required">* </abbr>
+            {text}
+            <lightning-icon
+                icon-name="utility:info"
+                size="x-small"
+                title=""
+                style="--slds-c-icon-color-foreground-default: var(--slds-g-color-brand-base-40);"
+                class="slds-m-left_medium">
+            </lightning-icon>
+        </label>
+        <div class="slds-form-element__control">
+            <lightning-input
+                type="toggle"
+                variant="label-hidden"
+                name="finalList"
+                message-toggle-active="Yes"
+                message-toggle-inactive="No"
+                onchange={handleToggleChange}>
+            </lightning-input>
+        </div>
+    </div>
+</template>

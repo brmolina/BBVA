@@ -1,0 +1,217 @@
+<aura:component controller="DPMX_MostrarHistorialTasas_ctrl" implements="lightning:availableForFlowScreens">
+    <!--Atributos del padre-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="status" type="String" />
+    <aura:attribute name="businessAgentId" type="String" />
+    <aura:attribute name="businessAuthorizesId" type="String" />
+
+    <!--Atributos Usuarios-->
+    <aura:attribute name="businessAgent" type="String" />
+    <aura:attribute name="businessAuthorizes" type="String" />
+
+    <!--Atributos debito-->
+    <aura:attribute name="tasaDebit" type="String" />
+    <aura:attribute name="statusDebit" type="String" />
+    <aura:attribute name="initDateDebit" type="String" />
+    <aura:attribute name="sendSystDateDebit" type="String" />
+    <aura:attribute name="revisionDateDebit" type="String" />
+    <aura:attribute name="debitExist" type="Boolean" default="false" />
+
+    <!--Atributos credito-->
+    <aura:attribute name="tasacredito" type="String" />
+    <aura:attribute name="statuscredito" type="String" />
+    <aura:attribute name="initDatecredito" type="String" />
+    <aura:attribute name="sendSystDatecredito" type="String" />
+    <aura:attribute name="revisionDatecredito" type="String" />
+    <aura:attribute name="creditExist" type="Boolean" default="false" />
+
+    <!--Atributos International-->
+    <aura:attribute name="tasaInternational" type="String" />
+    <aura:attribute name="statusInternational" type="String" />
+    <aura:attribute name="initDateInternational" type="String" />
+    <aura:attribute name="sendSystDateInternational" type="String" />
+    <aura:attribute name="revisionDateInternational" type="String" />
+    <aura:attribute name="internationalExist" type="Boolean" default="false" />
+
+    <!--Atributos Fechas-->
+    <aura:attribute name="initDate" type="String" />
+    <aura:attribute name="sendSystDate" type="String" />
+    <aura:attribute name="revisionDate" type="String" />
+
+    <!--Validaciones-->
+    <aura:attribute name="isGs" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 100%; max-width: 100rem; } .modal-body{ height : 100px !important; max-height: 100px !important; } .customFooter{ display: inline !important; } .cuf-content { padding: 0 0rem !important;
+        } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; }
+
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">FOLIO {!v.status.folio}</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-size_1-of-2 slds-m-right_xx-small">
+                            <div>Ejecutivo: </div>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-m-right_xx-small">
+                            <div>Autorizado por: </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-size_1-of-2 slds-m-right_xx-small">
+                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.businessAgent}" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-m-right_xx-small">
+                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.businessAuthorizes}" />
+                        </div>
+                    </div>
+
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="title"></div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Tasa o cueta">Tasa o cuota</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Fecha de envio a sistema">Fecha de envío a sistema</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Inicio">Inicio</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Fin">Recordatorio de revisión</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Estatus en sistema">Estatus en sistema</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!v.debitExist}">
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Debito" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <aura:if isTrue="{!v.isGs}">
+                                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.tasaDebit}" currencyText="MXN" />
+                                                <aura:set attribute="else">
+                                                    <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.tasaDebit}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.initDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.sendSystDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.revisionDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.statusDebit}" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:if>
+                            <aura:if isTrue="{!v.creditExist}">
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Credito" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.tasacredito}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.initDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.sendSystDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.revisionDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.statuscredito}" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:if>
+                            <aura:if isTrue="{!v.internationalExist}">
+                                <tr class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Internacional" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.tasaInternational}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.initDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.sendSystDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!v.revisionDate}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!v.statusInternational}" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Volver" onclick="{!c.handleClose}" />
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

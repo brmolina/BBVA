@@ -720,7 +720,7 @@ public without sharing class DES_HandlerTerritory {
                 }
                 final Map<ID,Opportunity> opps = new Map<ID, Opportunity>([SELECT Id, DES_Booking_Geography__c, disclosure_info_type__c, Account.DES_Segment__c
                                                                         FROM Opportunity
-                                                                        WHERE Id IN :idsOpp.values() and disclosure_info_type__c != :Label.DES_OP_Inside and recordType.DeveloperName != 'DMT_Opportunity']);//NOSONAR
+                                                                        WHERE Id IN :idsOpp.values() and disclosure_info_type__c != :Label.DES_OP_Inside]);//NOSONAR
 
                 if(!opps.isEmpty()) {
                     for (OpportunityLineItem objecto : objectos) {
@@ -961,15 +961,19 @@ public without sharing class DES_HandlerTerritory {
             final Set<Id> userIds = new Set<Id>();
             Set<String> clavesExistentes = new Set<String>();
             clavesExistentes = getIdsShare(listOppTeamMemb,parentIds,userIds,clavesExistentes);
-            for (OpportunityTeamMember otm : listOppTeamMemb) {
-            final String clave = otm.Opportunity.Committee_id__c + '-' + otm.UserId;    
-                if (!clavesExistentes.contains(clave)) {
-                    final NBC__Share objClon = nbcShare.clone();
-                    updateValue(objClon, 'UserOrGroupId', otm.UserId);
-                    updateValue(objClon, 'ParentId', otm.Opportunity.Committee_id__c);
-                    listNbcShare.add(objClon);
+
+            if (!listOppTeamMemb.isEmpty()) {
+                for (OpportunityTeamMember otm : listOppTeamMemb) {
+                final String clave = otm.Opportunity.Committee_id__c + '-' + otm.UserId;    
+                    if (!clavesExistentes.contains(clave)) {
+                        final NBC__Share objClon = nbcShare.clone();
+                        updateValue(objClon, 'UserOrGroupId', otm.UserId);
+                        updateValue(objClon, 'ParentId', otm.Opportunity.Committee_id__c);
+                        listNbcShare.add(objClon);
+                    }
                 }
             }
+            
             if (!listNbcShare.isEmpty()) {
                 insert listNbcShare;
             }
@@ -988,15 +992,19 @@ public without sharing class DES_HandlerTerritory {
     * @return Set<String> retorna un set con ids parent y userid 
     */ 
     public static Set<String> getIdsShare(List<OpportunityTeamMember> listOppTeamMemb, Set<Id> parentIds,Set<Id> userIds,Set<String> clavesExistentes) {
-    for (OpportunityTeamMember otm : listOppTeamMemb) {
-                parentIds.add(otm.Opportunity.Committee_id__c);
-                userIds.add(otm.UserId);
-     }
-    final List<NBC__Share> shareExiste = [SELECT Id, ParentId, UserOrGroupId FROM NBC__Share WHERE ParentId IN :parentIds AND UserOrGroupId IN :userIds];
-    for (NBC__Share lstShare : shareExiste) {
-    clavesExistentes.add(lstShare.ParentId + '-' + lstShare.UserOrGroupId);
-    }
-    return clavesExistentes;
+        for (OpportunityTeamMember otm : listOppTeamMemb) {
+                    parentIds.add(otm.Opportunity.Committee_id__c);
+                    userIds.add(otm.UserId);
+        }
+        final List<NBC__Share> shareExiste = [SELECT Id, ParentId, UserOrGroupId FROM NBC__Share WHERE ParentId IN :parentIds AND UserOrGroupId IN :userIds];
+
+        if (!shareExiste.isEmpty()) {
+            for (NBC__Share lstShare : shareExiste) {
+            clavesExistentes.add(lstShare.ParentId + '-' + lstShare.UserOrGroupId);
+            }
+        }
+        
+        return clavesExistentes;
     }
     /*
      *  Global Desktop

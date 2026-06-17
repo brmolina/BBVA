@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transport_type__c</fullName>
+    <label>Transport type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Other</fullName>
+                <default>true</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Car</fullName>
+                <default>false</default>
+                <label>Car</label>
+            </value>
+            <value>
+                <fullName>Foreign car</fullName>
+                <default>false</default>
+                <label>Foreign car</label>
+            </value>
+            <value>
+                <fullName>Bus</fullName>
+                <default>false</default>
+                <label>Bus</label>
+            </value>
+            <value>
+                <fullName>Train</fullName>
+                <default>false</default>
+                <label>Train</label>
+            </value>
+            <value>
+                <fullName>Plane</fullName>
+                <default>false</default>
+                <label>Plane</label>
+            </value>
+            <value>
+                <fullName>Boat</fullName>
+                <default>false</default>
+                <label>Boat</label>
+            </value>
+            <value>
+                <fullName>Tram</fullName>
+                <default>false</default>
+                <label>Tram</label>
+            </value>
+            <value>
+                <fullName>Taxi</fullName>
+                <default>false</default>
+                <label>Taxi</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

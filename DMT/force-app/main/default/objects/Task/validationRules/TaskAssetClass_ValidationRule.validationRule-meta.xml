@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TaskAssetClass_ValidationRule</fullName>
+    <active>true</active>
+    <description>Esta regla de validación sirve para que un Usuario sólo pueda poner como AssetClass de la Task, un valor correcto (un assetclass que él pertenezca y tenga dentro del User: por ejemplo que un Usuario FX no pueda poner en la Task un assetClass =&apos; EQ&apos;)</description>
+    <errorConditionFormula>IF($Setup.CIB_User_Org__c.CIB_Is_Sales__c,
+
+IF ( AND(  !ISBLANK(TEXT(Asset_Class__c)) , OR(
+AND(ISPICKVAL(Asset_Class__c, &apos;FI&apos;), NOT(INCLUDES($User.Asset_Class__c, &apos;FI&apos;))),
+AND(ISPICKVAL(Asset_Class__c, &apos;FX&apos;), NOT(INCLUDES($User.Asset_Class__c, &apos;FX&apos;))),
+AND(ISPICKVAL(Asset_Class__c, &apos;EQ&apos;), NOT(INCLUDES($User.Asset_Class__c, &apos;EQ&apos;)))
+)
+), true, false ), false)</errorConditionFormula>
+    <errorDisplayField>Asset_Class__c</errorDisplayField>
+    <errorMessage>The selected AssetClass is incorrect for this User</errorMessage>
+</ValidationRule>

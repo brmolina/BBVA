@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GM_Block_Close_Without_Accounting_Date</fullName>
+    <active>true</active>
+    <description>Prevents closing GM Monetary Claim cases without Accounting Date or SIRO Account.</description>
+    <errorConditionFormula>AND(
+    OR(
+       RecordType.DeveloperName  = &apos;SER_GM_User&apos;,
+       RecordType.DeveloperName  = &apos;SER_Closed_Case_GM_User&apos;
+    ),
+    SER_Incident_with_economic_impact__c,
+    OR(
+       ISNULL(SER_Accounting_date__c),
+       ISPICKVAL(SER_SIRO_Account__c, &quot;&quot;)
+    ),
+    ISPICKVAL(Status, &quot;Closed&quot;)
+)</errorConditionFormula>
+    <errorMessage>Accounting Date and SIRO Account are mandatory to close GM Monetary Claim cases.</errorMessage>
+</ValidationRule>

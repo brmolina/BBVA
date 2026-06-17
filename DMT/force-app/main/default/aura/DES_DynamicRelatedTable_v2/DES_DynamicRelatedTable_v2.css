@@ -1,0 +1,37 @@
+.THIS tr th {
+	background-color: #DEE5EE;
+	color: #43557A;
+	font-weight: bold;
+}
+
+.THIS tr:nth-child(2n+3) {
+    background-color: #FAFAFA;
+}
+
+.THIS .separatorRow{
+    background-color:#D8D8D8;
+    height: 20px;
+}
+
+.THIS .titleH1 {
+    margin-top:20px;
+    padding-top:10px;
+    font-weight:700;
+}
+
+.THIS th {
+  border: 1px solid #C9C9C9;
+}
+
+.THIS .slds-table tbody tr {
+    background-color: white !important;
+}
+
+.THIS .titleHead {
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    vertical-align: middle;
+}

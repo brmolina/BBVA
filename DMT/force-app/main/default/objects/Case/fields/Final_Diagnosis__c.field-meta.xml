@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Final_Diagnosis__c</fullName>
+    <label>Final Diagnosis</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>KO - Ilocalizable</fullName>
+                <default>false</default>
+                <label>KO - Ilocalizable</label>
+            </value>
+            <value>
+                <fullName>KO - No interesado</fullName>
+                <default>false</default>
+                <label>KO - No interesado</label>
+            </value>
+            <value>
+                <fullName>KO - No cumple requisitos</fullName>
+                <default>false</default>
+                <label>KO - No cumple requisitos</label>
+            </value>
+            <value>
+                <fullName>KO - Otros</fullName>
+                <default>false</default>
+                <label>KO - Otros</label>
+            </value>
+            <value>
+                <fullName>OK - Cliente gestionado en la llamada</fullName>
+                <default>false</default>
+                <label>OK - Cliente gestionado en la llamada</label>
+            </value>
+            <value>
+                <fullName>OK - Cliente gestionado antes de la llamada</fullName>
+                <default>false</default>
+                <label>OK - Cliente gestionado antes de la llamada</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

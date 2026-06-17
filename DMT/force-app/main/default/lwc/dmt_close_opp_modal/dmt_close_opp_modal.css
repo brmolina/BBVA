@@ -1,0 +1,113 @@
+:host {
+  display: block;
+}
+
+.modal-overlay {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+  display: block;
+}
+
+.modal-container {
+  position: relative;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(182, 179, 179, 0.2);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.55);
+  z-index: 20;
+  border-radius: 12px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.button-submit {
+  background-color: #0070d2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s ease;
+}
+
+.button-submit:hover {
+  background-color: #005fbe;
+}
+
+.button-submit:active {
+  background-color: #004a94;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .modal-container {
+    width: 100%;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 15px;
+  }
+}

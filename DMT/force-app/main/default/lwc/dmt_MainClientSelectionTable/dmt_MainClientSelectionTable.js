@@ -5,6 +5,7 @@ import fetchInitialData from '@salesforce/apex/DMT_HPG_MainTableCustomController
 import fetchData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
 import getStructureTypeByGroupCode from '@salesforce/apex/DMT_Client_Selector.getStructureTypeByGroupCode';
 import getRecordCode from '@salesforce/apex/DMT_HPG_MainTableCustomController.getRecordCode';
+import getSalesforceAccountIdsByCustomerIds from '@salesforce/apex/DMT_HPG_MainTableCustomController.getSalesforceAccountIdsByCustomerIds';
 
 export default class Dmt_MainClientSelectionTable extends LightningElement {
 
@@ -62,6 +63,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
         }
         this.isClientSalesforce();
         this.preselectOrigin();
+
     }
 
     //INIT
@@ -84,7 +86,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
         this.handleActiveTab(this.selectedTab);
         this.selectedData = {groups: [], toplevel: {clients:[]}};
         this.groupedData = [];
-
+        
         if (data) {
             
             if (data.success) {
@@ -94,7 +96,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
                 } else {
                     this.groupData();
                 }
-            } else {
+            } else {    
                 console.error('ERROR loading initial data: ' + data.errorMessage);
                 this.showErrorMessage = true;
                 this.fireErrorEvent();
@@ -117,6 +119,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
         this.showSpinner = true;
         fetchData(params).then( data => {
             if (data.success) {
+
                 this.groupedData = this.groupedData.concat(data.data);
                 if (data.pagination.totalPages > data.pagination.page) {
                     this.fetchMore(data.pagination.page + 1, data.pagination.pageSize);
@@ -163,6 +166,29 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     async groupData() {
         //await this.isClientSalesforce(null, this.groupCode);
         //return new Promise((resolve, reject) => {
+        if(this.groupedData.length == 0) {
+            const params = {
+                groupId: this.groupCode || '',
+                groupCode: this.groupCode || '',
+                groupName: this.groupName || '',
+                countryIfoId: '',
+                taxpayerId:'',
+                clientId: this.clientId || '',
+                clientName: this.groupName || '',
+                clientType: ('group' || ''),
+                level3GroupName : this.groupName || '',
+                isSupragroup : this._isSupraGroup,
+                isClientSalesforce: this._isClientSalesforce,
+                generalGroupCode: this.groupCode || ''
+            };
+            var evt = new CustomEvent('selectclient', {
+                bubbles: true,
+                composed: true,
+                cancelable: true,
+                detail: params
+            });
+            this.dispatchEvent(evt);
+        }
         this.mapData2Columns().then( selectedData => {
             var position = [];
             var grouped = [];
@@ -204,7 +230,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
                 });
                 data.forEach( group => {
                     if (group.subGroupId === '-1000') {
-                        this.selectedData.toplevel = group;
+                        this.selectedData.toplevel = group;                        
                     } else {
                         this.selectedData.groups.push(group);
 
@@ -257,6 +283,44 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             resolve(subGrouped);
         });
     }
+    //Clients Supra/Group by Entific.
+    getClientsByCountryArray(clients) {
+        const result = [];
+
+        clients.forEach(client => {
+            const externalClientId = client[6]; // g_customer_id__c
+            const country = c[6] ? c[6].substring(0, 2) : null;         // país
+
+            if (!externalClientId || !country) {
+                return;
+            }
+
+            if (!result.some(item => item.country === country)) {
+                result.push({
+                    country,
+                    externalClientId,
+                    salesforceId: null 
+                });
+            }
+        });
+
+        return result;
+    }
+
+    resolveSalesforceIds(clientsByGroup) {
+        const customerIds = clientsByGroup
+            .map(c => c.externalClientId)
+            .filter(Boolean);
+
+        return getSalesforceAccountIdsByCustomerIds({ customerIds })
+            .then(mapResult => {
+                return clientsByGroup.map(c => ({
+                    country: c.country,
+                    clientId: mapResult[c.externalClientId] || null
+                }));
+            });
+    }
+
 
     handleActiveTab() {
         this.columns = getColumns(this.selectedTab);
@@ -278,7 +342,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             pageSize: pageSize,
             bubbles: false
         };
-        this.template.querySelector("c-hpg_fetcher").fireFetchMoreEvent(params);
+        this.template.querySelector("c-dmt_fetcher").fireFetchMoreEvent(params);
     }
 
     handleFetchMoreEvent(event) {
@@ -295,9 +359,66 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     }
 
     selectRow(event) {
+        
+        if (event.detail.clientType === 'subgroup' || event.detail.clientType === 'l3group') {
+        const selectionObject = event.detail;
+        const countryMap = {};
+
+        selectionObject.clients.forEach(c => {
+            const externalClientId = c.customerId;
+            const country = c.customerId ? c.customerId.substring(0, 2) : null;;
+
+            if (!externalClientId || !country) {
+                return;
+            }
+
+            if (!countryMap[country]) {
+                countryMap[country] = [];
+            }
+
+            countryMap[country].push(externalClientId);
+        });
+
+        const allExternalIds = [
+            ...new Set(Object.values(countryMap).flat())
+        ];
+
+        getSalesforceAccountIdsByCustomerIds({
+            customerIds: allExternalIds
+        }).then(resultMap => {
+
+            const clientsByCountry = [];
+
+            Object.keys(countryMap).forEach(country => {
+                const externalIds = countryMap[country];
+                const found = externalIds.find(id => resultMap[id]);
+
+                clientsByCountry.push({
+                    country,
+                    clientId: found ? resultMap[found] : null
+                });
+            });
+
+            console.log(
+                'ABS SUBGROUP FINAL:',
+                JSON.stringify(clientsByCountry)
+            );
+
+            this.dispatchEvent(new CustomEvent('clientsAssociation', {
+                bubbles: true,
+                composed: true,
+                cancelable: true,
+                detail: {
+                    clientsByCountry
+                }
+            }));
+        });
+    }
+
+
         let selected = this.template.querySelector('.isSelected');
         if (selected) {
-           selected.classList.remove('isSelected');
+            selected.classList.remove('isSelected');
         }
         this.template.querySelector(`[data-id="${event.detail.cellid}"]`).classList.add('isSelected');
     }
@@ -318,7 +439,60 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     }
 
     sendGroupEvent(event) {
+        const clients =
+            this.selectedData?.toplevel?.clients || [];
+        const countryMap = {};
 
+        clients.forEach(c => {
+            const externalClientId = c[6];
+            const country = c[6] ? c[6].substring(0, 2) : null;
+            if (!externalClientId || !country) {
+                return;
+            }
+
+            if (!countryMap[country]) {
+                countryMap[country] = [];
+            }
+
+            countryMap[country].push(externalClientId);
+        });
+
+        const allExternalIds = [
+            ...new Set(Object.values(countryMap).flat())
+        ];
+
+
+        getSalesforceAccountIdsByCustomerIds({
+            customerIds: allExternalIds
+        }).then(resultMap => {
+
+            console.log('ABS resultmap '+ JSON.stringify(resultMap));
+            const clientsByCountry = [];
+
+            Object.keys(countryMap).forEach(country => {
+                const externalIds = countryMap[country];
+                const found = externalIds.find(id => resultMap[id]);
+
+                clientsByCountry.push({
+                    country,
+                    clientId: found ? resultMap[found] : null
+                });
+            });
+
+            console.log(
+                'ABS GROUP / SUPRAGROUP FINAL:',
+                JSON.stringify(clientsByCountry)
+            );
+
+            this.dispatchEvent(new CustomEvent('clientsAssociation', {
+                bubbles: true,
+                composed: true,
+                cancelable: true,
+                detail: {
+                    clientsByCountry
+                }
+            }));
+        });
         if (event) {
             event.preventDefault();
         }
@@ -326,7 +500,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
         let selected = this.template.querySelector('.isSelected');
 
         if (selected) {
-           selected.classList.remove('isSelected');
+            selected.classList.remove('isSelected');
         }
 
         this.template.querySelector(`th`).classList.add('isSelected');
@@ -345,8 +519,6 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             isClientSalesforce: this._isClientSalesforce,
             generalGroupCode: this.groupCode || ''
         };
-                
-
         var evt = new CustomEvent('selectclient', {
             bubbles: true,
             composed: true,
@@ -354,6 +526,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             detail: params
         });
         this.dispatchEvent(evt);
+
     }
 
     handleToggleGroup(event) {
@@ -484,7 +657,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
                             inline: "nearest"
                         });
                         this.selectRow({detail:{cellid: cellid}});
-                        var cell = this.template.querySelector('c-hpg_main_table_cell[data-id="' + cellid + '"]');
+                        var cell = this.template.querySelector('c-dmt_client_table_cell[data-id="' + cellid + '"]');
                         if (cell) {
                             cell.handleClick();
                         }

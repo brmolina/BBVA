@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT_Soportefunc_ES_TreasuryGro</label>
+    <protected>false</protected>
+    <values>
+        <field>DMT_Client_Type__c</field>
+        <value xsi:type="xsd:string">Group</value>
+    </values>
+    <values>
+        <field>DMT_Operation_Type__c</field>
+        <value xsi:type="xsd:string">TreasurySettlement</value>
+    </values>
+    <values>
+        <field>DMT_Role__c</field>
+        <value xsi:type="xsd:string">DMT_Soporte funcional</value>
+    </values>
+    <values>
+        <field>DMT_Value__c</field>
+        <value xsi:type="xsd:string">ES</value>
+    </values>
+</CustomMetadata>

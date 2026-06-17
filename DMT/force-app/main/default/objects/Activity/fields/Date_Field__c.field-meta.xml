@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Date_Field__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(MONTH(ActivityDate),
+1, &quot;01&quot; + &quot;/&quot;+TEXT(YEAR(ActivityDate)) ,
+2, &quot;02&quot; + &quot;/&quot;+TEXT(YEAR(ActivityDate)) ,
+3, &quot;03&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)) ,
+4, &quot;04&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+5, &quot;05&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+6, &quot;06&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+7, &quot;07&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+8, &quot;08&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+9, &quot;09&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+10, &quot;10&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+11, &quot;11&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+12, &quot;12&quot;+ &quot;/&quot;+TEXT(YEAR(ActivityDate)),
+&quot;None&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Date_Field</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

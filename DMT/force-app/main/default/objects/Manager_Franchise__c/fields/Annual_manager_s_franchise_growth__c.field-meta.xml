@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Annual_manager_s_franchise_growth__c</fullName>
+    <formula>if(  Adjusted_manager_s_Prior_Year_Franchise__c  &lt;&gt;0, ( YTD_Total_Franchise__c - Adjusted_manager_s_Prior_Year_Franchise__c ) /  Adjusted_manager_s_Prior_Year_Franchise__c  ,9999.9999)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Annual manager&apos;s franchise growth</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

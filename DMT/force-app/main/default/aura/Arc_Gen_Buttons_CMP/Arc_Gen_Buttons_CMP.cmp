@@ -1,0 +1,49 @@
+<!--
+@Component Name     : Arc_Gen_Buttons_CMP.cmp
+@Description        : Buttons component what initialize dynamic button collection with dwp_dbpn prefix managed package
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : amunguia.contractor@bbva.com
+@Last Modified On   : 09-01-2021
+@Modification Log   :
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    XX/4/2019                  ARCE TEAM     		    		    Initial Version
+1.1    30/03/2020      juanignacio.hita.contractor@bbva.com     Add init method to get name identifier of buttons collection
+1.2    07/05/2020      joseluis.garcia4.contractor@bbva.com     Add Finalize Prerating button.
+1.3    08/06/2020      joseluis.garcia4.contractor@bbva.com     Hardcode styles, alignments and component names that should not be labels.
+1.4    06/05/2020      javier.soto.carrascosa@bbva.com          Add refreshView event
+1.5    02/10/2020      ivan.cons@bbva.com                       Filter the GBL_SelectItem_EVT event based on name(based on qvcd 4.37)
+1.6    30/08/2021      amunguia.contractor@bbva.com             it is checked that overlay has been calculated.
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="Arc_Gen_ButtonsCMP_controller">
+  <aura:attribute name="recordId" type="String" access="global" description="Standard id of the current record"/>
+  <aura:attribute name="buttonsCollection" type="String" access="global" description="Name button collection"/>
+  <aura:attribute name="idSelect" type="String" description="saves selected id"/>
+  <aura:attribute name="view" type="boolean" default="false" description="controls show or hide"/>
+  <aura:attribute name="buttonsIdentifier" type="String" default="Arc_Gen_Remove,Arc_Gen_RAIP_Validate,Arc_Gen_RAIP_Propose,Arc_Gen_RAIP_AdjustCorporates,Arc_Gen_RAIP_FFSS,Arc_Gen_RAIP_New_FFSS,Arc_Gen_RAIP_FinalizePrerating,Arc_Gen_BtnValidateGroup,Arc_Gen_BtnValidate,Arc_Gen_ProposeInPreparation,Arc_Gen_BtnReturn,Arc_Gen_Sanction,Arc_Gen_ProposeInSanction,Arc_Gen_ScheduleInSanction,Arc_Gen_Refresh,MX_ARCE_ReAssign,Arc_Gen_Exit_FastTrack,Arc_Gen_BtnDumpData,Arc_Gen_ActMonoGroup,Arc_Gen_Propose_2021RTC,Arc_Gen_New_FFSS_2021RTC,Arc_Gen_Remove_2021RTC,Arc_Gen_Validate_2021RTC,Arc_Gen_Return_2021RTC,Arc_Gen_FinalizePrerating_2021RTC"
+                  description="show buttons"/>
+  <aura:attribute name="buttonsAlig" type="String" default="left,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,right,left,right,right,right"
+                  description="show buttons alignment"/>
+  <aura:attribute name="buttonsStyle" type="String" default="neutral,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,brand,neutral,brand,brand,brand"
+                  description="show buttons style"/>
+  <aura:attribute name="indexAux" type="Integer" description="index control for buttons"/>
+  <aura:handler event="c:Arc_Gen_TabSetEvent" action="{!c.handleTabEvent}"/>
+  <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getItemEvent}"/>
+  <aura:handler event="aura:locationChange" action="{!c.update}"/>
+  <aura:handler event="force:refreshView" action="{!c.refresh}"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+  <aura:if isTrue="{!v.view}">
+    <dwp_dbpn:DynamicButtonCollection_comp contextRecordId="{!v.idSelect}"
+                                          buttonsCollectionUniqueIdentifier="{!v.buttonsCollection}"
+                                          buttonsUniqueIdentifiers="{!v.buttonsIdentifier}"
+                                          buttonsAlignment="{!v.buttonsAlig}"
+                                          buttonsStyles="{!v.buttonsStyle}"
+                                          buttonHiddenIfNotAvailable="true"
+                                          refreshOnRefreshView="true"
+                                          contextObjectApiName="arce__Account_has_Analysis__c"/>
+  </aura:if>
+</aura:component>

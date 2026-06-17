@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Incorrect_Booking_unit_risk_analyst</fullName>
+    <active>true</active>
+    <errorConditionFormula>DMT_Booking_Analyst_Error__c</errorConditionFormula>
+    <errorDisplayField>DMT_Booking_Unit_Risk_Analyst__c</errorDisplayField>
+    <errorMessage>The approver entific differs from that of the client of this line</errorMessage>
+</ValidationRule>

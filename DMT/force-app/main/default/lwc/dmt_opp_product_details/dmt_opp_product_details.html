@@ -1,0 +1,129 @@
+<template>
+    <template if:true={isLoadingSaving}>
+        <lightning-spinner alternative-text="Loading..." size="medium" variant="brand" style="position: fixed;"></lightning-spinner>
+    </template>
+        <template if:true={isLoading}>
+            <div style="position: relative; width: 40px; left: 7px; background: transparent; bottom: 20px">
+                <lightning-spinner
+                    alternative-text="Loading"
+                    size="small">
+                </lightning-spinner>
+            </div>
+    </template>
+    <lightning-accordion active-section-name={allSections} allow-multiple-sections-open>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+    </template>
+        <lightning-accordion-section name="A" label="General Information" class="delete-border">
+            <c-dmt_opp_product_details_general_information
+                lwc:ref="generalInfo"
+                data={recordData}
+                field-options={optionsMap}
+                oneditmodechange={handleEditModeChange}
+                onsectionchange={handleSectionChange}>
+            </c-dmt_opp_product_details_general_information>
+        </lightning-accordion-section>
+
+        <!--<lightning-accordion-section name="B" label="Amortization" class="delete-border">
+            <c-dmt_opp_product_details_amortization
+                lwc:ref="amortization"
+                data={recordData}
+                tenors-data={tenorsData}
+                field-options={optionsMap}
+                record-id={currentRecordId}
+                currency-code={currentCurrencyCode}
+                initial-date={currentInitialDate}
+                maturity-date={currentMaturityDate}
+                oneditmodechange={handleEditModeChange}
+                onsectionchange={handleSectionChange}>
+            </c-dmt_opp_product_details_amortization>
+        </lightning-accordion-section>-->
+
+        <lightning-accordion-section name="B" label="Deal description" class="delete-border">
+            <c-dmt_opp_product_details_deal_description
+                lwc:ref="dealDescription"
+                data={recordData}
+                field-options={optionsMap}
+                oneditmodechange={handleEditModeChange}>
+            </c-dmt_opp_product_details_deal_description>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="C" label="Schedule" class="delete-border">
+            <c-dmt_opp_product_details_schedule
+                lwc:ref="schedule"
+                data={recordData}
+                tenors-data={tenorsData}
+                field-options={optionsMap}
+                record-id={currentRecordId}
+                currency-code={currentCurrencyCode}
+                initial-date={currentInitialDate}
+                maturity-date={currentMaturityDate}
+                oneditmodechange={handleEditModeChange}
+                onsectionchange={handleSectionChange}>
+            </c-dmt_opp_product_details_schedule>
+        </lightning-accordion-section>
+
+
+        <lightning-accordion-section name="D" label="Cost Of Funding" class="delete-border">
+            <c-dmt_opp_product_details_cost_of_funding
+                lwc:ref="costOfFunding"
+                data={recordData}
+                field-options={optionsMap}
+                oneditmodechange={handleEditModeChange}>
+            </c-dmt_opp_product_details_cost_of_funding>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="E" label="Sustainability" class="delete-border">
+            <c-dmt_opp_product_details_sustainability
+                lwc:ref="sustainability"
+                data={recordData}
+                field-options={optionsMap}
+                oneditmodechange={handleEditModeChange}>
+            </c-dmt_opp_product_details_sustainability>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="F" label="Country Risk" class="delete-border">
+            <c-dmt_opp_product_details_country_risk
+                lwc:ref="countryRisk"
+                data={recordData}
+                field-options={optionsMap}
+                oneditmodechange={handleEditModeChange}>
+            </c-dmt_opp_product_details_country_risk>
+        </lightning-accordion-section>
+
+        <lightning-accordion-section name="G" label="Mitigants" class="delete-border">
+            <div class="slds-p-horizontal_small slds-p-top_medium slds-p-bottom_small">
+                <c-dmt_opp_product_table_mitigants
+                    lwc:ref="mitigants"
+                    opp-product={currentRecordId}
+                    end-date-product={currentMaturityDate}
+                    data={mitigantsData}
+                    catalog-values={optionsMap.catalogValues}
+                    oneditmodechange={handleEditModeChange}>
+                </c-dmt_opp_product_table_mitigants>
+            </div>
+            <div class="slds-p-horizontal_small slds-p-top_medium slds-p-bottom_small">
+                <c-dmt_opp_product_table_unfunded_mitigants
+                    lwc:ref="unfundedMitigants"
+                    record-data={recordData}
+                    opp-product={currentRecordId}
+                    end-date-product={currentMaturityDate}
+                    data={mitigantsData}
+                    catalog-values={optionsMap.catalogValues}
+                    onopenmodaledit={handleOpenModalEdit}>
+                </c-dmt_opp_product_table_unfunded_mitigants>
+            </div>
+        </lightning-accordion-section>
+
+    </lightning-accordion>
+
+    <template if:true={isEditMode}>
+        <c-dmt_docked_form_footer
+            is-loading={isLoadingSaving}
+            has-error={hasError}
+            error-message={errorMessage}
+            onsave={handleSave}
+            oncancel={handleCancel}>
+        </c-dmt_docked_form_footer>
+    </template>
+</template>

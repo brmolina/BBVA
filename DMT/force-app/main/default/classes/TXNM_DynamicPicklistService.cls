@@ -5,35 +5,31 @@ public with sharing class TXNM_DynamicPicklistService {
     public static List<TXNM_DynamicPicklistHandler.PickValue> picklistValues = new List<TXNM_DynamicPicklistHandler.PickValue>();
 
     // inner classes to ease flow and deserialize
-    public class Input {
-        @InvocableVariable(label = 'Taxonomy Code' required = true)
-        public String taxonomyCode;
-    }
 
     public class ObjectFieldMapping {
         public String targetObject {get;set;}
         public String targetField  {get;set;}
     }
-
-
-    @InvocableMethod(label ='Taxonomy Update picklist' description = 'Update picklist values dynamically based on TXNM_Taxonomy__b records and mapping configuration')
-    public static void createDynamicPicklistValues(List<Input> params) {
-        String taxonomyCode = params[0].taxonomyCode;
+    @future(callout=true)
+    public static void createDynamicPicklistValues(String taxonomyCode, String serializedMdt) {
         try {
-            retrieveConfigAndRecords(taxonomyCode);
-            setPicklistValues();
-            List<ObjectFieldMapping> formattedMappings = formatTaxonomyMappings();
-            for (ObjectFieldMapping objectAndField : formattedMappings) {
-                updatePicklist(objectAndField);
+            TXNM_Taxonomy_mapping__mdt metadataConfig = (TXNM_Taxonomy_mapping__mdt) JSON.deserialize(serializedMdt, TXNM_Taxonomy_mapping__mdt.class);
+            taxonomyMapping = metadataConfig;
+            retrieveRecords(taxonomyCode);
+            if (taxonomyRecords.size() > 0) {
+                setPicklistValues();
+                List<ObjectFieldMapping> formattedMappings = formatTaxonomyMappings();
+                for (ObjectFieldMapping objectAndField : formattedMappings) {
+                    updatePicklist(objectAndField);
+                }
             }
         } catch (Exception e) {
             throw e; // Re-throw the exception to ensure the flow is aware of the failure
         }
     }
 
-    public static void retrieveConfigAndRecords(String taxonomyCode) {
+    public static void retrieveRecords(String taxonomyCode) {
         if (!Test.isRunningTest()) {
-            taxonomyMapping = [SELECT Objects_and_fields__c FROM TXNM_Taxonomy_mapping__mdt WHERE Taxonomy_code__c = :taxonomyCode WITH SECURITY_ENFORCED LIMIT 1];
             taxonomyRecords = [SELECT ValueLabel__c, ValueApiName__c from TXNM_Taxonomy__b WHERE TaxonomyCode__c = :taxonomyCode AND LastModifiedDate__c = TODAY WITH SECURITY_ENFORCED];
             // IF ANY LIST IS NULL, THROW ERROR
         }

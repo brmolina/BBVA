@@ -1,0 +1,20 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes" access="global" controller="PrcPriceMatrixBrowser_Ctrl" >
+    <aura:attribute name="oppId" type="String" access="private" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+   <lightning:recordViewForm recordId="{!v.oppId}" objectApiName="Opportunity">
+        <!-- div class="slds-box" -->
+       <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-2">
+                <lightning:outputField fieldName="gf_workflow_opportunity_id__c" />
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <lightning:outputField fieldName="gf_workflow_oppy_status_type__c" />
+            </div>
+    	</div>
+        <!-- /div -->
+    </lightning:recordViewForm>
+
+
+</aura:component>

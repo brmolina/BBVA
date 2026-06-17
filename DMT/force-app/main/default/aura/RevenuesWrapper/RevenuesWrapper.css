@@ -1,0 +1,13 @@
+.THIS .customTabs {
+	font-size: 15px;
+	font-weight: bold;
+}
+.THIS .mainWrapper {
+	/* display: inline-block; */
+	width: 100%;
+	/* position: relative; */
+}
+
+.THIS .sectiontitle {
+	color: #03234d;
+  }

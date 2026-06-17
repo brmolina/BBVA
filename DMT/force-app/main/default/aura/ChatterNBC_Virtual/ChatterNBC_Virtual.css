@@ -1,0 +1,12 @@
+.THIS .slds-box{
+    background: white!important;
+}
+.THIS .tabs__item.uiTabItem{
+    display: none !important;
+}
+.THIS .tabs__item.uiTabOverflowMenuItem{
+    display: none !important;
+}
+.THIS .tabs__item.active.uiTabItem{
+    display: inline-block !important;
+}

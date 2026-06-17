@@ -1,0 +1,51 @@
+<template>
+  <template lwc:if={isLoading}>
+    <lightning-spinner
+      alternative-text="Processing..."
+      size="medium"
+      variant="brand"
+    ></lightning-spinner>
+  </template>
+
+  <div class="custom-header">
+    <h1 class="header-title">{labels.title}</h1>
+  </div>
+
+  <div class="custom-body">
+    <div class="cards-grid">
+      <div class={addFundsClass} onclick={handleSelectAddFunds}>
+        <h2 class="card-title">{labels.addFundTitle}</h2>
+        <p class="card-desc">{labels.addFundDesc}</p>
+      </div>
+
+      <div class={fundsOnboardingClass} onclick={handleSelectFundsOnboarding}>
+        <h2 class="card-title">{labels.fundTitle}</h2>
+        <p class="card-desc">{labels.fundDesc}</p>
+      </div>
+
+      <div class={newProductClass}>
+        <h2 class="card-title">{labels.newProdTitle}</h2>
+        <p class="card-desc">{labels.newProdDesc}</p>
+      </div>
+
+      <div class={newContractClass}>
+        <h2 class="card-title">{labels.newContTitle}</h2>
+        <p class="card-desc">{labels.newContDesc}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="custom-footer slds-modal__footer">
+    <lightning-button
+      label="Cancel"
+      onclick={handleCancel}
+      class="slds-m-right_small"
+    ></lightning-button>
+    <lightning-button
+      variant="brand"
+      label="Next"
+      onclick={handleNext}
+      disabled={isNextDisabled}
+    ></lightning-button>
+  </div>
+</template>

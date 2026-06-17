@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>check_parent_ID__c</fullName>
+    <formula>Client_STAR_ID__c = Ariadna_MAZ_CD__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Casa Matriz</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

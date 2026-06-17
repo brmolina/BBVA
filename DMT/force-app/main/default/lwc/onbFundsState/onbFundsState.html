@@ -1,0 +1,35 @@
+<template>
+    <lightning-card>
+        <c-onb_autosave-banner-notification
+            icon={icono}
+            menssage={label.ONB_FUND_BANNER}
+            variant="funds">
+        </c-onb_autosave-banner-notification>
+
+        <c-onb_onboarding-table
+            record-id={recordId}
+            object-api-name={objectApiName}
+            parent-field-api-name={parentFieldApiName}
+            columns={columns}
+            initial-rows={rows}
+            add-label="Add fund"
+            show-add=true
+            show-clone="true"
+            show-connect="true"
+            show-delete=true
+            create-record-on-add=true
+            connect-tooltip-text={label.ONB_FUND_TOOLTIP_MSG}
+            actions-column-label={label.ONB_FUND_COLUM_LABEL}
+            required-field-api-names={requiredFieldApiNames}
+            conditional-required-rules={conditionalRequiredRules}
+            cell-disabled-when={cellDisabledWhen}
+            onrowcreated={handleRowChange}
+            onrowdeleted={handleRowChange}
+            onrowconnect={handleConnectRow}
+            onbookingentitychange={handleBookingEntityChange}
+            onconnectallfundstogglechange={handleConnectAllFundsToggleChange}
+            connect-all-funds-toggle-value={connectAllFundsToggleValue}
+            show-funds-toolbar=true>
+        </c-onb_onboarding-table>
+    </lightning-card>
+</template>

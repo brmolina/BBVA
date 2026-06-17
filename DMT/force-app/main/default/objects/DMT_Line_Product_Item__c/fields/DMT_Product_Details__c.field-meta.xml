@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Product_Details__c</fullName>
+    <externalId>false</externalId>
+    <formula>Name  + &apos; &apos; +  TEXT(Max_Tenor_WOC__c)  + &apos; &apos; +  TEXT(Max_Tenor_WC__c)+&apos;;&apos;</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Product Details</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

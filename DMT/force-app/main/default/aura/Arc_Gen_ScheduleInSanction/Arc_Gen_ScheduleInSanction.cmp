@@ -1,0 +1,59 @@
+<!--**
+  * @File Name          : Arc_Gen_ScheduleInSanction
+  * @Description        : Schedule in sanction modal analysis aura component
+  * @Author             : ARCE
+  * @Group              : ARCE
+  * @Last Modified By   : joseluis.garcia.contractor@bbva.com
+  * @Last Modified On   : 12/06/2020
+  * @Modification Log   :
+  *=======================================================================================================================
+  * Ver                  Date                         Author                         Modification
+  *=======================================================================================================================
+  * 1.0               23/05/2019                                                       Initial version
+  * 1.1               12/06/2020            joseluis.garcia.contractor@bbva.com        Disable save button when there is an error
+  * 1.2               12/05/2021            otiliaramona.veres.contractor@bbva.com     Added a new line at the end of helper file.
+  **-->
+<aura:component controller="Arc_Gen_ScheduleInSanction_Controller" implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,dwp_dbpn:DynamicFlowWizardStep_itf" access="global">
+    <aura:attribute name="committeesList" type="List" description="List with all committees"/>
+    <aura:attribute name="committeeValue" type="String" description="Selected Committee"/>
+    <aura:attribute name="committeeDesc" type="String" description="Selected Committee Label"/>
+    <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner load variable"/>
+    <aura:attribute name="buttonDisabled" type="Boolean" default="true" description="Button Disabled"/>
+    <aura:attribute name="delegationWrapper" type="Object" description="Delegation wrapper"/>
+    <aura:attribute name="show" type="Boolean" description="show or hide modal" default="true"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:if isTrue="{!v.show}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{!c.cancel}"
+                                            alternativeText="close"
+                                            variant="bare-inverse"
+                                            class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.ARC_GEN_Schedule_Header}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.spinnerStatus}">
+                        <div class="slds-align_absolute-center" style="margin-top:15px;">
+                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    <aura:set attribute="else">
+                        <lightning:combobox aura:id="committeCombo"  name="committeCombo" onchange="{!c.onSelectCom}" value="{!v.committeeValue}" options="{!v.committeesList}"/>
+                    </aura:set>
+                    </aura:if>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" disabled="{!v.buttonDisabled}" label="{!$Label.qvcd.Button_Modal_Save}" title="{!$Label.qvcd.Button_Modal_Save}" onclick="{!c.save}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

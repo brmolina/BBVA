@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Relationship_Status_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Banker’s feedback on the status of our relationship: evolution since onboarding, strengths, weakness, opportunities in the short term</inlineHelpText>
+    <label>Relationship Status</label>
+    <length>620</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

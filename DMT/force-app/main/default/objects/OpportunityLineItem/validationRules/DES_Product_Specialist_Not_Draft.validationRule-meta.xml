@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Product_Specialist_Not_Draft</fullName>
+    <active>true</active>
+    <description>Que no permita eliminar el Product Specialist cuando la oportunidad vinculada esté en una fase que no sea Draft Opp</description>
+    <errorConditionFormula>AND(NOT(ISPICKVAL(Opportunity.StageName, &apos;Draft Opp&apos;)),
+    ISBLANK(DES_Product_Specialist__c),
+        NOT(ISBLANK( PRIORVALUE(DES_Product_Specialist__c))),
+        NOT( ISNEW())
+)</errorConditionFormula>
+    <errorMessage>Sorry, you can&apos;t do this yet. You can&apos;t delete the Product Specialist in this Stage.</errorMessage>
+</ValidationRule>

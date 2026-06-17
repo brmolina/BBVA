@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Deleted_Reasons__c</fullName>
+    <label>Deleted Reasons</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Contact is no longer working in the company</fullName>
+                <default>false</default>
+                <label>Contact is no longer working in the company</label>
+            </value>
+            <value>
+                <fullName>Contact changed role in the company</fullName>
+                <default>false</default>
+                <label>Contact changed role in the company</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

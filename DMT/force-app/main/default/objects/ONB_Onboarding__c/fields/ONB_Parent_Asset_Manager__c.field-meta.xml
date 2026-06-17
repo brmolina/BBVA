@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ONB_Parent_Asset_Manager__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Parent Asset Manager</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Account.DES_Activity__c</field>
+            <operation>equals</operation>
+            <value>Asset Managers</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Onboarding (Parent Asset Manager)</relationshipLabel>
+    <relationshipName>Onboarding</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

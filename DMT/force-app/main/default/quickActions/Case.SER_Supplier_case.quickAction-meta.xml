@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Creates a case for suppliers to manage</description>
+    <fieldOverrides>
+        <field>Description</field>
+        <formula>Case.Description</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>IsStopped</field>
+        <formula>TRUE</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>SER_IsSernova__c</field>
+        <formula>TRUE</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>Subject</field>
+        <formula>Case.Subject</formula>
+    </fieldOverrides>
+    <label>Supplier case</label>
+    <optionsCreateFeedItem>true</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns/>
+        <quickActionLayoutColumns/>
+    </quickActionLayout>
+    <targetObject>Case</targetObject>
+    <targetParentField>Parent</targetParentField>
+    <targetRecordType>Case.SER_GM_User</targetRecordType>
+    <type>Create</type>
+</QuickAction>

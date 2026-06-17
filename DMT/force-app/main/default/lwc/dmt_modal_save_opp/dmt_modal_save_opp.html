@@ -1,0 +1,24 @@
+<template>
+    <template lwc:if={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </template>
+
+    <template lwc:if={showModal}>
+        <div class="slds-box slds-theme_default slds-text-align_center">
+            <p class="slds-text-body_regular slds-m-bottom_x-small">
+                The Opportunity will be modified and the associated cases and task will be reopened.
+            </p>
+            <p class="slds-text-body_regular slds-text-title_bold slds-m-bottom_medium">
+                Do you want to modify the Opportunity?
+            </p>
+            <div class="slds-grid slds-grid_align-center slds-gutters_x-small">
+                <div class="slds-col slds-size_auto">
+                    <button class="slds-button slds-button_neutral" onclick={handleNoClick}>No</button>
+                </div>
+                <div class="slds-col slds-size_auto">
+                    <button class="slds-button slds-button_brand" onclick={handleYesClick}>Yes</button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

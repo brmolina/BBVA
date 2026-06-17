@@ -1,0 +1,15 @@
+.THIS .table-align-center th {
+  text-align: center !important;
+}
+
+.THIS .table-width-complete {
+  width: 100%;
+}
+
+.THIS .rowAlignmentRight {
+  text-align: right !important;
+}
+
+.THIS .boldText {
+  font-weight: bold;
+}

@@ -1,0 +1,5 @@
+<design:component>
+    <design:attribute name="userId" label="Id del owner" required="true" />
+    <design:attribute name="opportunityId" label="Id de la oportunidad" required="true" />
+    <design:attribute name="formId" label="Id del formulario" required="true" />
+</design:component>

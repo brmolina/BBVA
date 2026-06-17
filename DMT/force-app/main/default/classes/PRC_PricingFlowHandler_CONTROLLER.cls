@@ -113,7 +113,7 @@ public with sharing class PRC_PricingFlowHandler_CONTROLLER {
          request.engineWorksWith.currenc_y = 'EUR';
         request.engineWorksWith.participant.economicGroupRating = pricingDetails.gf_cust_group_rating_type__c;
         request.engineWorksWith.participant.rating = pricingDetails.rating_scale_type__c;
-        request.engineWorksWith.participant.Id = pricingDetails.PRC_Opportunity__r.Account.SER_CClient__c != null ? pricingDetails.PRC_Opportunity__r.Account.SER_CClient__c : pricingDetails.PRC_Opportunity__r.AccountId ;
+        request.engineWorksWith.participant.Id = pricingDetails.PRC_Opportunity__r.Account.g_customer_id__c != null ? pricingDetails.PRC_Opportunity__r.Account.g_customer_id__c : pricingDetails.PRC_Opportunity__r.AccountId ;
         request.engineWorksWith.participant.sector.id = pricingDetails.economic_activity_sector_desc__c;
         request.engineWorksWith.originationBranch = new PRC_PFS_Request.originationBranch((String) pricingDetails.branch_name__c);
 

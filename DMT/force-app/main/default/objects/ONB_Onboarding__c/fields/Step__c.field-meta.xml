@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Step__c</fullName>
+    <label>Step</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>AML_KYC</fullName>
+                <default>true</default>
+                <label>AML &amp; KYC information</label>
+            </value>
+            <value>
+                <fullName>PRODUCTS</fullName>
+                <default>false</default>
+                <label>Products</label>
+            </value>
+            <value>
+                <fullName>FUNDS</fullName>
+                <default>false</default>
+                <label>Funds</label>
+            </value>
+            <value>
+                <fullName>CONTRACT</fullName>
+                <default>false</default>
+                <label>Contracts</label>
+            </value>
+            <value>
+                <fullName>RISK_INFO</fullName>
+                <default>false</default>
+                <label>Risk Info</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Currency__c</fullName>
+    <description>Currency de la Orden de Venta.
+Este campo se muestra por pantalla en la creación, ya que en el formulario de creación no se tienen que ver todos los valores de CurrencyISOCode, si no que tienen que verse unos valores determinados.</description>
+    <label>Currency</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ARS</fullName>
+                <default>false</default>
+                <label>Argentine Peso</label>
+            </value>
+            <value>
+                <fullName>AUD</fullName>
+                <default>false</default>
+                <label>Australian Dollar</label>
+            </value>
+            <value>
+                <fullName>VEF</fullName>
+                <default>false</default>
+                <label>Bolivar Fuerte</label>
+            </value>
+            <value>
+                <fullName>GBP</fullName>
+                <default>false</default>
+                <label>British Pound</label>
+            </value>
+            <value>
+                <fullName>CAD</fullName>
+                <default>false</default>
+                <label>Canadian Dollar</label>
+            </value>
+            <value>
+                <fullName>CLP</fullName>
+                <default>false</default>
+                <label>Chilean Peso</label>
+            </value>
+            <value>
+                <fullName>CNY</fullName>
+                <default>false</default>
+                <label>Chinese Yuan</label>
+            </value>
+            <value>
+                <fullName>COP</fullName>
+                <default>false</default>
+                <label>Colombian Peso</label>
+            </value>
+            <value>
+                <fullName>EUR</fullName>
+                <default>false</default>
+                <label>Euro</label>
+            </value>
+            <value>
+                <fullName>PYG</fullName>
+                <default>false</default>
+                <label>Guarani</label>
+            </value>
+            <value>
+                <fullName>HKD</fullName>
+                <default>false</default>
+                <label>Hong Kong Dollar</label>
+            </value>
+            <value>
+                <fullName>JPY</fullName>
+                <default>false</default>
+                <label>Japanese Yen</label>
+            </value>
+            <value>
+                <fullName>MXN</fullName>
+                <default>false</default>
+                <label>Mexican Peso</label>
+            </value>
+            <value>
+                <fullName>TWD</fullName>
+                <default>false</default>
+                <label>New Taiwan Dollar</label>
+            </value>
+            <value>
+                <fullName>PEN</fullName>
+                <default>false</default>
+                <label>Peruvian Sol</label>
+            </value>
+            <value>
+                <fullName>SEK</fullName>
+                <default>false</default>
+                <label>Swedish Krona</label>
+            </value>
+            <value>
+                <fullName>SGD</fullName>
+                <default>false</default>
+                <label>Singapore Dollar</label>
+            </value>
+            <value>
+                <fullName>TRY</fullName>
+                <default>false</default>
+                <label>Turkey Lira</label>
+            </value>
+            <value>
+                <fullName>UYU</fullName>
+                <default>false</default>
+                <label>Uruguayan Peso</label>
+            </value>
+            <value>
+                <fullName>USD</fullName>
+                <default>false</default>
+                <label>U.S Dollar</label>
+            </value>
+            <value>
+                <fullName>KRW</fullName>
+                <default>false</default>
+                <label>Won</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

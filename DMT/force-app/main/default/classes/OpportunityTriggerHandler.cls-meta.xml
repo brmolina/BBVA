@@ -6,10 +6,5 @@
         <minorNumber>8</minorNumber>
         <namespace>almd</namespace>
     </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>4</minorNumber>
-        <namespace>dwp_acmh</namespace>
-    </packageVersions>
     <status>Active</status>
 </ApexClass>

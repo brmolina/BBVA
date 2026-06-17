@@ -109,4 +109,19 @@ public with sharing class VisitsCommercialActivityController {
   			this.returnTotalVisitsYOY = totalVisitsYOY;
 		}
 	}
+
+	/**
+	 *@author diego.ostria@bbva.com
+	 *@description  Metodo que devuelve el Tier del Grupo
+	 */
+	@auraEnabled
+	public static String getTier(String accId) {
+		try {
+			Account acc = [SELECT toLabel(DES_Tier__c) FROM Account WHERE Id = :accId LIMIT 1];
+			return acc.DES_Tier__c;
+			
+		} catch(Exception exc) {
+			throw new AuraHandledException(Label.DES_Error + exc);
+		}
+	}
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Corp_Lending_Support_type__c</fullName>
+    <label>IB&amp;F (Origination) Support</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Corp. Lend. Supportive</fullName>
+                <default>false</default>
+                <label>Corp. Lend. Supportive</label>
+            </value>
+            <value>
+                <fullName>Corp. Lend. Non Supportive</fullName>
+                <default>false</default>
+                <label>Corp. Lend. Non Supportive</label>
+            </value>
+            <value>
+                <fullName>Project Finance Supportive</fullName>
+                <default>false</default>
+                <label>Project Finance Supportive</label>
+            </value>
+            <value>
+                <fullName>Project Finance Non Supportive</fullName>
+                <default>false</default>
+                <label>Project Finance Non Supportive</label>
+            </value>
+            <value>
+                <fullName>Portfolio Management Supportive</fullName>
+                <default>false</default>
+                <label>Portfolio Management Supportive</label>
+            </value>
+            <value>
+                <fullName>Portfolio Management Non Supportive</fullName>
+                <default>false</default>
+                <label>Portfolio Management Non Supportive</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <label>N/A</label>
+            </value>
+            <value>
+                <fullName>Specialized Lending-Real Estate</fullName>
+                <default>false</default>
+                <label>Specialized Lending-Real Estate</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

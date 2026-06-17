@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventIsPublicEQ_ValidationRule</fullName>
+    <active>false</active>
+    <description>Esta regla de validación sirve para que un Analyst EQ sólo pueda crear una Task como publica para todo EQ.</description>
+    <errorConditionFormula>IF ( AND(ISPICKVAL(Asset_Class__c, &apos;EQ&apos;), $Profile.Name == &apos;Analyst EQ&apos;, NOT(IsPublicEquity__c ) ), true, false )</errorConditionFormula>
+    <errorDisplayField>IsPublicEquity__c</errorDisplayField>
+    <errorMessage>The activity must be public for all EQ</errorMessage>
+</ValidationRule>

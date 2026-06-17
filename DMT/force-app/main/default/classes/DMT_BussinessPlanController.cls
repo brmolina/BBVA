@@ -63,6 +63,10 @@ public with sharing class DMT_BussinessPlanController {
                         Past_FY_Total_X_Sell_amount__c,
                         Current_FY_Total_X_Sell_amount__c,
                         Next_FY_Total_X_Sell_amount__c,
+                        Past2_FY_Child_X_Sell_amount__c,
+                        Past_FY_Child_X_Sell_amount__c,
+                        Current_FY_Child_X_Sell_amount__c,
+                        Next_FY_Child_X_Sell_amount__c,
                         Past2_FY_Total_Revenues_amount__c,
                         Past_FY_Total_Revenues_amount__c,
                         Current_FY_Total_Revenues_amount__c,
@@ -77,7 +81,7 @@ public with sharing class DMT_BussinessPlanController {
                         gf_kpi_trans_fees_nxy_amount__c
                     FROM DMT_Opportunity_Client__c 
                     WHERE DMT_MDE_Opportunity__c =: recordId 
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 
@@ -160,7 +164,7 @@ public with sharing class DMT_BussinessPlanController {
                         Account.gf_kpi_trans_fees_nxy_amount__c
                     FROM Opportunity 
                     WHERE Id =: recordId 
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 }

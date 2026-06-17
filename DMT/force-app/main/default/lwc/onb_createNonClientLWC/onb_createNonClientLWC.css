@@ -1,0 +1,451 @@
+.customHeader {
+  border-bottom: 1px solid #bdb9b9;
+}
+
+.customHeader .customHeaderText {
+  font-size: 1.5em !important;
+  text-align: center !important;
+}
+
+.two-columns {
+  width: 50%;
+  display: inline-block;
+}
+
+.two-columns-right {
+  float: right !important;
+  padding-top: 1.625rem;
+}
+
+.left-position {
+  float: left !important;
+}
+
+.rigth-position {
+  float: right !important;
+}
+
+.customHeader {
+  border-bottom: 1px solid #bdb9b9;
+}
+
+.customHeader .customHeaderText {
+  font-size: 1.5em !important;
+  text-align: center !important;
+}
+
+.two-columns {
+  width: 50%;
+  display: inline-block;
+}
+
+.two-columns-right {
+  float: right !important;
+  padding-top: 1.625rem;
+}
+
+.left-position {
+  float: left !important;
+}
+
+.rigth-position {
+  float: right !important;
+}
+
+.similar-names-li {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  padding-left: 0.5rem;
+  border-bottom: 1px solid rgb(221, 219, 218);
+  border-left: 1px solid rgb(221, 219, 218);
+  border-right: 1px solid rgb(221, 219, 218);
+}
+
+.similar-names-li:last-child {
+  display: none;
+}
+
+.inputSearchName {
+  position: relative;
+}
+
+.similar-names-ul {
+  height: auto;
+  position: absolute;
+  top: 56px;
+  z-index: 8;
+  left: 1%;
+  width: 98%;
+  background: #fff;
+}
+
+/* tendré que mostrarlo sólo cuando sea necesario por js para evitar scrool innecesario */
+.similar-names-ul {
+  display: none;
+}
+
+.similar-names-ul.show {
+  display: initial;
+}
+
+.slds-icon_container_circle.slds-icon-action-new-account.slds-icon_container {
+  margin-right: 0.5rem;
+}
+
+.slds-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.uiMessage.confirm {
+  border-color: #4bc076;
+  background-color: #4bc076;
+}
+
+.slds-icon-action-approval {
+  background-color: #4bc076;
+}
+
+.uiMessage.error {
+  border-color: rgb(194, 57, 52);
+  background-color: rgb(194, 57, 52);
+}
+
+.slds-icon-action-close {
+  background-color: rgb(194, 57, 52);
+}
+
+.uiMessage.info {
+  border-color: #2684ff;
+  background-color: #2684ff;
+}
+
+.uiMessage.info {
+  border-color: #2684ff;
+  background-color: #2684ff;
+}
+
+.slds-icon-action-new-person-account {
+  background-color: #2684ff;
+}
+
+.bBody {
+  color: white !important;
+  font-weight: bold;
+}
+
+.table-account {
+  height: 19rem;
+  overflow-y: auto;
+}
+
+.table-row {
+  padding-bottom: 10px !important;
+  height: 2rem;
+}
+
+table {
+  margin-left: 2%;
+  margin-right: 2%;
+  width: 96%;
+}
+
+th {
+  position: -webkit-sticky sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
+}
+
+.cCreateNonClient.slds-icon-action-new-person-account {
+  background-color: #c23934 !important;
+}
+
+/* .max-90 {
+  margin-left: 5% !important;
+  width: 90% !important;
+  max-width: 90% !important;
+} */
+
+/* SCROLL */
+.sWrap {
+  height: 100%;
+  width: 100%;
+  border-radius: 1px;
+}
+
+.sWrapDesktop {
+}
+
+.outer-container {
+  position: fixed;
+}
+
+.outerScroller {
+  border-radius: 100px;
+}
+
+.innerScroller {
+  border-radius: 100px;
+}
+
+.innerDivWrapper {
+  min-height: 101%;
+  padding-bottom: 20px;
+}
+
+.without-required abbr.slds-required {
+  display: none !important;
+}
+
+.custom-addres-required .slds-form-element__label {
+  padding-left: 0.3rem;
+}
+
+.custom-addres-required abbr.slds-required {
+  position: absolute;
+  top: 3px;
+}
+
+.customRequired .slds-col {
+  position: relative;
+}
+
+.customRequired abbr.slds-required {
+  display: initial;
+}
+
+.customRequired abbr.slds-required.requiredField {
+  display: none;
+  position: inherit;
+}
+
+.customRequired .requiredFieldContent abbr.slds-required {
+  display: none;
+}
+
+.customRequired .requiredFieldContent abbr.slds-required.requiredField {
+  display: initial;
+  position: absolute;
+  top: 4px;
+  left: 3px;
+}
+
+.customRequired .requiredFieldContent .slds-form-element__label {
+  padding-left: 8px;
+}
+
+.slds-modal__header .slds-modal__close svg {
+  fill: rgba(255, 255, 255, 1);
+}
+
+.addressClass {
+  position: relative;
+}
+
+.billingModal {
+  position: absolute;
+  top: 0;
+  background: #fff;
+  border: 1px solid var(--lwc-colorBorderInput, rgb(221, 219, 218));
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 9;
+  padding: 0.6rem;
+  left: 5%;
+  width: 90%;
+}
+
+.shippingModal {
+  position: absolute;
+  top: 0;
+  background: #fff;
+  border: 1px solid var(--lwc-colorBorderInput, rgb(221, 219, 218));
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 4;
+  padding: 0.6rem;
+  left: 5%;
+  width: 90%;
+}
+
+.billingModal.showMe {
+  visibility: initial;
+}
+
+.shippingModal.showMe {
+  visibility: initial;
+}
+
+.addressModal .slds-m-top_medium button {
+  float: right;
+}
+
+.shippingModal .slds-m-top_medium button {
+  float: right;
+}
+
+.newProspectModalContent {
+  position: relative;
+}
+
+.newProspectModalContent.overflowInitial {
+  overflow: initial;
+  overflow-y: initial;
+}
+
+.opacityField {
+  display: none;
+}
+
+.opacityField.show {
+  display: initial;
+  position: absolute;
+  background-color: rgba(74, 82, 93, 0.6);
+  opacity: 7;
+  height: 100%;
+  top: 0;
+  width: 500%;
+  left: -200%;
+  z-index: 3;
+}
+
+.addressClass .slds-input[disabled] {
+  cursor: default;
+  background-color: #fff;
+}
+
+.addressClass .field-error {
+  color: var(--lwc-colorTextError, rgb(194, 57, 52));
+}
+
+.addressClass .field-error.hide {
+  display: none;
+}
+
+/* Responsive styles */
+.mobile {
+  height: 100% !important;
+}
+
+.mobile.reset-height {
+  height: auto !important;
+}
+
+.mobile .similar-names-ul {
+  display: block !important;
+  width: 100%;
+  margin-top: -0.5rem;
+  padding: 0 0.25rem;
+  margin-bottom: 0.5rem;
+  left: 0;
+  position: inherit;
+  top: 0;
+  z-index: auto;
+}
+
+.mobile .slds-modal {
+  position: relative;
+  height: 100vh;
+}
+
+.mobile .slds-backdrop {
+  display: none;
+}
+
+.responsive_modal {
+  margin: 0;
+  padding: 0;
+  justify-content: inherit;
+}
+
+.responsive_modal .slds-modal__close {
+  display: none;
+}
+
+.slds-modal__content {
+  overflow-y: auto !important;
+  height: auto !important;
+  max-height: 100vh !important;
+}
+
+.responsive_modal .slds-modal__content {
+  overflow-y: hidden !important;
+  height: 100vh !important;
+  max-height: inherit !important;
+}
+
+.modal-header-phone {
+  border-bottom: var(--lwc-borderWidthThin, 1px) solid var(--lwc-colorBorder, rgb(221, 219, 218));
+  font-size: 16px;
+  padding: 1rem 0 0.5rem 0;
+}
+
+.modal-header-phone button {
+  border: 0;
+  display: inline-block;
+  width: 24%;
+  background: none;
+  color: var(--lwc-brandAccessible, rgb(0, 112, 210));
+  padding: 0;
+}
+
+.modal-header-phone button[disabled] {
+  color: rgb(221, 219, 218);
+}
+
+.modal-header-phone button:focus {
+  box-shadow: none;
+}
+
+.modal-header-phone button.slds-button_brand {
+  font-weight: bold;
+}
+
+.modal-header-phone h3 {
+  width: 50%;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Maps styles */
+.customClassMap {
+  width: 80%;
+  margin: 1rem auto;
+}
+
+
+   .first-screen-wrapper {
+  padding-top: 1.5rem;
+}
+
+.info-text {
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.first-screen-form {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.form-row {
+  margin-bottom: 0.75rem;
+}
+
+.contrast-button {
+  min-width: 140px;
+}
+
+.warning-white lightning-primitive-icon svg {
+    fill: white !important;
+}
+
+.warning-white svg {
+    fill: white !important;
+}
+
+.warning-white .slds-icon {
+    fill: white !important;
+}

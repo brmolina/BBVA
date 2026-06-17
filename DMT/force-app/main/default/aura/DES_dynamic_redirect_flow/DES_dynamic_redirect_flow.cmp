@@ -1,0 +1,6 @@
+<aura:component implements="lightning:availableForFlowActions,lightning:isUrlAddressable"
+                 access="global">
+    <aura:attribute name="object" type="String" access="global" />
+    <aura:attribute name="recordId" type="String" access="global" />
+	<lightning:navigation aura:id="nav" />
+</aura:component>

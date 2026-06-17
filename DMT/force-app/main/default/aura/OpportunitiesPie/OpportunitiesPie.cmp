@@ -1,0 +1,51 @@
+<aura:component controller="OpportunitiesPieCnt"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+    <ltng:require scripts="{! join(',',
+                            $Resource.Chart,
+                            $Resource.baseFichaGrupo)}"
+                styles="{!$Resource.cssFichaGrupo }"
+                afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+
+    <aura:attribute name="recordId" type="String" default="false" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="timeRefresh" type="String" default="false" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+    <aura:attribute name="familyParam" type="String" default="" />
+    <aura:attribute name="countryParam" type="String" default="" />
+    <aura:attribute name="dateEngloba" type="String" default="" />
+    <aura:attribute name="showViewDetails" type="Boolean" access="public"  />
+    <aura:attribute name="stageOption" type="String" access="public" default="All" />
+    <aura:attribute name="byProduct" type="Boolean" default="false" />
+    <aura:attribute name="byCountry" type="Boolean" default="false" />
+
+
+
+    <div class=" slds-size_1-of-1 slds-m-top_medium mainWrapper">
+        <aura:if isTrue="{!v.noData}">
+            <p class="mainText">
+                <span class="slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+            </p>
+            <aura:set attribute="else">
+                <div class=" " >
+                    <canvas aura:id="chart" class="canvasPie"></canvas>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+    <aura:if isTrue="{! v.showViewDetails == true}">
+        <div class="slds-grid slds-gutters slds-grid_vertical-align-center">
+            <div class="slds-col slds-text-align_left">
+                <a href="" class="slds-text-link" onclick="{!c.navigateToMyComponent}">View Report</a>
+            </div>
+            <div class="slds-col slds-text-align_right">
+                <span class="spanFooterDesc weight700">As of Today at
+                    <ui:outputText value="{!v.timeRefresh}" /></span>
+                <lightning:buttonIcon class="radiusbutton" iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}"
+                                      alternativeText="Refresh." />
+            </div>
+        </div>
+    </aura:if>
+
+
+</aura:component>

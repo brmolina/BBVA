@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>undrawn_fee_next_12m_per__c</fullName>
+    <description>Commission charged over not used BBVA Commitment amount not having in count liquidity fee</description>
+    <externalId>false</externalId>
+    <label>Annual Commitment Fee Next 12 Mths (bps)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

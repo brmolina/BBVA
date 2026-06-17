@@ -1,0 +1,62 @@
+.THIS .customBox {
+  height: 100%;
+}
+
+.THIS .slds-modal__container {
+  max-width: 85% !important;
+  width: 85% !important;
+  max-height: 85 !important;
+  height: 85% !important;
+}
+
+.THIS [aria-level="1"] th {
+  font-weight: bold;
+  color: #00358c;
+}
+
+.THIS tr[aria-level="1"] {
+  font-size: 1.05em;
+  font-weight: bold;
+  color: #00358c;
+}
+
+.THIS th :first-child {
+  font-weight: bold;
+}
+
+.THIS h1 {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.THIS td > lightning-primitive-cell-wrapper {
+  padding-right: 50%;
+  background-color: blue;
+}
+
+.THIS {
+  overflow: auto;
+}
+
+.THIS .slds-grid_align-end {
+  justify-content: center;
+}
+
+.THIS .srollWrap {
+  width: 100%;
+  border-radius: 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.THIS span.slds-row-number {
+  display: none;
+}
+
+.THIS #headerbuttons > .slds-form-element {
+  display: inline-block;
+}
+
+.THIS .slds-form-element {
+  display: inline-block;
+  padding: inherit;
+}

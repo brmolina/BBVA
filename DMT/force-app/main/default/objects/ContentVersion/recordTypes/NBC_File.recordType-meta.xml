@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NBC_File</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>Annex</compactLayoutAssignment>
+    <description>Files for NBC</description>
+    <label>NBC File</label>
+    <picklistValues>
+        <picklist>Category_Type__c</picklist>
+        <values>
+            <fullName>Additional information of the structure of the deal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Business Plan Figures %28pdf from Amiweb%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Client Snapshot</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Credit Risk Opinion and Confirmation of the rating%26calification</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Detailed description of prospect%27s activity and wallet share</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GC Strategy %26 Profitability Opinion</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NPC approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Product Opinion%3A Syndication%2C DCM%2C ECM%2C Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Project Finance Risk Memo</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Transactional RaR and Derivative %28pdf from Amiweb%26 COPOR%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Transactional RaR and Expected Global Annex %28pdf from Amiweb%29</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

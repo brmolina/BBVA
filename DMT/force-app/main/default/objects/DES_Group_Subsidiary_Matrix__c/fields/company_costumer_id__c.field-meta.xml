@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>company_costumer_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Subsidiary Account related to the group</description>
+    <label>Subsidiary</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Group - Subsidiary Matrices (Subsidiary)</relationshipLabel>
+    <relationshipName>Group_Subsidiary_Matrices1</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

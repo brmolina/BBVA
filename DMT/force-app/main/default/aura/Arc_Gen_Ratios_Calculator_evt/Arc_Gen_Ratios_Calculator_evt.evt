@@ -1,0 +1,2 @@
+<aura:event type="APPLICATION" description="Ratios calculator event"  access="global">
+</aura:event>

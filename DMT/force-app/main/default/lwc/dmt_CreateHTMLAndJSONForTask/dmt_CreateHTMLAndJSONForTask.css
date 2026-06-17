@@ -1,0 +1,38 @@
+/* Full screen version of your modal-overlay */
+.full-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.8); /* Light light-gray/white overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    pointer-events: all;
+}
+
+/* Container to stack spinner and text vertically */
+.spinner-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Match the dark text and spacing from your example */
+.spinner-message {
+    margin-top: 7rem; 
+    font-size: 1rem;
+    color: #333; /* Darker, professional gray/black text */
+    /* max-width: 90%; */
+    font-weight: normal;
+}
+
+/* Ensure the spinner itself remains transparent */
+.spinner-container .slds-spinner_container {
+    background-color: transparent !important;
+}

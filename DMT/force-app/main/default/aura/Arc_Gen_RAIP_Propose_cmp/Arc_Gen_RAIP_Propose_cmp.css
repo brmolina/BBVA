@@ -1,0 +1,31 @@
+.THIS .slds-spinner_container {
+  background-color: rgb(255, 255, 255);
+  margin-top: 140px;
+  margin-bottom: 140px;
+}
+
+.THIS .slds-modal__content { 
+  height: unset !important;
+  max-height: unset !important;
+  overflow: initial;
+}
+
+.THIS .linebreak {
+  white-space: pre-wrap;  
+}
+
+.THIS .show_refresh_wl {
+  margin-top: 15px;
+}
+
+.THIS .show_refresh_ps {
+  margin-top: 15px;
+}
+
+.THIS .spinner_grid_div {
+  display: flex;
+}
+
+.THIS .error_main_div {
+  margin-top: 1em;
+}

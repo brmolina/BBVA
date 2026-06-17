@@ -1,0 +1,457 @@
+<aura:component controller="CreateContactFormController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:availableForFlowScreens"
+    access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="objectApiName" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="sectionsObj" type="Object" />
+    <aura:attribute name="message" type="Object" />
+
+    <aura:attribute name="iconName" type="String" />
+    <aura:attribute name="labelOwner" type="String" />
+    <aura:attribute name="labelAccount" type="String" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="mode" type="String" />
+    <aura:attribute name="SearchKeyWordOwner" type="String" />
+    <aura:attribute name="SearchKeyWordAccount" type="String" />
+    <aura:attribute name="selectedOwnerFiltered" type="String" />
+
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
+    <aura:attribute name="showConfirmFields" type="Boolean" default="false" />
+    <aura:attribute name="isSalesGM" type="Boolean" default="false" />
+    <aura:attribute name="isWritable" type="Boolean" />
+
+    <aura:attribute name="ownerId" type="String" />
+    <aura:attribute name="email" type="String" />
+    <aura:attribute name="firstName" type="String" />
+    <aura:attribute name="lastName" type="String" />
+    <aura:attribute name="phone" type="String" />
+    <aura:attribute name="mobilephone" type="String" />
+    <aura:attribute name="contact" type="Object" />
+    <aura:attribute name="eventFields" type="Object" />
+    <aura:attribute name="isQuickAction" type="Boolean" default="true" />
+    <aura:attribute name="domain" type="String" />
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+
+    <aura:if isTrue="{! v.showSpinner }">
+        <div class="spinnerdiv">
+            <lightning:spinner alternativeText="Loading" aura:id="spinnerId" variant="brand" />
+        </div>
+    </aura:if>
+    <lightning:card title="{!v.title}" iconName="standard:contact"
+        class="slds-p-around_small slds-text-heading_small slds-p-bottom_none ">
+
+        <aura:if isTrue="{! and(v.message != null,v.message.title != '',v.message.body != '') }">
+            <ui:message title="{!v.message.title}" severity="{!v.message.severity}" closable="true" class="fixed">
+                {!v.message.body}
+
+                <aura:if isTrue="{! and(v.message.rowName != '' , v.message.rowName != undefined)}">
+                    <br />
+                    *
+                    <lightning:formattedUrl value="{!v.message.rowUrl}" label="{!v.message.rowName}" /><br />
+                    <aura:if isTrue="{! and(v.message.accUrl != '' , v.message.accUrl != undefined)}">
+                        *
+                        <lightning:formattedUrl value="{!v.message.accUrl}" label="{!v.message.accName}" /><br />
+                    </aura:if>
+                    <aura:if isTrue="{! and(v.message.ownUrl != '' , v.message.ownUrl != undefined)}">
+                        *
+                        <lightning:formattedUrl value="{!v.message.ownUrl}" label="{!v.message.ownName}" /> -
+                        {!v.message.ownDepartment}
+                    </aura:if>
+                </aura:if>
+            </ui:message>
+        </aura:if>
+
+        <aura:if isTrue="{! v.sObjectName != 'Contact' }">
+            <aura:if isTrue="{! v.isWritable == true  }">
+                <lightning:recordEditForm aura:id="createContactForm" objectApiName="{!v.objectApiName}"
+                    onsubmit="{!c.handleSubmitCreate}" onsuccess="{!c.handleSuccess}" class="">
+                    <lightning:messages class="" />
+                    
+                    <!--Se oculta para que los usuarios no puedan modificar el owner, ya que causa error en la creación del contacto-->
+                    <p class="slds-hide">System Information</p>
+                    <lightning:layout class="slds-hide" multipleRows="true">
+                        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6"
+                            flexibility="auto" padding="around-small" class="slds-text-body_regular">
+                            <c:FilteredLookup aura:Id="filteredName" objectAPIName="User" 
+                                SearchKeyWord="{!v.SearchKeyWordOwner}" label="{!v.labelOwner}" IconName="{!v.iconName}"
+                                objectOpenForm="{!v.sObjectName}" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    
+                    <p class="slds-section-title_divider customP">Contact Information</p>
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6"
+                            flexibility="auto" padding="around-small" class="slds-text-body_regular">
+
+                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="AccountId"
+                                aura:id="AccountId" class="" />
+
+                            <lightning:input fieldName="FirstName" aura:id="FirstName" required="true"
+                                pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                minlenght="2" messageWhenPatternMismatch="FirstName is not valid" type="text"
+                                label="First Name" value="{!v.firstName}" />
+                            <lightning:input fieldName="LastName" aura:id="LastName" required="true"
+                                pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                minlenght="2" messageWhenPatternMismatch="LastName is not valid" type="text"
+                                label="Last Name" value="{!v.lastName}" />
+                            <lightning:input fieldName="Email_ExternalID__c" aura:id="Email_ExternalID__c"
+                                pattern="[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z-]{2,}$"
+                                messageWhenPatternMismatch="Email is not valid" required="true" type="email"
+                                label="Email" value="{!v.email}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6"
+                            flexibility="auto" padding="around-small" class="slds-text-body_regular">
+
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                    largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                    <lightning:inputField fieldName="ladaline_phone_id__c" aura:id="PrefixPhone"
+                                        label="Prefix" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                    largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                    <lightning:input fieldName="Phone" aura:id="Phone" label="Phone"
+                                        pattern="^[0-9]{6,12}$" maxlength="12"
+                                        messageWhenPatternMismatch="Please notice phone number is not valid. Make sure the number is between 6 and 12 digits, with no spaces not letters or special characters" value="{!v.phone}" />
+                                </lightning:layoutItem>
+
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                    largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                    <lightning:inputField fieldName="cell_phone_lada_id__c" aura:id="PrefixMobile"
+                                        label="Prefix" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                    largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                    <lightning:input fieldName="MobilePhone" aura:id="Mobile" label="Mobile"
+                                        pattern="^[0-9]{6,12}$" maxlength="12"
+                                        messageWhenPatternMismatch="Mobile number is not valid"
+                                        value="{!v.mobilephone}" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Internal_Extension__c"
+                                aura:id="Internal_Extension__c" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12"
+                            flexibility="auto" padding="around-small" class="slds-text-body_regular">
+
+                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="DES_Scope__c"
+                                aura:id="DES_Scope__c" class="" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <aura:if isTrue="{! v.isSalesGM == true  }">
+                        <p class="slds-section-title_divider customP">Global Market</p>
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                largeDeviceSize="12" flexibility="auto" padding="around-small"
+                                class="slds-text-body_regular">
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Asset_Class__c"
+                                    aura:id="Asset_Class__c" class="" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Markets__c"
+                                    aura:id="Markets__c" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Sector__c"
+                                    aura:id="Sector__c" />
+
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6"
+                                flexibility="auto" padding="around-small" class="slds-text-body_regular">
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Email_2__c"
+                                    aura:id="Email_2__c" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="CurrencyIsoCode"
+                                    aura:id="CurrencyIsoCode" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="OtherPhone"
+                                    aura:id="OtherPhone" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Switchboard__c"
+                                    aura:id="Switchboard__c" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Fax" aura:id="Fax" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6"
+                                flexibility="auto" padding="around-small" class="slds-text-body_regular">
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Title" aura:id="Title" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Department"
+                                    aura:id="Department" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Type_of_Investor__c"
+                                    aura:id="Type_of_Investor__c" />
+                                <lightning:inputField disabled="{! !v.isWritable }" fieldName="Birthdate"
+                                    aura:id="Birthdate" />
+                                <lightning:inputField disabled="{! !v.isWritable }"
+                                    fieldName="Access_to_BBVA_Research__c" aura:id="Access_to_BBVA_Research__c" />
+                                <lightning:inputField disabled="{! !v.isWritable }"
+                                    fieldName="Permanent_Bloomberg_Chat__c" aura:id="Permanent_Bloomberg_Chat__c" />
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </aura:if>
+
+                    <footer class="slds-modal__footer bottom">
+                        <div class="slds-text-body_regular sticky">
+                            <lightning:button class="slds-float_left slds-m-vertical_small" variant="neutral" name="cancel"
+                                onclick="{!c.onCloseModal}" label="Cancel" />
+                            <lightning:button class="slds-m-vertical_small" variant="brand" type="submit" name="save"
+                                label="Save" />
+                        </div>
+                    </footer>
+                </lightning:recordEditForm>
+
+                <aura:set attribute="else">
+                    <lightning:recordEditForm aura:id="createContactForm" objectApiName="{!v.objectApiName}"
+                        recordId="{!v.recordId}" onsubmit="{!c.handleSubmitUpdate}" onsuccess="{!c.handleSuccess}">
+
+                        <ui:message title="Insuficient level of access" severity="error" closable="false" class="">
+                            You do not have the level of access necessary to perform the operation you requested. Please
+                            contact the owner of the
+                            record or your administrator if access is necessary.
+                        </ui:message>
+                    </lightning:recordEditForm>
+
+
+
+                </aura:set>
+
+            </aura:if>
+            <aura:set attribute="else">
+                <aura:if isTrue="{! v.isWritable == true  }">
+                    <lightning:recordEditForm aura:id="createContactForm" objectApiName="{!v.objectApiName}"
+                        recordId="{!v.recordId}" onsubmit="{!c.handleSubmitUpdate}" onsuccess="{!c.handleSuccess}">
+                        <lightning:messages />
+                        <aura:if isTrue="{!  v.showConfirmFields == true }">
+                            <p class="slds-section-title_divider customP">Name Fields</p>
+                            <ui:message title="Warning: modify Name:" severity="info" closable="true">
+                                You're about to overwrite the contact name. <strong>This will affect all its related
+                                    information</strong>.<br />
+                                If you want to continue, confirm the fields and "Save".<br />
+                                In other case, "cancel" and create a new contact.
+                            </ui:message>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                    largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                    class="slds-text-body_regular">
+                                    <lightning:input fieldName="FirstNameOld" aura:id="FirstNameOld"
+                                        messageWhenPatternMismatch="FirstName is not valid" type="text"
+                                        label="Original First Name" value="{!v.firstName}" disabled="true" />
+                                    <lightning:input fieldName="LastNameOld" aura:id="LastNameOld"
+                                        messageWhenPatternMismatch="LastName is not valid" type="text"
+                                        label="Original Last Name" value="{!v.lastName}" disabled="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                    largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                    class="slds-text-body_regular">
+                                    <lightning:input fieldName="FirstName" aura:id="FirstName" required="true"
+                                        pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                        minlenght="2" messageWhenPatternMismatch="FirstName is not valid" type="text"
+                                        label="First Name" value="{!v.contact.FirstName}" />
+                                    <lightning:input fieldName="LastName" aura:id="LastName" required="true"
+                                        pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                        minlenght="2" messageWhenPatternMismatch="LastName is not valid" type="text"
+                                        label="Last Name" value="{!v.contact.LastName}" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <p class="slds-section-title_divider customP">Other sensitive fields</p>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                    largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                    class="slds-text-body_regular">
+                                    <lightning:input fieldName="Email_ExternalID__cOld" aura:id="Email_ExternalID__cOld"
+                                        type="email" label="Original Email" value="{!v.email}" disabled="true" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                    largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                    class="slds-text-body_regular">
+                                    <lightning:input fieldName="Email_ExternalID__c" aura:id="Email_ExternalID__c"
+                                        pattern="[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z-]{2,}$"
+                                        messageWhenPatternMismatch="Email is not valid" required="true" type="email"
+                                        label="Email" value="{!v.contact.Email_ExternalID__c}" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+
+                            <footer class="slds-modal__footer bottom">
+                                <div class="slds-text-body_regular stick slds-align_absolute-center">
+                                    <lightning:button aura:id="goBackButton" class="slds-m-vertical_small" variant="neutral"
+                                        name="back" onclick="{!c.handleGoBackFirstScreen}" label="Back" />
+                                    <lightning:button aura:id="cancelButton" class="slds-m-vertical_small" variant="neutral"
+                                        name="cancel" onclick="{!c.onCloseModal}" label="Cancel" />
+                                    <lightning:button aura:id="submitButton" class="slds-m-vertical_small" variant="brand"
+                                        onclick="{!c.confirmFields}" name="save" label="Save" />
+                                </div>
+                            </footer>
+
+                            <aura:set attribute="else">
+                                <p class="slds-section-title_divider customP">System Information</p>
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                        largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                        class="slds-text-body_regular">
+                                        <c:FilteredLookup aura:Id="filteredName" objectAPIName="User"
+                                            SearchKeyWord="{!v.SearchKeyWordOwner}" label="{!v.labelOwner}"
+                                            IconName="{!v.iconName}" objectOpenForm="{!v.sObjectName}"
+                                            recordId="{!v.recordId}" />
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+
+                                <p class="slds-section-title_divider customP">Contact Information</p>
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                        largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                        class="slds-text-body_regular">
+
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="AccountId"
+                                            aura:id="AccountId" class="" />
+                                        <lightning:input fieldName="FirstName" aura:id="FirstName" required="true"
+                                            pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                            minlenght="2" messageWhenPatternMismatch="FirstName is not valid"
+                                            type="text" label="First Name" value="{!v.contact.FirstName}" />
+                                        <lightning:input fieldName="LastName" aura:id="LastName" required="true"
+                                            pattern="^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.´`'-]{2,30}$"
+                                            minlenght="2" messageWhenPatternMismatch="LastName is not valid" type="text"
+                                            label="Last Name" value="{!v.contact.LastName}" />
+
+                                        <lightning:input fieldName="Email_ExternalID__c" aura:id="Email_ExternalID__c"
+                                            pattern="[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z-]{2,}$"
+                                            messageWhenPatternMismatch="Email is not valid" required="true" type="email"
+                                            label="Email" value="{!v.contact.Email_ExternalID__c}" />
+
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="MailingStreet"
+                                            aura:id="MailingStreet" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="MailingCity"
+                                            aura:id="MailingCity" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }"
+                                            fieldName="MailingPostalCode" aura:id="MailingPostalCode" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="MailingState"
+                                            aura:id="MailingState" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="MailingCountry"
+                                            aura:id="MailingCountry" class="" />
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                        largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                        class="slds-text-body_regular">
+
+                                        <lightning:layout multipleRows="true">
+                                            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                                largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                                <lightning:inputField fieldName="ladaline_phone_id__c"
+                                                    aura:id="PrefixPhone" label="Prefix" />
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                                largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                                <lightning:input fieldName="Phone" aura:id="Phone" label="Phone"
+                                                    pattern="^[0-9]{6,12}$" maxlength="12"
+                                                    messageWhenPatternMismatch="Please notice phone number is not valid. Make sure the number is between 6 and 12 digits, with no spaces not letters or special characters"
+                                                    value="{!v.phone}" />
+                                            </lightning:layoutItem>
+
+                                            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                                largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                                <lightning:inputField fieldName="cell_phone_lada_id__c"
+                                                    aura:id="PrefixMobile" label="Prefix" />
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                                largeDeviceSize="12" flexibility="auto" class="slds-text-body_regular">
+                                                <lightning:input fieldName="MobilePhone" aura:id="Mobile" label="Mobile"
+                                                    pattern="^[0-9]{6,12}$" maxlength="12"
+                                                    messageWhenPatternMismatch="Mobile number is not valid"
+                                                    value="{!v.mobilephone}" />
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
+                                        <lightning:inputField disabled="{! !v.isWritable }"
+                                            fieldName="Internal_Extension__c" aura:id="Internal_Extension__c" />
+                                        <lightning:inputField disabled="{! !v.isWritable }"
+                                            fieldName="DES_Title_Role__c" aura:id="DES_Title_Role__c" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }"
+                                            fieldName="DES_Department__c" aura:id="DES_Department__c" class="" />
+
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                        largeDeviceSize="12" flexibility="auto" padding="around-small"
+                                        class="slds-text-body_regular">
+
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="DES_Scope__c"
+                                            aura:id="DES_Scope__c" class="" />
+                                        <lightning:inputField disabled="{! !v.isWritable }" fieldName="Description"
+                                            aura:id="Description" class="" />
+
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+
+                                <aura:if isTrue="{! v.isSalesGM == true }">
+                                    <p class="slds-section-title_divider customP">Global Market</p>
+                                    <lightning:layout multipleRows="true">
+                                        <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12"
+                                            largeDeviceSize="12" flexibility="auto" padding="around-small"
+                                            class="slds-text-body_regular">
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="Asset_Class__c" aura:id="Asset_Class__c" class="" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Markets__c"
+                                                aura:id="Markets__c" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Sector__c"
+                                                aura:id="Sector__c" />
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                            largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                            class="slds-text-body_regular">
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Email_2__c"
+                                                aura:id="Email_2__c" />
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="CurrencyIsoCode" aura:id="CurrencyIsoCode" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="OtherPhone"
+                                                aura:id="OtherPhone" />
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="Switchboard__c" aura:id="Switchboard__c" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Fax"
+                                                aura:id="Fax" />
+                                        </lightning:layoutItem>
+                                        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6"
+                                            largeDeviceSize="6" flexibility="auto" padding="around-small"
+                                            class="slds-text-body_regular">
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Title"
+                                                aura:id="Title" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Department"
+                                                aura:id="Department" />
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="Type_of_Investor__c" aura:id="Type_of_Investor__c" />
+                                            <lightning:inputField disabled="{! !v.isWritable }" fieldName="Birthdate"
+                                                aura:id="Birthdate" />
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="Access_to_BBVA_Research__c"
+                                                aura:id="Access_to_BBVA_Research__c" />
+                                            <lightning:inputField disabled="{! !v.isWritable }"
+                                                fieldName="Permanent_Bloomberg_Chat__c"
+                                                aura:id="Permanent_Bloomberg_Chat__c" />
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                </aura:if>
+
+                                <footer class="slds-modal__footer bottom">
+                                    <div class="slds-text-body_regular sticky">
+                                        <lightning:button aura:id="cancelButton" class="slds-float_left slds-m-vertical_small"
+                                            variant="neutral" name="cancel" onclick="{!c.onCloseModal}" label="Cancel" />
+                                        <lightning:button aura:id="submitButton" class="slds-m-vertical_small"
+                                            variant="brand" type="submit" name="save" label="Save" />
+                                    </div>
+                                </footer>
+                            </aura:set>
+                        </aura:if>
+                    </lightning:recordEditForm>
+                    <aura:set attribute="else">
+                        <lightning:recordEditForm aura:id="createContactForm" objectApiName="{!v.objectApiName}"
+                            recordId="{!v.recordId}" onsubmit="{!c.handleSubmitUpdate}" onsuccess="{!c.handleSuccess}">
+
+                            <ui:message title="Insuficient level of access" severity="error" closable="false" class="">
+                                You do not have the level of access necessary to perform the operation you requested.
+                                Please
+                                contact the owner of the
+                                record or your administrator if access is necessary.
+                            </ui:message>
+                        </lightning:recordEditForm>
+                    </aura:set>
+                </aura:if>
+
+            </aura:set>
+
+        </aura:if>
+
+    </lightning:card>
+</aura:component>

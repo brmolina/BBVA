@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>solution_classification_desc__c</fullName>
+    <label>Clase de Operación</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Asset Finance</fullName>
+                <default>false</default>
+                <label>Asset Finance</label>
+            </value>
+            <value>
+                <fullName>Corporate Facilities</fullName>
+                <default>false</default>
+                <label>Corporate Facilities</label>
+            </value>
+            <value>
+                <fullName>Leveraged Finance</fullName>
+                <default>false</default>
+                <label>Leveraged Finance</label>
+            </value>
+            <value>
+                <fullName>Project Finance</fullName>
+                <default>false</default>
+                <label>Project Finance</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

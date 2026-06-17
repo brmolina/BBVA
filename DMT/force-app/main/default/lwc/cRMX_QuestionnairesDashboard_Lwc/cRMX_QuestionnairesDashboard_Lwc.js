@@ -5,7 +5,7 @@ import getPDFUrl from '@salesforce/apex/CRMX_QuestionnaireBoard_Ctrl.getPDFUrl';
 import { refreshApex } from '@salesforce/apex';
 import LABEL_CLIENT from '@salesforce/label/c.CRMX_Client';
 import LABEL_LINKED_GROUP from '@salesforce/label/c.CRMX_Linked_Group';
-import LABEL_STATUS from '@salesforce/label/c.Arc_Gen_TraceabilityState';
+import LABEL_STATUS from '@salesforce/label/c.CRMX_TraceabilityState';
 import LABEL_LAST_MODIFIED from '@salesforce/label/c.CRMX_Last_Modification_Date';
 import LABEL_DOWNLOAD_PDF from '@salesforce/label/c.CRMX_Download_PDF';
 import LABEL_TITLE_QUESTIONNAIRE from '@salesforce/label/c.CRMX_Title_Questionnaire_lwc';

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>visit_users_number__c</fullName>
+    <description>Number of BBVA users in this visit</description>
+    <inlineHelpText>Número de usuarios BBVA en la visita</inlineHelpText>
+    <label>Users number</label>
+    <summaryForeignKey>Visit_Management_Team_Local__c.visit_id__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

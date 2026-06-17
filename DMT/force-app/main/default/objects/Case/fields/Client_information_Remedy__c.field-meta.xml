@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_information_Remedy__c</fullName>
+    <description>Client information included in Remedy layout. Just for remedy information.</description>
+    <externalId>false</externalId>
+    <formula>CASE(SER_Business_Case_Type__c, 
+     &quot;GNC&quot;, Account.Name &amp; &quot; / &quot; &amp; SER_Local_Reference__r.Name, 
+     &quot;EGS&quot;, Account.Name, 
+     Account.Name &amp; &quot; / &quot; &amp;     SER_Transactional_Reference__r.Name)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Client Information</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

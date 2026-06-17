@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="value" type="String" description="Value Selected" />
+</aura:event>

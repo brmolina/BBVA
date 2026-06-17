@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Ano_rollup__c</fullName>
+    <label>Año rollup</label>
+    <summarizedField>DES_Historic_RAR_EVA_RORC__c.DES_Year__c</summarizedField>
+    <summaryForeignKey>DES_Historic_RAR_EVA_RORC__c.DES_Client__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

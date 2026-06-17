@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Inc_Close_case_Validation_GM_Post</fullName>
+    <active>true</active>
+    <description>To close a case that is classified as &quot;Queries&quot; must have the following fields completed: Classification, Reason, Client Name and Asset.</description>
+    <errorConditionFormula>AND(
+            !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+            !$Setup.CIB_User_Org__c.CIB_Is_Admin__c,
+            $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+            ISPICKVAL(SER_Business_Case_Type__c, &quot;GM&quot;),
+            SER_Post_liquidation__c = TRUE ,
+            SER_Settled__c = FALSE,
+            OR(
+                ISBLANK(TEXT( SER_Subtype_GM__c )),
+                ISBLANK(SER_Asset__c ),
+                OR(
+                    ISBLANK(AccountId ),
+                    AND(
+                        !ISBLANK(AccountId),
+                        Account.Name = &quot;BBVA Internal Contact&quot;
+                    )
+                )
+            ),
+            ISPICKVAL( SER_Classification__c, &quot;Queries&quot;),
+            OR(
+                ISPICKVAL(Status,&quot;Closed&quot;),
+                SER_Close__c = True
+            )
+        )</errorConditionFormula>
+    <errorMessage>To close a case that is classified as &quot;Queries&quot;  must have the following fields completed: Classification, Reason, Client Name and Asset. Client Name can&apos;t be an Internal Contact Client.</errorMessage>
+</ValidationRule>

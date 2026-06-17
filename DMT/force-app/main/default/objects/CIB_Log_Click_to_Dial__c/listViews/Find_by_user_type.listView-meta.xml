@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Find_by_user_type</fullName>
+    <columns>NAME</columns>
+    <columns>OBJECT_ID</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Log_User__c</columns>
+    <columns>Type__c</columns>
+    <columns>Activity_Related_To__c</columns>
+    <columns>ActivitySubject__c</columns>
+    <columns>Call_Direction__c</columns>
+    <columns>CallId__c</columns>
+    <columns>Discarded_Call_Event__c</columns>
+    <columns>Log_Message__c</columns>
+    <columns>Telephony_System__c</columns>
+    <columns>User_Location__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Type__c</field>
+        <operation>equals</operation>
+        <value>SaveActivity</value>
+    </filters>
+    <filters>
+        <field>Log_User__c</field>
+        <operation>equals</operation>
+        <value>E045586</value>
+    </filters>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>equals</operation>
+        <value>TODAY</value>
+    </filters>
+    <label>Find by user and type</label>
+</ListView>

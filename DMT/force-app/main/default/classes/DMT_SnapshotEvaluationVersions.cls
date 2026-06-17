@@ -7,6 +7,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 public with sharing class DMT_SnapshotEvaluationVersions{
+    private static final Boolean EMAIL_ENABLED = true;
+
     /**
      * @description Call service and return wrapper string for GET Snapshot Evaluation Versions
      */
@@ -46,6 +48,7 @@ public with sharing class DMT_SnapshotEvaluationVersions{
         if (res != null && res.data != null && res.data.versions != null){
             for (Version v : res.data.versions){
                 if (v.user != null){
+                    v.userCode = v.user;
                     userCodeSet.add(v.user);
                 }
             }
@@ -66,41 +69,71 @@ public with sharing class DMT_SnapshotEvaluationVersions{
             for (Version v : res.data.versions){
                 if (v.user != null && userCodeToName.containsKey(v.user)){
                     v.user = userCodeToName.get(v.user);
+                    
                 }
             }
         }
 
         return res;
     }
-
     /**
-     * @description Call service and return wrapper for POST Snapshot Evaluation Versions
+     * @description Receives a Map containing 'wrapper' and 'fullJson'
      */
     @auraEnabled
     public static String postSnapshotEvaluationVersions(String jsonInput){
-        System.debug('jsonInput, ' + jsonInput);
+        System.debug('jsonInput (Map): ' + jsonInput);
+        
+        // 1. Deserialize the incoming Map
+        Map<String, Object> inputMap = (Map<String, Object>)JSON.deserializeUntyped(jsonInput);
+        
+        // 2. Get the Wrapper String and Full JSON from the Map
+        String wrapperString = (String)inputMap.get('wrapper');
+        String fullJson = (String)inputMap.get('fullJson');
+
+        // 3. Prepare Service Request (Send ONLY the wrapper string)
         Map<String, Object> request = new Map<String, Object>();
-        request.put('jsonInput', jsonInput);
+        request.put('jsonInput', wrapperString); 
+        
         HttpResponse response;
         String serviceName = 'DMT_PostSnapshotEvaluationVersions';
         PostSnapshotEvaluationVersionsWrapper res = new PostSnapshotEvaluationVersionsWrapper();
 
+        // 4. Call Service
         response = DMT_HPG_Utils.callService(serviceName, request);
 
         System.debug('Response status code: ' + response.getStatusCode());
-        switch  on response.getStatusCode(){
+        switch on response.getStatusCode(){
             when 200, 201{
                 System.debug('Response: ' + response.getBody());
                 res = (PostSnapshotEvaluationVersionsWrapper)System.JSON.deserialize(response.getBody(), PostSnapshotEvaluationVersionsWrapper.class);
                 res.success = true;
+
+                // Process the full JSON to extract necessary info for email sending
+                Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(fullJson);
+                System.debug('Full JSON deserialized for email processing: ' + String.valueOf(resultMap.get('HTML')));
+                resultMap.put('categoryId', res.data.categoryId);
+                if (EMAIL_ENABLED) {
+                   DMT_SendEmailService.processMapAndSendEmail(resultMap);
+                } else {
+                    System.debug('Email sending disabled by EMAIL_ENABLED flag.');
+                }
+
+                // Update the Line record with the last generated version info
+                fillLastGeneratedVersionField(res.data.opportunityId, res.data.versionDescription, res.data.categoryId, res.data.versionId);
             }
             when else{
                 res.success = false;
                 res.errorMessage = String.valueOf(response.getBody());
             }
         }
+        
+        // 5. Handle Success using the Full JSON we passed in the Map
         if (res.success){
+            // Pass the fullJson (with StatusLine/RecordType) to your save method
+            System.debug('res.success' + res);
+
             DMT_LINES__e evt = new DMT_LINES__e();
+
             Database.SaveResult sr = EventBus.publish(evt);
             if (!sr.isSuccess()){
                 System.debug('Failed to publish event: ' + sr.getErrors()[0].getMessage());
@@ -108,30 +141,71 @@ public with sharing class DMT_SnapshotEvaluationVersions{
         }
         return JSON.serialize(res);
     }
-
     /**
-     * @description Centralized method to handle requestStr, recordId, and type for POST Snapshot Evaluation Versions
+     * @description Helper to process the request, extract body, and call the service
      */
     @auraEnabled
     public static String processPostSnapshotEvaluationVersion(String requestStr, Id recordId, String type){
-        // Deserialize requestStr into a wrapper class
+
+        // 1. Deserialize the incoming request wrapper
         PostRequestWrapperClass wrapper = (PostRequestWrapperClass)JSON.deserialize(requestStr, PostRequestWrapperClass.class);
 
+        String fullJson = '';
         if (Test.isRunningTest()){
-            // Mock the response for test purposes
-            wrapper.body = '{"Name": "Mocked response body"}';
-        } else{
-            wrapper.body = generatePdfJSON(recordId, type);
+            fullJson = '{"PDF": "Mocked PDF Body", "StatusLine": "Close"}';
+        } else {
+            // Get Full JSON Map string
+            fullJson = generatePdfJSON(recordId, type);
         }
 
-        System.debug('wrapper.body: ' + wrapper.body);
+        // 2. EXTRACT PDF and assign to wrapper.body
+        Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(fullJson);
+        if (responseMap.containsKey('PDF')) {
+            wrapper.body = (String)responseMap.get('PDF');
+        } else {
+            wrapper.body = '';
+        }
+        
+        System.debug('wrapper.body set to PDF: ' + wrapper.body);
 
-        // Serialize the updated wrapper back to a string
-        String updatedRequestStr = JSON.serialize(wrapper);
+        // 3. CREATE MAP to transport data
+        Map<String, Object> requestMap = new Map<String, Object>();
+        
+        // Put the Serialized Wrapper (containing the PDF body) into the map
+        requestMap.put('wrapper', JSON.serialize(wrapper)); 
+        
+        // Put the Full JSON (containing StatusLine, etc.) into the map for later use
+        requestMap.put('fullJson', fullJson);
 
-        // Invoke the original postSnapshotEvaluationVersions method
-        return postSnapshotEvaluationVersions(updatedRequestStr);
+        // 4. Send the Map to the Post method
+        return postSnapshotEvaluationVersions(JSON.serialize(requestMap));
     }
+    
+    /**
+     * @description Creates a new Snapshot Version using a pre-generated JSON string from the client, avoiding server regeneration.
+     */
+    /* @AuraEnabled
+    public static String createSnapshotVersionFromCachedJson(String requestStr, String cachedJson) {
+        // 1. Deserialize the incoming request wrapper (metadata)
+        PostRequestWrapperClass wrapper = (PostRequestWrapperClass)JSON.deserialize(requestStr, PostRequestWrapperClass.class);
+
+        // 2. EXTRACT PDF from the cached JSON and assign to wrapper.body
+        if (String.isNotBlank(cachedJson)) {
+                wrapper.body = cachedJson;
+        } else {
+            throw new AuraHandledException('Cached JSON is empty. Cannot create snapshot version.');
+        }
+        
+        System.debug('wrapper.body successfully set from client cachedJson');
+
+        // 3. CREATE MAP to transport data (matching the logic in processPostSnapshotEvaluationVersion)
+        Map<String, Object> requestMap = new Map<String, Object>();
+        requestMap.put('wrapper', JSON.serialize(wrapper)); 
+        requestMap.put('fullJson', String.isNotBlank(cachedJson) ? cachedJson : '{}');
+
+        // 4. Send directly to the Post method
+        return postSnapshotEvaluationVersions(JSON.serialize(requestMap));
+    } */
 
     @AuraEnabled(cacheable = true)
     public static String getDMTUserId(){
@@ -142,8 +216,7 @@ public with sharing class DMT_SnapshotEvaluationVersions{
 
     @AuraEnabled
     public static String generatePdfJSON(String recordId, String type){
-
-        // Create a list of DMT_ViewController.ItemWrapper
+    // Create a list of DMT_ViewController.ItemWrapper
         List<DMT_ViewController.ItemWrapper> itemsList = new List<DMT_ViewController.ItemWrapper>();
 
         ViewTypeInfo info = getViewTypeInfoFromRecordId(recordId);
@@ -159,31 +232,15 @@ public with sharing class DMT_SnapshotEvaluationVersions{
             item.component = component;
             itemsList.add(item);
         }
-        String response = '';
-        if (Test.isRunningTest()){
-            // Mock the response for test purposes
-            response = '{"Name": "Mocked response body"}';
-        } else{
-            // Generate JSON for PDF
-            response = DMT_ViewController.loadJSONFromSelectedItems(recordId, type, JSON.serialize(itemsList));
-        }
-        return response;
-    }
 
-    //enqueue a job to create a new snapshot evaluation version from triggers helpers. (DMT_Line_Helper, SER_CaseMethods)
-    //this method is being called from inside loops (do not perform queries or DML inside this method)
-    public static void enqueueSnapshotEvaluationJob(String dmtUserId, String dmtLineId, String categoryId, String versionDescription, String lineRecordId, String type){
-        DMT_SnapshotEvaluationVersions.PostRequestWrapperClass requestBody = new DMT_SnapshotEvaluationVersions.PostRequestWrapperClass();
-        requestBody.user = dmtUserId;
-        requestBody.opportunityId = dmtLineId;
-        requestBody.categoryId = categoryId;
-        requestBody.versionDescription = versionDescription;
-
-        String requestStr = JSON.serialize(requestBody);
-        if (!Test.isRunningTest()){
-            System.enqueueJob(new DMT_SnapshotEvaluationQueueable(requestStr, lineRecordId, type));
-        }
+    String fullResponse = '';
+    if (Test.isRunningTest()){
+        fullResponse = '{"PDF": "Mocked PDF Content", "StatusLine": "Open", "RecordTypeName": "OtherProducts"}';
+    } else {
+        fullResponse = DMT_ViewController.loadJSONFromSelectedItems(recordId, type, JSON.serialize(itemsList));
     }
+    return fullResponse; 
+}
 
     // get viewType info from the recordId
     public static ViewTypeInfo getViewTypeInfoFromRecordId(Id recordId){
@@ -203,6 +260,9 @@ public with sharing class DMT_SnapshotEvaluationVersions{
                 when 'OtherProducts' {
                     info.viewType = 'Line';
                 }
+                when 'Sanction' {
+                    info.viewType = 'Line_Sanction';
+                }
             }
         } else if (sObjectType == Opportunity.SObjectType){
             info.viewType = 'Opportunity';
@@ -210,6 +270,41 @@ public with sharing class DMT_SnapshotEvaluationVersions{
         }
         return info;
     }
+    @AuraEnabled
+    public static void sendEmailToApprovers(String  pdfBase64, String lineId, String lineName) {
+        DMT_SendEmailService.sendEmailToApprovers(pdfBase64, lineId, lineName);
+    }
+
+    @AuraEnabled
+    public static void fillLastGeneratedVersionField(String LineId, String description, String category, String version) {
+        // Normalizar strings
+        description = String.isBlank(description) ? '' : description;
+        category    = String.isBlank(category)    ? '' : category;
+
+        List<DMT_Line__c> lines = [
+            SELECT Id, DMT_LastGeneratedVersionName__c
+            FROM DMT_Line__c
+            WHERE Line_Id__c = :LineId
+            LIMIT 1
+        ];
+
+        if (lines.isEmpty()) {
+            return;
+        }
+
+        DMT_Line__c line = lines[0];
+
+        // Construir nuevo valor
+        String newValue = String.isBlank(description)
+            ? category + ' - ' + version
+            : category + ' - ' + description + ' - ' + version;
+
+        if (line.DMT_LastGeneratedVersionName__c != newValue) {
+            line.DMT_LastGeneratedVersionName__c = newValue;
+            update line;
+        }
+    }
+
 
     public class ViewTypeInfo{
         public String viewType;
@@ -248,6 +343,11 @@ public with sharing class DMT_SnapshotEvaluationVersions{
 
         public String errorMessage{ get; set; }
 
+    }
+    public class PostEvaluationWrapper {
+        public String jsonInput;
+        public String requestJSON;
+        public String recordId;
     }
 
     /**
@@ -288,6 +388,8 @@ public with sharing class DMT_SnapshotEvaluationVersions{
         public Integer auditId{ get; set; }
 
         public String user{ get; set; }
+        
+        public String userCode{ get; set; }
 
         public Date eventDate{ get; set; }
 
@@ -298,4 +400,5 @@ public with sharing class DMT_SnapshotEvaluationVersions{
         public String body{ get; set; }
 
     }
+
 }

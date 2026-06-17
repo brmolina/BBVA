@@ -27,6 +27,7 @@ public with sharing class Arc_Gen_ButtonsCMP_service {
     * @date		31/03/2020
     * @author	juanignacio.hita.contractor@bbva.com
   */
+  @SuppressWarnings('PMD.EmptyStatementBlock')
   @TestVisible
   private Arc_Gen_ButtonsCMP_service() {
 
@@ -44,11 +45,17 @@ public with sharing class Arc_Gen_ButtonsCMP_service {
     String buttonCollection = '';
     final List<arce__Analysis__c> lstAnlys = arce.Arc_Gen_ArceAnalysis_Data.getArceAnalysisData(new List<Id> {recordId});
     if (!lstAnlys.isEmpty()) {
-      final String subProcess = lstAnlys[0].arce__anlys_wkfl_sub_process_type__c;
-      if (subProcess == arce.Arc_Gen_Constants.SUBPROCESS_NEW || subProcess == arce.Arc_Gen_Constants.SUBPROCESS_MODIFICATION || subProcess == arce.Arc_Gen_Constants.SUBPROCESS_RENOVATION) {
-        buttonCollection = 'Arc_Gen_ButtonPanel';
-      } else if (subProcess == arce.Arc_Gen_Constants.SUBPROCESS_RATING) {
-        buttonCollection = 'Arc_Gen_RAIPPanel';
+      final Boolean is2021RTC = lstAnlys[0].arce__is_RTC__c;
+
+      if (is2021RTC) {
+        buttonCollection = 'Arc_Gen_2021RTCPanel';
+      } else {
+        final String subProcess = lstAnlys[0].arce__anlys_wkfl_sub_process_type__c;
+        if (subProcess == arce.Arc_Gen_Constants.SUBPROCESS_NEW || subProcess == arce.Arc_Gen_Constants.SUBPROCESS_MODIFICATION || subProcess == arce.Arc_Gen_Constants.SUBPROCESS_RENOVATION) {
+          buttonCollection = 'Arc_Gen_ButtonPanel';
+        } else if (subProcess == arce.Arc_Gen_Constants.SUBPROCESS_RATING) {
+          buttonCollection = 'Arc_Gen_RAIPPanel';
+        }
       }
     }
     return buttonCollection;

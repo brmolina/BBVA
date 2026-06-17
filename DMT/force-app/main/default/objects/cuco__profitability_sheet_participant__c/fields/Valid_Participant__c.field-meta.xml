@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Participant__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>When false the participant has been removed from the list of participants. This is needed for the deleteParticipants batch to phisically remove the partificpant from the database.</description>
+    <label>Valid Participant</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

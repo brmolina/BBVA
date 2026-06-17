@@ -1,0 +1,6 @@
+<design:component >
+    <design:attribute name="targets" label="Recipientes del email" required="true" />
+    <design:attribute name="decision" label="Decisión Compliance" required="true" />
+    <design:attribute name="form" label="Formulario relacionado" required="true" />
+    <design:attribute name="relatedCase" label="Caso relacionado" required="true" />
+</design:component>

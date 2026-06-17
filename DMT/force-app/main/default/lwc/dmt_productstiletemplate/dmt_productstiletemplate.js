@@ -15,6 +15,7 @@ export default class Dmt_productstiletemplate extends LightningElement {
     }
 
     set productList(value) {
+          console.log('### productList received => ', JSON.stringify(value));
         if (!value) {
             this._productList = [];
             return;
@@ -51,7 +52,21 @@ export default class Dmt_productstiletemplate extends LightningElement {
         this._isOpportunityObject = value;
     }
 
-    
+
+    connectedCallback() {
+        console.log('### dmt_productstiletemplate connected');
+
+        window.addEventListener('saveOpportunityItemInfo', this.handleExternalSave);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('saveOpportunityItemInfo', this.handleExternalSave);
+    }
+
+    handleExternalSave = (event) => {
+        console.log('### saveOpportunityItemInfo received in LWC', event);
+    };
+        
 
 
     handleSelected(event){

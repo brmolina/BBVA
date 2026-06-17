@@ -1,0 +1,57 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  controller="Arc_Gen_Hotel_Projection_Controller" access="global">
+  <aura:attribute name="columns" type="List" access="global" description="columns of the table"/>
+  <aura:attribute name="rows" type="List" access="global" description="rows of the table"/>
+  <aura:attribute name="showTable" type="Boolean" default="true" access="global" description="Show/Hide Table"/>
+  <aura:attribute name="showButton" type="Boolean" default="false" access="global" description="Show/Hide edit button"/>
+  <aura:attribute name="currency" type="String" access="global" description="Currency of the table"/>
+  <aura:attribute name="unit" type="String" access="global" description="Unit of the table"/>
+  <aura:attribute name="fieldsApiName" type="String" access="global" description="Api names from fields"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <lightning:overlayLibrary aura:id="overlayLibrary" />
+  <aura:if isTrue="{!v.showTable}">
+    <div class="row">
+      <h1 class="slds-text-heading--medium slds-m-bottom_small text-padding">{!$Label.c.Arc_Gen_HotelProjTitle}</h1>
+    </div>
+    <div class="slds-grid slds-gutters">
+      <div class="slds-col"> <lightning:input name="input1" readonly="true" label="{!$Label.c.Arc_Gen_Currency}" disabled="true" value="{!v.currency}" class="slds-form-element slds-hint-parent slds-p-bottom_xx-small slds-has-divider_bottom"/></div>
+      <div class="slds-col">
+        <lightning:input name="input2" readonly="true" label="{!$Label.c.Arc_Gen_Unit}" disabled="true" value="{!v.unit}" class="slds-form-element slds-hint-parent slds-p-bottom_xx-small slds-has-divider_bottom" />
+      </div>
+      <div class="slds-col">
+        <span></span>
+      </div>
+      <div class="slds-col"> <span></span> </div>
+    </div>
+    &nbsp;
+    <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered slds-table_col-bordered  slds-no-row-hover">
+      <thead style="background:RGB(250, 250, 248);">
+        <tr class="slds-line-height_reset">
+          <aura:iteration items="{!v.columns}" var="col">
+            <th class="slds-truncate">
+              <div class="slds-truncate" title="{!col}" align="center">{!col}</div>
+            </th>
+          </aura:iteration>
+        </tr>
+      </thead>
+      <tbody>
+        <aura:iteration items="{!v.rows}" var="rowinfo">
+          <tr>
+            <aura:iteration items="{!rowinfo}" var="data">
+              <th class="slds-truncate">
+                <div class="slds-truncate" title="{!data}" align="center">{!data}</div>
+              </th>
+            </aura:iteration>
+          </tr>
+        </aura:iteration>
+      </tbody>
+    </table>
+    <aura:if isTrue="{!v.showButton}">
+      <div>
+        <lightning:button variant="Neutral" label="{!$Label.c.Arc_Gen_ManageHotelProj}" title="{!$Label.c.Arc_Gen_ManageHotelProj}" onclick="{!c.showModal}"/>
+      </div>
+    </aura:if>
+    <aura:set attribute="else">
+      <h2>{!$Label.c.Arc_Gen_NoDataShow}</h2>
+    </aura:set>
+  </aura:if>
+</aura:component>

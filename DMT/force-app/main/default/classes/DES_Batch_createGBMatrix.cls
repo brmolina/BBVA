@@ -60,16 +60,16 @@ public without sharing class DES_Batch_createGBMatrix implements Database.Batcha
   public void recursiveFxn(String accId) {
 
     if (accId != null) {
-      List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT ID, dwp_acmh__Parent_Account__c, dwp_acmh__Parent_Account__r.DES_Global_banker__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c =: accId];
+      List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT ID, AMH_Parent_Account__c, AMH_Parent_Account__r.DES_Global_banker__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c =: accId];
       system.debug('>>>>> listAccRel : ' + listAccRel );
       if(!listAccRel.isEmpty()) {
         foundGroup = true;
       }
-      for (dwp_acmh__GBL_Account_Relationship__c accRel : listAccRel) {
+      for (AMH_GBL_Account_Relationship__c accRel : listAccRel) {
         system.debug('>>>>> accRel : ' + accRel );
-        idGroupAccount = accRel.dwp_acmh__Parent_Account__c;
-        idGroupGB = accRel.dwp_acmh__Parent_Account__r.DES_Global_banker__c;
-        recursiveFxn(accRel.dwp_acmh__Parent_Account__c);
+        idGroupAccount = accRel.AMH_Parent_Account__c;
+        idGroupGB = accRel.AMH_Parent_Account__r.DES_Global_banker__c;
+        recursiveFxn(accRel.AMH_Parent_Account__c);
 
       }
     }

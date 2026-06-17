@@ -1,0 +1,93 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_RecordCompactCtrl">
+  <aura:attribute name="activeSections" type="List" default="['FLAT','SPECIAL']" />
+  <aura:attribute name="expRevenues" type="Decimal" default="0"/>
+  <aura:attribute name="simRevenues" type="Decimal" default="0"/>
+  <aura:attribute name="expRevenuesEuro" type="String" />
+  <aura:attribute name="simRevenuesEuro" type="Decimal" default="0"/>
+  <aura:attribute name="simRevenuesFlatEuro" type="String" />
+  <aura:attribute name="simRevenuesSpecEuro" type="String" />
+  <aura:attribute name="specRev" type="Decimal" default="0"/>
+  <aura:attribute name="flatRev" type="Decimal" default="0"/>
+  <aura:attribute name="dataValues" type="Object" />
+  <aura:attribute name="disabledCalculate" type="Boolean" default="true"/>
+  <aura:attribute name="disabledSend" type="Boolean" default="true"/>
+  <aura:attribute name="isSpecialCond" type="Boolean" default="false"/>
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="isGroup" type="String"/>
+  <aura:attribute name="lAccountId" type="List" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="acc" type="Account" access="global"/>
+  <aura:attribute name="catalog" type="String"/>
+
+  <aura:registerEvent name="PRW_ResponseEvent" type="c:PRW_ResponseEvent"/>
+
+  <aura:handler event="c:PRW_EditTableEvent" action="{!c.handleTableEvent}"/>
+  <aura:handler event="c:PRW_FirstCalculateEvt" action="{!c.handleFirstEvent}"/>
+  <aura:handler event="c:PRW_RevenuesEvent" action="{!c.handleRevenuesEvent}"/>
+  <aura:handler name="productSelectContinueEvt" event="c:PRW_AddProductEvent" action="{!c.handleProductsSelectContinue}"  includeFacets="true" phase="bubble" />
+
+  <article class="slds-card customCardClass">
+    <div class="slds-card__body slds-card__body_inner">
+      <gfsc:guidanceforSuccessWrapper guidanceName="Pricewise" fieldName="Top" minimised='true' nomenu="true"/>
+    </div>
+  </article>
+
+  <!-- Componente totales -->
+  <div class="slds-p-bottom_medium">
+    <article class="slds-card customCardClass articleClass">
+      <div class="slds-card__body slds-card__body_inner customCardTotalesClass">
+        <div class="slds-clearfix slds-grid slds-wrap slds-p-horizontal_medium">
+          <div class="slds-col slds-grid slds-size_4-of-12">
+            <div class="slds-col slds-size_6-of-12 slds-m-horizontal_xxx-small" style="background-color:#F3F2F2; border:1px solid #bfbfbf">
+              <div class="slds-grid slds-grid_vertical">
+                <div class="slds-col slds-p-vertical_xxx-small slds-p-left_x-small  slds-align_left">
+                  <div class="slds-text-title slds-truncate" title="Type">
+                    Flat Fee
+                  </div>
+                </div>
+                <div class="slds-col slds-p-vertical_xxx-small slds-p-left_x-large slds-align_center">
+                  <p>Simulated Revenues {!v.simRevenuesFlatEuro}</p>
+                  <p>Expected revenues {!v.expRevenuesEuro}</p>
+                </div>
+              </div>
+            </div>
+            <div class="slds-col slds-size_6-of-12 slds-m-horizontal_xxx-small" style="background-color:#F3F2F2; border:1px solid #bfbfbf">
+              <div class="slds-grid slds-grid_vertical">
+                <div class="slds-col slds-p-vertical_xxx-small slds-p-left_x-small slds-align_align_left">
+                  <div class="slds-text-title slds-truncate" title="Type">
+                    Special Conditions
+                  </div>
+                </div>
+                <div class="slds-col slds-p-vertical_xxx-small slds-p-left_x-large slds-align_center">
+                  <div>Simulated Revenues {!v.simRevenuesSpecEuro}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-col slds-grid slds-size_8-of-12 slds-grid_align-end">
+            <div class="slds-col slds-size_2-of-16 slds-m-horizontal_xx-small slds-m-top_xx-small">
+              <lightning:button variant="brand" label="{!$Label.c.PRW_EmailButton}" name="calculate_ID1" disabled="{!v.disabledSend}" onclick="{!c.handleSendEmail}"/>
+            </div>
+            <div class="slds-col slds-size_2-of-16 slds-m-horizontal_xx-small slds-m-top_xx-small">
+              <lightning:button variant="brand" label="{!$Label.c.PRW_CalculateButton}" name="calculate_ID" disabled="{!v.disabledCalculate}" onclick="{!c.handleCalculate}"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="slds-p-bottom_medium">
+    <lightning:card class="customCardClass">
+      <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{!c.handleSectionToggle}" activeSectionName="{! v.activeSections }">
+        <lightning:accordionSection class="classAccordion" name="FLAT" label="Flat fee Conditions">
+          <c:PRW_TableForSimulation isSpecialCond="false"/>
+        </lightning:accordionSection>
+        <lightning:accordionSection class="classAccordion" name="SPECIAL" label="Special Conditions">
+          <c:PRW_TableForSimulation isSpecialCond="true"/>
+        </lightning:accordionSection>
+      </lightning:accordion>
+    </lightning:card>
+  </div>
+  {!v.body}
+</aura:component>

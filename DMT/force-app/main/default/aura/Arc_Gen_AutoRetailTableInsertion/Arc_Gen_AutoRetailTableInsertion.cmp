@@ -1,0 +1,81 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_AutoRetailTableInsert_Ctrl">
+    <aura:attribute name="year1"              type="String"  access="global" default=""      description="Selected year 1"                                                                            />
+    <aura:attribute name="year2"              type="String"  access="global" default=""      description="Selected year 2"                                                                            />
+    <aura:attribute name="error"              type="boolean" access="global" default="false" description="Indicates if an error has occured"                                                          />
+    <aura:attribute name="spinner"            type="Boolean" access="global" default="false" description="Spinner load variable"                                                                      />
+    <aura:attribute name="operationType"      type="String"  access="global" default=""      description="Type of DML operation to execute"                                                           />
+    <aura:attribute name="tableType"          type="String"  access="global" default=""      description="1 -> New, 2 -> SemiNew"                                                                     />
+    <aura:attribute name="selectedRowId"      type="String"  access="global" default=""      description="Standard Id of the selected row (arce__autoretail_behavior_table__c)"                       />
+    <aura:attribute name="standardYear1Id"    type="String"  access="global" default=""      description="Standard Id of the year 1 value in the selected row (arce__autoretail_behavior_by_year__c)" />
+    <aura:attribute name="standardYear2Id"    type="String"  access="global" default=""      description="Standard Id of the year 2 value in the selected row (arce__autoretail_behavior_by_year__c)" />
+    <aura:attribute name="accHasAnalysisId"   type="String"  access="global" default=""      description="Standard Id of the current analyzed client (arce__Account_has_Analysis__c)"                 />
+    <aura:attribute name="agencyName"         type="String"  access="global" default=""      description="variable for agencyName"                                                                    />
+    <aura:attribute name="agenciesNumber"     type="String"  access="global" default=""      description="variable for agenciesNumber"                                                                />
+    <aura:attribute name="brand"              type="String"  access="global" default=""      description="variable for brand"                                                                         />
+    <aura:attribute name="bankRisk"           type="String"  access="global" default=""      description="variable for bankRisk"                                                                      />
+    <aura:attribute name="stockDays"          type="String"  access="global" default=""      description="variable for stockDays"                                                                     />
+    <aura:attribute name="totalUnitsYear1"    type="String"  access="global" default=""      description="variable for totalUnitsYear1"                                                               />
+    <aura:attribute name="totalUnitsYear2"    type="String"  access="global" default=""      description="variable for totalUnitsYear2"                                                               />
+    <aura:attribute name="stockRotationYear1" type="String"  access="global" default=""      description="variable for stockRotationYear1"                                                            />
+    <aura:attribute name="stockRotationYear2" type="String"  access="global" default=""      description="variable for stockRotationYear2"                                                            />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:overlayLibrary aura:id="overlayLibra"/>
+
+    <aura:html tag="style">
+        .slds-p-around--medium{
+            padding:0 !important;
+        }
+    </aura:html>
+    <div class="slds-p-top--medium slds-p-left--medium slds-p-right--medium slds-p-bottom--medium">
+        <div class="{!v.spinner == true ? '':'slds-hide'}">
+            <div class="slds-align_absolute-center slds-p-around_x-large">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                    <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+        <div class="{!v.spinner == false ? '':'slds-hide'}">
+            <aura:if isTrue="{!v.operationType == 'delete'}">
+                <div class="slds-align_absolute-center slds-p-around_medium">
+                    <arce:Arc_Gen_ChatMessages_cmp title="{!$Label.c.Lc_arce_Warning}"
+                        assistiveText="{!$Label.c.Lc_arce_newAnalysisSuccess}" variant="Warning"
+                        message="{!$Label.c.Lc_arce_autoRetailTable_DeleteRecordConfirm}" />
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:input name="agencyName" value="{!v.agencyName}" label="{!$Label.c.Lc_arce_autoRetailTable_Agency}" required="true" disabled="{!v.operationType == 'edit' ? true : false}" maxlength="100"/>
+                            <lightning:input name="agenciesNumber" value="{!v.agenciesNumber}" type="number" label="{!$Label.c.Lc_arce_autoRetailTable_AgenciesNumber}" required="true" max="99999"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:input name="brand" value="{!v.brand}" label="{!$Label.c.Lc_arce_autoRetailTable_Brand}" required="true" disabled="{!v.operationType == 'edit' ? true : false}" maxlength="50"/>
+                            <lightning:input name="bankRisk" value="{!v.bankRisk}" type="number" label="{!$Label.c.Lc_arce_autoRetailTable_BankRisk}" required="true" formatter="currency" max="999999999999999"/>
+                            <lightning:input name="stockDays" value="{!v.stockDays}" type="number" label="{!$Label.c.Lc_arce_autoRetailTable_StockDays}" required="true" max="99999999"/>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:input name="selectedYear" readonly="true" value="{!v.year2}" label="{!$Label.c.Lc_arce_autoRetailTable_SelectedYear}" />
+                            <lightning:input name="totalUnitsYear2" value="{!v.totalUnitsYear2}" type="number" label="{!$Label.c.Lc_arce_autoRetailTable_TotalUnits}" required="true" max="99999999"/>
+                            <lightning:input name="stockRotationYear2" value="{!v.stockRotationYear2}" label="{!$Label.c.Lc_arce_autoRetailTable_StockRotation}" required="true" maxlength="8"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:input name="previousYear" readonly="true" value="{!v.year1}" label="{!$Label.c.Lc_arce_autoRetailTable_PreviousYear}" />
+                            <lightning:input name="totalUnitsYear1" value="{!v.totalUnitsYear1}" type="number" label="{!$Label.c.Lc_arce_autoRetailTable_TotalUnits}" required="true" max="99999999"/>
+                            <lightning:input name="stockRotationYear1" value="{!v.stockRotationYear1}" label="{!$Label.c.Lc_arce_autoRetailTable_StockRotation}" required="true" maxlength="8"/>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+    <footer class="slds-modal__footer" style="padding:0.50rem 1rem">
+        <lightning:button label="{!$Label.c.Lc_arce_Persistance_Cancel_Button}" variant="neutral" onclick="{!c.handleCancel}" />
+        <lightning:button label="{!v.operationType == 'delete' ?  $Label.c.Lc_arce_autoRetailTable_DeleteRecordAcept : $Label.c.Lc_arce_autoRetailTable_Save}"
+            variant="brand" onclick="{!v.operationType == 'delete' ? c.handleDelete : c.handleSave}" />
+    </footer>
+</aura:component>

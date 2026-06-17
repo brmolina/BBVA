@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_case_area_name__c</fullName>
+    <label>Origin</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>case_channel_source_type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Client</fullName>
+                <default>false</default>
+                <label>Client</label>
+            </value>
+            <value>
+                <fullName>Cliente directamente</fullName>
+                <default>false</default>
+                <label>Cliente directamente</label>
+            </value>
+            <value>
+                <fullName>Contact Center</fullName>
+                <default>false</default>
+                <label>Contact Center</label>
+            </value>
+            <value>
+                <fullName>Digital Trainer</fullName>
+                <default>false</default>
+                <label>Digital Trainer</label>
+            </value>
+            <value>
+                <fullName>ERP Client</fullName>
+                <default>false</default>
+                <label>ERP Client</label>
+            </value>
+            <value>
+                <fullName>External Platforms</fullName>
+                <default>false</default>
+                <label>External Platforms</label>
+            </value>
+            <value>
+                <fullName>Global</fullName>
+                <default>false</default>
+                <label>Global</label>
+            </value>
+            <value>
+                <fullName>Global Customer Service</fullName>
+                <default>false</default>
+                <label>Global Customer Service</label>
+            </value>
+            <value>
+                <fullName>Local</fullName>
+                <default>false</default>
+                <label>Local</label>
+            </value>
+            <value>
+                <fullName>Oficina</fullName>
+                <default>false</default>
+                <label>Oficina</label>
+            </value>
+            <value>
+                <fullName>Otros equipos</fullName>
+                <default>false</default>
+                <label>Otros equipos</label>
+            </value>
+            <value>
+                <fullName>Prevención del Fraude</fullName>
+                <default>false</default>
+                <label>Prevención del Fraude</label>
+            </value>
+            <value>
+                <fullName>Reclamos</fullName>
+                <default>false</default>
+                <label>Reclamos</label>
+            </value>
+            <value>
+                <fullName>SSJJ</fullName>
+                <default>false</default>
+                <label>SSJJ</label>
+            </value>
+            <value>
+                <fullName>VISA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>VISA</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>ERP Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>External Platforms</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>Global</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Relay Bank</controllingFieldValue>
+            <controllingFieldValue>GSCF</controllingFieldValue>
+            <controllingFieldValue>H2H</controllingFieldValue>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <controllingFieldValue>GCC</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Leads Pivot</controllingFieldValue>
+            <valueName>Local</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Cliente directamente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Contact Center</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Digital Trainer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Global Customer Service</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Oficina</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Otros equipos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Prevención del Fraude</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>Reclamos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH</controllingFieldValue>
+            <controllingFieldValue>CAUDALES</controllingFieldValue>
+            <controllingFieldValue>INTERCONEXION</controllingFieldValue>
+            <controllingFieldValue>RECAUDOS</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <valueName>SSJJ</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,32 @@
+.THIS .customTabs {
+	font-size: 15px;
+	font-weight: bold;
+}
+.THIS .mainWrapper {
+	width: 100%;
+    display: table!important;
+}
+.THIS .width95 {
+    width: 95%;
+}
+.THIS h1 {
+    font-weight:bold;
+    font-size:1.3em;
+}
+.THIS.customBox {
+	text-align:center;
+	padding:10px 0px;
+	border-bottom:1px solid #E4E4E4;
+	border-left:1px solid #E4E4E4;
+	border-right:1px solid #E4E4E4;
+}
+
+.THIS.customBox2 {
+	border-bottom: solid transparent;
+	border-top: solid transparent;
+}
+
+.THIS .customHeader {
+	border-bottom: solid transparent;
+	padding:0px 0px;
+}

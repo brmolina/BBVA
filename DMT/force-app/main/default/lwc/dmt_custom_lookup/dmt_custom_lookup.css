@@ -1,0 +1,41 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+:host .slds-dropdown {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+:host .slds-listbox__option:hover,
+:host .slds-listbox__option.slds-has-focus {
+    background-color: #f3f2f2;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+}
+
+.slds-listbox__option-meta_entity {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+/* Positions the spinner aligned with the clear/search icons on the right */
+.spinner-container {
+    position: absolute;
+    right: 0.6rem;
+    top: 72%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+}
+
+.no-results-text {
+    font-style: italic;
+    color: #706e6b;
+}

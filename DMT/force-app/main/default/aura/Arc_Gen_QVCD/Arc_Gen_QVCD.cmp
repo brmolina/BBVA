@@ -1,0 +1,21 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:appHostable" controller="Arc_Gen_QVCD_Ctlr" access="global" >
+    <aura:attribute name="readRecords" type="boolean" default="" description="Show/hide button to add records"/>
+    <aura:attribute name="permissionEdit" type="boolean" default="" description="Parameter used to validate if the user have editing permissions"/>
+    <aura:attribute name="tableConfName" type="String" default="" description="Configuration name declared in the metadata"/>
+    <aura:attribute name="showButton" type="boolean" default="" description="Whether to show the 'Switch view' button"/>
+    <aura:handler event="aura:locationChange" action="{!c.update}"/>
+    <aura:handler event="c:Arc_Gen_QVCDRefresh_evt" action="{!c.refreshComponent}"/>
+    <aura:handler event="c:Arc_Gen_QVCDEvent" action="{!c.handleEvent}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+        <qvcd:GBL_Carousel_CMP recordId="{!v.recordId}"
+                                nameCards="Arc_Gen_Carousel"
+                                infinite="true"
+                                slidesToShow="4"
+                                relationMode="true"
+                                allowCardClick="true"
+                                showButtons="{!v.showButton}"
+                                sizeTable="200"
+                                readAllRecords="{!v.readRecords}"
+                                configTable="{!v.tableConfName}"
+                                nameClass="Arc_Gen_NAHACtrl"/>
+</aura:component>

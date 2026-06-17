@@ -1,0 +1,27 @@
+/*.buttonDisabled > a:link {
+    --slds-c-button-text-color-disabled: black !important;
+    color: black !important;
+    pointer-events: none !important;
+
+}*/
+
+th.buttonDisabled * > lightning-formatted-url > a {
+    color: black !important;
+    pointer-events: none !important;
+}
+
+.slds-icon-utility-close{
+    width: 0.5rem;
+    height: 0.5rem;
+    --sds-c-icon-color-foreground-default: red;
+}
+
+.slds-icon-utility-check{
+    width: 0.5rem;
+    height: 0.5rem;
+    --sds-c-icon-color-foreground-default: #49A54C !important;
+}
+
+.dynamicTable .slds-table_header-fixed_container, .slds-table--header-fixed_container {
+    overflow-x: hidden !important;
+}

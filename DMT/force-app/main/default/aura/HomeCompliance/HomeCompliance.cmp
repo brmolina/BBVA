@@ -1,0 +1,10 @@
+<aura:component implements="lightning:homeTemplate" description="Home Page with just one column">
+    <aura:attribute name="fullarea" type="Aura.Component[]" />
+    <div>
+        <lightning:layout >
+            <lightning:layoutItem size="12" >
+                {!v.fullarea}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+</aura:component>

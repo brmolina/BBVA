@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>iaso__Custom_Setting__c</field>
-        <value xsi:type="xsd:string">DMT_HPGR_Endpoint</value>
+        <value xsi:type="xsd:string">DMT_HPG_GetGroupPositions_INT</value>
     </values>
     <values>
         <field>iaso__Description__c</field>
@@ -52,7 +52,7 @@
     </values>
     <values>
         <field>iaso__Mock_LTA__c</field>
-        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;groupId&quot;:&quot;X00000000000001&quot;}</value>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;groupId&quot;:&quot;X00000000000001&quot;}}</value>
     </values>
     <values>
         <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>

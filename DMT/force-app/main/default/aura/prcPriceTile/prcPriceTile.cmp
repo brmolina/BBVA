@@ -1,0 +1,30 @@
+<!-- aura:component controller="PrcPriceMatrixBrowser_Ctrl" -->
+<aura:component>
+    <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+    <aura:attribute name="selected" type="boolean" access="public" default="false" />
+    <aura:attribute name="matrixAxis1" type="String" access="public" default="MARGIN" />
+    <aura:attribute name="matrixAxis2" type="String" access="public" default="TERM" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:registerEvent name="onPriceSelected" type="c:prcPriceSelected" />
+
+    <lightning:button aura:id="nonPaying" onclick="{!c.onPriceClick}" variant="neutral" class="{! (v.price.profitabilityMetrics[0].deal >= 12 ? 'bgBlue marginbutton ' : 'marginbutton ')}">
+        <div>
+            <div>
+
+                <h1 class="truncate">{#v.price.profitabilityMetrics[0].deal}%&nbsp;{#v.price.profitabilityMetrics[0].id}</h1>
+				<aura:if isTrue="{! and(v.matrixAxis1 == 'MARGIN' , v.matrixAxis2 == 'TERM')}">
+	                    <h1 class="truncate line-spacing-small text-grey2">MOnB:&nbsp;{#v.price.operations[0].currencyFactor}&nbsp;BP</h1>
+    	                <h1 class="truncate line-spacing-small text-grey3">MOffB:&nbsp;{#v.price.operations[0].regulatoryExpectedLoss}&nbsp;BP</h1>
+                <aura:set attribute="else">
+      					<h1 class="truncate line-spacing-small text-grey2">NAF:&nbsp;{#v.price.operations[0].netFundingCostInCash}&nbsp;PB</h1>
+                    	<h1 class="truncate line-spacing-small text-grey3">AF:&nbsp;{#v.price.operations[0].fundingDuration}&nbsp;PB</h1>
+    			</aura:set>
+  				</aura:if>
+
+                <h1 class="truncate text-black text-small">{#v.price.term.value}&nbsp;{#v.price.term.unit}</h1>
+            </div>
+        </div>
+    </lightning:button>
+
+</aura:component>

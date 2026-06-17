@@ -1,4 +1,4 @@
-global class DMT_DeleteConsolidateLineBatch implements Database.Batchable<SObject>, Database.Stateful {
+global without sharing class DMT_DeleteConsolidateLineBatch implements Database.Batchable<SObject>, Database.Stateful {
 
     global Database.QueryLocator start(Database.BatchableContext BC) {
 

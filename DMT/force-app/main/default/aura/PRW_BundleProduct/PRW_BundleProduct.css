@@ -1,0 +1,122 @@
+.THIS lightning-icon.colorIconActivate > lightning-primitive-icon > svg{
+    fill: #43BBF7;
+}
+
+.THIS button.colorButtonIcon > lightning-primitive-icon > svg{
+    fill: #43BBF7;
+}
+.THIS button.colorButtonWarning > lightning-primitive-icon > svg{
+    fill: #c9c200;
+}
+
+.THIS lightning-icon.colorIconNotActivate > lightning-primitive-icon > svg{
+    fill: #a2a2a2;
+    size: "large";
+}
+
+.THIS article.isBestClass{
+    border-style: solid;
+    border-color: #43BBF7;
+}
+
+.THIS article.isBestClassSelect{
+    border-style: solid;
+    border-color: #43BBF7;
+    border-width: initial;
+}
+
+.THIS article.isNotAvailable{
+    border-style: solid;
+    border-color: #c9c200;
+    border-width: initial;
+}
+
+.THIS article.isBundleSelect{
+    border-style: solid;
+    border-color: rgb(201, 201, 201);
+    border-width: initial;
+}
+
+.THIS lightning-datatable.tableHeader > div > div > div > table> thead > tr> th[aria-label="Q"] > lightning-primitive-header-factory > div > span{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.THIS lightning-datatable.tableRow > div > div > div > table> tbody > tr> td > lightning-primitive-cell-factory > span{
+    margin-right: 20px;
+}
+
+.THIS lightning-datatable.tableRowPreview > div > div > div > table> tbody > tr> td > lightning-primitive-cell-factory > span{
+    margin-right: 20px;
+    /* height: 10px; */
+}
+
+.THIS footer.addMargin > button > lightning-primitive-icon > svg{ 
+    padding: 0;
+    margin: 0.5rem;
+}
+
+.THIS div.bundleCLass {
+    border-bottom-color:#43BBF7;
+    background-color: #E0ECF8;
+}
+
+.THIS div.bundleClassNotSelected {
+    border-bottom-color:rgb(201, 201, 201);
+    background-color: #E6E6E6;
+}
+
+.THIS svg[data-key="edit"] {
+    opacity: 1 !important;
+    fill: #39A3F1;
+}
+
+.THIS table.rowClass tbody> tr > td{
+    background-color: white;
+}
+
+.THIS lightning-icon.iconEditClass > lightning-primitive-icon > svg{
+    height: 15px;
+    width: 17px;
+    margin-left: 5px;
+}
+
+.THIS lightning-input.cellInputClass > div > div > input{
+    background-color: rgb(250,255,189);
+}
+
+.THIS lightning-input.removeLabel > div > label{
+    display : none;
+}
+
+.THIS .colorEditCell{
+    background-color: rgb(250,255,189);
+}
+
+.THIS .buttonClass{
+    width: 18%;
+}
+
+.THIS .buttonCalculateClass{
+    margin-top: 5px;
+    margin-right: 8px;
+    height: 20px;
+    width: 65px;
+}
+
+.THIS lightning-button-icon.classDeleteRowButton > button{
+    width: 18px;
+    height: 24px;
+    margin-left: 15px;
+    border: white;
+}
+
+.THIS .slds-table .slds-row-number:after {
+    content: counter(none) !important ;
+    display: none !important ;
+}
+
+.THIS lightning-datatable.spanClass > div > div > div > table > thead > tr > th[aria-label="P"] > lightning-primitive-header-factory > div > span {
+    display: flex;
+    justify-content: flex-end;
+}

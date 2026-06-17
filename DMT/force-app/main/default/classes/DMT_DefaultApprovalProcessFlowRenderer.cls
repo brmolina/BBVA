@@ -7,7 +7,7 @@ public with sharing class DMT_DefaultApprovalProcessFlowRenderer implements DMT_
             List<DMT_Case_Steps_Controller.WRAPPER_Step> approvalFeatures = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
             List<DMT_Case_Steps_Controller.WRAPPER_Step> otherFeatures = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
             String table = '<div>'
-                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">APPROVAL PROCESS</h2>';
+                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Approval Process</h2>';
             for (DMT_Case_Steps_Controller.WRAPPER_Step feature : data.allsteps) {
                 String name = DMT_FormattingUtils.checkNull(feature?.featureName);
                 if (feature?.featureType == 'approval'  || feature?.featureType == null ) {
@@ -30,14 +30,14 @@ public with sharing class DMT_DefaultApprovalProcessFlowRenderer implements DMT_
                         + '<td colspan="8" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>' +feature?.featureName+ '</strong></td>'
                         + '</tr>'
                         + '<tr>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>APPROVER</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>TASK</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>STATUS</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>USER</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>START DATE</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>END DATE</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>RESULT</strong></td>'
-                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>COMMENTS</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Approver</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Task</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Status</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>User</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Start Date</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>End Date</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Result</strong></td>'
+                        + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>Comments</strong></td>'
 
                         + '</tr>';
                         if(feature.subitems.isEmpty()) {
@@ -110,8 +110,8 @@ public with sharing class DMT_DefaultApprovalProcessFlowRenderer implements DMT_
                 'threshold' => 35
             };
             
-            contentListApprovalProcess.add(DMT_Create_Pdf_Controller.createTitle('APPROVAL PROCESS'));
-            List<String> listHeaders = new List<String>{'APPROVER', 'TASK', 'STATUS', 'USER', 'START DATE', 'END DATE', 'RESULT','COMMENTS'};
+            contentListApprovalProcess.add(DMT_Create_Pdf_Controller.createTitle('Approval Process'));
+            List<String> listHeaders = new List<String>{'Approver', 'Task', 'Status', 'User', 'Start Date', 'End Date', 'Result','Comments'};
             List<DMT_Case_Steps_Controller.WRAPPER_Step> approvalFeatures = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
             for (DMT_Case_Steps_Controller.WRAPPER_Step feature : data.allsteps) {
                 String name = DMT_FormattingUtils.checkNull(feature?.featureName);
@@ -214,12 +214,12 @@ public with sharing class DMT_DefaultApprovalProcessFlowRenderer implements DMT_
                 }
             }
             componentApprovalProcess.put('content', contentListApprovalProcess);
-            componentApprovalProcess.put('name', 'APPROVAL PROCESS FLOW');
+            componentApprovalProcess.put('name', 'Approval Process Flow');
     
             return componentApprovalProcess;
         } catch (Exception e){
             System.debug('Error in DMT_DefaultApprovalProcessFlowRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultApprovalProcessFlowRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultApprovalProcessFlowRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Fields_From_Proposal_IP</fullName>
+    <active>true</active>
+    <description>Desde el estado Proposal, el campo % Expected Probability tienen que estar rellenos</description>
+    <errorConditionFormula>AND(
+	NOT( $Setup.CIB_Bypass__c.CIB_DES_DataMigration__c ),
+	RecordType.DeveloperName=&apos;Privileged_Opportunity&apos;,
+
+
+	OR(
+					ISPICKVAL(StageName,&apos;Approval&apos;),
+					ISPICKVAL(StageName,&apos;Ready to close&apos;),
+					ISPICKVAL(StageName,&apos;Closed Won&apos;),
+					ISPICKVAL(StageName,&apos;Closed Lost&apos;)),
+
+					ISBLANK(DES_Expected_Probability__c))</errorConditionFormula>
+    <errorMessage>Please check the Key Fields that are not completed:
+% Expected Probability or Booking Geography empty.
+It is necessary to fill them in order to advance the stage.</errorMessage>
+</ValidationRule>

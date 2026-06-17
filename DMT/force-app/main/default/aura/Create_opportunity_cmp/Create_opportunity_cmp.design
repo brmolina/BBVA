@@ -1,0 +1,16 @@
+<design:component>
+	<design:attribute name="disclosureVal" label="disclosureVal" />
+    <design:attribute name="form1Val" label="form1Val" />
+    <design:attribute name="form2Val" label="form2Val" />
+    <design:attribute name="nameVal" label="nameVal" />
+    <design:attribute name="descriptionVal" label="descriptionVal" />
+    <design:attribute name="bookingVal" label="bookingVal" />
+    <design:attribute name="countriesVal" label="countriesVal" />
+    <design:attribute name="currencyVal" label="currencyVal" />
+    <design:attribute name="closedateVal" label="closedateVal" />
+    <design:attribute name="probabilityVal" label="probabilityVal" />
+    <design:attribute name="clientName" label="clientName" />
+    <design:attribute name="clientOwner" label="clientOwner" />
+    <design:attribute name="clientCountry" label="clientCountry" />
+    <design:attribute name="mainParent" label="mainParent" />
+</design:component>

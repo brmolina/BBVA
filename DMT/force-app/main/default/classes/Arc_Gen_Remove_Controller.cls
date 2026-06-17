@@ -26,6 +26,7 @@ public with sharing class Arc_Gen_Remove_Controller {
     *@author otiliaramona.veres.contractor@bbva.com
     *@Date   Created:2021-04-30
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @TestVisible
     private Arc_Gen_Remove_Controller() { }
     /**
@@ -41,7 +42,8 @@ public with sharing class Arc_Gen_Remove_Controller {
     **/
   @AuraEnabled
   public static void updateRemoveInfo(Id recordId,String reasonPick, String reasonDesc, String reasonPickLabel) {
-    if (!arce.Arc_Gen_GenericUtilities.isButtonAvailable(recordId, 'Arc_Gen_Remove')) {
+    if (!arce.Arc_Gen_GenericUtilities.isButtonAvailable(recordId, 'Arc_Gen_Remove') &&
+        !arce.Arc_Gen_GenericUtilities.isButtonAvailable(recordId, 'Arc_Gen_Remove_2021RTC')) {
       throw new AuraHandledException(System.Label.Arc_Gen_Generic_ButtonNotAllowed);
     }
 

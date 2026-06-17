@@ -1,0 +1,118 @@
+<template>
+    <lightning-card title={cardTitle} icon-name={iconName}>
+        <div class="slds-p-horizontal_medium">
+
+            <template if:true={hasFields}>
+
+                <!-- Needed for lightning-input-field (lookup) -->
+                <lightning-record-edit-form
+                    record-id={recordId}
+                    object-api-name={objectApiName}>
+
+                    <template for:each={fieldsConfig} for:item="field">
+                        <template if:true={field.isVisible}>
+                            <div key={field.apiName} class="slds-m-bottom_small">
+
+                                <!-- READONLY (information mode) -->
+                                <template if:true={field.isReadOnly}>
+                                    <div class="slds-form-element slds-border_bottom">
+                                        <label class="slds-form-element__label">{field.displayLabel}</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="onb-readonly">
+                                                <lightning-formatted-text value={field.displayValue}></lightning-formatted-text>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- EDITABLE -->
+                                <template if:false={field.isReadOnly}>
+
+                                    <!-- LOOKUP (standard) -->
+                                    <template if:true={field.isLookup}>
+                                        <lightning-input-field
+                                            field-name={field.apiName}
+                                            variant="label-stacked"
+                                            data-field={field.apiName}
+                                            required={field.required}
+                                            disabled={field.disabled}
+                                            onchange={handleLookupChange}>
+                                        </lightning-input-field>
+                                    </template>
+
+                                    <!-- NOT LOOKUP -->
+                                    <template if:false={field.isLookup}>
+
+                                        <!-- PICKLIST -->
+                                        <template lwc:if={field.isPicklist}>
+                                            <lightning-combobox
+                                                name={field.apiName}
+                                                label={field.displayLabel}
+                                                value={field.value}
+                                                options={field.options}
+                                                data-field={field.apiName}
+                                                required={field.required}
+                                                disabled={field.disabled}
+                                                onchange={handlePicklistChange}>
+                                            </lightning-combobox>
+                                        </template>
+
+                                        <template lwc:elseif={field.isTextArea}>
+                                            <lightning-textarea
+                                                name={field.apiName}
+                                                label={field.displayLabel}
+                                                value={field.value}
+                                                data-field={field.apiName}
+                                                rows="1"
+                                                required={field.required}
+                                                disabled={field.disabled}
+                                                onblur={handleInputBlur}>
+                                            </lightning-textarea>
+                                        </template>
+
+                                        <!-- EMAIL -->
+                                        <template lwc:elseif={field.isEmail}>
+                                            <lightning-input
+                                                type="email"
+                                                name={field.apiName}
+                                                label={field.displayLabel}
+                                                value={field.value}
+                                                data-field={field.apiName}
+                                                required={field.required}
+                                                disabled={field.disabled}
+                                                maxlength={field.maxLength}
+                                                onblur={handleInputBlur}>
+                                            </lightning-input>
+                                        </template>
+
+
+                                        <!-- TEXT -->
+                                        <template lwc:else>
+                                            <lightning-input
+                                                name={field.apiName}
+                                                label={field.displayLabel}
+                                                value={field.value}
+                                                data-field={field.apiName}
+                                                required={field.required}
+                                                disabled={field.disabled}
+                                                maxlength={field.maxLength}
+                                                onblur={handleInputBlur}>
+                                            </lightning-input>
+                                        </template>
+
+                                    </template>
+                                </template>
+
+                            </div>
+                        </template>
+                    </template>
+
+                </lightning-record-edit-form>
+            </template>
+
+            <template if:false={hasFields}>
+                <p>{label.ONB_NO_FIELDS}</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

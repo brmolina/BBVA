@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_env_sustnbl_activity_name__c</fullName>
+    <label>Activity</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Acquisition and ownership</fullName>
+                <default>false</default>
+                <label>Acquisition and ownership</label>
+            </value>
+            <value>
+                <fullName>Afforestation</fullName>
+                <default>false</default>
+                <label>Afforestation</label>
+            </value>
+            <value>
+                <fullName>Agriculture &amp; Forestry</fullName>
+                <default>false</default>
+                <label>Agriculture &amp; Forestry</label>
+            </value>
+            <value>
+                <fullName>Anaerobic digestion of bio-waste</fullName>
+                <default>false</default>
+                <label>Anaerobic digestion of bio-waste</label>
+            </value>
+            <value>
+                <fullName>Anaerobic Digestion of Sewage sludge</fullName>
+                <default>false</default>
+                <label>Anaerobic Digestion of Sewage sludge</label>
+            </value>
+            <value>
+                <fullName>Bioenergy</fullName>
+                <default>false</default>
+                <label>Bioenergy</label>
+            </value>
+            <value>
+                <fullName>Building renovation</fullName>
+                <default>false</default>
+                <label>Building renovation</label>
+            </value>
+            <value>
+                <fullName>Capture of Anthropogenic Emissions</fullName>
+                <default>false</default>
+                <label>Capture of Anthropogenic Emissions</label>
+            </value>
+            <value>
+                <fullName>Centralized Wastewater treatment systems</fullName>
+                <default>false</default>
+                <label>Centralized Wastewater treatment systems</label>
+            </value>
+            <value>
+                <fullName>Cogener.Heat/cool &amp; Power from Bioenergy</fullName>
+                <default>false</default>
+                <label>Cogener.Heat/cool &amp; Power from Bioenergy</label>
+            </value>
+            <value>
+                <fullName>Cogeneration from Concentr.Solar Power</fullName>
+                <default>false</default>
+                <label>Cogeneration from Concentr.Solar Power</label>
+            </value>
+            <value>
+                <fullName>Cogeneration from Gas Combustion</fullName>
+                <default>false</default>
+                <label>Cogeneration from Gas Combustion</label>
+            </value>
+            <value>
+                <fullName>Cogeneration from Geothermal Energy</fullName>
+                <default>false</default>
+                <label>Cogeneration from Geothermal Energy</label>
+            </value>
+            <value>
+                <fullName>Collection and trans of non-risky waste</fullName>
+                <default>false</default>
+                <label>Collection and trans of non-risky waste</label>
+            </value>
+            <value>
+                <fullName>Composting of bio-waste</fullName>
+                <default>false</default>
+                <label>Composting of bio-waste</label>
+            </value>
+            <value>
+                <fullName>Concentrated Solar Power</fullName>
+                <default>false</default>
+                <label>Concentrated Solar Power</label>
+            </value>
+            <value>
+                <fullName>Conservation of forest</fullName>
+                <default>false</default>
+                <label>Conservation of forest</label>
+            </value>
+            <value>
+                <fullName>Construction, Real estate activities</fullName>
+                <default>false</default>
+                <label>Construction, Real estate activities</label>
+            </value>
+            <value>
+                <fullName>Construction of new buildings</fullName>
+                <default>false</default>
+                <label>Construction of new buildings</label>
+            </value>
+            <value>
+                <fullName>Construction of water projects</fullName>
+                <default>false</default>
+                <label>Construction of water projects</label>
+            </value>
+            <value>
+                <fullName>Data-driven solution</fullName>
+                <default>false</default>
+                <label>Data-driven solution</label>
+            </value>
+            <value>
+                <fullName>Data processing and hosting</fullName>
+                <default>false</default>
+                <label>Data processing and hosting</label>
+            </value>
+            <value>
+                <fullName>Direct Air Capture of CO2</fullName>
+                <default>false</default>
+                <label>Direct Air Capture of CO2</label>
+            </value>
+            <value>
+                <fullName>District Heating/Cooling Distribution</fullName>
+                <default>false</default>
+                <label>District Heating/Cooling Distribution</label>
+            </value>
+            <value>
+                <fullName>Electr., gas, steam &amp; air condit. supply</fullName>
+                <default>false</default>
+                <label>Electr., gas, steam &amp; air condit. supply</label>
+            </value>
+            <value>
+                <fullName>Existing forest management</fullName>
+                <default>false</default>
+                <label>Existing forest management</label>
+            </value>
+            <value>
+                <fullName>Freight Rail Transport</fullName>
+                <default>false</default>
+                <label>Freight Rail Transport</label>
+            </value>
+            <value>
+                <fullName>Freight transport services by road</fullName>
+                <default>false</default>
+                <label>Freight transport services by road</label>
+            </value>
+            <value>
+                <fullName>Gas Combustion</fullName>
+                <default>false</default>
+                <label>Gas Combustion</label>
+            </value>
+            <value>
+                <fullName>Geothermal</fullName>
+                <default>false</default>
+                <label>Geothermal</label>
+            </value>
+            <value>
+                <fullName>Growing of non-perennial crops</fullName>
+                <default>false</default>
+                <label>Growing of non-perennial crops</label>
+            </value>
+            <value>
+                <fullName>Growing of perennial crops</fullName>
+                <default>false</default>
+                <label>Growing of perennial crops</label>
+            </value>
+            <value>
+                <fullName>Heat/cool from Concentrated SolarPower</fullName>
+                <default>false</default>
+                <label>Heat/cool from Concentrated SolarPower</label>
+            </value>
+            <value>
+                <fullName>Hydropower</fullName>
+                <default>false</default>
+                <label>Hydropower</label>
+            </value>
+            <value>
+                <fullName>Individual measures &amp;profess. services</fullName>
+                <default>false</default>
+                <label>Individual measures &amp;profess. services</label>
+            </value>
+            <value>
+                <fullName>Information and Communications</fullName>
+                <default>false</default>
+                <label>Information and Communications</label>
+            </value>
+            <value>
+                <fullName>Infrastructure for low carbon transport</fullName>
+                <default>false</default>
+                <label>Infrastructure for low carbon transport</label>
+            </value>
+            <value>
+                <fullName>Inland freight water transport</fullName>
+                <default>false</default>
+                <label>Inland freight water transport</label>
+            </value>
+            <value>
+                <fullName>Inland passenger water transport</fullName>
+                <default>false</default>
+                <label>Inland passenger water transport</label>
+            </value>
+            <value>
+                <fullName>Install. &amp; operation Electric Heat Pumps</fullName>
+                <default>false</default>
+                <label>Install. &amp; operation Electric Heat Pumps</label>
+            </value>
+            <value>
+                <fullName>Interurban scheduled road transport</fullName>
+                <default>false</default>
+                <label>Interurban scheduled road transport</label>
+            </value>
+            <value>
+                <fullName>Landfill gas capture and utilization</fullName>
+                <default>false</default>
+                <label>Landfill gas capture and utilization</label>
+            </value>
+            <value>
+                <fullName>Livestock production</fullName>
+                <default>false</default>
+                <label>Livestock production</label>
+            </value>
+            <value>
+                <fullName>Manuf. of Biomasss, Biogas or Biofuels</fullName>
+                <default>false</default>
+                <label>Manuf. of Biomasss, Biogas or Biofuels</label>
+            </value>
+            <value>
+                <fullName>Manuf. of fertilizers&amp;nitrogen compounds</fullName>
+                <default>false</default>
+                <label>Manuf. of fertilizers&amp;nitrogen compounds</label>
+            </value>
+            <value>
+                <fullName>Manuf.of other inorganic basic chemicals</fullName>
+                <default>false</default>
+                <label>Manuf.of other inorganic basic chemicals</label>
+            </value>
+            <value>
+                <fullName>Manuf. of other organic basic chemicals</fullName>
+                <default>false</default>
+                <label>Manuf. of other organic basic chemicals</label>
+            </value>
+            <value>
+                <fullName>Manuf. products,components &amp; machinery</fullName>
+                <default>false</default>
+                <label>Manuf. products,components &amp; machinery</label>
+            </value>
+            <value>
+                <fullName>Manuf. products for energy effic. equip.</fullName>
+                <default>false</default>
+                <label>Manuf. products for energy effic. equip.</label>
+            </value>
+            <value>
+                <fullName>Manuf. vehicles, fleets and vessels</fullName>
+                <default>false</default>
+                <label>Manuf. vehicles, fleets and vessels</label>
+            </value>
+            <value>
+                <fullName>Manufacture of Aluminium</fullName>
+                <default>false</default>
+                <label>Manufacture of Aluminium</label>
+            </value>
+            <value>
+                <fullName>Manufacture of Cement</fullName>
+                <default>false</default>
+                <label>Manufacture of Cement</label>
+            </value>
+            <value>
+                <fullName>Manufacture of Hydrogen</fullName>
+                <default>false</default>
+                <label>Manufacture of Hydrogen</label>
+            </value>
+            <value>
+                <fullName>Manufacture of Iron and Steel</fullName>
+                <default>false</default>
+                <label>Manufacture of Iron and Steel</label>
+            </value>
+            <value>
+                <fullName>Manufacture of plastics in primary form</fullName>
+                <default>false</default>
+                <label>Manufacture of plastics in primary form</label>
+            </value>
+            <value>
+                <fullName>Manufacturing</fullName>
+                <default>false</default>
+                <label>Manufacturing</label>
+            </value>
+            <value>
+                <fullName>Material recovery from non-risky waste</fullName>
+                <default>false</default>
+                <label>Material recovery from non-risky waste</label>
+            </value>
+            <value>
+                <fullName>Ocean Energy</fullName>
+                <default>false</default>
+                <label>Ocean Energy</label>
+            </value>
+            <value>
+                <fullName>On and offshore wind energy</fullName>
+                <default>false</default>
+                <label>On and offshore wind energy</label>
+            </value>
+            <value>
+                <fullName>Passenger cars and commercial vehicles</fullName>
+                <default>false</default>
+                <label>Passenger cars and commercial vehicles</label>
+            </value>
+            <value>
+                <fullName>Passenger rail transport (interurban)</fullName>
+                <default>false</default>
+                <label>Passenger rail transport (interurban)</label>
+            </value>
+            <value>
+                <fullName>Permanent Sequestration of captured CO2</fullName>
+                <default>false</default>
+                <label>Permanent Sequestration of captured CO2</label>
+            </value>
+            <value>
+                <fullName>Product. Heat/cool from Gas Combustion</fullName>
+                <default>false</default>
+                <label>Product. Heat/cool from Gas Combustion</label>
+            </value>
+            <value>
+                <fullName>Production of Heat/cool from Bioenergy</fullName>
+                <default>false</default>
+                <label>Production of Heat/cool from Bioenergy</label>
+            </value>
+            <value>
+                <fullName>Production of Heat/cool from Geothermal</fullName>
+                <default>false</default>
+                <label>Production of Heat/cool from Geothermal</label>
+            </value>
+            <value>
+                <fullName>Production of Heat/cool using Waste Heat</fullName>
+                <default>false</default>
+                <label>Production of Heat/cool using Waste Heat</label>
+            </value>
+            <value>
+                <fullName>Public transport</fullName>
+                <default>false</default>
+                <label>Public transport</label>
+            </value>
+            <value>
+                <fullName>Reforestation</fullName>
+                <default>false</default>
+                <label>Reforestation</label>
+            </value>
+            <value>
+                <fullName>Rehabilitation, Restoration</fullName>
+                <default>false</default>
+                <label>Rehabilitation, Restoration</label>
+            </value>
+            <value>
+                <fullName>Retrofit Gas Transm. &amp; Distrib. Networks</fullName>
+                <default>false</default>
+                <label>Retrofit Gas Transm. &amp; Distrib. Networks</label>
+            </value>
+            <value>
+                <fullName>Solar Photovoltaic</fullName>
+                <default>false</default>
+                <label>Solar Photovoltaic</label>
+            </value>
+            <value>
+                <fullName>Storage of Energy</fullName>
+                <default>false</default>
+                <label>Storage of Energy</label>
+            </value>
+            <value>
+                <fullName>Storage of Hydrogen</fullName>
+                <default>false</default>
+                <label>Storage of Hydrogen</label>
+            </value>
+            <value>
+                <fullName>Storage of Thermal Energy</fullName>
+                <default>false</default>
+                <label>Storage of Thermal Energy</label>
+            </value>
+            <value>
+                <fullName>Transmission and Distrib. of Electricity</fullName>
+                <default>false</default>
+                <label>Transmission and Distrib. of Electricity</label>
+            </value>
+            <value>
+                <fullName>Transportation and storage</fullName>
+                <default>false</default>
+                <label>Transportation and storage</label>
+            </value>
+            <value>
+                <fullName>Transport of CO2</fullName>
+                <default>false</default>
+                <label>Transport of CO2</label>
+            </value>
+            <value>
+                <fullName>Unknown</fullName>
+                <default>false</default>
+                <label>Unknown</label>
+            </value>
+            <value>
+                <fullName>Water, sewerage, waste and remediation</fullName>
+                <default>false</default>
+                <label>Water, sewerage, waste and remediation</label>
+            </value>
+            <value>
+                <fullName>Water collection, treatment and supply</fullName>
+                <default>false</default>
+                <label>Water collection, treatment and supply</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>8</visibleLines>
+</CustomField>

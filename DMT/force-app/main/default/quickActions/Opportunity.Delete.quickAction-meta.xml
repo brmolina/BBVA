@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Delete opp para IP</description>
+    <flowDefinition>DES_Delete_Opportunity</flowDefinition>
+    <icon>Trash</icon>
+    <label>Delete</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

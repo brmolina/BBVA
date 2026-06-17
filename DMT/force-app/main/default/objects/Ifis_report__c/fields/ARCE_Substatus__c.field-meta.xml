@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ARCE_Substatus__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(Account_has_Analysis__r.arce__Analysis__r.arce__wf_status_id__c, &apos;14&apos;), &apos;14&apos;, &apos;Ongoing&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>ARCE Substatus</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

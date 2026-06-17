@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Amount__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( !ISBLANK(opportunity_id__c), TEXT(opportunity_id__r.DMT_CUR_Notional_Amount__c) ,
+    IF(!ISBLANK(DMT_Line__c ) &amp;&amp; DMT_Line__r.Product__c =&quot;Treasury Line&quot;,
+							&quot;DVP &quot; &amp; TEXT(ROUND(DMT_Line__r.DvP_Amount_Number__c, 3)) &amp; &quot; &quot; &amp; 
+       TEXT(DMT_Line__r.CurrencyIsoCode) &amp; &quot;, FD &quot; &amp; TEXT(ROUND(DMT_Line__r.FD_Amount_Number__c, 3)) &amp; &quot; &quot; &amp; 
+       TEXT(DMT_Line__r.CurrencyIsoCode) &amp; &quot;, Derivatives &quot; &amp; TEXT(ROUND(DMT_Line__r.DMT_DerivativesAmount_Number__c, 2)) &amp; &quot; &quot; &amp; 
+       TEXT(DMT_Line__r.CurrencyIsoCode), DMT_Line__r.g_limit_last_level_type__c &amp; &quot; - &quot; &amp; TEXT(ROUND(DMT_Line__r.Amount__c, 2)) &amp; &quot; &quot; &amp; 
+       TEXT(DMT_Line__r.CurrencyIsoCode)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total Amount L/O</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

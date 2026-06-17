@@ -19,7 +19,24 @@ public with sharing class DMT_CommercialProcessDataRenderer implements DMT_ViewR
             if (renderer == null) {
                 throw new IllegalArgumentException('No Commercial Process renderer for record type Id: ' + data.recordTypeId);
             }
-            return renderer.renderHtml(data);
+            String html = '<div>'
+                + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Commercial Process Data</h2>'
+                + '</div>';
+
+            html += renderer.renderHtml(data);
+
+            if (data.opportunity != null && data.opportunity.CloseDate != null) {
+                List<DMT_FormattingUtils.DisplayField> fieldsToRender = new List<DMT_FormattingUtils.DisplayField>{
+                    new DMT_FormattingUtils.DisplayField('Estimated Closing Date', DMT_FormattingUtils.checkNull(data.opportunity.CloseDate))
+                };
+
+                html += '<div class="slds-scope">'
+                    + DMT_FormattingUtils.generateHtmlTable(fieldsToRender)
+                    + '</div>'
+                    + '</br></br>';
+            }
+
+            return html;
         } catch (Exception e) {
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';

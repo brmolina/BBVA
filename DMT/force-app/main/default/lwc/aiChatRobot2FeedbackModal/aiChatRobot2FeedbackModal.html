@@ -1,0 +1,168 @@
+<!--
+  @description       : 
+  @author            : Javier Setién Rivas - [javier_setien@epamneoris.com]
+  @group             : 
+  @last modified on  : 20-03-2026
+  @last modified by  : Javier Setién Rivas - [javier_setien@epamneoris.com]
+  Modifications Log
+  Ver   Date         Author                                                 Modification
+  1.0   20-03-2026   Javier Setién Rivas - [javier_setien@epamneoris.com]   Initial Version
+-->
+<template>
+    <template if:true={isOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading" class="slds-text-heading_medium">
+                        {label.aiChatRobot2_Feedback_Title}
+                    </h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_small">
+                    <template if:true={isNegativeFeedback}>
+                        <p class="slds-m-bottom_x-small">{label.aiChatRobot2_Feedback_Question}</p>
+                        
+                        <!-- Feedback Options -->
+                        <div class="feedback-options">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-incorrect>
+                                        <input type="radio" 
+                                            id="radio-incorrect" 
+                                            name="feedback-reason" 
+                                            value="INCORRECT_INFORMATION"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Incorrect}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-unclear>
+                                        <input type="radio" 
+                                            id="radio-unclear" 
+                                            name="feedback-reason" 
+                                            value="UNCLEAR_RESPONSE"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Unclear}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-slow>
+                                        <input type="radio" 
+                                            id="radio-slow" 
+                                            name="feedback-reason" 
+                                            value="SLOW_RESPONSE"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Slow}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-irrelevant>
+                                        <input type="radio" 
+                                            id="radio-irrelevant" 
+                                            name="feedback-reason" 
+                                            value="IRRELEVANT_SOURCES"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Irrelevant}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-unjustified>
+                                        <input type="radio" 
+                                            id="radio-unjustified" 
+                                            name="feedback-reason" 
+                                            value="UNJUSTIFIED_FALLBACK"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Unjustified}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <label class="slds-radio" for:radio-other>
+                                        <input type="radio" 
+                                            id="radio-other" 
+                                            name="feedback-reason" 
+                                            value="OTHER"
+                                            onchange={handleReasonChange} />
+                                        <span class="slds-radio_faux"></span>
+                                        <span class="slds-form-element__label">{label.aiChatRobot2_Feedback_Other}</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Text input for OTHER option -->
+                            <template if:true={showOtherInput}>
+                                <div class="slds-form-element slds-m-top_x-small">
+                                    <label class="slds-form-element__label" for="other-reason">
+                                        {label.aiChatRobot2_Feedback_OtherPlaceholder}
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <textarea id="other-reason" 
+                                                class="slds-textarea" 
+                                                placeholder={label.aiChatRobot2_Feedback_OtherPlaceholder}
+                                                onchange={handleOtherReasonChange}
+                                                maxlength="255"
+                                                rows="3">{otherReason}</textarea>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                    <!-- Text input for POSITIVE DESCRIPTION option -->
+                    <template if:false={isNegativeFeedback}>
+                        <p class="slds-m-bottom_x-small">{label.aiChatRobot2_Feedback_PositiveQuestion}</p>
+                        
+                        <div class="slds-form-element slds-m-top_x-small">
+                            <label class="slds-form-element__label" for="positive-description">
+                                {label.aiChatRobot2_Feedback_PositiveDetailsPlaceholder}
+                            </label>
+                            <div class="slds-form-element__control">
+                                <textarea id="positive-description" 
+                                        class="slds-textarea" 
+                                        placeholder={label.aiChatRobot2_Feedback_PositiveDetailsPlaceholder}
+                                        onchange={handlePositiveDescriptionChange}
+                                        maxlength="255"
+                                        rows="3">{otherReason}</textarea>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={handleCancel} disabled={isLoading}>
+                        {label.aiChatRobot2_Feedback_Cancel}
+                    </button>
+                    <button class="slds-button slds-button_brand" onclick={handleSend} disabled={isSendDisabled}>
+                        <template if:true={isLoading}>
+                            <lightning-spinner alternative-text="Enviando..." size="small"></lightning-spinner>
+                        </template>
+                        <template if:false={isLoading}>
+                            {label.aiChatRobot2_Feedback_Send}
+                        </template>
+                    </button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

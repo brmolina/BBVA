@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_virtual_cmtee_supp_ind_type__c</fullName>
+    <label>Member Decision</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>-</fullName>
+                <default>true</default>
+                <label>-</label>
+            </value>
+            <value>
+                <fullName>Non Supportive</fullName>
+                <default>false</default>
+                <label>Non Supportive</label>
+            </value>
+            <value>
+                <fullName>Supportive</fullName>
+                <default>false</default>
+                <label>Supportive</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

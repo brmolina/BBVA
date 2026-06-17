@@ -1,0 +1,18 @@
+<aura:component implements="flexipage:availableForAllPageTypes" controller="InttCmpApexController" access="global">
+	<aura:handler name="init" action="{!c.getReportToShow}" value="{!this}"/>
+       
+    <aura:attribute name="Creator" type="Boolean"/>
+    <aura:attribute name="Participants" type="Boolean"/>
+    <aura:attribute name="Banker" type="Boolean"/>
+    <aura:attribute name="reportsToShow" type="String[]"/>
+    
+    <aura:handler name="change" action="{!c.getReportToShow}" value="{!v.Creator}"/>
+    <aura:handler name="change" action="{!c.getReportToShow}" value="{!v.Participants}"/>
+    <aura:handler name="change" action="{!c.getReportToShow}" value="{!v.Banker}"/>
+    
+    <aura:iteration items="{!v.reportsToShow}" var="report">
+        <c:ReportContainer reportDevAttribute="{!report}"/>
+    </aura:iteration>
+    
+    
+</aura:component>

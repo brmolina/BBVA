@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>incidence_type__c</fullName>
+    <label>Typology</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Liquidación Intereses</fullName>
+                <default>false</default>
+                <label>Liquidación Intereses</label>
+            </value>
+            <value>
+                <fullName>Comisión erronea</fullName>
+                <default>false</default>
+                <label>Comisión erronea</label>
+            </value>
+            <value>
+                <fullName>Ajuste valor</fullName>
+                <default>false</default>
+                <label>Ajuste valor</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <label>Otros</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

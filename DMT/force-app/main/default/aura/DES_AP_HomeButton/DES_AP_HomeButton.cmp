@@ -1,0 +1,71 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable"
+                access="global">
+    
+    <aura:attribute name="lpPicklist" type="String" default="Block AP" access="public"
+       description="Choose the button name: 'Lock AP', 'Unlock AP', 'Edit event date', 'Custom notification', 'Period edition type', 'Set form questions', 'Set Guidelines'" />
+    
+    <aura:attribute name="Lock_AP" type="Boolean" access="private" />
+    <aura:attribute name="Unlock_AP" type="Boolean" access="private" />
+    <aura:attribute name="Edit_event_date" type="Boolean" access="private" />
+    <aura:attribute name="Custom_notification" type="Boolean" access="private" />
+    <aura:attribute name="Period_edition_type" type="Boolean" access="private" />
+    <aura:attribute name="Set_form_questions" type="Boolean" access="private" />
+    <aura:attribute name="Delete_form_questions" type="Boolean" access="private" />
+    <aura:attribute name="Set_Guidelines" type="Boolean" access="private" />
+    
+    <aura:attribute name="divTitle" type="String" access="private" />
+    <aura:attribute name="actionDescription" type="String" access="private" />
+    <aura:attribute name="buttonName" type="String" access="private" />
+    <aura:attribute name="guidelinesResult" type="String" access="private" />
+    
+    <aura:attribute name="isOpen" type="Boolean" default="false" access="private"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-box ">
+        <aura:if isTrue="{!v.buttonName == 'hide lock unlock button'}">
+            In order to be able to lock or unlock the edition of Account Plans, you first have to set the appropriate configuration for it. You can do so by clicking on the button "Configure Date Settings".
+        <aura:set attribute="else">
+		<aura:if isTrue="{!v.buttonName == 'hide guidelines button'}">
+			In order to define the account plan Guidelines, you first have to set the appropriate configuration for it. You can do so by clicking on the button "Configure Date Settings".
+        <aura:set attribute="else">
+            <div class="slds-page-header__name-title">
+         	<h1>
+        		<span class="slds-page-header__title slds-truncate" title="{!v.divTitle}">
+                    {!v.divTitle}
+                </span>
+        		<br/>
+    	 	</h1>
+        	<div>
+                <div>{!v.actionDescription} <br/><br/></div>
+        		<lightning:button variant="brand" label="{!v.buttonName}" title="{!v.buttonName}" onclick="{!c.callFlow}" class="slds-align_absolute-center slds-is-static"/>
+            </div>
+    	</div>
+        </aura:set>
+        </aura:if>
+    	
+       </aura:set>
+       </aura:if>
+    </div>
+
+  <aura:if isTrue="{!v.isOpen}">
+          <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                  <header class="slds-modal__header">
+                      <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{! c.closeFlowModal }"
+                                            alternativeText="close"
+                                            variant="bare-inverse"
+                                            class="slds-modal__close"/>
+                      <h1 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.divTitle}</h1>
+                  </header>
+                  <div class="slds-modal__content slds-p-around_medium">
+                      <lightning:flow aura:id="flowName" onstatuschange="{!c.closeModalOnFinish}" />
+                  </div>
+              </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+
+	
+</aura:component>

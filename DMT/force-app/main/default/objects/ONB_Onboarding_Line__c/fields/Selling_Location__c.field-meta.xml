@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Selling_Location__c</fullName>
+    <label>Selling Location</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>BBVA Argentina</fullName>
+                <default>false</default>
+                <label>BBVA Argentina</label>
+            </value>
+            <value>
+                <fullName>BBVA Colombia</fullName>
+                <default>false</default>
+                <label>BBVA Colombia</label>
+            </value>
+            <value>
+                <fullName>BBVA Mexico</fullName>
+                <default>false</default>
+                <label>BBVA Mexico</label>
+            </value>
+            <value>
+                <fullName>BBVA Peru</fullName>
+                <default>false</default>
+                <label>BBVA Peru</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Belgium</fullName>
+                <default>false</default>
+                <label>BBVA SA - Belgium</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - China</fullName>
+                <default>false</default>
+                <label>BBVA SA - China</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - France</fullName>
+                <default>false</default>
+                <label>BBVA SA - France</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Germany</fullName>
+                <default>false</default>
+                <label>BBVA SA - Germany</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Hong Kon</fullName>
+                <default>false</default>
+                <label>BBVA SA - Hong Kon</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Italy</fullName>
+                <default>false</default>
+                <label>BBVA SA - Italy</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Japan</fullName>
+                <default>false</default>
+                <label>BBVA SA - Japan</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Portugal</fullName>
+                <default>false</default>
+                <label>BBVA SA - Portugal</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Singapore</fullName>
+                <default>false</default>
+                <label>BBVA SA - Singapore</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Spain</fullName>
+                <default>false</default>
+                <label>BBVA SA - Spain</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - Taiwan</fullName>
+                <default>false</default>
+                <label>BBVA SA - Taiwan</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - United kingdom</fullName>
+                <default>false</default>
+                <label>BBVA SA - United kingdom</label>
+            </value>
+            <value>
+                <fullName>BBVA SA - United States of America</fullName>
+                <default>false</default>
+                <label>BBVA SA - United States of America</label>
+            </value>
+            <value>
+                <fullName>BBVA Switzerland</fullName>
+                <default>false</default>
+                <label>BBVA Switzerland</label>
+            </value>
+            <value>
+                <fullName>BBVA Uruguay</fullName>
+                <default>false</default>
+                <label>BBVA Uruguay</label>
+            </value>
+            <value>
+                <fullName>BBVA Venezuela</fullName>
+                <default>false</default>
+                <label>BBVA Venezuela</label>
+            </value>
+            <value>
+                <fullName>BSI</fullName>
+                <default>false</default>
+                <label>BSI</label>
+            </value>
+            <value>
+                <fullName>Garanti BBVA - Malta</fullName>
+                <default>false</default>
+                <label>Garanti BBVA - Malta</label>
+            </value>
+            <value>
+                <fullName>Garanti BBVA - Netherlands</fullName>
+                <default>false</default>
+                <label>Garanti BBVA - Netherlands</label>
+            </value>
+            <value>
+                <fullName>Garanti BBVA - Romania</fullName>
+                <default>false</default>
+                <label>Garanti BBVA - Romania</label>
+            </value>
+            <value>
+                <fullName>Garanti BBVA - Turkey</fullName>
+                <default>false</default>
+                <label>Garanti BBVA - Turkey</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>emir_repapering_type__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Concatenar los valores de Emir Repapering de todas las contrapartidas relacionadas con el Cliente. Evitar duplicados. Separador de la concatenación la coma (,).</description>
+    <label>EMIR Repapering</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

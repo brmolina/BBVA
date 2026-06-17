@@ -1,0 +1,108 @@
+<!--
+  @Component Name     : Arc_Gen_NewRaipCorp.cmp
+  @Description        : Wizard for the creation of a new RAIP for Corporate.
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : saimassimilianno.jordana.contractor@bbva.com
+  @Last Modified On   : 04-04-2022
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    04/04/2020                  ARCE TEAM     		        Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" controller="Arc_Gen_RatingAsIndepProcess_controller" >
+
+    <!-- attributes -->
+    <aura:attribute name="recordId" type="String" default="{!v.recordId}" description="Standard id of the current record" access="global"/>
+    <aura:attribute name="arceIdToResume" type="String" default="" description="Salesforce ID of the ARCE to resume" />
+    <aura:attribute name="actualClient" type="Object" access="public" description="Account record of the actual client"/>
+    <aura:attribute name="customerId" type="String" access="public" description="Standard id of the object Account"/>
+    <aura:attribute name="profilingSet" type="String"/>
+    <aura:attribute name="renovationFind" type="Boolean" description="Indicates if there is a renovation in progress" default="true"/>
+    <aura:attribute name="existentAnalysis" type="Boolean" description="Indicates if there is a previous analysis"/>
+    <aura:attribute name="accHasAnalysisId" type="String" access="public" description="Standard Id of the object arce__Account_has_Analysis__c"/>
+    <aura:attribute name="clientNumber" type="String" description="Number of the client account"/>
+    <aura:attribute name="analysisId" type="String" access="public" description="Standard Id of the object arce__Analysis__c"/>
+    <aura:attribute name="currentStep" type="String" description="Indicates the current step of the modal"/>
+    <aura:attribute name="initialized" type="Boolean" default="false" description="Indicates if the component is initialized"/>
+    <aura:attribute name="options" type="List" access="global" default="[{'label':'Rating','value':'IRP'},{'label':'Adjustment','value':'ARP'},{'label':'Override','value':'CRP'}]"/>
+    <aura:attribute name="optionsMdls" type="List"/>
+    <aura:attribute name="RAIPSelectComboValue" type="String" default="IRP"/>
+    <aura:attribute name="modlSlctd" type="String" default="2021RTC"/>
+    <aura:attribute name="submodlSlctd" type="String"/>
+    <aura:attribute name="ratingTool" type="String" description="Rating tool"/>
+    <aura:attribute name="IRPRarRatingTool" type="String"/>
+    <aura:attribute name="isDisabled" type="Boolean" default ="false" description=""/>
+    <aura:attribute name="ffssValid" type="Boolean" description="indiates if the ffss is valid to calculate a rating"/>
+    <aura:attribute name="ratingType" type="String" default="Rating" description="Indicates if the raip is a rating or a prerating"/>
+    <aura:attribute name="rtngToolType" type="String" default="TOOL" description="rating tool type selected"/>
+    <aura:attribute name="irpTypeSlctd" type="String"/>
+    <aura:attribute name="typeSelected" type="String" description="Type of analysis selected in newModal"/>
+    <aura:attribute name="warningEEFF" type="List" />
+    <aura:attribute name="formDataMap" type="Map" default="{}" description="" access="global"/>
+    <aura:attribute name="loading" default="true"  type="Boolean" description="" access="global"/>
+    <aura:attribute name="modelOptions" type="Map" description="Map with available models." />
+    <aura:attribute name="selectedRows2" type="List"   description="Second List of the rows selected"/>
+    <aura:attribute name="acctList" type="arce__Financial_Statements__c[]" description="List of the obtained FFSS with labels translated"/>
+    <aura:attribute name="isFinancialRAIP" default="false" type="Boolean" description="Allows to select up to 2 FFSS more"/>
+    <aura:attribute name="fsServiceId" type="String" description="Id of the valid financial statement that retrieve the service of financial statements"/>
+    <aura:attribute name="msgTable" type="String" description="If yes, the balance tables were updated successfully" access="global"/>
+    <aura:attribute name="errorMsgTable" type="String" description="Display errors from FROM ratios WS"  access="global"/>
+    <aura:attribute name="errorMessage" type="String" access="global"/>
+    <aura:attribute name="dataCorp" type="object" />
+    <aura:attribute name="corpRenewal" type="String" />
+    <aura:attribute name="isSalesCall" type="Boolean" default="false"  description="indiates if the the sales service is OK" />
+
+    <!-- handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="ffssSelectionEvent" event="c:Arc_Gen_RAIP_SelectFFSS_evt" action="{!c.handleFfssSelection}" />
+    <aura:handler name="change" value="{!v.RAIPSelectComboValue}" action="{!c.handleIRPTypeChange}"/>
+    <aura:handler name="change" value="{!v.IRPRarRatingTool}" action="{!c.handleIRPTypeChange}"/>
+
+    <!-- external methods-->
+    <aura:method name="onNext" action="{!c.handleNext}" />
+
+    <!-- Events -->
+    <aura:registerEvent name="wizardEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+    <aura:registerEvent name="updateBlances" type="c:Arc_Gen_RAIP_UpdateBalances_evt"/>
+
+    <!-- EMP API component -->
+    <aura:attribute name="subscription" type="Map"/>
+    <aura:attribute name="notifications" type="List" default='[]'/>
+    <aura:attribute name="channel" type="String" default="/event/arce__persistanceCallbackEvent__e" />
+    <lightning:empApi aura:id="empApi" />
+
+    <aura:if isTrue="{!!v.loading}">
+        <aura:if isTrue="{!v.initialized}">
+
+            <!-- suggestedFlow cmp -->
+            <aura:if isTrue="{!v.currentStep == 'suggestedFlow'}">
+                <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                    <arce:Arc_Gen_FlowSuggested formDataMap="{!v.formDataMap}" isIfis="false" modelOptions="{!v.modelOptions}"/>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.currentStep == 'renovationRTC'}">
+                <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                    <c:Arc_Gen_CorpRenewal data="{!v.dataCorp}" isRenew="{!v.corpRenewal}" />
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.currentStep == 'irpselector'}">
+                <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                    <c:Arc_Gen_IRPTypeSelector optionsWF="{!v.options}" processSelected="{!v.RAIPSelectComboValue}" model="{!v.formDataMap.arce__RAR_rating_tool_id__c}" rarRtngSelected="{!v.IRPRarRatingTool}" isDisabled="{!v.isDisabled}" />
+                </div>
+            </aura:if>
+
+            <!-- Explicit Guarantee Selector cmp -->
+            <aura:if isTrue="{!v.currentStep == 'explicitGuaranteeselector'}">
+                <div class="slds-col slds-size_1-of-1 slds-p-around_small slds-m-around_none">
+                </div>
+            </aura:if>
+        </aura:if>
+        <aura:set attribute="else">
+            <div class="slds-is-relative slds-var-p-vertical_x-large spinner-container">
+                <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

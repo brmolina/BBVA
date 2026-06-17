@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Notify_meeting_changed_peru__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(visit_status_type__c,&quot;03&quot;),(IMAGE(&quot;/resource/bbva_icon_alert&quot;,&quot;Recuerda pulsar click en &apos;Crear / Actualizar visita&apos; para sincronizar el calendario del contacto seleccionado.&quot;,24,24)),&quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Notify meeting changed</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

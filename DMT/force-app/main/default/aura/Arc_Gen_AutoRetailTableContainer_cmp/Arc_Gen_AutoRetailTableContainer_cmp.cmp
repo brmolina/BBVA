@@ -1,0 +1,50 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_AutoRetailBehaviorTable_Ctrl">
+
+    <!-- Attributes -->
+    <aura:attribute name="hasRecordId"    type="String"  access="global" default="{!v.recorId}" description="Standard record Id"                       />
+    <aura:attribute name="tableType"      type="String"  access="global" default="default"      description="1 -> New, 2 -> Semi-New"                  />
+    <aura:attribute name="tableTitle"     type="String"  access="global" default="default"      description="Text with the title of the table"         />
+    <aura:attribute name="year1"          type="String"  access="global" default="default"      description="Input Year 1"                             />
+    <aura:attribute name="year2"          type="String"  access="global" default="default"      description="Input Year 2"                             />
+    <aura:attribute name="insert"         type="boolean" access="global" default="true"         description="Boolean value to enable/disable insert"   />
+    <aura:attribute name="edit"           type="boolean" access="global" default="true"         description="Boolean value to enable/disable edit"     />
+    <aura:attribute name="delete"         type="boolean" access="global" default="true"         description="Boolean value to enable/disable delete"   />
+    <aura:attribute name="tableIsVisible" type="boolean" access="global" default="false"        description="Indicates if the table is visible or not" />
+    <aura:attribute name="options"        type="List"    access="global" default="[]"           description="List of years to select"                  />
+    <aura:attribute name="selectedValue"  type="String"  access="global" default=""             description="Indicates the selected year"              />
+    <aura:attribute name="disableButton"  type="Boolean" access="global" default="true"         description="Indicates if the button is available"     />
+    <aura:attribute name="permToEdit"     type="String"  access="global" default="true"         description="Indicates if the user has edit permission"/>
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler event="c:Arc_Gen_AutoRetailTable_evt" action="{!c.refreshButtonHandle}"/>
+
+    <div class="slds-text-align_left slds-text-heading--medium slds-m-bottom_small text-padding">
+        <span>{!v.tableTitle}</span>
+    </div>
+    <div style="width: 98%;">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-6">
+                <lightning:select name="yearSelect" label="{!$Label.c.Lc_arce_autoRetailTable_SelectYear}" aura:id="yearId" value="{!v.selectedValue}" onchange="{!c.yearOptionHandle}" disabled="{!v.permToEdit == 'false'}">
+                    <option value="0"></option>
+                    <aura:iteration items="{!v.options}" var="option">
+                        <option text="{!option.label}" value="{!option.id}" selected="{!option.selected}"/>
+                    </aura:iteration>
+                </lightning:select>
+            </div>
+            <div class="slds-col slds-size_1-of-6 ">
+                <div class="slds-p-top_large">
+                    <lightning:button variant="brand"
+                        label="{!$Label.c.Lc_arce_autoRetailTable_RefreshButton}"
+                        title="{!$Label.c.Lc_arce_autoRetailTable_RefreshButton}"
+                        onclick="{! c.refreshButtonHandle }"
+                        disabled="{!v.disableButton}"
+                    />
+                </div>
+            </div>
+        </div>
+        <br/>
+        <aura:if isTrue="{!v.tableIsVisible}">
+          <c:Arc_Gen_AutoRetailBehaviorTable_cmp accHasAnalysisId="{!v.recordId}" tableType="{!v.tableType}" year1="{!v.year1}" year2="{!v.year2}" edit="{!v.edit}" insert="{!v.insert}" delete="{!v.delete}" />
+        </aura:if>
+    </div>
+</aura:component>

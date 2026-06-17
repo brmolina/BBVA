@@ -1,0 +1,290 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 02-16-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+    controller="Arc_Gen_ProjectionController" access="global">
+    <aura:attribute name="acctList" type="arce__Financial_Statements__c[]"
+        description="List of the obtained FFSS with labels translated" />
+    <aura:attribute name="eeffData" type="arce__Financial_Statements__c[]"
+        description="List of the obtained FFSS with labels translated" />
+    <aura:attribute name="ffssList" type="arce__Financial_Statements__c[]" description="List of the obtained FFSS" />
+    <aura:attribute name="mycolumns" type="List" description="List of the table columns" />
+    <aura:attribute name="preSelectedRows" type="List" description="List of the rows pre-selected" />
+    <aura:attribute name="spinnerClone" type="Boolean" default="false" />
+    <aura:attribute name="selectedRows" type="List" description="List of the rows selected" />
+    <aura:attribute name="selectedRows2" type="List" description="Second List of the rows selected" />
+    <aura:attribute name="anchorEEFF" type="String" />
+    <aura:attribute name="ffssValid" type="String" description="If yes, the financial statement is valid" />
+    <aura:attribute name="msgTable" type="String" description="If yes, the balance tables were updated successfully" />
+    <aura:attribute name="ffssErrorMsg" type="String" default="" description="Display errors from FROM FFSS WS" />
+    <aura:attribute name="spinnerInfinite" type="Boolean" default="true" />
+    <aura:attribute name="ahaStageFin" type="Boolean" default="false" />
+    <aura:attribute name="accHasAnalysisId" type="String" default="{!v.recordId}" />
+    <aura:attribute name="currentPage" type="Integer" default="1" />
+    <aura:attribute name="infiniteFFSS" type="Boolean" default="true" />
+    <aura:attribute name="preValues" type="List" />
+    <aura:attribute name="dateFFSS" type="String" />
+    <aura:attribute name="typeFFSS" type="String" />
+    <aura:attribute name="adjustmentFFSS" type="String" />
+    <aura:attribute name="currency" type="String" />
+    <aura:attribute name="options" type="List" default="[
+        {'label': 'Base Case', 'value': 'BaseCase'},
+        {'label': 'Down', 'value': 'Down'},
+        {'label': 'Up', 'value': 'Up'}
+        ]" />
+    <aura:attribute name="disabledCriteria" type="Boolean" default="false" />
+    <aura:attribute name="simulationButton" type="Boolean" default="false" />
+    <aura:attribute name="caseBaseOption" type="String" />
+    <aura:attribute name="literalUnits" type="String"/>
+    <aura:attribute name="editBaseCase" type="List" default="[
+    {'label': 'Yes', 'value': 'Yes'},
+    {'label': 'No', 'value': 'No'}
+    ]" />
+    <aura:attribute name="projecCriteria" type="List" />
+    <aura:attribute name="valueBaseCase" type="String" default="No" />
+    <aura:attribute name="spinner" type="boolean" default="true" />
+    <aura:attribute name="criteriaValue" type="String" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="scenarioSimulation" type="String" />
+    <aura:attribute name="value" type="String" />
+    <aura:attribute name="tableOrder" type="String" />
+    <aura:attribute name="valueComment" type="String" />
+    <aura:attribute name="gridData" type="Object" />
+    <aura:attribute name="gridExpandedRows" type="List" access="PRIVATE" /> 
+    <aura:attribute name="dataKey" type="list" />
+    <aura:attribute name="columnsKey" type="List" />
+    <aura:attribute name="controlScenario" type="boolean" default="false" />
+    <aura:attribute name="setValuesEdited" type="Map" default="{}" />
+    <aura:attribute name="mapformatPer" type="Map" default="{}" />
+    <aura:attribute name="projectionCalculated" type="String" default="null" />
+    <aura:attribute name="disabledOptions" type="Boolean" default="false" />
+    <aura:attribute name="disabledOptionsUp" type="Boolean" default="false" />
+    <aura:attribute name="disabledOptionsDown" type="Boolean" default="false" />
+    <aura:attribute name="hideColumns" type="Boolean" default="true" />
+    <aura:attribute name="optionsCurrn" type="List"
+    default="[{'label': 'EUR', 'value': 'EUR'},{'label': 'USD', 'value': 'USD'},{'label': 'Original', 'value': 'Other'}]" />
+    <aura:attribute name="optionsUnits" type="List"
+        default="[{'label': 'Units', 'value': '1'},{'label': 'Thousands', 'value': '2'},{'label': 'Millions', 'value': '3'},{'label': 'Billions', 'value': '4'}]" />
+    <aura:attribute name="valueUnits" type="String" />
+    <aura:attribute name="valueUnitsReal" type="String" />
+    <aura:attribute name="errorsKeyTable" type="Object" />
+    <aura:attribute name="proposalFolderId" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.initEng}" description="Init variable" />
+
+    <aura:registerEvent name="ffssSelectionEvent" type="c:Arc_Gen_RAIP_SelectFFSS_evt" />
+    <aura:attribute name="isModalOpen" type="boolean" default="false" />
+    <aura:attribute name="bannerMessage" type="String"/>
+    <aura:attribute name="isBannerEnabled" type="boolean" default="false" />
+    <aura:attribute name="checkAhaStatus" type="boolean" default="true" access="global"/>
+    <aura:attribute name="userCanEdit" type="Boolean" access="global"/>
+    <aura:attribute name="disableAttribute" type="Boolean" access="global"/>
+    <aura:attribute name="isProposal" type="Boolean" default="false" access="global"/>
+    <aura:handler event="arce:Arc_Gen_Ratios_Calculator_evt" action="{!c.initEng}"/>
+
+    <aura:if isTrue="{!v.isBannerEnabled}">
+        <div aura:id="container" class="slds-theme_warning">
+            <div class="slds-box slds-box_x-small">
+                <p>
+                    <lightning:icon class="slds-m-left_x-small" variant="inverse" iconName="utility:notification" size="x-small" alternativeText="Warning" />
+                    <span class="slds-m-left_small">{!v.bannerMessage}</span>
+                </p>
+            </div>
+        </div>
+
+        <aura:set attribute="else">
+            <div class="slds-m-vertical_large">
+                <aura:if isTrue="{!or(!v.isProposal, and(v.isProposal,v.userCanEdit))}">
+                    <lightning:button variant="brand" label="Calculate Projections" title="Calculate Projections"
+                    onclick="{! c.openModel }" iconName="utility:table" disabled="{!v.ahaStageFin}" />
+                </aura:if>
+                <aura:if isTrue="{!v.spinner}">
+                    <lightning:spinner class="spins" size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+                <aura:if isTrue="{!and(v.projectionCalculated == 'Yes', v.proposalFolderId == undefined)}">
+                    <lightning:button class="slds-m-bottom_small slds-float_right slds-m-right_x-large" variant="brand"
+                    label="Print" title="" onclick="{!c.printTable}" iconName="utility:print" />
+                </aura:if>
+                <aura:if isTrue="{!v.isModalOpen}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }"
+                            alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                            <div id="modal-heading-01" class="slds-modal__title slds-hyphenate">Calculate Base Case</div>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <div class="slds-is-relative slds-m-bottom_small">
+                                <aura:if isTrue="{!or (v.spinnerInfinite == true, v.spinnerClone == true)}">  
+                                    <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+                                </aura:if>
+                                <div class="slds-card slds-card__header slds-grid">
+                                    <div class="modal-grid-container slds-grid slds-p-top_medium">
+                                        <lightning:datatable data="{!v.acctList}" columns="{!v.mycolumns}"
+                                        keyField="arce__financial_statement_id__c" maxRowSelection="3"
+                                        errors="{! v.errors}" showRowNumberColumn="false"
+                                        enableInfiniteLoading="{! v.infiniteFFSS }"
+                                        onrowselection="{! c.checkValiditySelection }"
+                                        selectedRows="{!v.selectedRows}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="{!v.msgTable == 'si' ? '':'slds-hide'}">
+                                <section role="log" class="slds-chat">
+                                    <ul class="slds-chat-list">
+                                        <li class="slds-chat-listitem slds-chat-listitem_event">
+                                            <div class="slds-chat-event" role="alert">
+                                                <div class="slds-chat-event__rule"></div>
+                                                <div class="slds-chat-event__body">
+                                                    <span class="slds-icon_container slds-icon-utility-error slds-chat-icon"
+                                                    title="{!v.ffssValid == 'no' ? '!$Label.c.Lc_arce_Warning' : '!$Label.c.Lc_arce_newAnalysisSuccess'}">
+                                                    <lightning:icon
+                                                        iconName="{!v.ffssValid == 'no' ? 'utility:warning' : 'utility:check'}"
+                                                        alternativeText="clear!"
+                                                        variant="{!v.ffssValid == 'no' ? 'Warning' : 'Success'}" />
+                                                    <span
+                                                    class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisSuccess}</span>
+                                                </span>
+                                            </div>
+                                            <div class="slds-chat-event__rule"></div>
+                                            <div class="slds-chat-event__agent-message">
+                                                {!$Label.c.Lc_arce_UpdatedTables}</div>
+
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </section>
+                            </div>
+                            <div class="{!v.ffssErrorMsg != '' ? '':'slds-hide'}">
+                                    <section role="log" class="slds-chat">
+                                        <ul class="slds-chat-list">
+                                            <li class="slds-chat-listitem slds-chat-listitem_event">
+                                                <div class="slds-chat-event slds-has-error" role="alert">
+                                                    <div class="slds-chat-event__rule"></div>
+                                                    <div class="slds-chat-event__body">
+                                                        <span class="slds-icon_container slds-icon-utility-error slds-chat-icon"
+                                                        title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                                        <lightning:icon iconName="utility:clear" alternativeText="clear!"
+                                                        variant="Error" />
+                                                    </span>
+                                                </div>
+                                                <div class="slds-chat-event__rule"></div>
+                                                <div class="slds-chat-event__agent-message">{!v.ffssErrorMsg}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </section>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button class="slds-float_left" variant="neutral" label="Cancel" title="Cancel"
+                            onclick="{! c.closeModel }" />
+                            <lightning:button class="slds-float_right" label="Calculate" title="Calculate"
+                            onclick="{!c.projectionEngine}" variant="brand" disabled="{!v.msgTable == 'si'}" />
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>
+            </div>
+            <div>
+                <aura:if isTrue="{!v.projectionCalculated == 'No'}">
+                    <div class="">
+                        <section role="log" class="slds-chat">
+                            <ul class="slds-chat-list">
+                                <li class="slds-chat-listitem slds-chat-listitem_event">
+                                    <div class="slds-chat-event" role="alert">
+                                        <div class="slds-chat-event__rule"></div>
+                                        <div class="slds-chat-event__body">
+                                            <span class="slds-icon_container slds-chat-icon">
+                                                <lightning:icon iconName="utility:list" variant="Warning" />
+                                            </span>
+                                        </div>
+                                        <div class="slds-chat-event__rule"></div>
+                                        <div class="slds-chat-event__agent-message">Projection no calculated</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.projectionCalculated =='Yes'}">
+                    <lightning:radioGroup name="radioButtonGroup" label="" options="{!v.options}"
+                    value="{!v.caseBaseOption}" type="button" onchange="{! c.scenarioChange }" />
+                    <div class="slds-m-bottom_x-large slds-m-top_xx-large">
+                    <lightning:treeGrid aura:id="treeGrid" columns="{!v.columns}" data="{!v.gridData}" keyField="0"
+                        expandedRows="{!v.gridExpandedRows}" hideCheckboxColumn="{!v.hideColumns}" />
+                    </div>
+                        
+                    <div>
+                        Key assumptions Table:
+                        <lightning:datatable keyField="id" data="{! v.dataKey}" columns="{!v.columnsKey}"
+                        hideCheckboxColumn="{!v.hideColumns}" suppressBottomBar="true" oncellchange="{!c.handleSaveEdition}"
+                        errors="{!v.errorsKeyTable}" />
+                    </div>
+                    <aura:if isTrue="{!v.caseBaseOption == 'BaseCase'}">
+                        <div class="c-container slds-m-top_large">
+                            <lightning:layout pullToBoundary="medium">
+                                <lightning:layoutItem padding="horizontal-medium">
+                                    <lightning:radioGroup name="radioGroup" label="Edit Base Case" options="{! v.editBaseCase }"
+                                    value="{! v.valueBaseCase }" onchange="{!c.caseBaseOptions}" type="button" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem padding="horizontal-medium" size="4">
+                                    <lightning:select aura:id="projecCriteria" name="projecCriteria" label="Projection criteria"
+                                    required="true" disabled="{!or(and(!v.isProposal, v.disabledCriteria), and(v.isProposal,or(v.disabledCriteria, v.disableAttribute)))}"
+                                    onchange="{!c.projectionCriteriaChange}" value="{!v.criteriaValue}">
+                                    <aura:iteration items="{!v.projecCriteria}" var="projecCriteria">
+                                        <option text="{!projecCriteria.label}" value="{!projecCriteria.value}"
+                                        disabled="{!projecCriteria.disabled}"
+                                        selected="{!projecCriteria.value == v.criteriaValue}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <aura:if isTrue="{!v.simulationButton}">
+                                    <lightning:layoutItem padding="horizontal-medium" size="4" class="slds-m-top_small">
+                                        <lightning:button iconName="utility:sort" variant="brand"
+                                            label="Base Case Scenario simulation" title="" onclick="{! c.editScenario }"
+                                            class="slds-m-left_x-small slds-m-top_small" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}"/>
+                                        </lightning:layoutItem>
+                                    </aura:if>
+                                </lightning:layout>
+                            </div>
+                            <p>
+                                <lightning:textarea name="input1" label="Base-case scenario (Assumptions)" maxlength="3000"
+                                value="{!v.valueComment}" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}"/>
+                            </p>
+                        </aura:if>
+                        <aura:if isTrue="{! or(v.caseBaseOption == 'Up',v.caseBaseOption == 'Down')}">
+                            <div class="slds-m-top_small slds-m-bottom_medium">
+                                <lightning:button iconName="utility:sort" variant="brand" label="{!v.scenarioSimulation}" title=""
+                                onclick="{! c.editScenario }" class="slds-align_absolute-center" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}"/>
+                            </div>
+                            <p>
+                                <lightning:textarea class="slds-align_absolute-center" name="input1" label="{!v.caseBaseOption+' Scenario Comment'}" maxlength="3000"
+                                value="{!v.valueComment}" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}" />
+                            </p>
+                        </aura:if>
+                        <aura:if
+                        isTrue="{! or(or(v.caseBaseOption == 'BaseCase',v.caseBaseOption == 'Down'),v.caseBaseOption == 'Up')}">
+                        <lightning:buttonIcon aura:id="saveEntry" iconName="utility:save" alternativeText="Save" size="large"
+                        variant="bare" onclick="{!c.saveComment}" tooltip="Save" disabled="{!or(and(!v.isProposal, v.ahaStageFin), and(v.isProposal,v.disableAttribute))}"/>
+                        <aura:if isTrue="{! v.valueComment != null}">
+                            <span class="slds-float_right">{!v.valueComment.length}/3000</span>
+                        </aura:if>
+                        <aura:if isTrue="{! v.valueComment == null}">
+                            <span class="slds-float_right">0/3000</span>
+                        </aura:if>
+                    </aura:if>
+                </aura:if>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

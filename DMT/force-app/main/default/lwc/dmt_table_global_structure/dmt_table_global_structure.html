@@ -6,7 +6,6 @@
                 showcopypaste={showcopypaste}
                 context="derivatives"
                 withoutformat ="true"
-                customstyle = 'font-variant: small-caps;'
             ></c-dmt_-table-header-section>
             <template lwc:if={isDataProcessed}>
                 <div class="slds-table_edit_container">
@@ -38,15 +37,17 @@
 
                                                     <div class="slds-p-around_none slds-col slds-size_1-of-3">
                                                         <template lwc:if={cell.isEditable}>
-                                                            <lightning-button-icon 
-                                                                icon-name="utility:edit" 
-                                                                class="edit-icon no-border" 
-                                                                alternative-text="Edit" 
-                                                                data-id={row.Id} 
-                                                                data-field={cell.field} 
-                                                                onclick={handleEditCell} 
-                                                                variant='bare'>
-                                                            </lightning-button-icon>
+                                                            <template lwc:if={isEditPencilEnabled}>
+                                                                <lightning-button-icon 
+                                                                    icon-name="utility:edit" 
+                                                                    class="edit-icon no-border" 
+                                                                    alternative-text="Edit" 
+                                                                    data-id={row.Id} 
+                                                                    data-field={cell.field} 
+                                                                    onclick={handleEditCell} 
+                                                                    variant='bare'>
+                                                                </lightning-button-icon>
+                                                            </template>
                                                         </template>
                                                     </div>
                                                 </template>

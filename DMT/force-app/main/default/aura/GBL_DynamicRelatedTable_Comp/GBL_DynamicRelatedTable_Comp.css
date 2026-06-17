@@ -1,0 +1,9 @@
+.THIS tr th {
+	background-color: #DEE5EE;
+	color: #43557A;
+	font-weight: bold;
+}
+
+.THIS tr:nth-child(2n+3) {
+    background-color: #FAFAFA;
+}

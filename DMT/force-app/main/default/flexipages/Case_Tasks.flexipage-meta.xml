@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>dmt_HideLightningHeader</componentName>
+                <identifier>c_dmt_HideLightningHeader</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>dmt_HideHeaderScroll</componentName>
+                <identifier>c_dmt_HideHeaderScroll</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>taskCategory</name>
+                    <value>inProgress</value>
+                </componentInstanceProperties>
+                <componentName>dmt_case_tasks_alternative</componentName>
+                <identifier>c_dmt_case_tasks_alternative</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>main</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <masterLabel>Case Tasks</masterLabel>
+    <template>
+        <name>flexipage:defaultAppHomeTemplate</name>
+    </template>
+    <type>AppPage</type>
+</FlexiPage>

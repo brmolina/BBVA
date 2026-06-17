@@ -1,0 +1,10 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="Arc_Gen_SyncPersistance_Controller">
+
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getAhaEvent}"/>
+    <aura:attribute name="view" type="Boolean" default="false" description="Indicator of message component visibility"/>
+    <aura:attribute name="accHasAnalysisId" type="String" description="Analyzed client record"/>
+
+    <aura:if isTrue="{!v.view}">
+        <c.Arc_Gen_PersistanceCallbackMessage_cmp accHasAnalysisId="{!v.accHasAnalysisId}"/>
+    </aura:if>
+</aura:component>

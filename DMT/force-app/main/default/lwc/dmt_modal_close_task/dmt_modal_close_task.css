@@ -1,0 +1,54 @@
+.slds-modal__container {
+    position: relative !important;
+    width: auto;
+    max-width: 45rem !important;
+    min-width: 35rem !important;
+}
+.modal-close-btn, .slds-modal__close{
+    position: absolute !important;
+    z-index: 1000;
+    top: 1rem !important;
+    right: 1rem !important;
+}
+.spinnerClass{
+    background: none;
+}
+
+.modal-error {
+    display: block;
+    margin: 0 1rem 1rem;
+    padding: 0.5rem 0.75rem;
+    white-space: normal;
+    border-left: 4px solid #ba0517;
+    border-radius: 0.125rem;
+    background-color: #fef1ee;
+    color: #ba0517;
+    font-weight: 600;
+}
+
+.toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.toggle-row {
+    display: grid;
+    grid-template-columns: 35rem auto; /* ancho fijo para labels */
+    align-items: center;
+    column-gap: 1rem;
+    padding-bottom: 10px;
+}
+
+.toggle-label {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.25rem;
+    padding-left: 24px;
+    text-align: left;
+}
+
+.toggle-input {
+    display: flex;
+    align-items: center;
+}

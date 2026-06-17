@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+                controller="DES_AP_OppSummaryInfoCnt" access="global" >
+    
+    <aura:attribute name="OpportunityInfo" type="String" default="WonLastYear" access="public"
+       description="Recoge la informacion que se quiere mostrar en la tabla" />
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="fieldLabels" type="String" access="public" Default="Avge. revenues by won opportunity,VS Last Year"/>
+    <aura:attribute name="fieldData" type="String" access="private"/>
+    <aura:attribute name="dataResult" type="Object[]" access="private"/>
+    <aura:attribute name="sumType" type="String" access="public" default="Query"/>
+    <aura:attribute name="configType" type="String" access="public" default="Totals"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+      <aura:iteration indexVar="x" items="{!v.dataResult}" var="fieldLabels">
+              <td class="slds-size_1-of-6">
+                <div><strong>{!fieldLabels.label}</strong></div>
+                <div>{!fieldLabels.value}</div>
+              </td>
+      </aura:iteration>
+    </table>
+    
+</aura:component>

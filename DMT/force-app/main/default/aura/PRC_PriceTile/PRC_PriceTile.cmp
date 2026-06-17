@@ -1,0 +1,101 @@
+<!-- aura:component controller="PrcPriceMatrixBrowser_Ctrl" -->
+<aura:component>
+  <aura:attribute name="selected" type="String" access="public" />
+  <!-- aura:attribute name="posIndex" type="Integer" access="public" / -->
+  <!-- aura:attribute name="matrixColumns" type="Integer" access="public" default="5"/ -->
+  <!-- aura:attribute name="selectedPriceId" type="Integer" access="public" default="13"/ -->
+  <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+  <aura:attribute
+    name="matrixAxis1"
+    type="String"
+    access="public"
+    default="MARGIN"
+  />
+  <aura:attribute
+    name="matrixAxis2"
+    type="String"
+    access="public"
+    default="TERM"
+  />
+  <!--
+    <aura:attribute name="truncatedcurrencyFactor" type ="String"/>
+    <aura:attribute name="truncatedregulatoryExpectedLoss" type="String" />
+    <aura:attribute name="truncatednetFundingCostInCash" type="String" />
+    <aura:attribute name="truncatedfundingDuration" type="String" />
+    <aura:attribute name="truncatedprofitabilitydeal" type="String" />
+    <aura:attribute name="truncatedtermvalue" type="String" />
+    -->
+  <aura:registerEvent name="onPriceSelected" type="c:PRC_PriceSelectedEvent" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <lightning:button
+    aura:id="buttomPrc"
+    onclick="{!c.onPriceClick}"
+    variant="neutral"
+    class="{! if(v.selected=='yes', (v.price.profitabilityMetrics[0].deal >= 12 ? 'selectedInit bgBlue buttonStyle pruebas' : 'selectedInit buttonStyle pruebas'), (v.price.profitabilityMetrics[0].deal >= 12 ? 'bgBlue buttonStyle pruebas' : 'buttonStyle pruebas'))}"
+  >
+    <div class="pruebass">
+      <div>
+        <h1 class="truncate">
+          <ui:outPutNumber
+            format="0.00"
+            value="{#v.price.profitabilityMetrics[0].deal}"
+          />%&nbsp;{#v.price.profitabilityMetrics[0].id}
+        </h1>
+        <!-- Si se añaden nuevas matrices habrá que completar otros if-else con la nueva lógica -->
+
+        <aura:if
+          isTrue="{! and(v.matrixAxis1 == 'MARGIN' , v.matrixAxis2 == 'TERM')}"
+        >
+          <h1 class="truncate line-spacing-small text-grey2">
+            MOnB:&nbsp;<ui:outPutNumber
+              format="0.00"
+              value="{#v.price.operations[0].margin.onBalance}"
+            />&nbsp;BP
+          </h1>
+          <h1 class="truncate line-spacing-small text-grey3">
+            MOffB:&nbsp;<ui:outPutNumber
+              format="0.00"
+              value="{#v.price.operations[0].margin.offBalance}"
+            />&nbsp;BP
+          </h1>
+          <aura:set attribute="else">
+            <h1 class="truncate line-spacing-small text-grey2">
+              NAF:&nbsp;<ui:outPutNumber
+                format="0.00"
+                value="{#v.price.operations[0].fee.nonAccrual}"
+              />&nbsp;PB
+            </h1>
+            <h1 class="truncate line-spacing-small text-grey3">
+              AF:&nbsp;<ui:outPutNumber
+                format="0.00"
+                value="{#v.price.operations[0].fee.accrual}"
+              />&nbsp;PB
+            </h1>
+          </aura:set>
+        </aura:if>
+
+        <!-- **Para mostrar los datos truncados con variables nuevas y llamada al método**
+                <h1 class="truncate">{!v.truncatedprofitabilitydeal}%&nbsp;{#v.price.profitabilityMetrics[0].id}</h1>
+                <aura:if isTrue="{! and(v.matrixAxis1 == 'MARGIN' , v.matrixAxis2 == 'TERM')}">
+                    <h1 class="truncate line-spacing-small text-grey2">MOnB:&nbsp;{!v.truncatedcurrencyFactor}&nbsp;BP</h1>
+                    	                <h1 class="truncate line-spacing-small text-grey3">MOffB:&nbsp;{!v.truncatedregulatoryExpectedLoss}&nbsp;BP</h1>
+                    <aura:set attribute="else">
+                        <h1 class="truncate line-spacing-small text-grey2">NAF:&nbsp;{!v.truncatednetFundingCostInCash}&nbsp;PB</h1>
+                        <h1 class="truncate line-spacing-small text-grey3">AF:&nbsp;{!v.truncatedfundingDuration}&nbsp;PB</h1>
+                    </aura:set>
+  				</aura:if> 
+                -->
+        <h1
+          class="truncate text-black text-small"
+          style="text-transform: lowercase;"
+        >
+          <ui:outPutNumber
+            format="0.00"
+            value="{#v.price.term.value}"
+          />&nbsp;{#v.price.term.unit}
+        </h1>
+      </div>
+    </div>
+  </lightning:button>
+</aura:component>

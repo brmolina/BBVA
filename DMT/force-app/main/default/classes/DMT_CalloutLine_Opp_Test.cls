@@ -1,5 +1,13 @@
 @IsTest
-public class DMT_CalloutLine_Opp_Test {
+public without sharing class DMT_CalloutLine_Opp_Test {
+    
+    private static void insertAsSystem(SObject recordToInsert) {
+        Database.insert(recordToInsert, AccessLevel.SYSTEM_MODE);
+    }
+
+    private static void insertAsSystem(List<SObject> recordsToInsert) {
+        Database.insert(recordsToInsert, AccessLevel.SYSTEM_MODE);
+    }
     @TestSetup
     static void setup() {
 
@@ -12,11 +20,11 @@ public class DMT_CalloutLine_Opp_Test {
             'DMT_GrantingTicket', 'https://validation.ok', 'ServicesPartition', false
         ));
 
-        insert settings;
-        insert new DMT_Line__c(
+        insertAsSystem(settings);
+        insertAsSystem(new DMT_Line__c(
             Name = 'Linea Test',
             Line_Id__c = 'L1'
-        );
+        ));
     }
 
     @IsTest
@@ -26,7 +34,7 @@ public class DMT_CalloutLine_Opp_Test {
             Name = 'Linea Test',
             Line_Id__c = 'L1'
         );
-        insert lineRecord;
+        insertAsSystem(lineRecord);
 
         Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
 
@@ -34,6 +42,7 @@ public class DMT_CalloutLine_Opp_Test {
             List<DMT_CalloutLine_Opp.Data> lines =
                 DMT_CalloutLine_Opp.getLinesFromService('ES0182011799173');
         Test.stopTest();
+
     }
 
     @IsTest
@@ -45,6 +54,7 @@ public class DMT_CalloutLine_Opp_Test {
             List<DMT_CalloutLine_Opp.ProductData> products =
                 DMT_CalloutLine_Opp.getProductsFromService('L1');
         Test.stopTest();
+
     }
 
     @IsTest
@@ -85,13 +95,13 @@ public class DMT_CalloutLine_Opp_Test {
     @IsTest
     static void test_getRiskLineTerms_ok() {
         DMT_Line__c line = new DMT_Line__c(Line_Id__c = 'L1', Name = 'Linea Test');
-        insert line;
+        insertAsSystem(line);
 
         DMT_Risk_Line_Term__c term = new DMT_Risk_Line_Term__c(
             DMT_Line__c = line.Id,
             gf_group_priority_line_id__c = 'G1'
         );
-        insert term;
+        insertAsSystem(term);
 
         List<DMT_Risk_Line_Term__c> results = DMT_CalloutLine_Opp.getRiskLineTerms('L1');
 
@@ -103,7 +113,7 @@ public class DMT_CalloutLine_Opp_Test {
     @IsTest
     static void test_getLineSFId_ok() {
         DMT_Line__c line = new DMT_Line__c(Line_Id__c='L1', Name='Linea Test');
-        insert line;
+        insertAsSystem(line);
 
         Id resultId = DMT_CalloutLine_Opp.getLineSFId('L1');
     }

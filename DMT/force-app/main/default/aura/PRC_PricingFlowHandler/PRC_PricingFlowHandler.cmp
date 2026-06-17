@@ -1,0 +1,82 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 03-30-2021
+  @last modified by  : David Rodríguez
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-29-2021   David Rodríguez   Initial Version
+-->
+<aura:component
+  implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome"
+  access="GLOBAL" controller="PRC_PricingFlowHandler_CONTROLLER">
+
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+  <aura:registerEvent name="formsubmitevent" type="c:PRC_PFS_FormSubmit"/>
+  <aura:registerEvent name="closemodalevt" type="c:PRC_CloseModal" />
+  <aura:registerEvent name="refreshDetailEvt" type="c:PRC_RefreshDetailsEvt" />
+  <aura:registerEvent name="loadcomponentevt" type="c:PRC_LoadComponent" />
+
+  <aura:handler name="calculateresponse" event="c:PRC_PFS_CalculateMatrix" action="{!c.calculate}" />
+  <aura:handler name="PRCPicklistError" event="c:PRC_PicklistError" action="{!c.pickError}" />
+  <aura:registerEvent name="calculaterequest" type="c:PRC_PFS_CalculateMatrix"/>
+
+  <aura:handler name="closemodalevt" event="c:PRC_CloseModal" action="{!c.closemodal}" />
+  <aura:handler name="loadcomponentevt" event="c:PRC_LoadComponent" action="{!c.loadcmp}" />
+  <aura:handler name="formsubmitresult" event="c:PRC_FormSubmitResult" action="{!c.onsubmitsuccess}" />
+
+  <aura:handler name="calculaterequest" event="c:PRC_PFS_CalculateMatrix" action="{!c.tst}" />
+
+  <aura:attribute name="msgToast" type="String" access="private" default="save"/>
+  <aura:attribute name="displaymodal" type="Boolean" default="false"/>
+  <aura:attribute name="showspinner" type="Boolean" default="true" />
+
+  <!-- aura:attribute name="recordId" type="Id" / -->
+  <aura:attribute name="currentstep" type="String" default=""/>
+	<aura:attribute name="lastaction" type="String" default=""/>
+
+  <aura:attribute name="response" type="PRC_PFS_Response" default="" />
+
+  <!-- para poner saltos de línea en los mensajes del toast
+  <aura:html tag="style">.toastMessage.forceActionsText{white-space : pre-line!important;} </aura:html>-->
+  <ltng:require styles="{!$Resource.multilineToastCSS}" />
+
+  <aura:if isTrue="{!v.displaymodal}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modalselector" aria-modal="true"
+      class="slds-modal slds-fade-in-open slds-modal_xlarge">
+      <div class="slds-modal__container overwrite-width2 ">
+        <div class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closemodal }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+          <h1 class="text-large">Pricing Details</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around_medium overwrite-padding" aura:id="modalbody">
+          <aura:if isTrue="{!v.showspinner}">
+            <lightning:spinner alternativeText="Loading" size="large" />
+            <aura:set attribute="else">
+              {!v.body}
+            </aura:set>
+          </aura:if>
+        </div>
+        <div class="slds-modal__footer">
+          <div class="modalfooter-item" id="leftbuttoncontainer" data-testing-id="123">
+            <button class="slds-button slds-button_neutral" onclick="{!c.closemodalevt}">Cancel</button>
+            <!-- <button class="slds-button slds-button_neutral" onclick="{!c.closemodalevt}">Cancel EVT</button>
+            <button class="slds-button slds-button_neutral" onclick="{!c.loadcmpevt}">Load CMP EVT</button> -->
+          </div>
+          <div class="modalfooter-item" aura:id="progressindicator" id="progressbar">
+          </div>
+          <div class="modalfooter-item" aura:id="buttoncontainer" id="rightbuttoncontainer">
+            {!v.body}
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+</aura:component>

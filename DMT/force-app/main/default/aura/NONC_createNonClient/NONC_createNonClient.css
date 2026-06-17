@@ -1,0 +1,392 @@
+.THIS.customHeader {
+  border-bottom: 1px solid #bdb9b9;
+}
+
+.THIS.customHeader .customHeaderText {
+  font-size: 1.5em !important;
+  text-align: center !important;
+}
+
+.THIS #modal-heading-01 {
+  font-weight: bold !important;
+}
+
+.THIS .two-columns {
+  width: 50%;
+  display: inline-block;
+}
+
+.THIS .two-columns-right {
+  float: right !important;
+  padding-top: 1.625rem;
+}
+
+.THIS .left-position {
+  float: left !important;
+}
+
+.THIS .rigth-position {
+  float: right !important;
+}
+
+.THIS .similar-names-li {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  padding-left: 0.5rem;
+  border-bottom: 1px solid rgb(221, 219, 218);
+  border-left: 1px solid rgb(221, 219, 218);
+  border-right: 1px solid rgb(221, 219, 218);
+}
+
+.THIS .similar-names-li:last-child {
+  display: none;
+}
+
+.THIS .inputSearchName {
+  position: relative;
+}
+
+.THIS .similar-names-ul {
+  height: auto;
+  position: absolute;
+  top: 56px;
+  z-index: 8;
+  left: 1%;
+  width: 98%;
+  background: #fff;
+}
+
+/* tendré que mostrarlo sólo cuando sea necesario por js para evitar scrool innecesario */
+.THIS .similar-names-ul {
+  display: none;
+}
+
+.THIS .similar-names-ul.show {
+  display: initial;
+}
+
+.THIS .slds-icon_container_circle.slds-icon-action-new-account.slds-icon_container {
+  margin-right: 0.5rem;
+}
+
+.THIS .slds-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.THIS .uiMessage.confirm {
+  border-color: #4bc076;
+  background-color: #4bc076;
+}
+
+.THIS .slds-icon-action-approval {
+  background-color: #4bc076;
+}
+
+.THIS .uiMessage.error {
+  border-color: rgb(194, 57, 52);
+  background-color: rgb(194, 57, 52);
+}
+
+.THIS .slds-icon-action-close {
+  background-color: rgb(194, 57, 52);
+}
+
+.THIS .uiMessage.info {
+  border-color: #2684ff;
+  background-color: #2684ff;
+}
+
+.THIS .uiMessage.info {
+  border-color: #2684ff;
+  background-color: #2684ff;
+}
+
+.THIS .slds-icon-action-new-person-account {
+  background-color: #2684ff;
+}
+
+.THIS .bBody {
+  color: white !important;
+  font-weight: bold;
+}
+
+.THIS .table-account {
+  height: 19rem;
+  overflow-y: auto;
+}
+
+.THIS .table-row {
+  padding-bottom: 10px !important;
+  height: 2rem;
+}
+
+.THIS table {
+  margin-left: 2%;
+  margin-right: 2%;
+  width: 96%;
+}
+
+.THIS th {
+  position: -webkit-sticky sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
+}
+
+.THIS.cCreateNonClient.slds-icon-action-new-person-account {
+  background-color: #c23934 !important;
+}
+
+/* .THIS .max-90 {
+  margin-left: 5% !important;
+  width: 90% !important;
+  max-width: 90% !important;
+} */
+
+/* SCROLL */
+.THIS.sWrap {
+  height: 100%;
+  width: 100%;
+  border-radius: 1px;
+}
+
+.THIS .sWrapDesktop {
+}
+
+.THIS .outer-container {
+  position: fixed;
+}
+
+.THIS.outerScroller {
+  border-radius: 100px;
+}
+
+.THIS.innerScroller {
+  border-radius: 100px;
+}
+
+.THIS .innerDivWrapper {
+  min-height: 101%;
+  padding-bottom: 20px;
+}
+
+.THIS .without-required abbr.slds-required {
+  display: none !important;
+}
+
+.THIS .custom-addres-required .slds-form-element__label {
+  padding-left: 0.3rem;
+}
+
+.THIS .custom-addres-required abbr.slds-required {
+  position: absolute;
+  top: 3px;
+}
+
+.THIS .customRequired .slds-col {
+  position: relative;
+}
+
+.THIS .customRequired abbr.slds-required {
+  display: initial;
+}
+
+.THIS .customRequired abbr.slds-required.requiredField {
+  display: none;
+  position: inherit;
+}
+
+.THIS .customRequired .requiredFieldContent abbr.slds-required {
+  display: none;
+}
+
+.THIS .customRequired .requiredFieldContent abbr.slds-required.requiredField {
+  display: initial;
+  position: absolute;
+  top: 4px;
+  left: 3px;
+}
+
+.THIS .customRequired .requiredFieldContent .slds-form-element__label {
+  padding-left: 8px;
+}
+
+.THIS .slds-modal__header .slds-modal__close svg {
+  fill: rgba(255, 255, 255, 1);
+}
+
+.THIS .addressClass {
+  position: relative;
+}
+
+.THIS .billingModal {
+  position: absolute;
+  top: 0;
+  background: #fff;
+  border: 1px solid var(--lwc-colorBorderInput, rgb(221, 219, 218));
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 9;
+  padding: 0.6rem;
+  left: 5%;
+  width: 90%;
+}
+
+.THIS .shippingModal {
+  position: absolute;
+  top: 0;
+  background: #fff;
+  border: 1px solid var(--lwc-colorBorderInput, rgb(221, 219, 218));
+  border-radius: 4px;
+  visibility: hidden;
+  z-index: 4;
+  padding: 0.6rem;
+  left: 5%;
+  width: 90%;
+}
+
+.THIS .billingModal.showMe {
+  visibility: initial;
+}
+
+.THIS .shippingModal.showMe {
+  visibility: initial;
+}
+
+.THIS .addressModal .slds-m-top_medium button {
+  float: right;
+}
+
+.THIS .shippingModal .slds-m-top_medium button {
+  float: right;
+}
+
+.THIS .newProspectModalContent {
+  position: relative;
+}
+
+.THIS .newProspectModalContent.overflowInitial {
+  overflow: initial;
+  overflow-y: initial;
+}
+
+.THIS .opacityField {
+  display: none;
+}
+
+.THIS .opacityField.show {
+  display: initial;
+  position: absolute;
+  background-color: rgba(74, 82, 93, 0.6);
+  opacity: 7;
+  height: 100%;
+  top: 0;
+  width: 500%;
+  left: -200%;
+  z-index: 3;
+}
+
+.THIS .addressClass .slds-input[disabled] {
+  cursor: default;
+  background-color: #fff;
+}
+
+.THIS .addressClass .field-error {
+  color: var(--lwc-colorTextError, rgb(194, 57, 52));
+}
+
+.THIS .addressClass .field-error.hide {
+  display: none;
+}
+
+/* Responsive styles */
+.THIS.mobile {
+  height: 100% !important;
+}
+
+.THIS.mobile.reset-height {
+  height: auto !important;
+}
+
+.THIS.mobile .similar-names-ul {
+  display: block !important;
+  width: 100%;
+  margin-top: -0.5rem;
+  padding: 0 0.25rem;
+  margin-bottom: 0.5rem;
+  left: 0;
+  position: inherit;
+  top: 0;
+  z-index: auto;
+}
+
+.THIS.mobile .slds-modal {
+  position: relative;
+  height: 100vh;
+}
+
+.THIS.mobile .slds-backdrop {
+  display: none;
+}
+
+.THIS .responsive_modal {
+  margin: 0;
+  padding: 0;
+  justify-content: inherit;
+}
+
+.THIS .responsive_modal .slds-modal__close {
+  display: none;
+}
+
+.THIS .slds-modal__content {
+  overflow-y: auto !important;
+  height: auto !important;
+  max-height: 100vh !important;
+}
+
+.THIS .responsive_modal .slds-modal__content {
+  overflow-y: hidden !important;
+  height: 100vh !important;
+  max-height: inherit !important;
+}
+
+.THIS .modal-header-phone {
+  border-bottom: var(--lwc-borderWidthThin, 1px) solid var(--lwc-colorBorder, rgb(221, 219, 218));
+  font-size: 16px;
+  padding: 1rem 0 0.5rem 0;
+}
+
+.THIS .modal-header-phone button {
+  border: 0;
+  display: inline-block;
+  width: 24%;
+  background: none;
+  color: var(--lwc-brandAccessible, rgb(0, 112, 210));
+  padding: 0;
+}
+
+.THIS .modal-header-phone button[disabled] {
+  color: rgb(221, 219, 218);
+}
+
+.THIS .modal-header-phone button:focus {
+  box-shadow: none;
+}
+
+.THIS .modal-header-phone button.slds-button_brand {
+  font-weight: bold;
+}
+
+.THIS .modal-header-phone h3 {
+  width: 50%;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Maps styles */
+.THIS .customClassMap {
+  width: 80%;
+  margin: 1rem auto;
+}

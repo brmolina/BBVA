@@ -36,15 +36,17 @@ public with sharing class DMT_Currency {
     */
     public static Wrapper getExchangeRates(String baseCurrency) {
         Date filterDate = Date.today().addDays(-7);
-        Set<String> currencies = getCurrencyList();
+        //Set<String> currencies = getCurrencyList();
         List<ExchangeRate> rates = new List<ExchangeRate>();
         Decimal baseRate = 1.0;
+        System.debug('******* Currencis in test: '+baseCurrency);
         List<SER_EUR_Currency_exchange_rate__c> exchangeRates = [SELECT SER_Counter_currency__c, SER_Exchange_rate__c, SER_Process_date__c
                                                                  FROM SER_EUR_Currency_exchange_rate__c
                                                                  WHERE SER_Base_currency__c = 'EUR'
-                                                                 AND SER_Counter_currency__c IN :currencies
                                                                  AND SER_Process_date__c > :filterDate
                                                                  ORDER BY SER_Counter_currency__c, SER_Process_date__c DESC];
+
+        System.debug('******* exchangeRates in test: '+exchangeRates);
         // set base currency and get all exchangeRates from EUR
         if (baseCurrency == 'EUR') {
             ExchangeRate rate = new ExchangeRate();
@@ -53,8 +55,10 @@ public with sharing class DMT_Currency {
             rate.updated = exchangeRates[0].SER_Process_date__c;
             rates.add(rate);
         } else {
+            Boolean foundBase = false;
             for (SER_EUR_Currency_exchange_rate__c exchangeRate : exchangeRates) {
                 if (exchangeRate.SER_Counter_currency__c == baseCurrency) {
+                    foundBase = true;
                     baseRate = exchangeRate.SER_Exchange_rate__c;
                     ExchangeRate rate = new ExchangeRate();
                     rate.currencyId = 'EUR';
@@ -62,6 +66,10 @@ public with sharing class DMT_Currency {
                     rate.updated = exchangeRate.SER_Process_date__c;
                     rates.add(rate);
                 }
+            }
+
+            if (!foundBase) {
+                return null;  // moneda base no existe en la tabla
             }
         }
         for (SER_EUR_Currency_exchange_rate__c exchangeRate : exchangeRates) {
@@ -85,6 +93,14 @@ public with sharing class DMT_Currency {
     * @return Decimal converted amount
     */
     public static Decimal convert(Decimal amount, String fromCurrency, String toCurrency) {
+        if(amount == 0 ){
+            return 0 ; 
+        }
+        if(fromCurrency == null){
+            return null ;
+        }
+    	system.debug('Edu amount ' + amount);
+        system.debug('Edu fromCurrency ' + fromCurrency);
         Decimal converted;
         if (fromCurrency.equalsIgnoreCase(toCurrency)) {
             converted = amount;
@@ -95,6 +111,7 @@ public with sharing class DMT_Currency {
                     for (ExchangeRate rate : currencyData.exchangeRates) {
                         if (rate.currencyId.equalsIgnoreCase(toCurrency)) {
                             converted = amount * rate.exchangeRate;
+                            break;
                         }
                     }
                 }

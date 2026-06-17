@@ -1,14 +1,15 @@
 <template>
-    <lightning-record-picker
-    label="label"
-    placeholder={placeholder}
-    object-api-name="User"
-    value={value}
-    variant="label-hidden"
-    onchange={handleChangerecord}
-    display-info={displayinfo}
-    matching-info={matchinginfo}
-    disabled={disabled}
->
-</lightning-record-picker>
+        <lightning-record-picker
+            label="label"
+            placeholder={placeholder}
+            object-api-name="User"
+            value={value}
+            variant="label-hidden"
+            onchange={handleChangerecord}
+            display-info={displayinfo}
+            matching-info={matchinginfo}
+            filter={filter}
+            disabled={disabled}
+        >
+        </lightning-record-picker>
 </template>

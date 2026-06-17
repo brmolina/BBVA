@@ -1,0 +1,10 @@
+<design:component>
+  <design:attribute name='Name' label='Name' />
+  <design:attribute name='ClientName' label='Client Name' />
+  <design:attribute name='BBVATeam' label='BBVA Team' />
+  <design:attribute name='ProductFamily' label='Product Family' />
+  <design:attribute name='Product' label='Product' />
+  <design:attribute name='Country' label='Country' />
+  <design:attribute name='Description' label='Description' />
+  <design:attribute name='CountryIsVisible' label='CountryIsVisible' />
+</design:component>

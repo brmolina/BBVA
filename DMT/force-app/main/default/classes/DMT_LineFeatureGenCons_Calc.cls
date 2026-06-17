@@ -101,20 +101,31 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             }
         }
 
-        if(line.RecordType.DeveloperName != 'OtherProducts'){
+        if(line.RecordType.DeveloperName == 'TreasurySettlement'){
+            System.debug('line.RecordType.DeveloperName:'+line.RecordType.DeveloperName);
             if(line.Client_Type__c == 'Group' || line.Client_Type__c == 'Custom') {
-                mapFeatureResult.add(clientSelected(line));
+                mapFeatureResult.add(clientSelected(line, listOfClients));
+                mapFeatureResult.add(customAssociationClientValidation(line));
             }
             List<DMT_Risk_Line_Term__c> riskLineDeri = DMT_Passport_Selector.getRiskLineTerm(line.Id);
+            
+            List<DMT_OperationalRestrictionsTRSR__mdt> listOperationalRestrictions = DMT_Passport_Selector.getOperationalRestrictionMDT(line.Booking_Geography__c);
+            Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric = new Map<String, DMT_OperationalRestrictionsTRSR__mdt>();
+            for (DMT_OperationalRestrictionsTRSR__mdt aux : listOperationalRestrictions) {
+                mapOpRestric.put(aux.DMT_Operational_Restrictions_Name__c, aux);
+            }
+
             mapFeatureResult.add(isCurrentLine(clientsCodeList, line.Start_Date__c, line));
             mapFeatureResult.add(restricGreaterTerm(lineProductItems, riskLineDeri));
-            mapFeatureResult.add(deriRestricNOFdDvp(lineProductItems));
+            mapFeatureResult.add(deriRestricNOFdDvp(lineProductItems, mapOpRestric));
             mapFeatureResult.add(noSettlementAmount(lineProductItems, line));
             mapFeatureResult.add(startDate(line));
             mapFeatureResult.add(endDate(line));
             mapFeatureResult.add(counterparty(listOfClients));
             mapFeatureResult.add(rating(listOfClients));
-            mapFeatureResult.add(isdaValidation(listOfClients, taxonomies, line));
+            if (line.Booking_Geography__c == 'ES' || line.Booking_Geography__c == 'MX') {
+                mapFeatureResult.add(isdaValidation(listOfClients, taxonomies, line));
+            }
 
             if(line.Client_Type__c == 'Group' || line.Client_Type__c == 'Custom'){
                 mapFeatureResult.add(isGDTClient(listOfClients));
@@ -229,16 +240,70 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         return incorrectProductLineTerm;
     }
 
-    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations deriRestricNOFdDvp(List<DMT_Line_Product_Item__c> lpiList){
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations deriRestricNOFdDvp(List<DMT_Line_Product_Item__c> lpiList, Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric){
         DMT_Wrapper_Passport_Abs.FeatureGenConsiderations deriRestricNoSettVali = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
         deriRestricNoSettVali.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
         deriRestricNoSettVali.name = DMT_Constants.FEATURE_NAME_DERIRESTRICNOFDDVP;
         deriRestricNoSettVali.message = DMT_Constants.DERIVATIVES_NOFDDVP_GREENMESSAGE;
         List<String> deriNoFddvpMessageList = new List<String> ();
+        System.debug('lpiList, '+ lpiList);
+        System.debug('mapOpRestric, '+ mapOpRestric);
         for(DMT_Line_Product_Item__c lpi : lpiList){
-            if(lpi.Name != 'IRS' && lpi.DMT_DerivativeRestriction__c){
+            if(lpi.DMT_DerivativeRestriction__c && mapOpRestric != null){
+                // MÉXICO
+                /*Boolean esMX = lpi.Line__r.Booking_Geography__c == 'MX';
+
+                Boolean mxFOEXySinDVP    = esMX && lpi.Product_Code_Value__c == 'FOEX' && !lpi.DMT_DVPRestriction__c;
+                Boolean mxCCSWySinFD     = esMX && lpi.Product_Code_Value__c == 'CCSW' && !lpi.DMT_FDRestriction__c;
+                Boolean mxB_o_C_yAlgunaFalse = esMX && lpi.Product_Code_Value__c == 'DBIC' && 
+                    (!lpi.DMT_FDRestriction__c || !lpi.DMT_DVPRestriction__c);
+                Boolean mxEQSPSinDVP     = esMX && lpi.Product_Code_Value__c == 'EQSP' && !lpi.DMT_DVPRestriction__c;
+
+                Boolean condicionMX = mxFOEXySinDVP || mxCCSWySinFD || mxB_o_C_yAlgunaFalse || mxEQSPSinDVP;
+
+                // COLOMBIA
+                Boolean esCO = lpi.Line__r.Booking_Geography__c == 'CO';
+
+                Boolean coFOEXySinFD = esCO && lpi.Product_Code_Value__c == 'FOEX' && !lpi.DMT_FDRestriction__c;
+                Boolean coCCSWySinFD = esCO && lpi.Product_Code_Value__c == 'CCSW' && !lpi.DMT_FDRestriction__c;
+
+                Boolean condicionCO = coFOEXySinFD || coCCSWySinFD;
+
+                // ARGENTINA
+                Boolean esAR = lpi.Line__r.Booking_Geography__c == 'AR';
+
+                Boolean arFXSinDVP = esAR && lpi.Product_Code_Value__c == 'FOEX' && !lpi.DMT_DVPRestriction__c;
+
+                Boolean arEQSPSinDVP = esAR && lpi.Product_Code_Value__c == 'EQSP' && !lpi.DMT_DVPRestriction__c;
+
+                Boolean condicionAR = arEQSPSinDVP || arFXSinDVP;
+
+                // ESPAÑA
+                Boolean esES = lpi.Line__r.Booking_Geography__c == 'ES';
+
+                Boolean esFOEXyAlgunaFalse = esES && lpi.Product_Code_Value__c == 'FOEX' && 
+                    (!lpi.DMT_FDRestriction__c || !lpi.DMT_DVPRestriction__c);
+                Boolean esCCSWySinFD = esES && lpi.Product_Code_Value__c == 'CCSW' && !lpi.DMT_FDRestriction__c;
+                Boolean esDBICyAlgunaFalse = esES && lpi.Product_Code_Value__c == 'DBIC' && 
+                    (!lpi.DMT_FDRestriction__c || !lpi.DMT_DVPRestriction__c);
+
+                Boolean condicionES = esFOEXyAlgunaFalse || esCCSWySinFD || esDBICyAlgunaFalse;
+
+                // PERÚ
+                Boolean esPE = lpi.Line__r.Booking_Geography__c == 'PE';
+
+                Boolean peCCSWySinFD = esPE && lpi.Product_Code_Value__c == 'CCSW' && !lpi.DMT_FDRestriction__c;
+                Boolean peEQSPSinDVP = esPE && lpi.Product_Code_Value__c == 'EQSP' && !lpi.DMT_DVPRestriction__c;
+
+                Boolean condicionPE = peCCSWySinFD || peEQSPSinDVP;
+
+                // CONDICIÓN FINAL
+                Boolean entrarAlIf = condicionMX || condicionCO || condicionAR || condicionES || condicionPE;
                 //09/05/25 - The condition is modified to exclude the equities product -  CIBGLOBALD-1200
-                if(!lpi.DMT_DVPRestriction__c && lpi.Name != 'CCS' && !lpi.Name.contains('Repo')&& !lpi.Name.contains('Equities')  && !lpi.Name.contains('Depo Lent') && lpi.Line__r.Booking_Geography__c != 'CO' || (!lpi.DMT_FDRestriction__c && !lpi.Name.contains('Depo Lent')&& !lpi.Name.contains('Equities')) || (!lpi.DMT_FDRestriction__c && !lpi.Name.contains('FX') && lpi.Line__r.Booking_Geography__c == 'CO')){
+                */
+
+
+                if((mapOpRestric?.get(lpi.Product_Code_Value__c)?.Apply_Validations_FD__c == true && !lpi?.DMT_FDRestriction__c)||(mapOpRestric?.get(lpi.Product_Code_Value__c)?.Apply_Validations_DVP__c == true && !lpi?.DMT_DVPRestriction__c)){
                     deriRestricNoSettVali.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
                     deriNoFddvpMessageList.add(lpi.Name);
                     deriRestricNoSettVali.message = DMT_Constants.DERIVATIVES_NOFDDVP_REDMESSAGE + String.join(deriNoFddvpMessageList,', ');
@@ -253,7 +318,12 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         DMT_Wrapper_Passport_Abs.FeatureGenConsiderations incorrectSettlementAmount = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
         incorrectSettlementAmount.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
         incorrectSettlementAmount.name = DMT_Constants.FEATURE_NAME_NOSETTLEMENTAMOUNT;
-        incorrectSettlementAmount.message = DMT_Constants.NO_SETTLEMENT_GREENMESSAGE;
+        if(linelpi.Booking_Geography__c.equals('AR')){
+            incorrectSettlementAmount.message = DMT_Constants.NO_SETTLEMENT_GREENMESSAGE_AR;
+        }else {
+            incorrectSettlementAmount.message = DMT_Constants.NO_SETTLEMENT_GREENMESSAGE;  
+        }
+        
         String incorrectSettlementMessage = null;
         Set<String> settlementRestricMessageList = new Set<String> ();
         Boolean isFreeDelivery = false;
@@ -261,10 +331,12 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         for(DMT_Line_Product_Item__c lpi : lpiList){
             if((linelpi.FD_Amount__c == 0 || linelpi.FD_Amount__c == null) && lpi.DMT_FDRestriction__c){
                 isFreeDelivery = true;
+                System.debug('linelpi: '+linelpi);
                 settlementRestricMessageList.add(lpi.Name);
             }
             if((linelpi.DvP_Amount__c == 0 || linelpi.DvP_Amount__c == null) && lpi.DMT_DVPRestriction__c){
                 isPayment = true;
+                System.debug('linelpi: '+linelpi);
                 settlementRestricMessageList.add(lpi.Name);
             }
         }
@@ -278,7 +350,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             incorrectSettlementAmount.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
             incorrectSettlementAmount.message = incorrectSettlementMessage + DMT_Constants.NO_SETTLEMENT_REDMESSAGE + String.join(settlementRestricMessageList,', ');
         }
-
+        
         return incorrectSettlementAmount;
     }
 
@@ -304,7 +376,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         incorrectEndDate.message = System.Label.dmt_cl_FeatureEndDateGreen;
 
         if(date.daysInMonth(linelpi.End_Date__c.year(),linelpi.End_Date__c.month()) != linelpi.End_Date__c.day()){
-            incorrectEndDate.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
+            incorrectEndDate.state = DMT_Constants.FEATURE_GC_STATE_RED;
             incorrectEndDate.message = System.Label.dmt_cl_FeatureEndDateRed;
         }
 
@@ -312,7 +384,27 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         return incorrectEndDate;
     }
 
-    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations clientSelected(DMT_Line__c line) {
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations customAssociationClientValidation(DMT_Line__c linelpi){
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations incorrectCustomAssociationValidations = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
+        incorrectCustomAssociationValidations.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
+        incorrectCustomAssociationValidations.name = System.Label.dmt_cl_FeatureCACLimitTitle;
+        incorrectCustomAssociationValidations.message = System.Label.dmt_cl_FeatureCACLimitGreen;
+
+        List<Custom_Association_Client__c> auxCustomAssClient = DMT_Passport_Selector.getCustomAssociationClientLine(linelpi.Id);
+        if(linelpi != null && auxCustomAssClient != null && auxCustomAssClient.size() > 0){   
+            for(Custom_Association_Client__c aux : auxCustomAssClient){
+                if(aux.DMT_Amount__c >= linelpi.DMT_DerivativesAmount__c || aux.DMT_FDAmount__c >= linelpi.FD_Amount__c || aux.DMT_DvPAmount__c >= linelpi.DvP_Amount__c){
+                    incorrectCustomAssociationValidations.state = DMT_Constants.FEATURE_GC_STATE_RED;
+                    incorrectCustomAssociationValidations.message = System.Label.dmt_cl_FeatureCACLimitRed;
+                }
+            }
+        }
+
+
+        return incorrectCustomAssociationValidations;
+    }
+
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations clientSelected(DMT_Line__c line, Set<Custom_Association_Client__c> caClient) {
         DMT_Wrapper_Passport_Abs.FeatureGenConsiderations clientSelectedResult = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
         clientSelectedResult.name = DMT_Constants.FEATURE_NAME_CLIENTS_SELECTED;
         clientSelectedResult.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
@@ -320,9 +412,16 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
 
         if (line.Client_Type__c != null && line.Client_Type__c == DMT_Constants.TYPE_GROUP) {
 
-            clientSelectedResult.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
+            clientSelectedResult.state = DMT_Constants.FEATURE_GC_STATE_RED;
             clientSelectedResult.message = DMT_Constants.CLIENT_SELECTED_REDMESSAGE;
             return clientSelectedResult;
+
+        }else if(line.Client_Type__c != null && line.Client_Type__c == DMT_Constants.TYPE_CUSTOM){
+            if(caClient == null || caClient.size() <= 1){
+                clientSelectedResult.state = DMT_Constants.FEATURE_GC_STATE_RED;
+                clientSelectedResult.message = DMT_Constants.CLIENT_SELECTED_REDMESSAGE;
+                return clientSelectedResult;
+            }
         }
 
         return clientSelectedResult;

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Countries_Insurence__c</fullName>
+    <label>Countries_Insurence</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>shdaowBanking_Countries_Insurence</valueSetName>
+    </valueSet>
+</CustomField>

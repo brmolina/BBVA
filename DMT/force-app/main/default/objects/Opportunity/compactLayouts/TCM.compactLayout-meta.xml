@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TCM</fullName>
+    <fields>Name</fields>
+    <fields>DES_Client_Name__c</fields>
+    <fields>OwnerId</fields>
+    <fields>DMT_RecordTypeName__c</fields>
+    <fields>DMT_Opp_Id__c</fields>
+    <fields>DMT_Sanction__c</fields>
+    <fields>DMT_Parent_Opportunity__c</fields>
+    <fields>DMT_Parent_Code__c</fields>
+    <label>TCM</label>
+</CompactLayout>

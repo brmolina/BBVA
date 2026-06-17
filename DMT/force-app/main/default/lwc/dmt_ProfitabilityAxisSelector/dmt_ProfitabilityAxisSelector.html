@@ -1,77 +1,132 @@
 <template>
-    <template if:true={disabledControls}>
-        <div class="slds-box slds-theme_alert-texture slds-m-bottom_small" role="alert">
-            <span class="slds-text-heading_small slds-text-color_error">{errorMessage}</span>
-        </div>
-    </template>
-    <div class="slds-grid">
-        <div class="slds-col">
-            <lightning-combobox
-                name="XAxis"
-                label="Select x axis"
-                value=""
-                placeholder="Select"
-                options={optionsX}
-                onchange={handleChange}
-                required
-                disabled={disabledControls}
-            ></lightning-combobox>
-            <lightning-combobox
-                name="YAxis"
-                label="Select y axis"
-                value=""
-                placeholder="Select"
-                options={optionsY}
-                onchange={handleChange}
-                required
-                disabled={disabledControls}
-            ></lightning-combobox>
-            <lightning-combobox
-                name="CentralAxis"
-                label="Select central value"
-                value=""
-                placeholder="Select"
-                options={optionsCentral}
-                onchange={handleChange}
-                required
-                disabled={disabledControls}
-            ></lightning-combobox>
-        </div>
-        <div class="slds-col">
-            <c-dmt_profitability-test-input
-                inputid="xMin"
-                label={label.dmt_cl_ProfMin_Text}
-                min=0
-                type={xFieldType}
-                options={catalogRating}
-                fieldselected={xSelected}
-            ></c-dmt_profitability-test-input>
-            <c-dmt_profitability-test-input
-                inputid="yMin"
-                label={label.dmt_cl_ProfMin_Text}
-                min=0
-                type={yFieldType}
-                options={catalogRating}
-                fieldselected={ySelected}
-            ></c-dmt_profitability-test-input>
-        </div>
-        <div class="slds-col">
-            <c-dmt_profitability-test-input
-                inputid="xRange"
-                label={label.dmt_cl_ProfRange}
-                min=0
-                type={xFieldType}
-                options={catalogRating}
-                fieldselected={xSelected}
-            ></c-dmt_profitability-test-input>
-            <c-dmt_profitability-test-input
-                inputid="yRange"
-                label={label.dmt_cl_ProfRange}
-                min=0
-                type={yFieldType}
-                options={catalogRating}
-                fieldselected={ySelected}
-            ></c-dmt_profitability-test-input>
-        </div>
+  <template if:true={disabledControls}>
+    <div
+      class="slds-box slds-theme_alert-texture slds-m-bottom_small"
+      role="alert"
+    >
+      <span class="slds-text-heading_small slds-text-color_error"
+        >{errorMessage}</span
+      >
     </div>
+  </template>
+  <lightning-button-icon
+    icon-name="utility:redo"
+    class="redo-icon no-border"
+    alternative-text="Undo"
+    title="Undo / Clear selections"
+    onclick={handleUndo}
+    disabled={disabledUndo}
+    variant="bare"
+  ></lightning-button-icon>
+
+  <div class="slds-grid">
+    <div class="slds-grid slds-grid_vertical slds-col slds-size_1-of-2">
+      <div class="slds-grid slds-col">
+        <div class="slds-size_2-of-4">
+          <lightning-combobox
+            name="XAxis"
+            label="Select x axis"
+            value={xSelected}
+            placeholder="Select"
+            options={optionsX}
+            onchange={handleChange}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            required
+            disabled={disabledControls}
+          ></lightning-combobox>
+        </div>
+        <template if:true={showXInputs}>
+          <div class="slds-size_1-of-4">
+            <c-dmt_profitability-test-input
+              input-id="xMin"
+              label={label.dmt_cl_ProfMin_Text}
+              min="0"
+              type={xFieldType}
+              options={_resolvedXOptions}
+              field-selected={xSelected}
+              external-error={xRowError}
+            ></c-dmt_profitability-test-input>
+          </div>
+          <div class="slds-size_1-of-4">
+            <c-dmt_profitability-test-input
+              input-id="xRange"
+              label={label.dmt_cl_ProfRange}
+              min="0"
+              type={xFieldType}
+              options={_resolvedXOptions}
+              field-selected={xSelected}
+              external-error={xRowError}
+            ></c-dmt_profitability-test-input>
+          </div>
+        </template>
+      </div>
+      <template if:true={xRowError}>
+        <div class="slds-col slds-size_1-of-1">
+          <p class="slds-text-color_error slds-text-body_small profitability-negative-top-m">{xRowError}</p>
+        </div>
+      </template>
+      <div class="slds-grid slds-col">
+        <div class="slds-size_2-of-4">
+          <lightning-combobox
+            name="YAxis"
+            label="Select y axis"
+            value={ySelected}
+            placeholder="Select"
+            options={optionsY}
+            onchange={handleChange}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            required
+            disabled={disabledControls}
+          ></lightning-combobox>
+        </div>
+        <template if:true={showYInputs}>
+          <div class="slds-size_1-of-4">
+            <c-dmt_profitability-test-input
+              input-id="yMin"
+              label={label.dmt_cl_ProfMin_Text}
+              min="0"
+              type={yFieldType}
+              options={_resolvedYOptions}
+              field-selected={ySelected}
+              external-error={yRowError}
+            ></c-dmt_profitability-test-input>
+          </div>
+          <div class="slds-size_1-of-4">
+            <c-dmt_profitability-test-input
+              input-id="yRange"
+              label={label.dmt_cl_ProfRange}
+              min="0"
+              type={yFieldType}
+              options={_resolvedYOptions}
+              field-selected={ySelected}
+              external-error={yRowError}
+            ></c-dmt_profitability-test-input>
+          </div>
+        </template>
+      </div>
+      <template if:true={yRowError}>
+        <div class="slds-col slds-size_1-of-1">
+          <p class="slds-text-color_error slds-text-body_small profitability-negative-top-m">{yRowError}</p>
+        </div>
+      </template>
+      <div class="slds-grid slds-col">
+        <div class="slds-size_2-of-4">
+          <lightning-combobox
+            name="CentralAxis"
+            label="Select central value"
+            value={centralSelected}
+            placeholder="Select"
+            options={optionsCentral}
+            onchange={handleChange}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            required
+            disabled={disabledControls}
+          ></lightning-combobox>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

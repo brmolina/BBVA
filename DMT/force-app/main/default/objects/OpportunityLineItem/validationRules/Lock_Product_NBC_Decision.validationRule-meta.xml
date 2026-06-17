@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lock_Product_NBC_Decision</fullName>
+    <active>true</active>
+    <errorConditionFormula>TEXT(Opportunity.NBC_Decision_Taken_type__c) = $Label.NBC_Decision_Not_Recommended &amp;&amp;
+Opportunity.Template_approved_type__c &amp;&amp;
+NOT(ISCHANGED(opportunity_nbc_recm_ind_type__c)) &amp;&amp;
+NOT(ISCHANGED(opportunity_nbc_recm_date__c)) &amp;&amp;
+NOT(ISCHANGED(opportunity_nbc_comments_desc__c)) &amp;&amp;
+NOT(ISCHANGED(opportunity_stage_type__c)) &amp;&amp;
+NOT(ISCHANGED(user_profile_id__c)) &amp;&amp;
+NOT(ISCHANGED(solution_classification_desc__c)) &amp;&amp;
+NOT(ISCHANGED(DES_Product_Family__c)) &amp;&amp;
+NOT(ISCHANGED(DES_Expected_Revenue__c)) &amp;&amp;
+$Profile.Name != $Label.DES_Profile_BBVA_Desktop_SP &amp;&amp; $Profile.Name != &quot;System Administrator&quot;</errorConditionFormula>
+    <errorMessage>You can&apos;t modify a product if the decision of NBC Commitee is &apos;Not Recommended&apos;</errorMessage>
+</ValidationRule>

@@ -101,34 +101,34 @@
 
 .matrix-title {
   margin-bottom: 0.5rem;
-  width: 100%;               /* ocupar todo el ancho del contenedor */
+  width: 100%;             
   display: block;
   box-sizing: border-box;
-  padding: 0 0.5rem;         /* espacio lateral para que el fondo no pegue al borde */
-  text-align: center;        /* centrar el contenido interno */
+  padding: 0 0.5rem;
+  text-align: center;
 }
 
 .matrix-title__heading {
   margin: 0;
-  display: block;            /* block para que ocupe el 100% */
+  display: block;
   width: 100%;
   box-sizing: border-box;
-  font-size: 1rem; /* 24px */
+  font-size: 1rem;
   line-height: 1.2;
   font-weight: 700;
-  color: #16325c; /* SLDS dark blue */
+  color: #16325c;
   background: rgba(22,50,92,0.06);
-  padding: 0.5rem 0.75rem;   /* padding vertical para que destaque */
+  padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
   box-shadow: 0 1px 0 rgba(0,0,0,0.04);
   letter-spacing: 0.2px;
-  text-align: center;        /* asegurar que el texto quede centrado */
+  text-align: center;
 }
 
 /* Ajuste móvil */
 @media (max-width: 480px) {
   .matrix-title__heading {
-    font-size: 1.125rem; /* 18px */
+    font-size: 1.125rem;
     padding: 0.35rem 0.5rem;
   }
 }

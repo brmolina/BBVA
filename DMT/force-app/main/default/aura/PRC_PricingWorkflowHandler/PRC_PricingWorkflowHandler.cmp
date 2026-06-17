@@ -1,0 +1,51 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes" access="global" controller="PrcPriceMatrixBrowser_Ctrl">
+
+  <aura:attribute name="displaymodal" type="Boolean" default="true"/>
+  <aura:attribute name="displaySpinner" type="Boolean" default="false" />
+
+  <!-- para poner saltos de línea en los mensajes del toast 
+  <aura:html tag="style">.toastMessage.forceActionsText{white-space : pre-line!important;} </aura:html>-->
+  <ltng:require styles="{!$Resource.multilineToastCSS}" />
+  
+  <aura:if isTrue="{!v.displaymodal}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modalselector" aria-modal="true" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container overwrite-width">
+      <aura:if isTrue="{!v.displaySpinner}">
+        <div>
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </div>
+       </aura:if>
+        <div class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.cancelWorkflowl }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+          <h1  class="text-large">Pricing submit for approval process</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around_medium" aura:id="modalbody">
+			Are you sure to submit for approval process?            
+        </div>
+        <div class="slds-modal__footer">          
+          <div class="modalfooter-item" aura:id="progressindicator" id="progressbar"></div>
+          <div class="modalfooter-item" aura:id="buttoncontainer">
+              <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2 align-left">
+                     <div class="modalfooter-item" id="cancelbutton" data-testing-id="123">
+            			<button class="slds-button slds-button_neutral" onclick="{!c.cancelWorkflowl}">Cancel</button>
+                      </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                     <div class="modalfooter-item" id="cancelbutton" data-testing-id="123">
+            			 <button class="slds-button slds-button_brand" onclick="{!c.callWorkflow}">Accept</button>
+                      </div>
+                </div>  
+    	      </div>  
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+  
+</aura:component>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Relationship__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates that it is a custom relationship between Account and a Custom or standard Object</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>For these type of relationships, please indicate the related list API name in the value field</inlineHelpText>
+    <label>Custom Relationship</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,15 @@
+<design:component>
+	<design:attribute name="disclosureval" label="disclosureval" />
+    <design:attribute name="visitName" label="visitName" />
+    <design:attribute name="startdate" label="startdate" />
+    <design:attribute name="durationval" label="durationval" />
+    <design:attribute name="locationval" label="locationval" />
+    <design:attribute name="typeval" label="typeval" />
+    <design:attribute name="purposetypeval" label="purposetypeval" />
+    <design:attribute name="countryval" label="countryval" />
+    <design:attribute name="topicval" label="topicval" />
+    <design:attribute name="showDisclosure" label="showDisclosure" />
+    <design:attribute name="accId" label="accId" />
+    <design:attribute name="leadId" label="leadId" />
+    <design:attribute name="recordId" label="recordId" />
+</design:component>

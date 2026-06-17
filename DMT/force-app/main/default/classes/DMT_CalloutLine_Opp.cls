@@ -228,7 +228,7 @@ public with sharing class DMT_CalloutLine_Opp implements Callable {
         ];
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<OpportunityLineItem> getOpportunityLineItems(Id oppId) {
         return [
             SELECT Id, OpportunityId, Product2Id, Product2.Name, DMT_Associated_Line_Product__c, DMT_Associated_Line_Product__r.DMT_Product__r.Name, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c

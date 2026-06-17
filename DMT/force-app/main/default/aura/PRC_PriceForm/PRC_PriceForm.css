@@ -1,0 +1,81 @@
+.THIS Button.greyBackGround {
+    background: #f3f2f2;
+}
+
+.THIS .inputitem{
+  display: inline-block;
+  width: 50%;
+  /*vertical-align: middle;*/
+  padding-bottom: 2px;
+  padding-top: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  
+}
+
+.THIS .inputitemPicklist {
+  display: inline-block;
+  width: 50%;
+  /*vertical-align: middle;*/
+  margin-bottom: -6px;
+  padding-top: 2px;
+  /*margin-left: -4px;*/
+  padding-right: -4px;
+}
+
+.THIS .inputcheckbox{
+  display: inline-flex;
+  width: 50%;
+  padding-bottom: 7px;
+  padding-top: 7px;
+  margin-bottom: -7px;
+}
+
+.THIS .inputfield{
+  /*position: relative;
+  top: 10px;
+    margin-top: -10px;*/
+}
+.THIS .slds-form-element__label {
+  display:none !important
+}
+
+
+.THIS .inputcontainer{
+  /*margin-top: 10px;
+  margin-bottom: 10px;*/
+  border-top: 1px solid #dddbda!important;
+  /*border-bottom: 1px solid #dddbda!important;*/
+  /*margin-bottom: -10px; */
+}
+
+.THIS .borderTop{
+  border-top: 1px solid #dddbda!important;
+}
+.THIS .borderBotom {
+  border-bottom: 1px solid #dddbda!important;
+}
+
+.THIS H1.text-large {
+ font-size: larger!important;
+}
+
+.THIS DIV.form-width  {
+  width: 70%!important;
+}
+
+.THIS DIV.cPRC_PriceForm  {
+  width: 70%!important;
+}
+
+.THIS .slds-modal_large .slds-modal__container {
+    width: 70%!important;
+}
+.THIS .hiddencontrolfield {
+    
+}
+
+/* Centra el calendario en los campos fecha*/
+.THIS .slds-button_icon-bare{
+  line-height: 0!important; 
+}

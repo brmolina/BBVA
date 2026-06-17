@@ -1,0 +1,8 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that removes the arce</b></h5>
+        <p>show-this attribute controls the visibility of text area</p>
+        <p>showbutton-this attibute controls the visibility of button save</p>
+        <p><code>c:Arce_Gen_Remove_Controller</code></p>
+    </aura:description>
+</aura:documentation>

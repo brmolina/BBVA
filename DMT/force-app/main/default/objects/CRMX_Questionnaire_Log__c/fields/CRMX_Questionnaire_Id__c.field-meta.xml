@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Questionnaire_Id__c</fullName>
+    <description>Identifier of the questionnaire related to the log.</description>
+    <label>Regulatory Questionnaire</label>
+    <referenceTo>CRMX_Regulatory_Questionnaires__c</referenceTo>
+    <relationshipLabel>Logs de Cuestionarios</relationshipLabel>
+    <relationshipName>Logs_de_Cuestionarios</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

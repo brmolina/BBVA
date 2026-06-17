@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Equator_Principles_Scope__c</fullName>
+    <label>Equator Principles Scope</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not Applicable</fullName>
+                <default>false</default>
+                <label>Not Applicable</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Energy</fullName>
+                <default>false</default>
+                <label>Project Finance - Energy</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Infrastructure</fullName>
+                <default>false</default>
+                <label>Project Finance - Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Real Estate</fullName>
+                <default>false</default>
+                <label>Project Finance - Real Estate</label>
+            </value>
+            <value>
+                <fullName>Project Finance - TMT</fullName>
+                <default>false</default>
+                <label>Project Finance - TMT</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Other</fullName>
+                <default>false</default>
+                <label>Project Finance - Other</label>
+            </value>
+            <value>
+                <fullName>STF - Energy</fullName>
+                <default>false</default>
+                <label>STF - Energy</label>
+            </value>
+            <value>
+                <fullName>STF - Infrastructure</fullName>
+                <default>false</default>
+                <label>STF - Infrastructure</label>
+            </value>
+            <value>
+                <fullName>STF - TMT</fullName>
+                <default>false</default>
+                <label>STF - TMT</label>
+            </value>
+            <value>
+                <fullName>STF - Other</fullName>
+                <default>false</default>
+                <label>STF - Other</label>
+            </value>
+            <value>
+                <fullName>Corporate Loan - Energy</fullName>
+                <default>false</default>
+                <label>Corporate Loan - Energy</label>
+            </value>
+            <value>
+                <fullName>Corporate Loan - Infrastructure</fullName>
+                <default>false</default>
+                <label>Corporate Loan - Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Corporate Loan - Real Estate</fullName>
+                <default>false</default>
+                <label>Corporate Loan - Real Estate</label>
+            </value>
+            <value>
+                <fullName>Corporate Loan - TMT</fullName>
+                <default>false</default>
+                <label>Corporate Loan - TMT</label>
+            </value>
+            <value>
+                <fullName>Corporate Loan - Other</fullName>
+                <default>false</default>
+                <label>Corporate Loan - Other</label>
+            </value>
+            <value>
+                <fullName>Bridge Loan - Energy</fullName>
+                <default>false</default>
+                <label>Bridge Loan - Energy</label>
+            </value>
+            <value>
+                <fullName>Bridge Loan - Infrastructure</fullName>
+                <default>false</default>
+                <label>Bridge Loan - Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Bridge Loan - Real Estate</fullName>
+                <default>false</default>
+                <label>Bridge Loan - Real Estate</label>
+            </value>
+            <value>
+                <fullName>Bridge Loan - TMT</fullName>
+                <default>false</default>
+                <label>Bridge Loan - TMT</label>
+            </value>
+            <value>
+                <fullName>Bridge Loan - Other</fullName>
+                <default>false</default>
+                <label>Bridge Loan - Other</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,42 @@
+<aura:component controller="PotRevenuesProductsPerRegionCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable"
+        access="global">
+
+    <ltng:require scripts="{! join(',',
+                          $Resource.Chart,
+                          $Resource.baseFichaGrupo)}"
+     afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+    <aura:attribute name="timeRefresh" type="String" default="false"/>
+    <aura:attribute name="noData" type="Boolean" default="false"/>
+    <aura:attribute name="familyParam" type="String" default=""/>
+    <aura:attribute name="showViewDetails" type="Boolean" access="public" default="true"/>
+
+    <div class="slds-box" style="padding:30px 30px 50px 30px;">
+        <h1>Opportunity Potential Revenues by Region and Products {!v.familyParam}</h1>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium">
+            <aura:if isTrue="{!v.noData}">
+        <p style="height:200px;text-align:center;padding-top:100px;">
+              {!$Label.c.DES_Chart_No_Data}
+            </p>
+        <aura:set attribute="else">
+          <div id="chartjs-tooltip"></div>
+          <canvas aura:id="chart"></canvas>
+        </aura:set>
+      </aura:if>
+        </div>
+        <aura:if isTrue="{!!v.noData}">
+          <aura:if isTrue="{! v.showViewDetails == true}">
+            <div style="width:100%; margin-top:10px;">
+                <a href="" class="slds-text-link" style="float:left;" onclick="{!c.navigateToMyComponent}">View Report</a>
+                <span style="float:right;">
+                    <span style="margin-right:10px;">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+                    <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+                </span>
+            </div>
+          </aura:if>
+       </aura:if>
+    </div>
+
+
+</aura:component>

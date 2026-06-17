@@ -1,0 +1,8 @@
+<design:component>
+    <design:attribute name="titleList" label="Title"
+      datasource="Needs,Drivers"
+      default="Needs" />
+	<design:attribute name="obj" label="Object"
+      datasource="bupl__BP_Need__c,bupl__BP_GrowthDriver__c"
+      default="bupl__BP_Need__c" />
+</design:component>

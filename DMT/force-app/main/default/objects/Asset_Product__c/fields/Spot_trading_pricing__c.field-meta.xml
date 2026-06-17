@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Spot_trading_pricing__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Spot trading pricing</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Asset_Margin__c.Spot_trading_pricing__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </filterItems>
+        <filterItems>
+            <field>Asset_Margin__c.Disabled__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Asset_Margin__c</referenceTo>
+    <relationshipName>Spot_trading_pricing</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

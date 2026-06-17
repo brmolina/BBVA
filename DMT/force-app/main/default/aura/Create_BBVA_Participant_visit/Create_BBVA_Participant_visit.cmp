@@ -1,0 +1,40 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens" access="global">
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="UserVal" type="String" default=""/>
+    <aura:attribute name="visitName" type="String" access="global"/>
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:if isTrue="{!v.showError}">
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div class="slds-notify slds-notify_toast slds-theme_error slds-col slds-size_1-of-1" role="status">
+                <span class="slds-assistive-text">ERROR</span>
+                <div class="slds-notify__content slds-col slds-size_1-of-1">
+                    <p class="slds-text-heading_small">Review the errors on this page.</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                <p class="slds-text-color_error">{!v.errorMessage}</p>
+            </div>
+        </div>
+    </aura:if>
+    <lightning:recordEditForm
+                  objectApiName="dwp_kitv__Visit_Management_Team__c" >
+      <lightning:messages />
+      <div class="slds-grid slds-p-top_small slds-wrap">
+        <div class="slds-col slds-size_1-of-2 slds-form-element">
+            <span class="slds-form-element__label">Visit</span><br/>
+            <lightning:formattedText value="{!v.visitName}"/>
+        </div>
+        <div aura:id="divuser" class="slds-col slds-size_1-of-2 slds-form-element">
+              <lightning:inputField fieldName="dwp_kitv__user_id__c" class="customRequired" aura:id="userField"/>
+              <div class="slds-form-element__help slds-hidden" aura:id="error-DES_User__c">Complete this field</div>
+          </div>
+
+      </div>
+  </lightning:recordEditForm>
+
+  <div aura:id="actionButtonBar" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+      <div class="slds-float_right">
+          <lightning:button aura:id="NEXT" label="Next" variant="brand" onclick="{!c.saveForm}" />
+      </div>
+  </div>
+</aura:component>

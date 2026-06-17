@@ -8,3 +8,11 @@
     position: absolute;
     top: 4px;
 }
+
+.passport-space-helpericon
+{
+    padding-left: 28px;
+}
+.faded-row {
+    opacity: 0.4;
+}

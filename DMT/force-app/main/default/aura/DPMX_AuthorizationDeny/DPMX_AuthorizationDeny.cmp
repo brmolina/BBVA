@@ -1,0 +1,30 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId"  controller="DPMX_AuthorizationDeny_ctrl" access="global">
+
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true" />
+    <aura:attribute name="statusAuth" type="Boolean" default="false" />
+
+    <aura:html tag="style">
+        .cuf-content { padding: 0 0rem !important; } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; width:unset !important; max-width:unset !important;
+        }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Solicitud de autorización</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <div class="slds-form-element__control">
+                        <lightning:textarea name="textAreaComment" aura:id="commentarioTxt" required="true" label="Comentarios" onchange="{!c.checkComment}" maxlength="300" messageWhenTooLong="Has superado el maximo de los 300 caracteres que permite el comentario." messageWhenValueMissing="Este campo es obliatorio."
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.handleClose}" /> 
+                <button class="slds-button slds-button_brand" name="{!v.savebutton}" disabled="{!v.disableSubmitBtn}" label="Autorizar" onclick="{!c.handleSave}">Denegar</button>
+            </div>
+        </div>
+    </section>
+</aura:component>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_Related_Client</fullName>
+    <active>false</active>
+    <errorConditionFormula>ISBLANK(Alpha_Code__c)  &amp;&amp; ISBLANK(Alpha_Code_Client__c)</errorConditionFormula>
+    <errorMessage>No Client Found</errorMessage>
+</ValidationRule>

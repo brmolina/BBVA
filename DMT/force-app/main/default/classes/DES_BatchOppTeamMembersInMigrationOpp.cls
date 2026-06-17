@@ -1,7 +1,7 @@
 /******************************************************************************************************************************************************************
 Name:            DES_BatchOppTeamMembersInMigrationOpp
 Description:     Clase Batch para lanzar justo despues de la carga masiva de Opp de los datos de migración. Luego nunca más se utilizará.
-				 Para cada Opp de una Account, se traerá al OppTeam todo el AccountTeam de la jerarquía
+         Para cada Opp de una Account, se traerá al OppTeam todo el AccountTeam de la jerarquía
 Test Class:      -
 
 Version        Date            Author            Summary of changes
@@ -10,7 +10,7 @@ Version        Date            Author            Summary of changes
 2.0            05/07/2018                        Modificada la query del proceso batch    
 *******************************************************************************************************************************************************************/
 
-public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Database.Batchable<Sobject>, Database.Stateful {	
+public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Database.Batchable<Sobject>, Database.Stateful {  
   //--------------------------------------- PRIVATE ATTRIBUTES ------------------------------------
   private Integer recordsProcessed = 0;
   private Integer relationshipsCreated = 0;
@@ -28,7 +28,7 @@ public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Da
   }
 
   public void execute(Database.BatchableContext bc, List<Opportunity> scope) {    
-   	accHierarchyTeamCopyToOppTeam(scope);    
+     accHierarchyTeamCopyToOppTeam(scope);    
   }
 
   public void finish(Database.BatchableContext bc) {
@@ -63,7 +63,7 @@ public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Da
         
         // aunque se mete en un FOR este método está pensado para un BatchSize = 1 para que no de límite de queries
         for (Opportunity opp : listaOportunidades){
-        	recordsProcessed++;
+          recordsProcessed++;
             setAccIdHierarchyForOpp.clear();
             
             if(opp.AccountId != null) { //para las opp de Lead no se aplica la lógica
@@ -141,11 +141,11 @@ public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Da
     }
 
     //Retrieve the parents for the account passed
-    List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT Id, dwp_acmh__Parent_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c = :accId];
+    List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT Id, AMH_Parent_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c = :accId];
 
     //iterate to recursively add the opportunity to each parent in the hierarchy
-    for (dwp_acmh__GBL_Account_Relationship__c accRel : listAccRel) {
-      recursiveFxn(accRel.dwp_acmh__Parent_Account__c);
+    for (AMH_GBL_Account_Relationship__c accRel : listAccRel) {
+      recursiveFxn(accRel.AMH_Parent_Account__c);
     }
   }    
 
@@ -176,5 +176,5 @@ public without sharing class DES_BatchOppTeamMembersInMigrationOpp implements Da
         return hayDuplicado;
     } // FIN checkDuplicates()      
 
-	
+  
 }

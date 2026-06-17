@@ -1,0 +1,32 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_AutoRetailTableInsertion</p>
+        <p><b>DESCRIPTION: </b>Component to insert/update records in the auto retail table</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>year1              String : Selected year 1</li>
+                <li>year2              String : Selected year 2</li>
+                <li>error              Boolean : Indicates if an error has occured</li>
+                <li>spinner            Boolean : Spinner load variable</li>
+                <li>operationType      String : Type of DML operation to execute</li>
+                <li>tableType          String : 1 -> New, 2 -> SemiNew</li>
+                <li>selectedRowId      String : Standard Id of the selected row (arce__autoretail_behavior_table__c)</li>
+                <li>standardYear1Id    String : Standard Id of the year 1 value in the selected row (arce__autoretail_behavior_by_year__c)</li>
+                <li>standardYear2Id    String : Standard Id of the year 2 value in the selected row (arce__autoretail_behavior_by_year__c)</li>
+                <li>accHasAnalysisId   String : Standard Id of the current analyzed client (arce__Account_has_Analysis__c)</li>
+                <li>agencyName         String : variable for agencyName</li>
+                <li>agenciesNumber     String : variable for agenciesNumber</li>
+                <li>brand              String : variable for brand</li>
+                <li>bankRisk           String : variable for bankRisk</li>
+                <li>stockDays          String : variable for stockDays</li>
+                <li>totalUnitsYear1    String : variable for totalUnitsYear1</li>
+                <li>totalUnitsYear2    String : variable for totalUnitsYear2</li>
+                <li>stockRotationYear1 String : variable for stockRotationYear1</li>
+                <li>stockRotationYear2 String : variable for stockRotationYear2</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_AutoRetailTableInsertion</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_AutoRetailTableInsertion" ref="c:Arc_Gen_AutoRetailTableInsertion" label="Auto Retail Behavior table insertion">
+    </aura:example>
+</aura:documentation>

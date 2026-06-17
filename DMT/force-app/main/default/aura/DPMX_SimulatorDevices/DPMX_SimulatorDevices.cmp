@@ -1,0 +1,125 @@
+<aura:component access="global" extends="dwp_mdal:ModalTemplate_cmp" controller="DPMX_SimulatorDevices_Ctrl">
+    <aura:attribute name="acquirerActivitiesWrapper" type="Object" />
+    <aura:attribute name="action" type="String" />
+    <aura:attribute name="flagBool" type="Integer" />
+    <aura:attribute name="dynamicPricing" type="Object" />
+    <aura:attribute name="dynamicPricingUpsert" type="Object" />
+    <aura:attribute name="checkboxesWrapper" type="Object" />
+    <aura:attribute name="waiting" type="Boolean" default="false" />
+    <aura:attribute name="hasChanges" type="Boolean" default="true" />
+    <aura:attribute name="hasHeader" type="boolean" default="false" />
+    <aura:attribute name="isCustom" type="Boolean" default="false" />
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-modal__container slds-align_absolute-center">
+        <header class="slds-modal__header slds-size_large slds-text-heading_medium">
+            <strong>{!$Label.c.DPMX_Add_Devices}</strong>
+        </header>
+        <div class="slds-modal__content slds-size_large slds-p-around_large slds-is-relative" id="modal-content-id-1">
+            <aura:if isTrue="{!v.waiting}">
+                <lightning:spinner variant="brand" />
+            </aura:if>
+            <div class="slds-text-heading_small slds-m-top_medium">
+                <strong>{!$Label.c.DPMX_Devices}</strong>
+            </div>
+            <div>
+                <div class="slds-m-bottom_medium slds-m-top_medium">
+                    <strong>Tarjeta presente (TP). *Pago con tarjeta</strong>
+                </div>
+                <div>
+                    <lightning:input type="checkbox" aura:id="checkboxTerminal" checked="{!v.checkboxesWrapper.terminalIdCheckbox}" name="checkboxTerminal" onchange="{!c.handleOnCheckTerminal}" label="{!$Label.c.DPMX_InformationDetail_Devices_Row1}" />
+                </div>
+                <aura:if isTrue="{!v.checkboxesWrapper.terminalIdCheckbox}">
+                    <div class="slds-m-top_x-small slds-p-left_medium color:grey">
+                        <p>Dispositivos</p>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-p-left_medium">
+                        <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Terminal_Id__c}" format="###,###,###,##0" />
+                    </div>
+                </aura:if>
+                <div class="slds-m-top_x-small">
+                    <lightning:input type="checkbox" aura:id="POSCheckbox" label="POS" checked="{!v.checkboxesWrapper.posCheckbox}" onchange="{!c.handleOnCheckPOS}" />
+                </div>
+                <div class="slds-m-top_x-small">
+                    <lightning:input type="checkbox" aura:id="pinPadsInfoPinPadsCheckbox" label="{!$Label.c.DPMX_InformationDetail_Devices_Row2}" checked="{!v.checkboxesWrapper.pinPadsInfoPinPadsCheckbox}" onchange="{!c.handleOnCheckPinpad}" />
+                </div>
+                <aura:if isTrue="{!v.checkboxesWrapper.pinPadsInfoPinPadsCheckbox}">
+                    <div class="slds-m-top_x-small slds-p-left_medium">
+                        <p>{!$Label.c.DPMX_SimulatorDevices_Text1}</p>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-p-left_medium">
+                        <ui:inputNumber value="{!v.dynamicPricingUpsert.pinPadsInfo_withoutPinPads__c}" format="###,###,###,##0" />
+                    </div>
+
+                    <div class="slds-m-top_x-small slds-p-left_medium">
+                        <p>{!$Label.c.SimulatorDevices_Text2}</p>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-p-left_medium">
+                        <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_PinPadsInfo_PinPads__c}" format="###,###,###,##0" />
+                    </div>
+                </aura:if>
+            </div>
+            <div>
+                <div class="slds-m-bottom_medium slds-m-top_medium">
+                    <strong>Tarjeta no presente (TNP). *Pago digital</strong>
+                </div>
+                <div class="slds-m-top_x-small">
+                    <lightning:input type="checkbox" aura:id="ecommerceCheckbox" label="{!$Label.c.DPMX_InformationDetail_Devices_Row3}" checked="{!v.dynamicPricingUpsert.Sim_Ecommerce__c}" />
+                </div>
+                <div class="slds-m-top_x-small">
+                    <lightning:input type="checkbox" aura:id="RecurringChargesCheckbox" label="Cargos recurrentes" checked="{!v.checkboxesWrapper.RecurringChargesCheckbox}" onchange="{!c.handleOnCheckRecCharg}" />
+                </div>
+            </div>
+            <div>
+                <div class="slds-text-heading_small slds-m-top_medium">
+                    <strong>{!$Label.c.DPMX_Commissions}</strong>
+                </div>
+                <div class="slds-m-bottom_medium">
+                    {!$Label.c.DPMX_SimulatorDevices_Text2}
+                </div>
+                <div class="slds-m-bottom_x-small">
+                    <lightning:input type="checkbox" aura:id="feesExtraBillingAmountCheckbox" label="{!$Label.c.DPMX_SimulatorDevices_Text3}" checked="{!v.checkboxesWrapper.feesExtraBillingAmountCheckbox}" />
+                </div>
+                <div class="slds-m-bottom_x-small">
+                    <lightning:input type="checkbox" aura:id="feesCellnetAmountCheckbox" label="{!$Label.c.DPMX_SimulatorDevices_Text4}" checked="{!v.checkboxesWrapper.feesCellnetAmountCheckbox}" />
+                </div>
+                <div class="slds-m-bottom_x-small">
+                    <lightning:input type="checkbox" aura:id="feesBillingAmountCheckbox" label="{!$Label.c.DPMX_SimulatorDevices_Text5}" checked="{!v.checkboxesWrapper.feesBillingAmountCheckbox}" />
+                </div>
+            </div>
+
+            <!-- 
+            <div class="slds-m-top_x-small slds-p-left_medium">
+                <p>Precio por TPV:</p>
+            </div>
+            <div class="slds-size_1-of-2 slds-p-left_medium">
+                <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Fees_ExtraBilling_Amount__c}" format="###,###,###,##0" />
+            </div>
+            -->
+
+            <!--
+            <div class="slds-m-top_x-small slds-p-left_medium">
+                <p>Precio de red celular:</p>
+            </div>
+            <div class="slds-size_1-of-2 slds-p-left_medium">
+                <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Fees_Cellnet_Amount__c}" format="###,###,###,##0" />
+            </div>
+            -->
+
+            <!--
+            <div class="slds-m-top_x-small slds-p-left_medium">
+                <p>Precio baja facturación:</p>
+            </div>
+            <div class="slds-size_1-of-2 slds-p-left_medium">
+                <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Fees_Billing_Amount__c}" format="###,###,###,##0" />
+            </div>
+            -->
+
+        </div>
+        <footer class="slds-modal__footer slds-size_large">
+            <lightning:button label="{!$Label.c.DPMX_Cancel}" onclick="{!c.handleOnCancel}" disabled="{!v.waiting}" class="slds-m-top_none" />
+            <lightning:button label="{!$Label.c.DPMX_Save}" onclick="{!c.handleOnSave}" disabled="{!v.waiting}" variant="brand" class="slds-m-top_none" />
+        </footer>
+    </div>
+</aura:component>

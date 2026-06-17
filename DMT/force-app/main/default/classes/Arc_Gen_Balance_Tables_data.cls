@@ -16,7 +16,7 @@
 *1.5        23/10/2019     mariohumberto.ramirez.contractor@bbva.com    Added new method getFinancialState2Show and updateRecordLts
 *1.6        24/10/2019     mariohumberto.ramirez.contractor@bbva.com    Delete method getEEFFValidForRatingList() and getEEFFValidForRating()
 *                                                                       and added new fields 'arce__magnitude_unit_type__c,CurrencyIsoCode' in
-*                                                                       the method getFinancialStatements 
+*                                                                       the method getFinancialStatements
 *1.6.1      02/12/2019     german.sanchez.perez.contractor@bbva.com
 *                          franciscojavier.bueno@bbva.com               Api names modified with the correct name on business glossary
 *1.7        24/10/2019     mariohumberto.ramirez.contractor@bbva.com    Added new fields in the method getEmptyFinancialStatements
@@ -43,7 +43,7 @@
 *1.22       23/12/2021     francisco.munoz.torres.contractor@bbva.com   Add getRecords method
 *1.24       27/02/2023     joseluis.miralles.contractor@bbva.com        Update overlay record with ratingEngine value
 *-----------------------------------------------------------------------------------------*/
-@SuppressWarnings('PMD.ExcessivePublicCount,sf:TooManyMethods')
+@SuppressWarnings('PMD.ExcessivePublicCount,sf:TooManyMethods, PMD.CyclomaticComplexity, PMD.ApexCRUDViolation')
 public without sharing class Arc_Gen_Balance_Tables_data {
     /**
     *-------------------------------------------------------------------------------
@@ -130,10 +130,14 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<String> getCustomerData(String analysisId) {
     **/
     public arce.Arc_Gen_Account_Wrapper getCustomerData(String analysisId) {
-        final arce__Account_has_Analysis__c analysis = [SELECT arce__Customer__c, arce__CustomAccountID__c FROM arce__Account_has_Analysis__c WHERE id =: analysisId LIMIT 1];
-        final String clientId = arce.Arc_Gen_AccHasAnalysis_Data.getCorrectIdWAhas(analysis);
-        final Map<Id, arce.Arc_Gen_Account_Wrapper> mapWrap = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id>{clientId});
-        return mapWrap.get(clientId);
+        arce.Arc_Gen_Account_Wrapper retData = null;
+        if (Schema.sObjectType.arce__Account_has_Analysis__c.isAccessible()) {
+            final arce__Account_has_Analysis__c analysis = [SELECT arce__Customer__c, arce__CustomAccountID__c FROM arce__Account_has_Analysis__c WHERE id =: analysisId LIMIT 1];
+            final String clientId = arce.Arc_Gen_AccHasAnalysis_Data.getCorrectIdWAhas(analysis);
+            final Map<Id, arce.Arc_Gen_Account_Wrapper> mapWrap = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id>{clientId});
+            retData = mapWrap.get(clientId);
+        }
+        return retData;
     }
     /**
     *-------------------------------------------------------------------------------
@@ -146,7 +150,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Financial_Statements__c> getFinancialStatements(List<String> ids) {
     **/
     public List<arce__Financial_Statements__c> getFinancialStatements(List<String> ids) {
-        return [SELECT id, arce__magnitude_unit_type__c,arce__Order__c,CurrencyIsoCode,arce__financial_statement_id__c,arce__account_has_analysis_id__c,arce__rating_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,tolabel(arce__ffss_adjusted_type__c) adjusted,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c, arce__pd_per__c, arce__rating_long_value_type__c FROM arce__Financial_Statements__c WHERE Id in : ids];
+        List<arce__Financial_Statements__c> ffss = new List<arce__Financial_Statements__c>();
+        if (Schema.sObjectType.arce__Financial_Statements__c.isAccessible()) {
+            ffss = [SELECT id,arce__Selected_Adjustment_Type__c, arce__magnitude_unit_type__c,arce__Order__c,CurrencyIsoCode,arce__financial_statement_id__c,arce__ffss_auditor_qlfn_type__c,arce__ffss_auditor_opinion_type__c,arce__account_has_analysis_id__c,arce__rating_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,tolabel(arce__ffss_adjusted_type__c) adjusted,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c, arce__pd_per__c, arce__rating_long_value_type__c FROM arce__Financial_Statements__c WHERE Id in : ids];
+        }
+        return ffss;
     }
     /**
     *-------------------------------------------------------------------------------
@@ -159,7 +167,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public arce__Financial_Statements__c getEmptyFinancialStatements() {
     **/
     public arce__Financial_Statements__c getEmptyFinancialStatements() {
-        Return [SELECT id, arce__magnitude_unit_type__c, arce__ffss_submitted_type__c, CurrencyIsoCode, arce__financial_statement_id__c FROM arce__Financial_Statements__c WHERE arce__financial_statement_id__c = 'dummyFFSS'][0];
+        arce__Financial_Statements__c ffss = new arce__Financial_Statements__c();
+        if (Schema.sObjectType.arce__Financial_Statements__c.isAccessible()) {
+            ffss = [SELECT id, arce__magnitude_unit_type__c, arce__ffss_submitted_type__c, CurrencyIsoCode, arce__financial_statement_id__c FROM arce__Financial_Statements__c WHERE arce__financial_statement_id__c = 'dummyFFSS'][0];
+        }
+        return ffss;
     }
     /**
     *-------------------------------------------------------------------------------
@@ -172,7 +184,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Financial_Statements__c> getExistentFinancialStatements(String analysisId) {
     **/
     public List<arce__Financial_Statements__c> getExistentFinancialStatements(String analysisId) {
-        return [SELECT id,arce__rating_id__c,arce__financial_statement_id__c,arce__account_has_analysis_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c FROM arce__Financial_Statements__c WHERE arce__account_has_analysis_id__c =: analysisId];
+        List<arce__Financial_Statements__c> ffss = new List<arce__Financial_Statements__c>();
+        if (Schema.sObjectType.arce__Financial_Statements__c.isAccessible()) {
+            ffss = [SELECT id,arce__rating_id__c,arce__financial_statement_id__c,arce__account_has_analysis_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c FROM arce__Financial_Statements__c WHERE arce__account_has_analysis_id__c =: analysisId];
+        }
+        return ffss;
     }
 
     /**
@@ -187,7 +203,7 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     **/
     public List<arce__Account_has_Analysis__c> getAccountHasAnalysis(String analysisId) {
         return [SELECT id,Name,arce__ffss_for_rating_id__c, arce__CustomAccountID__c, arce__Analysis__r.arce__parent_analysis_id__c,arce__Analysis__r.arce__anlys_wkfl_sub_process_type__c,arce__Analysis__r.arce__analysis_risk_expiry_date__c,arce__ffss_for_rating_id__r.arce__magnitude_unit_type__c,arce__ffss_for_rating_id__r.currencyIsoCode,arce__main_subsidiary_ind_type__c, arce__group_asset_header_type__c, arce__ffss_for_rating_id__r.arce__financial_statement_id__c,
-                    (SELECT id,arce__financial_statement_end_date__c  FROM arce__Financial_Statements__r) FROM arce__Account_has_Analysis__c WHERE Id =: analysisId];
+                (SELECT id,arce__financial_statement_end_date__c  FROM arce__Financial_Statements__r) FROM arce__Account_has_Analysis__c WHERE Id =: analysisId];
     }
 
     /**
@@ -217,13 +233,17 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Table_Content_per_Analysis__c> getRecords(String recordId, List<String> filterValues) {
     **/
     public List<arce__Table_Content_per_Analysis__c> getRecords(String recordId, List<String> filterValues) {
-      return [
-        SELECT Id, RecordTypeId, arce__Data_Collection_Id__c, arce__Data_collection_name__c, arce__account_has_analysis_id__c, arce__arce_collection_order_number__c, arce__collection_order_type__c,
-              arce__collection_table__c, arce__economic_month_info_number__c, arce__previous_valid__c, arce__table_content_parent_code_id__c, arce__table_content_percentage__c,
-              arce__table_content_value__c, arce__table_content_year__c, arce__valid_fin_statement__c
-        FROM arce__Table_Content_per_Analysis__c
-        WHERE arce__account_has_analysis_id__c = :recordId
-        AND arce__collection_table__c IN :filterValues];
+        List<arce__Table_Content_per_Analysis__c> tcpa = new List<arce__Table_Content_per_Analysis__c>();
+        if (Schema.sObjectType.arce__Table_Content_per_Analysis__c.isAccessible()) {
+            tcpa = [
+                SELECT Id, RecordTypeId, arce__Data_Collection_Id__c, arce__Data_collection_name__c, arce__account_has_analysis_id__c, arce__arce_collection_order_number__c, arce__collection_order_type__c,
+                    arce__collection_table__c, arce__economic_month_info_number__c, arce__previous_valid__c, arce__table_content_parent_code_id__c, arce__table_content_percentage__c,
+                    arce__table_content_value__c, arce__table_content_year__c, arce__valid_fin_statement__c
+                FROM arce__Table_Content_per_Analysis__c
+                WHERE arce__account_has_analysis_id__c = :recordId
+                AND arce__collection_table__c IN :filterValues];
+        }
+        return tcpa;
     }
 
     /**
@@ -237,7 +257,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Table_Content_per_Analysis__c> getRecordsToClean(String recordId) {
     **/
     public List<arce__Table_Content_per_Analysis__c> getRecordsToClean(String recordId, List<String> filterValues) {
-        return [SELECT Id FROM arce__Table_Content_per_Analysis__c WHERE arce__account_has_analysis_id__c = :recordId AND arce__collection_table__c IN :filterValues];
+        List<arce__Table_Content_per_Analysis__c> tcpa = new List<arce__Table_Content_per_Analysis__c>();
+        if (Schema.sObjectType.arce__Table_Content_per_Analysis__c.isAccessible()) {
+            tcpa = [SELECT Id FROM arce__Table_Content_per_Analysis__c WHERE arce__account_has_analysis_id__c = :recordId AND arce__collection_table__c IN :filterValues];
+        }
+        return tcpa;
     }
 
     /**
@@ -251,7 +275,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Table_Content_per_Analysis__c> getRecordsToClean(String recordId) {
     **/
     public static List<arce__Table_Content_per_Analysis__c> getRecordsToCleanByProposal(String recordId, List<String> filterValues) {
-        return [SELECT Id FROM arce__Table_Content_per_Analysis__c WHERE arce__SP2_Proposal_Folder__c = :recordId AND arce__collection_table__c IN :filterValues];
+        List<arce__Table_Content_per_Analysis__c> tcpa = new List<arce__Table_Content_per_Analysis__c>();
+        if (Schema.sObjectType.arce__Table_Content_per_Analysis__c.isAccessible()) {
+            tcpa = [SELECT Id FROM arce__Table_Content_per_Analysis__c WHERE arce__SP2_Proposal_Folder__c = :recordId AND arce__collection_table__c IN :filterValues];
+        }
+        return tcpa;
     }
 
     /**
@@ -264,7 +292,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @return List<arce__Data_Collections__c>. list of data collections
     **/
     public static List<arce__Data_Collections__c> getDataCollectionsById(Set<String> ids) {
-        return [SELECT Name, arce__collection_table__c FROM arce__Data_Collections__c WHERE Id IN :ids ];
+        List<arce__Data_Collections__c> datCol = new List<arce__Data_Collections__c>();
+        if (Schema.sObjectType.arce__Data_Collections__c.isAccessible()) {
+            datCol = [SELECT Name, arce__collection_table__c FROM arce__Data_Collections__c WHERE Id IN :ids ];
+        }
+        return datCol;
     }
 
     /**
@@ -278,7 +310,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List<arce__Data_Collections__c> getRecordsToInsert(List<String> tablesList) {
     **/
     public List<arce__Data_Collections__c> getRecordsToInsert(List<String> tablesList) {
-        return [SELECT Id, arce__collection_code_term__c, arce__collection_table__c,arce__collection_order_number__c FROM arce__Data_Collections__c WHERE arce__collection_table__c in : tablesList ];
+        List<arce__Data_Collections__c> datCol = new List<arce__Data_Collections__c>();
+        if (Schema.sObjectType.arce__Data_Collections__c.isAccessible()) {
+            datCol = [SELECT Id, arce__collection_code_term__c, arce__collection_table__c,arce__collection_order_number__c FROM arce__Data_Collections__c WHERE arce__collection_table__c in : tablesList ];
+        }
+        return datCol;
     }
 
     /**
@@ -307,7 +343,7 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public void deletePrevious(List<sObject> recordsToDelete) {
     **/
     public void deletePrevious(List<sObject> recordsToDelete) {
-        delete recordsToDelete;
+        Database.delete(recordsToDelete, true, AccessLevel.SYSTEM_MODE);
     }
 
     /**
@@ -379,7 +415,9 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public void updateRecord(sObject recordToUpdate) {
     **/
     public static void updateRecordLts(List<arce__Financial_Statements__c> recordToUpdate) {
-        update recordToUpdate;
+        if (Schema.sObjectType.arce__Financial_Statements__c.isUpdateable()) {
+            update recordToUpdate;
+        }
     }
     /**
     *-------------------------------------------------------------------------------
@@ -413,8 +451,7 @@ public without sharing class Arc_Gen_Balance_Tables_data {
             WHERE arce__account_has_analysis_id__c = :analysisId AND
                 arce__financial_statement_id__c IN :ffssServiceIds];
 
-        final Map<String, arce__Financial_Statements__c> existFfssByServId =
-            new Map<String, arce__Financial_Statements__c>();
+        final Map<String, arce__Financial_Statements__c> existFfssByServId = new Map<String, arce__Financial_Statements__c>();
         for (arce__Financial_Statements__c existingFfss : existingFfssList) {
             existFfssByServId.put(existingFfss.arce__financial_statement_id__c, existingFfss);
         }
@@ -423,14 +460,17 @@ public without sharing class Arc_Gen_Balance_Tables_data {
             if (existFfssByServId.containsKey(ffss.arce__financial_statement_id__c)) {
                 // Update.
                 ffss.Id = existFfssByServId.get(ffss.arce__financial_statement_id__c).Id;
+            } else {
+                // Insert
+                ffss.arce__account_has_analysis_id__c = analysisId;
             }
 
             toUpsertFfssList.add(ffss);
         }
 
         // Perform DMLs.
-        delete toDeleteFfssList;
-        upsert toUpsertFfssList;
+        Database.delete(toDeleteFfssList, true, AccessLevel.SYSTEM_MODE);
+        Database.upsert(toUpsertFfssList, true, AccessLevel.SYSTEM_MODE);
 
         return !toDeleteFfssList.isEmpty() || existingFfssList.size() != processedFfssList.size();
     }
@@ -474,7 +514,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public List <arce__rating_variables_detail__c> getRatingVariables(String ahaId) {
     **/
     public List<arce__rating_variables_detail__c> getRatingVariables(String ahaId) {
-        return [SELECT id,name,arce__account_has_analysis_id__r.Name,arce__rating_var_score_number__c,arce__rating_id__r.arce__rating_long_value_type__c,arce__rating_override_reason_desc__c,arce__rating_id__c,arce__rating_variable_type_name__c FROM arce__rating_variables_detail__c WHERE arce__account_has_analysis_id__c =:ahaId];
+        List<arce__rating_variables_detail__c> rvd = new List<arce__rating_variables_detail__c>();
+        if (Schema.sObjectType.arce__rating_variables_detail__c.isAccessible()) {
+            rvd = [SELECT id,name,arce__account_has_analysis_id__r.Name,arce__rating_var_score_number__c,arce__rating_id__r.arce__rating_long_value_type__c,arce__rating_override_reason_desc__c,arce__rating_id__c,arce__rating_variable_type_name__c FROM arce__rating_variables_detail__c WHERE arce__account_has_analysis_id__c =:ahaId];
+        }
+        return rvd;
     }
 
     /**
@@ -487,7 +531,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example public arce__Arce_Config__mdt orderTableField() {
     **/
     public static arce__Arce_Config__mdt orderTableField() {
-        return [SELECT Id, arce__Config_Name__c, arce__Value1__c FROM arce__Arce_Config__mdt WHERE arce__Config_Name__c = 'RatiosOrderTableField' limit 1];
+        arce__Arce_Config__mdt conf = new arce__Arce_Config__mdt();
+        if (Schema.sObjectType.arce__Arce_Config__mdt.isAccessible()) {
+            conf = [SELECT Id, arce__Config_Name__c, arce__Value1__c FROM arce__Arce_Config__mdt WHERE arce__Config_Name__c = 'RatiosOrderTableField' limit 1];
+        }
+        return conf;
     }
 
     /**
@@ -519,9 +567,9 @@ public without sharing class Arc_Gen_Balance_Tables_data {
             arce__collection_order_type__c,arce__collection_table__c, arce__economic_month_info_number__c, arce__previous_valid__c, arce__table_content_parent_code_id__c,
             arce__table_content_percentage__c, arce__table_content_value__c, arce__table_content_year__c, arce__valid_fin_statement__c
             FROM arce__Table_Content_per_Analysis__c
-            WHERE arce__account_has_analysis_id__c = :recordId AND arce__table_content_parent_code_id__c=:relatedFFSS AND arce__arce_collection_order_number__c IN :ratiosCollection]; 
+            WHERE arce__account_has_analysis_id__c = :recordId AND arce__table_content_parent_code_id__c=:relatedFFSS AND arce__arce_collection_order_number__c IN :ratiosCollection];
       }
-      /**
+    /**
     *-------------------------------------------------------------------------------
     * @description Update overlay with ratingEngine value
     *--------------------------------------------------------------------------------
@@ -530,9 +578,11 @@ public without sharing class Arc_Gen_Balance_Tables_data {
     * @example updateDataValueOverlay(ahaid,dataValue)
     **/
     public static void updateDataValueOverlay(String ahaid, String dataValue) {
-        final arce__Overlay__c  overlayRecord = [Select id from arce__Overlay__c where arce__Account_has_AnalysisId__c =:ahaid limit 1];
-        overlayRecord.arce__Arc_Gen_Engine_Data_Value__c = dataValue;
-        update(overlayRecord);
+        if (Schema.sObjectType.arce__Overlay__c.isUpdateable() && Schema.sObjectType.arce__Overlay__c.isAccessible()) {
+            final arce__Overlay__c overlayRecord = [Select id from arce__Overlay__c where arce__Account_has_AnalysisId__c =:ahaid limit 1];
+            overlayRecord.arce__Arc_Gen_Engine_Data_Value__c = dataValue;
+            update(overlayRecord);
+        }
     }
 
     /**

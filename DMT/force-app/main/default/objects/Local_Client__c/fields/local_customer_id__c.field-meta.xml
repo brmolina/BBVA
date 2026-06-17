@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>local_customer_id__c</fullName>
+    <description>Clave Global del Cliente.
+
+Código del cliente global sobre el cual agrupa el cliente local correspondiente. Indicador de cliente. La relación es de 1: N con el cliente local.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>MDM</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

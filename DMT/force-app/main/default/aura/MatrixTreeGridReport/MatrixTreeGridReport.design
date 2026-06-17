@@ -1,0 +1,12 @@
+<design:component label="MatrixTreeGridReport">
+	<design:attribute name="title" required="true" label="Title" default="" />
+	<design:attribute name="queryInput" required="true" label="Query" default="" />
+	<design:attribute name="groupByLabelPrimary" required="true" label="Label Agrupación Primaria" default="" />
+	<design:attribute name="groupByFieldPrimary" required="true" label="API FieldName Agrupación Primaria" default="" />
+	<design:attribute name="groupByLabelSecondary" label="Label Agrupación Complementaria" default="" />
+	<design:attribute name="groupByFieldSecondary" label="API FieldName Agrupación Complementaria" default="" />
+	<design:attribute name="labelTotalColumn" label="Label of Total Column" default="" />
+	<design:attribute name="fieldRowPrimary" required="true" label="API FieldName primary row" default="" />
+	<design:attribute name="fieldRowChild" required="true" label="API FieldName children rows" default="" />
+	<design:attribute name="fieldDecimalValues" required="true" label="API FieldName decimal values" default="" />
+</design:component>

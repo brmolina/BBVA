@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Silver_Groups</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>DES_Tier__c</columns>
+    <columns>DES_Segment__c</columns>
+    <columns>DES_Global_Banker_Ref__c</columns>
+    <columns>DES_Country_of_Management__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Group,Account.SupraGroup</value>
+    </filters>
+    <filters>
+        <field>DES_Tier__c</field>
+        <operation>equals</operation>
+        <value>CIB-Silver</value>
+    </filters>
+    <label>Silver Groups</label>
+    <language>en_US</language>
+    <sharedTo>
+        <roleAndSubordinatesInternal>Desktop_Management</roleAndSubordinatesInternal>
+    </sharedTo>
+</ListView>

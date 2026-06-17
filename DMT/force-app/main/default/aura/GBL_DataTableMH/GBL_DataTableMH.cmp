@@ -1,0 +1,50 @@
+<aura:component controller='GBL_DataTableMH_SrvrCtrl' implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:appHostable" access="global">
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler event="c:GBL_hierarchyNodeClick" action="{!c.handleNodeClicked}"/>
+
+  <aura:attribute name="useStandard" type="Boolean" default="false" access="global"/>
+  <aura:attribute name="accountTypeField" type="String" default="" access="global"/>
+  <aura:attribute name="objectLabel" type="String" default="Subsidiaries"  access="global"/>
+
+  <aura:attribute name="accountId" type="String" default="{!v.recordId}"/>
+  <aura:attribute name="objColumns" type="List" default="[]"/>
+  <aura:attribute name="objData" type="List" default="[]"/>
+  <aura:attribute name="selectedHTypes" type="List" default="[]" />
+  <aura:attribute name="selectedVision" type="String" />
+  <aura:attribute name="ACMHAvailable" type="Boolean" default="false" />
+  <aura:attribute name="searchKey" type="String" />
+
+  <!--DataTable Infinite Scrolling Attributes-->
+  <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+  <aura:attribute name="totalRows" type="String" default="0"/>
+  <aura:attribute name="loadedRows" type="String" default="0"/>
+  <aura:attribute name="startFromRow" type="String" default="START"/>
+
+  <article aura:id="childAccountsListView" class="slds-card  slds-card_boundary ">
+    <lightning:spinner class="slds-hide" aura:id="childsSpinner" variant="brand" size="large" alternativeText="retrieving associated children"/>
+    <div class="slds-card__header">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-account" title="Children Accounts">
+                    <lightning:icon iconName="standard:account" size="small" />
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h2>
+                    <span class="slds-text-heading_small">{!v.objectLabel} (loaded {!v.loadedRows} of {!v.totalRows})</span>
+                </h2>
+            </div>
+            <c:GBL_SearchBar aura:id="childSearchBar" searchKeyChange="{!c.handleSearchKeyChangeEvent}"/>
+        </header>
+    </div>
+        <div style="max-height: 500px; overflow-y: auto;">
+            <lightning:datatable class="slds-table slds-table_bordered"
+                                data="{!v.objData}"
+                                columns="{!v.objColumns}"
+                                keyField="Id"
+                                hideCheckboxColumn="true" />
+        </div>
+    <footer class="slds-card__footer slds-hide"> Children Details
+    </footer>
+  </article>
+</aura:component>

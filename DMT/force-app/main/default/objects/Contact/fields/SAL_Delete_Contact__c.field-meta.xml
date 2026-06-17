@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SAL_Delete_Contact__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used for the Lightning quick action of Soft Deleting</description>
+    <inlineHelpText>When this field is checked the contact will be deleted.</inlineHelpText>
+    <label>Delete Contact</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,3 @@
+<design:component label="ESG-KPI Linked">
+    <design:attribute name="appPageLocation" label="Page Location" datasource="Home,Toolkit,Client" description="Use this field for make the component work properly. It indicates where in the app is placed"/>
+</design:component>

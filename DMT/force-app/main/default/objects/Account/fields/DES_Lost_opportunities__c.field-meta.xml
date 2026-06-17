@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Lost_opportunities__c</fullName>
+    <label>Lost opportunities</label>
+    <summaryFilterItems>
+        <field>AMH_Denorm_Account_Opportunity__c.DES_Opportunity_Stage_Rollup__c</field>
+        <operation>equals</operation>
+        <value>Closed Lost, Opportunity Missed</value>
+    </summaryFilterItems>
+    <summaryForeignKey>AMH_Denorm_Account_Opportunity__c.AMH_AccountId__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

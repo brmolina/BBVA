@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT"
+    description="asset to control all asset components">
+    <aura:attribute name="typeEvent" type="String" />
+    <aura:attribute name="recordID" type="sObject" />
+</aura:event>

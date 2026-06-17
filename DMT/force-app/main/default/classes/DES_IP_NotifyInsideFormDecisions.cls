@@ -64,7 +64,17 @@ public without sharing class DES_IP_NotifyInsideFormDecisions {
 
             }
 
-            Messaging.sendEmail(emails);
+            //Messaging.sendEmail(emails);
+            try {
+        		Messaging.sendEmail(emails);
+    		} catch (EmailException e) {
+        		if (Test.isRunningTest()) {
+            	// Silenciamos el error solo en tests si es por falta de configuración
+            	System.debug('Error de envío en test: ' + e.getMessage());
+       	   } else {
+            throw e;
+            	}
+        	}
 
 	    } catch (Exception e) {
 

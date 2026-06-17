@@ -1,132 +1,223 @@
 <template>
     <lightning-card title="Lista de Excepciones">
-        <div class="slds-m-around_medium">
-            <!-- Contenedor del formulario de búsqueda -->
-            <div class="slds-grid slds-gutters">
-                <!-- Primera columna -->
-                <div class="slds-col slds-size_1-of-2">
-                    <lightning-input 
-                        type="date" 
-                        label="Fecha Desde" 
-                        value={searchTimestampFrom} 
-                        data-field="searchTimestampFrom" 
-                        required 
-                        class="slds-m-bottom_small"
-                        onchange={handleInputChange}>
-                    </lightning-input>
-
+        <div class="sticky-header">
+            <div class="slds-m-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input type="date" label="Fecha Desde" value={searchTimestampFrom} data-field="searchTimestampFrom" required class="slds-m-bottom_small" onchange={handleInputChange}></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <lightning-input type="date" label="Fecha Hasta" value={searchTimestampTo} data-field="searchTimestampTo" required class="slds-m-bottom_small" onchange={handleInputChange}></lightning-input>
+                    </div>
                 </div>
 
-                <!-- Segunda columna -->
-                <div class="slds-col slds-size_1-of-2">
-                    <lightning-input 
-                        type="date" 
-                        label="Fecha Hasta" 
-                        value={searchTimestampTo} 
-                        data-field="searchTimestampTo" 
-                        required 
-                        class="slds-m-bottom_small"
-                        onchange={handleInputChange}>
-                    </lightning-input>
+                <template if:true={showError}>
+                    <div style="color: red; margin-top: 10px;">
+                        <p class="slds-text-color_error slds-m-top_small">{errorMessage}</p>
+                    </div>
+                </template>
+
+                <div class="slds-grid slds-grid_align-center slds-gutters slds-m-top_small">
+                    <div class="slds-col">
+                        <lightning-button label="Buscar" variant="brand" onclick={handleSearch}></lightning-button>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-button label="Cargar más" onclick={loadMoreRecords} disabled={isLoading}></lightning-button>
+                    </div>
+                    <div class="slds-col">
+                        <lightning-button label="Generar Reporte" variant="success" icon-name="utility:metrics" onclick={handleGenerateReport} disabled={isGeneratingReport}></lightning-button>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Mensaje de error si no se ingresan las fechas -->
-            <template if:true={showError}>
-                <div style="color: red; margin-top: 10px;"><p class="slds-text-color_error slds-m-top_small">{errorMessage}</p></div>
-            </template>
-
-            <!-- Botón de búsqueda alineado -->
-            <div class="slds-m-top_medium slds-align_absolute-center">
-                <lightning-button label="Buscar" variant="brand" onclick={handleSearch}></lightning-button>
             </div>
         </div>
 
- <!-- Tabla de datos con filtros en encabezados -->
- <div style="overflow-x: auto;">
-    <table aria-label="dmtDesExceptionTable" class="slds-table slds-table_bordered slds-table_cell-buffer" >
-        <thead>
-            <tr>
-                <th scope="col">Fecha Creación</th>
-                <th scope="col">Proyecto</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Clase</th>
-                <th scope="col">Método</th>
-                <th scope="col">Mensaje</th>
-                <th scope="col">Descargar</th>
-            </tr>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col">
-                    <lightning-input 
-                        type="text" 
-                        variant="label-hidden"
-                        placeholder="Filtrar"
-                        data-field="projectFilter"
-                        onchange={handleFilterChange}>
-                    </lightning-input>
-                </th>
-                <th scope="col">
-                    <lightning-input 
-                        type="text" 
-                        variant="label-hidden"
-                        placeholder="Filtrar"
-                        data-field="typeFilter"
-                        onchange={handleFilterChange}>
-                    </lightning-input>
-                </th>
-                <th scope="col">
-                    <lightning-input 
-                        type="text" 
-                        variant="label-hidden"
-                        placeholder="Filtrar"
-                        data-field="classFilter"
-                        onchange={handleFilterChange}>
-                    </lightning-input>
-                </th>
-                <th scope="col">
-                    <lightning-input 
-                        type="text" 
-                        variant="label-hidden"
-                        placeholder="Filtrar"
-                        data-field="methodFilter"
-                        onchange={handleFilterChange}>
-                    </lightning-input>
-                </th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <template if:true={isLoading}>
-                <tr>
-                    <td colspan="7" class="slds-align_absolute-center slds-p-vertical_medium">
-                        <lightning-spinner alternative-text="Cargando..." size="medium"></lightning-spinner>
-                    </td>
-                </tr>
-            </template>
-            <template if:false={isLoading}>
-                <template for:each={filteredRecords} for:item="record">
-                    <tr key={record.Id}>
-                        <td>{record.formattedTimestamp}</td>
-                        <td>{record.Project__c}</td>
-                        <td>{record.Type__c}</td>
-                        <td>{record.Class_Name__c}</td>
-                        <td>{record.MethodName__c}</td>
-                        <td>{record.shortMessage}</td>
-                        <td>
-                            <lightning-button-icon icon-name="utility:download" alternative-text="Descargar" onclick={handleDownload} data-id={record.Id}></lightning-button-icon>
-                        </td>
+        <div class="table-container slds-scrollable_y">
+            <table aria-label="dmtDesExceptionTable" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols slds-table_cell-buffer records-table">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="slds-is-resizable sticky-column col-date" scope="col">Fecha Creación</th>
+                        <th class="slds-is-resizable sticky-column col-project" scope="col">Proyecto</th>
+                        <th class="slds-is-resizable sticky-column col-type" scope="col">Tipo</th>
+                        <th class="slds-is-resizable sticky-column col-class" scope="col">Clase</th>
+                        <th class="slds-is-resizable sticky-column col-method" scope="col">Método</th>
+                        <th class="slds-is-resizable sticky-column col-message" scope="col">Mensaje</th>
+                        <th class="sticky-column col-detail" scope="col"></th>
                     </tr>
-                </template>
-            </template>
-        </tbody>
-    </table>
-</div>
-
-        <!-- Botón de carga de más registros -->
-        <div class="slds-m-top_medium slds-align_absolute-center">
-            <lightning-button label="Cargar más" onclick={loadMoreRecords} disabled={isLoading}></lightning-button>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col" class="sticky-filter"></th>
+                        <th scope="col" class="sticky-filter">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Filtrar" data-field="projectFilter" onchange={handleFilterChange}></lightning-input>
+                        </th>
+                        <th scope="col" class="sticky-filter">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Filtrar" data-field="typeFilter" onchange={handleFilterChange}></lightning-input>
+                        </th>
+                        <th scope="col" class="sticky-filter">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Filtrar" data-field="classFilter" onchange={handleFilterChange}></lightning-input>
+                        </th>
+                        <th scope="col" class="sticky-filter">
+                            <lightning-input type="text" variant="label-hidden" placeholder="Filtrar" data-field="methodFilter" onchange={handleFilterChange}></lightning-input>
+                        </th>
+                        <th scope="col" class="sticky-filter"></th>
+                        <th scope="col" class="sticky-filter"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template if:true={isLoading}>
+                        <tr>
+                            <td colspan="7" class="slds-align_absolute-center slds-p-vertical_medium">
+                                <lightning-spinner alternative-text="Cargando..." size="medium"></lightning-spinner>
+                            </td>
+                        </tr>
+                    </template>
+                    <template if:false={isLoading}>
+                        <template for:each={filteredRecords} for:item="record">
+                            <tr key={record.rowKey}>
+                                <td class="col-date"><span class="nowrap">{record.formattedTimestamp}</span></td>
+                                <td class="col-project"><span class="truncate-text" title={record.Project__c}>{record.Project__c}</span></td>
+                                <td class="col-type"><span class="truncate-text" title={record.Type__c}>{record.Type__c}</span></td>
+                                <td class="col-class"><span class="truncate-text" title={record.Class_Name__c}>{record.Class_Name__c}</span></td>
+                                <td class="col-method"><span class="truncate-text" title={record.MethodName__c}>{record.MethodName__c}</span></td>
+                                <td class="col-message message-cell"><span class="truncate-text" title={record.Message__c}>{record.shortMessage}</span></td>
+                                <td class="col-detail">
+                                    <lightning-button-icon icon-name="utility:preview" alternative-text="Ver detalle" title="Ver detalle" onclick={handleOpenModal} data-id={record.rowKey}></lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </tbody>
+            </table>
         </div>
     </lightning-card>
+
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="exception-modal-title" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container modal-container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="medium"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="exception-modal-title" class="slds-text-heading_medium">Detalle de la excepción</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={selectedRecord}>
+                        <div class="detail-grid">
+                            <div class="detail-card"><div class="detail-label">Fecha</div><div class="detail-value">{selectedRecord.formattedTimestamp}</div></div>
+                            <div class="detail-card"><div class="detail-label">Proyecto</div><div class="detail-value">{selectedRecord.Project__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Tipo</div><div class="detail-value">{selectedRecord.Type__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Clase</div><div class="detail-value">{selectedRecord.Class_Name__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Método</div><div class="detail-value">{selectedRecord.MethodName__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Objeto</div><div class="detail-value">{selectedRecord.Object__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Línea</div><div class="detail-value">{selectedRecord.LineNumber__c}</div></div>
+                            <div class="detail-card"><div class="detail-label">Status DML</div><div class="detail-value">{selectedRecord.DML_StatusCode__c}</div></div>
+                        </div>
+                        <div class="slds-m-top_medium">
+                            <div class="section-title">Mensaje completo</div>
+                            <div class="message-box">{selectedRecord.Message__c}</div>
+                        </div>
+                        <div class="slds-m-top_medium">
+                            <div class="section-title">Stack Trace</div>
+                            <div class="message-box">{selectedRecord.StackTrace__c}</div>
+                        </div>
+                        <div class="slds-m-top_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-wrap slds-m-bottom_x-small">
+                                <div class="section-title slds-m-bottom_x-small">JSON listo para compartir</div>
+                                <lightning-button label={copyButtonLabel} icon-name="utility:copy" onclick={copyJson}></lightning-button>
+                            </div>
+                            <textarea class="json-textarea" readonly>{selectedRecordJson}</textarea>
+                        </div>
+                    </template>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cerrar" onclick={closeModal}></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={isReportModalOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_large">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Cerrar" onclick={closeReportModal}>
+                        <lightning-icon icon-name="utility:close" size="medium"></lightning-icon>
+                        <span class="slds-assistive-text">Cerrar</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Reporte de Excepciones ({searchTimestampFrom} a {searchTimestampTo})</h2>
+                    <p class="slds-m-top_x-small">Total Analizados: <strong>{reportSummary.totalRecords}</strong> errores</p>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template if:true={isGeneratingReport}>
+                        <div class="slds-is-relative" style="height: 200px;">
+                            <lightning-spinner alternative-text="Generando reporte..." size="large"></lightning-spinner>
+                        </div>
+                    </template>
+
+                    <template if:false={isGeneratingReport}>
+                        <div class="section-title slds-m-bottom_small">Resumen por Proyecto</div>
+                        <div class="detail-grid slds-m-bottom_large">
+                            <template for:each={reportSummary.projectCounts} for:item="proj">
+                                <div key={proj.name} class="detail-card summary-card">
+                                    <div class="detail-label">{proj.name}</div>
+                                    <div class="detail-value error-count">{proj.count} errores</div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="section-title slds-m-bottom_small">Detalle de Errores Recurrentes (Clase.Método)</div>
+                        <lightning-accordion allow-multiple-sections-open>
+                            <template for:each={reportSummary.groupedErrors} for:item="group">
+                                <lightning-accordion-section key={group.id} name={group.id} label={group.label}>
+
+                                    <div class="slds-m-bottom_small">
+                                        <strong>Mensajes de error ({group.messages.length}):</strong>
+                                        <ul class="slds-list_dotted">
+                                            <template for:each={group.messages} for:item="msg">
+                                                <li key={msg.id} class="slds-truncate" title={msg.text}>{msg.text}</li>
+                                            </template>
+                                        </ul>
+                                    </div>
+
+                                    <div>
+                                        <strong>Stack Traces detectados:</strong>
+                                        <template for:each={group.stackTraces} for:item="st">
+                                            <div key={st.id} class="message-box slds-m-top_x-small report-stack-trace">
+                                                {st.text}
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                </lightning-accordion-section>
+                            </template>
+                        </lightning-accordion>
+                    </template>
+                </div>
+
+               <footer class="slds-modal__footer slds-grid slds-grid_align-spread">
+                    <lightning-button label="Cerrar Reporte" onclick={closeReportModal}></lightning-button>
+
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <lightning-button
+                                label={copySummaryLabel}
+                                icon-name="utility:chat"
+                                onclick={copyReportSummary}>
+                            </lightning-button>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-button
+                                label="Descargar CSV"
+                                variant="brand"
+                                icon-name="utility:download"
+                                onclick={exportToCSV}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
 </template>

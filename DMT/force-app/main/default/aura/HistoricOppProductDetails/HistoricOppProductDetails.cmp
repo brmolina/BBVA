@@ -1,0 +1,83 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+  controller="HistoricOppController"
+  access="global" >
+
+  <aura:attribute name="ObjectType" type="Object" />
+  <aura:attribute name="isexpandedIP" type="boolean" default="true" />
+  <aura:attribute name="opp" type="Object" />
+  <aura:attribute name="products" type="Object" />
+  <aura:attribute name="oppLineId" type="String" default="0" />
+  <aura:attribute name="oppId" type="String" default="0"/>
+  <aura:attribute name="ProductName" type="String" default="0"/>
+  <aura:attribute name="ProductFamily" type="String" default="0"/>
+
+  <aura:attribute name="members" type="List" default="[]" />
+  <aura:attribute name="sizeMembers" type="Integer" default="0" />
+  <aura:attribute name="isVisible" type="boolean" default="true"/>
+  <aura:attribute name="Spinner" type="Boolean" default="false"/>
+  <aura:attribute name="keyFields" type="List" default="[]" />
+  <aura:attribute name="currencyCode" type="String" />
+
+  <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <div class="c-container">
+    <lightning:layout multipleRows="true">
+      <lightning:layoutItem padding="around-small" size="12">
+        <lightning:card>
+              <aura:set attribute="title">
+                <lightning:icon iconName="standard:product" alternativeText="Product" title="Product" class="iconMargin"/>
+                  {!v.ProductFamily} - {!v.ProductName}
+              </aura:set>
+              <aura:set attribute="footer">
+                <div class="slds-tile__detail content-fix">
+                  <dl class="slds-list_horizontal">
+                    <aura:iteration items="{!v.keyFields}" var="keyField" indexVar="index">
+                      <dt class="slds-item_label">
+                        <dl class="slds-list_vertical">
+                          <dt class="slds-item_label slds-text-color_weak listClass">{!keyField.label}</dt>
+                          <dd class="slds-item_detail slds-truncate">{!keyField.value + ' ' + v.currencyCode}</dd>
+                        </dl>
+                      </dt>
+                    </aura:iteration>
+                  </dl>
+                </div>
+              </aura:set>
+            </lightning:card>
+      </lightning:layoutItem>
+      <lightning:layoutItem padding="around-small" size="12">
+        <div class="page-section page-main">
+          <div aura:id="viewFormIP">
+            <div class="slds-section full forcePageBlockSection forcePageBlockSectionView slds-is-open">
+              <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate" title="Section Title">Details</span>
+              </h3>
+              <div class="slds-section__content">
+                <div class="slds-form slds-form_stacked ">
+                  <div class="slds-grid slds-wrap">
+                    <aura:iteration items="{!v.ObjectType.Items[0]}" var="itemOpp" indexVar="index">
+                      <aura:if isTrue="{!itemOpp.name != 'Id'}">
+                        <div class="slds-col slds-size_1-of-2 " role="listitem">
+                          <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                            <span class="slds-form-element__label">{!itemOpp.label}</span>
+                            <div class="slds-form-element__control">
+                              <lightning:layout class="slds-hint-parent">
+                                <div class="slds-form-element__static">
+                                  <lightning:formattedText value="{!itemOpp.value}" />
+                                </div>
+                              </lightning:layout>
+                            </div>
+                          </div>
+                        </div>
+                      </aura:if>
+                    </aura:iteration>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </lightning:layoutItem>
+    </lightning:layout>
+  </div>
+</aura:component>

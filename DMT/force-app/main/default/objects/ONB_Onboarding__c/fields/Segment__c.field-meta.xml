@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Segment__c</fullName>
+    <label>Segment</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BANKS</fullName>
+                <default>false</default>
+                <label>BANKS</label>
+            </value>
+            <value>
+                <fullName>BROKER DEALER</fullName>
+                <default>false</default>
+                <label>BROKER DEALER</label>
+            </value>
+            <value>
+                <fullName>HEDGE FUNDS</fullName>
+                <default>false</default>
+                <label>HEDGE FUNDS</label>
+            </value>
+            <value>
+                <fullName>FINANCIAL SPONSORS &amp; PRIVATE EQUITY FUNDS</fullName>
+                <default>false</default>
+                <label>FINANCIAL SPONSORS &amp; PRIVATE EQUITY FUNDS</label>
+            </value>
+            <value>
+                <fullName>INVESTMENT FUNDS</fullName>
+                <default>false</default>
+                <label>INVESTMENT FUNDS</label>
+            </value>
+            <value>
+                <fullName>PENSION FUNDS</fullName>
+                <default>false</default>
+                <label>PENSION FUNDS</label>
+            </value>
+            <value>
+                <fullName>INSURANCE</fullName>
+                <default>false</default>
+                <label>INSURANCE</label>
+            </value>
+            <value>
+                <fullName>CENTRAL BANKS</fullName>
+                <default>false</default>
+                <label>CENTRAL BANKS</label>
+            </value>
+            <value>
+                <fullName>PUBLIC INSTITUTIONS</fullName>
+                <default>false</default>
+                <label>PUBLIC INSTITUTIONS</label>
+            </value>
+            <value>
+                <fullName>CORPORATES - NON BANKING FINANCIAL INST</fullName>
+                <default>false</default>
+                <label>CORPORATES - NON BANKING FINANCIAL INST</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

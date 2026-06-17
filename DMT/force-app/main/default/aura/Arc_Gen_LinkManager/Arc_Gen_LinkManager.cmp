@@ -1,0 +1,7 @@
+<aura:component access="global">
+    <aura:attribute name="label" type="String" access="global" description="Message to show"/>
+    <aura:attribute name="link" type="String" access="global" description="link reference"/>
+    <div class="slds-p-around_medium">
+        <p><lightning:formattedUrl value="{!v.link}" tooltip="{!v.link}" label="{!v.label}" target="_blank" /></p>
+    </div>
+</aura:component>

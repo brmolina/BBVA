@@ -325,7 +325,7 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
       SELECT Id, Name, DES_Group_Code__c, gf_customer_prospect_id__c, DES_Country_Client__c, DES_ID_Fiscal__c,GDT_Delegation__c, g_country_subdivision_id__c,
       DES_Entity_Hierarchy__c, OwnerId, participant_id__c, gf_cust_orig_prospect_ind_type__c, DES_Activity__c, gf_data_institution_type_name__c,
       (select local_customer_id__c, taxpayer_id__c, gf_data_institution_type_name__c from Local_Clients__r LIMIT 1),
-      (select id from dwp_acmh__Accounts_Relationships1__r)
+      (select id from AMH_Accounts_Relationships1__r)
       FROM Account WHERE Id =: standardAccounts
     ];
 
@@ -343,7 +343,7 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
       wrapper.branchId = BRANCHID;
       wrapper.country = acc.DES_Country_Client__c;
       wrapper.globalId = wrapper.accNumber; // Alpha code
-      wrapper.parentSubsidiary = getTypes(acc.DES_Entity_Hierarchy__c, acc.dwp_acmh__Accounts_Relationships1__r);
+      wrapper.parentSubsidiary = getTypes(acc.DES_Entity_Hierarchy__c, acc.AMH_Accounts_Relationships1__r);
       wrapper.isProspect = acc.gf_cust_orig_prospect_ind_type__c;
       wrapper.econActSector = Util_PickList.getLabelFromAPI('Account', 'DES_Activity__c').get(acc.DES_Activity__c);
       wrapper.isIFISClient = isIfisClient(wrapper.econActSector);
@@ -382,18 +382,18 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
       parentIds.add(acc.Cib_Client__c);
     }
 
-    final List<dwp_acmh__GBL_Account_Relationship__c > parentGroup =
-      [select id, dwp_acmh__Child_Account__c
-      from dwp_acmh__GBL_Account_Relationship__c
-      where dwp_acmh__Child_Account__c =: parentIds
-      AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+    final List<AMH_GBL_Account_Relationship__c > parentGroup =
+      [select id, AMH_Child_Account__c
+      from AMH_GBL_Account_Relationship__c
+      where AMH_Child_Account__c =: parentIds
+      AND AMH_Parent_Account__r.account_group__c = '3'];
 
-      final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
-      for(dwp_acmh__GBL_Account_Relationship__c rel : parentGroup) {
-        if(!accRelMap.containsKey(rel.dwp_acmh__Child_Account__c)) {
-          accRelMap.put(rel.dwp_acmh__Child_Account__c, new List<dwp_acmh__GBL_Account_Relationship__c>());
+      final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
+      for(AMH_GBL_Account_Relationship__c rel : parentGroup) {
+        if(!accRelMap.containsKey(rel.AMH_Child_Account__c)) {
+          accRelMap.put(rel.AMH_Child_Account__c, new List<AMH_GBL_Account_Relationship__c>());
         }
-        accRelMap.get(rel.dwp_acmh__Child_Account__c).add(rel);
+        accRelMap.get(rel.AMH_Child_Account__c).add(rel);
       }
 
     for(Local_Client__c loc : lstAcc) {
@@ -770,18 +770,18 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
         }
            System.debug('>>>>>>>>>>>>>>> Entra mapCClient' + mapCClient);
         final List<Account> lstEspej = [
-          SELECT Id, Name, SER_CClient__c, DES_Country_Client__c, DES_ID_Fiscal__c, GDT_Delegation__c, g_country_subdivision_id__c,
+          SELECT Id, Name, g_customer_id__c, DES_Country_Client__c, DES_ID_Fiscal__c, GDT_Delegation__c, g_country_subdivision_id__c,
           DES_Entity_Hierarchy__c, OwnerId, participant_id__c, gf_cust_orig_prospect_ind_type__c, DES_Activity__c, gf_data_institution_type_name__c,
           (select local_customer_id__c, taxpayer_id__c, gf_data_institution_type_name__c from Local_Clients__r LIMIT 1)
           FROM Account
-          WHERE SER_CClient__c IN: mapCClient.keySet()
+          WHERE g_customer_id__c IN: mapCClient.keySet()
         ];
         if(lstEspej != null && !lstEspej.isEmpty()) {
           System.debug('>>>>>>>>>>>>>>> Entra espejo');
           for(Account acc : lstEspej) {
             final arce.Arc_Gen_Account_Wrapper wrapper = new arce.Arc_Gen_Account_Wrapper();
             wrapper.accId = acc.Id;
-            wrapper.accNumber = mapCClient.get(acc.SER_CClient__c);
+            wrapper.accNumber = mapCClient.get(acc.g_customer_id__c);
             wrapper.name = acc.Name;
             wrapper.bankId = getBankId(acc.DES_Country_Client__c);
             wrapper.participantType = acc.DES_Entity_Hierarchy__c == null ? CLIENT : acc.DES_Entity_Hierarchy__c == 'S' ? S_GROUP : CLIENT;
@@ -825,9 +825,9 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
     try{
         final List<Local_Client__c> lcClient = [SELECT Id, Cib_Client__c FROM Local_Client__c WHERE Alpha_code__c =: alphaCode LIMIT 1];
         final List<Account> lstAcc = [Select Id, DES_Main_Parent__c from Account WHERE Id =: lcClient[0].Cib_Client__c LIMIT 1];
-        final list <dwp_acmh__GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, dwp_acmh__Parent_Account__r.account_group__c, dwp_acmh__Parent_Account__c from dwp_acmh__GBL_Account_Relationship__c where dwp_acmh__Child_Account__c =: lstAcc[0].Id AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+        final list <AMH_GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, AMH_Parent_Account__r.account_group__c, AMH_Parent_Account__c from AMH_GBL_Account_Relationship__c where AMH_Child_Account__c =: lstAcc[0].Id AND AMH_Parent_Account__r.account_group__c = '3'];
         if(parentGroup != null && !parentGroup.isEmpty()){
-          Id accountId = parentGroup[0].dwp_acmh__Parent_Account__c;
+          Id accountId = parentGroup[0].AMH_Parent_Account__c;
           toolkitId = String.valueOf(cstk.Utils.getToolkitId(accountId));
         }else{
           Id accountId = lstAcc[0].DES_Main_Parent__c;
@@ -893,18 +893,18 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
               parentIds.add(acc.Cib_Client__c);
             }
 
-            final List<dwp_acmh__GBL_Account_Relationship__c > parentGroup =
-              [select id, dwp_acmh__Child_Account__c
-              from dwp_acmh__GBL_Account_Relationship__c
-              where dwp_acmh__Child_Account__c =: parentIds
-              AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+            final List<AMH_GBL_Account_Relationship__c > parentGroup =
+              [select id, AMH_Child_Account__c
+              from AMH_GBL_Account_Relationship__c
+              where AMH_Child_Account__c =: parentIds
+              AND AMH_Parent_Account__r.account_group__c = '3'];
 
-              final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
-              for(dwp_acmh__GBL_Account_Relationship__c rel : parentGroup) {
-                if(!accRelMap.containsKey(rel.dwp_acmh__Child_Account__c)) {
-                  accRelMap.put(rel.dwp_acmh__Child_Account__c, new List<dwp_acmh__GBL_Account_Relationship__c>());
+              final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
+              for(AMH_GBL_Account_Relationship__c rel : parentGroup) {
+                if(!accRelMap.containsKey(rel.AMH_Child_Account__c)) {
+                  accRelMap.put(rel.AMH_Child_Account__c, new List<AMH_GBL_Account_Relationship__c>());
                 }
-                accRelMap.get(rel.dwp_acmh__Child_Account__c).add(rel);
+                accRelMap.get(rel.AMH_Child_Account__c).add(rel);
               }
 
             for (Local_Client__c acc : lstAcc) {
@@ -979,18 +979,18 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
               parentIds.add(acc.Cib_Client__c);
             }
 
-            final List<dwp_acmh__GBL_Account_Relationship__c > parentGroup =
-              [select id, dwp_acmh__Child_Account__c
-              from dwp_acmh__GBL_Account_Relationship__c
-              where dwp_acmh__Child_Account__c =: parentIds
-              AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+            final List<AMH_GBL_Account_Relationship__c > parentGroup =
+              [select id, AMH_Child_Account__c
+              from AMH_GBL_Account_Relationship__c
+              where AMH_Child_Account__c =: parentIds
+              AND AMH_Parent_Account__r.account_group__c = '3'];
 
-              final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
-              for(dwp_acmh__GBL_Account_Relationship__c rel : parentGroup) {
-                if(!accRelMap.containsKey(rel.dwp_acmh__Child_Account__c)) {
-                  accRelMap.put(rel.dwp_acmh__Child_Account__c, new List<dwp_acmh__GBL_Account_Relationship__c>());
+              final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
+              for(AMH_GBL_Account_Relationship__c rel : parentGroup) {
+                if(!accRelMap.containsKey(rel.AMH_Child_Account__c)) {
+                  accRelMap.put(rel.AMH_Child_Account__c, new List<AMH_GBL_Account_Relationship__c>());
                 }
-                accRelMap.get(rel.dwp_acmh__Child_Account__c).add(rel);
+                accRelMap.get(rel.AMH_Child_Account__c).add(rel);
               }
             
             for (Local_Client__c acc : lstAcc) {
@@ -1069,18 +1069,18 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
             parentIds.add(acc.Cib_Client__c);
         }
 
-        final List<dwp_acmh__GBL_Account_Relationship__c > parentGroup =
-            [select id, dwp_acmh__Child_Account__c
-            from dwp_acmh__GBL_Account_Relationship__c
-            where dwp_acmh__Child_Account__c =: parentIds
-            AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+        final List<AMH_GBL_Account_Relationship__c > parentGroup =
+            [select id, AMH_Child_Account__c
+            from AMH_GBL_Account_Relationship__c
+            where AMH_Child_Account__c =: parentIds
+            AND AMH_Parent_Account__r.account_group__c = '3'];
 
-            final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
-            for(dwp_acmh__GBL_Account_Relationship__c rel : parentGroup) {
-                if(!accRelMap.containsKey(rel.dwp_acmh__Child_Account__c)) {
-                    accRelMap.put(rel.dwp_acmh__Child_Account__c, new List<dwp_acmh__GBL_Account_Relationship__c>());
+            final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
+            for(AMH_GBL_Account_Relationship__c rel : parentGroup) {
+                if(!accRelMap.containsKey(rel.AMH_Child_Account__c)) {
+                    accRelMap.put(rel.AMH_Child_Account__c, new List<AMH_GBL_Account_Relationship__c>());
                 }
-                accRelMap.get(rel.dwp_acmh__Child_Account__c).add(rel);
+                accRelMap.get(rel.AMH_Child_Account__c).add(rel);
             }
 
         for (Local_Client__c acc : accList) {
@@ -1175,7 +1175,7 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
     if(accList[0].DES_Entity_Hierarchy__c == 'S'){
       type = 'GROUP';
     }else{
-        final list <dwp_acmh__GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, dwp_acmh__Parent_Account__r.account_group__c from dwp_acmh__GBL_Account_Relationship__c where dwp_acmh__Child_Account__c =: accList[0].Id AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+        final list <AMH_GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, AMH_Parent_Account__r.account_group__c from AMH_GBL_Account_Relationship__c where AMH_Child_Account__c =: accList[0].Id AND AMH_Parent_Account__r.account_group__c = '3'];
         if (parentGroup != null && !parentGroup.isEmpty()){
             type = 'SUBGROUP';
         }else{
@@ -1200,7 +1200,7 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
     if(accList[0].DES_Entity_Hierarchy__c == 'S'){
       type = 'GROUP';
     }else{
-        final list <dwp_acmh__GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, dwp_acmh__Parent_Account__r.account_group__c from dwp_acmh__GBL_Account_Relationship__c where dwp_acmh__Child_Account__c =: accNumber AND dwp_acmh__Parent_Account__r.account_group__c = '3'];
+        final list <AMH_GBL_Account_Relationship__c > parentGroup = [select id, DES_Type__c, AMH_Parent_Account__r.account_group__c from AMH_GBL_Account_Relationship__c where AMH_Child_Account__c =: accNumber AND AMH_Parent_Account__r.account_group__c = '3'];
         if (parentGroup != null && !parentGroup.isEmpty()){
             type = 'SUBGROUP';
         }else{
@@ -1212,14 +1212,14 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
   
   /**
   *-------------------------------------------------------------------------------
-  * @description  Method "getTypes" gets type of Account.
+  * @description  Method "getTypes" gets type of Account.
   --------------------------------------------------------------------------------
   * @author hectorjeshua.vasquez.contractor@bbva.com | 31/03/2023
   * @param String accNumber
-  * @return   String of account type
+  * @return   String of account type
   * @example Arc_Gen_Group_Structure_Wrapper getTypes(accNumber);
   **/
-  global static String getTypes(String entHierarchy, List<dwp_acmh__GBL_Account_Relationship__c> accRel) {
+  global static String getTypes(String entHierarchy, List<AMH_GBL_Account_Relationship__c> accRel) {
       String type;
       if(entHierarchy == 'S'){
         type = 'GROUP';
@@ -1268,14 +1268,14 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
         return mapData;
     }
     private static Map<String, Object> getMatrixFromCibGroup(Map<String, Object> mapInfo) {
-        final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
+        final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
         final arce.Arc_Gen_Account_Wrapper wrapper = new arce.Arc_Gen_Account_Wrapper();
         final Map<String, Object> mapData = new Map<String, Object>();
         String currentAcc = (String) mapInfo.get('getMatrixFromCibGroup');
 
         try {
 
-			      final List<Account> lisAcc = [SELECT Id from Account WHERE DES_Main_Parent__c =:currentAcc AND business_group_header_type__c = true AND account_client__c = 'S'];
+            final List<Account> lisAcc = [SELECT Id from Account WHERE DES_Main_Parent__c =:currentAcc AND business_group_header_type__c = true AND account_client__c = 'S'];
             final Local_Client__c locClient = [SELECT Id,CurrencyIsoCode,Name,Cib_Client__c,Alpha_code__c,OwnerId,taxpayer_id__c,Cib_Client__r.DES_Entity_Hierarchy__c,Cib_Client__r.DES_Main_Parent__c,Cib_Client__r.DES_Main_Parent__r.DES_Group_Code__c, g_residence_country_id__c,Booking_country_code__c,local_customer_id__c,Cib_Client__r.GDT_Delegation__c,Cib_Client__r.DES_Activity__c,entity_id__c, gf_data_institution_type_name__c from Local_Client__c WHERE Cib_Client__c = :lisAcc[0].Id AND gf_prtcpt_act_status_ind_type__c = true AND entity_id__c IN ('0182','0074','0013','0011','0017','7714','0069','9120') LIMIT 1];
 
             wrapper.accId = locClient.Id;
@@ -1311,11 +1311,11 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
     }
     private static Map<String, Object> getSubsFromCibGroup(Map<String, Object> mapInfo) {
         final Map<String, List<String>> mapWrapper = new Map<String, List<String>>();
-        final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
+        final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
         String currentAcc = (String) mapInfo.get('getSubsFromCibGroup');
 
         try {
-			final List<Account> lisAcc = [SELECT Id from Account WHERE DES_Main_Parent__c =:currentAcc AND business_group_header_type__c = false];
+      final List<Account> lisAcc = [SELECT Id from Account WHERE DES_Main_Parent__c =:currentAcc AND business_group_header_type__c = false];
             Set<Id> setAccounts = new Set<Id>();
             if (!lisAcc.isEmpty()) {
                 for(Account acc: lisAcc) {
@@ -1346,13 +1346,13 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
     }
     private static Map<String, Object> getSubsGroupsFromCibGroup(Map<String, Object> mapInfo) {
         final Map<String, List<String>> mapWrapper = new Map<String, List<String>>();
-        final Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<dwp_acmh__GBL_Account_Relationship__c>>();
+        final Map<Id, List<AMH_GBL_Account_Relationship__c>> accRelMap = new Map<Id, List<AMH_GBL_Account_Relationship__c>>();
         final String currentAcc = (String) mapInfo.get('getSubsGroupsFromCibGroup');
 
         try {
-      final List<dwp_acmh__GBL_Account_Relationship__c> accRelSubGroups = [SELECT Id, dwp_acmh__Child_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Parent_Account__c =:currentAcc AND dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Child_Account__r.account_group__c = '3'];
+      final List<AMH_GBL_Account_Relationship__c> accRelSubGroups = [SELECT Id, AMH_Child_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Parent_Account__c =:currentAcc AND AMH_Vision__c = 'Riesgos' AND AMH_Child_Account__r.account_group__c = '3'];
             final Set<String> setSubGroups = getSetChildAccount(accRelSubGroups);
-            final List<dwp_acmh__GBL_Account_Relationship__c> accCabSubGroups = [SELECT Id, dwp_acmh__Child_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Parent_Account__c IN :setSubGroups AND dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Child_Account__r.account_client__c = 'S'];
+            final List<AMH_GBL_Account_Relationship__c> accCabSubGroups = [SELECT Id, AMH_Child_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Parent_Account__c IN :setSubGroups AND AMH_Vision__c = 'Riesgos' AND AMH_Child_Account__r.account_client__c = 'S'];
             final Set<String> setCabSubGroups = getSetChildAccount(accCabSubGroups);
             final List<Local_Client__c> lstLocClient = [SELECT Id,CurrencyIsoCode,Name,Cib_Client__c,Alpha_code__c,OwnerId,taxpayer_id__c,Cib_Client__r.DES_Entity_Hierarchy__c,g_residence_country_id__c,Booking_country_code__c,local_customer_id__c,Cib_Client__r.GDT_Delegation__c,Cib_Client__r.DES_Activity__c,entity_id__c,country_id__c from Local_Client__c WHERE Cib_Client__c IN :setCabSubGroups AND gf_prtcpt_act_status_ind_type__c = true AND entity_id__c IN ('0182','0074','0013','0011','0017','7714','0069','9120')];
             for(Local_Client__c locClient : lstLocClient) {
@@ -1375,10 +1375,10 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
         System.debug('mapData en getSubsGroupsFromCibGroup es: ' + JSON.serialize(mapWrapper));
         return mapWrapper;
     }
-    private static Set<String> getSetChildAccount(List<dwp_acmh__GBL_Account_Relationship__c> accRelSubGroups) {
+    private static Set<String> getSetChildAccount(List<AMH_GBL_Account_Relationship__c> accRelSubGroups) {
         final Set<String> setChildAccount = new Set<String>();
-        for(dwp_acmh__GBL_Account_Relationship__c accRel : accRelSubGroups) {
-            setChildAccount.add(accRel.dwp_acmh__Child_Account__c);
+        for(AMH_GBL_Account_Relationship__c accRel : accRelSubGroups) {
+            setChildAccount.add(accRel.AMH_Child_Account__c);
         }
     return setChildAccount;
     }
@@ -1463,12 +1463,12 @@ global without sharing class DES_Arc_Account_Locator implements arce.Arc_Gen_Acc
       mapaAccAlphaCode.put(locCli.Cib_Client__c, locCli.Alpha_code__c);
     }
 
-    final List<dwp_acmh__GBL_Account_Relationship__c > parentSubGroup = [SELECT id, dwp_acmh__Child_Account__c, dwp_acmh__Parent_Account__r.account_group__c, dwp_acmh__Child_Account__r.business_group_header_type__c, dwp_acmh__Child_Account__r.account_client__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c =: parentIds AND dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Parent_Account__r.account_group__c = '3' AND dwp_acmh__Child_Account__r.account_client__c = 'S'];
-    final List<dwp_acmh__GBL_Account_Relationship__c > parentGroup = [SELECT id, dwp_acmh__Child_Account__c, dwp_acmh__Parent_Account__r.account_group__c, dwp_acmh__Child_Account__r.business_group_header_type__c, dwp_acmh__Child_Account__r.account_client__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c =: parentIds AND dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Parent_Account__r.account_group__c = '1A' AND DES_Main_Parent__c = 'S' AND dwp_acmh__Child_Account__r.account_client__c = 'S'];      
+    final List<AMH_GBL_Account_Relationship__c > parentSubGroup = [SELECT id, AMH_Child_Account__c, AMH_Parent_Account__r.account_group__c, AMH_Child_Account__r.business_group_header_type__c, AMH_Child_Account__r.account_client__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c =: parentIds AND AMH_Vision__c = 'Riesgos' AND AMH_Parent_Account__r.account_group__c = '3' AND AMH_Child_Account__r.account_client__c = 'S'];
+    final List<AMH_GBL_Account_Relationship__c > parentGroup = [SELECT id, AMH_Child_Account__c, AMH_Parent_Account__r.account_group__c, AMH_Child_Account__r.business_group_header_type__c, AMH_Child_Account__r.account_client__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c =: parentIds AND AMH_Vision__c = 'Riesgos' AND AMH_Parent_Account__r.account_group__c = '1A' AND DES_Main_Parent__c = 'S' AND AMH_Child_Account__r.account_client__c = 'S'];      
     if(!parentSubGroup.isEmpty()) {
-        mapToRet.put(mapaAccAlphaCode.get(parentSubGroup[0].dwp_acmh__Child_Account__c), 'PARENT_SUBGROUP');
+        mapToRet.put(mapaAccAlphaCode.get(parentSubGroup[0].AMH_Child_Account__c), 'PARENT_SUBGROUP');
     } else if(!parentGroup.isEmpty()) {
-        mapToRet.put(mapaAccAlphaCode.get(parentGroup[0].dwp_acmh__Child_Account__c), 'PARENT_GROUP');
+        mapToRet.put(mapaAccAlphaCode.get(parentGroup[0].AMH_Child_Account__c), 'PARENT_GROUP');
     }
     return mapToRet;
   }

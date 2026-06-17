@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_From_Draft_To_Closed_Won_Lost</fullName>
+    <active>true</active>
+    <description>Desde el estado Draft no se puede cerrar una oportunidad</description>
+    <errorConditionFormula>AND(
+				OR(
+								AND(
+												opportunity_expiration_ind_type__c = true,
+												NOT(ISPICKVAL(StageName,&apos;Closed Lost&apos;))
+								),
+								opportunity_expiration_ind_type__c = false
+				),
+				OR(
+								RecordType.DeveloperName=&apos;Draft_Opportunity&apos;,
+								RecordType.DeveloperName=&apos;Confidential_Opportunity&apos;,
+								RecordType.DeveloperName=&apos;Privileged_Opportunity&apos;
+				),
+				OR(
+								ISPICKVAL(StageName,&apos;Ready to close&apos;),
+								ISPICKVAL(StageName,&apos;Closed Won&apos;),
+								ISPICKVAL(StageName,&apos;Approval&apos;)
+				),
+				ISPICKVAL(PRIORVALUE(StageName),&apos;Draft Opp&apos;)
+)</errorConditionFormula>
+    <errorMessage>In order to close the opportunity, please advance to the stage &apos;Proposal&apos;.</errorMessage>
+</ValidationRule>

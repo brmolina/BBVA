@@ -1,0 +1,9 @@
+<aura:documentation>
+    <aura:description>
+        <p>name="record" description="Holds the single record instance"</p>
+        <p>name="subHeadingFieldsAPI" description="Holds the field API names to show as meta entity in list"</p>
+        <p>name="subHeadingFieldValues" description="Used to construct the meta entity value. Works as subheading in record option"</p>
+        <p>name="iconCategoryName" description="Lightning icon category and icon name to show with each record element"</p>
+        <p>name="lookupChoose"  description="Event used to send the selected record Id and Name to Lookup component"</p>
+    </aura:description>
+</aura:documentation>

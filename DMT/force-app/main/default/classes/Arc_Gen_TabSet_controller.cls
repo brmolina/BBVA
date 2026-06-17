@@ -47,8 +47,13 @@
 *             Add warningMessage attribute wrapper and call method for fill.
 * -----------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('PMD.ExcessivePublicCount')
-public class Arc_Gen_TabSet_controller {
+@SuppressWarnings('PMD.ExcessivePublicCount, PMD.EmptyStatementBlock')
+public without sharing class Arc_Gen_TabSet_controller {
+    /**
+    * @Description: Literal for 'arce__Account_has_Analysis__c'
+    */
+    static final String ACCHAS_LITERAL = 'arce__Account_has_Analysis__c';
+
     /**
     * ----------------------------------------------------------------------------------------------------
     * @Description Void Constructor to avoid warning in sonar qube
@@ -58,6 +63,7 @@ public class Arc_Gen_TabSet_controller {
     * @example Arc_Gen_TabSet_controller controller = new Arc_Gen_TabSet_controller()
     * ----------------------------------------------------------------------------------------------------
     **/
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @TestVisible
     private Arc_Gen_TabSet_controller() {
 
@@ -87,7 +93,7 @@ public class Arc_Gen_TabSet_controller {
         /**
         * @Description: Description of the response
         */
-        @AuraEnabled public String gblDescriptionResponse {get;set;}
+        @AuraEnabled public String gblDesResponse {get;set;}
         /**
         * @Description: Boolean param to change the arce status
         */
@@ -95,7 +101,7 @@ public class Arc_Gen_TabSet_controller {
         /**
         * @Description: Message to show if the unit have been change
         */
-        @AuraEnabled public String unitChangeResponse {get;set;}
+        @AuraEnabled public String unitChangeRes {get;set;}
         /**
         * @Description: manage the columns in the policie table
         */
@@ -104,6 +110,34 @@ public class Arc_Gen_TabSet_controller {
         * @Description: warning arce finalized
         */
         @AuraEnabled public boolean warningMessage {get;set;}
+        /**
+        * @Description: ffss id
+        */
+        @AuraEnabled public String ffssId {get;set;}
+        /**
+        * @Description: modifier id
+        */
+        @AuraEnabled public String modifiId {get;set;}
+        /**
+        * @Description: arce__Rating_variables_details__c id
+        */
+        @AuraEnabled public String ratingVarDet {get;set;}
+        /**
+        * @Description: arce__Activity_Split__c id
+        */
+        @AuraEnabled public String actSplId {get;set;}
+        /**
+        * @Description: arce__Account_has_Analysis__c id
+        */
+        @AuraEnabled public String ahaId {get;set;}
+        /**
+        * @Description: arce__AHA_Extension__c id
+        */
+        @AuraEnabled public String ahaExtId {get;set;}
+        /**
+        * @Description: ahaObj List
+        */
+        @AuraEnabled public List<arce__Account_has_Analysis__c> ahaObj {get;set;}
     }
     /**
     * -----------------------------------------------------------------------------------------------
@@ -155,14 +189,64 @@ public class Arc_Gen_TabSet_controller {
             wrapper.gblPermissionEdit = Arc_Gen_TabSet_service.getPermissionToEdit(recordId);
             wrapper.columnReduction = Arc_Gen_TabSet_service.getColumnReduction(recordId);
             wrapper.warningMessage = Arc_Gen_TabSet_service.getWarningMessage(recordId, resJSON);
+            wrapper.ahaObj = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<Id>{recordId});
+            wrapper.ahaId = wrapper.ahaObj[0].Id;
+            wrapper.ahaExtId = wrapper.ahaObj[0].arce__AHA_Extension__c;
+            final List<arce__Activity_Split__c> actSplIds = wrapper.ahaObj.isEmpty() ? new List<arce__Activity_Split__c>() : getactSplId(recordId);
+            wrapper.actSplId = actSplIds.isEmpty() ? '' : actSplIds[0].Id;
+            wrapper.ffssId = wrapper.ahaObj.isEmpty() ? '' : wrapper.ahaObj[0].arce__ffss_for_rating_id__c;
+            final List<arce__rating_variables_detail__c> ratingVars = wrapper.ahaObj.isEmpty() ? new List<arce__rating_variables_detail__c>() : getRatingVariableDet(recordId);
+            wrapper.ratingVarDet = ratingVars.isEmpty() ? '' : ratingVars[0].Id;
+            wrapper.modifiId = recordId == null ? null : arce.Arc_Gen_Modifiers_Utils.getModifierInfo(new Set<String>{ String.valueOf(recordId) })[0]?.Id;
         } catch (Arc_Gen_TabSet_service.NoTabsetConfigFoundException ex) {
             wrapper.gblResultResponse = false;
-            wrapper.gblDescriptionResponse = ex.getMessage();
+            wrapper.gblDesResponse= ex.getMessage();
         } catch(Exception ex) {
             wrapper.gblResultResponse = false;
-            wrapper.gblDescriptionResponse = ex.getMessage() + ' : ' + ex.getLineNumber();
+            wrapper.gblDesResponse= ex.getMessage() + ' : ' + ex.getLineNumber();
         }
         return JSON.serialize(wrapper);
+    }
+    /*----------------------------------------------------------------------------------------------------
+    *@Description
+    * ----------------------------------------------------------------------------------------------------
+    * @Author   Noelia.ruiz.lopez.contractor@bbva.com
+    * @Date     10-04-2025
+    * @param    accHasAnId - The ID of the Account has Analysis Standard record (18-character ID)
+    * @param    accHasAnId - Valid 18-character Account has Analysis ID
+    * @return   List<arce__rating_variables_detail__c> - Never null, may be empty
+    * ----------------------------------------------------------------------------------------------------
+    **/
+    @AuraEnabled
+    public static List<arce__rating_variables_detail__c> getRatingVariableDet(String accHasAnId) {
+        List<arce__rating_variables_detail__c> result = new List<arce__rating_variables_detail__c>();
+        if (!String.isBlank(accHasAnId)) {
+            final String queryString = 'SELECT ' + arce.Arc_Gen_GenericUtilities.getAllFields('arce__rating_variables_detail__c') +
+                                ' FROM arce__rating_variables_detail__c WHERE arce__account_has_analysis_id__c = :accHasAnId';
+            result = Database.query(String.escapeSingleQuotes(queryString));
+        }
+        return result;
+    }
+    /*----------------------------------------------------------------------------------------------------
+    *@Description
+    * ----------------------------------------------------------------------------------------------------
+    * @Author   Noelia.ruiz.lopez.contractor@bbva.com
+    * @Date     10-04-2025
+    * @param    accHasAnId - The ID of the Account has Analysis Standard record (18-character ID)
+    * @param    accHasAnId - Valid 18-character Account has Analysis ID
+    * @return   List<arce__rating_variables_detail__c> - Never null, may be empty
+    * ----------------------------------------------------------------------------------------------------
+    **/
+    @AuraEnabled
+    public static List<arce__Activity_Split__c> getactSplId(String accHasAnId) {
+        List<arce__Activity_Split__c> result = new List<arce__Activity_Split__c>();
+        if (!String.isBlank(accHasAnId)) {
+            final String queryString = 'SELECT ' + arce.Arc_Gen_GenericUtilities.getAllFields('arce__Activity_Split__c') +
+                                ' FROM arce__Activity_Split__c' +
+                                ' WHERE arce__Account_has_Analysis__c = :accHasAnId';
+            result = Database.query(String.escapeSingleQuotes(queryString));
+        }
+        return result;
     }
     /*
     * -----------------------------------------------------------------------------------------------
@@ -176,14 +260,14 @@ public class Arc_Gen_TabSet_controller {
     @AuraEnabled
     public static TabsWrapper callTemplateAnalysisJson(String recordId) {
         final TabsWrapper wrapperResp = new TabsWrapper();
-        Id recId = (Id) recordId;
-        if (recId.getSobjectType().getDescribe().getName() == 'arce__Account_has_Analysis__c') {
+        final Id recId = (Id) recordId;
+        if (recId.getSobjectType().getDescribe().getName() == ACCHAS_LITERAL) {
             try {
                 wrapperResp.changeStatus = Arc_Gen_TabSet_service.changeArceState(recordId);
-                wrapperResp.gblDescriptionResponse = Arc_Gen_TabSet_service.getTemplatesByAccHasAnalysisJson(recordId);
-                wrapperResp.unitChangeResponse = Arc_Gen_TabSet_service.getUnitChangeResponse(recordId);
+                wrapperResp.gblDesResponse= Arc_Gen_TabSet_service.getTemplatesByAccHasAnalysisJson(recordId);
+                wrapperResp.unitChangeRes = Arc_Gen_TabSet_service.getUnitChangeResponse(recordId);
             } catch(Exception ex) {
-                wrapperResp.gblDescriptionResponse = ex.getMessage();
+                wrapperResp.gblDesResponse= ex.getMessage();
             }
         }
         return wrapperResp;
@@ -223,7 +307,7 @@ public class Arc_Gen_TabSet_controller {
         String response;
         try {
             if (accHasAn.arce__Analysis__r.arce__Stage__c != arce.Arc_Gen_Constants.STAGE_FINALIZED) {
-            response = JSON.serialize(Arc_Gen_SetAutomatedFileds_Service.updateGroupFields(accHasAn));
+                response = JSON.serialize(Arc_Gen_SetAutomatedFileds_Service.updateGroupFields(accHasAn));
             }
         } catch(Exception ex) {
             throwAuraExcept(ex.getMessage());
@@ -241,8 +325,30 @@ public class Arc_Gen_TabSet_controller {
     * ----------------------------------------------------------------------------------------------------
     **/
     private static void throwAuraExcept(String message) {
-        AuraHandledException auraError = new AuraHandledException(message);
+        final AuraHandledException auraError = new AuraHandledException(message);
         auraError.setMessage(message);
         throw auraError;
+    }
+    /**
+    * -----------------------------------------------------------------------------------------------
+    * @description Get metadata
+    * -----------------------------------------------------------------------------------------------
+    * @autor    joseluis.miralles.tech@bbva.com
+    * @date     09-10-2025
+    * @param    metadataList metadata names
+    * @return   String with metadata information
+    * @example  String e = getTempgetMetadataates(metadataList)
+    * -----------------------------------------------------------------------------------------------
+    **/
+    @AuraEnabled(cacheable=true)
+    public static String getMetadata(List <String> metadataList) {
+        String response;
+        try {
+            final Map<String, String> arceConfigsMap = arce.Arc_Gen_DataQuality_Utils.getCustomMetadatas(metadataList);
+            response = JSON.serialize(arceConfigsMap);
+        } catch (Exception e) {
+            throwAuraExcept(e.getMessage());
+        }
+        return response;
     }
 }

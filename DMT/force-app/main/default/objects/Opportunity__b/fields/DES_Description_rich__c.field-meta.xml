@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Description_rich__c</fullName>
+    <inlineHelpText>Client rational.</inlineHelpText>
+    <label>Client need´s description</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>15</visibleLines>
+</CustomField>

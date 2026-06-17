@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>amortization_desc__c</fullName>
+    <description>Amortization Type</description>
+    <label>Amortization Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BULLET</fullName>
+                <default>false</default>
+                <label>Bullet</label>
+            </value>
+            <value>
+                <fullName>LINEAR</fullName>
+                <default>false</default>
+                <label>Linear</label>
+            </value>
+            <value>
+                <fullName>USER_DEFINED</fullName>
+                <default>false</default>
+                <label>Defined by User</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

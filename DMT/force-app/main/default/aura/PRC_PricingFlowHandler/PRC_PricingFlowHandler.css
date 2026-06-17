@@ -1,0 +1,37 @@
+.THIS .modalfooter-item {
+  position : relative;
+  display: inline-block;
+}
+.THIS #progressbar {
+  width: 75%;
+}
+.THIS H1.text-large {
+ font-size: large!important;
+}
+.THIS #leftbuttoncontainer {
+    float:left;
+}
+.THIS #rightbuttoncontainer {
+    float:right;
+}
+.THIS div.overwrite-width {
+    width: fit-content!important;
+    max-width: none!important;
+    min-width: 40rem!important;
+}
+
+.THIS div.overwrite-padding {
+    padding-left: 4rem!important;
+    padding-right: 4rem!important;
+}
+
+
+.THIS DIV.overwrite-width2 {
+    width: 80%!important;
+    max-width: none!important;
+    min-width: 40rem!important;
+
+}
+.THIS .slds-modal__content {
+    height: 100%;
+}

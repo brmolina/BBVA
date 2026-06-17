@@ -1,0 +1,52 @@
+<aura:component
+  implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  controller="Arc_Gen_EvolPricesProdTable_Ctr"
+  access="global">
+  <aura:attribute name="columns" type="List" access="global" description="Table configuration identifier"/>
+  <aura:attribute name="rows" type="List" access="global" description="Table configuration identifier"/>
+  <aura:attribute name="edit" type="String" access="global" description="Show/hide edit button"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <lightning:overlayLibrary aura:id="overlayLibrary" />
+  <div class="row">
+    <h1 class="slds-text-heading--medium slds-m-bottom_small text-padding">
+      {!$Label.c.Arc_Gen_TableTitle_EvolMainProd}
+    </h1>
+  </div>
+  <aura:if isTrue="{! !empty(v.rows)}">
+    <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered slds-no-row-hover">
+      <thead class="backColor">
+        <tr>
+          <aura:iteration items="{!v.columns}" var="column">
+            <th class="slds-truncate">
+              <div title="{!column}" align="center">{!column}</div>
+            </th>
+          </aura:iteration>
+        </tr>
+      </thead>
+      <tbody>
+        <aura:iteration items="{!v.rows}" var="rowinfo">
+          <tr>
+            <aura:iteration items="{!rowinfo}" var="row">
+              <th class="slds-truncate">
+                <div title="{!row}" align="center">{!row}</div>
+              </th>
+            </aura:iteration>
+          </tr>
+        </aura:iteration>
+      </tbody>
+    </table>
+    <aura:set attribute="else">
+      <div class="slds-text-align_center">{!$Label.c.Arc_Gen_NoData2Show}</div>
+    </aura:set>
+  </aura:if>
+  <aura:if isTrue="{!v.edit == 'true'}">
+    <div>
+      <lightning:button
+        variant="Neutral"
+        label="{!$Label.c.Arc_Gen_ManageEvolMainProd}"
+        title="{!$Label.c.Arc_Gen_ManageEvolMainProd}"
+        onclick="{!c.showModal}"
+      />
+    </div>
+  </aura:if>
+</aura:component>

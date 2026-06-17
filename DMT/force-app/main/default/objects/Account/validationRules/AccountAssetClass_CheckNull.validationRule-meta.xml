@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AccountAssetClass_CheckNull</fullName>
+    <active>false</active>
+    <description>Check if Asset Class is null</description>
+    <errorConditionFormula>AND (
+  !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+  ISBLANK(Asset_Class__c)
+)</errorConditionFormula>
+    <errorDisplayField>Asset_Class__c</errorDisplayField>
+    <errorMessage>Asset Class can not be null</errorMessage>
+</ValidationRule>

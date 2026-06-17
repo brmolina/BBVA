@@ -99,14 +99,61 @@ global class Arc_GBL_User_Locator implements arce.Arc_Gen_User_Interface {//NOSO
   * @example  Arc_Gen_Workflow_Helper.fetchUsersByAmbit(String ambitString);
   */
 
-    public static List<User> getUserByAmbit(String ambitString) {
-      return [
-        SELECT Id, Name
-        FROM User
-        WHERE gf_user_operation_ambit_name__c = :ambitString
-        and IsActive = true
-        ORDER BY Name ASC
-      ];
+    public static List<User> getUserByAmbit(String ambitString, Id recordId) {
+        Set<Id> excludedUsers = new Set<Id>();
+
+        if (recordId != null) {
+            List<arce__Account_has_Analysis__c> ahaList = [
+                SELECT Id, arce__Analysis__c
+                FROM arce__Account_has_Analysis__c
+                WHERE Id = :recordId
+                LIMIT 1
+            ];
+
+            if(!ahaList.isEmpty()){
+                List<dwp_cvad__Action_Audit__c> auditList = [
+                    SELECT Id, dwp_cvad__action_audit_name__c, dwp_cvad__audit_audit_comments__c
+                    FROM dwp_cvad__Action_Audit__c
+                    WHERE dwp_cvad__action_audit_record_id__c = :ahaList[0].arce__Analysis__c
+                    AND dwp_cvad__action_audit_name__c = 'Proposing Rating'
+                    LIMIT 1
+                ];
+
+                if (!auditList.isEmpty()) {
+                    excludedUsers.add(UserInfo.getUserId());
+                    String comments = auditList[0].dwp_cvad__audit_audit_comments__c;
+                    String proposedUserName;
+                    if (comments != null && comments.contains(':') && comments.contains('|')) {
+                        proposedUserName = comments.substringBetween(':', '|');
+
+                        if (proposedUserName != null) {
+                            proposedUserName = proposedUserName.trim();
+                        }
+                    }
+
+                    if (String.isNotBlank(proposedUserName)) {
+                        List<User> proposedUsers = [
+                            SELECT Id
+                            FROM User
+                            WHERE Name = :proposedUserName
+                            LIMIT 1
+                        ];
+
+                        if (!proposedUsers.isEmpty()) {
+                            excludedUsers.add(proposedUsers[0].Id);
+                        }
+                    }
+                }
+            }
+        }
+        return [
+            SELECT Id, Name
+            FROM User
+            WHERE gf_user_operation_ambit_name__c = :ambitString
+            AND IsActive = true
+            AND Id NOT IN :excludedUsers
+            ORDER BY Name ASC
+        ];
     }
 
 

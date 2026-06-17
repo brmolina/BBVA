@@ -1,0 +1,18 @@
+.THIS .greenbutton {
+  margin-top: 2em;
+}
+
+.THIS .slds-modal-body {
+  background: white;
+  height: 20vh !important;
+  max-height: 100vh !important;
+}
+
+.THIS .slds-modal__footer {
+  display: inline !important;
+}
+
+.THIS .searchbar {
+  margin-left: 1em;
+  margin-right: 1em;
+}

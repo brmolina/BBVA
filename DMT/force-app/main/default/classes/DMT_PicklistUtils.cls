@@ -27,6 +27,8 @@ global with sharing class DMT_PicklistUtils  implements Callable {
                 result = getTaxonomyRelationshipValues(inputMap,outMap,options);
             } else if (methodName == 'getPicklistDependantValuesByParam') {
                 result = getPicklistDependantValuesByParam(inputMap,outMap,options);
+            } else if (methodName == 'capitalizeString') {
+                result = capitalizeString(inputMap,outMap);
             }
             if (result != null) {
                 outMap.putAll(result);
@@ -257,6 +259,21 @@ global with sharing class DMT_PicklistUtils  implements Callable {
         }
 
         outMap.put('mapCatalogValuesFixed', mapTaxonomyRelValuesFixed);
+        return outMap;
+    }
+
+    private Map<String, Object> capitalizeString(Map<String, Object> inputMap, Map<String, Object> outMap) {
+        System.debug( 'capitalizeString - inputMap: ' + inputMap);
+        System.debug( 'capitalizeString - valor de "value" en inputMap: ' + inputMap.get('arguments'));
+        List<Object> arguments = (List<Object>)inputMap.get('arguments');
+        String value = (String) arguments[0];
+        
+        if (String.isBlank(value)) {
+            outMap.put('result', '');
+            return outMap;
+        }
+        String capitalized = value.substring(0, 1).toUpperCase() + value.substring(1).toLowerCase();
+        outMap.put('result', capitalized);
         return outMap;
     }
 }

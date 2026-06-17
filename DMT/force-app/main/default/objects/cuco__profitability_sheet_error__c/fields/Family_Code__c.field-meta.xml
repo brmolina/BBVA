@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Family_Code__c</fullName>
+    <externalId>false</externalId>
+    <formula>cuco__gf_error_code_id__c + if(ISBLANK(cuco__gf_product_family_desc__c), &apos;&apos;, &apos; - &apos; + CASE(cuco__gf_product_family_desc__c,
+&apos;01&apos;, $Label.Code_Family_01,
+&apos;02&apos;, $Label.Code_Family_02,
+&apos;03&apos;, $Label.Code_Family_03,
+&apos;04&apos;, $Label.Code_Family_04,
+&apos;05&apos;, $Label.Code_Family_05,
+&apos;06&apos;, $Label.Code_Family_06,
+&apos;07&apos;, $Label.Code_Family_07,
+&apos;08&apos;, $Label.Code_Family_08,
+&apos;09&apos;, $Label.Code_Family_09,
+&apos;10&apos;, $Label.Code_Family_10,
+&apos;11&apos;, $Label.Code_Family_11,
+&apos;12&apos;, $Label.Code_Family_12,
+&apos;13&apos;, $Label.Code_Family_13,
+&apos;14&apos;, $Label.Code_Family_14,
+&quot;&quot;))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Family Code</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

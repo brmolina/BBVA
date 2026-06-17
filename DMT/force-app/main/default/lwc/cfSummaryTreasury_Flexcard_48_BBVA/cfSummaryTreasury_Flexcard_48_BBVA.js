@@ -22,7 +22,17 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              
+              @track Label={dmt_cl_NameLine:"Name",
+        dmt_cl_Entific_Label:"Entific",
+        dmt_cl_Start_Date:"Start Date",
+        dmt_cl_End_Date:"End Date",
+        dmt_cl_Line_Term:"Line Term",
+        dmt_cl_Sanction_Term:"Sanction Term",
+        dmt_cl_Amount:"Amount",
+        dmt_cl_Currency:"Currency",
+        dmt_cl_Type_Risk:"Type of risk",
+        dmt_commitmentline:"Line Commitment Type"
+        };
               pubsubEvent = [];
               customEvent = [];
                
@@ -46,9 +56,17 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                
+                this.customLabels = this.Label;
+                      
+                          this.fetchUpdatedCustomLabels();
+                      
                 this.setDefinition(data);
  this.registerEvents();
+                this.setAttribute(
+                  "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
+                  " card-0koKG000000L6K0YAK"
+                );
+                this.loadCustomStylesheetAttachement("00PKG000003pH9C2AU");
                 
                 
               }

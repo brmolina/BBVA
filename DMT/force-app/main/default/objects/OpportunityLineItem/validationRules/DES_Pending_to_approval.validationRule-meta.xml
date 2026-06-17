@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Pending_to_approval</fullName>
+    <active>true</active>
+    <errorConditionFormula>TEXT(Opportunity.StageName)!=&apos;Proposal&apos; &amp;&amp;Opportunity.Template_pending_approval_type__c &amp;&amp;
+ISBLANK(TEXT(Opportunity.NBC_Decision_Taken_type__c)) &amp;&amp;
+$Profile.Name != $Label.DES_Profile_BBVA_Desktop_SP &amp;&amp; $Profile.Name != &quot;System Administrator&quot; &amp;&amp;
+(
+
+(($Label.DES_Corporate_Loans == solution_classification_desc__c || $Label.DES_Leverage_Buyout_LBOs == solution_classification_desc__c)
+&amp;&amp;
+(ISCHANGED( opportunity_tenor_years_number__c ) || ISCHANGED( deal_total_amount__c ) ||
+ISCHANGED( bbva_prtcp_tranche_amount__c ) || ISCHANGED( loan_purpose_desc__c )))
+||
+
+($Label.DES_Structure_Trade_Finance == solution_classification_desc__c
+&amp;&amp;
+(ISCHANGED( loan_tenor_month_desc__c ) || ISCHANGED( deal_total_amount__c ) ||
+ISCHANGED( bbva_prtcp_tranche_amount__c ) || ISCHANGED( loan_export_cr_agncy_cntrb_per__c ) ||
+ISCHANGED( export_credit_agency_name__c )))
+||
+
+($Label.DES_Transaction_Trade_Finance == solution_classification_desc__c
+&amp;&amp;
+(ISCHANGED( syndicated_loan_drawn_amount__c ) || ISCHANGED( bbva_prtcp_tranche_amount__c )))
+||
+
+($Label.DES_Working_Capital == solution_classification_desc__c
+&amp;&amp;
+ISCHANGED( syndicated_loan_drawn_amount__c ))
+||
+
+($Label.DES_Project_Finance_Lending== solution_classification_desc__c
+&amp;&amp;
+(ISCHANGED( opportunity_tenor_years_number__c ) || ISCHANGED( deal_total_amount__c ) ||
+ISCHANGED( bbva_prtcp_tranche_amount__c )))
+)</errorConditionFormula>
+    <errorMessage>Cannot edit product when a template it&apos;s approved or pending to approval.</errorMessage>
+</ValidationRule>

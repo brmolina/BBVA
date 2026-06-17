@@ -25,9 +25,9 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
     public List<cuco.Participant_Wrapper> getParticipantDetails(Set<Id> accountsIdsSet) {
         final List<cuco.Participant_Wrapper> participants = new List<cuco.Participant_Wrapper>();
         if (!accountsIdsSet.isEmpty()) {
-            final List<Account> accounts = [SELECT Id, Name, AccountNumber, SER_CClient__c, DES_ID_Fiscal__c, toLabel(Rating) FROM Account WHERE Id IN :accountsIdsSet];
+            final List<Account> accounts = [SELECT Id, Name, AccountNumber, g_customer_id__c, DES_ID_Fiscal__c,CUCO_is_vulnerable__c, toLabel(Rating) FROM Account WHERE Id IN :accountsIdsSet];
             if (!accounts.isEmpty()) {
-                final Set<Id> localClients = getLocalClients(accountsIdsSet);
+                // final Set<Id> localClients = getLocalClients(accountsIdsSet);
                 for (Account account : accounts) {
                     final cuco.Participant_Wrapper participant = new cuco.Participant_Wrapper();
                     participant.participantId = account.Id;
@@ -35,9 +35,10 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
                     participant.documentNumber = account.DES_ID_Fiscal__c;
                     participant.documentType = 'CIF';
                     participant.documentTypeCode = '2';
-                    participant.participantCode = account.SER_CClient__c;
-                    participant.participantIntegrationId = 'ES0182' + account.SER_CClient__c + 'C';
-                    participant.rating = (localClients.contains(account.Id))? 'Yes': '';
+                    participant.participantCode = account.g_customer_id__c;
+                    participant.participantIntegrationId = account.g_customer_id__c + 'C';
+                    // participant.rating = (localClients.contains(account.Id))? 'Yes': '';
+                    participant.rating = 'Yes';
                     participants.add(participant);
                 }
             }
@@ -52,13 +53,13 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
     *
     * In order to get clients from local client where entity = 0182
     * we would need to change the query to something like this:
-    * final List<Account> accounts = [SELECT Cib_Client__c, Cib_Client__r.SER_CClient__c, Cib_Client__r.Name
+    * final List<Account> accounts = [SELECT Cib_Client__c, Cib_Client__r.g_customer_id__c, Cib_Client__r.Name
     * FROM Local_Client__c
     * WHERE entity_id__c  = '0182'
     * AND Cib_Client__c IN (
     *   SELECT Id
     *   FROM Account
-    *   WHERE SER_CClient__c != null
+    *   WHERE g_customer_id__c != null
     *   AND DES_Main_Parent__c = :client.Id
     *   AND (
     *     (DES_Provisioning_Method__c = 'Datio' AND DES_Structure_Type__c = 'Subsidiary')
@@ -72,7 +73,7 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
 
         cuco.ParticipantHierarchy_Wrapper participantHierarchy = new cuco.ParticipantHierarchy_Wrapper();
 
-        final Account client = [SELECT Id, Name, DES_Main_Parent__c, DES_Main_Parent__r.Name, DES_Structure_Type__c, parentId, Parent.Name, SER_CClient__c, DES_ID_Fiscal__c, DES_Main_Parent__r.DES_Group_Code__c, AccountNumber FROM Account WHERE Id = :accountId];
+        final Account client = [SELECT Id, Name, DES_Main_Parent__c, DES_Main_Parent__r.Name, DES_Structure_Type__c, parentId, Parent.Name, g_customer_id__c, DES_ID_Fiscal__c, DES_Main_Parent__r.DES_Group_Code__c, AccountNumber FROM Account WHERE Id = :accountId];
 
         final Set<Id> children = new Set<Id>();
         final String groupTypes = System.Label.cuco_cib_group_types;
@@ -87,7 +88,7 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
             participantHierarchy.parentName = client.DES_Main_Parent__r.Name;
             participantHierarchy.integrationId = client.DES_Main_Parent__r.DES_Group_Code__c;
 
-            final List<Account> accounts = [SELECT Id, SER_CClient__c, Name FROM Account WHERE DES_Main_Parent__c = :client.Id AND SER_CClient__c != null AND ((DES_Provisioning_Method__c = 'Datio' AND DES_Structure_Type__c = 'Subsidiary') OR (DES_Structure_Type__c = 'NIF Client'))]; //NOSONAR
+            final List<Account> accounts = [SELECT Id, g_customer_id__c, Name FROM Account WHERE g_customer_id__c like 'ES%' and DES_Main_Parent__c = :client.Id AND g_customer_id__c != null AND (((DES_Provisioning_Method__c = 'Datio' OR DES_Provisioning_Method__c = 'ADA') AND DES_Structure_Type__c = 'Subsidiary') OR (DES_Structure_Type__c = 'NIF Client'))]; //NOSONAR
 
             for (Account acc : accounts) {
                 // If using local clients query -> children.add(acc.Cib_Client__c);
@@ -100,7 +101,7 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
                 participantHierarchy.type = 'orphan';
                 participantHierarchy.parentId = accountId;
                 participantHierarchy.parentName = client.Name;
-                participantHierarchy.integrationId = 'ES0182' + client.SER_CClient__c + 'C';
+                participantHierarchy.integrationId = client.g_customer_id__c + 'C';
             } else {
                 participantHierarchy.type ='subsidiary';
                 participantHierarchy.parentId = client.DES_Main_Parent__c;
@@ -124,8 +125,8 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
       final List<cuco.Participant_Wrapper> participants = new List<cuco.Participant_Wrapper>();
         if (!accountsIdsSet.isEmpty()) {
 
-            final List<Account> accounts = [SELECT Id, Name, AccountNumber, SER_CClient__c, DES_ID_Fiscal__c, Rating FROM Account WHERE Id IN :accountsIdsSet];
-            final Set<Id> localClients = getLocalClients(accountsIdsSet);
+            final List<Account> accounts = [SELECT Id, Name, AccountNumber, g_customer_id__c, DES_ID_Fiscal__c, Rating FROM Account WHERE Id IN :accountsIdsSet];
+            // final Set<Id> localClients = getLocalClients(accountsIdsSet);
 
             if (!accounts.isEmpty()) {
                 for (Account account : accounts) {
@@ -135,10 +136,11 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
                     participant.documentNumber = account.DES_ID_Fiscal__c;
                     participant.documentType = 'CIF';
                     participant.documentTypeCode = '2';
-                    participant.participantCode = account.SER_CClient__c;
-                    participant.participantIntegrationId = 'ES0182' + account.SER_CClient__c + 'C';
+                    participant.participantCode = account.g_customer_id__c;
+                    participant.participantIntegrationId = account.g_customer_id__c + 'C';
                     participant.isCustomer = true;
-                    participant.rating = (localClients.contains(account.Id))? 'Yes': '';
+                    // participant.rating = (localClients.contains(account.Id))? 'Yes': '';
+                    participant.rating = 'Yes';
                     participants.add(participant);
                 }
             }
@@ -157,12 +159,12 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
         final Set<String> parInteIdsSplit = new Set<String>();
         if (!partIntegrationIds.isEmpty()) {
             for (String inte: partIntegrationIds) {
-                parInteIdsSplit.add(inte.substring(6,15));
+                parInteIdsSplit.add(inte.substring(0,15));
             }
             if (!parInteIdsSplit.isEmpty()) {
-                final List<Account> lstAcc = [SELECT Id, SER_CClient__c, AccountNumber FROM Account WHERE SER_CClient__c IN :parInteIdsSplit];
+                final List<Account> lstAcc = [SELECT Id, g_customer_id__c, AccountNumber FROM Account WHERE g_customer_id__c IN :parInteIdsSplit];
                 for (Account account: lstAcc) {
-                    mapAcc.put(account.SER_CClient__c, account.Id);
+                    mapAcc.put(account.g_customer_id__c, account.Id);
                 }
             }
         }
@@ -177,17 +179,17 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
     public static Set<Id> getDescendants(Set<Id> accountsIdsSet) {
 
         final Set<Id> res = new Set<Id>();
-        final List<dwp_acmh__GBL_Account_Relationship__c> relationships = [SELECT Id, dwp_acmh__Child_Account__c, dwp_acmh__Child_Account__r.Name, dwp_acmh__Child_Account__r.Is_Group__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Parent_Account__c IN :accountsIdsSet AND dwp_acmh__Vision__c = 'Negocio'];
+        final List<AMH_GBL_Account_Relationship__c> relationships = [SELECT Id, AMH_Child_Account__c, AMH_Child_Account__r.Name, AMH_Child_Account__r.Is_Group__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Parent_Account__c IN :accountsIdsSet AND AMH_Vision__c = 'Negocio'];
 
-        for (dwp_acmh__GBL_Account_Relationship__c relationship : relationships) {
+        for (AMH_GBL_Account_Relationship__c relationship : relationships) {
 
-            if(relationship.dwp_acmh__Child_Account__r.Is_Group__c) {
-                final Set<Id> descendants = getDescendants(new Set<Id>{relationship.dwp_acmh__Child_Account__c});
+            if(relationship.AMH_Child_Account__r.Is_Group__c) {
+                final Set<Id> descendants = getDescendants(new Set<Id>{relationship.AMH_Child_Account__c});
                 for (Id descendant : descendants) {
                     res.add(descendant);
                 }
             } else {
-                res.add(relationship.dwp_acmh__Child_Account__c);
+                res.add(relationship.AMH_Child_Account__c);
             }
         }
         return res;
@@ -198,12 +200,12 @@ global with sharing class CucoParticipantCIB implements cuco.Participant_itf {
     * @param accountsIdsSet : Set of the related accounts Ids
     * @return Set<Id> accounts
     */
-    private static Set<Id> getLocalClients(Set<Id> accountsIdsSet) {
-        final Set<Id> res = new Set<Id>();
-        final List<Local_Client__c> localClients = [SELECT Cib_Client__c FROM Local_Client__c WHERE entity_id__c  = '0182' AND Cib_Client__c IN :accountsIdsSet];
-        for (Local_Client__c localClient : localClients) {
-            res.add(localClient.Cib_Client__c);
-        }
-        return res;
-    }
+    // private static Set<Id> getLocalClients(Set<Id> accountsIdsSet) {
+    //     final Set<Id> res = new Set<Id>();
+    //     final List<Local_Client__c> localClients = [SELECT Cib_Client__c FROM Local_Client__c WHERE entity_id__c  = '0182' AND Cib_Client__c IN :accountsIdsSet];
+    //     for (Local_Client__c localClient : localClients) {
+    //         res.add(localClient.Cib_Client__c);
+    //     }
+    //     return res;
+    // }
 }

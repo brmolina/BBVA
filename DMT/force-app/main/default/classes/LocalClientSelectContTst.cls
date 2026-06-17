@@ -17,7 +17,7 @@ public class LocalClientSelectContTst {
   static void testOne() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     insert acc;
 
@@ -82,7 +82,7 @@ public class LocalClientSelectContTst {
   static void testTwo() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     insert acc;
 
@@ -106,8 +106,8 @@ public class LocalClientSelectContTst {
     final LocalClientHandler lclientHandler = LocalClientHandler.gtInstance();
     system.debug(lclientHandler);
 
-    final Local_Client__c lclientaux = [SELECT Name from Local_Client__c WHERE participant_name__c = 'Test3' LIMIT 1];
-    system.assertEquals('Test3', lclientaux.Name, 'notupdated');
+    final Local_Client__c lclientaux = [SELECT participant_name__c from Local_Client__c WHERE participant_name__c = 'Test3' LIMIT 1];
+    system.assertEquals('Test3', lclientaux.participant_name__c, 'notupdated');
 
   }
 
@@ -118,7 +118,7 @@ public class LocalClientSelectContTst {
   static void testThree() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     insert acc;
 
@@ -143,7 +143,7 @@ public class LocalClientSelectContTst {
   static void testFour() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     insert acc;
 
@@ -175,7 +175,7 @@ public class LocalClientSelectContTst {
   static void testFive() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = TESTVAR;
+    acc.g_customer_id__c = TESTVAR;
     acc.Name = TESTVAR;
     insert acc;
 

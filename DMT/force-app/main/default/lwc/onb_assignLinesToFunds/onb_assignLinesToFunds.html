@@ -1,0 +1,32 @@
+<template>
+    <lightning-modal-header>
+        <div class="slds-text-heading_medium">{header} ({rows.length})</div>
+    </lightning-modal-header>
+
+    <lightning-modal-body>
+        <c-onb_onboarding-table
+            empty-state-message={label.ONB_EMPTY_STATE_CONTRACT_MSSG}
+            record-id={fundId}
+            object-api-name={onboardingLineObjApiName}
+            parent-field-api-name={parentFieldApiName}
+            columns={columns}
+            initial-rows={rows}
+            default-values={defaultLineValues}
+            add-label="Add line"
+            show-add=true
+            disable-add={disableAddLineButton}
+            show-clone=true
+            show-delete=true
+            create-record-on-add=true
+            required-field-api-names={requiredFieldApiNames}
+            picklist-allowed-values-by-field={picklistAllowedValuesByField}
+            onrowcreated={handleRowChange}
+            onrowdeleted={handleRowChange}
+            line-type-subtype-max-rules={lineTypeSubtypeMaxRules}>
+        </c-onb_onboarding-table>
+    </lightning-modal-body>
+    
+    <lightning-modal-footer>
+        <lightning-button variant="neutral" label="Accept" onclick={handleClose}></lightning-button>
+    </lightning-modal-footer>
+</template>

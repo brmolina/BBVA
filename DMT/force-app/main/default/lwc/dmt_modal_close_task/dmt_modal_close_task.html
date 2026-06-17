@@ -1,37 +1,94 @@
 <template>
-    <section role="dialog" class="slds-modal slds-fade-in-open">
-        <div class="slds-modal__container">
-            <header class="slds-modal__header">
-                <h2 class="slds-text-heading_medium slds-hyphenate">CLOSE TASK AND:</h2>
-                <button
-                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
-                title="Cerrar"
-                onclick={closeModal}>
-                <lightning-icon
-                    icon-name="utility:close"
-                    alternative-text="Cerrar"
-                    size="small">
-                </lightning-icon>
-            </button>
-            </header>
-            <div class="slds-modal__content">
-                <div class="slds-modal__content slds-p-around_medium">
-                <lightning-radio-group
-                    name="Options"
-                    label="Close task and: "
-                    options={options}
-                    value={value}
-                    type="radio"
-                    onchange={handleChange}>
-                    </lightning-radio-group>
-                </div>
-                <p class="slds-m-top_medium slds-modal__content">
-                    Opción seleccionada: <strong>{value}</strong>
-                </p>
-            </div>
-           
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header slds-p-bottom_medium">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Cerrar"
+                        variant="bare"
+                        class="slds-modal__close modal-close-btn"
+                        onclick={handleClose}>
+                    </lightning-button-icon>
+                    <h2 class="slds-text-heading_medium">CLOSE TASK AND:</h2>
+                </header>
+                <div class="slds-modal__content">
+                    <template if:true={showErrorMessage}>
+                        <div class="slds-text-color_error modal-error">{errorMessage}</div>
+                    </template>
+                    
+<div class="toggle-group slds-p-top_medium">
+    <div class="toggle-row">
+        <div class="toggle-label" title={label.CHECK_TEXT_1}>
+            {label.CHECK_TEXT_1}
+        </div>
+        <div class="toggle-input">
+            <lightning-input
+                type="toggle"
+                variant="label-hidden"
+                label={label.CHECK_TEXT_1}
+                checked={isActive1}
+                onchange={handleToggle1}
+                message-toggle-active=""
+                message-toggle-inactive=""
+                disabled={finishStep}>
+            </lightning-input>
+        </div>
+    </div>
 
+        <div class="toggle-row">
+            <div class="toggle-label" title={label.CHECK_TEXT_2}>
+                {label.CHECK_TEXT_2}
             </div>
-    </section>
-    <div class="slds-backdrop slds-backdrop_open"></div>
+            <div class="toggle-input">
+                <lightning-input
+                    type="toggle"
+                    variant="label-hidden"
+                    label={label.CHECK_TEXT_2}
+                    checked={isActive2}
+                    onchange={handleToggle2}
+                    message-toggle-active=""
+                    message-toggle-inactive=""
+                    disabled={returnToProposalDisabled}>
+                </lightning-input>
+            </div>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-label" title={label.CHECK_TEXT_3}>
+                {label.CHECK_TEXT_3}
+            </div>
+            <div class="toggle-input">
+                <lightning-input
+                    type="toggle"
+                    variant="label-hidden"
+                    label={label.CHECK_TEXT_3}
+                    checked={isActive3}
+                    onchange={handleToggle3}
+                    message-toggle-active=""
+                    message-toggle-inactive=""
+                    disabled={buttonDisabled}>
+                </lightning-input>
+            </div>
+        </div>
+    </div>
+                        <lightning-spinner 
+                            if:true={showSpinner} 
+                            alternative-text="loading" 
+                            size="medium" 
+                            variant="brand"
+                            class="spinnerClass">
+                        </lightning-spinner>
+                </div>
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <lightning-button
+                            variant="brand"
+                            label="Next"
+                            disabled={disabledNextButton}
+                            onclick={handleNext}
+                    ></lightning-button>
+                </footer>
+            </div>
+        </section>
+    </template>
 </template>

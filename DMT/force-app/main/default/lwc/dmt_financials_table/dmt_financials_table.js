@@ -11,6 +11,8 @@ export default class Dmt_financials_table extends LightningElement {
     draftValues;
     originalData;
     
+
+    
     columns = [
         { label: '', fieldName: 'category', type: 'text', isEditable:false },
         { label: `${new Date().getFullYear() - 1}`, fieldName: 'lastYear', type: 'number', isEditable: true },

@@ -20,7 +20,7 @@
  * See the Apex Language Reference for more information about Testing and Code Coverage.
  */
 @isTest
-private class DMT_ScreenViewManagementControllerTest {
+private without sharing class DMT_ScreenViewManagementControllerTest {
     @testSetup
     static void makeData() {
         // Create an Approvers View

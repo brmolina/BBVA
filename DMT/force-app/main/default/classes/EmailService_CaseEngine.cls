@@ -6,6 +6,7 @@ Description:   Method that generates Case for Email Service
 History:
 <Author>                  <Date>                <Change Description>
 Juan Carlos Terr�n                              Initial version.
+Adrian Salinas (NFQ)     04/02/2026          Uso de Email_Service_Config__mdt para eliminacion de hardcode.
 ---------------------------------------------------------------------------------*/
 public with sharing class EmailService_CaseEngine {
   /* Methods Get/Set Case */
@@ -22,6 +23,8 @@ public with sharing class EmailService_CaseEngine {
   public static final integer MAXLENGTH = 30000;
   /*Classification query*/
   public static final String CLASSIF_QUERY = 'Query';
+  /* Metadata Config */
+  private Email_Service_Config__mdt config;
   
 
 /*-------------------------------------------------------------------------------
@@ -38,6 +41,7 @@ Juan Carlos Terr�n                              Initial version.
     this.newCase = new Case();
     this.currentEmail = currentEmail;
     this.setting = new SER_EmailDefaultValues_Assignment__c();
+    this.config = EmailServiceUtils.getConfig();
   }
 /*-------------------------------------------------------------------------------
 Author:        Juan Carlos Terr�n
@@ -67,7 +71,8 @@ Description:   Method Create Case
 			//this.newCase.Origin = 'Email';
 			this.newCase.SER_Business_Case_Type__c = this.setting.SER_BusinessType__c;
       system.debug('EmailService_CaseEngine - Create Case - SER_Business_Case_Type__c :  '+this.newCase.SER_Business_Case_Type__c);//NOSONAR
-      this.newCase.SER_Classification__c = 'Consulta';
+      //this.newCase.SER_Classification__c = 'Queries';
+      this.newCase.SER_Classification__c = this.config.Default_Classification__c;
       system.debug('EmailService_CaseEngine - Create Case - SER_Classification__c :  '+this.newCase.SER_Classification__c);//NOSONAR
       if(currentEmail.textBody!=null) { this.cutShortDescription(this.newCase, currentEmail.textBody.stripHtmlTags());}
           
@@ -106,8 +111,8 @@ Company:       Accenture
 Description:   Method get RecordTyeId
 ---------------------------------------------------------------------------------*/
   private Id getRecordTypeId() {
-  
-      return Schema.SObjectType.Case.getRecordTypeInfosByName().get('GM User').getRecordTypeId();
+      // return Schema.SObjectType.Case.getRecordTypeInfosByName().get('GM User').getRecordTypeId();
+      return Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get(this.config.Case_RT_DevName__c).getRecordTypeId();
       
   }
   private void getContact() {

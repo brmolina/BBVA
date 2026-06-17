@@ -1,5 +1,5 @@
 @isTest
-public class DMT_Client_Selector_Test {
+public with sharing class DMT_Client_Selector_Test {
 
     @testSetup
     static void setup() {

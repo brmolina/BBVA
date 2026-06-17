@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_Category__c</fullName>
+    <label>Product Category</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Booking_Entity__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>Equities</fullName>
+                <default>false</default>
+                <label>Equities</label>
+            </value>
+            <value>
+                <fullName>Fixed Income &amp; Rates</fullName>
+                <default>false</default>
+                <label>Fixed Income &amp; Rates</label>
+            </value>
+            <value>
+                <fullName>Securities</fullName>
+                <default>false</default>
+                <label>Securities</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>BBVA_SA_Japan</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Singapore</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Spain</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Taiwan</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_United_Kingdom</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_United_States_of_America</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_France</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Hong_Kong</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Belgium</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_China</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Germany</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_Italy</controllingFieldValue>
+            <valueName>FX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA_SA_Spain</controllingFieldValue>
+            <controllingFieldValue>BBVA_Mexico</controllingFieldValue>
+            <valueName>Equities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA_SA_Spain</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_United_States_of_America</controllingFieldValue>
+            <controllingFieldValue>BSI</controllingFieldValue>
+            <valueName>Fixed Income &amp; Rates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA_SA_Spain</controllingFieldValue>
+            <controllingFieldValue>BBVA_SA_United_States_of_America</controllingFieldValue>
+            <controllingFieldValue>BSI</controllingFieldValue>
+            <valueName>Securities</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

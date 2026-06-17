@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Objects_and_fields__c</fullName>
+    <description>The json or object string representation of the object and fields associated to this Taxonomy code (e.g. [{&quot;object&quot;:&quot;Account&quot;, &quot;field&quot;:&quot;Industry&quot;}]</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>The json or object string representation of the object and fields associated to this Taxonomy code (e.g. [{&quot;object&quot;:&quot;Account&quot;, &quot;field&quot;:&quot;Industry&quot;}]</inlineHelpText>
+    <label>Objects and fields</label>
+    <length>1000</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

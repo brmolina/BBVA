@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Regiones__c</fullName>
+    <description>Este campo permite seleccionar las regiones geográficas relevantes para la cobertura de los países asociados a los Cover Team Members. Los valores seleccionados representan las regiones que deben estar alineadas con los países asignados a cada miembro del equipo de cobertura, asegurando que la asignación sea consistente a nivel regional. Este campo facilita la gestión y validación de la cobertura regional en el sistema.</description>
+    <inlineHelpText>Seleccione las regiones correspondientes para la cobertura de los países asignados a los miembros del equipo. Las regiones seleccionadas se utilizarán para validar que los países de cada miembro del equipo estén alineados con las áreas de cobertura establecidas.</inlineHelpText>
+    <label>Regiones Gestor</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>DES_Country_ISO_3</valueSetName>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

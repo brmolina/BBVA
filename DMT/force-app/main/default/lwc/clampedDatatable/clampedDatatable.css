@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;       
+  overflow: hidden;
+
+  white-space: normal !important;
+  overflow-wrap: anywhere;    
+  word-break: break-word;
+
+  line-height: 1.35;
+  max-height: calc(1.35em * 2);
+}
+
+.slds-truncate .clamp {
+  white-space: normal !important;
+}

@@ -1,0 +1,12 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+	<aura:attribute name="recordId" type="String" default="false"/>
+    <div class="slds-grid slds-wrap">
+        <div class="slds-size_1-of-2">
+            <c:DES_POC_CustomReportChart recordId="{!v.recordId}"/>
+        </div>
+        <div class="slds-size_1-of-2">
+            <c:DES_Expected_Revenues_by_Country_Graph recordId="{!v.recordId}"/>
+        </div>   
+    </div>
+
+</aura:component>

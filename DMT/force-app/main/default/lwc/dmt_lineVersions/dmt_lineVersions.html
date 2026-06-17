@@ -4,6 +4,13 @@
             <lightning-card title="Line Versions" icon-name="standard:record">
                 <div slot="actions" class="slds-grid slds-grid_vertical-align-center">
                     <lightning-button 
+                        label="Compare Versions" 
+                        variant="neutral"
+                        class="slds-m-right_x-small"
+                        onclick={handleOpenCompare}
+                        disabled={compareDisabled}>
+                    </lightning-button>
+                    <lightning-button 
                         label="Create New Version" 
                         disabled={isButtonDisabled} 
                         onclick={processCreateNewVersion}>
@@ -99,10 +106,11 @@
                     </header>
                     <div class="slds-p-around_medium">
                         <lightning-input label={versionDescriptionText} value={userInput} onchange={handleUserInput} oncommit={focusCombobox} data-id="versionInput"></lightning-input>
-                        <lightning-input label={versionCategoryText} value={selectedCategory} onchange={handleCategoryChange} oncommit={focusConfirmButton} data-id="categoryInput" disabled={selectCategoryDisabled}></lightning-input>
+                        <lightning-input label={versionCategoryText} value={selectedCategoryClosedView} onchange={handleCategoryChange} oncommit={focusConfirmButton} data-id="categoryInput" disabled={selectCategoryDisabled}></lightning-input>
                     </div>
                     <footer class="slds-grid slds-grid_align-center">
-                        <lightning-button class="slds-m-around_small" variant="brand" label="Save" onclick={handleCreateNewVersion} data-id="dialogConfirmButton"></lightning-button>
+                        <lightning-button class="slds-m-around_small" variant="brand" label="Save" onclick={handleCreateNewVersion} data-action="saveVersion"></lightning-button>
+                        <!--<lightning-button class="slds-m-around_small" variant="brand" label="Save & Send Email" onclick={handleCreateNewVersion} data-action="sendMailVersion"></lightning-button>-->
                     </footer>
                 </section>
                 <template lwc:if={isLoading}>

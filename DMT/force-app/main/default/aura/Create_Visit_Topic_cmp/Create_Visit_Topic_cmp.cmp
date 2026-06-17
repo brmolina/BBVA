@@ -1,0 +1,75 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens" access="global" controller="Create_opp_controller">
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="visitName" type="String" default=""/>
+    <aura:attribute name="oppId" type="String" default=""/>
+    <aura:attribute name="doneVal" type="Boolean" default="false"/>
+    <aura:attribute name="descriptionVal" type="String" default=""/>
+    <aura:attribute name="oppNameVal" type="String" default=""/>
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String" default=""/>
+    <aura:attribute name="searchKeyWordOpp" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+
+    <aura:if isTrue="{!v.showError}">
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div class="slds-notify slds-notify_toast slds-theme_error slds-col slds-size_1-of-1" role="status">
+                <span class="slds-assistive-text">ERROR</span>
+                <div class="slds-notify__content slds-col slds-size_1-of-1">
+                    <p class="slds-text-heading_small">Review the errors on this page.</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                <p class="slds-text-color_error">{!v.errorMessage}</p>
+            </div>
+        </div>
+    </aura:if>
+
+    <lightning:recordEditForm objectApiName="dwp_kitv__Visit_Topic__c">
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1">
+                <span class="slds-form-element__label">Visit</span><br></br>
+                <lightning:formattedText value="{!v.visitName}"/>
+            </div>
+            <div aura:id="divdone" class="slds-col slds-medium-size_1-of-2 slds-size_1-of-1 slds-p-left_small">
+                <lightning:inputField fieldName="dwp_kitv__visit_done_type__c" aura:id="doneField" required="false"/>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div aura:id="divdescription" class="slds-col slds-size_1-of-1 slds-form-element">
+                <lightning:inputField fieldName="dwp_kitv__topic_desc__c" aura:id="descriptionField" value="{!v.descriptionVal}"/>
+            </div>
+        </div>
+
+
+        <div class="slds-grid slds-p-bottom_small slds-wrap">
+            <div aura:id="divopp" class="slds-col slds-size_1-of-1 slds-form-element">
+                <aura:if isTrue="{!v.oppNameVal == ''}">
+                    <c:FilteredLookup objectAPIName="Opportunity"
+                        SearchKeyWord="{!v.searchKeyWordOpp}"
+                        label="Opportunity"
+                        IconName="standard:opportunity"
+                        disclosureInfo="{!$Label.c.DES_OP_Inside}"
+                        objectOpenForm="dwp_kitv__Visit_Topic__c" />
+                    <aura:set attribute="else">
+                        <span class="slds-form-element__label">Opportunity</span><br></br>
+                <lightning:formattedText value="{!v.oppNameVal}"/>
+                    </aura:set>
+                </aura:if>
+
+            </div>
+        </div>
+
+
+    </lightning:recordEditForm>
+
+    <div aura:id="actionButtonBar" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+        <div class="slds-float_right">
+            <lightning:button aura:id="NEXT" label="Next" variant="brand" onclick="{!c.saveForm}" />
+        </div>
+    </div>
+
+
+
+</aura:component>

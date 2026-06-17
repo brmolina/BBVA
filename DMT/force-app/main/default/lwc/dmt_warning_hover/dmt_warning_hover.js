@@ -8,13 +8,30 @@ export default class Dmt_warning_hover extends LightningElement {
     @api isEquals;
     @api compareFields;
     @api ignoreValueText;
+    @api helpText;
+    _hasHelpText;
+    @api contentLabel;
 
+
+    @api
+    set hasHelpText(value){
+        this._hasHelpText = value === true || value === 'true';
+
+    };
+    get hasHelpText(){
+        return this._hasHelpText;
+    };
 
     get showWarning() {
       
+        if (this.content == null || this.content == 'null' || this.content == 'NULL') {
+            return false;
+        }
+        
         var isShowWarning;
 
         if(this.compareFields == true || this.compareFields == 'true' ){
+            
             var equalsOk;
             var contentOk;
             if (typeof this.isEquals ==  'string') {
@@ -38,6 +55,7 @@ export default class Dmt_warning_hover extends LightningElement {
                 isShowWarning = false;
 
             } 
+     
 
             return isShowWarning;
         }else{
@@ -50,7 +68,10 @@ export default class Dmt_warning_hover extends LightningElement {
 
                 isShowWarning = this.isEquals;
 
-            } 
+  
+                   
+          } 
+
             return !isShowWarning;
 
         }
@@ -61,11 +82,12 @@ export default class Dmt_warning_hover extends LightningElement {
         return this.title ? true : false;
     }
 
+
     get contentFull() {
         if(this.ignoreValueText == true || this.ignoreValueText == 'true' ) {
             return this.object;
         } else {
-            return this.object + ' value: ' + this.content;
+            return this.object + ' value: ' + (this.contentLabel ? this.contentLabel : this.content);
         }
         
     }

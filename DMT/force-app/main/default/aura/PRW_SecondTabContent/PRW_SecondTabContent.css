@@ -1,0 +1,5 @@
+.THIS .classAccordion {
+  --sds-c-accordion-summary-color-background: #F3F2F2 !important;
+  --sds-c-accordion-heading-text-color-hover: #8C8B88;
+  --sds-c-accordion-heading-text-color: #8C8B88;
+}

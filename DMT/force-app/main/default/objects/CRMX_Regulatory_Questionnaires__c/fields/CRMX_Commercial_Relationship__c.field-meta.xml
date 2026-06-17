@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Commercial_Relationship__c</fullName>
+    <description>Answer to the question: Select from the list the group/company with which you have the most commercial relationships</description>
+    <label>Commercial Relationships</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>COMISIÓN FEDERAL DE ELECTRICIDAD CFE</fullName>
+                <default>false</default>
+                <label>COMISIÓN FEDERAL DE ELECTRICIDAD CFE</label>
+            </value>
+            <value>
+                <fullName>PETROLEOS MEXICANOS -PEMEX-</fullName>
+                <default>false</default>
+                <label>PETROLEOS MEXICANOS -PEMEX-</label>
+            </value>
+            <value>
+                <fullName>GRUPO SLIM</fullName>
+                <default>false</default>
+                <label>GRUPO SLIM</label>
+            </value>
+            <value>
+                <fullName>GEM FINANZAS</fullName>
+                <default>false</default>
+                <label>GEM FINANZAS</label>
+            </value>
+            <value>
+                <fullName>GRUPO GOB EDO NUEVO LEON FIN</fullName>
+                <default>false</default>
+                <label>GRUPO GOB EDO NUEVO LEON FIN</label>
+            </value>
+            <value>
+                <fullName>GRUPO FIBRA UNO</fullName>
+                <default>false</default>
+                <label>GRUPO FIBRA UNO</label>
+            </value>
+            <value>
+                <fullName>COPPEL</fullName>
+                <default>false</default>
+                <label>COPPEL</label>
+            </value>
+            <value>
+                <fullName>TOYOTA</fullName>
+                <default>false</default>
+                <label>TOYOTA</label>
+            </value>
+            <value>
+                <fullName>VOLKSWAGEN</fullName>
+                <default>false</default>
+                <label>VOLKSWAGEN</label>
+            </value>
+            <value>
+                <fullName>GRUPO VAZQUEZ RAÐA</fullName>
+                <default>false</default>
+                <label>GRUPO VAZQUEZ RAÐA</label>
+            </value>
+            <value>
+                <fullName>BIMBO</fullName>
+                <default>false</default>
+                <label>BIMBO</label>
+            </value>
+            <value>
+                <fullName>GRUPO LALA</fullName>
+                <default>false</default>
+                <label>GRUPO LALA</label>
+            </value>
+            <value>
+                <fullName>GRUPO BOURS / MEGACABLE</fullName>
+                <default>false</default>
+                <label>GRUPO BOURS / MEGACABLE</label>
+            </value>
+            <value>
+                <fullName>FORD</fullName>
+                <default>false</default>
+                <label>FORD</label>
+            </value>
+            <value>
+                <fullName>TC ENERGY</fullName>
+                <default>false</default>
+                <label>TC ENERGY</label>
+            </value>
+            <value>
+                <fullName>CEMEX</fullName>
+                <default>false</default>
+                <label>CEMEX</label>
+            </value>
+            <value>
+                <fullName>DAIMLER</fullName>
+                <default>false</default>
+                <label>DAIMLER</label>
+            </value>
+            <value>
+                <fullName>ENGIE GROUP</fullName>
+                <default>false</default>
+                <label>ENGIE GROUP</label>
+            </value>
+            <value>
+                <fullName>XIGNUX</fullName>
+                <default>false</default>
+                <label>XIGNUX</label>
+            </value>
+            <value>
+                <fullName>GRUPO SIAPA</fullName>
+                <default>false</default>
+                <label>GRUPO SIAPA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

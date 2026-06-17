@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>customer_type__c</fullName>
+    <label>Client Type</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Corporate</fullName>
+                <default>false</default>
+                <label>Corporate</label>
+            </value>
+            <value>
+                <fullName>ECA</fullName>
+                <default>false</default>
+                <label>ECA</label>
+            </value>
+            <value>
+                <fullName>Bank</fullName>
+                <default>false</default>
+                <label>Bank</label>
+            </value>
+            <value>
+                <fullName>Sovereign Debtor</fullName>
+                <default>false</default>
+                <label>Sovereign Debtor</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>CIB</fullName>
+                <default>false</default>
+                <label>CIB</label>
+            </value>
+            <value>
+                <fullName>BEC</fullName>
+                <default>false</default>
+                <label>BEC</label>
+            </value>
+            <value>
+                <fullName>Corporativa</fullName>
+                <default>false</default>
+                <label>Corporativa</label>
+            </value>
+            <value>
+                <fullName>Banco</fullName>
+                <default>false</default>
+                <label>Banco</label>
+            </value>
+            <value>
+                <fullName>Deudor Soberano</fullName>
+                <default>false</default>
+                <label>Deudor Soberano</label>
+            </value>
+            <value>
+                <fullName>Otro</fullName>
+                <default>false</default>
+                <label>Otro</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

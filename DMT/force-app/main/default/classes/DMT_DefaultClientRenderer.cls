@@ -5,7 +5,7 @@ public with sharing class DMT_DefaultClientRenderer implements DMT_ViewRenderer 
         }
         try {
             String table;
-            if(!data.isNotMultiHolder){
+            if(!data.isSubsidiary){
                 table = '<div>'
                 + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">CLIENT</h2>'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse;">'
@@ -32,7 +32,7 @@ public with sharing class DMT_DefaultClientRenderer implements DMT_ViewRenderer 
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Client Type:</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.Client_Type__c) + '</td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>INTERNAL RATING (SHORT):</strong></td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(initialRating) + '</td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.ratingMonoHolder) + '</td>'
                 + '</tr>'
                 + '</table>'
                 + '</div>'
@@ -96,13 +96,9 @@ public with sharing class DMT_DefaultClientRenderer implements DMT_ViewRenderer 
                 Map<String, Object> textClient = new Map<String, Object>();
                 List<String> name = new List<String>{'Client:','Client Type:'};
                 List<String> value = new List<String>{DMT_FormattingUtils.checkNull(data.line.Client__r.Name),DMT_FormattingUtils.checkNull(data.line.Client_Type__c)};
-                if(data.isNotMultiHolder){
+                if(data.isSubsidiary){
                     name.add('Internal Rating (Short):');
-                    String initialRating;
-                    for (Custom_Association_Client__c client : data.customAssociationClientList) {
-                        initialRating = (String)client.DMT_ClientRating__c;
-                    }
-                    value.add(DMT_FormattingUtils.checkNull(initialRating));
+                    value.add(DMT_FormattingUtils.checkNull(data.ratingMonoHolder));
                 }
                 textClient = DMT_Create_Pdf_Controller.createListText(name, value, '');
                     contentListTable.add(textClient);
@@ -157,7 +153,7 @@ public with sharing class DMT_DefaultClientRenderer implements DMT_ViewRenderer 
             return componentTable;
         } catch (Exception e){
             System.debug('Error in DMT_DefaultClientRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultClientRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultClientRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

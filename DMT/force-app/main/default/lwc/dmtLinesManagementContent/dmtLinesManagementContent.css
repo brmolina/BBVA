@@ -1,0 +1,124 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0; 
+}
+
+.containerRoot {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 72vh;
+    overflow: hidden;
+    isolation: isolate;
+}
+.containerRoot > .slds-grid {
+    flex: 0 0 auto;
+    width: 100%;
+    align-items: flex-end;
+    position: relative;
+    z-index: 20;
+    overflow: visible;
+}
+
+.bulk-actions-layer {
+    position: relative;
+    z-index: 25;
+    overflow: visible;
+}
+
+.spinnerOverlay {
+  position: absolute;
+  inset: 0;                 
+  display: flex;
+  align-items: center;      
+  justify-content: center; 
+    z-index: 200;
+}
+.table-flex {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.lines-content-pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.bulk-footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+
+    background: #f3f3f3; /* gris Salesforce */
+    border-top: 1px solid #d8dde6;
+
+    display: flex;
+    justify-content: center; /* centra todo */
+    align-items: center;
+
+    padding: 0.75rem 1rem;
+    z-index: 50;
+}
+
+/* contenedor de botones */
+.bulk-footer .slds-button-group {
+    display: flex;
+    gap: 0.75rem; /* separación entre botones */
+}
+
+/* opcional: contador a la izquierda si lo quieres */
+.bulk-footer .footer-info {
+    position: relative;
+    right: 1rem;
+    font-size: 0.85rem;
+    color: #444;
+}
+
+.table-selection-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.fake-select-all-header {
+    position: absolute;
+    top: 0.72rem;
+    left: 0.95rem;
+    z-index: 5;
+
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #c9c9c9;
+    border-radius: 0.125rem;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.fake-select-all-header:hover {
+    border-color: #747474;
+    background: #f3f3f3;
+}
+
+.fake-select-all-header.is-selected {
+    border-color: #0176d3;
+    background: #0176d3;
+}

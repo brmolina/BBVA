@@ -1,0 +1,4 @@
+<aura:component>
+    <aura:registerEvent name="searchKeyChange" type="c:GBL_SearchKeyChange" />
+    <lightning:input type="search" label="Search:" name="search" onchange="{!c.dispatchSearchKeyChange}"/>
+</aura:component>

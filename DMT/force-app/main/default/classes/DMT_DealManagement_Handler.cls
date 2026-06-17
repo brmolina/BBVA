@@ -17,11 +17,21 @@ global with sharing class DMT_DealManagement_Handler implements Callable {
     }
     private Object invokeMethod(String methodName, Map<String, Object> inputMap, Map<String, Object> outMap, Map<String, Object> options) {
         try{
+            Map<String, Object> result;
             if(methodName == 'lastDate'){
                 outMap.put('returnedDate' ,  DMT_HPG_Utils.lastDate());
                                         }
             else if(methodName == 'getGroup'){
                 outMap.put('groupCode' ,  DMT_HPG_Utils.getGroupId((String)inputMap.get('originId')));
+            }
+            else if(methodName == 'getGroupName'){
+                List<Object> args = (List<Object>) inputMap.get('arguments');
+                System.debug('getGroupName args: '+args);
+                System.debug('(String) args[0]: '+(String) args[0]);
+                String groupName = DMT_HPG_Utils.getGroupName((String) args[0]);
+                System.debug('groupName: '+groupName);
+                result = new Map<String, Object>{ 'result' => groupName };
+                outMap.putAll(result);
             }
             else if(methodName == 'getLineId'){
                 Map<String, Object> request = new Map<String, Object>();
@@ -65,7 +75,7 @@ global with sharing class DMT_DealManagement_Handler implements Callable {
                 listIds.add((Id)id);
             }
 
-            for (DMT_Line__c line : [SELECT Id, DMT_Parent_Line__c, Status__c,(select id from Lines__r), DMT_Cancel__c, DMT_Deleted__c FROM DMT_Line__c WHERE Id IN :listIds WITH SECURITY_ENFORCED]) {
+            for (DMT_Line__c line : [SELECT Id, DMT_Parent_Line__c, Status__c,(select id from Lines__r), DMT_Cancel__c, DMT_Deleted__c FROM DMT_Line__c WHERE Id IN :listIds WITH USER_MODE]) {
                 if(line.Status__c != 'Closed' || line.DMT_Cancel__c || line.DMT_Deleted__c){
                     result.add(true);
                 }else{

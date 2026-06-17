@@ -36,7 +36,7 @@ public class PRC_TestUtils {
 	public void loadOpportunity() {
         final Account acc = this.utils.createClient();
         acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Subsidiary;
-        acc.SER_CClient__c = 'Test';
+        acc.g_customer_id__c = 'Test';
         insert acc;
         this.acc = acc;
 
@@ -73,7 +73,7 @@ public class PRC_TestUtils {
         this.mitigant.Pricing_Detail__c = this.pd.Id;
         this.mitigant.gf_warranty_type__c = 'Collateral';
         this.mitigant.gf_subwarranty_name__c = 'CASH';
-        this.mitigant.gf_providing_warranty_ent_id__c = this.acc.SER_CClient__c;
+        this.mitigant.gf_providing_warranty_ent_id__c = this.acc.g_customer_id__c;
         this.mitigant.gf_offer_warranty_country_type__c = 'AR';
         this.mitigant.gf_cty_rqst_wrrnty_risk_per__c = 34;
         this.mitigant.gf_mit_rk_rqst_warranty_per__c = 56;

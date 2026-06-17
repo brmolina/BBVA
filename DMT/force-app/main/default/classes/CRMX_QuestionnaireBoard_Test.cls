@@ -196,7 +196,7 @@
         Id recordTypeId = [SELECT Id FROM RecordType WHERE SObjectType = :SOBJECT_TYPE AND DeveloperName = :CLIENT_RECTYPE LIMIT 1].Id;
         final Account testAccount    = new Account();
 		testAccount.Name             = CLIENT_NAME;
-		testAccount.SER_CClient__c   = NO_CLIENTE;
+		testAccount.g_customer_id__c   = NO_CLIENTE;
 		testAccount.RecordTypeId     = recordTypeId;
         insert testAccount;
         testAccountId = testAccount.Id;
@@ -313,7 +313,7 @@
      **/
     @isTest
     static void testGetQuestionnairesBasic() {
-        Final Account testAccount = [SELECT Id FROM Account WHERE SER_CClient__c = :NO_CLIENTE LIMIT :LIMIT_ONE];
+        Final Account testAccount = [SELECT Id FROM Account WHERE g_customer_id__c = :NO_CLIENTE LIMIT :LIMIT_ONE];
         Final List<CRMX_QuestionnaireBoard_Ctrl.QuestionnaireWrapper> listWrappers = CRMX_QuestionnaireBoard_Ctrl.getQuestionnaires(testAccount.Id);
         System.assertNotEquals(true, listWrappers == null || listWrappers.isEmpty(), QUEST_GET);
     }

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>tier_desc__c</fullName>
+    <label>Tier</label>
+    <required>false</required>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>00000000</fullName>
+                <default>false</default>
+                <label>Not Defined</label>
+            </value>
+            <value>
+                <fullName>00000010</fullName>
+                <default>false</default>
+                <label>BEeIG - Others</label>
+            </value>
+            <value>
+                <fullName>00000020</fullName>
+                <default>false</default>
+                <label>CIB-Platinum</label>
+            </value>
+            <value>
+                <fullName>00000021</fullName>
+                <default>false</default>
+                <label>CIB-Gold</label>
+            </value>
+            <value>
+                <fullName>00000022</fullName>
+                <default>false</default>
+                <label>CIB-Silver</label>
+            </value>
+            <value>
+                <fullName>00000023</fullName>
+                <default>false</default>
+                <label>CIB-Bronze</label>
+            </value>
+            <value>
+                <fullName>00000024</fullName>
+                <default>false</default>
+                <label>BEeIG-GCB</label>
+            </value>
+            <value>
+                <fullName>00000025</fullName>
+                <default>false</default>
+                <label>CIB-Geographic</label>
+            </value>
+            <value>
+                <fullName>00000030</fullName>
+                <default>false</default>
+                <label>Core/ESG not defined</label>
+            </value>
+            <value>
+                <fullName>00000031</fullName>
+                <default>false</default>
+                <label>Core/ESG Poor</label>
+            </value>
+            <value>
+                <fullName>00000032</fullName>
+                <default>false</default>
+                <label>Core/ESG Moderate -Strong</label>
+            </value>
+            <value>
+                <fullName>00000033</fullName>
+                <default>false</default>
+                <label>Core/ESG Advanced</label>
+            </value>
+            <value>
+                <fullName>00000034</fullName>
+                <default>false</default>
+                <label>Value/ESG not defined</label>
+            </value>
+            <value>
+                <fullName>00000035</fullName>
+                <default>false</default>
+                <label>Value/ESG Poor</label>
+            </value>
+            <value>
+                <fullName>00000036</fullName>
+                <default>false</default>
+                <label>Value/ESG Moderate - Strong</label>
+            </value>
+            <value>
+                <fullName>00000037</fullName>
+                <default>false</default>
+                <label>Value/ESG Advanced</label>
+            </value>
+            <value>
+                <fullName>00000038</fullName>
+                <default>false</default>
+                <label>Progress/ESG not defined</label>
+            </value>
+            <value>
+                <fullName>00000039</fullName>
+                <default>false</default>
+                <label>Progress/ESG Poor</label>
+            </value>
+            <value>
+                <fullName>00000040</fullName>
+                <default>false</default>
+                <label>Progress/ESG Moderate - Strong</label>
+            </value>
+            <value>
+                <fullName>00000041</fullName>
+                <default>false</default>
+                <label>Progress/ESG Advanced</label>
+            </value>
+            <value>
+                <fullName>00000042</fullName>
+                <default>false</default>
+                <label>GC Standard</label>
+            </value>
+            <value>
+                <fullName>00000043</fullName>
+                <default>false</default>
+                <label>Value FS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

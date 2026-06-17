@@ -1,0 +1,30 @@
+<template>
+    <c-dmt_form_renderer
+        fields={fields}
+        is-edit-mode={isEditMode}
+        oneditmodechange={handleEditModeChange}
+        onfieldchange={handleFieldChange}>
+    </c-dmt_form_renderer>
+
+    <div class="slds-p-horizontal_small slds-p-top_medium slds-p-bottom_small">
+        <c-dmt_opp_product_table_tenors
+            lwc:ref="tableTenors"
+            data={tenorsData}
+            opp-product={recordId}
+            is-edit-mode={isEditMode}
+            initial-date={initialDate}
+            maturity-date={maturityDate}
+            amortization-type={currentAmortizationType}
+            currency-code={currencyCode}
+            ontenorschange={handleTenorsChange}
+            onvalidationchange={handleTenorsValidation}>
+        </c-dmt_opp_product_table_tenors>
+    </div>
+
+    <c-dmt_form_renderer
+        fields={extraFields}
+        is-edit-mode={isEditMode}
+        oneditmodechange={handleEditModeChange}
+        onfieldchange={handleExtraFieldChange}>
+    </c-dmt_form_renderer>
+</template>

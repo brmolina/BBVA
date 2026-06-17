@@ -1,0 +1,9 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component - Show the edition modal for potition bank table component. </b></h5>
+    <p>exposureId - Contains the id of the limit exposure object</p>
+    <p>accHasAnId - Contains the id of the account has analyis object</p>
+    <p>recordTypeId - Contains the id of the record type for typology</p>
+    <p><code>c:Arc_Gen_PotitionTableEdition</code></p>
+  </aura:description>
+</aura:documentation>

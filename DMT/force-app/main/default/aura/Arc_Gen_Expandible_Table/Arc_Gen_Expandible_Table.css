@@ -1,0 +1,8 @@
+.THIS .slds-th__action .slds-th__action-button { display: none; }
+
+.THIS .slds-table_col-bordered td + td,
+.THIS .slds-table_col-bordered th + th,
+.THIS .slds-table_col-bordered th + td,
+.THIS .slds-table_col-bordered td + th { border-left: none; }
+.THIS .slds-th__action { justify-content: center; }
+.THIS .slds-has-button-menu .slds-th__action { padding-right: 0; }

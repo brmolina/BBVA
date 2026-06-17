@@ -1,0 +1,45 @@
+.THIS .icono svg{
+    fill: grey;
+}
+
+.THIS .headerTable{
+    font-size: 11pt;
+}
+
+.THIS .franchiseData{
+    background-color: white;
+    font-size: 10pt;
+
+}
+
+.THIS .regionCol{
+    width:9%;
+}
+
+.THIS .width-column{
+    width:25% !important; 
+}
+
+.THIS .margin-icon{
+    margin: 0px 5px;
+}
+
+.THIS .margin-column{
+    margin: 0px 0px 0px 19px;
+}
+
+.THIS .active-color{
+    color: #2b2826;
+    font-size: 10pt;
+    font-weight:bold;
+}
+
+.THIS .top-margin{
+	margin: 10px 0px 10px 0px;    
+}
+
+.THIS .slds-accordion__summary-action{
+    background-color: #f3f2f2;
+    border-radius: 0rem;
+    padding: 0.5rem;
+}

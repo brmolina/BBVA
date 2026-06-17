@@ -1,0 +1,98 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens" access="global" controller="Create_opp_controller">
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="rtId" type="String" default=""/>
+
+    <aura:attribute name="UserVal" type="String" default=""/>
+    <aura:attribute name="CoverageVal" type="String" default=""/>
+    <aura:attribute name="TeamRoleVal" type="String" default=""/>
+    <aura:attribute name="Scope" type="String" default=""/>
+    <aura:attribute name="PSProductFamily" type="String" default=""/>
+    <aura:attribute name="PSProduct" type="String" default=""/>
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:attribute name="disableTB" type="Boolean" default="true"/>
+    <aura:attribute name="disablePS" type="Boolean" default="true"/>
+    <aura:attribute name="searchKeyWordPS" type="String" />
+    <aura:attribute name="listOfSearchRecords" type="List" description="Use,for store the list of search records which returns from apex class" />
+    <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.showError}">
+        <div class="slds-grid slds-p-top_small slds-wrap">
+            <div class="slds-notify slds-notify_toast slds-theme_error slds-col slds-size_1-of-1" role="status">
+                <span class="slds-assistive-text">ERROR</span>
+                <div class="slds-notify__content slds-col slds-size_1-of-1">
+                    <p class="slds-text-heading_small">Review the errors on this page.</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-1">
+                <p class="slds-text-color_error">{!v.errorMessage}</p>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.rtId == ''}">
+        <div class="spinnerdiv">
+            <lightning:spinner alternativeText="Loading" aura:id="spinnerId"  variant="brand"/>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.rtId != ''}">
+        <lightning:recordEditForm
+                      objectApiName="DES_Opportunity_Management_member__c"
+                      recordTypeId="{!v.rtId}">
+            <lightning:messages />
+            <div class="slds-grid slds-p-top_small slds-wrap">
+                <div aura:id="divuser" class="slds-col slds-size_1-of-2 slds-form-element">
+                    <lightning:inputField fieldName="DES_User__c" class="customRequired" aura:id="userField"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-DES_User__c">Complete this field</div>
+                </div>
+                <div aura:id="divcoveragetype" class="slds-col slds-size_1-of-2 slds-p-right_small">
+                    <lightning:inputField fieldName="DES_Tipo_de_cobertura__c" aura:id="coveragetypeField" disabled="{!v.disableTB}"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-coveragetype">Complete this field</div>
+                </div>
+            </div>
+            <div class="slds-grid slds-p-top_small slds-wrap">
+                <div aura:id="divteamrole" class="slds-col slds-size_1-of-2 slds-p-right_small">
+                    <lightning:inputField fieldName="DES_Opportunity_member_role__c" class="customRequired" aura:id="teamroleField" onchange="{!c.onChangeTeamRole}"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-teamrole">Complete this field</div>
+                </div>
+                <div aura:id="divpsprodfamily" class="slds-col slds-size_1-of-2 slds-p-right_small">
+                    <lightning:inputField fieldName="DES_PS_Product_Family__c" aura:id="psprodfamilyField" disabled="{!v.disablePS}" value="{!v.PSProductFamily}"/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-psprodfamily">Complete this field</div>
+                </div>
+            </div>
+            <div class="slds-grid slds-p-top_small slds-wrap">
+                <div aura:id="divcountries" class="slds-col slds-size_1-of-2 slds-p-right_small">
+                    <lightning:inputField fieldName="DES_Scope__c" aura:id="countriesField" value=""/>
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-countries">Complete this field</div>
+                </div>
+                <div aura:id="divproduct" class="slds-col slds-size_1-of-2 slds-form-element">
+                    <aura:if isTrue = "{!!v.disablePS}">
+                        <c:FilteredLookup objectAPIName="Product2"
+                        SearchKeyWord="{!v.searchKeyWordPS}"
+                        label="PS Product"
+                        IconName="standard:product"
+                        productFamily="{!v.PSProductFamily}"
+                        objectOpenForm="Product2" />
+                        <aura:set attribute="else">
+                            <lightning:inputField fieldName="DES_PS_Product__c" aura:id="productFieldFalse" disabled="true"/>
+                        </aura:set>
+                    </aura:if>
+
+                    <div class="slds-form-element__help slds-hidden" aura:id="error-product">Complete this field</div>
+                </div>
+            </div>
+        </lightning:recordEditForm>
+
+        <div aura:id="actionButtonBar" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+            <div class="slds-float_right">
+                <lightning:button aura:id="NEXT" label="Next" variant="brand" onclick="{!c.saveForm}" />
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <div class="spinnerdiv">
+                <lightning:spinner alternativeText="Loading" aura:id="spinnerId"  variant="brand"/>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

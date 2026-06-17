@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Onboarding_Trigger__c</fullName>
+    <label>Onboarding Trigger</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Client proactive request</fullName>
+                <default>false</default>
+                <label>Client proactive request</label>
+            </value>
+            <value>
+                <fullName>Banker &amp; GM sales coordinated opportunity</fullName>
+                <default>false</default>
+                <label>Banker &amp; GM sales coordinated opportunity</label>
+            </value>
+            <value>
+                <fullName>Global Markets sales opportunity</fullName>
+                <default>false</default>
+                <label>Global Markets sales opportunity</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Min_Length</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+            NOT(ISBLANK(SWIFT_BIC__c)),
+            LEN(SWIFT_BIC__c) &lt; 8
+        )</errorConditionFormula>
+    <errorDisplayField>SWIFT_BIC__c</errorDisplayField>
+    <errorMessage>This field must be between 8 and 11 characters long.</errorMessage>
+</ValidationRule>

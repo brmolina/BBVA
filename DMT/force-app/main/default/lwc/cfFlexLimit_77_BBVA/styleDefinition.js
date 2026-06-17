@@ -1,0 +1,3 @@
+let styleDefinition =
+      {"state0element0block_element1block_element0block_element2":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element   slds-size_12-of-12  ","style":"      \n         ","styleProperties":{}}}],"state0element0block_element1block_element0block_element3block_element0":[{"conditions":"default","styleObject":{"class":"slds-col  condition-element slds-border_top slds-border_right slds-border_bottom slds-border_left slds-p-around_x-small contenedorMensaje slds-size_11-of-12  ","style":"background-color:#FFFFFF;     border-top: #F4F4F4 2px solid;border-right: #F4F4F4 2px solid;border-bottom: #F4F4F4 2px solid;border-left: #F4F4F4 2px solid; \n    border-radius:4px;     ","styleProperties":{}}}]};
+  export default styleDefinition

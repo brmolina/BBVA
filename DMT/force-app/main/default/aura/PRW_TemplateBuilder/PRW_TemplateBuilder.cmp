@@ -1,0 +1,26 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+
+<aura:attribute name="recordId" type="String" />
+<aura:attribute name="sObjectName" type="String" />
+<aura:attribute name="hideHeader" type="Boolean" default="true" />
+
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <div class="slds-button slds-button_icon slds-modal__close">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.close}" variant="bare" title="Close" iconClass="closeButton" alternativeText="Close"/>
+                    <span class="slds-assistive-text">Close</span>
+                </div>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Send Email</h2>
+            </header>
+            <div class="empty">
+
+            </div>
+            <tmpb:templateBuilderContent onclosetemplatebuilder="{!c.close}" recordId="{!v.recordId}" hideHeader="{!v.hideHeader}" />
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+</aura:component>

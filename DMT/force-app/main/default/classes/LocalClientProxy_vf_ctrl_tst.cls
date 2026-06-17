@@ -12,7 +12,7 @@ public with sharing class LocalClientProxy_vf_ctrl_tst {
   static void testMethodOne() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = 'test1';
+    acc.g_customer_id__c = 'test1';
     acc.Name = 'test1';
     insert acc;
 

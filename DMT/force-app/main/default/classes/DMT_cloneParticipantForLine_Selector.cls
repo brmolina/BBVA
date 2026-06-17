@@ -3,17 +3,17 @@ public without sharing  class DMT_cloneParticipantForLine_Selector {
         return  [SELECT Id, User__c, Full_Name_User__c, Line__c,Line__r.Client__r.DES_Group_Code__c, Line__r.Client__r.DES_Subsidiary_Group_Code__c,
                          AccessLevel__c, DMT_ApprovalEdit__c, Team_Role__c, User__r.DMT_User_Role__c
                         FROM DMT_TeamMember__c
-                        WHERE Line__c = :oldLineId AND DMT_ApprovalEdit__c = false  WITH SECURITY_ENFORCED];
+                        WHERE Line__c = :oldLineId AND DMT_ApprovalEdit__c = false  WITH USER_MODE];
     }
     public static List<Local_Client__c> getLocalClient(String localClient){
         return  [SELECT Cib_Client__c, Cib_Client__r.DES_Main_Parent__c
                   FROM Local_Client__c
-                  WHERE id = :localClient WITH SECURITY_ENFORCED LIMIT 1];
+                  WHERE id = :localClient WITH USER_MODE LIMIT 1];
     }
     public static List<DES_BBVA_Management_team__c> getManagementTeam(Set<Id> clientIds){
         return  [SELECT Id, Name, DES_First_Name__c, DES_Last_Name__c, DES_User__c, DES_User__r.IsActive, DES_User_email__c, DES_Client__c, DES_Client__r.DES_Group_Code__c
                   FROM DES_BBVA_Management_team__c
-                  WHERE DES_Client__c IN :clientIds AND DES_User__r.IsActive = true WITH SECURITY_ENFORCED];
+                  WHERE DES_Client__c IN :clientIds AND DES_User__r.IsActive = true WITH USER_MODE];
 
     }
 }

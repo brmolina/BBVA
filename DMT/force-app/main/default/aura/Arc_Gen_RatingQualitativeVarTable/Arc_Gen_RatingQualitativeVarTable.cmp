@@ -1,0 +1,32 @@
+<!--
+  @Component Name     : Arc_Gen_RatingQualitativeVarTable.cmp
+  @Description        : Table that shows the questions and answers for the qualitative variables of a rating.
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : joseluis.garcia4.contractor@bbva.com
+  @Last Modified On   : 26/05/2020
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0                                ARCE TEAM     		        Initial Version
+  1.1    20/05/2020      joseluis.garcia4.contractor@bbva.com   Shows the qualitative variables for a rating.
+  1.1.1  26/05/2020      joseluis.garcia4.contractor@bbva.com   Fix checkbox column.
+  1.2    26/05/2020      joseluis.garcia4.contractor@bbva.com   fix handler in ratingstudies, analysis code in ratios
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_RatingVariablesTable_controller" access="global">
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" description="Init variable"/>
+    <aura:attribute name="columns" type="List" access="PRIVATE" description="List of the table colums"/>
+    <aura:attribute name="data" type="Object" access="PRIVATE" description="Table data in JSON type"/>
+    <aura:attribute name="hideCheckbox" type="Boolean" default="true" access="PRIVATE" description="Whether to show the checkbox column"/>
+    <div class="table-container">
+        <lightning:datatable
+            columns="{! v.columns }"
+            data="{! v.data }"
+            keyField="description"
+            aura:id="qualitativeTable"
+            hideCheckboxColumn="{!v.hideCheckbox}"
+        />
+    </div>
+</aura:component>

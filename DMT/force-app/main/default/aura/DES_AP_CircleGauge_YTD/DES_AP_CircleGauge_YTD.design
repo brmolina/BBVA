@@ -1,0 +1,10 @@
+<design:component>    
+	<design:attribute name="theme" label="Theme" datasource="blue" description="Color theme of the component" />
+    <design:attribute name="size" label="Size" datasource="medium" description="Size of the of the component" />
+    
+    <design:attribute name="totalProgress" label="Total" description="Either API Name of field Or numeric value showing total value to be used for computation" />
+    <design:attribute name="actualProgress" label="Actual" description="Either API Name of field Or numeric value showing actual value to be used for computation" />
+    
+    <design:attribute name="Legend" label="Legend" description="Legend to be displayed." />
+    
+</design:component>

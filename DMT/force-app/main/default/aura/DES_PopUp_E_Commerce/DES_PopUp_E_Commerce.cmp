@@ -1,0 +1,45 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+    controller="DES_PopUp_E_Commerce_Ctrl"
+	access="global">
+	<!--use boolean attribute for Store true/false value,
+	make default to "false" so modal box are not display on the load of component.
+	-->
+	<aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="PopUpMessage" type="String" default=""/>
+	<aura:attribute name="titlePopUp" type="String" default="Warning"/>
+    <aura:attribute name="onlyOnce" type="boolean" default="false"/>
+	<aura:attribute name="cookieLifetime" type="Integer" default="60"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<!--Use "slds-m-around- -xx-large" class to add standard Large padding to the component-->
+	<aura:if isTrue="{!v.isOpen}">
+        <div class="slds-m-around--xx-large" style="text-align:center;">
+            <!--###### MODAL BOX Start From Here ######-->
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+                        <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="header99" class="slds-text-heading--medium"><b><aura:unescapedHtml value="{!v.titlePopUp}" /></b></h2>
+                    </div>
+                    <!--###### MODAL BOX BODY Part Start From Here ######-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <p class="my-custom-styles">
+                            <!-- <b> -->
+                                <lightning:formattedText value="{!v.PopUpMessage}" style-class="my-custom-styles"/>
+                            <!-- </b> -->
+                        </p>
+                    </div>
+                    <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">OK</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+        </div>
+    </aura:if>
+</aura:component>

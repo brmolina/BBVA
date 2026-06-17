@@ -6,6 +6,7 @@
             <input
                 type="checkbox"
                 checked={product.selected}
+                disabled={product.disabled}
                 onchange={toggleExpand}/>
             <span class="radio-circle"></span>
             </label>
@@ -16,21 +17,26 @@
                 variant="label-hidden"
                 class="custom-radio"
                 checked={product.selected}
+                disabled={product.disabled}
                 onchange={toggleExpand}>
             </lightning-input>
             </template>
-            <span onclick={toggleExpand} style="cursor:pointer" class={levelClass}>{product.displayName}</span>
+            <template if:true={product.disabled}>
+                <span onclick={toggleExpand}
+                    style="cursor:pointer; font-weight: normal; color:#999;">
+                    {product.displayName}
+                </span>
+            </template>
+
+            <template if:false={product.disabled}>
+                <span onclick={toggleExpand}
+                    style="cursor:pointer"
+                    class={levelClass}>
+                    {product.displayName}
+                </span>
+            </template>
             <template if:true={zeroLevel}>
-            <template if:true={isSelected}><lightning-combobox
-            name="progress"
-            style="margin-left: 0.8rem; min-width: 12rem;"
-            label="Max Term"
-            variant="label-hidden"
-            value={valueTerm}
-            placeholder="Select Term"
-            options={optionsTerm}
-            onchange={handleChangeTerm} ></lightning-combobox>
-        </template>
+            
         </template>
         </template>
         <template if:false={hasChildren} >
@@ -40,7 +46,9 @@
                 <input
                 type="checkbox"
                 checked={product.selected}
-                onchange={handleCheckbox}/>
+                onchange={handleCheckbox}
+                disabled={product.disabled}/>
+                
             <span class="radio-circle"></span>
             </label> 
             </template>  
@@ -61,17 +69,7 @@
                 <span class={levelClass} style="cursor:pointer" onclick={handleCheckbox}>{product.displayName}</span><span style="cursor:pointer;font-style:italic;" onclick={handleCheckbox}> - &#123;{product.taxValue}&#125;</span>
             </template>  
             <template if:true={zeroLevel}>
-            <template if:true={isSelected}>
-                <lightning-combobox
-            name="progress"
-            style="margin-left: 0.8rem;; min-width: 12rem;"
-            label="Max Term"
-            variant="label-hidden"
-            value={valueTerm}
-            placeholder="Term"
-            options={optionsTerm}
-            onchange={handleChangeTerm} ></lightning-combobox>
-        </template>
+            
         </template>  
             </div>
         </template>

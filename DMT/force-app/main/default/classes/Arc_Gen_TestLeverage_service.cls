@@ -3,8 +3,8 @@
 * @Description        : Contains the logic of the test leveraged
 * @Author             : eduardoefrain.hernandez.contractor@bbva.com
 * @Group              : ARCE Team
-* @Last Modified By   : cesaroctavio.villanueva.cebal@bbva.com
-* @Last Modified On   : 10/06/2020 12:26:55
+* @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+* @Last Modified On   : 04-21-2026
 * @Changes
 *=======================================================================================================================
 * Ver         Date                     Author      		      Modification
@@ -47,47 +47,47 @@ public without sharing class Arc_Gen_TestLeverage_service {
         /**
         * @Description: Number of employees
         */
-        Double noEmployees;
+        public Double noEmployees;
         /**
         * @Description: Risk amount
         */
-        Double risk;
+        public Double risk;
         /**
         * @Description: Rating value
         */
-        String rating;
+        public String rating;
         /**
         * @Description: Was financial sponsor previously filled
         */
-        Boolean prevFS;
+        public Boolean prevFS;
         /**
         * @Description: Financial sponsor indicator
         */
-        Boolean financialSponsor;
+        public Boolean financialSponsor;
         /**
         * @Description: Was Small or Medium Enterprise Indicator previously filled
         */
-        Boolean prevSME;
+        public Boolean prevSME;
         /**
         * @Description: Small or Medium Enterprise Indicator
         */
-        Boolean smeIndicator;
+        public Boolean smeIndicator;
         /**
         * @Description: Debt amount
         */
-        Double debt;
+        public Double debt;
         /**
         * @Description: Ebitda amount
         */
-        Double ebitda;
+        public Double ebitda;
         /**
         * @Description: Debt over ebitda ratio
         */
-        Double debtOverEbitda;
+        public Double debtOverEbitda;
         /**
         * @Description: Type of calculation
         */
-        String calculateType;
+        public String calculateType;
     }
 /**
 *-------------------------------------------------------------------------------

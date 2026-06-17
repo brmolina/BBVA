@@ -1,0 +1,61 @@
+/* .slds-button, .slds-p-horizontal_x-smalL{
+    background-color: #f3f3f3;
+    width: -webkit-fill-available;
+    height:2.8rem;
+} 
+.slds-modal_medium, .slds-modal__container{
+        margin: 0 auto !important;
+        width: 55% !important;
+        max-width: 40rem !important;
+        min-width: 20rem !important;
+
+}
+
+.slds-p-around_medium, .slds-p-around--medium{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__content{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__container{
+margin: 0 auto;
+    width: 50%;
+    max-width: 40rem;
+    min-width: 20rem;
+}
+
+c-dmt_table_xsell table tbody td button.slds-button.slds-button_neutral
+{
+        padding-left: 10px;
+        padding-right: 10px;
+}*/
+
+.slds-modal_medium, .slds-modal__container{
+        margin: 0 auto !important;
+        /*width: 55% !important;*/
+        width: fit-content !important;
+        max-width: 60rem !important;
+        min-width: 50rem !important;
+
+}
+
+.slds-p-around_medium, .slds-p-around--medium{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__content{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__container{
+margin: 0 auto;
+    width: fit-content;
+    max-width: 60rem;
+    min-width: 50rem;
+}

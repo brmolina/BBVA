@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContactId</fullName>
+    <description>Counterparty contact.</description>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>(1 AND 2 AND 4) OR 3</booleanFilter>
+        <filterItems>
+            <field>$Source.AccountId</field>
+            <operation>equals</operation>
+            <valueField>Contact.AccountId</valueField>
+        </filterItems>
+        <filterItems>
+            <field>$Profile.Name</field>
+            <operation>contains</operation>
+            <value>Service Client Service Manager STE, Service Management STE, Service Standard User STE, Service Client Service Manager GNC, Service Standard User GNC</value>
+        </filterItems>
+        <filterItems>
+            <field>$Profile.Name</field>
+            <operation>notContain</operation>
+            <value>Service Client Service Manager STE, Service Management STE, Service Standard User STE, Service Client Service Manager GNC, Service Standard User GNC</value>
+        </filterItems>
+        <filterItems>
+            <field>Contact.Status__c</field>
+            <operation>equals</operation>
+            <value>Active</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

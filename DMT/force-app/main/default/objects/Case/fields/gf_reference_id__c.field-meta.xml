@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_reference_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Local Reference</label>
+    <referenceTo>Local_Reference__c</referenceTo>
+    <relationshipLabel>Cases</relationshipLabel>
+    <relationshipName>CaseLocalRef</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

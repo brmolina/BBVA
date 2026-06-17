@@ -1,0 +1,3 @@
+<design:component>
+	<design:attribute name="gmRolVery" label="Rol verify" description="Show all visit by role/department"/>
+</design:component>

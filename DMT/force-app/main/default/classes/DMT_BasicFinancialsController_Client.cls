@@ -41,7 +41,7 @@ public with sharing class DMT_BasicFinancialsController_Client {
                         Net_Debt_EBITDA_Next_Year_2_number__c
                     FROM Account 
                     WHERE Id =: recordId
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 }

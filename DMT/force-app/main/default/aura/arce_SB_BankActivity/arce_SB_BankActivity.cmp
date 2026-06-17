@@ -1,0 +1,27 @@
+<aura:component access="global" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId">
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 75%; max-height: 100rem; width: 75%; max-width: 100rem; } .modal-body{ height : 100px !important; max-height: 100px !important; } .customFooter{ display: inline !important; } .cuf-content { padding: 0 0rem !important;
+        } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; }
+    </aura:html>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-theme_default">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Bank activities</h1>
+            </div>
+            <div class="slds-scrollable_y" tabindex="0">
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p>
+                        <lightning:formattedRichText aura:id="listRichText" class="slds-text-body_small"/>
+                    </p>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral slds-float_left" onclick="{!c.handleOnCancel}" aria-label="Close">Close</button>
+            </div>
+        </div>
+        {!v.body}
+    </section>
+</aura:component>

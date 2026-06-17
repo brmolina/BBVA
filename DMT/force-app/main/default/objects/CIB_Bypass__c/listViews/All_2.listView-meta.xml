@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_2</fullName>
+    <columns>SETUP_OWNER_NAME</columns>
+    <columns>SETUP_TYPE</columns>
+    <columns>NAME</columns>
+    <columns>CIB_Skip_Commercial_Alert_trigger__c</columns>
+    <columns>CIB_migration__c</columns>
+    <columns>CIB_skip_assert__c</columns>
+    <columns>CIB_skip_trigger__c</columns>
+    <columns>CIB_skip_triggers_AP__c</columns>
+    <columns>CIB_skip_validationrule__c</columns>
+    <columns>CIB_skip_workflow__c</columns>
+    <columns>CIB_stop_job__c</columns>
+    <columns>CIB_DES_DataMigration__c</columns>
+    <columns>CIB_DES_skip_trigger_in_denorm__c</columns>
+    <columns>CIB_skip_ProcessBuilder__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All 2</label>
+    <language>en_US</language>
+</ListView>

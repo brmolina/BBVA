@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <inlineHelpText>User from the system you want to relate to this contact</inlineHelpText>
+    <label>User</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>1 AND 2 AND 3 AND 4</booleanFilter>
+        <filterItems>
+            <field>User.IsActive</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </filterItems>
+        <filterItems>
+            <field>User.User_And_Logged_equal__c</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </filterItems>
+        <filterItems>
+            <field>User.Profile.Id</field>
+            <operation>notEqual</operation>
+            <value>00e57000001AuIn</value>
+        </filterItems>
+        <filterItems>
+            <field>User.Profile.Id</field>
+            <operation>notEqual</operation>
+            <value>00e570000012tY7</value>
+        </filterItems>
+        <infoMessage>The User can only look for active users in the same Asset</infoMessage>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>User</referenceTo>
+    <relationshipName>Contact_Team</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

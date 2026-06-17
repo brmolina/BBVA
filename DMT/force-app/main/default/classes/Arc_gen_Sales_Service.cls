@@ -3,14 +3,15 @@
 * @Description        : Class to the callouts of sales
 * @Author             : isabel.ascaso.tech@bbva.com
 * @Group              : ARCE Team
-* @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
-* @Last Modified On   : 05-26-2025
+* @Last Modified By   : isabel.ascaso.tech@bbva.com
+* @Last Modified On   : 26/03/2024
 * @Changes
 *========================================================================================
 * Ver         Date   Author                                           Modification
 *========================================================================================
 * 1.0    26/03/2024  isabel.ascaso.tech@bbva.com     Initial Version
 **/
+@SuppressWarnings('PMD.EmptyStatementBlock,PMD.ExcessiveParameterList')
 public with sharing class Arc_gen_Sales_Service {
     /**
     * @description Constant storing the custom metadata service salesEnginename
@@ -39,8 +40,9 @@ public with sharing class Arc_gen_Sales_Service {
     * @date		26/03/2024
     * @author	isabel.ascaso.tech@bbva.com
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
+    @TestVisible
     private Arc_gen_Sales_Service() {
-
     }
 
     /**
@@ -75,7 +77,12 @@ public with sharing class Arc_gen_Sales_Service {
         final arce.Arc_gen_Sales_Wrappers.DataWrapper dataRequest = new arce.Arc_gen_Sales_Wrappers.DataWrapper();
         final arce__Financial_Statements__c ffss = getFfssInformation(ahaObj.arce__ffss_for_rating_id__r.arce__financial_statement_id__c);
         final arce.Arc_Gen_AccHasAnalysis_Data ahaLocator = new arce.Arc_Gen_AccHasAnalysis_Data();
-        final arce__Table_Content_per_Analysis__c tableContent = ahaLocator.getTableContentByCodeTerm(ahaObj.Id,new Set<String>{SEVENHUNDRED})[0];
+        arce__Table_Content_per_Analysis__c tableContent = new arce__Table_Content_per_Analysis__c();
+        final List<arce__Table_Content_per_Analysis__c> tableContentList = ahaLocator.getTableContentByCodeTerm(ahaObj.Id,new Set<String>{SEVENHUNDRED});
+        if(!tableContentList.isEmpty()) {
+            tableContent = tableContentList[0];
+        }
+
         final Map<Id,arce.Arc_Gen_Account_Wrapper> prevSubsWrpMap = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id>{ahaObj.arce__Customer__c});
 
         dataRequest.currencyX = ffss.CurrencyIsoCode;
@@ -208,13 +215,16 @@ public with sharing class Arc_gen_Sales_Service {
     * -----------------------------------------------------------------------------------------------
     **/
     public static ResponseWrapper callIASOServiceEngineSales(arce__Account_has_Analysis__c ahaObj, String raipType) {
-        final ResponseWrapper response;
+        ResponseWrapper response = new ResponseWrapper();
         try {
             final arce.Arc_gen_Sales_Wrappers.DataWrapper request = setVariables(ahaObj, raipType);
             String salesRequestJson = JSON.serialize(request, true);
 
             final Map<String, String> replacementKeys = new Map<String, String>{ 'currencyX' => 'currency', 'dateX' => 'date', 'parentSubsidiary' => 'relationParentSubsidiary', 'finStatement' => 'financialStatement', 'idLong' => 'id', 'finStatType' => 'financialStatementType' };
             salesRequestJson = replaceJsonKeys(salesRequestJson, replacementKeys);
+
+            final Map<String, String> replacementKeysUnit = new Map<String, String>{ 'THOUS' => 'THOUSANDS', 'MILLI' => 'MILLIONS', 'BILLI' => 'THOUSANDS_MILLIONS'};
+            salesRequestJson = replaceJsonKeys(salesRequestJson, replacementKeysUnit);
             final Map<String, String> parametersJson = setParametersSales(ahaObj);
             parametersJson.put('jsonInput', salesRequestJson);
 
@@ -226,13 +236,25 @@ public with sharing class Arc_gen_Sales_Service {
             final arce.Arc_gen_Sales_Wrappers.EngineSalesResponseWrapper salesResponse = (arce.Arc_gen_Sales_Wrappers.EngineSalesResponseWrapper) JSON.deserializeStrict(responseJson, arce.Arc_gen_Sales_Wrappers.EngineSalesResponseWrapper.class);
 
             if (iasoResponse.serviceCode.contains('20')) {
-                response = new ResponseWrapper(salesResponse.data.calculationResult, null, ahaObj.Id, iasoResponse.serviceCode);
+                response.calculationResult = salesResponse.data.calculationResult;
+                response.message = null;
+                response.idAha = ahaObj.Id;
+                response.code = iasoResponse.serviceCode;
+                response.success = true;
             } else {
-                response = new ResponseWrapper(false, salesResponse.messages[0].message, ahaObj.Id, iasoResponse.serviceCode);
+                response.calculationResult = false;
+                response.message = salesResponse.messages[0].message;
+                response.idAha = ahaObj.Id;
+                response.code = iasoResponse.serviceCode;
+                response.success = false;
             }
             updateAhaExtSalesEngine(request, ahaObj);
         } catch (CalloutException exc) {
-            response = new ResponseWrapper(false, exc.getMessage(), ahaObj.Id, System.Label.Arc_Gen_ApexCallError);
+            response.calculationResult = false;
+            response.message = exc.getMessage();
+            response.idAha = ahaObj.Id;
+            response.code = System.Label.Arc_Gen_ApexCallError;
+            response.success = false;
             System.debug(response);
             throw new AuraHandledException(exc.getMessage());
         }
@@ -280,6 +302,7 @@ public with sharing class Arc_gen_Sales_Service {
                             FROM arce__Financial_Statements__c
                             WHERE arce__financial_statement_id__c =: ffssId LIMIT 1];
         }
+
         return financialState;
     }
 
@@ -293,7 +316,6 @@ public with sharing class Arc_gen_Sales_Service {
     * @example deleteARCE(recordId) {
     * ---------------------------------------------------------------------------------------------------------------------------------------
     **/
-    @AuraEnabled
     public static void updateAhaExtSalesEngine(arce.Arc_gen_Sales_Wrappers.DataWrapper request, arce__Account_has_Analysis__c aha) {
         final arce__AHA_Extension__c ahaExtension = new arce__AHA_Extension__c();
 
@@ -346,28 +368,6 @@ public with sharing class Arc_gen_Sales_Service {
         */
         @AuraEnabled
         public String code { get;set; }
-        /**
-        * ----------------------------------------------------------------------------------------------------
-        * @description Empty constructor to avoid sonar warnings
-        * ----------------------------------------------------------------------------------------------------
-        * @param Boolean blSuccess
-        * @param String strMessage 
-        * @param String strId
-        * @param String strCode
-        * @example ResponseWrapper wrapper = new arce.Arc_gen_Sales_Wrappers.ResponseWrapper()
-        * ----------------------------------------------------------------------------------------------------
-        **/
-        public ResponseWrapper(Boolean calResult, String strMessage, String strId, String strCode) {
-            if(strCode != null && strCode.contains('20')) {
-                success = true;
-            } else {
-                success = false;
-            }
-            message = strMessage;
-            idAha = strId;
-            code = strCode;
-            calculationResult = calResult;
-        }
     }
 
 }

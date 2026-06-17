@@ -25,7 +25,7 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
             }
 
             String html = '<div>'
-                        + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">TRANSACTION OVERVIEW</h2>'
+                        + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Transaction Overview</h2>'
                         + '</br>';
             html += buildHtmlTransactionOverview(data, profitabilityResults)
                  + '</br></br>';
@@ -49,7 +49,7 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
 
         List<String> orderedLabels = new List<String>{
             'Currency', 'BBVA Commitment',
-            'Exected Final Take', 'New Money for BBVA', 'Old Money for BBVA',
+            'Expected Final Take', 'New Money for BBVA', 'Old Money for BBVA',
             'Tenor', 'Average Life', 'RORC / RAROEC'
         };
 
@@ -99,7 +99,7 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
             for (Object rec : profitabilityResults) {
                 Map<String, Object> mapRec = (Map<String, Object>)rec;
                 String jsonProductId = (String)mapRec.get('productId');
-                if (jsonProductId == oli.Id) {
+                if (jsonProductId == oli.gf_group_priority_opportunity_id__c) {
                     productResult = mapRec;
                     break;
                 }
@@ -107,10 +107,10 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
         }
         switch on label {
             when 'Currency' { return (oli.Product2 != null && oli.Product2.CurrencyIsoCode != null) ? oli.Product2.CurrencyIsoCode : oli.CurrencyIsoCode; }
-            when 'BBVA Commitment' { return DMT_FormattingUtils.checkNull(oli.DMT_Deal_Amount_Tenors__c); }
-            when 'Exected Final Take' { return DMT_FormattingUtils.checkNull(oli.DMT_ExpectedFinal_Take__c); }
-            when 'New Money for BBVA' { return DMT_FormattingUtils.checkNull(oli.DMT_NewMoney_BBVA__c); }
-            when 'Old Money for BBVA' { return DMT_FormattingUtils.checkNull(oli.DMT_OldMoney_BBVA__c); }
+            when 'BBVA Commitment' { return DMT_FormattingUtils.formatObjectAbbreviation(DMT_FormattingUtils.convertValue(oli.DMT_Deal_Amount_Tenors__c)); }
+            when 'Expected Final Take' { return DMT_FormattingUtils.formatObjectAbbreviation(DMT_FormattingUtils.convertValue(oli.DMT_ExpectedFinal_Take__c)); }
+            when 'New Money for BBVA' { return DMT_FormattingUtils.formatObjectAbbreviation(DMT_FormattingUtils.convertValue(oli.DMT_NewMoney_BBVA__c)); }
+            when 'Old Money for BBVA' { return DMT_FormattingUtils.formatObjectAbbreviation(DMT_FormattingUtils.convertValue(oli.DMT_OldMoney_BBVA__c)); }
             when 'Tenor' { return DMT_FormattingUtils.checkNull(oli.DES_Tenor_years__c); }
             when 'Average Life' { return DMT_FormattingUtils.checkNull(productResult.get('averageLife')); }
             when 'RORC / RAROEC' {
@@ -161,7 +161,7 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
             Map<String, Object> component = new Map<String, Object>();
 
             contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 60 });
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('TRANSACTION OVERVIEW'));
+            contentList.add(DMT_Create_Pdf_Controller.createTitle('Transaction Overview'));
 
             contentList.addAll(buildPdfTransactionOverview(data, profitabilityResults));
 
@@ -191,7 +191,7 @@ public with sharing class DMT_OppTransactionOverviewRenderer implements DMT_View
 
         List<String> orderedLabels = new List<String>{
             'Currency', 'BBVA Commitment',
-            'Exected Final Take', 'New Money for BBVA', 'Old Money for BBVA',
+            'Expected Final Take', 'New Money for BBVA', 'Old Money for BBVA',
             'Tenor', 'Average Life', 'RORC / RAROEC'
         };
 

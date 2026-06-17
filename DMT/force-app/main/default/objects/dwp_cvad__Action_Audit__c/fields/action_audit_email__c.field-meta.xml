@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>action_audit_email__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Email SIO</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

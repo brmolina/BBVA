@@ -32,19 +32,19 @@ public class DES_DenormalizeContacts_Test {
 			Final Account accSubsidiary = utilTestClass.createClient();
 					accSubsidiary.DES_Structure_Type__c		=Label.DES_STR_TYPE_Supragroup;
 					accSubsidiary.DES_BBVA_Segmentation__c	=Label.DES_Segmentation_B_BEC;
-					accSubsidiary.SER_CClient__c			='CClient';
+					accSubsidiary.g_customer_id__c			='CClient';
 					accGroup.RecordTypeId 					=Schema.SObjectType.Account.getRecordTypeInfosByName().get('Subsidiary').getRecordTypeId();
 			
 			listaCuentas.add(accSubsidiary);	
 			insert listaCuentas;
 			
 				//Relacion entre accounts			
-			Final dwp_acmh__GBL_Account_Relationship__c  relationAcc = new 	dwp_acmh__GBL_Account_Relationship__c (
-																		dwp_acmh__Parent_Account__c	=accGroup.Id,
-																		dwp_acmh__Child_Account__c	=accSubsidiary.Id,
+			Final AMH_GBL_Account_Relationship__c  relationAcc = new 	AMH_GBL_Account_Relationship__c (
+																		AMH_Parent_Account__c	=accGroup.Id,
+																		AMH_Child_Account__c	=accSubsidiary.Id,
 																		CurrencyIsoCode				='EUR',
-																		dwp_acmh__Type__c			='03 - Filial',
-																		dwp_acmh__Vision__c 		='Negocio',
+																		AMH_Type__c			='03 - Filial',
+																		AMH_Vision__c 		='Negocio',
 																		DES_Participacion__c 		=100
 																		);
         	insert relationAcc;
@@ -85,7 +85,7 @@ public class DES_DenormalizeContacts_Test {
 			Final Account accSubsidiary = utilTestClass.createClient();
 					accSubsidiary.DES_Structure_Type__c		=Label.DES_STR_TYPE_Supragroup;
 					accSubsidiary.DES_BBVA_Segmentation__c	=Label.DES_Segmentation_B_BEC;
-					accSubsidiary.SER_CClient__c			='CClient';
+					accSubsidiary.g_customer_id__c			='CClient';
 					accSubsidiary.RecordTypeId 				=Schema.SObjectType.Account.getRecordTypeInfosByName().get('Subsidiary').getRecordTypeId();
 					accSubsidiary.DES_Structure_Type__c 	='Subsidiary';
 			
@@ -95,12 +95,12 @@ public class DES_DenormalizeContacts_Test {
 			System.debug('>>>>>>>>>>>>>>>>> listaCuentas: ' + listaCuentas);
 			
 			//Relacion entre accounts			
-			Final dwp_acmh__GBL_Account_Relationship__c  relationAcc = new 	dwp_acmh__GBL_Account_Relationship__c (
-																		dwp_acmh__Parent_Account__c	=accGroup.Id,
-																		dwp_acmh__Child_Account__c	=accSubsidiary.Id,
+			Final AMH_GBL_Account_Relationship__c  relationAcc = new 	AMH_GBL_Account_Relationship__c (
+																		AMH_Parent_Account__c	=accGroup.Id,
+																		AMH_Child_Account__c	=accSubsidiary.Id,
 																		CurrencyIsoCode				='EUR',
-																		dwp_acmh__Type__c			='03 - Filial',
-																		dwp_acmh__Vision__c 		='Negocio',
+																		AMH_Type__c			='03 - Filial',
+																		AMH_Vision__c 		='Negocio',
 																		DES_Participacion__c 		=100
 																		);
         	insert relationAcc;

@@ -1,0 +1,49 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_RelatedTableManager_Ctr" access="global">
+  <aura:attribute name="accHasId" type="String" access="global" description="recordId from the account has analysis object"/>
+  <aura:attribute name="currency" type="String" access="global" description="Currency of the table"/>
+  <aura:attribute name="unit" type="String" access="global" description="Unit of the table"/>
+  <aura:attribute name="unitLts" type="List" access="global" description="List of units"/>
+  <aura:attribute name="currencyLts" type="List" access="global" description="List of currencies "/>
+
+  <aura:attribute name="tableType" type="String" access="global" description="Table type to differentiate among tables"/>
+  <aura:attribute name="relatedName" type="String" access="global" description="Relationship field to arce__account_has_analysis__c object"/>
+  <aura:attribute name="sObjectType" type="String" access="global" description="Object table api name"/>
+  <aura:attribute name="apexClassSave" type="String" access="global" description="Save class logic from table"/>
+  <aura:attribute name="fieldsApiName" type="String" access="global" description="Api names from fields"/>
+  <aura:attribute name="filterTable" type="String" access="global" description="Record order conditions" default=""/>
+  <aura:attribute name="comboClassName" type="String" access="global" description="Attribute store class name from each table" default=""/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:html tag="style">
+      <aura:if isTrue="{!v.tableType == 'groupStructure'}">
+        .slds-button_icon-bare {
+          visibility: hidden;
+        }
+        .slds-grid_align-end,
+        .slds-grid--align-end {
+          display: none;
+      }
+      </aura:if>
+  </aura:html>
+  <div class="slds-grid slds-gutters slds-card__body slds-card__body_inner slds-p-top_medium">
+    <div class="slds-col">
+      <lightning:combobox name="currencyCombo" label="{!$Label.c.Arc_Gen_Currency}" value="{!v.currency}" placeholder="{!$Label.c.Arc_Gen_Currency}" options="{!v.currencyLts}" onchange="{!c.handleChangeCur}"/>
+    </div>
+    <div class="slds-col">
+      <lightning:combobox name="unitCombo" label="{!$Label.c.Arc_Gen_Unit}" value="{!v.unit}" placeholder="{!$Label.c.Arc_Gen_Unit}" options="{!v.unitLts}" onchange="{!c.handleChangeUnit}"/>
+    </div>
+    <div class="slds-col">
+      <span></span>
+    </div>
+    <div class="slds-col"> <span></span> </div>
+  </div>
+  &nbsp;
+  <rrtm:RelatedRecordTableManager
+    recordId="{!v.accHasId}"
+    fieldsApiName= "{!v.fieldsApiName}"
+    relatedName = "{!v.relatedName}"
+    filterTable = "{!v.filterTable}"
+    sObjectType = "{!v.sObjectType}"
+    hideResetButton = "true"
+    readOnly = "false"
+    apexClassSave = "{!v.apexClassSave}"/>
+</aura:component>

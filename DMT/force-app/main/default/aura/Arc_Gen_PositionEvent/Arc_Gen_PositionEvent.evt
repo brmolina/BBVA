@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to manage refresh in policies/potitions Table">
+    <aura:attribute name="table" type="String" description="Manage refresh in policies/potitions Table"/>
+    <aura:attribute name="recordId" type="String" description="Record ID from where event was executed"/>
+</aura:event>

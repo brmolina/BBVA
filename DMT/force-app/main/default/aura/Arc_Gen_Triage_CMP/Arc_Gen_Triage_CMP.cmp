@@ -1,0 +1,152 @@
+<!--
+  @Component Name     : Arc_Gen_Triage_CMP.cmp
+  @Description        : Triage component
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 03-26-2024
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    17-07-2023                  ARCE TEAM     		        Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" access="global" controller="Arc_Gen_Triage_Controller" >
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="accHasAnalysisId" type="String" access="global" />
+    <aura:attribute name="ahaExtensionId" type="String" access="global" />
+    <aura:attribute name="showSuggested" type="Boolean" default="false" />
+    <aura:attribute name="isCondition8116" type="Boolean" default="false" />
+    <aura:attribute name="islegalEEFF" type="Boolean" default="false" />
+    <aura:attribute name="isTreasury" type="Boolean" default="false" />
+    <aura:attribute name="isExplicit" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" description="error message of the process"/>
+    <aura:attribute name="isErrorMessage" type="Boolean" default="false" />
+    <aura:attribute name="isfilialCore" type="Boolean" />
+    <aura:attribute name="isGroupCorporate" type="Boolean"  />
+    <aura:attribute name="isCountryEEUUCanada" type="Boolean"  />
+    <aura:attribute name="isMatrizIg" type="Boolean" />
+    <aura:attribute name="participantType" type="String" />
+    <aura:attribute name="jsonFlow" type="String[]" />
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <aura:method name="onNext" action="{!c.handleNext}" />
+
+    <aura:registerEvent name="wizardEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+
+    <!-- Error message. -->
+    <aura:if isTrue="{!v.isErrorMessage}">
+        <div class="slds-box slds-theme_warning">
+            <p>{!v.errorMessage}</p>
+        </div>
+    </aura:if>
+
+    <lightning:recordEditForm aura:id="extensionForm"
+        recordId="{!v.ahaExtensionId}"
+        objectApiName="arce__AHA_Extension__c"
+        onsubmit="{!c.handleSubmit}" >
+        <lightning:messages />
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_11-of-12">
+                <label for="arce__level_Shell__c">{!$Label.c.Arc_Gen_RTC_level_Shell}</label>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                <lightning:inputField class="inp" aura:id="arce__level_Shell__c" fieldName="arce__level_Shell__c" onchange="{!c.handleChangeField}"  variant="label-hidden"/>
+            </div>
+
+            <div class="slds-col slds-size_11-of-12">
+                <label for="arce__group_treasury_subsidiary__c">{!$Label.c.Arc_Gen_RTC_groupTreasury}</label>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                <lightning:inputField class="inp" aura:id="arce__group_treasury_subsidiary__c" fieldName="arce__group_treasury_subsidiary__c" onchange="{!c.handleChangeTreasury}" variant="label-hidden"/>
+            </div>
+            <div class="{! v.isTreasury ? 'display' : 'noDisplay' }" >
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__filial_Core__c">{!$Label.c.Arc_Gen_RTC_filialCore}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__filial_Core__c" fieldName="arce__filial_Core__c" value="{!v.isfilialCore}" onchange="{!c.handleChangeCore}" variant="label-hidden"/>
+                </div>
+
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__group_corporative__c">{!$Label.c.Arc_Gen_RTC_groupCorporate}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__group_corporative__c" fieldName="arce__group_corporative__c" value="{!v.isGroupCorporate}" onchange="{!c.handleChangeCorporate}" variant="label-hidden"/>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_11-of-12">
+                <label for="arce__legal_EEFF__c">{!$Label.c.Arc_Gen_RTC_legalEEFF}</label>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                <lightning:inputField class="inp" aura:id="arce__legal_EEFF__c" fieldName="arce__legal_EEFF__c" onchange="{!c.handleChangeEEFF}" variant="label-hidden"/>
+            </div>
+
+            <div class="{! v.islegalEEFF ? 'display' : 'noDisplay' }" >
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__matrizIg__c">{!$Label.c.Arc_Gen_RTC_matrizIg}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__matrizIg__c" fieldName="arce__matrizIg__c" value="{!v.isMatrizIg}" onchange="{!c.handleChangeIg}" variant="label-hidden"/>
+                </div>
+
+                
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__filial_Core__c">{!$Label.c.Arc_Gen_RTC_filialCore}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__filial_Core__c" fieldName="arce__filial_Core__c" value="{!v.isfilialCore}" onchange="{!c.handleChangeCore}" variant="label-hidden"/>
+                </div>
+
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__group_corporative__c">{!$Label.c.Arc_Gen_RTC_groupCorporate}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__group_corporative__c" fieldName="arce__group_corporative__c" value="{!v.isGroupCorporate}" onchange="{!c.handleChangeCorporate}" variant="label-hidden"/>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_11-of-12">
+                <label for="arce__explicit_guarantee__c">{!$Label.c.Arc_Gen_RTC_explicit}</label>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                <lightning:inputField class="inp" aura:id="arce__explicit_guarantee__c" fieldName="arce__explicit_guarantee__c" onchange="{!c.handleChangeExplicit}" variant="label-hidden"/>
+            </div>
+
+            <div class="{! v.isExplicit ? 'display' : 'noDisplay' }">
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__filial_Core__c">{!$Label.c.Arc_Gen_RTC_filialCore}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__filial_Core__c" fieldName="arce__filial_Core__c" value="{!v.isfilialCore}" onchange="{!c.handleChangeCore}" variant="label-hidden"/>
+                </div>
+
+                <div class="slds-col slds-size_1-of-12">
+                </div>
+                <div class="slds-col slds-size_10-of-12">
+                    <label for="arce__group_corporative__c">{!$Label.c.Arc_Gen_RTC_groupCorporate}</label>
+                </div>
+                <div class="slds-col slds-size_1-of-12 slds-col_bump-left">
+                    <lightning:inputField class="inp" aura:id="arce__group_corporative__c" fieldName="arce__group_corporative__c" value="{!v.isGroupCorporate}" onchange="{!c.handleChangeCorporate}" variant="label-hidden"/>
+                </div>
+            </div>
+
+        </div>
+
+    </lightning:recordEditForm>
+
+</aura:component>

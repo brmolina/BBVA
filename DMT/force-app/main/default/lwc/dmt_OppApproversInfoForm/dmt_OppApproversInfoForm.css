@@ -1,0 +1,15 @@
+.field-row {
+    display: flex;
+    align-items: end;
+    width: 100%;
+    border-bottom: var(--lwc-borderWidthThin, 1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder, rgb(229, 229, 229)));
+}
+
+.field-row lightning-button-icon {
+    flex-shrink: 0;
+    margin-bottom: 7px;
+}
+
+.field-row .slds-form-element_stacked:not(.slds-form-element_readonly){
+    margin-bottom: 0 !important;
+}

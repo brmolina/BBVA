@@ -1,0 +1,184 @@
+.table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 45px;
+  }
+
+.table-scroll--with-padding {
+  padding-bottom: 12rem;
+}
+
+.table-scroll table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.table-scroll th,
+.table-scroll td {
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.table-header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.table-header-label {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.table-header-helptext {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Contenedor de celda */
+.cell-control {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Inputs full width */
+.cell-control lightning-combobox,
+.cell-control lightning-input,
+.cell-control lightning-textarea,
+.cell-control lightning-record-picker {
+  width: 100%;
+  margin-top: 0;
+}
+
+/* Lookup fix */
+.lookup-wrap {
+  width: 100%;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.lookup-wrap lightning-record-picker {
+  display: block;
+}
+
+.cell-error {
+  /* ayuda visual alrededor del “slot” de la celda (no reemplaza el borde rojo del input) */
+  outline: 1px solid #ea001e;
+  outline-offset: 2px;
+  border-radius: .25rem;
+}
+
+.td-boolean {
+  text-align: center;
+  vertical-align: middle;
+}
+.cell-control-boolean {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell-control-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onb-linesPill {
+  border-radius: 999px;
+  padding: 0.15rem 0.75rem;
+  line-height: 1.6;
+  font-size: 0.8rem;
+  min-width: 5.2rem;
+  text-align: center;
+}
+
+.td-connect {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.table-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.table-toolbar-right {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.funds-final-list-wrap {
+  min-width: 235px;
+}
+
+.funds-connect-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 1.35rem;
+}
+
+.funds-connect-toggle-label {
+  white-space: nowrap;
+}
+
+.funds-connect-toggle-input {
+  display: inline-flex;
+  align-items: center;
+}
+
+.hover-container {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+
+.hover-container .custom-coachmark {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    position: absolute;
+    bottom: 100%;
+    left: -12px;
+    margin-bottom: 10px;
+    background-color: #032d60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    width: max-content;
+    max-width: 280px;
+    white-space: normal;
+    z-index: 9999;
+}
+
+.hover-container .custom-coachmark.slds-nubbin_bottom-left::before,
+.hover-container .custom-coachmark.slds-nubbin_bottom-left::after {
+    background-color: #032d60;
+    box-shadow: none;
+}
+
+.hover-container:hover .custom-coachmark {
+    visibility: visible;
+    opacity: 1;
+}

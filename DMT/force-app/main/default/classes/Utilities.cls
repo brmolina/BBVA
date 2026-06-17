@@ -65,6 +65,7 @@ public without sharing class Utilities {
     public static void checkIsMexico(Map<Id, SObject> newMap) {
         Set<Id> setAccIds = new Set<Id>();
         String sObjectType = String.valueOf(newMap.values().get(0).getSObjectType());
+
         for (SObject sOb : newMap.values()) {
             switch on sObjectType {
                 when 'Contact' {
@@ -81,10 +82,15 @@ public without sharing class Utilities {
                 }
             }
         }
-        Map<Id, Account> mapAcc = new Map<Id, Account>([SELECT Id, Name, DES_Country_Client__c
+        Map<Id, Account> mapAcc;
+        System.debug('setAccIds::: '+setAccIds);
+        if(!setAccIds.isEmpty()){
+             mapAcc = new Map<Id, Account>([SELECT Id, Name, DES_Country_Client__c
                                                            FROM Account
                                                            WHERE Id IN:setAccIds AND DES_Country_Client__c = 'MX']);
-        for (SObject sOb : newMap.values()) {
+        }
+        if(!newMap.values().isEmpty()){
+            for (SObject sOb : newMap.values()) {
             switch on sObjectType {
                 when 'Contact' {
                     Contact con = (Contact) sOb;
@@ -112,6 +118,8 @@ public without sharing class Utilities {
                 }
             }
         }
+        }
+        
     }
 
 }

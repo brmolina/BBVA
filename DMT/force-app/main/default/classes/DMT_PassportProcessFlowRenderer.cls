@@ -7,9 +7,12 @@ public with sharing class DMT_PassportProcessFlowRenderer implements DMT_ViewRen
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
         Id dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_DefaultPassportProcessFlowRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultPassportProcessFlowRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultPassportProcessFlowRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_OtherLineInfoRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

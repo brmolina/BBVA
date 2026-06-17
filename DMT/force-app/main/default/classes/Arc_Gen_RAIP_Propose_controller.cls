@@ -27,6 +27,7 @@
 *             it is checked that overlay has been calculated.
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.ExcessivePublicCount')
 public class Arc_Gen_RAIP_Propose_controller {
     /**
     * @description Parent Subsidiary Service class name
@@ -60,6 +61,8 @@ public class Arc_Gen_RAIP_Propose_controller {
     * @description String 2012P1IRP.
     */
     public static final String RATING_IRP_MODEL = '2012P1IRP';
+    /** String false value */
+    static final String FALSE_STRING = 'false';
 
     /**
     * @Class: MessageResponse
@@ -91,7 +94,7 @@ public class Arc_Gen_RAIP_Propose_controller {
     *--------------------------------------------------------------------------------
     * @date		30/03/2020
     */
-    public virtual class CustomException extends Exception {} 
+    public virtual class CustomException extends Exception {}
 
     /**
     *-------------------------------------------------------------------------------
@@ -100,6 +103,7 @@ public class Arc_Gen_RAIP_Propose_controller {
     * @date		27/01/2020
     * @author	eduardoefrain.hernandez.contractor@bbva.com
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @testVisible
     private Arc_Gen_RAIP_Propose_controller() {
 
@@ -146,7 +150,9 @@ public class Arc_Gen_RAIP_Propose_controller {
     @AuraEnabled
     public static String toProposeRaip(String arceId, String selectedAmbit, String selectedUser) {
         final List<arce__Account_has_Analysis__c> ahaList = arce.Arc_Gen_AccHasAnalysis_Data.accHasAnByArce(new List<String> { arceId });
-        if (ahaList.isEmpty() || !arce.Arc_Gen_GenericUtilities.isButtonAvailable(ahaList[0].Id, 'Arc_Gen_RAIP_Propose')) {
+        if (ahaList.isEmpty() ||
+            (!arce.Arc_Gen_GenericUtilities.isButtonAvailable(ahaList[0].Id, 'Arc_Gen_RAIP_Propose') &&
+            !arce.Arc_Gen_GenericUtilities.isButtonAvailable(ahaList[0].Id, 'Arc_Gen_Propose_2021RTC'))) {
             throw new AuraHandledException(System.Label.Arc_Gen_Generic_ButtonNotAllowed);
         }
 
@@ -327,7 +333,7 @@ public class Arc_Gen_RAIP_Propose_controller {
     */
     @AuraEnabled
     public static String isCorporates() {
-        final List<String> configNames = new List<String>{ 'Is_Corporate', 'EnableRatingSystem' };
+        final List<String> configNames = new List<String>{ 'Is_Corporate'};
 
         final Map<String, String> arceConfMap = new Map<String, String>();
         for (String configName : configNames) {
@@ -477,4 +483,28 @@ public class Arc_Gen_RAIP_Propose_controller {
         }
         return response;
     }   
+
+    /**
+    * @description Refresh WatchList data
+    * @author aleksandar.dinkov.contractor@bbva.com | 16-09-2024
+    * @param String ahaId
+    * @return MessageResponse
+    **/
+    @AuraEnabled
+    public static MessageResponse refreshWatchList(Id ahaId) {
+        MessageResponse response = new MessageResponse();
+        try {
+            final arce__Account_has_Analysis__c ahaObj = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ ahaId })[0];
+            arce.Arc_Gen_WatchList_Utils.setWatchListValue(ahaObj);
+            final arce.Arc_Gen_GenericUtilities.SaveResult updRes = Arc_Gen_Propose_Helper.setRecalculateRatingValue(ahaId, '3');
+            if (updRes.status == FALSE_STRING) {
+                response.status = Arc_Gen_ValidatePS.VALUE_ERROR;
+                response.message = updRes.message;
+            }
+        } catch (Exception e) {
+            response.status = VALUE_ERROR;
+            response.message = e.getMessage();
+        }
+        return response;
+    }
 }

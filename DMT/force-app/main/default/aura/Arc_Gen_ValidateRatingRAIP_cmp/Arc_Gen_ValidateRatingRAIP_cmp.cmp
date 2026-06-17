@@ -1,0 +1,37 @@
+<!--
+@Component Name     : Arc_Gen_ValidateRatingRAIP_cmp.cmp
+@Description        : Modal to validate RAIP instance the ValidateRating component.
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : juanignacio.hita.contractor@bbva.com
+@Last Modified On   : 22/05/2020
+@Modification Log   :
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    22/05/2020       juanignacio.hita.contractor@bbva.com       Initial Version
+-->
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="recordId" type="String"  description="Record id " access="global"/>
+    <aura:attribute name="show"     type="Boolean" default="false" description="Indicates to show or to hide the modal" access="global"/>
+
+    <aura:handler name="ValidateRatingRAIPClose" event="c:Arc_Gen_RAIP_ValidateRatingClose" action="{!c.closeModal}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="Init variable"/>
+
+    <aura:if isTrue="{!v.show}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:icon class="slds-modal__close white"
+                                    iconName="utility:close"
+                                    size="x-small"
+                                    onclick="{!c.closeModal}"
+                                    alternativeText="Close" />
+                    <h4 class="title slds-text-heading--medium" >{!$Label.c.Arc_Gen_RAIP_Validate}</h4>
+                </header>
+                <c:Arc_Gen_ValidateRating_cmp hasRecordId="{!v.recordId}" isRAIP="true" />
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

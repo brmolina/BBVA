@@ -1,4 +1,5 @@
-public class DMT_SnapshotEvaluationQueueable implements Queueable, Database.AllowsCallouts {
+/** reupload */
+public with sharing class DMT_SnapshotEvaluationQueueable implements Queueable, Database.AllowsCallouts {
     private String requestStr;
     private Id recordId;
     private String type;

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Visit_new__c</fullName>
+    <label>Visit</label>
+    <referenceTo>dwp_kitv__Visit__c</referenceTo>
+    <relationshipLabel>Denorm Account Visits</relationshipLabel>
+    <relationshipName>Denorm_Account_Visits</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

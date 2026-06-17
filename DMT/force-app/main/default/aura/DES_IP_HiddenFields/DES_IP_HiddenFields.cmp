@@ -1,0 +1,66 @@
+<aura:component description="DES_IP_HiddenFields"
+                implements="force:hasRecordId,force:hasSObjectName,flexipage:availableForRecordHome"
+                controller="DES_Ip_HiddenFieldsController">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="ipClientLink" type="String"/>
+    <aura:attribute name="ipOwnerLink" type="String"/>
+    <aura:attribute name="codUser" type="String"/>
+    <aura:attribute name="showData" type="boolean" default="false"/>
+    <aura:attribute name="endpoint" type="String"/>
+    <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+
+    <aura:if isTrue="{!v.showData}">
+        <aura:if isTrue="{! and(v.ipClientLink != undefined, v.ipOwnerLink != undefined) }">
+
+            <div class="slds-grid slds-gutters">
+
+                <div class="slds-col">
+
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Real Client</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="{!v.ipClientLink}">{!v.data.clientName}</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+
+                <div class="slds-col">
+
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Owner</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <a href="{!v.ipOwnerLink}">{!v.data.ownerName}</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aura:if>
+
+        <aura:set attribute="else">
+            <h1>
+                <h2>
+                    <div class="errorIP">
+                        <div class="slds-text-color_inverse slds-align_absolute-center">
+                            <lightning:icon iconName="utility:lock" variant="inverse" />
+                            Only Opportunity team members can access the complete set of data of this opportunity with Inside information.
+                        </div>
+                    </div>
+                </h2>
+            </h1>
+        </aura:set>
+	</aura:if>
+
+</aura:component>

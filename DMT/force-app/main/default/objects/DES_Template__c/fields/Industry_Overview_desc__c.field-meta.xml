@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Industry_Overview_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Industry Head/Banker brief opinion on key drivers of client’s sector: Opportunies &amp; Threats, acquisition movements, strategic actions (sale/ buy of business division) impact of market risks and BBVA position in this sector (max 598 characters)</inlineHelpText>
+    <label>Industry Overview</label>
+    <length>598</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

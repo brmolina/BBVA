@@ -1,0 +1,172 @@
+<aura:component access="global" extends="dwp_mdal:ModalTemplate_cmp" controller="RPP_CalculatorModify_Ctrl">
+	<aura:attribute name="RPPCalculatorSimulationId" type="String"/>	
+	<aura:attribute name="RPPCalculatorSimulation" type="List"/>
+	<aura:attribute name="RPPCalculatorSimulationOld" type="Object"/>
+    <aura:attribute name="RPPCalculatorSimulationDebtors" type="List"/>
+	<aura:attribute name="RPPCalculatorSimDebtors" type="List"/>
+	<aura:attribute name="RPPCalculatorSimFields" type="Map"/>
+	<aura:attribute name="RPPCalculatorSimDebtorFields" type="Map"/>
+	<aura:attribute name="RPPCalculatorSimDebtorsMap" type="Map"/>
+	<aura:attribute name="internalRatingSimPicklist" type="List"/>
+	<aura:attribute name="externalRatingSimPicklist" type="List"/>
+	<aura:attribute name="internalRatingDebtorPicklist" type="List"/>
+	<aura:attribute name="externalRatingDebtorPicklist" type="List"/>
+	<aura:attribute name="hasHeader" type="boolean" default="false"/>
+	<aura:set attribute="modalSizeSLDS" value="slds-modal_large"/>
+	<aura:attribute name="waiting" type="Boolean" default="false"/>
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="RPP_CalculatorRefresh_evt" type="c.RPP_CalculatorRefresh_evt"/>
+
+	<aura:if isTrue="{!v.waiting}">
+        <lightning:spinner variant="brand" />
+    </aura:if>
+	<header class="slds-modal__header">
+		<strong>{!$Label.c.RPP_Modify_Data}</strong>
+	</header>
+	<div class="slds-modal__content slds-p-around_large slds-is-relative slds-scrollable" id="modal-content-id-1">
+		{!v.RPPCalculatorSimulation.Tax_Id__c}
+		{!v.RPPCalculatorSimulation.Internal_Rating__c}
+		{!v.RPPCalculatorSimulation.External_Rating__c}
+		<table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+			<thead>
+				<tr class="slds-line-height_reset">
+					<th scope="col" class="slds-text-align_right"></th>
+					<th scope="col">{!v.RPPCalculatorSimFields.tax_id__c}</th>
+					<th scope="col"></th>
+					<th scope="col">{!v.RPPCalculatorSimFields.seller_assignor__c}</th>
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.total_amount_eur__c}</th>
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimFields.total_limit_eur__c}</th>
+					<th scope="col" class="slds-text-align_right"></th>
+					<th scope="col" class="slds-text-align_center">{!v.RPPCalculatorSimFields.internal_rating__c}</th>
+					<th scope="col" class="slds-text-align_center">{!v.RPPCalculatorSimFields.external_rating__c}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<aura:iteration items="{!v.RPPCalculatorSimulation}" var="RPPCalculatorSim">
+					<tr class="slds-hint-parent">
+						<td></td>
+						<td>
+							<div class="slds-truncate">
+								<ui:outputText value="{!RPPCalculatorSim.Tax_Id__c}"/>
+							</div>
+						</td>
+						<td></td>
+						<td>
+							<div class="slds-truncate">
+								<ui:outputText value="{!RPPCalculatorSim.Seller_Assignor__c}"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSim.Total_Amount_EUR__c}" format="#,###,###,###,###,##0.00"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSim.Total_Limit_EUR__c}" format="#,###,###,###,###,##0.00"/>
+							</div>
+						</td>
+						<td></td>
+						<td>
+							<div class="slds-truncate slds-m-bottom_medium">
+								<lightning:select value="{!RPPCalculatorSim.Internal_Rating__c}">
+									<aura:iteration items="{!v.internalRatingSimPicklist}" var="option">
+										<option value="{!option.value}">{!option.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-m-bottom_medium">
+								<lightning:select value="{!RPPCalculatorSim.External_Rating__c}">
+									<aura:iteration items="{!v.externalRatingSimPicklist}" var="option">
+										<option value="{!option.value}">{!option.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</div>
+						</td>
+					</tr>
+				</aura:iteration>
+			</tbody>
+			<br></br>
+			<thead>
+				<tr class="slds-line-height_reset">
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.number__c}</th>
+					<th scope="col">{!v.RPPCalculatorSimDebtorFields.tax_id__c}</th>
+					<th scope="col">{!v.RPPCalculatorSimDebtorFields.lei__c}</th>
+					<th scope="col">{!v.RPPCalculatorSimDebtorFields.obligor_debtor__c}</th>
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.total_amount_eur__c}</th>
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.authorised_limit_eur__c}</th>
+					<th scope="col" class="slds-text-align_right">{!v.RPPCalculatorSimDebtorFields.percentage__c}</th>
+					<th scope="col" class="slds-text-align_center">{!v.RPPCalculatorSimDebtorFields.internal_rating__c}</th>
+					<th scope="col" class="slds-text-align_center">{!v.RPPCalculatorSimDebtorFields.external_rating__c}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<aura:iteration items="{!v.RPPCalculatorSimDebtors}" var="RPPCalculatorSimDebtor">
+					<tr class="slds-hint-parent">
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSimDebtor.Number__c}"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate">
+								<ui:outputText value="{!RPPCalculatorSimDebtor.Tax_Id__c}"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate">
+								<ui:outputText value="{!RPPCalculatorSimDebtor.LEI__c}"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate">
+								<ui:outputText value="{!RPPCalculatorSimDebtor.Obligor_Debtor__c}"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSimDebtor.Total_Amount_EUR__c}" format="#,###,###,###,###,##0.00"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSimDebtor.Authorised_Limit_EUR__c}" format="#,###,###,###,###,##0.00"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-text-align_right">
+								<ui:outputNumber value="{!RPPCalculatorSimDebtor.Percentage__c}" format="##0.00"/>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-m-bottom_medium">
+								<lightning:select value="{!RPPCalculatorSimDebtor.Internal_Rating__c}">
+									<aura:iteration items="{!v.internalRatingDebtorPicklist}" var="option">
+										<option value="{!option.value}">{!option.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</div>
+						</td>
+						<td>
+							<div class="slds-truncate slds-m-bottom_medium">
+								<lightning:select value="{!RPPCalculatorSimDebtor.External_Rating__c}">
+									<aura:iteration items="{!v.externalRatingDebtorPicklist}" var="option">
+										<option value="{!option.value}">{!option.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</div>
+						</td>
+					</tr>
+				</aura:iteration>
+			</tbody>
+		</table>
+	</div>
+	<footer class="slds-modal__footer">
+		<lightning:button label="{!$Label.c.RPP_Cancel}" onclick="{!c.handleOnCancel}" disabled="{!v.waiting}" class="slds-m-top_none" />
+		<lightning:button label="{!$Label.c.RPP_Save}" onclick="{!c.handleOnSave}" disabled="{!v.waiting}" variant="brand" class="slds-m-top_none" />
+	</footer>
+
+</aura:component>

@@ -1,0 +1,17 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_EmpCalculateOverlayController" access="global">
+    <aura:attribute name="overlaySupport" access="public" default="supported" type="String" />
+    <aura:attribute name="recordId" access="public" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="Init variable" />
+
+    <aura:if isTrue="{!v.overlaySupport == 'orgDisabled'}">
+        <arce:Arc_Gen_ChatMessages_cmp title="{!$Label.c.Arc_Gen_RatingNoOverlayTitle}"
+            assistiveText="{!$Label.c.Arc_Gen_RatingNoOverlayConfigMessage}" variant="Warning"
+            message="{!$Label.c.Arc_Gen_RatingNoOverlayConfigMessage}" />
+    </aura:if>
+    <aura:if isTrue="{!v.overlaySupport == 'arceDisabled'}">
+        <arce:Arc_Gen_ChatMessages_cmp title="{!$Label.c.Arc_Gen_RatingNoOverlayTitle}"
+            assistiveText="{!$Label.c.Arc_Gen_RatingNoOverlayArceMessage}" variant="Warning"
+            message="{!$Label.c.Arc_Gen_RatingNoOverlayArceMessage}" />
+    </aura:if>
+</aura:component>

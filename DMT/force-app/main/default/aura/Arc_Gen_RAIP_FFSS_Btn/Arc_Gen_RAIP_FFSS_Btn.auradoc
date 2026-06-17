@@ -1,0 +1,21 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_RAIP_FFSS_Btn</p>
+        <p><b>DESCRIPTION: </b>Component that contains a selectable table of financial statements available for RAIP</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>hasRecordId = String : Standard id of the current record</li>
+                <li>accHasAnalysisId = String : Standard Id of the arce__Account_has_Analysis__c.</li>
+                <li>analysisId = String : Standard Id of the arce__Analysis__c</li>
+                <li>customerId = String : Standard Id of the Account</li>
+                <li>showTable = String : Indicates if show or not the financial statements table.</li>
+                <li>show = String : show or hide modal</li>
+                <li>nextDisabled = String : enable or disable next button</li>
+                <li>loading = String : whether the spinner is shown</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_RAIP_FFSS_Btn</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_RAIP_FFSS_Btn" ref="c:Arc_Gen_RAIP_FFSS_Btn" label="RAIP FFSS">
+    </aura:example>
+</aura:documentation>

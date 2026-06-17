@@ -13,6 +13,7 @@
 * 25-05-2023      Class creation.
 * -----------------------------------------------------------------------------------------------
 **/
+@SuppressWarnings('PMD.AvoidGlobalModifier,sf:PreserveStackTrace,sf:OnlyOneReturn')
 public with sharing class Arc_IFIS_ButtonsFinalize_Ctrl {
     /**
     * @description Constant with the status in progress
@@ -89,145 +90,96 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Ctrl {
     }
 
     /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Controls the participant relation callout logic for the lightning component.
-    * -----------------------------------------------------------------------------------------------
-    * @autor    marcos.gimeno.contractor@bbva.com
-    * @date     10-07-2023
-    * @param    ahaId    arce__Account_has_Analysis__c id
-    * @return   Response to be returned to the lightning component
-    * @example  arce.Arc_IFIS_Buttons_Wrp.ValidateResponse e = callParticipantRelation(ahaId)
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @AuraEnabled
-    public static arce.Arc_IFIS_Buttons_Wrp.ValidateResponse callParticipantRelation(String ahaId) {
-        arce.Arc_IFIS_Buttons_Wrp.ValidateResponse response;
-
-        try {
-            // Get related Account Has Analysis
-            final List<arce__Account_has_Analysis__c> ahas = arce.Arc_IFIS_Srv_ParticipantRelation.getAccountHasAnalysis(
-                ahaId
-            );
-            final arce__Account_has_Analysis__c aha = ahas.isEmpty() ? new arce__Account_has_Analysis__c() : ahas[0];
-
-            // Get current client account
-            final arce.Arc_Gen_Account_Wrapper currentAccount = arce.Arc_IFIS_Srv_ParticipantRelation.getAccountWrapper(
-                ahas
-            );
-
-            if (aha == null || currentAccount == null) {
-                response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(
-                    null,
-                    false,
-                    System.Label.arce.Arc_IFIS_Error_ParticipantRelation +
-                        ': ' +
-                        System.Label.arce.Arc_IFIS_Wizard_Acc_Not_Found
-                );
-            } else {
-                if (arce.Arc_IFIS_Srv_ParticipantRelation.isServiceEnabled(aha.arce__RAR_rating_tool_id__c)) {
-                    // Persist in service
-                    final arce.Arc_Gen_ServiceAndSaveResponse servResp = arce.Arc_IFIS_Srv_ParticipantRelation.callService(
-                        ahas,
-                        currentAccount,
-                        STATUS_PROGRESS
-                    );
-
-                    if (servResp.serviceCode.contains('20')) {
-                        response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(null, true, null);
-                    } else {
-                        response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(
-                            null,
-                            false,
-                            System.Label.arce.Arc_IFIS_Error_ParticipantRelation +
-                                ': ' +
-                                System.Label.arce.Arc_IFIS_Wizard_Service_KO
-                        );
-                    }
-                } else {
-                    response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(
-                        null,
-                        true,
-                        'Service not enabled for this account has analysis.'
-                    );
-                }
-            }
-        } catch (Exception e) {
-            response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(
-                null,
-                false,
-                System.Label.arce.Arc_IFIS_Error_ParticipantRelation
-            );
-        }
-
-        return response;
-    }
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description This method finalizes a rating by validating it and updating its description.
-    * -----------------------------------------------------------------------------------------------
-    * @autor    marcos.gimeno.contractor@bbva.com
-    * @date     25-05-2023
-    * @param    ahaId            ID of the aha record.
-    * @param    ratingId         ID of the rating record.
-    * @param    validatedById    ID of the user who validated the rating.
-    * @param    description      New description for the rating.
-    * @param    ambit            Ambit of the rating.
-    * @return   The response object for validated operations.
-    * @example  arce.Arc_IFIS_Buttons_Wrp.ValidateResponse e = validateRating(ahaId, ratingId, validatedById, description, ambit)
-    * -----------------------------------------------------------------------------------------------
-    **/
+    * Executes rating validation service call
+    * @param valDataJson JSON string with validation data
+    * @return Response object with validation result
+    */
     @AuraEnabled
     public static arce.Arc_IFIS_Buttons_Wrp.ValidateResponse callRatingValidation(String valDataJson) {
-        arce.Arc_IFIS_Buttons_Wrp.ValidateResponse response;
-
         try {
-            final Arc_IFIS_Buttons_Wrp.ValidationData valDataWrap = (Arc_IFIS_Buttons_Wrp.ValidationData) JSON.deserialize(
+            final Arc_IFIS_Buttons_Wrp.ValidationData valData = (Arc_IFIS_Buttons_Wrp.ValidationData) JSON.deserialize(
                 valDataJson,
                 Arc_IFIS_Buttons_Wrp.ValidationData.class
             );
 
-            // Check if the user has permission to edit the analysis record
-            if (arce.Arc_IFIS_TabSet_Service.getPermissionToEdit(valDataWrap.ahaId)) {
-                final arce__Analysis__c analysis = arce.Arc_Gen_ArceAnalysis_Data.gerArce(valDataWrap.ahaId);
-
-                final arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper validationWrap = new arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper(
-                    valDataWrap.ahaId,
-                    valDataWrap.validatedById,
-                    valDataWrap.ratingId,
-                    valDataWrap.ambit,
-                    valDataWrap.description
-                );
-
-                final arce.Arc_Gen_ServiceAndSaveResponse servResponse = Arc_IFIS_ButtonsFinalize_Service.setupValidateRatingByUser(
-                    validationWrap,
-                    analysis
-                );
-
-                if (servResponse.serviceCode.contains('20')) {
-                    response = Arc_IFIS_ButtonsFinalize_Service.handleValidationSuccess(
-                        valDataWrap,
-                        Boolean.valueOf(servResponse.saveStatus),
-                        servResponse.saveMessage,
-                        analysis
-                    );
-                } else {
-                    response = Arc_IFIS_ButtonsFinalize_Service.handleValidationFailure(servResponse.serviceMessage);
-                }
-            } else {
-                response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(
+            if (!arce.Arc_IFIS_TabSet_Service.getPermissionToEdit(valData.ahaId)) {
+                return arce.Arc_IFIS_Buttons_Helper.createResponseObj(
                     null,
                     false,
                     System.Label.arce.Arc_IFIS_Error_NotAllowed
                 );
             }
+
+            return Arc_IFIS_ButtonsFinalize_Service.validateRating(valData);
         } catch (Exception e) {
             arce.Arc_Gen_GenericUtilities.throwAuraExcept(
-                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage() + e.getStackTraceString()
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
             );
+            return null;
         }
+    }
 
-        return response;
+    /**
+    * Executes rating persistence with ParticipantRelations service
+    * @param ahaId Account Has Analysis record ID
+    * @return Response object with persistence result
+    */
+    @AuraEnabled
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse callRatingPersistence(String ahaId) {
+        try {
+            return Arc_IFIS_ButtonsFinalize_Service.persistRatingParticipants(ahaId);
+        } catch (Exception e) {
+            arce.Arc_Gen_GenericUtilities.throwAuraExcept(
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+            return null;
+        }
+    }
+
+    /**
+    * Executes rating cloning process (synchronous or asynchronous)
+    * @param valDataJson JSON string with validation data
+    * @return Response object with cloning result
+    **/
+    @AuraEnabled
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse callRatingClone(String valDataJson) {
+
+        try {
+            final Arc_IFIS_Buttons_Wrp.ValidationData valData = (Arc_IFIS_Buttons_Wrp.ValidationData) JSON.deserialize(
+                valDataJson,
+                Arc_IFIS_Buttons_Wrp.ValidationData.class
+            );
+
+            return Arc_IFIS_ButtonsFinalize_Service.cloneRating(valData);
+        } catch (Exception e) {
+            arce.Arc_Gen_GenericUtilities.throwAuraExcept(
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+            return null;
+        }
+    }
+
+    /**
+    * Builds traceability records, closes the source analysis, and sends finalization notifications.
+    * Must be called after a successful callRatingClone() invocation.
+    * @param valDataJson JSON string with validation data
+    * @return Response object with finalization result
+    **/
+    @AuraEnabled
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse callFinalizeRating(String valDataJson) {
+        try {
+            final Arc_IFIS_Buttons_Wrp.ValidationData valData = (Arc_IFIS_Buttons_Wrp.ValidationData) JSON.deserialize(
+                valDataJson,
+                Arc_IFIS_Buttons_Wrp.ValidationData.class
+            );
+
+            return Arc_IFIS_ButtonsFinalize_Service.finalizeRating(valData);
+        } catch (Exception e) {
+            arce.Arc_Gen_GenericUtilities.throwAuraExcept(
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+            return null;
+        }
     }
 
     /**
@@ -330,34 +282,6 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Ctrl {
         } catch (Exception e) {
             throw new AuraHandledException(System.Label.Arc_Gen_ApexCallError + ': ' + e); //NOSONAR
         }
-    }
-
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Get the configuration values to use in the component
-    * -----------------------------------------------------------------------------------------------
-    * @autor       marcos.gimeno.tech@bbva.com
-    * @date        22-05-2024
-    * @return      Serialized JSON with the configuration values
-    * @example     String configValues = getArceConfigs()
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @AuraEnabled(cacheable=true)
-    public static String getArceConfigs() {
-        final List<String> configNames = new List<String>{ 'EnableRatingSystem' };
-
-        final Map<String, String> arceConfMap = new Map<String, String>();
-        for (String configName : configNames) {
-            final List<arce__Arce_Config__mdt> arceConfList = arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo(
-                configName
-            );
-            for (arce__Arce_Config__mdt arceConf : arceConfList) {
-                arceConfMap.put(arceConf.arce__Config_Name__c, arceConf.arce__Value1__c);
-            }
-        }
-
-        return JSON.serialize(arceConfMap);
     }
 
     /**

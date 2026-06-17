@@ -1,0 +1,175 @@
+<template>
+    <div class="containerRoot slds-m-top_x-small">
+        <template lwc:if={showSpinner}>
+            <div class="spinnerOverlay">
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+        <!-- Filters + Actions (ONE ROW, stable widths) -->
+        <div class="slds-grid slds-gutters slds-nowrap">
+        <div class="bulk-actions-layer">
+        <label class="slds-form-element__label slds-p-left_small">
+            Multi-actions
+        </label>
+            <div class="slds-form-element__control">
+            <lightning-button-group
+            class="slds-p-bottom_xxx-small slds-p-left_small"
+            label="Multi-actions">
+
+            <template if:true={showRenewAction}>
+                <lightning-button
+                    label="Renew"
+                    icon-name="utility:refresh"
+                    icon-position="left"
+                    variant="neutral"
+                    disabled={disableRenewAction}
+                    data-action="renew"
+                    onclick={handleAction}>
+                </lightning-button>
+            </template>
+
+            <template if:true={showModifyAction}>
+                <lightning-button
+                    label="Modify"
+                    icon-name="utility:edit"
+                    icon-position="left"
+                    variant="neutral"
+                    disabled={disableModifyAction}
+                    data-action="modify"
+                    onclick={handleAction}>
+                </lightning-button>
+            </template>
+
+            <template if:true={showMoreActionsMenu}>
+                <lightning-button-menu
+                    alternative-text="More actions"
+                    icon-name="utility:down"
+                    menu-alignment="left"
+                    variant="border-filled"
+                    onselect={handleMenuAction}>
+
+                    <template if:true={hasConnectPermission}>
+                        <template if:true={showConnectAction}>
+                            <lightning-menu-item
+                                value="connect"
+                                label="Automatic assignment of transactions to sanctions On"
+                                icon-name="utility:link"
+                                disabled={disableConnectAction}>
+                            </lightning-menu-item>
+                        </template>
+
+                        <template if:true={showDisconnectAction}>
+                            <lightning-menu-item
+                                value="disconnect"
+                                label="Automatic assignment of transactions to sanctions Off"
+                                icon-name="utility:close"
+                                disabled={disableDisconnectAction}>
+                            </lightning-menu-item>
+                        </template>
+                    </template>
+
+                </lightning-button-menu>
+    </template>
+
+</lightning-button-group>
+            </div>
+            </div>
+            <!-- Search -->
+            <div class="slds-col slds-size_2-of-12" style="padding-right: 0;">
+                <lightning-input type="search" label="Filter result" placeholder="Search..." value={searchText}
+                    onkeyup={handleSearchKeyUp} onchange={handleSearchChange}>
+                </lightning-input>
+            </div>
+
+            <!-- Type -->
+            <div class="slds-col slds-size_3-of-12" style="padding-right: 0;">
+                <lightning-combobox data-key="type" label={labels.DMT_SelectLineType} placeholder="Select type"
+                    options={picklistOptions.type} value={filters.type} onchange={handlePicklistChange}>
+                </lightning-combobox>
+            </div>
+
+            <!-- Status -->
+            <div class="slds-col slds-size_3-of-12" style="padding-right: 0;">
+                <lightning-combobox data-key="status" label={labels.DMT_SelectLineStatus} placeholder="Select status"
+                    options={picklistOptions.status} value={filters.status} onchange={handlePicklistChange}>
+                </lightning-combobox>
+            </div>
+        </div>
+        <div class="lines-content-pane">
+        <div class="table-selection-wrapper">
+        <template if:true={selectionMode}>
+            <button
+                class={selectAllHeaderClass}
+                title={selectAllHeaderTitle}
+                onclick={handleToggleSelectAll}>
+                <lightning-icon
+                    icon-name={selectAllHeaderIcon}
+                    size="xx-small"
+                    alternative-text={selectAllHeaderTitle}>
+                </lightning-icon>
+            </button>
+        </template>
+
+        <c-dmt-deal-managment-table
+            table-data={filteredTableData}
+            table-columns={tableColumns}
+            class="table-flex"
+            is-expanded-side-bar={isExpandedSideBar}
+            is-loading-data={isLoading}
+            ondatatableactionresult={handleRenewLine}
+            text-no-records={labels.DMT_No_Available_Lines}
+            onrowselection={handleSelection}>
+        </c-dmt-deal-managment-table>
+    </div>
+            <!-- Footer + multiselection -->
+        <template lwc:if={selectionMode}>
+        <div class="bulk-footer">
+
+            <div class="footer-info">
+                {selectedRows.length} selected
+            </div>
+
+            <div class="slds-button-group">
+                <!-- <template if:true={showSelectAllLink}>
+                    <button
+                        class="slds-button slds-button_reset slds-text-link"
+                        onclick={handleSelectAll}>
+                        Select all
+                    </button>
+                </template>
+
+                <template if:true={showUnselectAllLink}>
+                    <button
+                        class="slds-button slds-button_reset slds-text-link"
+                        onclick={handleUnselectAll}>
+                        Unselect all
+                    </button>
+                </template> -->
+
+                <lightning-button
+                    label="Cancel"
+                    variant="neutral"
+                    onclick={handleCancelSelection}>
+                </lightning-button>
+
+                <lightning-button
+                    label={bulkActionLabel}
+                    variant="brand"
+                    onclick={executeBulkAction}>
+                </lightning-button>
+
+                <template if:true={showRenewAndModifyAction}>
+                <lightning-button
+                    label="Renew and Modify"
+                    variant="neutral"
+                    onclick={executeRenewAndModify}>
+                </lightning-button>
+                </template>
+            </div>
+
+        </div>
+        </template>
+        </div>
+
+    </div>
+</template>

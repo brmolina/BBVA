@@ -1,0 +1,44 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="OpportunitiesInProgressByFamilyCont" access="global">
+    <aura:attribute name="breadcrumbsActive" type="Boolean"/>
+    <aura:attribute name="filial" type="Boolean" default="false"/>
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="familyParam" type="String" default=""/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+    
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+    
+    <div class="boxsection">
+        
+            <div class="slds-media slds-m-top_small slds-m-bottom_x-small">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon_container_circle" title="Opportunities in progress">
+                        <lightning:icon iconName="standard:opportunity" size="medium" alternativeText="Report"/>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <p class="slds-text-body_small slds-line-height_reset slds-m-bottom_xx-small title">Opportunities</p>
+                    <h1 class="slds-truncate slds-align-middle subtitle" title="Opportunities in progress">Opportunities in progress ({!v.data[0].oppNumber})</h1>
+                </div>
+            </div>
+        <aura:if isTrue="{!empty(v.data)}">
+            <div class="slds-text-align_center tableNoData customNoData">
+                <span class="slds-m-bottom_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-p-horizontal_xx-small">
+                    <lightning:datatable data="{!v.data}"
+                                         columns="{!v.columns}"
+                                         keyField="id"
+                                         hideCheckboxColumn="true"/>
+                </div>
+                <div class="slds-m-top_small slds-p-vertical_x-small slds-text-align_center customBox">
+                    <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

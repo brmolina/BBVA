@@ -1,0 +1,138 @@
+.THIS.Normal td th{
+  display:inline;
+  padding: 20px;
+  float:left;
+  table-layout:fixed;
+
+
+}
+
+ /* CSS - Erik */  
+
+.THIS.Normal table{
+  border-collapse: separate;
+  /*padding:10px;*/ 
+}
+
+
+.THIS.Normal div.horizontal{
+   display:block;  
+   padding: 5px;
+}
+
+.THIS div b {
+   color: rgb(22, 50, 92);
+   font-size: 1rem;
+}
+
+.THIS div b span {
+   color: rgb(22, 50, 92);
+   font-size: 1.25rem;
+}
+
+/*************/
+
+
+.THIS.One td th{
+    display:inline;
+    margin:0;
+    padding:0;  
+
+
+}
+
+
+.THIS.One table{
+   
+    border-collapse: collapse;
+
+}
+
+.THIS.One div.horizontal{
+    display:block;
+    font-size: 100%;
+    margin-right: 3%;
+        width: 100%; /* or 100% according to OP comment. See edit about Safari 6 below */
+
+
+
+}
+
+
+
+.THIS.Two td th{
+    display:inline;
+    margin:0;
+    width: 100%; /* or 100% according to OP comment. See edit about Safari 6 below */
+    margin-right: 10%;
+
+
+
+}
+
+
+.THIS.Two table{
+   
+    border-collapse: collapse;
+        table-layout:fixed;
+
+}
+
+.THIS.Two div.horizontal{
+    display:inline;
+    margin-right: 5%;
+
+
+}
+
+
+.THIS.Three td th{
+    display:inline;
+    margin:0;
+    padding:0;  
+    table-layout:fixed;
+    
+}
+.THIS.Three td{
+  width: 25px;
+
+}
+
+.THIS.Three table{
+   
+    border-collapse: collapse;
+}
+
+.THIS.Three div.horizontal{
+    display:inline;
+    margin:5%;
+}
+
+.THIS .titulo {
+    font-size: 16px;
+    color: #3597CD;
+}
+
+.THIS .icono svg{
+ fill: #3597CD;
+}
+
+.THIS tr th {
+	background-color: #DEE5EE;
+	color: #43557A;
+	font-weight: bold;
+}
+
+.THIS tr:nth-child(2n+3) {
+    background-color: #FAFAFA;
+}
+
+.THIS tr:hover {
+    background-color: #ECEEEF;
+    border-top: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
+}
+
+.THIS .dataRow{
+    border-bottom: 1px solid #ddd;
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tiering_Action_type__c</fullName>
+    <label>Tiering Action</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Uptier</fullName>
+                <default>false</default>
+                <label>Uptier</label>
+            </value>
+            <value>
+                <fullName>Downtier</fullName>
+                <default>false</default>
+                <label>Downtier</label>
+            </value>
+            <value>
+                <fullName>No change</fullName>
+                <default>false</default>
+                <label>No change</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <label>N/A</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

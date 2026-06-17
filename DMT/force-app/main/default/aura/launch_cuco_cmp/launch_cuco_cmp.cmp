@@ -1,0 +1,8 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+  <aura:attribute name="contextId" type="String"/>
+  <aura:handler name="dynamicFlowWizardCancel" event="dwp_dbpn:DynamicFlowWizardCancel_evt" action="{!c.doCancelFlow}" description="Close of the flow" />
+  <aura:handler name="dynamicFlowWizardContinue" event="dwp_dbpn:DynamicFlowWizardContinue_evt" action="{!c.doNextComponent}" description="Compose the new flow step" />
+  <aura:handler name="modalTemplateClose" event="dwp_mdal:modalTemplateClose_evt" action="{!c.doCancelFlow}" description="Close of the flow" />
+  <lightning:messageChannel type="Launch_Cuco__c" onMessage="{!c.handleMessage}" scope="APPLICATION"/>
+  {!v.body}
+</aura:component>

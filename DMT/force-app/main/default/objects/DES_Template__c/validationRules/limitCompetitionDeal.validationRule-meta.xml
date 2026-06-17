@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>limitCompetitionDeal</fullName>
+    <active>false</active>
+    <errorConditionFormula>LEN(Competition_For_the_Deal_desc__c) &gt; 600 &amp;&amp; RecordType.Name = $Label.DES_Template_PF</errorConditionFormula>
+    <errorDisplayField>Competition_For_the_Deal_desc__c</errorDisplayField>
+    <errorMessage>(max 600 characters)</errorMessage>
+</ValidationRule>

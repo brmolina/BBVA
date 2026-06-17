@@ -43,6 +43,7 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
         //processRecordsRA(toolIds); //Rating
         //processRecordsTG(toolIds); //TOP5Geographies
         processRecordsPR(toolIds); //PHYSICAL RISK
+        processRecordsWB(toolIds); //WATER BIODIVERSITY
     }
 
     /**
@@ -137,6 +138,15 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     }
 
     /**
+    * @description Consolidate Record Zero of cstk__Water_Biodiversity__c
+    * @param toolkitId List of toolkit Id
+    * @return void
+    */
+    public static void processRecordsWB(Set<Id> recordIds) {
+        Database.executeBatch(new CSTK_RecordZeroActions(new List<Id>(recordIds), 'cstk__Water_Biodiversity__c'), 100);
+    }
+
+    /**
     * @description Consolidate Record Zero of General_Data
     * @param toolkitId List of toolkit Id
     * @return void
@@ -156,8 +166,8 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     */
     @future 
     public static void processRecordsRAENV(Set<Id> recordIds) {
-        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'environmental', 'snp'); //NOSONAR
-        system.debug('environmental snp' + res);
+        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'environmental', 'cla'); //NOSONAR
+        system.debug('environmental cla' + res);
         final cstk.Utils.DML_Wrapper res1 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'environmental', 'sustainalytics'); //NOSONAR
         system.debug('environmental sustainalytics' + res1);
         final cstk.Utils.DML_Wrapper res2 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'environmental', 'cdp'); //NOSONAR
@@ -177,8 +187,8 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     */
     @future 
     public static void processRecordsRASOC(Set<Id> recordIds) {
-        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'social', 'snp'); //NOSONAR
-        system.debug('social snp' + res);
+        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'social', 'cla'); //NOSONAR
+        system.debug('social cla' + res);
         final cstk.Utils.DML_Wrapper res1 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'social', 'sustainalytics'); //NOSONAR
         system.debug('social sustainalytics' + res1);
         final cstk.Utils.DML_Wrapper res2 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'social', 'cdp'); //NOSONAR
@@ -198,8 +208,8 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     */
     @future 
     public static void processRecordsRAGOV(Set<Id> recordIds) {
-        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'governance', 'snp'); //NOSONAR
-        system.debug('governance snp' + res);
+        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'governance', 'cla'); //NOSONAR
+        system.debug('governance cla' + res);
         final cstk.Utils.DML_Wrapper res1 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'governance', 'sustainalytics'); //NOSONAR
         system.debug('governance sustainalytics' + res1);
         final cstk.Utils.DML_Wrapper res2 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'governance', 'cdp'); //NOSONAR
@@ -219,8 +229,8 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     */
     @future 
     public static void processRecordsRAGLO(Set<Id> recordIds) {
-        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'global', 'snp'); //NOSONAR
-        system.debug('global snp' + res);
+        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'global', 'cla'); //NOSONAR
+        system.debug('global cla' + res);
         final cstk.Utils.DML_Wrapper res1 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'global', 'sustainalytics'); //NOSONAR
         system.debug('global sustainalytics' + res1);
         final cstk.Utils.DML_Wrapper res2 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'global', 'cdp'); //NOSONAR
@@ -240,8 +250,8 @@ public with sharing class CSTK_ScriptQueueable implements Queueable { //NOSONAR
     */
     @future 
     public static void processRecordsRACAR(Set<Id> recordIds) {
-        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'carbonrisk', 'snp'); //NOSONAR
-        system.debug('carbonrisk snp' + res);
+        final cstk.Utils.DML_Wrapper res = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'carbonrisk', 'cla'); //NOSONAR
+        system.debug('carbonrisk cla' + res);
         final cstk.Utils.DML_Wrapper res1 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'carbonrisk', 'sustainalytics'); //NOSONAR
         system.debug('carbonrisk sustainalytics' + res1);
         final cstk.Utils.DML_Wrapper res2 = CSTK_RecordZeroActions.consolidateObjectRating(new List<Id>(recordIds), 'carbonrisk', 'cdp'); //NOSONAR

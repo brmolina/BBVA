@@ -40,7 +40,7 @@ public with sharing class AlertBigObject implements Database.Batchable<Sobject>,
 
     // Se cambia para seleccionar los regitros de más de 3 años en lugar de dos y para comparar con la StartDate y no la CreatedDate
     //this.pQuery = 'SELECT Id, (select ctcp__gf_team_users_desc__r.Name, ctcp__gf_team_users_desc__r.Email from Alert_Teams__r), '+ this.fieldsToSave + ' FROM altm__Commercial_Alert__c	' + (Test.isRunningTest() ? 'LIMIT 1' : 'WHERE CreatedDate < :twoYears'); //NOSONAR
-    this.pQuery = 'SELECT Id, (select ctcp__gf_team_users_desc__r.Name, ctcp__gf_team_users_desc__r.Email from Alert_Teams__r), '+ this.fieldsToSave + ' FROM altm__Commercial_Alert__c ' + (Test.isRunningTest() ? 'LIMIT 1' : 'WHERE altm_commercial_alert_start_date__c < :threeYears'); //NOSONAR
+    this.pQuery = 'SELECT Id, (select ctcp__gf_team_users_desc__r.Name, ctcp__gf_team_users_desc__r.Email from Alert_Teams__r), '+ this.fieldsToSave + ' FROM altm__Commercial_Alert__c ' + (Test.isRunningTest() ? 'LIMIT 1' : 'WHERE altm__commercial_alert_start_date__c < :threeYears'); //NOSONAR
   }
 
   /*

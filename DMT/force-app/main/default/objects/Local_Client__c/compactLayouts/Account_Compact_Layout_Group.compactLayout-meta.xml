@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account_Compact_Layout_Group</fullName>
+    <fields>Name</fields>
+    <fields>RecordType__c</fields>
+    <fields>main_code_id__c</fields>
+    <fields>OwnerId</fields>
+    <fields>branch_level2_desc__c</fields>
+    <fields>branch_id__c</fields>
+    <label>Account Compact Layout Group</label>
+</CompactLayout>

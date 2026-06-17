@@ -23,7 +23,7 @@ public class DES_DetailsTable_Test {
         final Account acc1 = utilTestClass.createClient();
         insert acc1;
         
-        DES_DetailsTable_Controller.getTableJSON(acc1.Id,'Account','DES_GTB_Revenues__c,DES_GF_Revenues__c,DES_GM_Revenues__c,DES_CF_Revenues__c','Spain');
+        DES_DetailsTable_Controller.getTableJSON(acc1.Id,'Account','DES_RARinfo_Capital_Consumption__c,DES_Operating_Expenses_RORC__c','Spain');
         System.assertEquals(acc1.Name, 'Test Client','Correcto');
     	
     }

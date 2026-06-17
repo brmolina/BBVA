@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>fprd__GBL_Sample_Datetime__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Field for test class</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Sample Datetime</label>
+    <required>false</required>
+    <type>DateTime</type>
+</CustomField>

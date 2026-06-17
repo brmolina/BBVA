@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGRM_CIB_Europe_Germany_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>GRM_CIB_Europe_Germany</label>
+    <queue>DMT_ApproversGRM_CIB_Europe_Germany</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

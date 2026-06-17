@@ -49,7 +49,7 @@ public with sharing class ProfitabilitySheetTriggerHandler {
                     pSheet.cuco__gf_prftbly_sheet_seg_type_name__c = 'CIB';
                 }
             }
-            if (!userMap.containsKey(pSheet.OwnerId) && userMap.containsKey(System.Label.DefaultOwnerPricingConditionBook)) {
+            if ((!userMap.containsKey(pSheet.OwnerId) && userMap.containsKey(System.Label.DefaultOwnerPricingConditionBook)) || pSheet.OwnerId == null) {
                 pSheet.OwnerId = userMap.get(System.Label.DefaultOwnerPricingConditionBook).Id;
             }
         }

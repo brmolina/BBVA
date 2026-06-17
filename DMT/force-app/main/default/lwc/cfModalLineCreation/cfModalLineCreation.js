@@ -23,10 +23,10 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               @track record;
               @track _sessionApiVars = {};
               @track Label={dmt_cl_NewLine:"New Line:",
-        dmt_cl_Line_Type:"Line Type",
-        dmt_cl_NameLine:"Name",
+        dmt_cl_Entific_Error:"You do not have permissions to create this type of operation for any entific.",
         dmt_cl_Entific_Label:"Entific",
-        dmt_cl_Entific_Error:"You do not have permissions to create this type of operation for any entific."
+        dmt_cl_NameLine:"Name",
+        dmt_cl_Line_Type:"Line Type"
         };
               pubsubEvent = [];
               customEvent = [];

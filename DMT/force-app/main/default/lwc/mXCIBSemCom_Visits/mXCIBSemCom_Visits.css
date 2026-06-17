@@ -1,0 +1,61 @@
+.custom-div {
+    border-radius: 0.75rem;
+    border: 2px solid #e5e5e5;
+    background-color: #ffffff;
+    padding: 1.25rem;
+}
+
+.inner-card {
+    border: 2px solid #e5e5e5;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    min-height: 75px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metrics-title {
+    color: #03234d;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.subtitle-text {
+    color: #03234d;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.label-title {
+    color: #03234d;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.value-text {
+    color: #03234d;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.custom-input-field {
+    --slds-c-input-color-border: transparent;
+    --slds-c-input-shadow: none;
+}
+
+.custom-input-field input {
+    border: none !important;
+    padding: 0 !important;
+    color: #03234d !important;
+    font-size: 20px !important;
+}
+
+.blue-icon-circle 
+{ background-color: #00A1E0; 
+ border-radius: 50%; 
+ width: 32px; 
+ height: 32px; 
+ display: flex;
+ align-items: center;
+ justify-content: center; }

@@ -1,0 +1,86 @@
+.THIS .slds-coordinates{
+	display: none;
+}
+
+.THIS .center {
+	/*display: block;
+  	margin-left: auto;
+  	margin-right: auto;*/
+  	height:70%;
+  	width:80%
+}
+
+.THIS.customDiv {
+	height:50%;
+	width:80%;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	border:1px;
+	border-color:grey;
+	border-style: solid;
+}
+
+.THIS .customLightning {
+	min-width:50%;
+}
+
+.THIS .customDiv2 {
+	width:70veh;
+	overflow:hidden
+}
+
+.THIS.customDiv3 {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS.customA {
+	float:left;
+}
+
+/* NEW */
+.THIS .container-country, .THIS .container-map {
+	padding-right: 0px !important;
+}
+
+.THIS .slds-grid_pull-padded-medium {
+	margin-right: 0px !important;
+}
+
+.THIS .select-country {
+	padding-left: 20px;
+	height: 400px !important;
+	overflow-x: auto !important;
+}
+
+.THIS .slds-icon_container_circle {
+	margin-top: 3px;
+	width: 30px;
+	height: 30px;
+	padding: 5px;
+}
+
+.THIS .slds-icon_container_circle .slds-icon {
+	width: 20px;
+	height: 20px;
+}
+
+.THIS #wr_lista a{
+	font-size: 1em !important;
+	padding: .5rem .5rem .5rem .5rem;
+}
+
+.THIS #wr_lista .slds-nav-vertical__item {
+    width: 70% !important;
+}
+
+.THIS #wr_aside .slds-nav-vertical__title {
+	position: sticky !important;
+	background-color: white;
+	padding-right: 50px;
+    padding-left: 20px;
+    margin-left: -20px;
+	z-index: 99;
+    top: 0;
+}

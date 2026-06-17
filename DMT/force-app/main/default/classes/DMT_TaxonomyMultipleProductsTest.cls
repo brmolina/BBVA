@@ -1,5 +1,5 @@
 @isTest
-private class DMT_TaxonomyMultipleProductsTest {
+private without sharing class DMT_TaxonomyMultipleProductsTest {
 
     @TestSetup
     static void setupData() {
@@ -78,7 +78,7 @@ private class DMT_TaxonomyMultipleProductsTest {
     static void testGetAllProducts() {
         Test.startTest();
         DMT_Line__c line = [SELECT Id,DMT_line_template_type__c , Booking_Geography__c FROM DMT_Line__c WHERE Booking_Geography__c = 'ES' AND DMT_line_template_type__c = 'OL' LIMIT 1];
-        List<Product2> result = DMT_TaxonomyMultipleProducts.getProductsDMT(line.Id);
+        List<Product2> result = DMT_TaxonomyMultipleProducts.getProductsDMT(line.Id, null);
         Test.stopTest();
 
         System.assertNotEquals(0, result.size(), 'Debe devolver productos');

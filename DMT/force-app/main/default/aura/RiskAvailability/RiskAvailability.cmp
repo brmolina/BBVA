@@ -1,0 +1,46 @@
+<aura:component controller="RiskAvailabilityCnt"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+    <ltng:require scripts="{! join(',',
+                            $Resource.Chart,
+                            $Resource.baseFichaGrupo)}"
+                afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+
+
+
+    <aura:attribute name="recordId" type="String" default="false" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="timeRefresh" type="String" default="false" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+
+    <aura:attribute name="showViewDetails" type="Boolean" access="public" />
+    <aura:attribute name="typeAmount" type="String" default="false" />
+    <aura:attribute name="countryParam" type="String" description="Country de client a filtrar" />
+    <aura:attribute name="familyChecked" type="String" description="Familia de productos a mostrar" />
+
+
+    <div class=" slds-size_1-of-1 ">
+        <aura:if isTrue="{!v.noData}">
+            <p class="mainText">
+                {!$Label.c.DES_Chart_No_Data}
+            </p>
+            <aura:set attribute="else">
+                <div class=" ">
+                    <canvas aura:id="chart" class="canvasPie"></canvas>
+                </div>
+                <aura:if isTrue="{! v.showViewDetails == true}">
+                    <div class=" ">
+                        <span class="floatRight spanFooter ">
+                            <span class="spanFooterDesc">As of Today at
+                                <ui:outputText value="{!v.timeRefresh}" />
+                            </span>
+                            <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}"
+                                alternativeText="Refresh." />
+                        </span>
+                    </div>
+                </aura:if>
+            </aura:set>
+        </aura:if>
+    </div>
+
+</aura:component>

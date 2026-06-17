@@ -1,0 +1,60 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-26-2024
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="isOpen" type="boolean" default="true" description="used to show or hide modal"/>
+    <aura:attribute name="continue" type="boolean" default="false" description="used to continue to new arce"/>
+    <aura:attribute name="chosenRecordId" type="String" description="Used to store the selected record id. While calling this component from other component, set this attribute to the lookup field API name" />
+    <aura:attribute name="chosenRecordLabel" type="String" description="This is used to show the selected record Name in search input" />
+    <aura:handler name="lookupChoose" event="c:Arc_Gen_SearchEventForNewArce_evt" action="{!c.handleLookupChooseEvent}" description="Event handler to get the selected record Id and Name from LookupItem component"/>
+    <aura:handler name="closeModalEvent" event="arce:Arc_Gen_WizardEvent_evt" action="{!c.closeModel}" />
+    <!-- <aura:html tag="style">
+        .greenbutton{ margin-top: 2em; }
+        .slds-modal__container{ height : auto; width: 80%; max-width: 90vh; }
+        .slds-modal-body{ background:white; height : 20vh !important; max-height: 100vh !important; }
+        .slds-modal__footer{ display: inline !important; }
+        .searchbar{ margin-left:1em; margin-right:1em; }
+    </aura:html> -->
+    <aura:if isTrue="{!v.isOpen}">
+        <div class="slds-m-around_xx-large" aura:id="mymodal">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                            <ui:outputText value="{!$Label.c.searchacustomer}"/>
+                        </h2>
+                    </header>
+                    <div class="slds-modal-body" id="modal-content-id-1">
+                        <div class="searchbar">
+                            <c:Arc_Gen_SearchCustomerForNewArce_Cmp />
+                        </div>
+                        <aura:if isTrue="{!v.chosenRecordId}">
+                            <div class="greenbutton">
+                                <center><button class="slds-button slds-button_brand" onclick="{! c.continuetoarce}"><ui:outputText value="{!$Label.c.Arc_Gen_Continue}"/></button></center>
+                            </div>
+                        </aura:if>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="{!$Label.qvcd.Button_Modal_Cancel}" title="{!$Label.qvcd.Button_Modal_Cancel}" onclick="{! c.closeModel }" />
+                    </footer>
+                </div>
+            </section>
+            <div aura:id="mymodal" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.continue}">
+        <div class="slds-m-around_xx-large" aura:id="mymodal">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <c:Arc_Gen_NewAnalysis_modal recordId="{!v.chosenRecordId}" showCloseButton="true" />
+                </div>
+            </section>
+            <div aura:id="mymodal" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

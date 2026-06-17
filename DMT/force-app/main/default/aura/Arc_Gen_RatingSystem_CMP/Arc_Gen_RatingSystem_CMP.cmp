@@ -1,0 +1,196 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-21-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    controller="Arc_Gen_RatingSystem_Controller"
+    access="global">
+    <aura:attribute name="recordId" type="String" description="The record Id of the current record." />
+    <aura:attribute name="view" type="Boolean" default="false" description="Flag to control if the component is visible." />
+    <aura:attribute name="conditionsJson" type="Object" description="JSON with the conditions defined for the rating system according to the metadata configuration." />
+    <aura:attribute name="modelOptions" type="Map" default="{}" description="Map with available models." />
+    <aura:attribute name="picklistValues" type="Map" default="{}" description="Map with the picklist values" />
+    <aura:attribute name="formDataMap" type="Map" default="{}" description="Map with the form information along with the rating system selected by the logic." />
+    <aura:attribute name="visibilityMap" type="Map" default="{}" description="Map with the boolean visibility of the fields to support form completion." />
+    <aura:attribute name="visibilityMapClass" type="Map" default="{}" description="Map with the text visibility of the fields to support form completion." />
+    <aura:attribute name="entityOptions" type="List" description="Options for selecting the model." />
+    <aura:attribute name="checkboxOptions" type="List" description="Options for yes/no checkbox answers." />
+    <aura:attribute name="ratingSystemEnabled" type="Boolean" default="false" description="Flag to enable or disable rating system service by configuration." />
+    <aura:attribute name="ratingSystemName" type="String" default="" description="The rating system name retrieved from the service callout." />
+    <aura:attribute name="ratingSystemBookCodes" type="List" default="[]" description="The unit booking codes available for the rating system service callout." />
+    <aura:attribute name="additionalInfo" type="String" default="" description="Información adicional (Institution Type y Model)." />
+    <aura:attribute name="entityTypeValue" type="String" default="" description="The value of the selected Entity Type." />
+    <aura:attribute name="unitBookingValue" type="String" description="The value indicating the unit booking." />
+    <aura:attribute name="ifisInstTypeJson" type="Object" description="JSON with the IFIS institution types defined for the rating system." />
+    <aura:attribute name="ifisModelDisabled" type="Boolean" default="false" description="Flag to enable or disable the IFIS model selection." />
+    <aura:attribute name="groupCorporateDisabled" type="Boolean" default="false" description="Flag to enable or disable group corporate selection." />
+    <aura:attribute name="explicitGuaranteeDisabled" type="Boolean" default="false" description="Flag to enable or disable explicit guarantee selection." />
+    <aura:attribute name="filialCoreDisabled" type="Boolean" default="false" description="Flag to enable or disable filial core selection." />
+    <aura:attribute name="groupCorporateValue" type="String" default="" description="Current value for group corporate." />
+    <aura:attribute name="explicitGuaranteeValue" type="String" default="" description="Current value for explicit guarantee." />
+    <aura:attribute name="filialCoreValue" type="String" default="" description="Current value for filial core." />
+    <aura:attribute name="clientSelectorCmp" type="Aura.Component[]" description="The client selector component." />
+    <aura:attribute name="isGDT" type="Boolean" default="false" description="Flag to enable or disable GDT environment. Heredated from parent component" />
+    <aura:attribute name="isProspect" type="Boolean" default="false" description="Flag to enable prospect flow." />
+    <aura:attribute name="selectedCountry" type="String" default="" description="Country selected" />
+    <aura:attribute name="selectedClient" type="List" default="[]" description="Client selected" />
+    <aura:attribute name="selectedBankEntity" type="String" default="" description="Bank entity selected" />
+    <aura:attribute name="parentSubsidiarySer" type="String" default="" description="The parent subsidiary retrieved from child component service callout." />
+    <aura:attribute name="formattedClient" type="String" default="false" description="Formated client selected" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.selectedClient}" action="{!c.handleChangeClient}"/>
+    <aura:handler name="change" value="{!v.parentSubsidiarySer}" action="{!c.handleParentSubsidiaryChange}"/>
+
+    <aura:registerEvent name="wizardEvent" type="arce:Arc_Gen_WizardEvent_evt" description="Custom event to notify changes in wizard." />
+
+    <aura:if isTrue="{!v.view}">
+        <div class="slds-var-p-around_medium">
+            <aura:if isTrue="{!NOT(EMPTY(v.selectedClient))}">
+                <div class="slds-grid slds-grid_align-end">
+                    <lightning:buttonIcon
+                        iconName="utility:change_owner"
+                        variant="bare"
+                        size="medium"
+                        onclick="{!c.onClickEnableSelection}"
+                        alternativeText="Enable Selection"
+                        title="Enable Selection"
+                        class="slds-var-m-right_x-small"/>
+                    <div class="slds-text-body_regular">{!v.formattedClient}</div>
+                </div>
+                <div class="slds-grid slds-grid_align-end slds-var-m-top_small">
+                    <lightning:formattedRichText value="{!v.additionalInfo}" class="slds-text-body_regular" />
+                </div>
+            </aura:if>
+            <lightning:combobox
+                aura:id="entityType"
+                label="{!$Label.c.Arc_Gen_RTC_EntityType}"
+                options="{!v.entityOptions}"
+                onchange="{!c.handleChange}"
+                value="{!v.entityTypeValue}"
+                required="true"
+                disabled="{!NOT(EMPTY(v.selectedClient))}" />
+            <aura:if isTrue="{!NOT(EMPTY(v.entityTypeValue))}">
+                <aura:if isTrue="{!NOT(EMPTY(v.selectedClient))}">
+                    <div class="{!v.visibilityMapClass.ifisModel}">
+                        <div class="slds-grid slds-grid_align-start slds-m-bottom_xx-small">
+                            <div class="slds-grid slds-grid_align-center">
+                                <span class="slds-required slds-m-right_xx-small">*</span>
+                                <label class="slds-form-element__label slds-m-right_none">{!$Label.c.Arc_Gen_RTC_SelectOption}</label>
+                                <lightning:helptext
+                                    content="{!$Label.c.Arc_Gen_InstitutionTypeIFIS}"
+                                    class="slds-m-left_none"
+                                />
+                            </div>
+                        </div>
+                        <lightning:radioGroup
+                            aura:id="ifisModel"
+                            name="ifisModel"
+                            options="{!v.picklistValues.IFIS_ModelOptions}"
+                            onchange="{!c.handleChange}"
+                            disabled="{!v.ifisModelDisabled}"
+                            class="slds-m-top_xx-small"
+                        />
+                    </div>
+                    <div class="{!v.visibilityMapClass.arce__level_Shell__c}">
+                        <lightning:combobox
+                            aura:id="arce__level_Shell__c"
+                            label="{!$Label.c.Arc_Gen_RTC_level_Shell}"
+                            fieldLevelHelp="{!$Label.c.Arc_Gen_RTC_level_Shell_HelpText1 + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + $Label.c.Arc_Gen_RTC_level_Shell_HelpText2 + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + $Label.c.Arc_Gen_RTC_level_Shell_HelpText3 + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + $Label.c.Arc_Gen_RTC_level_Shell_HelpText4 + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + $Label.c.Arc_Gen_RTC_level_Shell_HelpText5 + ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + $Label.c.Arc_Gen_RTC_level_Shell_HelpText6}"
+                            options="{!v.checkboxOptions}"
+                            onchange="{!c.handleChange}"
+                            required="true" />
+                    </div>
+                    <div class="{!v.visibilityMapClass.arce__group_corporative__c}">
+                        <lightning:combobox
+                            aura:id="arce__group_corporative__c"
+                            label="{!$Label.c.Arc_Gen_RTC_groupCorporate}"
+                            value="{!v.groupCorporateValue}"
+                            options="{!v.checkboxOptions}"
+                            onchange="{!c.handleChange}"
+                            disabled="{!v.groupCorporateDisabled}"
+                            required="true" />
+                        <div class="{!v.visibilityMapClass.arce__explicit_guarantee__c}">
+                            <lightning:combobox
+                                aura:id="arce__unit_booking__c"
+                                label="{!$Label.c.Arc_Gen_RTC_UnitBooking}"
+                                value="{!v.unitBookingValue}"
+                                options="{!v.picklistValues.UnitBookingOptions}"
+                                onchange="{!c.handleChange}"
+                                required="true" />
+                        </div>
+                        <div class="{!v.visibilityMapClass.arce__explicit_guarantee__c}">
+                            <lightning:combobox
+                                aura:id="arce__explicit_guarantee__c"
+                                label="{!$Label.c.Arc_Gen_RTC_explicit}"
+                                fieldLevelHelp="{!$Label.c.Arc_Gen_RTC_explicit_HelpText}"
+                                value="{!v.explicitGuaranteeValue}"
+                                options="{!v.checkboxOptions}"
+                                onchange="{!c.handleChange}"
+                                disabled="{!v.explicitGuaranteeDisabled}"
+                                required="true" />
+                        </div>
+                        <div class="{!v.visibilityMapClass.arce__filial_Core__c}">
+                            <lightning:combobox
+                                aura:id="arce__filial_Core__c"
+                                label="{!$Label.c.Arc_Gen_RTC_filialCore}"
+                                value="{!v.filialCoreValue}"
+                                options="{!v.checkboxOptions}"
+                                onchange="{!c.handleChange}"
+                                disabled="{!v.filialCoreDisabled}"
+                                required="true" />
+                            <div class="{!v.visibilityMapClass.arce__captive_nbf__c}">
+                                <lightning:combobox
+                                    aura:id="arce__captive_nbf__c"
+                                    label="{!$Label.c.Arc_Gen_RTC_nbf}"
+                                    options="{!v.checkboxOptions}"
+                                    onchange="{!c.handleChange}"
+                                    required="true" />
+                                <div class="{!v.visibilityMapClass.arce__group_treasury_subsidiary__c}">
+                                    <lightning:combobox
+                                        aura:id="arce__group_treasury_subsidiary__c"
+                                        label="{!$Label.c.Arc_Gen_RTC_groupTreasury}"
+                                        options="{!v.checkboxOptions}"
+                                        onchange="{!c.handleChange}"
+                                        required="true" />
+                                    <div class="{!v.visibilityMapClass.arce__legal_EEFF__c}">
+                                        <lightning:combobox
+                                            aura:id="arce__legal_EEFF__c"
+                                            label="{!$Label.c.Arc_Gen_RTC_legalEEFF}"
+                                            options="{!v.checkboxOptions}"
+                                            onchange="{!c.handleChange}"
+                                            required="true" />
+                                        <div class="{!v.visibilityMapClass.arce__matrizIg__c}">
+                                            <div class="slds-var-m-top_small">
+                                                <lightning:input
+                                                    aura:id="arce__matrizIg__c"
+                                                    type="checkbox"
+                                                    label="{!$Label.c.Arc_Gen_RTC_matrizIg}"
+                                                    onclick="{!c.handleChange}"
+                                                    required="true" />
+                                                <lightning:input
+                                                    aura:id="arce__common_ops_no_ffss__c"
+                                                    type="checkbox"
+                                                    label="{!$Label.c.Arc_Gen_RTC_CommonOpsNoFfss}"
+                                                    onclick="{!c.handleChange}"
+                                                    required="true" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div aura:id="client-selector">
+                            {!v.clientSelectorCmp}
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

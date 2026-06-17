@@ -1,0 +1,8 @@
+<design:component>
+	<design:attribute name="UserVal" label="UserVal" />
+  <design:attribute name="CoverageVal" label="CoverageVal" />
+  <design:attribute name="TeamRoleVal" label="TeamRoleVal" />
+  <design:attribute name="Scope" label="Scope" />
+  <design:attribute name="PSProductFamily" label="PSProductFamily" />
+  <design:attribute name="PSProduct" label="PSProduct" />
+</design:component>

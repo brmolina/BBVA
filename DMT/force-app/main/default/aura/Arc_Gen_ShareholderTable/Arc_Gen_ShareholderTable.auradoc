@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that show the shareholder group table</b></h5>
+        <p>data - row data to build the table</p>
+        <p>headers - column data to build the table</p>
+        <p>options - options availables in the dual list box</p>
+        <p>values - values selected in the dual list box</p>
+        <p>availables - all options availables in the dual listbox</p>
+        <p>min - minimum values selected in the dual list box</p>
+        <p>max - maximum values selected in the dual list box</p>
+        <p>showDualList - hide/show the dual list box</p>
+        <p>showSpinner - hide/show the spinner</p>
+        <p>showCmp - hide/show the cmp</p>
+        <p><code>c:Arc_Gen_ShareholderTable</code></p>
+    </aura:description>
+</aura:documentation>

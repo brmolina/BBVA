@@ -1,84 +1,143 @@
 <template>
-    <tr class="slds-hint-parent" style="height: 3rem;">
-        <template lwc:if={feature.featureIsValid}> 
-            <td class="slds-p-left_large slds-align-center" colspan="1">
-                <template lwc:if={haveProducts}> 
-                    <template lwc:if={isExpanded}>
-                        <lightning-button-icon icon-name="utility:chevrondown" onclick={expandedControlEvent} size="medium" variant="bare" data-id={feature.Id}></lightning-button-icon>
-                    </template>
-                    <template lwc:else>
-                        <lightning-button-icon icon-name="utility:chevronright" onclick={expandedControlEvent} size="medium" variant="bare" data-id={feature.Id}></lightning-button-icon>
-                    </template>
-                </template>
-                <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
-            </td>
-            
-            <template lwc:if={feature.capabilityIsValid}>
-                    <template lwc:if={feature.showTrafficLight}>
-                        <td class="slds-p-left_large slds-align-center">
-                            <div class="slds-truncate"><c-dmt_traffic_light status={feature.stateName} onclick={openModal} data-id={feature.idProccess} simplelight="false" lightsize="25px"></c-dmt_traffic_light> </div>
-                        </td>
-                    </template>   
-                    <template lwc:else>
-                        <td class="slds-p-left_large" colspan="2"></td>    
-                    </template>
-            </template>
-            <template lwc:else>
-                <td class="slds-p-left_large slds-align-center">
-                    <div class="passport-space-helpericon">
-                        <template lwc:if={feature.showErrorCapability}>
-                            <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.capabilityErrorMessage} icon-variant="error"></c-dmt_helpericon>
-                        </template>
-                    </div>
-                </td>
-            </template>
-            <template lwc:if={isbig}>
-                <td class="slds-p-left_large" colspan="8"></td>     
-            </template> 
+  <tr class={rowClass} style="height: 3rem">
+    <template lwc:if={feature.featureIsValid}>
+      <td class="slds-p-left_large slds-align-center" colspan="1">
+        <template lwc:if={haveProducts}>
+          <template lwc:if={isExpanded}>
+            <lightning-button-icon
+              icon-name="utility:chevrondown"
+              onclick={expandedControlEvent}
+              size="medium"
+              variant="bare"
+              data-id={feature.Id}
+            ></lightning-button-icon>
+          </template>
+          <template lwc:else>
+            <lightning-button-icon
+              icon-name="utility:chevronright"
+              onclick={expandedControlEvent}
+              size="medium"
+              variant="bare"
+              data-id={feature.Id}
+            ></lightning-button-icon>
+          </template>
+        </template>
+        <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+      </td>
+      <template lwc:if={feature.capabilityIsValid}>
+        <template lwc:if={feature.showTrafficLight}>
+          <td class="slds-p-left_large slds-align-center">
+            <div class="slds-truncate">
+              <c-dmt_traffic_light
+                status={feature.stateName}
+                data-id={feature.idProccess}
+                simplelight="false"
+                lightsize="25px"
+              ></c-dmt_traffic_light>
+            </div>
+          </td>
+          <td class="slds-p-left_large" colspan="1"></td>
         </template>
         <template lwc:else>
-            <td class="slds-p-left_large slds-align-center">
-                <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
-                <template lwc:if={feature.showErrorFeature}>
-                    <span class="feature_error">
-                        <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.featureErrorMessage} icon-variant="error"></c-dmt_helpericon>
-                    </span>
-                </template>
-            </td>
-            <td class="slds-p-left_large" colspan="1"></td>
+          <td class="slds-p-left_large" colspan="1"></td>
+        </template>
             <template lwc:if={isbig}>
                 <td class="slds-p-left_large" colspan="7"></td>     
-            </template> 
+            </template>
+      </template>
+      <template lwc:else>
+        <td class="slds-p-left_large slds-align-center">
+          <div class="passport-space-helpericon">
+            <template lwc:if={feature.showErrorCapability}>
+              <c-dmt_helpericon
+                icon-name="utility:warning"
+                icon-size="small"
+                text={feature.capabilityErrorMessage}
+                icon-variant="error"
+              ></c-dmt_helpericon>
+            </template>
+          </div>
+        </td>
+        <td class="slds-p-left_large" colspan="1"></td>
+        <template lwc:if={isbig}>
+        <td class="slds-p-left_large" colspan="7"></td>
+      </template>
+      </template> 
+    </template>
+    <template lwc:else>
+      <td class="slds-p-left_large slds-align-center">
+        <b class="slds-m-top_xx-small slds-m-left_xx-small">{feature.name}</b>
+        <template lwc:if={feature.showErrorFeature}>
+          <span class="feature_error">
+            <c-dmt_helpericon
+              icon-name="utility:warning"
+              icon-size="small"
+              text={feature.featureErrorMessage}
+              icon-variant="error"
+            ></c-dmt_helpericon>
+          </span>
         </template>
-    </tr>
-    <template lwc:if={isExpanded}>
-        <template for:each={feature.products} for:item="product">
-            <tr key={product.productId} class="slds-hint-parent" style="height: 3rem;">
-                <td class="slds-p-left_medium slds-align-center" style="padding-left: 45px;">
-                    <b class="slds-m-top_xx-small">{product.productId}</b>
-                </td>
-                <td class="slds-p-left_large slds-align-center">
-                    <div class="slds-truncate"><c-dmt_traffic_light status={product.stateName} onclick={openModal} data-id={product.productId} simplelight="false" lightsize="25px"></c-dmt_traffic_light></div>   
-                </td>
-                <td class="slds-p-left_large" colspan="1"></td>
-                <template lwc:if={isbig}>
-                    <td class="slds-p-left_large" colspan="7"></td>     
-                </template> 
-            </tr>
-            <template for:each={product.mitigants} for:item="mitigant">
-                <tr key={mitigant.mitigantId} class="slds-hint-parent" style="height: 3rem;">
-                    <td class="slds-p-left_x-large slds-align-center" style="padding-left: 75px;">
-                        <b class="slds-m-top_xx-smal">{mitigant.mitigantId}</b>
-                    </td>
-                    <td class="slds-p-left_large slds-align-center">
-                        <div class="slds-truncate"><c-dmt_traffic_light status={mitigant.stateName} onclick={openModal} data-id={mitigant.mitigantId} simplelight="false" lightsize="25px"></c-dmt_traffic_light> </div>
-                    </td>
-                    <td class="slds-p-left_large" colspan="1"></td>
-                    <template lwc:if={isbig}>
-                        <td class="slds-p-left_large" colspan="7"></td>     
-                    </template> 
-                </tr>
-            </template>     
+      </td>
+      <td class="slds-p-left_large" colspan="2"></td>
+      <template lwc:if={isbig}>
+        <td class="slds-p-left_large" colspan="7"></td>
+      </template>
+    </template>
+  </tr>
+  <template lwc:if={isExpanded}>
+    <template for:each={processedProducts} for:item="product">
+      <tr key={product.productId} class={rowClass} style="height: 3rem">
+        <td
+          class="slds-p-left_medium slds-align-center"
+          style="padding-left: 45px"
+        >
+          <b class="slds-m-top_xx-small">{product.displayName}</b>
+        </td>
+        <td class="slds-p-left_large slds-align-center">
+          <div class="slds-truncate">
+            <c-dmt_traffic_light
+              status={product.stateName}
+              onclick={openModal}
+              data-id={product.productId}
+              simplelight="false"
+              lightsize="25px"
+            ></c-dmt_traffic_light>
+          </div>
+        </td>
+        <td class="slds-p-left_large" colspan="1"></td>
+        <template lwc:if={isbig}>
+          <td class="slds-p-left_large" colspan="7"></td>
         </template>
-    </template> 
+      </tr>
+      <template for:each={product.mitigants} for:item="mitigant">
+        <tr
+          key={mitigant.mitigantId}
+          class={rowClass}
+          style="height: 3rem"
+        >
+          <td
+            class="slds-p-left_x-large slds-align-center"
+            style="padding-left: 75px"
+          >
+            <b class="slds-m-top_xx-smal">{mitigant.displayName}</b>
+          </td>
+          <td class="slds-p-left_large slds-align-center">
+            <div class="slds-truncate">
+              <c-dmt_traffic_light
+                status={mitigant.stateName}
+                onclick={openModal}
+                data-id={mitigant.mitigantId}
+                simplelight="false"
+                lightsize="25px"
+              ></c-dmt_traffic_light>
+            </div>
+          </td>
+          <td class="slds-p-left_large" colspan="1"></td>
+          <template lwc:if={isbig}>
+            <td class="slds-p-left_large" colspan="7"></td>
+          </template>
+        </tr>
+      </template>
+    </template>
+  </template>
 </template>

@@ -1,0 +1,11 @@
+<design:component>
+   	<design:attribute name="visitOwner" label="visitOwner" />
+	<design:attribute name="visitStatus" label="visitStatus" />
+    <design:attribute name="codVisit" label="codVisit" />
+    <design:attribute name="visitLocation" label="visitLocation" />
+    <design:attribute name="visitFeedback" label="visitFeedback" />
+    <design:attribute name="operation" label="operation" required="true"/>
+    <design:attribute name="endpoint" label="endpoint" />
+    <design:attribute name="error" label="error" />
+    <design:attribute name="isError" label="isError" />
+</design:component>

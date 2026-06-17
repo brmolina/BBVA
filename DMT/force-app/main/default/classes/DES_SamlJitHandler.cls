@@ -27,6 +27,8 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
     public static final String BASICCONF = 'Basic_Configuration';
     public static final String SPGROUP = 'CIB_gr_S_P_TEAM';
     public static final String CIBUOCODE = '00003906';
+    public static final String EVENTLICENSE = 'Event Monitoring Analytics Apps';
+    private static final Map<String, Schema.SObjectType> GLOBAL_DESCRIBE = Schema.getGlobalDescribe();
     /**********************************************************************************************************
      * @name            createUser
      * @author          David Díaz
@@ -71,7 +73,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
      **********************************************************************************************************/
     global void updateUser(Id userId, Id samlSsoProviderId, Id communityId, Id portalId, String federationIdentifier, Map<String, String> attributes, String assertion){
 
-        User user = [SELECT Id, IsActive, UserRoleId, ID_User__c, Email, DMT_User_Role__c
+        User user = [SELECT Id, IsActive, UserRoleId, ID_User__c, Email, DMT_User_Role__c, FederationIdentifier, firstName, lastName
                      FROM User
                      WHERE Id = :userId
                      LIMIT 1];
@@ -158,27 +160,14 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
             mapUserData(user, wrapper.data);
 
             // Determina si el usuario es administrador.
-            Boolean isAdmin = false;
-            if (wrapper.data.roles != null){
-                for (UserUuaaInfoExtended.Role role : wrapper.data.roles){
-                     for(UserUuaaInfoExtended.Resource resource : role.resources){
-                            if (resource.name == SADMIN){
-                                isAdmin = true;
-                                break;
-                            }
-                     }
-                }
-            }
+            Boolean isAdmin = hasResource(wrapper.data, SADMIN);
+
 
             // Asigna el perfil y el rol del usuario.
             user.ProfileId = getProfileId(wrapper.data, isAdmin);
             user.UserRoleId = getUserRoleId(wrapper.data, user.UserRoleId);
 
-            // Mapea los atributos personalizados, si existen.
-            if (wrapper.data.attributeSet != null){
-                mapCustomAttributes(user, wrapper.data.attributeSet);
-            }
-            if( user.Id != null){
+            if (user.Id != null){
                 User_Helper.fillUserRoleByProject(user, wrapper);
             }
         } else{
@@ -194,33 +183,42 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
      * @created         22/01/2025
      * @description     Método que valida los datos del wrapper asegurándose de que los campos obligatorios no
      *                  están vacíos o nulos.
-     * @param           User user - Objeto usuario que será evaluado.
+     * @param           User user - Usuario evaluado (reservado para validaciones futuras).
      * @param           UserUuaaInfoExtended.Data data - Datos del wrapper a validar.
      * @return          Boolean - Retorna true si todos los datos requeridos están presentes; de lo contrario, false.
      **********************************************************************************************************/
     public static Boolean validateWrapperData(User user, UserUuaaInfoExtended.Data data){
-        Boolean hasBasicConf = false;
-        if (data.roles != null){
-            for (UserUuaaInfoExtended.Role role : data.roles){
-                if (role.resources != null){
-                    for (UserUuaaInfoExtended.Resource res : role.resources){
-                        if (res.name == BASICCONF){
-                            hasBasicConf = true;
-                            break;
-                        }
-                    }
-                }
-                if (hasBasicConf){
-                    break;
-                }
-            }
-        }
-
-        // Validar campos obligatorios y existencia del recurso BASICCONF.
-        if (!hasBasicConf || String.isBlank(data.name) || String.isBlank(data.surname) || String.isBlank(data.workCountry) || String.isBlank(data.email)){
+        if (!hasResource(data, BASICCONF) || String.isBlank(data.name) || String.isBlank(data.surname) || String.isBlank(data.workCountry) || String.isBlank(data.email)){
             return false;
         }
         return true;
+    }
+
+    /*********************************************************************************************************
+     * @name            hasResource
+     * @author          David Díaz
+     * @created         24/12/2025
+     * @description     Verifica si en los roles del usuario existe un recurso concreto.
+     * @param           UserUuaaInfoExtended.Data data - Datos del usuario obtenidos desde SSO.
+     * @param           String resourceName - Nombre del recurso a buscar.
+     * @return          Boolean - true si el recurso existe; false en caso contrario.
+     **********************************************************************************************************/
+    private static Boolean hasResource(UserUuaaInfoExtended.Data data, String resourceName){
+        if (data == null || data.roles == null){
+            return false;
+        }
+
+        for (UserUuaaInfoExtended.Role role : data.roles){
+            if (role.resources == null){
+                continue;
+            }
+            for (UserUuaaInfoExtended.Resource res : role.resources){
+                if (res.name == resourceName){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /*********************************************************************************************************
@@ -288,7 +286,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         user.LocaleSidKey = LOCALES;
         user.EmailEncodingKey = ISOCOD;
         user.LanguageLocaleKey = LANGUAGE;
-        user.Email = data.email+'.invalid';
+        user.Email = data.email;
         user.Username = userNameSTR;
         user.UserPermissionsSFContentUser = true;
     }
@@ -302,15 +300,14 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
      * @param           Boolean isAdmin - Indica si el usuario es un administrador.
      * @return          Id - ID del perfil.
      **********************************************************************************************************/
-    private Id getProfileId(UserUuaaInfoExtended.Data data, Boolean isAdmin){
-        String profileName = getAttributes(data).get(PFSF);
-        if (String.isBlank(profileName)){
-            profileName = isAdmin ? SYSADMIN : STDUSER;
-        }
-        return [SELECT Id
-                FROM Profile
-                WHERE Name = :profileName
-                LIMIT 1].Id;
+    public Id getProfileId(UserUuaaInfoExtended.Data data, Boolean isAdmin){
+        String profileName;
+        profileName = isAdmin ? SYSADMIN : STDUSER;
+        Profile userProfile = [SELECT Id, Name
+                               FROM Profile
+                               WHERE Name = :profileName
+                               LIMIT 1];
+        return userProfile.Id;
     }
 
     /*********************************************************************************************************
@@ -343,39 +340,6 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
     }
 
     /*********************************************************************************************************
-     * @name            mapCustomAttributes
-     * @author          David Díaz
-     * @created         02/12/2024
-     * @description     Método que mapea los atributos personalizados del usuario y los asigna al objeto 'User'.
-     * @param           User user - El usuario al que se asignarán los atributos personalizados.
-     * @param           List<UserUuaaInfoExtended.Attribute> attributes - Atributos personalizados del usuario.
-     * @return          NA
-     **********************************************************************************************************/
-    private void mapCustomAttributes(User user, List<UserUuaaInfoExtended.Attribute> attributes){
-        Map<String, String> attributeMap = getAttributes(wrapper.data);
-        for (Profiling_Configuration__mdt config : Profiling_Configuration__mdt.getAll().values()){
-            String value = attributeMap.get(config.DES_Key__c);
-            if (String.isBlank(value)){
-                continue;
-            }
-            switch  on config.DES_Data_Type__c{
-                when 'String'{
-                    user.put(config.DES_value__c, value);
-                }
-                when 'Boolean'{
-                    user.put(config.DES_value__c, Boolean.valueOf(value));
-                }
-                when 'Number'{
-                    user.put(config.DES_value__c, Integer.valueOf(value));
-                }
-                when 'Double'{
-                    user.put(config.DES_value__c, Double.valueOf(value));
-                }
-            }
-        }
-    }
-
-    /*********************************************************************************************************
      * @name            getPermissionSet
      * @author          David Díaz
      * @created         02/12/2024
@@ -398,32 +362,12 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
     }
 
     /*********************************************************************************************************
-     * @name            getAttributes
-     * @author          David Díaz
-     * @created         02/12/2024
-     * @description     Método que obtiene los atributos personalizados del usuario desde los datos proporcionados por SSO.
-     * @param           UserUuaaInfoExtended.Data data - Datos del usuario obtenidos de SSO.
-     * @return          Map<String, String> - Mapa de atributos personalizados del usuario.
-     **********************************************************************************************************/
-    private Map<String, String> getAttributes(UserUuaaInfoExtended.Data data){
-        Map<String, String> attributeMap = new Map<String, String>();
-        if (data.attributeSet != null){
-            for (UserUuaaInfoExtended.Attribute attrSet : data.attributeSet){
-                if (attrSet.attributes != null){
-                    for (UserUuaaInfoExtended.Attributes attr : attrSet.attributes){
-                        attributeMap.put(attr.attributeName, attr.attributeValue);
-                    }
-                }
-            }
-        }
-        return attributeMap;
-    }
-
-    /*********************************************************************************************************
      * @name            setPermissionSet
      * @author          David Díaz
      * @created         02/12/2024
-     * @description     Método que asigna los Permission Sets al usuario según los roles y recursos obtenidos de los datos del SSO.
+     * @description     Gestiona la asignación y eliminación de Permission Sets del usuario
+     *                  según los recursos recibidos por SSO, controlando licencias,
+     *                  conflictos y operaciones extendidas vía Custom Metadata.
      * @param           User user - El usuario al que se asignarán los Permission Sets.
      * @return          NA
      **********************************************************************************************************/
@@ -435,7 +379,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         }
 
         // Consultar los Permission Sets correspondientes a los nombres obtenidos.
-        List<PermissionSet> permissionSets = [SELECT Id, Name
+        List<PermissionSet> permissionSets = [SELECT Id, Name, LicenseId, License.Name
                                               FROM PermissionSet
                                               WHERE Name IN:permissionSetNames];
 
@@ -456,8 +400,14 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         List<String> psNamesToInsert = new List<String>();
         List<String> psNamesDelete = new List<String>();
 
+        String licenseId;
+        String psId;
         for (PermissionSet ps : permissionSets){
             newPermissionSetIds.add(ps.Id);
+            if (ps.LicenseId != null && ps.License.Name == EVENTLICENSE){
+                licenseId = ps.LicenseId;
+                psId = ps.Id;
+            }
             if (!assignedPermissionSetIds.contains(ps.Id)){
                 psNamesToInsert.add(ps.Name);
                 newAssignments.add(new PermissionSetAssignment(
@@ -466,6 +416,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                 ));
             }
         }
+
         // Determinar las asignaciones obsoletas a eliminar.
         for (PermissionSetAssignment existing : existingAssignments){
             if (!newPermissionSetIds.contains(existing.PermissionSetId)){
@@ -483,11 +434,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         }
 
         List<Permission_Extended__mdt> list_PermissionextendMdt = new List<Permission_Extended__mdt>();
-        if (!metadaToFindFromPS.isEmpty()){
-            list_PermissionextendMdt = queryMDTFromPSName(metadaToFindFromPS);
-        }
-
-        System.debug('list_PermissionextendMdt:::: ' + list_PermissionextendMdt);
+        list_PermissionextendMdt = queryMDTFromPSName(metadaToFindFromPS);
 
         Map<String, List<Permission_Extended__mdt>> mapToCreateORDelete = new Map<String, List<Permission_Extended__mdt>>();
 
@@ -501,38 +448,149 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                 if (psNamesDelete.contains(mdt.Permission_Set__c)){
                     mapToCreateORDelete.get('Delete').add(mdt);
                 }
+                if (mdt.Profile__c != null){
+                    if (mdt.Profile__c == user.ProfileId){
+                        mapToCreateORDelete.get('Create').add(mdt);
+                    }
+                    if (mdt.Profile__c != user.ProfileId){
+                        mapToCreateORDelete.get('Delete').add(mdt);
+                    }
+                }
             }
         }
-
         try{
             if (!newAssignments.isEmpty()){
-                insert newAssignments;
+                Database.insert (newAssignments);
             }
             if (!assignmentsToDelete.isEmpty()){
                 delete assignmentsToDelete;
-            }         
+            }
+
         } catch (Exception e){
-            logError(e.getMessage(), e.getStackTraceString(), SETPERMISSIONSET, user.Id);
+            if (psId != null && licenseId != null){
+                List<PermissionSetAssignment> newAssigWithOutEventM = new List<PermissionSetAssignment>();
+                for (PermissionSetAssignment pSA : newAssignments){
+                    if (pSA.PermissionSetId != psId){
+                        newAssigWithOutEventM.add(pSA);
+                    }
+                }
+                Database.insert (newAssigWithOutEventM);
+                Boolean licenseFree = freeUpLicense(licenseId, psId, newAssignments);
+                if (licenseFree){
+                    Map<String, String> dataForReUpdated = new Map<String, String>{ 'userId' => user.Id, 'psId' => psId };
+                    futureUpdatePSUser(JSON.serialize(dataForReUpdated));
+                }
+            }
         }
-        
-            if (!mapToCreateORDelete.isEmpty()){
-                mapObjectToManipulate(user.id, mapToCreateORDelete);
-            }   
+
+
+        if (!mapToCreateORDelete.isEmpty()){
+            mapObjectToManipulate(user, mapToCreateORDelete);
+        }
+    }
+
+    /*********************************************************************************************************
+     * @name            freeUpLicense
+     * @author          María Martínez
+     * @created         24/12/2025
+     * @description     Intenta liberar una licencia asociada a un Permission Set eliminando
+     *                  la asignación del usuario activo menos reciente.
+     * @param           String licensedId       - Id de la licencia limitada.
+     * @param           String permissionSetID  - Id del Permission Set asociado.
+     * @param           List<PermissionSetAssignment> newAssignment - Asignaciones pendientes.
+     * @return          Boolean - true si la licencia se libera correctamente; false en caso contrario.
+     * @notes           Excluye usuarios marcados como no desactivables mediante CIB_Bypass__c.
+     **********************************************************************************************************/
+    @future
+    public static void futureUpdatePSUser(String dataForReUpdated){
+        Map<String, String> data = (Map<String, String>)JSON.deserialize(dataForReUpdated, Map<String, String>.class);
+        PermissionSetAssignment pSA = new PermissionSetAssignment(
+            AssigneeId = data.get('userId'), 
+            PermissionSetId = data.get('psId')
+        );
+        insert PSA;
+    }
+
+    /*********************************************************************************************************
+     * @name            freeUpLicense
+     * @author          María Martínez
+     * @created         24/12/2025
+     * @description     Intenta liberar una licencia de Permission Set eliminando la asignación del usuario
+     *                  activo con el LastLoginDate más antiguo.
+     * @param           String licensedId       - Id de la licencia limitada.
+     * @param           String permissionSetID  - Id del Permission Set asociado a la licencia.
+     * @param           List<PermissionSetAssignment> newAssignment - Asignaciones pendientes.
+     * @return          Boolean - true si se libera la licencia correctamente; false en caso contrario.
+     * @notes           Excluye usuarios marcados como no desactivables mediante CIB_Bypass__c.
+     **********************************************************************************************************/
+    private Boolean freeUpLicense(String licensedId, String permissionSetID, List<PermissionSetAssignment> newAssignment){
+        Boolean respuesta = false;
+        if (licensedId == null || permissionSetID == null){
+            System.debug('ERROR: El conjunto de licencias para liberar está vacío.');
+            return false;
+        }
+        List<CIB_Bypass__c> usersNoDesactivar = [SELECT Id, SetupOwnerId
+                                                 FROM CIB_Bypass__c
+                                                 WHERE CIB_DES_No_Desactivar_Usuario__c = true];
+        List<Id> usersIDNoDesactivar = new List<Id>();
+        for (CIB_Bypass__c record : usersNoDesactivar){
+            usersIDNoDesactivar.add(record.SetupOwnerId);
+        }
+        // 1. Consulta: Encontrar la asignación del Permission Set limitado
+        // cuyo usuario (Assignee) tiene el LastLoginDate más antiguo (o nulo, si nunca se logueó).
+        // ORDER BY Assignee.LastLoginDate ASC NULLS FIRST asegura que el menos activo sea el primero.
+        System.debug('LicensedId::: ' + licensedId + ' PermissionId:: ' + permissionSetID + ' UserNoDesactivar:: ' + usersIDNoDesactivar);
+        List<PermissionSetAssignment> assignmentPSAToFree = [SELECT Id, AssigneeId, PermissionSetId, Assignee.LastLoginDate
+                                                             FROM PermissionSetAssignment
+                                                             WHERE PermissionSet.LicenseId = :licensedId // Filtrar solo los PS que consumen la licencia
+         AND PermissionSetId = :permissionSetID AND Assignee.IsActive = TRUE AND AssigneeId NOT IN:usersIDNoDesactivar// Solo considerar usuarios activos
+                                                             ORDER BY Assignee.LastLoginDate ASC
+                                                             NULLS FIRST // El más antiguo (NULLS FIRST = nunca logueado)
+                                                             LIMIT 1];
+
+        Id userId = assignmentPSAToFree[0].AssigneeId;
+        List<PermissionSetAssignment> assigmentPSA = new List<PermissionSetAssignment>();
+        assigmentPSA.addAll(assignmentPSAToFree);
+        assigmentPSA.addAll(newAssignment);
+
+        if (!assignmentPSAToFree.isEmpty()){
+            PermissionSetAssignment psa = assignmentPSAToFree[0];
+            System.debug('Eliminar la asignación: ' + psa.Id + ' Del usuario menos activo: ' + psa.AssigneeId + ' (LastLoginDate: ' + psa.Assignee.LastLoginDate + ')');
+            try{
+                System.debug('Eliminada la asignación: ' + psa.Id);
+                // 2. Eliminar la asignación de permissio para liberar la licencia
+                delete assignmentPSAToFree;
+
+                respuesta = true;
+            } catch (DmlException e){
+                // Manejar error si la eliminación falla (p. ej., problemas de permisos o bloqueos)
+                System.debug('ERROR al intentar eliminar la asignación para liberar la licencia: ' + e.getMessage());
+                // logError(e.getMessage(), e.getStackTraceString(), 'freeUpLicense', psa.AssigneeId);
+                respuesta = false;
+            }
+        }
+
+        return respuesta;
     }
 
     /*********************************************************************************************************
      * @name            queryMDTFromPSName
      * @author          Guillermo Iglesias
      * @created         08/07/2025
-     * @description     Método que devuelve una query para obtener los metadatas tanto de los registros que hay que insertar como eliminar, en función de la lista de nombres de los Permission Set.
-     * @param           List<String> psNames.
-     * @return          list_PermissionextendMdt - Query generada
+     * @description     Obtiene los registros de Custom Metadata Permission_Extended__mdt
+     *                  asociados a una lista de Permission Sets o a un Profile.
+     * @param           List<String> psNames - Lista de nombres de Permission Sets.
+     * @return          List<Permission_Extended__mdt> - Lista de metadatos encontrados.
      **********************************************************************************************************/
     public static List<Permission_Extended__mdt> queryMDTFromPSName(List<String> psNames){
-        List<Permission_Extended__mdt> list_PermissionextendMdt = [SELECT id, Api_Name__c, Filter_Fields__c, DeveloperName, Filter_Values__c, Permission_Set__c, Type__c
-                                                                   FROM Permission_Extended__mdt
-                                                                   WHERE Permission_Set__c IN:psNames];
-        System.debug('list_PermissionextendMdt:::: ' + list_PermissionextendMdt);
+        List<Permission_Extended__mdt> list_PermissionextendMdt = new List<Permission_Extended__mdt>();
+        for (Permission_Extended__mdt meta : [SELECT id, Api_Name__c, Filter_Fields__c, DeveloperName, Filter_Values__c, Permission_Set__c, Type__c, Profile__c
+                                              FROM Permission_Extended__mdt]){
+            if (psNames.contains(meta.Permission_Set__c) || meta.Profile__c != null){
+                list_PermissionextendMdt.add(meta);
+            }
+
+        }
         return list_PermissionextendMdt;
     }
 
@@ -540,12 +598,14 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
      * @name            mapObjectToManipulate
      * @author          Guillermo Iglesias
      * @created         08/07/2025
-     * @description     Método que recibiendo como parámetro un usuario y una lista de CMDT, almacena la información en un map con los registros a eliminar o insertar
-     * @param           String userId.
-     * @param           Map<String, List<Permission_Extended__mdt> mapToCreateORDelete.
+     * @description     Analiza la configuración de Custom Metadata asociada a Permission Sets
+     *                  y determina qué registros deben insertarse o eliminarse para el usuario.
+     * @param           User user - Usuario sobre el que se aplican las operaciones.
+     * @param           Map<String, List<Permission_Extended__mdt>> mapToCreateORDelete -
+     *                  Mapa con metadata a crear ('Create') o eliminar ('Delete').
      * @return          NA
      **********************************************************************************************************/
-    public static void mapObjectToManipulate(String userId, Map<String, List<Permission_Extended__mdt>> mapToCreateORDelete){
+    public static void mapObjectToManipulate(User user, Map<String, List<Permission_Extended__mdt>> mapToCreateORDelete){
         List<Permission_Extended__mdt> listToInsert = mapToCreateORDelete.get('Create');
         List<Permission_Extended__mdt> listToDelete = mapToCreateORDelete.get('Delete');
         Map<String, List<SObject>> mapObjectsToInsert = new Map<String, List<SObject>>();
@@ -559,7 +619,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                 if (mdt.Type__c == 'Public Group'){
                     groupsToFind.add(mdt.Api_Name__c);
                 } else{
-                    SObject obj = crearObjeto(userId, mdt);
+                    SObject obj = crearObjeto(user, mdt);
                     if (obj != null){
                         if (mapObjectsToInsert.keySet().contains(mdt.Type__c)){
                             mapObjectsToInsert.get(mdt.Type__c).add(obj);
@@ -572,8 +632,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                 }
             }
             if (!groupsToFind.isEmpty()){
-                //cambiando nombre
-                manageGroupMember(userId, groupsToFind,isInsert);
+                manageGroupMember(user, groupsToFind, isInsert);
             }
         }
         if (!listToDelete.isEmpty()){
@@ -589,14 +648,14 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
             }
             if (!groupsToFind.isEmpty()){
                 //Buscar y eliminar miembros de grupos
-                manageGroupMember(userId, groupsToFind,isInsert);
+                manageGroupMember(user, groupsToFind, isInsert);
             }
 
-            if(!sObjectsOrCSToFind.isEmpty()){
-                for(Permission_Extended__mdt mdtObjectOrCS : sObjectsOrCSToFind) {
-                    List<SObject> objectToDelete = obtenerRegistros(userId, mdtObjectOrCS);
+            if (!sObjectsOrCSToFind.isEmpty()){
+                for (Permission_Extended__mdt mdtObjectOrCS : sObjectsOrCSToFind){
+                    List<SObject> objectToDelete = obtenerRegistros(user, mdtObjectOrCS);
                     if (!objectToDelete.isEmpty()){
-                        if(mapObjectsToInsert.keySet().contains(mdtObjectOrCS.Type__c)){
+                        if (mapObjectsToInsert.keySet().contains(mdtObjectOrCS.Type__c)){
                             mapObjectsToDelete.get(mdtObjectOrCS.Type__c).addAll(objectToDelete);
                         } else{
                             mapObjectsToDelete.put(mdtObjectOrCS.Type__c, objectToDelete);
@@ -604,7 +663,7 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                     }
                 }
             }
-            if(!mapObjectsToInsert.isEmpty()){
+            if (!mapObjectsToInsert.isEmpty()){
                 insertarData(mapObjectsToInsert);
             }
             if (!mapObjectsToDelete.isEmpty()){
@@ -614,70 +673,73 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
     }
 
     /*********************************************************************************************************
-    * @name            insertarData
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo como parámetro un map, filtra por tipo de metadata para insertarlos de manera asíncrona o no
-    * @param           Map<String, List<SObject>> mapObjects.
-    * @return          NA
-    **********************************************************************************************************/
-    private static void insertarData(Map<String, List<SObject>> mapObjects) {
-        for (String key : mapObjects.keySet()) {
+     * @name            insertarData
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Inserta registros agrupados por tipo, ejecutando inserción asíncrona
+     *                  cuando el tipo corresponde a objetos dinámicos.
+     * @param           Map<String, List<SObject>> mapObjects - Registros a insertar agrupados por tipo.
+     * @return          NA
+     **********************************************************************************************************/
+    private static void insertarData(Map<String, List<SObject>> mapObjects){
+        for (String key : mapObjects.keySet()){
             List<SObject> listaRegistroSObject = mapObjects.get(key);
 
-            if (key == 'Object') {
+            if (key == 'Object'){
                 insertAsincrono(JSON.serialize(listaRegistroSObject));
-            } else {
-                Database.insert(listaRegistroSObject, false);
+            } else{
+                Database.insert (listaRegistroSObject, false);
             }
         }
     }
 
     /*********************************************************************************************************
-    * @name            insertAsincrono
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo como parámetro un string, deserializa un JSON para rellenar una lista de registros e insertalos
-    * @param           String jsonList.
-    * @return          NA
-    **********************************************************************************************************/
+     * @name            insertAsincrono
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Inserta registros de forma asíncrona a partir de una lista serializada en JSON.
+     * @param           String jsonList - Lista de SObjects serializada en formato JSON.
+     * @return          NA
+     * @notes           Usado para evitar límites DML en operaciones dinámicas.
+     **********************************************************************************************************/
     @future
-    public static void insertAsincrono(String jsonList) {
-        List<SObject> registrosSObject = (List<SObject>) JSON.deserialize(jsonList, List<SObject>.class);
+    public static void insertAsincrono(String jsonList){
+        List<SObject> registrosSObject = (List<SObject>)JSON.deserialize(jsonList, List<SObject>.class);
         insert registrosSObject;
     }
 
     /*********************************************************************************************************
-    * @name            borrarData
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo como parámetro un map, filtra por tipo de metadata para borrarlos de manera asíncrona o no
-    * @param           Map<String, List<SObject>> mapObjectsToDelete.
-    * @return          NA
-    **********************************************************************************************************/
-    private static void borrarData(Map<String, List<SObject>> mapObjectsToDelete) {
-        for (String key : mapObjectsToDelete.keySet()) {
+     * @name            borrarData
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Elimina registros agrupados por tipo, ejecutando borrado asíncrono
+     *                  cuando corresponde a objetos dinámicos.
+     * @param           Map<String, List<SObject>> mapObjectsToDelete - Registros a eliminar.
+     * @return          NA
+     **********************************************************************************************************/
+    private static void borrarData(Map<String, List<SObject>> mapObjectsToDelete){
+        for (String key : mapObjectsToDelete.keySet()){
             List<SObject> listaRegistroSObject = mapObjectsToDelete.get(key);
 
-            if (key == 'Object') {
+            if (key == 'Object'){
                 borrarAsincrono(JSON.serialize(listaRegistroSObject));
-            } else {
-                Database.delete(listaRegistroSObject, false);
+            } else{
+                Database.delete (listaRegistroSObject, false);
             }
         }
     }
 
     /*********************************************************************************************************
-    * @name            borrarAsincrono
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo como parámetro un string, deserializa un JSON para rellenar una lista de registros y borrarlos
-    * @param           String jsonList.
-    * @return          NA
-    **********************************************************************************************************/
+     * @name            borrarAsincrono
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Elimina registros de forma asíncrona a partir de una lista serializada en JSON.
+     * @param           String jsonList - Lista de SObjects serializada.
+     * @return          NA
+     **********************************************************************************************************/
     @future
-    public static void borrarAsincrono(String jsonList) {
-        List<SObject> registrosObject = (List<SObject>) JSON.deserialize(jsonList, List<SObject>.class);
+    public static void borrarAsincrono(String jsonList){
+        List<SObject> registrosObject = (List<SObject>)JSON.deserialize(jsonList, List<SObject>.class);
         delete registrosObject;
     }
 
@@ -706,11 +768,34 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         }
     }
 
+    /*********************************************************************************************************
+     * @name            logErrorFuture
+     * @author          David Díaz
+     * @created         02/12/2024
+     * @description     Ejecuta de forma asíncrona el registro de errores de integración SSO.
+     * @param           String errorMessage - Mensaje de error.
+     * @param           String errorTrace - Trazabilidad o stack trace.
+     * @param           String federationIdentifier - Identificador de federación.
+     * @param           Id userId - Usuario asociado al error.
+     * @return          NA
+     **********************************************************************************************************/
     @future
     public static void logErrorFuture(String errorMessage, String errorTrace, String federationIdentifier, Id userId){
         logErrorSync(errorMessage, errorTrace, federationIdentifier, userId);
     }
 
+    /*********************************************************************************************************
+     * @name            logErrorSync
+     * @author          David Díaz
+     * @created         02/12/2024
+     * @description     Registra de forma síncrona un error de integración en el objeto
+     *                  iaso__GBL_Application_Log__c.
+     * @param           String errorMessage - Mensaje de error.
+     * @param           String errorTrace - Trazabilidad o stack trace.
+     * @param           String federationIdentifier - Identificador de federación.
+     * @param           Id userId - Usuario asociado al error.
+     * @return          NA
+     **********************************************************************************************************/
     public static void logErrorSync(String errorMessage, String errorTrace, String federationIdentifier, Id userId){
         iaso__GBL_Application_Log__c log = new iaso__GBL_Application_Log__c(
             iaso__Message_LTA__c = ERRORMSG + errorMessage, 
@@ -727,24 +812,20 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
     }
 
     /*********************************************************************************************************
-    * @name            crearObjeto
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo el id del usuario logueado y sus correspondientes metadata crea y devuelve los objetos para su posterior insercción
-    * @param           String userId.
-    * @param           Permission_Extended__mdt mdt.
-    * @return          obj
-    * @return          null
-    **********************************************************************************************************/
+     * @name            crearObjeto
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Crea dinámicamente un SObject a partir de la definición almacenada
+     *                  en Custom Metadata, resolviendo tokens con datos del usuario.
+     * @param           User user - Usuario actual.
+     * @param           Permission_Extended__mdt mdt - Metadata con definición del objeto.
+     * @return          SObject - Objeto listo para inserción o null si no es válido.
+     **********************************************************************************************************/
     @TestVisible
-    private static SObject crearObjeto(String userId, Permission_Extended__mdt mdt){
+    private static SObject crearObjeto(User user, Permission_Extended__mdt mdt){
         // Obtener el nombre del objeto desde la Custom Metadata
-        if (userId != null && mdt != null){
-            User user = [SELECT id, id_user__c, email, firstName, lastName
-                         FROM user
-                         WHERE id = :userId];
+        if (user.Id != null && mdt != null){
             String objectName = mdt.Api_Name__c;
-            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
             List<String> fields = new List<String>();
             List<String> values = new List<String>();
             if (mdt.Filter_Fields__c != null){
@@ -763,55 +844,71 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                 }
 
             }
-            if (gd.containsKey(objectName)){
+            if (GLOBAL_DESCRIBE.containsKey(objectName)){
                 // Crear una instancia del objeto dinámicamente
-                SObject obj = gd.get(objectName).newSObject();
+                SObject obj = GLOBAL_DESCRIBE.get(objectName).newSObject();
 
                 for (Integer i = 0; i < fields.size(); i++){
                     String field = fields[i];
                     String rawValue = values[i];
-                    String realValue;
-                    // Reemplazo de tokens dinámicos
-                    if (rawValue == '{{userId}}'){
-                        realValue = user.Id;
-                    } else if (rawValue == '{{userEmail}}'){
-                        realValue = user.Email;
-                    } else if (rawValue == '{{userIduser}}'){
-                        realValue = user.id_user__c;
-                    } else if (rawValue == '{{name}}'){
-                        realValue = user.FirstName + ' ' + user.LastName;
-                    } else{
-                        realValue = rawValue;
-                    }
+                    String realValue = resolveToken(rawValue, user);
 
                     obj.put(field, realValue);
                 }
 
                 return obj;
-            } 
+            }
         }
         return null;
     }
 
     /*********************************************************************************************************
-    * @name            obtenerRegistros
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que recibiendo el id del usuario logueado y sus correspondientes metadata crea una query donde obtiene y almacena los objetos para su borrado
-    * @param           String userId.
-    * @param           Permission_Extended__mdt mdt.
-    * @return          returnList
-    **********************************************************************************************************/
-    private static List<SObject> obtenerRegistros(String userId, Permission_Extended__mdt mdt) {
+     * @name            resolveToken
+     * @author          David Díaz
+     * @created         24/12/2025
+     * @description     Resuelve valores dinámicos definidos en Custom Metadata,
+     *                  sustituyendo tokens por valores reales del usuario.
+     * @param           String rawValue - Valor original del metadata (token o literal).
+     * @param           User user - Usuario actual.
+     * @return          String - Valor final resuelto.
+     * @notes           Tokens soportados: {{userId}}, {{userEmail}}, {{userIduser}}, {{name}}.
+     **********************************************************************************************************/
+    private static String resolveToken(String rawValue, User user){
+        switch  on rawValue{
+            when '{{userId}}'{
+                return user.Id;
+            }
+            when '{{userEmail}}'{
+                return user.Email;
+            }
+            when '{{userIduser}}'{
+                return user.Id_User__c;
+            }
+            when '{{name}}'{
+                return user.FirstName + ' ' + user.LastName;
+            }
+            when else{
+                return rawValue;
+            }
+        }
+    }
+
+    /*********************************************************************************************************
+     * @name            obtenerRegistros
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Construye dinámicamente una query SOQL basada en Custom Metadata
+     *                  y obtiene los registros asociados a un usuario para su eliminación.
+     * @param           User user - Usuario actual.
+     * @param           Permission_Extended__mdt mdt - Metadata con definición de filtros.
+     * @return          List<SObject> - Lista de registros encontrados.
+     * @notes           Valida campos dinámicos mediante Schema Describe.
+     **********************************************************************************************************/
+    private static List<SObject> obtenerRegistros(User user, Permission_Extended__mdt mdt){
         List<SObject> returnList = new List<SObject>();
-        if (userId != null && mdt != null) {
-            User user = [SELECT id, id_user__c, email, firstName, lastName
-                         FROM user
-                         WHERE id = :userId];
+        if (user.Id != null && mdt != null){
             String objectName = mdt.Api_Name__c;
-            
-            Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
-            
+
             List<String> fields = new List<String>();
             List<String> values = new List<String>();
             if (mdt.Filter_Fields__c != null){
@@ -828,77 +925,67 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                     values.add(mdt.Filter_Values__c);
                 }
             }
-            if (gd.containsKey(objectName)){
+            if (GLOBAL_DESCRIBE.containsKey(objectName)){
                 Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(objectName).getDescribe().fields.getMap();
                 List<String> condiciones = new List<String>();
-                for (Integer i = 0; i < fields.size(); i++) {
+                for (Integer i = 0; i < fields.size(); i++){
                     String field = fields[i];
                     String rawValue = values[i];
-                    String realValue;
-                    if (!fieldMap.containsKey(field)) {
+                    String realValue = resolveToken(rawValue, user);
+                    if (!fieldMap.containsKey(field)){
                         throw new AuraHandledException('Campo no permitido: ' + field);
-                    }
-                    if (rawValue == '{{userId}}') {
-                        realValue = user.Id;
-                    } else if (rawValue == '{{userEmail}}') {
-                        realValue = user.Email;
-                    } else if (rawValue == '{{userIduser}}') {
-                        realValue = user.id_user__c;
-                    } else if (rawValue == '{{name}}') {
-                        realValue = user.FirstName + ' ' + user.LastName;
-                    } else {
-                        realValue = rawValue;
                     }
                     condiciones.add(field + ' = \'' + String.escapeSingleQuotes(realValue) + '\''); // NOSONAR
                 }
                 String query = 'SELECT Id FROM ' + objectName; // NOSONAR
-                if (!condiciones.isEmpty()) {
+                if (!condiciones.isEmpty()){
                     query += ' WHERE ' + String.join(condiciones, ' AND '); // NOSONAR
                 }
-                
+
                 returnList = Database.query(query); // NOSONAR
-                
+
             }
         }
         return returnList;
     }
 
     /*********************************************************************************************************
-    * @name            manageGroupMember
-    * @author          Guillermo Iglesias
-    * @created         08/07/2025
-    * @description     Método que manega la inserción y borrado de miembros de grupos
-    * @param           Id userId.
-    * @param           List<String> groupNames.
-    * @param           boolean isInsert.
-    * @return          NA
-    **********************************************************************************************************/
+     * @name            manageGroupMember
+     * @author          Guillermo Iglesias
+     * @created         08/07/2025
+     * @description     Gestiona la inserción o eliminación de un usuario como miembro
+     *                  de uno o varios Public Groups.
+     * @param           User user - Usuario a insertar o eliminar del grupo.
+     * @param           List<String> groupNames - DeveloperName de los grupos.
+     * @param           Boolean isInsert - true para insertar; false para eliminar.
+     * @return          NA
+     **********************************************************************************************************/
     @TestVisible
-    private static void manageGroupMember(Id userId, List<String> groupNames, boolean isInsert){
-        if (groupNames == null || groupNames.isEmpty() || userId == null)
+    private static void manageGroupMember(User user, List<String> groupNames, boolean isInsert){
+        if (groupNames == null || groupNames.isEmpty() || user.Id == null)
             return;
-       
         List<Group> grupos = [SELECT Id, DeveloperName
                               FROM Group
                               WHERE DeveloperName IN:groupNames];
 
-        if (grupos.isEmpty()) return;
+        if (grupos.isEmpty())
+            return;
         if (isInsert){
             List<GroupMember> membersToInsert = new List<GroupMember>();
             for (Group grupo : grupos){
                 GroupMember gm = new GroupMember();
                 gm.GroupId = grupo.Id;
-                gm.UserOrGroupId = userId;
+                gm.UserOrGroupId = user.Id;
                 membersToInsert.add(gm);
             }
             if (!membersToInsert.isEmpty()){
                 insert membersToInsert;
             }
 
-        }else{
+        } else{
             List<GroupMember> membersToDelete = [SELECT Id
                                                  FROM GroupMember
-                                                 WHERE GroupId IN:grupos AND UserOrGroupId = :userId];
+                                                 WHERE GroupId IN:grupos AND UserOrGroupId = :user.Id];
             if (!membersToDelete.isEmpty()){
                 delete membersToDelete;
             }
@@ -910,9 +997,11 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
      * @name            createRoleOrHerarchy
      * @author          David Díaz
      * @created         06/05/2025
-     * @description     Método que crea roles dinamicamente.
-     * @param           UserUuaaInfoExtended.OrganizationalUnit orgUnit - Unidad organizativa adel usuario.
-     * @return          Id - ID del rol creado.
+     * @description     Crea dinámicamente la jerarquía de User Roles a partir de la
+     *                  unidad organizativa recibida desde SSO.
+     * @param           UserUuaaInfoExtended.OrganizationalUnit orgUnit - Unidad organizativa del usuario.
+     * @return          Id - Id del rol final asignado al usuario.
+     * @notes           Reutiliza roles existentes y crea únicamente los inexistentes.
      **********************************************************************************************************/
     private Id createRoleOrHerarchy(UserUuaaInfoExtended.OrganizationalUnit orgUnit){
         List<String> uoCodes = new List<String>{ orgUnit.parentCode1, orgUnit.parentCode2, orgUnit.parentCode3, orgUnit.parentCode4, orgUnit.parentCode5, orgUnit.parentCode6, orgUnit.parentCode7, orgUnit.parentCode8, orgUnit.parentCode9, orgUnit.parentCode10 };
@@ -958,6 +1047,10 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
                     ParentRoleId = currentParentId
                 );
                 insert newRole;
+                Map<String, String> roleData = new Map<String, String>{ 'Name' => newRole.Name, 'ParentRoleId' => newRole.ParentRoleId, 'RollupDescription' => newRole.RollupDescription };
+                if (!System.isFuture() && !System.isBatch()){
+                    notifyANS(JSON.serialize(roleData));
+                }
                 currentParentId = newRole.Id;
                 finalRoleId = newRole.Id;
                 existingRoleMap.put(code, newRole);
@@ -965,6 +1058,40 @@ global with sharing class DES_SamlJitHandler implements Auth.SamlJitHandler{
         }
 
         return finalRoleId;
+    }
+
+    /*********************************************************************************************************
+     * @name            notifyANS
+     * @author          Adrián Salinas
+     * @created         13/01/2026
+     * @description     Método que envia una notificación a ANS cuando se crea un nuevo rol dinámico.
+     * @param           String roleJson - JSON con datos del nuevo rol creado.
+     * @return          NA
+     **********************************************************************************************************/
+    @future
+    private static void notifyANS(String roleJson){
+        try{
+            Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+            Id orgWideId = [SELECT Id
+                            FROM OrgWideEmailAddress
+                            WHERE Address = 'ans_clientcloud@bbva.com'
+                            LIMIT 1].Id;
+            email.setOrgWideEmailAddressId(orgWideId);
+            email.setToAddresses(new String[]{ 'ans_clientcloud@bbva.com' });
+            email.setSubject('Nuevo Role dinámico creado en a través del proceso SAML');
+
+            Map<String, String> roleData = (Map<String, String>)JSON.deserialize(roleJson, Map<String, String>.class);
+            String body = 'Se ha creado un nuevo Role dinámico en Producción vía SAML.\n' + 
+                       '\nRole Name: ' + roleData.get('Name') + 
+                       '\nParent Role: ' + roleData.get('ParentRoleId') + 
+                       '\nRollup Description: ' + roleData.get('RollupDescription') + 
+                       '\n\nPor favor, sincronizar en Pre-Producción y repositorio.';
+
+            email.setPlainTextBody(body);
+            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ email });
+        } catch (Exception e){
+            System.debug('No se pudo enviar notificación ANS: ' + e.getMessage());
+        }
     }
 
 }

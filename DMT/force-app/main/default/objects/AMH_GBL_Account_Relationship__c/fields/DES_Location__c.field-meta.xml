@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Location__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(AMH_Child_Account__r.DES_Country_Client__c),
+&apos;AE&apos;, &apos;Arab Emirates&apos;,
+&apos;AR&apos;, &apos;Argentina&apos;,
+&apos;BE&apos;, &apos;Belgium&apos;,
+&apos;BR&apos;, &apos;Brazil&apos;,
+&apos;CL&apos;, &apos;Chile&apos;,
+&apos;CN&apos;, &apos;China&apos;,
+&apos;CO&apos;, &apos;Colombia&apos;,
+&apos;Compass&apos;, &apos;Compass&apos;,
+&apos;FR&apos;, &apos;France&apos;,
+&apos;DE&apos;, &apos;Germany&apos;,
+&apos;Global&apos;, &apos;Global&apos;,
+&apos;HK&apos;, &apos;Hong Kong&apos;,
+&apos;IN&apos;, &apos;India&apos;,
+&apos;ID&apos;, &apos;Indonesia&apos;,
+&apos;IT&apos;, &apos;Italy&apos;,
+&apos;JP&apos;, &apos;Japan&apos;,
+&apos;MX&apos;, &apos;Mexico&apos;,
+&apos;NY&apos;, &apos;NY&apos;,
+&apos;PY&apos;, &apos;Paraguay&apos;,
+&apos;PE&apos;, &apos;Peru&apos;,
+&apos;PT&apos;, &apos;Portugal&apos;,
+&apos;PR&apos;, &apos;Puerto Rico&apos;,
+&apos;RU&apos;, &apos;Russia&apos;,
+&apos;SG&apos;, &apos;Singapore&apos;,
+&apos;KR&apos;, &apos;South Korea&apos;,
+&apos;ES&apos;, &apos;Spain&apos;,
+&apos;TW&apos;, &apos;Taiwan&apos;,
+&apos;TR&apos;, &apos;Turkey&apos;,
+&apos;GB&apos;, &apos;United Kingdom&apos;,
+&apos;UY&apos;, &apos;Uruguay&apos;,
+&apos;US&apos;, &apos;USA&apos;,
+&apos;VE&apos;, &apos;Venezuela&apos;,
+&apos;VN&apos;, &apos;Vietnam&apos;,
+TEXT(AMH_Child_Account__r.DES_Country_Client__c))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Location</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

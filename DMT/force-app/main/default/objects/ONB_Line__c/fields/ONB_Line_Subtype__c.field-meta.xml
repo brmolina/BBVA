@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ONB_Line_Subtype__c</fullName>
+    <description>.</description>
+    <label>Line Subtype</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Line_Type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>DVP</fullName>
+                <default>false</default>
+                <label>DVP</label>
+            </value>
+            <value>
+                <fullName>Free Delivery</fullName>
+                <default>false</default>
+                <label>Free Delivery</label>
+            </value>
+            <value>
+                <fullName>Flow</fullName>
+                <default>false</default>
+                <label>All</label>
+            </value>
+            <value>
+                <fullName>No Flow</fullName>
+                <default>false</default>
+                <label>No Flow</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>LC_REPOS</controllingFieldValue>
+            <valueName>Flow</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>LC_REPOS</controllingFieldValue>
+            <valueName>No Flow</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>LC_DVP</controllingFieldValue>
+            <valueName>DVP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>LC_DVP</controllingFieldValue>
+            <valueName>Free Delivery</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

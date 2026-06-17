@@ -147,11 +147,14 @@ public with sharing class Desktop_Utils { //NOSONAR
     public Map<Id, String> getMapAccountAndMembers(Set<Id> setAccountIds) { //NOSONAR
         Map<Id, String> mapAccAndMembs;
         mapAccAndMembs = new Map<Id, String>();
-        for(AccountTeamMember acctm : [SELECT Id, AccountId, UserId FROM AccountTeamMember WHERE AccountId IN :setAccountIds]) {
-            if(mapAccAndMembs.get(acctm.AccountId) == null) {
-            	mapAccAndMembs.put(acctm.AccountId, (String)acctm.UserId);
-            } else {
-            	mapAccAndMembs.put(acctm.AccountId, mapAccAndMembs.get(acctm.AccountId) + ';' + acctm.UserId);
+        System.debug('Set de Accounts ------> ' + setAccountIds);
+        if(!setAccountIds.isEmpty()){
+            for(AccountTeamMember acctm : [SELECT Id, AccountId, UserId FROM AccountTeamMember WHERE AccountId IN :setAccountIds]) {
+                if(mapAccAndMembs.get(acctm.AccountId) == null) {
+                    mapAccAndMembs.put(acctm.AccountId, (String)acctm.UserId);
+                } else {
+                    mapAccAndMembs.put(acctm.AccountId, mapAccAndMembs.get(acctm.AccountId) + ';' + acctm.UserId);
+                }
             }
         }
 
@@ -170,15 +173,18 @@ public with sharing class Desktop_Utils { //NOSONAR
         Map<Id, List<DES_BBVA_Management_team__c>> mapAccAndMembs;
         mapAccAndMembs = new Map<Id, List<DES_BBVA_Management_team__c>>();
 
-        for(DES_BBVA_Management_team__c acctm : [SELECT Id, DES_Client__c, DES_User__c,DES_Member_Role__c,DES_Local_Banker_Country__c FROM DES_BBVA_Management_team__c WHERE DES_Client__c IN :setAccountIds]) {
-            if(mapAccAndMembs.containsKey(acctm.DES_Client__c)) {
-                final List<DES_BBVA_Management_team__c> membersInfo = mapAccAndMembs.get(acctm.DES_Client__c);
-                membersInfo.add(acctm);
-                mapAccAndMembs.put(acctm.DES_Client__c, membersInfo);
-            } else {
-                mapAccAndMembs.put(acctm.DES_Client__c, new List<DES_BBVA_Management_team__c> { acctm });
-            }
+        if(!setAccountIds.isEmpty()){
+          for(DES_BBVA_Management_team__c acctm : [SELECT Id, DES_Client__c, DES_User__c,DES_Member_Role__c,DES_Local_Banker_Country__c FROM DES_BBVA_Management_team__c WHERE DES_Client__c IN :setAccountIds]) {
+                if(mapAccAndMembs.containsKey(acctm.DES_Client__c)) {
+                    final List<DES_BBVA_Management_team__c> membersInfo = mapAccAndMembs.get(acctm.DES_Client__c);
+                    membersInfo.add(acctm);
+                    mapAccAndMembs.put(acctm.DES_Client__c, membersInfo);
+                } else {
+                    mapAccAndMembs.put(acctm.DES_Client__c, new List<DES_BBVA_Management_team__c> { acctm });
+                }
+        	}
         }
+
 
         return mapAccAndMembs;
     }
@@ -190,12 +196,15 @@ public with sharing class Desktop_Utils { //NOSONAR
     **/
     public Map<Id, Id> getMapClientGroup(Set<Id> setIdClients) { //NOSONAR
         final Map<Id, Id> mapClientGroups= new Map<Id, Id>();
-
-        for(DES_Subsidiary_Group_Relation__c matrix : [SELECT Id, participant_parent_id__c, participant_child_id__c FROM DES_Subsidiary_Group_Relation__c WHERE participant_child_id__c IN :setIdClients AND main_subsidiary_ind_type__c = true]) {
-            if(mapClientGroups.get(matrix.participant_child_id__c) == null) {
-                mapClientGroups.put(matrix.participant_child_id__c, matrix.participant_parent_id__c);
-            }
+		System.debug('setIdClients:: '+setIdClients);
+        if(!setIdClients.isEmpty()){
+            for(DES_Subsidiary_Group_Relation__c matrix : [SELECT Id, participant_parent_id__c, participant_child_id__c FROM DES_Subsidiary_Group_Relation__c WHERE participant_child_id__c IN :setIdClients AND main_subsidiary_ind_type__c = true]) {
+                if(mapClientGroups.get(matrix.participant_child_id__c) == null) {
+                    mapClientGroups.put(matrix.participant_child_id__c, matrix.participant_parent_id__c);
+                }
+        	}
         }
+       
 
         return mapClientGroups;
     }

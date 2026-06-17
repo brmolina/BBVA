@@ -1,0 +1,231 @@
+<aura:component controller="PRC_PriceAmortizationCSVCreator" implements="force:appHostable,flexipage:availableForAllPageTypes">
+	<!-- aura:attribute name="csvObject" type="PRC_PriceAmortizationData" access="private"/ -->
+   	<aura:attribute name="isEditableForm" type="Boolean" access="public" default="false"/>
+	<aura:attribute name="csvString" type="String" access="public"/>
+    <aura:attribute name="recordId" type="Id" access="public"/>
+    <aura:attribute name="pricingDetailsId" type="Id" access="public"/>
+    <aura:attribute name="proyectFinance" type="string" access="public" />
+    <aura:handler name="change" value="v.csvString" action="{!c.handleGetCSV}"/>
+
+    <!-- paginacion -->
+    <aura:attribute name="amortizationList" type="PRC_Price_Amortization_Data__c[]" />
+    <aura:attribute name="paginationList" type="PRC_Price_Amortization_Data__c[]"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="numPages" type="Integer" />
+    <aura:attribute name="currentPage" type="Integer" default="1"/>
+    <aura:attribute name="totalSize" type="Integer"/>
+    <aura:attribute name="start" type="Integer" />
+    <aura:attribute name="end" type="Integer"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <!-- *************** -->
+    <aura:attribute name="totalNonAccrualFees" type="Integer"/>
+
+    <!-- ventana modal confirmación borrado -->
+    <aura:attribute name="displaymodal" type="Boolean" default="false"/>
+    <aura:attribute name="displaySpinner" type="Boolean" default="false" />
+
+    <!-- handler de evento para refrescar el componente-->
+    <aura:handler event="c.PRC_AmortizationCSVInterface_Refresh" action="{!c.doInit}"/>
+
+
+
+	<div class="slds-card">
+		<!--
+        <div class="slds-card__header slds-grid">
+			<header class="slds-media slds-media_center slds-has-flexi-truncate">
+				<div class="slds-media__body">
+					<h2 class="slds-card__header-title">
+						<span>CSV Dataloader</span>
+					</h2>
+				</div>
+				<button class="slds-button slds-button_destructive" onclick="{!c.cleanData}">Clean data table</button>
+			</header>
+		</div>
+        -->
+		<div class="slds-card__body slds-card__body_inner">
+            <lightning:recordEditForm recordId="{!v.pricingDetailsId}" objectApiName="PRC_Pricing_Detail__c">
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2">
+                        <div>
+                    		<span>&nbsp;Payment Rate</span>
+                		</div>
+                        <div class="outputitem">
+                    		<lightning:inputField fieldName="payment_type__c" disabled="true" />
+               			 </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div>
+                    		<span>&nbsp;Accrual Fees (B.P.)</span>
+                		</div>
+                        <div class="outputitem">
+                            <lightning:inputField fieldName="gf_accrual_per__c" disabled="true" />
+                        </div>
+                    </div>
+                </div>
+            </lightning:recordEditForm>
+            <br/><br/>
+
+            <aura:if isTrue="{!v.isEditableForm}">
+                <button class="slds-button slds-button--neutral" onclick="{!c.downloadTempalteCsv}">
+                    <lightning:buttonIcon iconName="utility:download" variant="bare" alternativeText="Download template amortization schedule" title="Download template amortization schedule" class="icon-color" />
+                    &nbsp;&nbsp;Download template amortization schedule</button>
+                &nbsp;&nbsp;
+                <button class="slds-button slds-button--neutral" onclick="{!c.launchFileUpload}">
+                    <lightning:buttonIcon iconName="utility:upload" variant="bare" alternativeText="Upload amortization schedule" title="Upload amortization schedule" class="icon-color" />
+                    &nbsp;&nbsp;Upload amortization schedule
+                </button>
+                <!-- <label for="fileUpload">&nbsp;&nbsp;Upload amortization schedule</label> -->
+                <input type="file" class="fileUpload" aura:id="file" onchange="{!c.handleUploadFinished}" name="fileUpload" />
+                <br/><br/>
+			</aura:if>
+
+			<aura:if isTrue="{!not(empty(v.amortizationList))}">
+                <!-- paginacion -->
+                <table >
+                <tr > <td style="width:5%">Show</td>
+                    <td style="width:7%">
+                    <ui:inputSelect aura:id="records" change="{!c.onSelectChange}">
+                    <ui:inputSelectOption text="10" value="10"/>
+                    <ui:inputSelectOption text="20" value="20"/>
+                    <ui:inputSelectOption text="30" value="30"/>
+                    <ui:inputSelectOption text="All" value="All"/>
+                    </ui:inputSelect>
+                    </td>
+                    <td>&nbsp;&nbsp;Entries</td>
+                <!-- td style="width:7%">Search</td>
+                <td style="width:25%">
+                <ui:inputText aura:id="input1"   change="{!c.searchKeyChange}"   required="true"></ui:inputText>
+                </td -->
+                </tr>
+                </table><br/>
+                <!-- *************** -->
+
+                <!-- aura:if isTrue="{!not(empty(v.amortizationList))}" -->
+				<table class="slds-table">
+					<thead>
+						<tr>
+							<th>DATE</th>
+                            <th>NOMINAL ONB (THOUSANDS)</th>
+                            <th>NOMINAL OFFB (THOUSANDS)</th>
+                            <th>MARGIN ONB (B.P.)</th>
+                            <th>MARGIN OFFB (B.P.)</th>
+                            <th>NON ACCRUAL (B.P.)</th>
+                            <!--<aura:if isTrue="{!v.proyectFinance!='GTB'}">
+                            	<th>Qualification</th>
+                            	<th>Rating</th>
+                            	<th>LGD</th>
+                            </aura:if>-->
+						</tr>
+					</thead>
+					<tbody id="table_body">
+						<aura:iteration items="{!v.paginationList}" var="amort">
+							<tr class="borderBotom">
+                                <td>{!amort.cutoff_date__c}</td>
+                                <td>{!amort.gf_on_bal_mrgn_gen_amount__c}</td>
+                                <td>{!amort.gf_off_bal_mrgn_gen_amount__c}</td>
+                                <td>{!amort.gf_ope_on_balance_margin_per__c}</td>
+                                <td>{!amort.gf_ope_off_balance_margin_per__c}</td>
+                                <td>{!amort.gf_non_accrual_comission_per__c}</td>
+
+                                <!--<aura:if isTrue="{!v.proyectFinance!='GTB'}">
+                                    <th>{!amort.gf_financing_type_name__c}</th>
+                                    <th>{!amort.gf_amort_proc_oper_rating_type__c}</th>
+                                    <th>{!amort.gf_amort_proc_expct_lss_amount__c}</th>
+                            	</aura:if>-->
+							</tr>
+						</aura:iteration>
+						<!-- aura:iteration items="{!v.csvObject.lines}" var="line">
+							<tr class="borderBotom">
+								<aura:iteration items="{!line}" var="cell">
+									<td>{!cell}</td>
+								</aura:iteration>
+							</tr>
+						</aura:iteration -->
+					</tbody>
+				</table>
+                <div class="button-container">
+                    <br/>
+                    <!-- <lightning:button label="First" disabled="{!v.start == 0}"  onclick="{!c.first}" /> -->
+                    <lightning:button label="Previous" disabled="{!v.currentPage == 1}" onclick="{!c.previous}" class="nopaddingButton">
+                        <lightning:buttonIcon iconName="utility:left" variant="bare" alternativeText="Previous" title="Previous" class="{!if(v.currentPage == 1,'','icon-color')}" size="large" disabled="{!v.currentPage == 1}"/>
+                    </lightning:button>
+                    <ui:outputText value="{!'&nbsp;&nbsp;' + v.currentPage + '/' + v.numPages + ' pages' + '&nbsp;&nbsp;'}" />
+                    <lightning:button label="Next" disabled="{!v.currentPage == v.numPages}" onclick="{!c.next}" class="nopaddingButton">
+						<lightning:buttonIcon iconName="utility:right" variant="bare" alternativeText="Next" title="Next" class="{!if(v.currentPage == v.numPages,'','icon-color')}" size="large" disabled="{!v.currentPage == v.numPages}"/>
+                    </lightning:button>
+                    <!-- <lightning:button label="Last" disabled="{!v.end >= v.totalSize}" onclick="{!c.last}" /> -->
+                    <br/><br/><br/>
+                </div>
+
+                <div class=" borderBotom">
+                    <div class="inputitem">
+                      <span>Total Non Accrual Fees (B.P.)</span>
+                    </div><br/>
+                    <div class="outputitem">
+                      <span>{!v.totalNonAccrualFees}</span>
+                    </div>
+                </div>
+                <br/><br/>
+            <!-- /aura:if -->
+
+                <aura:if isTrue="{!v.isEditableForm}">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.displayConfirmPopup}">
+                        <lightning:buttonIcon iconName="utility:delete" variant="bare" alternativeText="Delete amortization data" title="Delete amortization data" class="icon-color" />
+                        &nbsp;&nbsp;Delete amortization data
+                    </button>
+                    &nbsp;&nbsp;
+                </aura:if>
+                <button class="slds-button slds-button--neutral" onclick="{!c.downloadCsv}">
+                    <lightning:buttonIcon iconName="utility:download" variant="bare" alternativeText="Download data amortization schedule" title="Download data amortization schedule" class="icon-color" />
+                    &nbsp;&nbsp;Download data amortization schedule
+                </button> <br/><br/>
+
+			</aura:if>
+		</div>
+
+
+
+
+  <aura:if isTrue="{!v.displaymodal}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modalselector" aria-modal="true" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container overwrite-width">
+      <aura:if isTrue="{!v.displaySpinner}">
+        <div>
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </div>
+       </aura:if>
+        <div class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.cancelDeleteAmortization }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+          <h1  class="text-large">Amortization schedule</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around_medium div-height-fit" aura:id="modalbody">
+            Delete all amortization data?
+            <br/><br/>
+        </div>
+        <div class="slds-modal__footer">
+          <div class="modalfooter-item" aura:id="progressindicator" id="progressbar"></div>
+          <div class="modalfooter-item" aura:id="buttoncontainer">
+              <div class="slds-grid">
+                <div class="slds-col slds-size_1-of-2 align-left">
+                     <div class="modalfooter-item" id="cancelbutton" >
+            			<button class="slds-button slds-button_neutral" onclick="{!c.cancelDeleteAmortization}">Cancel</button>
+                      </div>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                     <div class="modalfooter-item" id="cancelbutton" >
+            			 <button class="slds-button slds-button_brand" onclick="{!c.deleteAmortization}">Accept</button>
+                      </div>
+                </div>
+    	      </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+	</div>
+</aura:component>

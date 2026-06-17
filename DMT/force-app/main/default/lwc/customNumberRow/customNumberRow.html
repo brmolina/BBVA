@@ -1,0 +1,20 @@
+<template>
+    <lightning-input
+        type="number"
+        label="Input Number"
+        variant="label-hidden"
+        name="numberInput"
+        value={numberValue}
+        min={min}
+        max={max}
+        step={step}
+        formatter={formatter}
+        placeholder={placeholder}
+        read-only={readonlyAttr}
+        disabled={isDisabled}
+        onfocus={handleFocus}
+        onblur={handleBlur}
+        onchange={handleChange}
+        id={fieldname}>
+    </lightning-input>
+</template>

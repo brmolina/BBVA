@@ -47,7 +47,7 @@
   * |2022-04-05 juanignacio.hita.contractor@bbva.com
   *             Add getPrevArceData and prevAnalyTemplate, prevFfssType params
   **/
-@SuppressWarnings('sf:TooManyMethods, PMD.ExcessivePublicCount')
+@SuppressWarnings('sf:TooManyMethods,PMD.ExcessivePublicCount,PMD.EmptyStatementBlock')
 public without sharing class Arc_Gen_ModificationArce_Service {
     /*
     @Description: String with the word 1
@@ -179,12 +179,13 @@ public without sharing class Arc_Gen_ModificationArce_Service {
         // Check if overlays enabled.
         final List<arce__Arce_Config__mdt> configs = arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('EnableOverlays');
         final Boolean overlaysEnabled = configs.isEmpty() ? false : Boolean.valueOf(configs[0].arce__Value1__c);
-
-        final List<arce__Overlay__c> overlayObjs = new List<arce__Overlay__c>();
+        List<arce__Overlay__c> overlayObjs = new List<arce__Overlay__c>();
         if (overlaysEnabled) {
+            final List<Id> ahaIds = new List<Id>();
             for (arce__Account_has_Analysis__c aha : accHas2CreateLts) {
-                overlayObjs.add(arce.Arc_Gen_Overlays_Utils.createOverlay(aha.Id));
+                ahaIds.add(aha.Id);
             }
+            overlayObjs = arce.Arc_Gen_Overlays_Utils.createOverlays(ahaIds);
         }
         return overlayObjs;
     }

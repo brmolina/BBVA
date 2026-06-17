@@ -1,0 +1,6 @@
+<design:component>
+  <design:attribute name="inputClass" label="Class" description="Name of the class to build table data" />
+  <design:attribute name="insert" label="Insert" description="Boolean value to enable/disable insert" />
+  <design:attribute name="edit" label="Edit" description="Boolean value to enable/disable edit" />
+  <design:attribute name="delete" label="Delete" description="Boolean value to enable/disable delete" />
+</design:component>

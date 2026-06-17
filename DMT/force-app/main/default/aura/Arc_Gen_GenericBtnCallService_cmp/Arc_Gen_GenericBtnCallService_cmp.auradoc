@@ -1,0 +1,5 @@
+<aura:documentation>
+        <aura:description>
+        <h5><b>Generic aura component showing a button to call a local implementation of an IASO service</b></h5>
+    </aura:description>
+</aura:documentation>

@@ -70,7 +70,7 @@
                             <template if:true={isEditing}>
                                 <div class="slds-p-vertical_x-small">
                                     <lightning-input
-                                        type="number"
+                                        type="text"
                                         name="deal_total_amount__c"
                                         label="Deal amount (amount in units)"
                                         value={dealAmountValue}
@@ -149,6 +149,7 @@
                                                     name={field.apiName}
                                                     label={field.label}
                                                     value={field.value}
+                                                    step={field.step}
                                                     onchange={handleChange}
                                                     disabled={field.readOnly}>
                                                 </lightning-input>

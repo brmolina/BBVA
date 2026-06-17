@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ActivateDate__c</fullName>
+    <description>Apartir de esta fecha se activa la funcionalidad</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>ActivateDate</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

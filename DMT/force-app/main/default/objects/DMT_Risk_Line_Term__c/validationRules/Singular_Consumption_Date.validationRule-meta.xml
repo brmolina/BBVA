@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Singular_Consumption_Date</fullName>
+    <active>true</active>
+    <errorConditionFormula>DMT_Singular__c   &amp;&amp;  ISBLANK( DMT_Max_Date__c )</errorConditionFormula>
+    <errorMessage>Mandatory max date in singular consum</errorMessage>
+</ValidationRule>

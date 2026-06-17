@@ -1,0 +1,37 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="familyParam" type="String" default=""/>
+    <aura:attribute name="country" type="String" default=""/>
+
+   	<div class="slds-m-around--medium">
+
+   	<c:FamilyProductCards recordId="{! v.recordId}" country="{! v.country}"/>
+
+	  	<div class="slds-tabs--default">
+
+	   		<ul class="slds-tabs--default__nav" role="tablist">
+
+			<li aura:id="commercialActivityId"  class="slds-tabs--default__item slds-text-title--caps slds-active sizeFont" title="COMMERCIAL ACTIVITY"
+				role="presentation"><a class="slds-tabs--default__link" href="javascript:void(0);"
+				onclick="{!c.commercialActivityTab}" role="tab" tabindex="-1" aria-selected="true" aria-controls="tab-default-2"
+				id="Commercial_linking">COMMERCIAL ACTIVITY</a></li>
+			</ul>
+
+			<div aura:id="commercialActivityTabId" id="tab-default-2" class="slds-tabs--default__content" role="tabpanel"
+				aria-labelledby="Commercial_linking">
+         		<ul>
+         			<div class="slds-box customStyle">
+	         			<li><c:OppsCommercialActivity recordId="{! v.recordId}" country="{! v.country}"/></li>
+			            <li><c:OpportunitiesInProgressByFamily familyParam="All" recordId="{!v.recordId}" country="{!v.country}" breadcrumbsActive="false"/></li>
+		            </div>
+		            <div class="slds-box slds-m-top_large customStyle">
+			            <li><c:VisitsCommercialActivity recordId="{! v.recordId}" country="{! v.country}"/></li>
+			            <li><c:NextVisitsByFamily familyParam="All" recordId="{! v.recordId}" country="{! v.country}" breadcrumbsActive="false"/></li>
+		            </div>
+         		</ul>
+   		 	</div>
+
+		</div>
+	</div>
+</aura:component>

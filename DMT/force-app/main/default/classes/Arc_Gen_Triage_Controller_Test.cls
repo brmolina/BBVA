@@ -27,6 +27,7 @@ public with sharing class Arc_Gen_Triage_Controller_Test {
     * ----------------------------------------------------------------------------------------------------
     **/
     @testSetup static void setup() {
+        Arc_UtilitysDataTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{'G000001'});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get('G000001');
@@ -42,6 +43,7 @@ public with sharing class Arc_Gen_Triage_Controller_Test {
         insert newAnalysis;
 
         final arce__AHA_Extension__c ahaExtGrp = new arce__AHA_Extension__c();
+        ahaExtGrp.arce__group_corporative__c = true;
         insert ahaExtGrp;
 
         final arce__Account_has_Analysis__c ahaTest = new arce__Account_has_Analysis__c();
@@ -50,6 +52,7 @@ public with sharing class Arc_Gen_Triage_Controller_Test {
         ahaTest.arce__Stage__c = '3';
         ahaTest.arce__InReview__c = true;
         ahaTest.arce__AHA_Extension__c = ahaExtGrp.Id;
+        ahaTest.arce__RAR_rating_tool_id__c = '2021RTC_EXPG';
         insert ahaTest;
 
     }

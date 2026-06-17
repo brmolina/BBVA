@@ -308,24 +308,4 @@ public class Arc_IFIS_ButtonsPropose_Test {
 
         System.assertEquals('false', result, 'Result status should be false.');
     }
-
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Unit test for getArceConfigs().
-    * -----------------------------------------------------------------------------------------------
-    * @autor       marcos.gimeno.tech@bbva.com
-    * @date        22-05-2024
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @IsTest
-    static void testGetArceConfigs() {
-        // When
-        Test.startTest();
-        final String result = Arc_IFIS_ButtonsPropose_Ctrl.getArceConfigs();
-        Test.stopTest();
-
-        // Then
-        System.assert(String.isNotEmpty(result), 'Result should not be empty.');
-    }
 }

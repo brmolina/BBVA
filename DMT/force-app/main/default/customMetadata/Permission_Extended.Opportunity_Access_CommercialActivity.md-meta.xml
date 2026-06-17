@@ -27,6 +27,10 @@
         <value xsi:type="xsd:string">DMT_CommercialActivity</value>
     </values>
     <values>
+        <field>Profile__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>Type__c</field>
         <value xsi:type="xsd:string">Public Group</value>
     </values>

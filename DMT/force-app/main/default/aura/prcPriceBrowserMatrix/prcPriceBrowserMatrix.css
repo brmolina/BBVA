@@ -1,0 +1,46 @@
+.THIS div.align-left{
+        padding-left: 1%;
+}
+
+.THIS div.mycontainer{
+        background-color:#f3f2f2;
+        border:2px solid #FF0000!important;
+    	overflow: hidden;
+    	display: table!important;
+    	width:100%;
+    	/*text-align:center;*/
+}
+
+.THIS div.header{
+        /*background-color:#E5BC7A;*/
+        padding-left: 10%;
+}
+
+
+.THIS div.menu{
+    	/*background-color:#C8CACC;*/
+    	height:10%;
+}
+
+.THIS div.leftColumn{
+        /*background-color:#BDD2EF;*/
+        float:left;
+        width:50%;
+    	display: table-cell;
+    /*display:inline-block; -> para que el ancho se adapte al contenido*/
+}
+
+.THIS div.rightColumn{
+        /*background-color:#DAF7E2;*/
+        float:right;
+        width:50%;
+    	display: table-cell;
+}
+
+.THIS div.footer{
+        /*padding-left: 4px;*/
+    	padding-top: 10px;
+        height:20%;
+        /*background-color:#f3f2f2;*/
+        clear:both;
+}

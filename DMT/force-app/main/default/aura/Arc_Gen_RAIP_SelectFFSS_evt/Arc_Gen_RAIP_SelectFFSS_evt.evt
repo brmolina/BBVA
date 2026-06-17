@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="isValidFfss" type="Boolean" access="public" description="Indicates if the financial statement is valid"/>
+</aura:event>

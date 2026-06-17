@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type_of_Investor__c</fullName>
+    <label>Type of Investor</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SWF</fullName>
+                <default>false</default>
+                <label>SWF</label>
+            </value>
+            <value>
+                <fullName>HF</fullName>
+                <default>false</default>
+                <label>HF</label>
+            </value>
+            <value>
+                <fullName>LO</fullName>
+                <default>false</default>
+                <label>LO</label>
+            </value>
+            <value>
+                <fullName>LO/HF</fullName>
+                <default>false</default>
+                <label>LO/HF</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

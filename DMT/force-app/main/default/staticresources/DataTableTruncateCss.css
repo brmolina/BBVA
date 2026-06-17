@@ -1,0 +1,39 @@
+th > lightning-primitive-cell-factory > .slds-truncate {
+
+    overflow: visible !important;
+
+}
+
+
+c-dmt_record_picker .slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown {
+    min-height: 4rem !important;
+    height: auto !important;
+    max-height: 10.2rem !important;
+    top: 2rem !important;
+    z-index: 99999 !important;
+}
+
+c-custom-data-table .slds-is-open {
+    min-height: 13rem !important;
+}
+c-dmt_opp_product_details  c-custom-data-table c-custom-date-row .slds-is-open {
+    min-height: 0 !important;
+}
+
+
+ c-dmt_opp_product_table_mitigants .slds-dropdown{
+    position: relative;
+}
+c-dmt_opp_product_table_mitigants c-custom-data-table .slds-is-open {
+    min-height: 0 !important;
+}
+c-custom-data-table c-custom-date-row .slds-form-element__help{
+    display: none !important;
+}
+
+
+/* Override padding in table cells */
+c-custom-data-table table td {
+    padding: 6px !important;
+}
+

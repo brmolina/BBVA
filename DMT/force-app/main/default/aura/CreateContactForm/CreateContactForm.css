@@ -1,0 +1,32 @@
+.THIS .fixed {
+    position: fixed;
+    z-index: 999999;
+    width: 80%;
+    border: 1px solid grey;
+    /* border: solid; */
+    max-height: 25%;
+}
+.THIS .sticky {
+    position:sticky;
+    bottom: 0px;
+    background-color: rgba(242, 242, 242, 1);
+    width: 100%;
+
+}
+
+.THIS.customP {
+	display: block;
+  	font-size: 1.17rem;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	margin-left: 0;
+	margin-right: 0;
+	font-weight: bold;
+}
+.THIS .maxHeight {
+    height: 2000px !important;
+}
+
+.THIS .slds-modal__content {
+    height:unset !important;
+}

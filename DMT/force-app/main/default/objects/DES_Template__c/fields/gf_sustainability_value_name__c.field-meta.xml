@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_sustainability_value_name__c</fullName>
+    <label>Sustainability Linked Value</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Green KPI</fullName>
+                <default>false</default>
+                <label>Green KPI</label>
+            </value>
+            <value>
+                <fullName>Social KPI</fullName>
+                <default>false</default>
+                <label>Social KPI</label>
+            </value>
+            <value>
+                <fullName>ESG Score</fullName>
+                <default>false</default>
+                <label>ESG Score</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>8</visibleLines>
+</CustomField>

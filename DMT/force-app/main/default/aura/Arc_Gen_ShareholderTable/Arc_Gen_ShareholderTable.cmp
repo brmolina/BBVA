@@ -1,0 +1,71 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_ShareholderTable_Ctr" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="data" type="List" description="row data to build the table" access="global"/>
+    <aura:attribute name="headers" type="List" description="column data to build the table" access="global"/>
+    <aura:attribute name="options" type="List" description="options availables in the dual list box" access="global"/>
+    <aura:attribute name="values" type="List" description="values selected in the dual list box " default="[]" access="global"/>
+    <aura:attribute name="availables" type="List" description="all options availables in the dual listbox" default="[]" access="global"/>
+    <aura:attribute name="min" type="Integer" description="minimum values selected in the dual list box" default="1" access="global"/>
+    <aura:attribute name="max" type="Integer" description="maximum values selected in the dual list box" default="6" access="global"/>
+    <aura:attribute name="showDualList" type="Boolean" description="hide/show the dual list box" default="false" access="global"/>
+    <aura:attribute name="showSpinner" type="Boolean" description="hide/show the spinner" default="true" access="global"/>
+    <aura:attribute name="showCmp" type="Boolean" description="hide/show the cmp" default="true" access="global"/>
+    <aura:if isTrue='{!v.showCmp}'>
+        <aura:if isTrue='{!v.showDualList}'>
+            <div>
+                <lightning:dualListbox name="languages"
+                                    label= "{!$Label.c.Arc_Gen_SelectSubsidiaries}"
+                                    sourceLabel="{!$Label.c.Arc_Gen_Available}"
+                                    selectedLabel="{!$Label.c.Arc_Gen_Selected}"
+                                    fieldLevelHelp="{!$Label.c.Arc_Gen_SelecSub2Show}"
+                                    options="{!v.options}"
+                                    value="{!v.values}"
+                                    min="{!v.min}"
+                                    max="{!v.max}"
+                                    onchange="{! c.handleChange }"/>
+            </div>
+            <br></br><br></br>
+            <div>
+                <lightning:button variant="brand" label="{!$Label.c.Arc_Gen_UpdateTable}" title="{!$Label.c.Arc_Gen_UpdateTable}" onclick="{! c.updateTable }" />
+            </div>
+            <br></br><br></br>
+        </aura:if>
+        <div>
+            <aura:if isTrue='{!v.showSpinner}'>
+                <div class="slds-is-relative slds-p-vertical_x-large spinner-container">
+                    <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+                </div>
+                <aura:set attribute="else">
+                    <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered slds-table_col-bordered  slds-no-row-hover">
+                        <thead style="background:RGB(250, 250, 248);">
+                            <tr class="slds-line-height_reset">
+                                <aura:iteration items="{!v.headers}" var="head">
+                                    <th class="slds-truncate">
+                                        <div class="slds-truncate" title="{!head}" align="center">{!head}</div>
+                                    </th>
+                                </aura:iteration>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.data}" var="rows">
+                                <tr>
+                                    <aura:iteration items="{!rows}" var="info">
+                                        <th class="slds-truncate">
+                                            <div class="slds-truncate" title="{!info}" align="center">{!info}</div>
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </aura:set>
+            </aura:if>
+        </div>
+        <aura:set attribute="else">
+            <br></br><br></br><br></br>
+            <div class="noDataText">
+                {!$Label.c.Arc_Gen_NoData2Show}
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

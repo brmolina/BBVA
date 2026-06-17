@@ -1,0 +1,11 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that allow edit records. </b></h5>
+        <p>recordId variable for row.name</p>
+        <p>accHasAId variable for id of arce__account_has_analysis__c</p>
+        <p>tipology variable for name of the tipology to edit</p>
+        <p>error boolean to show error message</p>
+        <p>producto boolean to show product to edit</p>
+        <p><code>c:Arc_Gen_Edition</code></p>
+    </aura:description>
+</aura:documentation>

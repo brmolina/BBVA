@@ -1,0 +1,38 @@
+<template>
+    <lightning-modal-header label="New Product"></lightning-modal-header>
+
+    <lightning-modal-body>
+        <div class="modal-body-container">
+            <template if:true={isSaving}>
+                <lightning-spinner alternative-text="Saving" size="medium" variant="brand"></lightning-spinner>
+            </template>
+
+            <div class="slds-grid slds-grid_vertical slds-p-horizontal_medium">
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-input name="enter-search" label="Search product" type="search" oninput={handleInput} onchange={handleInput}></lightning-input>
+                    </div>
+                    <div class="slds-col slds-p-top_medium">
+                        <c-dmt_opp-info-box metadata-record-name="oppAddProduct" info-text="Check product equivalence"></c-dmt_opp-info-box>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-m-top_medium">
+                    <c-dmt_multipleproducts_otherline
+                        line-id={recordId}
+                        context-code={contextCode}
+                        search-product={filterInput}
+                        onproductstosend={handleProductsToSend}>
+                    </c-dmt_multipleproducts_otherline>
+                </div>
+            </div>
+        </div>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <div class="slds-grid slds-grid_align-center slds-gap_medium">
+            <lightning-button class="slds-p-horizontal_small" label="Cancel" onclick={handleClose} disabled={isSaving}></lightning-button>
+            <lightning-button label="Save" variant="brand" onclick={handleSave} disabled={isSaveDisabled}></lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

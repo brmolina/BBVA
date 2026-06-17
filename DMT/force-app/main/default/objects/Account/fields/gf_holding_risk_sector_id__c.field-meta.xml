@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_holding_risk_sector_id__c</fullName>
+    <description>Description of the customer&apos;s holding activity, according to the local economic activity and the type of local institution.</description>
+    <inlineHelpText>Description of the customer&apos;s holding activity, according to the local economic activity and the type of local institution.</inlineHelpText>
+    <label>Risk Subsector</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>AB</fullName>
+                <default>false</default>
+                <label>Durable goods</label>
+            </value>
+            <value>
+                <fullName>AC</fullName>
+                <default>false</default>
+                <label>Automotive (OEMs)</label>
+            </value>
+            <value>
+                <fullName>AD</fullName>
+                <default>false</default>
+                <label>Auto parts suppliers</label>
+            </value>
+            <value>
+                <fullName>AE</fullName>
+                <default>false</default>
+                <label>Motor Vehicle Dealers</label>
+            </value>
+            <value>
+                <fullName>AF</fullName>
+                <default>false</default>
+                <label>Other OEMS</label>
+            </value>
+            <value>
+                <fullName>BD</fullName>
+                <default>false</default>
+                <label>Medical Equipment &amp; Supplies</label>
+            </value>
+            <value>
+                <fullName>BE</fullName>
+                <default>false</default>
+                <label>Professional &amp; commercial services</label>
+            </value>
+            <value>
+                <fullName>BF</fullName>
+                <default>false</default>
+                <label>Aerospace &amp; Defense</label>
+            </value>
+            <value>
+                <fullName>BG</fullName>
+                <default>false</default>
+                <label>Machinery</label>
+            </value>
+            <value>
+                <fullName>BH</fullName>
+                <default>false</default>
+                <label>Electric Equipment</label>
+            </value>
+            <value>
+                <fullName>CA</fullName>
+                <default>false</default>
+                <label>Construction</label>
+            </value>
+            <value>
+                <fullName>CB</fullName>
+                <default>false</default>
+                <label>Construction materials</label>
+            </value>
+            <value>
+                <fullName>CC</fullName>
+                <default>false</default>
+                <label>Construction and Maintenance</label>
+            </value>
+            <value>
+                <fullName>DA</fullName>
+                <default>false</default>
+                <label>Oilfield services</label>
+            </value>
+            <value>
+                <fullName>DC</fullName>
+                <default>false</default>
+                <label>Downstream</label>
+            </value>
+            <value>
+                <fullName>DD</fullName>
+                <default>false</default>
+                <label>Integrated Oil &amp; Gas</label>
+            </value>
+            <value>
+                <fullName>DE</fullName>
+                <default>false</default>
+                <label>Midstream</label>
+            </value>
+            <value>
+                <fullName>DF</fullName>
+                <default>false</default>
+                <label>Upstream</label>
+            </value>
+            <value>
+                <fullName>EA</fullName>
+                <default>false</default>
+                <label>Insurance companies</label>
+            </value>
+            <value>
+                <fullName>EE</fullName>
+                <default>false</default>
+                <label>Diversified financial services</label>
+            </value>
+            <value>
+                <fullName>EF</fullName>
+                <default>false</default>
+                <label>Auxiliary activities related to financial services</label>
+            </value>
+            <value>
+                <fullName>EG</fullName>
+                <default>false</default>
+                <label>Other Financial Services</label>
+            </value>
+            <value>
+                <fullName>EH</fullName>
+                <default>false</default>
+                <label>Funds / Asset Managers</label>
+            </value>
+            <value>
+                <fullName>EI</fullName>
+                <default>false</default>
+                <label>Market Infrastructures</label>
+            </value>
+            <value>
+                <fullName>FB</fullName>
+                <default>false</default>
+                <label>Healthcare services</label>
+            </value>
+            <value>
+                <fullName>FC</fullName>
+                <default>false</default>
+                <label>Household and personal care products</label>
+            </value>
+            <value>
+                <fullName>FD</fullName>
+                <default>false</default>
+                <label>Textiles, apparel and luxury goods</label>
+            </value>
+            <value>
+                <fullName>FE</fullName>
+                <default>false</default>
+                <label>Pharmaceutical products</label>
+            </value>
+            <value>
+                <fullName>FF</fullName>
+                <default>false</default>
+                <label>Manufacturing of Food, Beverages and Tobacco</label>
+            </value>
+            <value>
+                <fullName>FG</fullName>
+                <default>false</default>
+                <label>Primary Exploitation</label>
+            </value>
+            <value>
+                <fullName>GA</fullName>
+                <default>false</default>
+                <label>Central Government</label>
+            </value>
+            <value>
+                <fullName>GB</fullName>
+                <default>false</default>
+                <label>Regional &amp; Local Government</label>
+            </value>
+            <value>
+                <fullName>GC</fullName>
+                <default>false</default>
+                <label>Other Institutions</label>
+            </value>
+            <value>
+                <fullName>HB</fullName>
+                <default>false</default>
+                <label>Leisure</label>
+            </value>
+            <value>
+                <fullName>HD</fullName>
+                <default>false</default>
+                <label>Diversified Consumer Services</label>
+            </value>
+            <value>
+                <fullName>IC</fullName>
+                <default>false</default>
+                <label>Paper &amp; Forest products</label>
+            </value>
+            <value>
+                <fullName>ID</fullName>
+                <default>false</default>
+                <label>Chemicals</label>
+            </value>
+            <value>
+                <fullName>IE</fullName>
+                <default>false</default>
+                <label>Paper, plastic, metal &amp; glass packaging</label>
+            </value>
+            <value>
+                <fullName>IF</fullName>
+                <default>false</default>
+                <label>Mining</label>
+            </value>
+            <value>
+                <fullName>IG</fullName>
+                <default>false</default>
+                <label>Steel &amp; Processed Metals</label>
+            </value>
+            <value>
+                <fullName>JB</fullName>
+                <default>false</default>
+                <label>Commercial Real Estate</label>
+            </value>
+            <value>
+                <fullName>JC</fullName>
+                <default>false</default>
+                <label>Other Activities Related to Real Estate</label>
+            </value>
+            <value>
+                <fullName>JD</fullName>
+                <default>false</default>
+                <label>Residential Real Estate</label>
+            </value>
+            <value>
+                <fullName>KA</fullName>
+                <default>false</default>
+                <label>Food &amp; staples retail</label>
+            </value>
+            <value>
+                <fullName>KC</fullName>
+                <default>false</default>
+                <label>Other Retailers</label>
+            </value>
+            <value>
+                <fullName>LB</fullName>
+                <default>false</default>
+                <label>Media</label>
+            </value>
+            <value>
+                <fullName>LC</fullName>
+                <default>false</default>
+                <label>Telecommunication services</label>
+            </value>
+            <value>
+                <fullName>LE</fullName>
+                <default>false</default>
+                <label>Technology (software, hardware and computer services)</label>
+            </value>
+            <value>
+                <fullName>LF</fullName>
+                <default>false</default>
+                <label>Telecommunication Infrastructure</label>
+            </value>
+            <value>
+                <fullName>MB</fullName>
+                <default>false</default>
+                <label>Transportation infrastructure operators</label>
+            </value>
+            <value>
+                <fullName>MC</fullName>
+                <default>false</default>
+                <label>Air transportation</label>
+            </value>
+            <value>
+                <fullName>MD</fullName>
+                <default>false</default>
+                <label>Logistic services</label>
+            </value>
+            <value>
+                <fullName>ME</fullName>
+                <default>false</default>
+                <label>Marine transportation</label>
+            </value>
+            <value>
+                <fullName>MF</fullName>
+                <default>false</default>
+                <label>Road and rail transportation</label>
+            </value>
+            <value>
+                <fullName>NB</fullName>
+                <default>false</default>
+                <label>Water, Sewage and Waste Management</label>
+            </value>
+            <value>
+                <fullName>ND</fullName>
+                <default>false</default>
+                <label>Traditional Electric Power generation</label>
+            </value>
+            <value>
+                <fullName>NE</fullName>
+                <default>false</default>
+                <label>Gas T DSupply</label>
+            </value>
+            <value>
+                <fullName>NF</fullName>
+                <default>false</default>
+                <label>Low Carbon Electric Power Generation</label>
+            </value>
+            <value>
+                <fullName>NG</fullName>
+                <default>false</default>
+                <label>Electric Power T D Supply</label>
+            </value>
+            <value>
+                <fullName>NH</fullName>
+                <default>false</default>
+                <label>Integrated Utility</label>
+            </value>
+            <value>
+                <fullName>OA</fullName>
+                <default>false</default>
+                <label>Credit institutions</label>
+            </value>
+            <value>
+                <fullName>OB</fullName>
+                <default>false</default>
+                <label>Multilateral banks</label>
+            </value>
+            <value>
+                <fullName>XX</fullName>
+                <default>false</default>
+                <label>Other Corporates</label>
+            </value>
+            <value>
+                <fullName>ZZ</fullName>
+                <default>false</default>
+                <label>Individuals</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

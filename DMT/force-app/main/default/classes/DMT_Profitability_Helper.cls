@@ -37,6 +37,24 @@ public with sharing class DMT_Profitability_Helper {
         ];
         return taxonomyValues;
     }
+    
+    @AuraEnabled(cacheable=false)
+    public static Map<String, Object> callOrderCatalogs(List<Map<String, Object>> items) {
+        List<Object> normalizedItems = new List<Object>();
+        for (Map<String, Object> item : items) {
+            Map<String, Object> normalized = new Map<String, Object>();
+            normalized.put('label', item.get('label'));
+            normalized.put('value', item.get('value'));
+            normalized.put('orden', item.get('orden'));
+            normalizedItems.add(normalized);
+        }
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'data' => normalizedItems
+        };
+        Map<String, Object> outMap = new Map<String, Object>();
+        orderCatalogs(inputMap, outMap);
+        return outMap;
+    }
 
     public static void orderCatalogs(Map<String, Object> inputMap,  Map<String, Object> outMap) {
         List<Object> catalogList = new List<Object>();

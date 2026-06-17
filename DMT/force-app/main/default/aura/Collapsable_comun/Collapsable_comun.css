@@ -1,0 +1,60 @@
+/* CSS - Alex */
+.THIS div.contdivProds{
+	width: 100%;
+	margin-bottom: -15px;
+}
+/************/
+.THIS div.contdivProds{
+	width: 100%;
+}
+.THIS div.divProds{
+	width: 100%;
+	display: inline-block;
+	overflow: auto;
+}
+.THIS div.divProd{
+	float: left;
+	width: 50%;
+	height: 70px;
+	margin: 0px 0px 0px 0px;
+	padding: 8px 8px 8px 10px;
+}
+.THIS.slds-media{
+	max-height: 2100px;
+} 
+.THIS.slds-transition-hide{
+	height: auto;
+	max-height: 0;
+	-ms-transition: all 1.5s ease-in-out;
+	-moz-transition: all 1.5s ease-in-out;
+	-o-transition: all 1.5s ease-in-out;
+	-webkit-transition: all 1.5s ease-in-out;
+}
+.THIS .removeborder{
+	border-style: none !important;
+	border-width: 0px !important;
+	padding-left:0px !important;
+	width: 500px !important;
+}
+.THIS.uiButton.buttonStyle{
+	background-color: none;
+	width:5px;
+	height:2px;
+}
+.THIS div.sectionChevronIcon{
+	-ms-transform: rotate(-90deg); /* IE 9 */
+	-webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+	-moz-transform: rotate(-90deg);/* Firefox */
+	-o-transform: rotate(-90deg);/* Opera */
+	transform: rotate(-90deg);
+	display: inline-block;
+	-webkit-transition: all 0.5s ease-in-out;
+}
+.THIS div.collapse{
+	height: auto;
+	max-height: 0;
+	-webkit-transition: all 0.5s ease-in-out;
+}
+.THIS .removeborder:focus, .THIS .removeborder:hover{
+	background-color: transparent !important;
+}

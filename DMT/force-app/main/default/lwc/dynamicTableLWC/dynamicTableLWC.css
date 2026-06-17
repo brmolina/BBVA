@@ -1,31 +1,44 @@
-.containerWithData {
-  overflow-x: auto;
-  overflow-y: auto;
-  white-space: nowrap;
-  max-height: 65vh;
+.hideFirstColTable table th:first-child, .hideFirstColTable table td:first-child{
+    display: none !important;
 }
+
+.scrollable-container {
+    max-height: calc( 100vh - (3.125rem + 2.5rem + 0.75rem) - 250px);
+}
+
 .tableWithData {
     display: inline-block;
     min-width: -moz-available;
     min-width: -webkit-fill-available;
     min-width: stretch;
 }
+.tableWithOutData {
+    min-width: -moz-available;
+    min-width: -webkit-fill-available;
+    min-width: stretch;
+}
 
-.containerWithOutData {
-  overflow-x: hidden;
-  overflow-y: hidden;
-  white-space: nowrap;
-  max-height: 65vh;
+.containerWithData{
+    overflow-x: auto; 
+    overflow-y: auto;
+    white-space: nowrap;
+     max-height: 65vh; 
+}
+.containerWithOutData{
+    overflow-x: hidden; 
+    overflow-y: hidden;
+    white-space: nowrap;
+    max-height: 65vh;
 }
 
 .empty-state {
-  height: 65vh;
-  align-content: center;
+    height:65vh;
+    align-content: center;
 }
 
 .empty-svg {
-  max-width: 550px !important;
-  width: 100%;
-  height: auto;
-  margin-bottom: 1rem !important;
+    max-width: 550px !important;       
+    width: 100%;
+    height: auto;
+    margin-bottom: 1rem !important;
 }

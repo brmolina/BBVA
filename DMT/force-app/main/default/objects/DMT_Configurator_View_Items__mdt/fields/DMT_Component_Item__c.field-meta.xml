@@ -170,6 +170,141 @@
                 <default>false</default>
                 <label>Economics</label>
             </value>
+            <value>
+                <fullName>Basic Financials</fullName>
+                <default>false</default>
+                <label>Basic Financials</label>
+            </value>
+            <value>
+                <fullName>Client Tier</fullName>
+                <default>false</default>
+                <label>Client Tier</label>
+            </value>
+            <value>
+                <fullName>Business Plan Data</fullName>
+                <default>false</default>
+                <label>Business Plan Data</label>
+            </value>
+            <value>
+                <fullName>Sustainable Finance</fullName>
+                <default>false</default>
+                <label>Sustainable Finance</label>
+            </value>
+            <value>
+                <fullName>Main Characteristics of the Deal</fullName>
+                <default>false</default>
+                <label>Main Characteristics of the Deal</label>
+            </value>
+            <value>
+                <fullName>Other Aspect</fullName>
+                <default>false</default>
+                <label>Other Aspect</label>
+            </value>
+            <value>
+                <fullName>Risks</fullName>
+                <default>false</default>
+                <label>Risks</label>
+            </value>
+            <value>
+                <fullName>Basic Requirement</fullName>
+                <default>false</default>
+                <label>Basic Requirement</label>
+            </value>
+            <value>
+                <fullName>Intro Opportunity Deal</fullName>
+                <default>false</default>
+                <label>Intro Opportunity Deal</label>
+            </value>
+            <value>
+                <fullName>Active Related Lines</fullName>
+                <default>false</default>
+                <label>Active Related Lines</label>
+            </value>
+            <value>
+                <fullName>Approval Modifications</fullName>
+                <default>false</default>
+                <label>Approval Modifications</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Info</fullName>
+                <default>false</default>
+                <label>Sanction Approval Info</label>
+            </value>
+            <value>
+                <fullName>Sanction Client</fullName>
+                <default>false</default>
+                <label>Sanction Client</label>
+            </value>
+            <value>
+                <fullName>Sanction Products</fullName>
+                <default>false</default>
+                <label>Sanction Products</label>
+            </value>
+            <value>
+                <fullName>Sanction Participants</fullName>
+                <default>false</default>
+                <label>Sanction Participants</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Process Data</fullName>
+                <default>false</default>
+                <label>Sanction Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Sanction Passport</fullName>
+                <default>false</default>
+                <label>Sanction Passport</label>
+            </value>
+            <value>
+                <fullName>Sanction Limit</fullName>
+                <default>false</default>
+                <label>Sanction Limit</label>
+            </value>
+            <value>
+                <fullName>Sanction Limit Visual</fullName>
+                <default>false</default>
+                <label>Sanction Limit Visual</label>
+            </value>
+            <value>
+                <fullName>Approval Info</fullName>
+                <default>false</default>
+                <label>Approval Info</label>
+            </value>
+            <value>
+                <fullName>Profitability</fullName>
+                <default>false</default>
+                <label>Profitability</label>
+            </value>
+            <value>
+                <fullName>Product Simple</fullName>
+                <default>false</default>
+                <label>Product Simple</label>
+            </value>
+            <value>
+                <fullName>Opportunity Info NBC</fullName>
+                <default>false</default>
+                <label>Opportunity Info NBC</label>
+            </value>
+            <value>
+                <fullName>Client NBC</fullName>
+                <default>false</default>
+                <label>Client NBC</label>
+            </value>
+            <value>
+                <fullName>Profitability Summaries</fullName>
+                <default>false</default>
+                <label>Profitability Summaries</label>
+            </value>
+            <value>
+                <fullName>Profitability Visual</fullName>
+                <default>false</default>
+                <label>Profitability Visual</label>
+            </value>
+            <value>
+                <fullName>Status</fullName>
+                <default>false</default>
+                <label>Status</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

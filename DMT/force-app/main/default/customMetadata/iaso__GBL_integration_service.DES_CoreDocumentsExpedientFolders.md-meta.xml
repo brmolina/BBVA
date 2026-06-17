@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DES_CoreDocumentsExpedientFolders</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocumentsGrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocuments</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;89402b1d-69f9-47d7-a725-af74d54012f2&quot;,
+      &quot;businessCode&quot;: {
+        &quot;folderCode&quot;: &quot;OPR-0001&quot;
+      },
+      &quot;folderInfo&quot;: {
+        &quot;objectName&quot;: &quot;OPR_0001&quot;,
+        &quot;creationDate&quot;: &quot;2022-12-31T10:50:22.123Z&quot;,
+        &quot;creationUser&quot;: &quot;TXXXXXX&quot;,
+        &quot;comments&quot;: &quot;comments&quot;
+      },
+      &quot;origin&quot;: &quot;WEB&quot;,
+      &quot;processInfo&quot;: {
+        &quot;id&quot;: &quot;SE_WT_00001_CI_5a6de135-c197-4e8e-91ad-912a57c153de&quot;,
+        &quot;code&quot;: &quot;SE_WT_00001_CI&quot;,
+        &quot;name&quot;: &quot;Oportunidades Credito Mayorista&quot;,
+        &quot;processType&quot;: {
+          &quot;id&quot;: &quot;Origination&quot;
+        }
+      },
+      &quot;securityLevelInfo&quot;: {
+        &quot;classificationLevel&quot;: 5,
+        &quot;securityLevel&quot;: 3
+      },
+      &quot;status&quot;: {
+        &quot;date&quot;: &quot;2022-12-31T10:50:22.123Z&quot;,
+        &quot;name&quot;: &quot;OPEN&quot;
+      },
+      &quot;children&quot;: [
+        {
+          &quot;id&quot;: &quot;119daa62-871f-4e08-a9dd-4ca0bc085af9&quot;,
+          &quot;nodeType&quot;: {
+            &quot;id&quot;: &quot;DOCUMENT&quot;,
+            &quot;description&quot;: &quot;DOCUMENT&quot;
+          },
+          &quot;objectCode&quot;: &quot;OPR-0002&quot;,
+          &quot;objectName&quot;: &quot;oportunidad.pdf&quot;,
+          &quot;documentType&quot;: &quot;CO-OF-00242&quot;,
+          &quot;contentLocator&quot;: &quot;1ac1e145c8bd825454b78a4f5e0a2c65c3fb1f75040a1d9a0d4989932a205ef56629e4eaedbe757a9af9c8260e77bfbebe0b0706344734942e8ab70e397126adeb411c3ec29fa290361e5fc4708df20e1a2dfe8149ffec9e1c255db0b5453f9d0bd1ddee83277386e2fe58b04675&quot;,
+          &quot;securityLevelInfo&quot;: {
+            &quot;classificationLevel&quot;: 5,
+            &quot;securityLevel&quot;: 3
+          }
+        }
+      ],
+      &quot;jwt&quot;: &quot;eyJhbGciOiJSUzI1NiIsImtpZCI6IkNOPUV0aGVyIFIzIEVTIElzc3VpbmcgQ0EsT1U9U2VjdXJpdHkgQXJjaGl0ZWN0dXJlIENyeXB0b2dyYXBoeSxPPUJCVkEsQz1FUzo6MTcxODYyMjQ1NTg4NTA4ODczMCIsInR5cCI6IkpXVCIsIngtcmhvLXRyYWNlaWQiOiJiODI2OWYzZmM0YTFlMzk0MzAzNmFlN2JhNzA2YjU0ZSIsIng1dSI6Imh0dHBzOi8vcG9ydHVudXMuY2VudHJhbC0wMS5uZXh0Z2VuLmlncnVwb2JidmEvdjEvY2VydC9zaWduZXIifQ.eyJhdWQiOlsiRUNTS2VybmVsIl0sImJjc0FjTG9naW4iOiIiLCJiY3NBcHBEYXRhIjoiIiwiYmNzVXNlcklkIjoiVDA1MzgyOCIsImVjc01ldGEiOnsiZ2VvZ3JhcGh5Ijoid2ViIiwiZ2lhbSI6eyJncm91cHMiOlsiVUFfRE1UT19HTE9fRGV2ZWxvcGVycyIsIlVBX0RNVE9fRGV2ZWxvcGVycyIsIlVBX0RNVE9fR0xPX1NlcnZpY2VfT3BlcmF0b3JzIiwiRXRoZXJfRGV2ZWxvcGVyc19TcGFpbiIsIkV0aGVyX0RldmVsb3BlcnMiLCJFdGhlcl9EZXZlbG9wZXJzX0JCVkFfRXh0ZXJuYWxfU3BhaW4iLCJFdGhlcl9EZXZlbG9wZXJzX0JCVkFfRXh0ZXJuYWxfR2xvYmFsIiwiRXRoZXJfRGV2ZWxvcGVyc19HbG9iYWwiLCJFQ1NfdXNyc191dWFhX2dsb2JhbGVzIiwiRUNTX2xyYV9kZWZhdWx0X2dsIiwiRUNTX2Vjc19kYXRhZXh0ZW5kZWRfcHVibGljX2dsIiwiRUNTX3ZkY19vYnNlcnZhYmlsaXR5X2dsIiwiVUFfUDZFU19HTE9fRGV2ZWxvcGVycyIsIlVBX1A2RVNfRGV2ZWxvcGVycyIsIlVBX0hQR1JfR0xPX0RldmVsb3BlcnMiLCJVQV9IUEdSX0RldmVsb3BlcnMiXX19LCJleHAiOjE3NTk3NTEyNDQsImlhdCI6MTc1OTczNjg0NCwiaXNzIjoiU0VDYWFTIiwianRpIjoiYTljMjRiZWEtYjA3OS00ZmZjLTliOTMtM2ZkZDk3NWZlZGU5IiwibmJmIjoxNzU5NzM2ODQ0LCJzdWIiOiJUMDUzODI4In0.OTCMgGjHvNOE-rTGBBZ_Fz-W33j8F1S1X2Ffgzf3Tax2OJwG9RqzI8Pg43S11-iip4InkbrW9NTpxlHTbEjvdrwsS5LmK_ec0RQO8aRms1Jc-2MC5dd5RP-pInDcHJdwQkuJdri-3BwWm6WZt5nED5MfDBlHIKvuO6Piz0VPwZsjb2JiUP_5SD9k_QIv1gx4u8w2MuZ34WYzznsQ7eXy03h9BGa2nNHBwD26gyB8qDruVypmAT67BXXQf5F86sRWB2B1cM5U2b-Q9M5VqDwTw97p0zgHtRFLeZlOHZ9kNiz0Je-4IDfMeRdV_Ebl4nc6VR9O6CGuBV5OVDchIFWDp2&quot;
+    }
+  ],
+  &quot;pagination&quot;: {
+    &quot;links&quot;: {
+      &quot;first&quot;: &quot;v0/expedient-folders?pageSize=1&amp;paginationKey=0&quot;,
+      &quot;last&quot;: &quot;v0/expedient-folders?pageSize=1&amp;paginationKey=3&quot;,
+      &quot;previous&quot;: &quot;v0/expedient-folders?pageSize=1&amp;paginationKey=1&quot;,
+      &quot;next&quot;: &quot;v0/expedient-folders?pageSize=1&amp;paginationKey=3&quot;
+    },
+    &quot;page&quot;: 2,
+    &quot;totalPages&quot;: 3,
+    &quot;totalElements&quot;: 3,
+    &quot;pageSize&quot;: 1
+  }
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">expedient-folders?q=#qExpression#&amp;pageSize=#size#&amp;paginationKey=#page#</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

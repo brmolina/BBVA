@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Facility__c</fullName>
+    <label>Facility</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SEF</fullName>
+                <default>false</default>
+                <label>SEF</label>
+            </value>
+            <value>
+                <fullName>MTF</fullName>
+                <default>false</default>
+                <label>MTF</label>
+            </value>
+            <value>
+                <fullName>SEF &amp; MTF</fullName>
+                <default>false</default>
+                <label>SEF &amp; MTF</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

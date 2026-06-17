@@ -3,7 +3,7 @@ Autor: vido
 Fecha: 2024-02-27
 */
 @JsonAccess(serializable='always' deserializable='always')
-public class DMT_IP_Wrapper {
+public with sharing class DMT_IP_Wrapper {
 
     /**Description: contains input attributes*/
     @AuraEnabled

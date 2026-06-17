@@ -1,0 +1,164 @@
+<aura:component controller="DPMX_Authorization_ctrl" implements="lightning:availableForFlowScreens">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Component attributes -->
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true" />
+    <aura:attribute name="isGs" type="Boolean" />
+    <aura:attribute name="breakEvenSelectedBool" type="Boolean" default="false" />
+    <aura:attribute name="usersToAuthLst" type="List" default="[]" />
+    <aura:attribute name="usersToAuthNamesLst" type="List" default="[]" />
+    <aura:attribute name="existingUser" type="String" default="Seleccionar usuario" />
+    <!--Atributos de padre-->
+    <aura:attribute name="dynamicPricing" type="Object" />
+    <aura:attribute name="sendConditionLst" type="Object" /> 
+    <aura:attribute name="sectionLst" type="Object" />
+    <aura:attribute name="resultRates" type="String" />
+    <aura:attribute name="isCustom" type="Boolean" />
+    <aura:attribute name="updDebit" type="Decimal" />
+    <aura:attribute name="updCredit" type="Decimal" />
+    <aura:attribute name="updInternational" type="Decimal" />
+    <aura:attribute name="updRenta" type="Decimal" />
+    <aura:attribute name="updBai" type="Decimal" />
+    <aura:attribute name="debitBase" type="Decimal" />
+    <aura:attribute name="creditBase" type="Decimal" />
+    <aura:attribute name="internationalBase" type="Decimal" />
+    <aura:attribute name="rentaBase" type="Decimal" />
+    <aura:attribute name="baiBase" type="Decimal" />
+    <aura:attribute name="family" type="String" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Solicitar autorización </h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <aura:if isTrue="{!v.breakEvenSelectedBool}">
+                        <div class="slds-form-element">
+                            <lightning:select name="existingUser" aura:id="existingUser" label="Seleccionar usuario para asignar la autorización:" required="true" value="{!v.existingUser}" onchange="{!c.checkComment}">
+                                <option value="{!v.existingUser}">{!v.existingUser}</option>
+                                <aura:iteration items="{!v.usersToAuthNamesLst}" var="usersToODT">
+                                    <option text="{!usersToODT}" value="{!usersToODT}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>
+                                Seleccionaste una tasa Break even, requieres una autorización previa para continuar
+                            </p>
+                        </div>
+                        <div>
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Débito">Débito</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Crédito">Crédito</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Internacional">Internacional</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Rentabilidad">Rentabilidad</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="BAI">BAI</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!v.isCustom}">
+                                        <tr class="slds-hint-parent">
+                                            <td>
+                                                <div class="slds-truncate">
+                                                    <aura:if isTrue="{!v.isGs}">
+                                                        <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.updDebit}" currencyText="MXN" />
+                                                        <aura:set attribute="else">
+                                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.updDebit}" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate">
+                                                    <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.updCredit}" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate">
+                                                    <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.updInternational}" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate">
+                                                    <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.updRenta}" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate">
+                                                    <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.updBai}" currencyText="MXN" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <aura:set attribute="else">
+                                            <tr class="slds-hint-parent">
+                                                <aura:iteration items="{!v.sectionLst.itemizeFees}" var="acquirerFeesTypes" indexVar="index">
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <aura:if isTrue="{!index == 0}">
+                                                                <aura:if isTrue="{!v.isGs}">
+                                                                    <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!acquirerFeesTypes.itemizeFeeUnit.amount}" currencyText="{!acquirerFeesTypes.itemizeFeeUnit.currency_y}" />
+                                                                    <aura:set attribute="else">
+                                                                        <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!acquirerFeesTypes.itemizeFeeUnit.value}" />
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <aura:set attribute="else">
+                                                                    <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!acquirerFeesTypes.itemizeFeeUnit.value}" />
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </div>
+                                                    </td>
+                                                </aura:iteration>
+                                                <td>
+                                                    <div class="slds-truncate">
+                                                        <c:DPMX_DynamicTableField fieldType="NUMBER" fieldValue="{!v.sectionLst.profitability.percentage}" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">
+                                                        <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.sectionLst.profitability.amount.amount}" currencyText="{!v.sectionLst.profitability.amount.currency_y}" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:set>
+                                    </aura:if>
+
+                                </tbody>
+                            </table>
+                            <div class="slds-form-element__control">
+                                <lightning:textarea name="textAreaComment" aura:id="commentarioTxt" required="true" label="Comentarios" onchange="{!c.checkComment}" maxlength="300" messageWhenTooLong="Has superado el maximo de los 300 caracteres que permite el comentario." messageWhenValueMissing="Este campo es obliatorio."
+                                />
+                            </div>
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <p>
+                                    Debes selecionar una tasa Break even para pedir una autorización.
+                                </p>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.closeModal}" />
+                <button class="slds-button slds-button_brand" name="{!v.savebutton}" disabled="{!v.disableSubmitBtn}" label="Generar Autorización" onclick="{!c.saveAuth}">Generar Autorización</button>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

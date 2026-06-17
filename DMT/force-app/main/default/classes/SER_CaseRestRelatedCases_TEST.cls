@@ -20,7 +20,7 @@ private class SER_CaseRestRelatedCases_TEST {
 
     // Se crea una cuenta
     Account acc;
-    acc = new Account(Name='TestAccount Max Mistral JLB', ser_cclient__c='987654',
+    acc = new Account(Name='TestAccount Max Mistral JLB', g_customer_id__c='987654',
                       OwnerId = UserInfo.getUserId(),
                       RecordtypeId=idRT,
                       DES_BBVA_Segmentation__c = 'NBC');

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Visits_Pending_Send_Form</fullName>
+    <columns>NAME</columns>
+    <columns>visit_id__c</columns>
+    <columns>status_type__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>status_type__c</field>
+        <operation>equals</operation>
+        <value>Created,Elevated</value>
+    </filters>
+    <filters>
+        <field>visit_id__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <label>Visits Pending Send Form</label>
+</ListView>

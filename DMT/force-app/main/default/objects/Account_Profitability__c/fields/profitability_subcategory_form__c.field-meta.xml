@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>profitability_subcategory_form__c</fullName>
+    <description>Campo helper</description>
+    <externalId>false</externalId>
+    <formula>IF( profitability_subcategory_type__c ==&apos;TOTAL&apos;,IF(profitability_category_type__c==&apos;Altas&apos;,&apos;Facturación S/&apos;,IF(profitability_category_type__c==&apos;Spread&apos;,&apos;Spread %&apos;,IF(profitability_category_type__c==&apos;Tasa&apos;,&apos;Tasa %&apos;,IF(profitability_category_type__c==&apos;DI&apos;,&apos;DI%&apos;,&apos;&apos;)))),
+
+
+
+
+
+
+
+
+
+
+IF( profitability_subcategory_type__c ==&apos;MN&apos;,&apos;Facturación  S/&apos;,
+IF( profitability_subcategory_type__c ==&apos;ME&apos;,&apos;Facturación  S/&apos;,
+IF( profitability_subcategory_type__c ==&apos;Spread&apos;,&apos;Spread %&apos;,
+IF( profitability_subcategory_type__c ==&apos;Tasa&apos;,&apos;Tasa %&apos;, 
+IF( profitability_subcategory_type__c ==&apos;DI&apos;,&apos;DI %&apos;,
+IF( profitability_subcategory_type__c ==&apos;TOTAL CLIENTE&apos;,&apos;Facturación S/&apos;,
+IF( profitability_subcategory_type__c ==&apos;TOTAL DI&apos;,&apos;DI %&apos;,
+IF( profitability_subcategory_type__c ==&apos;TOTAL Spread&apos;,&apos;Spread %&apos;,
+IF( profitability_subcategory_type__c ==&apos;TOTAL Tasa&apos;,&apos;Tasa %&apos;,&apos;&apos;))))))))))</formula>
+    <inlineHelpText>Campo helper</inlineHelpText>
+    <label>profitability_subcategory_form</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

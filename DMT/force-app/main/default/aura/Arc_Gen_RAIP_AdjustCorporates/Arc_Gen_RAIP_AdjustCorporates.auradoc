@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that showing adjust corporate component</b></h5>
+        <p><code>c:Arc_Gen_RAIP_AdjustCorporates</code></p>
+    </aura:description>
+</aura:documentation>

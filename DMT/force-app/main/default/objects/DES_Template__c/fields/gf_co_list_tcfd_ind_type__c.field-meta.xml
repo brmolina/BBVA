@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_co_list_tcfd_ind_type__c</fullName>
+    <label>TCFD supporter</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>YES</fullName>
+                <default>false</default>
+                <label>YES</label>
+            </value>
+            <value>
+                <fullName>NO</fullName>
+                <default>false</default>
+                <label>NO</label>
+            </value>
+            <value>
+                <fullName>ND</fullName>
+                <default>false</default>
+                <label>No Data</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

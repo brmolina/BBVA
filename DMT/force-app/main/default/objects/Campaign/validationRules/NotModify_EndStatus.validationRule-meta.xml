@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NotModify_EndStatus</fullName>
+    <active>true</active>
+    <description>valida que no se pueda colocar el registro en pending si el stado previo es diferente de draft</description>
+    <errorConditionFormula>AND(NOT(ISPICKVAL(PRIORVALUE(Status),&quot;Draft&quot;)),ISPICKVAL(Status,&quot;Pending&quot;),ISCHANGED(Status),RecordType.Name=&apos;Initiative&apos;)</errorConditionFormula>
+    <errorMessage>It is not possible to change the Status.</errorMessage>
+</ValidationRule>

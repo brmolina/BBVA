@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Edit_Client</fullName>
+    <active>true</active>
+    <description>Control de edición de cuentas</description>
+    <errorConditionFormula>AND (
+     !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+     OwnerId  &lt;&gt; $User.Id,
+	OR(
+		$Profile.Name = &quot;BBVA Desktop GCC Standard&quot;,
+		$Profile.Name = &quot;BBVA Desktop GF Standard&quot;,
+                $Profile.Name = &quot;BBVA Desktop GF Business Development&quot;,
+		$Profile.Name = &quot;BBVA Desktop GM Standard&quot;,
+		$Profile.Name = &quot;BBVA Desktop GTB Standard&quot;,
+		$Profile.Name = &quot;Administrator Business&quot;,
+		$Profile.Name = &quot;Analyst&quot;,
+		$Profile.Name = &quot;eSales&quot;,
+		$Profile.Name = &quot;Management&quot;,
+		$Profile.Name = &quot;Marketing&quot;,
+		$Profile.Name = &quot;Sales Cash Equity&quot;,
+		$Profile.Name = &quot;Sales Corporates&quot;,
+		$Profile.Name = &quot;Sales Equity Derivatives&quot;,
+		$Profile.Name = &quot;Sales Flow FI &amp; FX&quot;,
+		$Profile.Name = &quot;Sales Internal Networks&quot;,
+		$Profile.Name = &quot;Sales Structured FI Investors&quot;
+	),
+	OR(
+		$RecordType.Name = &quot;BBVA Internal Contact&quot;,
+		$RecordType.Name = &quot;Customer&quot;,
+		$RecordType.Name = &quot;Group&quot;,
+		$RecordType.Name = &quot;Prospect Desktop&quot;,
+		$RecordType.Name = &quot;Prospect Group Desktop&quot;,
+		$RecordType.Name = &quot;SER Service Account&quot;,
+		$RecordType.Name = &quot;Shared management Group&quot;,
+		$RecordType.Name = &quot;Standard Account&quot;,
+		$RecordType.Name = &quot;SubGroup&quot;,
+		$RecordType.Name = &quot;Subsidiary&quot;,
+        $RecordType.Name = &quot;Non Client&quot;,
+		$RecordType.Name = &quot;Subsidiary Commercial Client&quot;,
+        $RecordType.Name = &quot;Commercial Client&quot;,
+		$RecordType.Name = &quot;SupraGroup&quot;
+	),
+	OR(
+		ISCHANGED(Name),
+		ISCHANGED(DES_Segment__c),
+		ISCHANGED(DES_Tier__c) ,
+		ISCHANGED(DES_Country_Client__c),
+		ISCHANGED(DES_AGGR_Sector__c),
+		ISCHANGED(DES_Entity_Type__c),
+		ISCHANGED(DES_ID_Fiscal__c),
+                ISCHANGED( DES_Group_Code__c ),
+                ISCHANGED(BillingStreet),
+                ISCHANGED(BillingState),
+                ISCHANGED(BillingCountry),
+		ISCHANGED( BillingCity ),
+                ISCHANGED(BillingPostalCode),
+                ISCHANGED( DES_Country_of_Management__c ),
+                ISCHANGED( DES_Subsegment__c ),
+                ISCHANGED( DES_Activity__c ),
+                ISCHANGED( Website )
+
+	)
+)</errorConditionFormula>
+    <errorMessage>Insufficient privileges to edit accounts.</errorMessage>
+</ValidationRule>

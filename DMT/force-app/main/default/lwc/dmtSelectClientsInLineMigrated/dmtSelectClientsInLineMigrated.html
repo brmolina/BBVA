@@ -1,0 +1,286 @@
+<template>
+    <lightning-card>
+        <div class="panel-shell">
+            <template lwc:if={showSavingOverlay}>
+                <div class="saving-overlay" role="status" aria-live="polite">
+                    <div class="saving-box">
+                        <div class="spinner-wrap" aria-hidden="true">
+                            <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
+                                <span class="slds-assistive-text">Saving</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                        <p class="loading-text">Saving selected records, please wait...</p>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={showGlobalLoadingOverlay}>
+                <div class="loading-global-overlay" role="status" aria-live="polite">
+                    <div class="loading-box">
+                        <div class="spinner-wrap" aria-hidden="true">
+                            <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
+                                <span class="slds-assistive-text">Loading</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                        <p class="loading-text">{loadingMessage}</p>
+                    </div>
+                </div>
+            </template>
+
+            <template lwc:if={showLineVersionsModal}>
+                <section class="slds-modal slds-fade-in-open line-versions-modal" role="dialog" aria-modal="true" aria-label="Line versions">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning-button-icon
+                                icon-name="utility:close"
+                                variant="bare-inverse"
+                                alternative-text="Close"
+                                class="slds-modal__close"
+                                onclick={handleCloseLineVersionsModal}
+                            ></lightning-button-icon>
+                            <h2 class="slds-text-heading_medium">Line versions</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <c-dmt_line-versions show-line-closed-view="true"></c-dmt_line-versions>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Close" onclick={handleCloseLineVersionsModal}></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open line-versions-backdrop"></div>
+            </template>
+
+            <div class="toolbar">
+                <div class="table-summary">
+                    <template lwc:if={showSelectionSummary}>
+                        <div class="selection-summary">
+                            <span class="selection-summary__label">Selected records</span>
+                            <span class="selection-summary__count">{selectedCount}</span>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="toolbar-right">
+                    <lightning-combobox
+                        class="filter-combobox"
+                        name="filterClients"
+                        label="Select type of clients"
+                        value={filterClients}
+                        options={filterOptions}
+                        onchange={handleFilterChange}
+                    ></lightning-combobox>
+
+                    <div class="search-wrap">
+                        <lightning-input
+                            id="clientSearch"
+                            type="search"
+                            label="Search"
+                            placeholder="Search client"
+                            value={searchText}
+                            onchange={handleSearchChange}
+                            oninput={handleSearchChange}
+                        ></lightning-input>
+                    </div>
+                </div>
+            </div>
+
+            <template lwc:if={hasError}>
+                <div class="table-message table-message--error">{errorMessage}</div>
+            </template>
+            <template lwc:if={showNoClientsForGeography}>
+                <div class="table-message table-message--info">{noClientsMessage}</div>
+            </template>
+
+            <div class="table-host">
+                <div class={tableFrameClass} onscroll={handleTableScroll}>
+                    <template if:true={showTableLoadingOverlay}>
+                        <div class="loading-overlay">
+                            <div class="loading-box">
+                                <div class="spinner-wrap" aria-hidden="true">
+                                    <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                                <p class="loading-text">{loadingMessage}</p>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template lwc:if={hasLoadedOnce}>
+                        <table class={tableClass} role="grid" aria-label="select clients table">
+                        <thead>
+                            <tr>
+                                <th scope="col">{tableLabelName}</th>
+                                <template lwc:if={showStarCode}>
+                                    <th scope="col">Star Code</th>
+                                </template>
+                                <template lwc:if={showMitigantContracts}>
+                                    <th scope="col">Mitigant Contracts</th>
+                                </template>
+                                <template lwc:if={showInternalRating}>
+                                    <th scope="col">Internal Rating (short)</th>
+                                </template>
+                                <template lwc:if={showCurrentRatingDate}>
+                                    <th scope="col">Current Rating Tool Date</th>
+                                </template>
+                                <template lwc:if={showExpirationRatingDate}>
+                                    <th scope="col">Expiration Rating Date</th>
+                                </template>
+                                <template lwc:if={showExternalRating}>
+                                    <th scope="col">External Rating (Foreign Curr)</th>
+                                </template>
+                                <template lwc:if={showEditableFinancialColumns}>
+                                    <th scope="col">Derivatives Amount</th>
+                                    <th scope="col">FD Amount</th>
+                                    <th scope="col">DvP Amount</th>
+                                    <th scope="col">Currency</th>
+                                    <th scope="col">Term</th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template lwc:if={hasVisibleClients}>
+                                <template for:each={visibleClients} for:item="client">
+                                    <tr key={client.customerId} class={client.rowClass}>
+                                        <td class="name-col">
+                                            <div class="name-cell">
+                                                <div>
+                                                    <button
+                                                        type="button"
+                                                        class="name-link"
+                                                        data-id={client.customerId}
+                                                        title={client.customerName}
+                                                        disabled={isClientSelectionDisabled}
+                                                        onclick={handleClientNameToggle}
+                                                    >
+                                                        {client.customerName}
+                                                    </button>
+                                                    <div class="secondary-text">{client.countryIfoId} - {client.customerId}</div>
+                                                </div>
+                                                <template lwc:if={client.isSelected}>
+                                                    <div class={client.mainHolderToggleClass}>
+                                                        <span class="main-holder-label">{mainToggleLabel}</span>
+                                                        <label class="slds-checkbox_toggle tiny-toggle">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={client.isMainHolder}
+                                                                data-id={client.customerId}
+                                                                onchange={handleMainHolderToggle}
+                                                                disabled={client.mainHolderDisabled}
+                                                            />
+                                                            <span class="slds-checkbox_faux_container" aria-live="polite">
+                                                                <span class="slds-checkbox_faux"></span>
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </td>
+
+                                        <template lwc:if={showStarCode}>
+                                            <td>{client.customerCounterpartiesCodesDesc}</td>
+                                        </template>
+                                        <template lwc:if={showMitigantContracts}>
+                                            <td>{client.operationMitigantDesc}</td>
+                                        </template>
+                                        <template lwc:if={showInternalRating}>
+                                            <td>{client.updSmsclInternalRatgType}</td>
+                                        </template>
+                                        <template lwc:if={showCurrentRatingDate}>
+                                            <td>{client.currentRatingToolDate}</td>
+                                        </template>
+                                        <template lwc:if={showExpirationRatingDate}>
+                                            <td>{client.expirationRatingDate}</td>
+                                        </template>
+                                        <template lwc:if={showExternalRating}>
+                                            <td>{client.unifiedExtRatgLtFcType}</td>
+                                        </template>
+
+                                        <template lwc:if={showEditableFinancialColumns}>
+                                            <td>
+                                                <lightning-input
+                                                    type="number"
+                                                    variant="label-hidden"
+                                                    value={client.amount}
+                                                    data-id={client.customerId}
+                                                    data-field="amount"
+                                                    onchange={handleRowFieldChange}
+                                                    disabled={client.disabled}
+                                                ></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input
+                                                    type="number"
+                                                    variant="label-hidden"
+                                                    value={client.amountFD}
+                                                    data-id={client.customerId}
+                                                    data-field="amountFD"
+                                                    onchange={handleRowFieldChange}
+                                                    disabled={client.disabled}
+                                                ></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input
+                                                    type="number"
+                                                    variant="label-hidden"
+                                                    value={client.amountDVP}
+                                                    data-id={client.customerId}
+                                                    data-field="amountDVP"
+                                                    onchange={handleRowFieldChange}
+                                                    disabled={client.disabled}
+                                                ></lightning-input>
+                                            </td>
+                                            <td>{client.displayCurrency}</td>
+                                            <td>
+                                                <lightning-combobox
+                                                    variant="label-hidden"
+                                                    value={client.term}
+                                                    data-id={client.customerId}
+                                                    data-field="term"
+                                                    options={termOptions}
+                                                    onchange={handleRowFieldChange}
+                                                    disabled={client.disabled}
+                                                ></lightning-combobox>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </template>
+                            <template if:false={hasVisibleClients}>
+                                <tr>
+                                    <td colspan={totalColumns} class="empty-row">No records to display.</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        </table>
+                    </template>
+                </div>
+            </div>
+
+            <template lwc:if={showFooter}>
+                <div class="footer-area">
+                    <div>
+                        <template lwc:if={errorMainHolder}>
+                            <div class="error-inline">Main Holder is required when clients are selected.</div>
+                        </template>
+                        <template lwc:if={hasError}>
+                            <div class="error-inline footer-error">{errorMessage}</div>
+                        </template>
+                    </div>
+
+                    <div class="actions">
+                        <lightning-button label="Cancel" variant="neutral" onclick={handleCancel}></lightning-button>
+                        <lightning-button label="Save" variant="brand" onclick={handleSave} disabled={isSaveDisabled}></lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

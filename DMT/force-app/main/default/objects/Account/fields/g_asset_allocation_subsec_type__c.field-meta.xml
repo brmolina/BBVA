@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>g_asset_allocation_subsec_type__c</fullName>
+    <description>ASSET ALLOCATION subsector type. Global model sector in which the client is classified according to the corporate catalog. This field only applies to wholesale customers. Wholesalers: Monthly centers, Orthodontics, Others</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>ASSET ALLOCATION subsector type. Global model sector in which the client is classified according to the corporate catalog. This field only applies to wholesale customers. Wholesalers: Monthly centers, Orthodontics, Others</inlineHelpText>
+    <label>Subsector Asset Allocation</label>
+    <length>2</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

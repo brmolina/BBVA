@@ -1,0 +1,8 @@
+<design:component>
+	<design:attribute name="recordId" label="recordId" />
+    <design:attribute name="visitName" label="visitName" />
+    <design:attribute name="doneVal" label="doneVal" />
+    <design:attribute name="descriptionVal" label="descriptionVal" />
+    <design:attribute name="oppNameVal" label="oppNameVal" />
+    <design:attribute name="oppId" label="oppId" />
+</design:component>

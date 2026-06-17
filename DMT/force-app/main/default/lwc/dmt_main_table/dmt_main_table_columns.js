@@ -149,10 +149,15 @@ export function getVisibleColumns(tabName) {
                 { label: "DvP Amount", field: 'amountDVP', type: 'textinput', sortable: false, inselectcolumn: true},
                 { label: "Currency", field: 'currency', type: 'isCurrencylabel', sortable: false, inselectcolumn: true},
                 { label: "Term", field: 'term', type: 'combobox', sortable: false, 
-                    options:[{label: "", value :""},{label: "0Y", value: "0Y"},{label: "1Y", value: "1Y"},{label: "2Y", value: "2Y"},
-                        {label: "3Y", value: "3Y"},{label: "4Y", value: "4Y"},{label: "5Y", value: "5Y"},{label: "6Y", value: "6Y"}
-                        ,{label: "7Y", value: "7Y"},{label: "8Y", value: "8Y"},{label: "9Y", value: "9Y"},{label: "10Y", value: "10Y"}
-                        ,{label: "11Y", value: "11Y"},{label: "12Y", value: "12Y"}], inselectcolumn: true}
+                    options:[{ label: 'Select...', value: '' },{label: "BUCKETING", value :"BUCKETING"},{label:"0D",value:"0D"},{label:"2D",value:"2D"},{label:"3D",value:"3D"},{label:"4D",value:"4D"},{label:"7D",value:"7D"},
+            {label:"10D",value:"10D"},{label:"15D",value:"15D"},{label:"20D",value:"20D"},{label:"1M",value:"1M"},{label:"45D",value:"45D"},{label:"2M",value:"2M"},
+            {label:"3M",value:"3M"},{label:"4M",value:"4M"},{label:"5M",value:"5M"},{label:"6M",value:"6M"},{label:"9M",value:"9M"},{label:"1Y",value:"1Y"},
+            {label:"18M",value:"18M"},{label:"2Y",value:"2Y"},{label:"3Y",value:"3Y"},{label:"4Y",value:"4Y"},{label:"5Y",value:"5Y"},{label:"6Y",value:"6Y"},
+            {label:"7Y",value:"7Y"},{label:"8Y",value:"8Y"},{label:"9Y",value:"9Y"},{label:"10Y",value:"10Y"},{label:"11Y",value:"11Y"},{label:"12Y",value:"12Y"},
+            {label:"13Y",value:"13Y"},{label:"14Y",value:"14Y"},{label:"15Y",value:"15Y"},{label:"16Y",value:"16Y"},{label:"17Y",value:"17Y"},{label:"18Y",value:"18Y"},
+            {label:"19Y",value:"19Y"},{label:"20Y",value:"20Y"},{label:"22Y",value:"22Y"},{label:"25Y",value:"25Y"},{label:"27Y",value:"27Y"},{label:"30Y",value:"30Y"},
+            {label:"32Y",value:"32Y"},{label:"35Y",value:"35Y"},{label:"37Y",value:"37Y"},{label:"40Y",value:"40Y"},{label:"42Y",value:"42Y"},
+            {label:"45Y",value:"45Y"}], inselectcolumn: true}
         ];
     } else if (tabName === 'tcmcustomer') {
         return [{ label: 'Client Name', field: 'name', type: 'text',title: 'displaytext', sortable: false }, 

@@ -1,0 +1,151 @@
+ //    div#clear-call button {
+ //        background-color: #d9534f;
+ //        border-color: #d43f3a;
+ //        background-image: none;
+ //        color: white;
+ //    }
+    
+ //    div#call-history{
+ //        font-family: Arial,Helvetica,sans-serif;
+ //        font-size: 75%;
+ //    }
+	div.call-history-entry{
+		padding-left: 10px;
+    }
+ //    div#call-list{
+ //        font-family: Arial,Helvetica,sans-serif;
+ //        font-size: 75%;
+ //        padding-top: 5px;
+ //    }
+    div#call-list > .call-list-entry {
+        background-color: #00E676;
+		border-radius: 6px 6px 6px 6px;
+    }
+    // div#held-call-list{
+    //     font-family: Arial,Helvetica,sans-serif;
+    //     font-size: 75%;
+    //     padding-top: 5px;
+    // }
+    div#held-call-list > .call-list-entry {
+        background-color: #FBC02D;
+		border-radius: 6px 6px 6px 6px;
+    }
+    // div#incoming-call-list{
+    //     font-family: Arial,Helvetica,sans-serif;
+    //     font-size: 75%;
+    //     padding-top: 5px;
+    // }
+    // div.incoming-history{
+    //     font-family: Arial,Helvetica,sans-serif;
+    //     font-size: 75%;
+    // }
+
+
+    // .nav li a{
+    //     padding: 4px 8px !important;
+    // }
+    // .nav-tabs li{
+    //     font-size: 9px !important;
+    //     margin-left: 0px;
+    // }
+    // .call-list-entry a{
+    //     color: blue;
+    // }
+    .active-call{
+        background-color: #00E676;
+    }
+    .held-call{
+        background-color: #FBC02D;
+    }
+    .flash{
+        -moz-animation: flash 1s ease-out;
+        -moz-animation-iteration-count: 60;
+    
+        -webkit-animation: flash 1s ease-out;
+        -webkit-animation-iteration-count: 60;
+    
+        -ms-animation: flash 1s ease-out;
+        -ms-animation-iteration-count: 60;
+    }
+    
+    @-webkit-keyframes flash {
+        0% { background-color:none;}
+        50% { background-color:#00E676;}        
+        100% {background-color:none;}
+    }
+    
+    @-moz-keyframes flash {
+        0% { background-color:none;}
+        50% { background-color:#00E676;}        
+        100% {background-color:none;}
+    }
+    
+    @-ms-keyframes flash {
+        0% { background-color:none;}
+        50% { background-color:#00E676;}        
+        100% {background-color:none;}
+    }
+
+
+div#softphone-header {
+    background-color: rgb(209, 219, 231);
+}
+
+
+div#softphone-footer  {
+   position:absolute;
+   bottom:0;
+   width: 100%;  
+}
+div#softphone-body {
+   overflow:auto;
+   height:325px;
+   background-color: rgb(248, 245, 247)!important;
+}
+
+
+// .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+//     background-color: rgb(248, 245, 247)!important;
+// }
+
+// a:hover {
+// 	cursor: pointer!important;
+// }
+
+// div.activeTab {
+//     background-color: rgb(248, 245, 247)!important;
+// }
+
+// div.active {
+//     background-color: rgb(248, 245, 247)!important;
+// }
+
+// div.divseparator {
+//     background-color: rgb(248, 245, 247)!important;
+// 	height: 25px!important;
+// }
+
+// .ext-strict {
+//     background-color: rgb(248, 245, 247)!important;
+// }
+
+
+// button.action {
+//     width: 70px!important;
+// 	height: 26px!important;
+// }
+
+// button.action-mini {
+//     width: 99%!important;
+// 	height: 20px!important;
+// }
+
+.btn-primary.active,.btn-primary.focus, .btn-primary:active,.btn-primary:focus, .btn-primary:hover,.open>.dropdown-toggle.btn-primary {
+	color: #204d74!important;
+}
+
+// button.action :hover, button.action-mini:hover{
+// 	color: #204d74;
+// 	/*background-color: #286090;*/
+// 	border-color: #204d74;
+// }

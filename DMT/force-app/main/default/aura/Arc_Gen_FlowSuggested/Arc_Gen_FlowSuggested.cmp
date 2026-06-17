@@ -1,0 +1,66 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" access="global" controller="Arc_Gen_FlowSuggested_Controller">
+    <aura:attribute name="accHasAnalysisId" type="String" />
+    <aura:attribute name="suggestedFlow" type="String"/>
+    <aura:attribute name="suggestedFlowValue" type="String"/>
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="modelOptions" type="Map" description="Map with available models." />
+    <aura:attribute name="modifyFlow" type="Boolean" default="false" />
+    <aura:attribute name="isError" type="Boolean" default="false" />
+    <aura:attribute name="initialSelectedValSubModel" type="String" access="global"/>
+    <aura:attribute name="selectedValueSubModel" type="String" access="global"/>
+    <aura:attribute name="selectedValueSubModelSelect" type="String" access="global"/>
+    <aura:attribute name="participantType" type="String" />
+    <aura:attribute name="ratingSystem" type="String" />
+    <aura:attribute name="formDataMap" type="Map" description="" access="global"/>
+    <aura:attribute name="isIfis" type="Boolean" description="" access="global"/>
+    <aura:attribute name="loading" default="true"  type="Boolean" description="" access="global"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <aura:registerEvent name="wizardEvent" type="c:Arc_Gen_WizardEvent_evt" />
+
+    <aura:if isTrue="{!!v.loading}">
+        <aura:if isTrue="{!not(empty(v.suggestedFlow))}">
+            <div style="text-align: right; color: #00bd00; font-weight: bold;">
+                {!v.ratingSystem}
+            </div>
+
+            <div style="text-align: center;">
+                <div class="slds-visual-picker slds-visual-picker_medium">
+                    <input type="radio" id="analysis-option" value="sp2Analysis" name="arce-type" checked="{!not(v.modifyFlow)}" disabled="{!v.modifyFlow}"/>
+                    <label for="analysis-option">
+                    <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                        <span>
+                            {!v.suggestedFlow}
+                        </span>
+                    </span>
+                    <span class="slds-visual-picker__body">
+                    </span>
+                    <span class="slds-icon_container slds-visual-picker__text-check">
+                        <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                    </span>
+                    </label>
+                </div>
+            </div>
+
+            <aura:if isTrue="{!OR(v.isIfis, v.participantType == 'SUBSIDIARY')}">
+                <label>{!$Label.c.Arc_Gen_RTC_Modify_Flow}</label>
+                <lightning:input type="toggle" aura:id="modifyFlow" value="{!v.modifyFlow}" onchange="{!c.handleChange}" messageToggleActive="" messageToggleInactive=""/>
+            </aura:if>
+        </aura:if>
+        <aura:if isTrue="{!v.modifyFlow }">
+            <lightning:select aura:id="input" name="lightSelectSubModel" label="SubModel" required="true" value="{!v.selectedValueSubModelSelect}" onchange="{!c.onChangeModel}" class="slds-m-bottom_x-small">
+                <aura:iteration items="{!v.options}" var="option">
+                    <option value="{!option.value}">{!option.label}</option>
+                </aura:iteration>
+            </lightning:select>
+        </aura:if>
+
+        <!-- Loading state. -->
+        <aura:set attribute="else">
+            <div class="slds-is-relative slds-var-p-vertical_x-large spinner-container">
+                <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

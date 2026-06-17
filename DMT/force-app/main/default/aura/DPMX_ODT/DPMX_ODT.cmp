@@ -1,0 +1,27 @@
+<aura:component controller="DPMX_ODT_ctrl" implements="lightning:availableForFlowScreens">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!--Atributos de padre-->
+    <aura:attribute name="dynamicPricing" type="Object" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">¿Seguro que deseas guardar la información?</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>Recuerda que en caso de que desees modificar la información, deerás volver a Generar una nueva propuesta de tasas(ODT)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.closeModal}" />
+                <button class="slds-button slds-button_brand" name="{!v.savebutton}" label="Aceptar" onclick="{!c.saveModal}">Aceptar</button>
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

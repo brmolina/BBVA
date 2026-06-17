@@ -1,0 +1,40 @@
+<aura:component controller="DES_CustomReportLastUpdOpps" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global">
+	
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+	<aura:attribute name="userISOCode" type="String"/>  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-page-header">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunities without updates during at least 30 days">
+					<lightning:icon iconName="standard:opportunity" size="medium" alternativeText="Report"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">Opportunities</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Opportunities without updates during at least 30 days">Opportunities without updates during at least 30 days</h1>
+			</div>
+		</div>
+	</div>
+    
+    <aura:if isTrue="{! empty(v.myData)}">
+        <div class="tableNoData" style="text-align:center; padding:10px; border-bottom:1px solid #E4E4E4;border-left:1px solid #E4E4E4;border-right:1px solid #E4E4E4; border-bottom-left-radius:10px;border-bottom-right-radius:10px;">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+            <div>
+            	<lightning:datatable data="{!v.myData}" 
+                                 columns="{!v.myColumns}" 
+                                 keyField="id"
+                                 hideCheckboxColumn="true"/> 
+                <p style="text-align:center; padding:10px 0px; border-bottom:1px solid #E4E4E4;border-left:1px solid #E4E4E4;border-right:1px solid #E4E4E4; border-radius:10px;">
+                    <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+                </p>
+            </div>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

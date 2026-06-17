@@ -79,7 +79,7 @@ global with sharing class DMT_CoreDocumentsAuthentication implements iaso.GBL_In
             partition.put(authenticationConfig.iaso__Cache_Key__c, credentials);
             Cache.Session.put('DMTCoredocCredentials', credentials);
 
-            System.debug('credenctials guardadas en cache: ' + credentials);
+            //System.debug('credenctials guardadas en cache: ' + credentials);
         }
 
         String respHeaderStr = '';

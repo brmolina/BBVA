@@ -1,8 +1,6 @@
 import { LightningElement,api } from 'lwc';
 import passportModal from 'c/dmt_passport_modal';
 
-const OPPERATION_CREATE_EVENT = 'CREATE';
-
 export default class Dmt_global_validation_feature extends LightningElement {
     
     _feature;
@@ -14,9 +12,6 @@ export default class Dmt_global_validation_feature extends LightningElement {
         return this._feature;
     }
     set feature(value) {
-        console.log('Dmt_global_validation_feature set feature ' + value);
-        console.log('Dmt_global_validation_feature set feature name ' + value.name);
-        console.log('Dmt_global_validation_feature set feature stateName ' + value.stateName);
         this._feature = value;
         
     }
@@ -26,7 +21,6 @@ export default class Dmt_global_validation_feature extends LightningElement {
         return this._isbig;
     } 
     set isbig(value) {
-        console.log('Dmt_global_validation_feature isbig ' + value);
         this._isbig = value;
     }
      
@@ -46,7 +40,6 @@ export default class Dmt_global_validation_feature extends LightningElement {
         }
         
         passportModal.open({
-            // maps to developer-created `@api options`
             noShowInfo: false,
             graphicModal: false,
             limits: null,

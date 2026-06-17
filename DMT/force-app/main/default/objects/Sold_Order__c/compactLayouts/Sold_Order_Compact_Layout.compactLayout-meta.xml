@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sold_Order_Compact_Layout</fullName>
+    <fields>gf_loan_br_ctpty_id__c</fields>
+    <fields>gf_ctpty_sold_order_amount__c</fields>
+    <fields>gf_sold_ord_ctpty_setl_amount__c</fields>
+    <fields>gf_sold_order_settled_ind_type__c</fields>
+    <fields>CurrencyIsoCode</fields>
+    <label>Sold Order Compact Layout</label>
+</CompactLayout>

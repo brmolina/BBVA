@@ -3,7 +3,7 @@
     <apiVersion>45.0</apiVersion>
     <packageVersions>
         <majorNumber>1</majorNumber>
-        <minorNumber>4</minorNumber>
+        <minorNumber>6</minorNumber>
         <namespace>dwp_acmh</namespace>
     </packageVersions>
     <status>Active</status>

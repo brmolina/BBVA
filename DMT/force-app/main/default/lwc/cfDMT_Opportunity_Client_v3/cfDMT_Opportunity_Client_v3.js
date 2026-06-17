@@ -22,33 +22,39 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_thresholdType_title:"Client Treashold Type (Global if income from more than one geography)"
+              @track Label={dmt_cl_threshold_Type:"Client Threshold Type",
+        dmt_cl_Industry_Text:"Industry",
+        dmt_cl_LeveragedLending_Text:"Leveraged Lending",
+        dmt_cl_CAMN_Text:"CAMN",
+        DMT_ErrorToastTitle:"Something went wrong",
+        DMT_ErrorToastSubTitle:"Please check the details below",
+        DMT_Error_MainHolder:"No main holder has been selected for the multiclient group"
         };
               pubsubEvent = [];
               customEvent = [];
                
-        firstRender1 = true;
-        @wire(getRecord , {recordId: "$recordId" , fields:"DMT_Line__c.Id",optionalFields: $cmp.getWireOptionalFields(data.events[1])})
-          wiredRecord1({ error, data }){
+        firstRender0 = true;
+        @wire(getRecord , {recordId: "$recordId" , fields:"DMT_Line__c.Id",optionalFields: $cmp.getWireOptionalFields(data.events[0])})
+          wiredRecord0({ error, data }){
             if (this.objectApiName === 'DMT_Line__c'){
-              if(data && this.firstRender1){
-                this.firstRender1 = false;
+              if(data && this.firstRender0){
+                this.firstRender0 = false;
                 return;
               }else{
-                this.recordChangeEventHandler(error,data,1)
+                this.recordChangeEventHandler(error,data,0)
               }
             }
           }
          
-        firstRender5 = true;
-        @wire(getRecord , {recordId: "$recordId" , fields:"Opportunity.Id",optionalFields: $cmp.getWireOptionalFields(data.events[5])})
-          wiredRecord5({ error, data }){
+        firstRender4 = true;
+        @wire(getRecord , {recordId: "$recordId" , fields:"Opportunity.Id",optionalFields: $cmp.getWireOptionalFields(data.events[4])})
+          wiredRecord4({ error, data }){
             if (this.objectApiName === 'Opportunity'){
-              if(data && this.firstRender5){
-                this.firstRender5 = false;
+              if(data && this.firstRender4){
+                this.firstRender4 = false;
                 return;
               }else{
-                this.recordChangeEventHandler(error,data,5)
+                this.recordChangeEventHandler(error,data,4)
               }
             }
           }
@@ -66,9 +72,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6QWYA0"
+                  " card-0koKE000000L8PEYA0"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pUSM2A2");
+                this.loadCustomStylesheetAttachement("00PKE000001umlb2AA");
                 
                 
               }
@@ -84,28 +90,48 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               registerEvents() {
                 
         this.pubsubEvent[0] = {
-          [interpolateWithRegex(`changeValues`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[0],0)
+          [interpolateWithRegex(`Edit`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[1],1),
+[interpolateWithRegex(`Reload`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[2],2)
         };
-        this.pubsubChannel0 = interpolateWithRegex(`select`,this._allMergeFields,this._regexPattern,"noparse");
+        this.pubsubChannel0 = interpolateWithRegex(`Button`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
         this.pubsubEvent[1] = {
-          [interpolateWithRegex(`Edit`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[2],2),
-[interpolateWithRegex(`Reload`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[3],3)
+          [interpolateWithRegex(`errorValidationClient`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[5],5)
         };
-        this.pubsubChannel1 = interpolateWithRegex(`Button`,this._allMergeFields,this._regexPattern,"noparse");
+        this.pubsubChannel1 = interpolateWithRegex(`errorValidationClient`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
 
         this.pubsubEvent[2] = {
-          [interpolateWithRegex(`errorValidationClient`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[6],6)
+          [interpolateWithRegex(`updatedatasource`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[8],8)
         };
-        this.pubsubChannel2 = interpolateWithRegex(`errorValidationClient`,this._allMergeFields,this._regexPattern,"noparse");
+        this.pubsubChannel2 = interpolateWithRegex(`update`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel2,this.pubsubEvent[2]);
 
+        this.pubsubEvent[3] = {
+          [interpolateWithRegex(`setMainHolderAndSelection`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[9],9),
+[interpolateWithRegex(`mainholderChange`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[10],10),
+[interpolateWithRegex(`setDeselectionIds`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[11],11)
+        };
+        this.pubsubChannel3 = interpolateWithRegex(`DMT_Opportunity_Client_v3`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel3,this.pubsubEvent[3]);
+
             this.customEventName0 = interpolateWithRegex(`isSaveRtC`,this._allMergeFields,this._regexPattern,"noparse");
-            this.customEvent[0] = this.handleEventAction.bind(this, data.events[4],4);
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[3],3);
 
             this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
+            this.customEventName1 = interpolateWithRegex(`editingtab`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[6],6);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
+            this.customEventName2 = interpolateWithRegex(`errorMainHolder`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[2] = this.handleEventAction.bind(this, data.events[7],7);
+
+            this.template.addEventListener(this.customEventName2,this.customEvent[2]);
 
           
               }
@@ -114,8 +140,13 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
 pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
 pubsub.unregister(this.pubsubChannel2,this.pubsubEvent[2]);
+pubsub.unregister(this.pubsubChannel3,this.pubsubEvent[3]);
 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
+
+            this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
 
               }
             

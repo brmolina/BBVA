@@ -1,0 +1,6 @@
+<design:component>
+        <design:attribute name='AddOption' label='Add Option'/>
+        <design:attribute name='NewOption' label='New Option'/>
+        <design:attribute name='AddButton' label='Add Button Name'/>
+        <design:attribute name='NewButton' label='New Button Name'/>
+</design:component>

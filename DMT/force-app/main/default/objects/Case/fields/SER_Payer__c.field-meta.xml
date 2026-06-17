@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Payer__c</fullName>
+    <description>The party that finally makes the payment of the claim (e.g. Client, BBVA, CORRESPONDENT).</description>
+    <label>Payer</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BBVA</fullName>
+                <default>false</default>
+                <label>BBVA</label>
+            </value>
+            <value>
+                <fullName>Client</fullName>
+                <default>false</default>
+                <label>Client</label>
+            </value>
+            <value>
+                <fullName>Correspondant</fullName>
+                <default>false</default>
+                <label>Correspondant</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

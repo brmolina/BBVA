@@ -6,9 +6,12 @@ public with sharing class DMT_ParticipantRenderer implements DMT_ViewRenderer {
         Map<String, Schema.RecordTypeInfo> rtInfosOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
         Id dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
+        
         recordTypeRenderers.put(treasuryId, new DMT_DefaultParticipantRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultParticipantRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_DefaultParticipantRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultParticipantRenderer());
     }
 

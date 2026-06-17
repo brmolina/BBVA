@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Franchise_Values_Check</fullName>
+    <active>false</active>
+    <description>Check if the fields &quot;YTD total Franchise&quot;, &quot;MTD total Franchise&quot; and &quot;Prior Year total Franchise&quot; are fewer than previous values.</description>
+    <errorConditionFormula>AND (
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+OR (
+	PRIORVALUE(MTD_Total_Franchise__c) - (PRIORVALUE(MTD_Total_Franchise__c) * 0.05) &gt; MTD_Total_Franchise__c,
+	PRIORVALUE(YTD_Total_Franchise__c) - (PRIORVALUE(YTD_Total_Franchise__c) * 0.05) &gt; YTD_Total_Franchise__c,
+	PRIORVALUE(Prior_Year_Franchise__c) - (PRIORVALUE(Prior_Year_Franchise__c) * 0.05) &gt; Prior_Year_Franchise__c,
+
+	PRIORVALUE(Cash_Bond_MTD_Total_Franchise__c) - (PRIORVALUE(Cash_Bond_MTD_Total_Franchise__c) * 0.05) &gt; Cash_Bond_MTD_Total_Franchise__c,
+	PRIORVALUE(Cash_Bond_YTD_Total_Franchise__c) - (PRIORVALUE(Cash_Bond_YTD_Total_Franchise__c) * 0.05) &gt; Cash_Bond_YTD_Total_Franchise__c,
+	PRIORVALUE(Prior_Year_Franchise_Cash_Bond__c) - (PRIORVALUE(Prior_Year_Franchise_Cash_Bond__c) * 0.05) &gt; Prior_Year_Franchise_Cash_Bond__c,
+
+	PRIORVALUE(FX_MTD_Total_Franchise__c) - (PRIORVALUE(FX_MTD_Total_Franchise__c) * 0.05) &gt; FX_MTD_Total_Franchise__c,
+	PRIORVALUE(FX_YTD_Total_Franchise__c) - (PRIORVALUE(FX_YTD_Total_Franchise__c) * 0.05) &gt; FX_YTD_Total_Franchise__c,
+	PRIORVALUE(Prior_Year_Franchise_FX__c) - (PRIORVALUE(Prior_Year_Franchise_FX__c) * 0.05) &gt; Prior_Year_Franchise_FX__c,
+
+	PRIORVALUE(CE_MTD_Total_Franchise__c) - (PRIORVALUE(CE_MTD_Total_Franchise__c) * 0.05) &gt; CE_MTD_Total_Franchise__c,
+	PRIORVALUE(CE_YTD_Total_Franchise__c) - (PRIORVALUE(CE_YTD_Total_Franchise__c) * 0.05) &gt; CE_YTD_Total_Franchise__c,
+	PRIORVALUE(Prior_Year_Franchise_CE__c) - (PRIORVALUE(Prior_Year_Franchise_CE__c) * 0.05) &gt; Prior_Year_Franchise_CE__c
+)
+)</errorConditionFormula>
+    <errorMessage>Franchise values cannot be fewer than existing values</errorMessage>
+</ValidationRule>

@@ -1,0 +1,37 @@
+<aura:component controller="DES_AP_ReportController" 
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+				access="global">
+
+    <ltng:require scripts="{! join(',',
+							$Resource.Chart,
+							$Resource.baseFichaGrupo)}"
+	afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+    <aura:attribute name="timeRefresh" type="String" default="false"/>
+    <aura:attribute name="noData" type="Boolean" default="false"/>
+    <aura:attribute name="showViewDetails" type="Boolean" default="true" />
+    <aura:attribute name="show" type="Boolean" default="false"/>
+    <aura:attribute name="chartTitle" type="String" access="global"/>
+    <aura:attribute name="chartFilter" type="String" access="global"/>
+
+    <div class="slds-box customDiv" >
+        <h1><b>By Product</b></h1>
+        
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium">
+            <aura:if isTrue="{!v.noData}">
+				<p class="customP">
+        			{!$Label.c.DES_Chart_No_Data}
+        		</p>
+				<aura:set attribute="else">
+					<div id="chartjs-tooltip"></div>
+					<canvas aura:id="chart"   height="500" style="width: 100% !important" ></canvas>
+                    
+				</aura:set>
+			</aura:if>
+        </div> 
+        <aura:if isTrue="{!!v.noData}">
+			
+		</aura:if>
+    </div>
+</aura:component>

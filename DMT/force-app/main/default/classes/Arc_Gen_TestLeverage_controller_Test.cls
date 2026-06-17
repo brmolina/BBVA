@@ -69,6 +69,7 @@ public class Arc_Gen_TestLeverage_controller_Test {
     **/
 @testSetup
     static void insertData() {
+        arce.Arc_UtilitiesToTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{GROUP_ID,SUBSIDIARY_ID});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get(GROUP_ID);

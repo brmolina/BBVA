@@ -1,0 +1,42 @@
+<aura:component controller="DES_CustomReportChartOppByCountry" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+	<ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.doInit}"/>
+	<aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String"/>
+    <aura:attribute name="defaultSortDirection" type="String"/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="userISOCode" type="String"/>
+    
+    <div class="slds-page-header">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-standard-opportunity" title="Pipeline Exp. Revenues by Country">
+					<lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+				<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Pipeline Exp. Revenues by Country">Pipeline Exp. Revenues by Country</h1>
+				<p class="slds-text-body_small slds-line-height_reset">Report</p>
+			</div>
+		</div>
+	</div>
+    <center style="margin-top:30px; padding-top:10px;">
+        <div style="height:500px; width:500px;">
+            <c:DES_Expected_Revenues_by_Country_Graph recordId="{!v.recordId}"/>
+        </div>
+    </center>
+	<div class="reportTabla">
+		<lightning:datatable data="{!v.myData}" 
+			columns="{!v.myColumns}" 
+			keyField="id"
+            sortedBy="{!v.sortedBy}"
+            sortedDirection="{!v.sortedDirection}"
+            defaultSortDirection="{!v.defaultSortDirection}"
+            onsort="{!c.updateColumnSorting}"
+            hideCheckboxColumn="true"/> 
+	</div>
+	
+</aura:component>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RPP_Calculator_Simulation__c</fullName>
+    <label>RPP Calculator Simulation</label>
+    <referenceTo>RPP_Calculator_Simulation__c</referenceTo>
+    <relationshipLabel>RPP Calculator Simulation Debtors</relationshipLabel>
+    <relationshipName>RPP_Calculator_Simulation_Debtors</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

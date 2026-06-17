@@ -1,0 +1,86 @@
+<!--**
+  * @File Name          : Arc_Gen_Insertion_cmp
+  * @Description        : Insertion aura component
+  * @Author             : ARCE
+  * @Group              : ARCE
+  * @Last Modified By   : juanignacio.hita.contractor@bbva.com
+  * @Last Modified On   : 16/07/2021
+  * @Modification Log   :
+  *=======================================================================================================================
+  * Ver                  Date                         Author                         Modification
+  *=======================================================================================================================
+  * 1.0               30/07/2019                                                        Initial version
+  * 1.1               10/06/2020            joseluis.garcia4.contractor@bbva.com        Add Arc_Gen_EditPermChecker_serviceCmp aura
+  * 1.2               24/07/2020            joseluis.garcia4.contractor@bbva.com        Convert 'Success!' text to label
+  * 1.3               08/10/2020            juanignacio.hita.contractor@bbva.com        Added limits persistence service
+  * 1.4               12/03/2020            juanpedro.benito.contractor@bbva.com        Change field arce__current_apprv_limit_term_type__c in helper
+  * 1.5               16/07/2021            juanignacio.hita.contractor@bbva.com        Adds status control if analysis has changes in status
+  **-->
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_Expandible_Table_Controller" >
+  <aura:attribute name="apiNameObject" type="String" access="global" description="variable for objectApiName" />
+  <aura:attribute name="parentId" type="String" access="global" description="Contains the Id of the parent" />
+  <aura:attribute name="accHasAId" type="Id" access="global" description="Contains the id of the account has analyis" />
+  <aura:attribute name="recordTypeId" type="Id" access="global" description="variable to select record layout" />
+  <aura:attribute name="error" type="boolean" access="global" description="boolean to show error message" />
+  <aura:attribute name="errorMessageId" type="boolean" access="global" description="mesage id of error"/>
+  <aura:attribute name="errorMessageFields" type="boolean" access="global" description="Fields validation error"/>
+  <aura:attribute name="selectedChild" type="String" access="global" description="Contains the selected record" />
+  <aura:attribute name="tipology" type="String" access="global" description="Contains the id of the record to edit" />
+  <aura:attribute name="inputClass" type="String" access="global" description="input class used on the component" />
+  <aura:attribute name="listProducts" type="List" description="list of products child of tipologies" />
+  <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner load variable"/>
+  <aura:attribute name="editMode" type="String" description="Controls lightning recordform editability" default="readonly"/>
+  <aura:attribute name="recordShow" type="Boolean" description="Visibility control record form" default="false"/>
+  <aura:attribute name="typologyId" type="String" description="Record id typology selected"/>
+  <aura:attribute name="insertSubmit" type="Boolean" default="false" description="Spinner status var"/>
+  <aura:attribute name="changeStatus" type="Boolean" access="global" default="false" description="True if has change status of analysis when saved"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+  <lightning:overlayLibrary aura:id="overlayLib"/>
+  <c:Arc_Gen_EditPermChecker_serviceCmp aura:id="permChecker" />
+
+  <aura:if isTrue="{!v.error}">
+    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+      <span class="slds-assistive-text">{!$Label.c.Arc_Gen_Error}</span>
+      <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Description of icon when needed">
+        <lightning:icon iconName="utility:error" size="xx-small" variant="inverse" />
+      </span>
+      <aura:if isTrue="{!empty(v.listProducts)}">
+        <h2>{!$Label.c.Arc_Gen_Error_ProdId}
+          <a href="javascript:void(0);"></a>
+        </h2>
+      </aura:if>
+      <aura:if isTrue="{!v.errorMessageFields}">
+        <h2>{!$Label.c.Arc_Gen_Error_Term}
+          <a href="javascript:void(0);"></a>
+        </h2>
+      </aura:if>
+    </div>
+    <aura:set attribute="else">
+      <lightning:combobox name="products" label="{!$Label.c.Arc_Gen_Select_Product}" required="{!!empty(v.listProducts)}" options="{! v.listProducts }" onchange="{! c.handleChange }" spinnerActive="{!v.spinnerStatus}" />
+    </aura:set>
+  </aura:if>
+  <aura:if isTrue="{!v.recordShow}">
+    <aura:if isTrue="{!v.insertSubmit}">
+      <div class="slds-align_absolute-center" style="margin-top:15px;">
+        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <lightning:recordForm
+      aura:id="myform"
+      recordId=""
+      recordTypeId="{!v.recordTypeId}"
+      columns="2"
+      onsubmit="{!c.onSubmit}"
+      onsuccess="{!c.handleSuccess}"
+      objectApiName="{!v.apiNameObject}"
+      layoutType="Full"
+      mode="{!v.editMode}"/>
+  </aura:if>
+</aura:component>

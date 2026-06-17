@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Qualitative_Assesment_of_X_Sell_Rev_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Description of the opportunities, the competition expected and the probabilities used to calculated potential revenues, if any (max 465 characters)</inlineHelpText>
+    <label>Qualitative Assesment of X-Sell Revenues</label>
+    <length>465</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

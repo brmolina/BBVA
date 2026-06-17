@@ -5,7 +5,7 @@ Fecha: 2024-02-27
 
 // Clase que contiene constantes utilizadas en la aplicación
 @JsonAccess(serializable='always' deserializable='always')
-public class DMT_Constants {
+public with sharing class DMT_Constants {
 
     //Decoradores
     public static final String ALWAYS = 'always';
@@ -74,6 +74,7 @@ public class DMT_Constants {
     public static final String TYPE_GROUP = 'Group';
     public static final String TYPE_SUPRA_GROUP = 'Supragroup';
     public static final String TYPE_SUBSIDIARY = 'Subsidiary';
+    public static final String TYPE_CUSTOM = 'Custom';
     //public static final String TYPE_SER_SERVICE_ACCOUNT = 'SER Service Account';
     public static final String TYPE_SUBSIDIARY_COMMERCIAL_ACCOUNT = 'Subsidiary Commercial Client';
 
@@ -83,7 +84,6 @@ public class DMT_Constants {
     public static final String MD5 = 'MD5';
 
     //servicios
-    public static final String HPG_GLOBAL_POSITION = 'HPG_GlobalPosition';
     public static final String HPG_COMMON_ENDPOINT = 'HPG_CommonEndPoint';
     public static final String GRANTING_TICKET_GLOBAL_INT = 'GrantingTicketGlobal_INT';
 
@@ -96,6 +96,7 @@ public class DMT_Constants {
 
     //StaticResource
     public static final String DMT_HPG_200 = 'DMT_HPG_200';
+    public static final String HPG_GLOBAL_POSITION = 'HPG_GlobalPosition';
 
     //Status
     public static final String DRAFT = 'Draft';
@@ -146,6 +147,8 @@ public class DMT_Constants {
     public static final String GROUP_PRIORITY_REPOS ='03y03u01';
     public static final String GROUP_PRIORITY_REPOSNOFLOW ='03y03u02';
     public static final String GROUP_PRIORITY_TERM ='03y02';
+    public static final String GROUP_PRIORITY_TERM_DEPOS ='04y02';
+    public static final String GROUP_PRIORITY_TERM_EQUITIES ='05y02';
     public static final String GROUP_PRIORITY_RESTRIC ='03y03';
     public static final String GROUP_PRIORITY_RESTRIC_FD ='01y02';
     public static final String GROUP_PRIORITY_RESTRIC_DVP ='02y02';
@@ -182,12 +185,13 @@ public class DMT_Constants {
     public static final String COUNTERPARTY_REDMESSAGE = 'The following local clients do not have a counterparty code: ';
     public static final String RATING_REDMESSAGE = 'The following local clients do not have a valid rating (expired or unexisting): ';
     public static final String ISDA_REDMESSAGE = 'The following local clients do not have a signed ISDA contract: ';
-    public static final String CLIENT_SELECTED_REDMESSAGE = 'The line has been created at group level but no customer has been selected.';
+    public static final String CLIENT_SELECTED_REDMESSAGE = 'The line has been created, but you must select at least two customers.';
     public static final String NO_GDT_CLIENT_GREENMESSAGE ='All the selected local clients exist in Global Desktop';
     public static final String CURRENT_CLIENT_LINE_GREENMESSAGE ='None of the clients are already included in another current line';
     public static final String GREATER_RESTRIC_TERM_GREENMESSAGE ='All the maturities in the product restrictions are shorter than the maximum consumption limit';
     public static final String DERIVATIVES_NOFDDVP_GREENMESSAGE ='In product restrictions, settlement selections are consistent with the current allowed derivatives products in the line';
     public static final String NO_SETTLEMENT_GREENMESSAGE ='Neither Free Delivery nor Delivery versus Payment have no operational restrictions and amount 0.';
+    public static final String NO_SETTLEMENT_GREENMESSAGE_AR = 'Delivery versus Payment have no operational restrictions and amount 0.';
     public static final String START_DATE_GREENMESSAGE = 'Start date of the line is not earlier than today';
     public static final String LIMIT_CONSISTENCY_GREENMESSAGE = 'Limit for repos total is equal or higher than limit for no-flow repos';
     public static final String COUNTERPARTY_GREENMESSAGE = 'All the local clients already have a counterparty code';
@@ -204,6 +208,33 @@ public class DMT_Constants {
     public static final String APPROVER_TYPE_RISK ='Risk';
     public static final String APPROVER_TYPE_BUSINESS ='Business';
 
+    //Prospects
+    public static final String DMT_PROSPECT_PREFIX = '[P]';
+    public static final String DMT_PROSPECT_ENTIFIC_PREFIX_NOT_SELECTED = 'ZZ';
 
+    //HPG anonymization constants
+    public static final List<String> ANON_ANY = new List<String>{'XX'};
+    public static final List<String> ANON_MX = new List<String>{'MX'};
+    public static final List<String> ANON_ALL_COUNTRIES = new List<String>{'ES', 'MX', 'PE', 'CO', 'TR', 'AR', 'VN', 'VE'};
+    public static final String MEX = 'MEX';
+
+    //Opportunity product Sustainable Deal Assessment SubCategorys Values
+    public static final String DMT_SUSTAINABLE_GREEN = 'Green';
+    public static final String DMT_SUSTAINABLE_SOCIAL = 'Social';
+    public static final String DMT_SUSTAINABLE_GREEN_AND_SOCIAL = 'Green and social';
+
+    //Opportunity product Sustainable Deal Assessment
+    public static final String DMT_SUSTAINABILITY_SSL = '4';
+    public static final String DMT_SUSTAINABILITY_SSL_GREEN = '3';
+    public static final String DMT_SUSTAINABILITY_USE_OF_PROCEEDS = '6';
+    public static final String DMT_SUSTAINABILITY_SUSTAINABLE_LOAN = '5';
+    public static final String DMT_SUSTAINABILITY_CHAIN_FINANCE = '2';
+
+    //Catalogos sostenibilidad
+    public static final String DMT_TAXO_CATALOG_RBGR = 'RBGR';
+    public static final String DMT_TAXO_CATALOG_RBSO = 'RBSO';
+    public static final String DMT_TAXO_CATALOG_RBES = 'RBES';
+
+    public static final String RT_OPP_DMT_NAME = 'DMT_Opportunity';
 
 }

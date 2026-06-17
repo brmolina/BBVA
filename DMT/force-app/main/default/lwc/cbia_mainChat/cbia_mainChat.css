@@ -1,0 +1,280 @@
+* {
+    font-family: sans-serif;
+}
+
+.cib-general{
+    height: 100%;
+    overflow: hidden;
+}
+
+.cib-general .cib-left{
+    padding: 0px !important;
+}
+
+.cib-general .cib-cabecera {
+    display: block;
+    max-height: 100px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.cib-general .cib-cabecera .cib-info{
+    width: 100%;
+    text-align: right;
+}
+
+.cib-general .cib-cabecera .cib-info lightning-icon{
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: #171717c2;
+}
+
+.cib-cabecera img{
+    width: 104px;
+}
+
+.cib-general .cib-cabecera div lightning-icon{
+    vertical-align: middle;
+}
+
+.cib-chat-container{
+    display: flex;
+    flex-direction: column;
+    background-color: #F3F3F3;
+}
+
+.cib-container-lateral {
+    padding: 0px;
+}
+
+.cib-container{
+    height: 100%;
+    background-color: #03234D;
+}
+
+.slds-chat-bookend {
+    border: 0px !important;
+}
+
+.cib-container .cib-chat{
+    overflow-y: scroll;
+    scrollbar-color: rgba(138, 137, 137, 0.326) white;
+    scrollbar-width: thin;
+    padding-bottom: 10px;
+    flex: 1;
+    margin-bottom: 0px !important;
+    width: 92%;
+    margin: 0px auto;
+}
+
+.cib-container .cib-chat ul{
+    width: 100%;
+}
+
+.separador {
+    margin: 1px 0px;
+}
+
+.cib-container .cib-footer {
+    width: 92%;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.cib-container .cib-send{
+    min-height: 56px;
+    max-height: 75px;
+    height: 3.5rem;
+    display: flex;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border: 1px solid #5C5C5C;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.cib-container .cib-send .cib-txt-area{
+    width: 95%;
+    height: 100%;
+    padding: 8px;
+}
+
+.cib-container .cib-send .cib-send-button{
+    width: 5%;
+    text-align: center;
+    align-content: end;
+    margin-bottom: 5px;
+}
+
+.cib-container .cib-send .cib-send-button lightning-icon{
+    margin-top: 10px;
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: #0250D9;
+}
+
+.cib-container .cib-send textarea {
+    resize: none;
+    border: 0px;
+    padding: 0;
+    font-size: 13px; 
+    font-weight: 400;
+    font-family: sans-serif;
+    width: 100%;
+    height: 100%;
+    line-height: 18px;
+}
+
+.cib-container .cib-send textarea::placeholder {
+    color: #939393;
+    line-height: 18px;
+    font-size: 13px;
+}
+
+.cib-container .cib-send textarea:focus {
+    border: 0px !important;
+    box-shadow: none !important;
+}
+
+.cib-general .cib-right {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top: 1px solid #c9c9c9;
+    border-right: 1px solid #c9c9c9;
+    border-bottom: 1px solid #c9c9c9;
+    padding: 0px 7px;
+    min-height: 200px;
+    background-color: #171717c2;
+}
+
+.dis-inl-block{
+    display: inline-block !important;
+}
+
+.cib-modal h2{
+    font-weight: 700;
+    font-family: sans-serif;
+    font-size: 22px;
+}
+
+.cib-modal p{
+    font-family: sans-serif;
+    font-size: 16px;
+    text-align: center;
+}
+
+.cib-modal button {
+    top: 10px;
+    right: 10px;
+}
+
+.cib-chat-info {
+    margin-top: 5px;
+}
+
+.cib-chat-info lightning-icon {
+    margin-right: 5px;
+}
+
+.cib-chat-info .span-2, .span-1{
+    line-height: 17px;
+    color: #5C5C5C;
+    font-size: 12px;
+    align-self: end;
+}
+
+.slds-chat-listitem {
+    margin-top: 2rem;
+}
+
+lightning-spinner {
+    z-index: 110 !important;
+    position: fixed !important;
+}
+
+.slds-backdrop_open{
+    z-index: 100;
+}
+
+.slds-avatar_circle abbr{
+    background-color: #dbdbdb !important;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.cib-footer-info {
+    display: flex;
+    margin-top: 5px;
+}
+
+.cib-footer-info .cib-new-chat{
+    margin-left: auto;
+    margin-bottom: 16px;
+    --slds-c-button-radius-border: 20px;
+}
+
+.cib-desplegable {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.cib-desplegable span {
+    color: #CBDEF6;
+    font-size: 14px;
+    line-height: 17px;
+    align-self: center;
+}
+
+.cib-desplegable lightning-icon {
+    --slds-c-icon-color-foreground-default: #CBDEF6;
+    border-radius: 100%;
+    border: 1px solid #CBDEF6;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.slds-col {
+    transition: 0.4s  ease-in-out;
+}
+
+.cib-confirmation {
+    width: 25% !important;
+}
+
+.cib-confirmation h2{
+    color: #03234d;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.cib-confirmation p{
+    color: #5C5C5C;
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.cib-confirmation lightning-button{
+    --slds-c-button-radius-border: 20px;
+}
+
+.cib-confirmation footer {
+    border-top: 0;
+}
+
+.cib-replying {
+    position: relative;
+    height: 40px;
+    margin-top: 2rem;
+}
+
+.cib-reply-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px;
+    display: flex;
+    align-items: center;
+}

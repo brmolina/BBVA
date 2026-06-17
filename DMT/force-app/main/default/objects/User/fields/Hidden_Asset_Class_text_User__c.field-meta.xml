@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hidden_Asset_Class_text_User__c</fullName>
+    <description>Will write the Asset Class multipicklist selected values</description>
+    <externalId>false</externalId>
+    <formula>IF( INCLUDES(Asset_Class__c , &quot;FI&quot;), &quot;FI; &quot;,&quot;&quot;)
+&amp;
+IF( INCLUDES(Asset_Class__c , &quot;FX&quot;), &quot;FX; &quot;, &quot;&quot;)
+&amp;
+IF( INCLUDES(Asset_Class__c , &quot;Cash Equity&quot;), &quot;Cash Equity; &quot;, &quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Hidden Asset Class text User</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

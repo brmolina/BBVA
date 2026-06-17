@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>period__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(MONTH(year_month_day_date__c),1, $Label.Month1ShortName ,2,$Label.Month2ShortName,3,$Label.Month3ShortName,4,$Label.Month4ShortName,5,$Label.Month5ShortName,6,$Label.Month6ShortName,7,$Label.Month7ShortName,8,$Label.Month8ShortName,9,$Label.Month9ShortName,10,$Label.Month10ShortName,11,$Label.Month11ShortName,$Label.Month12ShortName) + &apos; &apos; + RIGHT(TEXT(YEAR(year_month_day_date__c)),2)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Period</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

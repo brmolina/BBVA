@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Managed_opportunities_by_banker</fullName>
+    <columns>NAME</columns>
+    <columns>month_name__c</columns>
+    <columns>gf_average_managed_oppy_number__c</columns>
+    <columns>gf_live_opportunity_number__c</columns>
+    <columns>gf_opportunity_close_number__c</columns>
+    <columns>gf_opportunity_managers_number__c</columns>
+    <columns>gf_opportunity_won_number__c</columns>
+    <columns>gf_opportunity_lost_number__c</columns>
+    <columns>gf_opportunity_expired_number__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>Managed opportunities by banker</label>
+</ListView>

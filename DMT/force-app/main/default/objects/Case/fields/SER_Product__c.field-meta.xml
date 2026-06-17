@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Product__c</fullName>
+    <label>Product</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>BBVA FINET</fullName>
+                <default>false</default>
+                <label>BBVA FINET</label>
+            </value>
+            <value>
+                <fullName>BBVANETADVANCE (NO CLIENTE)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVANETADVANCE (NO CLIENTE)</label>
+            </value>
+            <value>
+                <fullName>BBVA NET C@SH</fullName>
+                <default>false</default>
+                <label>BBVA NET C@SH</label>
+            </value>
+            <value>
+                <fullName>BBVA NET C@SH AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET C@SH AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH BRUSELAS</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH BRUSELAS</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH BRUSELAS-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH BRUSELAS-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH HONG KONG</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH HONG KONG</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH HONG KONG-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH HONG KONG-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH LONDRES</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH LONDRES</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH LONDRES-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH LONDRES-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH MILAN</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH MILAN</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH MILAN-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH MILAN-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH NUEVA YORK</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH NUEVA YORK</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH NUEVA YORK-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH NUEVA YORK-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PARIS</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PARIS</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PARIS-AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PARIS-AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PORTUGAL</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PORTUGAL AUXILIAR</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PORTUGAL AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>BBVA NET OFFICE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA NET OFFICE</label>
+            </value>
+            <value>
+                <fullName>BBVA WEB PROVEEDORES</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>BBVA WEB PROVEEDORES</label>
+            </value>
+            <value>
+                <fullName>BBVA WEB PROVEEDORES NO CLIENTES</fullName>
+                <default>false</default>
+                <label>BBVA WEB PROVEEDORES NO CLIENTES</label>
+            </value>
+            <value>
+                <fullName>CASH AUXILIAR ESPAÑA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH AUXILIAR ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>CASH BRUSELAS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH BRUSELAS</label>
+            </value>
+            <value>
+                <fullName>CASH LONDRES</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH LONDRES</label>
+            </value>
+            <value>
+                <fullName>CASH LONDRES AUXILIAR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH LONDRES AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>CASH MILAN</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH MILAN</label>
+            </value>
+            <value>
+                <fullName>CASH PARIS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH PARIS</label>
+            </value>
+            <value>
+                <fullName>CASH PARIS AUXILIAR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CASH PARIS AUXILIAR</label>
+            </value>
+            <value>
+                <fullName>CONSORCIO</fullName>
+                <default>false</default>
+                <label>CONSORCIO</label>
+            </value>
+            <value>
+                <fullName>DISKETTE 3 1/2</fullName>
+                <default>false</default>
+                <label>DISKETTE 3 1/2</label>
+            </value>
+            <value>
+                <fullName>EDIFACT</fullName>
+                <default>false</default>
+                <label>EDIFACT</label>
+            </value>
+            <value>
+                <fullName>EDITRAN</fullName>
+                <default>false</default>
+                <label>EDITRAN</label>
+            </value>
+            <value>
+                <fullName>FACTURA INTEGRAL</fullName>
+                <default>false</default>
+                <label>FACTURA INTEGRAL</label>
+            </value>
+            <value>
+                <fullName>FI-CLIENTE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FI-CLIENTE</label>
+            </value>
+            <value>
+                <fullName>FI-PROVEEDOR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FI-PROVEEDOR</label>
+            </value>
+            <value>
+                <fullName>FI-RENFE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FI-RENFE</label>
+            </value>
+            <value>
+                <fullName>GENERICO</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GENERICO</label>
+            </value>
+            <value>
+                <fullName>GENERIC PRODUCT</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GENERIC PRODUCT</label>
+            </value>
+            <value>
+                <fullName>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</fullName>
+                <default>false</default>
+                <label>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</label>
+            </value>
+            <value>
+                <fullName>HSS</fullName>
+                <default>false</default>
+                <label>HSS</label>
+            </value>
+            <value>
+                <fullName>NET CASH</fullName>
+                <default>false</default>
+                <label>NET CASH</label>
+            </value>
+            <value>
+                <fullName>PASARELAS</fullName>
+                <default>false</default>
+                <label>PASARELAS</label>
+            </value>
+            <value>
+                <fullName>SWIFT</fullName>
+                <default>false</default>
+                <label>SWIFT</label>
+            </value>
+            <value>
+                <fullName>SWIFT FILEACT</fullName>
+                <default>false</default>
+                <label>SWIFT FILEACT</label>
+            </value>
+            <value>
+                <fullName>SWIFT FIN</fullName>
+                <default>false</default>
+                <label>SWIFT FIN</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

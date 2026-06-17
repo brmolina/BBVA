@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------------------------
-    Description:    Creacion de datos dummy para los Tests de los desarrollos de Desktop.
+    Description:    Creacion de datos dummy para los Tests de los desarrollos de Desktop. smash
 
     History:
     <Date>          <Author>                <Description>
@@ -164,15 +164,15 @@ public with sharing class DES_UtilTestClass {
     /**
      * Global Desktop
      */
-    public dwp_acmh__GBL_Account_Relationship__c createAccRelationship(Account accParent, Account accChild) {
-        dwp_acmh__GBL_Account_Relationship__c rel = new dwp_acmh__GBL_Account_Relationship__c();
-        rel.dwp_acmh__Child_Account__c = accChild.Id;
-        rel.dwp_acmh__Parent_Account__c = accParent.Id;
+    public AMH_GBL_Account_Relationship__c createAccRelationship(Account accParent, Account accChild) {
+        AMH_GBL_Account_Relationship__c rel = new AMH_GBL_Account_Relationship__c();
+        rel.AMH_Child_Account__c = accChild.Id;
+        rel.AMH_Parent_Account__c = accParent.Id;
         rel.DES_Participacion__c = 80;
         rel.CurrencyIsoCode = 'EUR';
         rel.DES_Main_Parent__c = 'S';
-        rel.dwp_acmh__Type__c = '03 - Filial';
-        rel.dwp_acmh__Vision__c = 'Negocio';
+        rel.AMH_Type__c = '03 - Filial';
+        rel.AMH_Vision__c = 'Negocio';
         return rel;
     }
 
@@ -493,6 +493,13 @@ public with sharing class DES_UtilTestClass {
         CIB_User_Org__c userSettings = new CIB_User_Org__c();
         userSettings.CIB_Is_Desktop__c = true;
         return userSettings;
+    }
+
+    // Custom Setting ByPass
+    public void createCustomSettingByPass() {
+        CIB_Bypass__c bypassTest = new CIB_Bypass__c();
+        bypassTest.ExtensionsAllowed__c = 'png|jpeg|jpg|gif|svg|pdf|docx|xlsx|pptx|doc|xls|ppt|html|json';
+        insert bypassTest;
     }
 
     /**
@@ -953,7 +960,7 @@ public with sharing class DES_UtilTestClass {
     	Contrato_Marco__c legalAgreement = new Contrato_Marco__c();
     	legalAgreement.participant_id__c = accFilial.Id;
     	legalAgreement.gf_deal_signing_date__c = system.Today();
-    	legalAgreement.master_agreement_type__c = 'CMOF09';
+    	legalAgreement.master_agreement_type__c = 'GMSLA';
     	legalAgreement.gf_agree_annex_typo_desc__c = 'CSAENGLAW';
     	return legalAgreement;
     }
@@ -971,4 +978,5 @@ public with sharing class DES_UtilTestClass {
         twdeals.solution_category_id__c = 'FX,RATES';
         return twdeals;
     }
+
 }

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_MailingGroup__c</fullName>
+    <label>Mailing Group</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ALL FI &amp; RV</fullName>
+                <default>false</default>
+                <label>ALL FI &amp; RV</label>
+            </value>
+            <value>
+                <fullName>ALL FI &amp; RV &amp; Derivatives</fullName>
+                <default>false</default>
+                <label>ALL FI &amp; RV &amp; Derivatives</label>
+            </value>
+            <value>
+                <fullName>Client Onboarding</fullName>
+                <default>false</default>
+                <label>Client Onboarding</label>
+            </value>
+            <value>
+                <fullName>Customer &amp; Claim Support</fullName>
+                <default>false</default>
+                <label>Customer &amp; Claim Support</label>
+            </value>
+            <value>
+                <fullName>Derivatives</fullName>
+                <default>false</default>
+                <label>Derivatives</label>
+            </value>
+            <value>
+                <fullName>Fijaciones</fullName>
+                <default>false</default>
+                <label>Cupones</label>
+            </value>
+            <value>
+                <fullName>Middle Affirmations</fullName>
+                <default>false</default>
+                <label>Middle Affirmations</label>
+            </value>
+            <value>
+                <fullName>Confirmations</fullName>
+                <default>false</default>
+                <label>Confirmations</label>
+            </value>
+            <value>
+                <fullName>SLBE</fullName>
+                <default>false</default>
+                <label>SLBE</label>
+            </value>
+            <value>
+                <fullName>Specialist</fullName>
+                <default>false</default>
+                <label>Specialist</label>
+            </value>
+            <value>
+                <fullName>Editran</fullName>
+                <default>false</default>
+                <label>Editran</label>
+            </value>
+            <value>
+                <fullName>Default STE</fullName>
+                <default>false</default>
+                <label>Default STE</label>
+            </value>
+            <value>
+                <fullName>GNC</fullName>
+                <default>false</default>
+                <label>GNC</label>
+            </value>
+            <value>
+                <fullName>Email Oneview</fullName>
+                <default>false</default>
+                <label>Email Oneview</label>
+            </value>
+            <value>
+                <fullName>UCLI</fullName>
+                <default>false</default>
+                <label>UCLI</label>
+            </value>
+            <value>
+                <fullName>Documentation &amp; Validations</fullName>
+                <default>false</default>
+                <label>Documentation &amp; Validations</label>
+            </value>
+            <value>
+                <fullName>Client Solution</fullName>
+                <default>false</default>
+                <label>Client Solution</label>
+            </value>
+            <value>
+                <fullName>GTB</fullName>
+                <default>false</default>
+                <label>GTB</label>
+            </value>
+            <value>
+                <fullName>Call Center</fullName>
+                <default>false</default>
+                <label>Call Center</label>
+            </value>
+            <value>
+                <fullName>RRSS &amp; Validations</fullName>
+                <default>false</default>
+                <label>RRSS &amp; Validations</label>
+            </value>
+            <value>
+                <fullName>EGS</fullName>
+                <default>false</default>
+                <label>EGS</label>
+            </value>
+            <value>
+                <fullName>CLAIMS SUPPORT</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CLAIMS SUPPORT</label>
+            </value>
+            <value>
+                <fullName>CORPORATE ACTIONS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CORPORATE ACTIONS</label>
+            </value>
+            <value>
+                <fullName>CUPONES</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CUPONES</label>
+            </value>
+            <value>
+                <fullName>CUSTOMER SUPPORT</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CUSTOMER SUPPORT</label>
+            </value>
+            <value>
+                <fullName>Clearing a Terceros</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Clearing a Terceros</label>
+            </value>
+            <value>
+                <fullName>Coordinator</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Coordinator</label>
+            </value>
+            <value>
+                <fullName>DEUDA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>DEUDA</label>
+            </value>
+            <value>
+                <fullName>EQUITY</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EQUITY</label>
+            </value>
+            <value>
+                <fullName>RRSS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RRSS</label>
+            </value>
+            <value>
+                <fullName>SETTLEMENTS</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>SETTLEMENTS</label>
+            </value>
+            <value>
+                <fullName>Social Network and Opinator</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Social Network and Opinator</label>
+            </value>
+            <value>
+                <fullName>Validaciones</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Validaciones</label>
+            </value>
+            <value>
+                <fullName>Validations</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Validations</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

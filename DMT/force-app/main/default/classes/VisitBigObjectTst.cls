@@ -106,7 +106,7 @@ public with sharing class VisitBigObjectTst {
 	public static void methodTest5() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = 'test1';
+    acc.g_customer_id__c = 'test1';
     acc.Name = 'test1';
     insert acc;
 

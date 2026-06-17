@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to comunicate between the two tables">
+    <aura:attribute name="data" type="String"/>
+    <aura:attribute name="isSpecial" type="Boolean"/>
+</aura:event>

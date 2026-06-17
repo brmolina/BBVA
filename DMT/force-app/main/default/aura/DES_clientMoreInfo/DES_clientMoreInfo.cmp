@@ -1,0 +1,32 @@
+<aura:component controller="Local_Client_View_Controller" implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+	<aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="texto" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+    	<aura:if isTrue="{!v.texto}">
+        <lightning:recordViewForm aura:id="viewForm" recordId="{!v.texto}" objectApiName="Local_Client__c">
+        <div class="slds-media">
+          <div class="slds-media__body">
+            <lightning:layout multipleRows="true">
+              <div class="slds-col">
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col slds-size_1-of-2 ">
+                    <lightning:outputField fieldName="local_customer_id__c" class="slds-form-element slds-form-element_readonly ajuste"/>
+                    </div>
+                  </div>
+                </div>
+              </lightning:layout>
+            </div>
+            </div>
+            
+        </lightning:recordViewForm>
+            <aura:set attribute="else">
+                <div class="slds-col">
+                <div class="slds-grid slds-gutters">
+                  <div class="slds-col slds-size_1-of-2 ">
+                      <p class="slds-form-element slds-form-element_readonly ajuste color"> MDM</p>
+                    </div>
+                  </div>
+                </div>
+    </aura:set>
+    </aura:if>
+</aura:component>

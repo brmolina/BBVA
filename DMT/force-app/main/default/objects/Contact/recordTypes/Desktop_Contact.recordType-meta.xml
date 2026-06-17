@@ -1,0 +1,3607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Desktop_Contact</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>Desktop_contact_compact_layout</compactLayoutAssignment>
+    <label>Desktop Contact</label>
+    <picklistValues>
+        <picklist>Asset_Class__c</picklist>
+        <values>
+            <fullName>Cash Equity</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DES_Department__c</picklist>
+        <values>
+            <fullName>Accounting</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Business Development</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CEO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CFO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consulting</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Finance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Finantial institutions</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Human Resources</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Information Technology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Investors Relations</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Legal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Marketing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Operations</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Research</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Strategy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Treasury</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DES_Scope__c</picklist>
+        <values>
+            <fullName>AB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BJ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compass</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DJ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ER</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ET</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Estados Federados de</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FJ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fiji</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ID</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ME</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ML</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>QA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SJ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ST</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TJ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>US</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UZ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>XK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>XX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>YE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>YT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZW</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DES_Title_Role__c</picklist>
+        <values>
+            <fullName>Analyst</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Assistant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CEO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CFO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CRO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Deputy Treasurer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Director</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Group Treasurer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Partner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Regional Treasurer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Treasury Analyst</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VP</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Deleted_Reasons__c</picklist>
+        <values>
+            <fullName>Contact changed role in the company</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact is no longer working in the company</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>LeadSource</picklist>
+        <values>
+            <fullName>Advertisement</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Employee Referral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>External Referral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Partner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Public Relations</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Seminar - Internal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Seminar - Partner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Trade Show</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Web</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Word of mouth</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Markets__c</picklist>
+        <values>
+            <fullName>Credit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cross asset</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Economics</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Equity cash</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Equity derivatives</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rates</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>cross-asset</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>equity-cash</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>equity-derivatives</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>interest-rates</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Name</picklist>
+        <values>
+            <fullName>Dr%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mr%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mrs%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ms%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Prof%2E</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SER_Asset_Class__c</picklist>
+        <values>
+            <fullName>Equity</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>General</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rates</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SER_Business__c</picklist>
+        <values>
+            <fullName>GM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GNC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSTT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSTT and GM</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SER_Department_STE__c</picklist>
+        <values>
+            <fullName>BBVA NETCASH</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SER_Department__c</picklist>
+        <values>
+            <fullName>Claims</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Clearing</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Collateral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compliance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compliance%2FLegal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Confirmaciones</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer Support</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Documentation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Front</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>General</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Liquidaciones</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Settlements</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SER_Origin__c</picklist>
+        <values>
+            <fullName>Sales</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Service</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Sector__c</picklist>
+        <values>
+            <fullName>Consumer%2C Food manufacturers</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Food%2C Beverages %26 Tobacco</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Hotel%2C Holidays %26 Gaming</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Large Cap Discretionary</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Mid Cap Discretionary</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Small Cap Consumer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer%2C Staples</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financials%2C Banks</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financials%2C Diversified Financials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financials%2C Insurance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financials%2C Property</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financials%2C Small Cap Financials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Generalist</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Healthcare%2C Mid cap Healthcare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Healthcare%2C Pharma</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Airlines%2C Aerospace %26 Defense</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Building Mat%2E %26 paper%2Fpackaging</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Capital Goods</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Construction %26 engineering</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Small Caps Industrials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indust%2E%2C Support Services</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Consumption</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Financials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Industrials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Infrastructure</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Mining</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- Real State</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Latam- TMTs</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>None</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Energy E%26P %26 Oil Services</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Integrated Energy %26 Services</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Large Caps Metals %26 Mining</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Large Caps Utilities</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Mic dap Utilities</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resources%2C Small Caps Metals %26 Mining</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TMT%2C Media</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TMT%2C Software and IT Services</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TMT%2C Telecom %26 Online</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TMT%2C Telecoms</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Active</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Inactive</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type_of_Investor__c</picklist>
+        <values>
+            <fullName>HF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LO%2FHF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SWF</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Unchecking_Reason__c</picklist>
+        <values>
+            <fullName>Client does not want to be contacted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact changed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact changed role in the company</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact is no longer working in the company</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact is not relevant - No banker is covering the client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer is in liquidation process</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>cell_phone_lada_id__c</picklist>
+        <values>
+            <fullName>ABW %7C 297</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AFG %7C 93</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AGO %7C 244</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AIA %7C 1-264</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ALB %7C 355</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AND %7C 376</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANT %7C 599</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARE %7C 971</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARG %7C 54</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARM %7C 374</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ASM %7C 1-684</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ATA %7C 672</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ATG %7C 1-268</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUS %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUT %7C 43</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AZE %7C 994</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BDI %7C 257</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BEL %7C 32</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BEN %7C 229</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BFA %7C 226</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BGD %7C 880</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BGR %7C 359</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BHR %7C 973</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BHS %7C 1-242</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BIH %7C 387</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLM %7C 590</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLR %7C 375</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLZ %7C 501</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BMU %7C 1-441</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BOL %7C 591</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRA %7C 55</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRB %7C 1-246</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRN %7C 673</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BTN %7C 975</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BWA %7C 267</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAF %7C 236</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAN %7C 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CCK %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHE %7C 41</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHL %7C 56</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHN %7C 86</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIV %7C 225</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CMR %7C 237</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COD %7C 243</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COG %7C 242</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COK %7C 682</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COL %7C 57</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COM %7C 269</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CPV %7C 238</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CRI %7C 506</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CUB %7C 53</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CUW %7C 599</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CXR %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CYM %7C 1-345</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CYP %7C 357</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CZE %7C 420</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DEU %7C 49</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DJI %7C 253</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DMA %7C 1-767</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DNK %7C 45</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DOM %7C 1-809%2C 1-829%2C 1-849</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DZA %7C 213</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ECU %7C 593</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EGY %7C 20</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ERI %7C 291</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ESH %7C 212</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ESP %7C 34</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EST %7C 372</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ETH %7C 251</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FIN %7C 358</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FJI %7C 679</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FLK %7C 500</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FRA %7C 33</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FRO %7C 298</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FSM %7C 691</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GAB %7C 241</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GBR %7C 44</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GEO %7C 995</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GGY %7C 44-1481</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GHA %7C 233</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIB %7C 350</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIN %7C 224</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GMB %7C 220</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GNB %7C 245</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GNQ %7C 240</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRC %7C 30</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRD %7C 1-473</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRL %7C 299</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GTM %7C 502</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GUM %7C 1-671</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GUY %7C 592</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HKG %7C 852</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HND %7C 504</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HRV %7C 385</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HTI %7C 509</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HUN %7C 36</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IDN %7C 62</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IMN %7C 44-1624</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IND %7C 91</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IOT %7C 246</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRL %7C 353</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRN %7C 98</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRQ %7C 964</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISL %7C 354</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISR %7C 972</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ITA %7C 39</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JAM %7C 1-876</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JEY %7C 44-1534</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JOR %7C 962</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JPN %7C 81</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KAZ %7C 7</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KEN %7C 254</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KGZ %7C 996</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KHM %7C 855</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KIR %7C 686</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KNA %7C 1-869</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KOR %7C 82</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KWT %7C 965</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LAO %7C 856</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBN %7C 961</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBR %7C 231</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBY %7C 218</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCA %7C 1-758</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIE %7C 423</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LKA %7C 94</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LSO %7C 266</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LTU %7C 370</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LUX %7C 352</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LVA %7C 371</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAC %7C 853</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAF %7C 590</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAR %7C 212</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MCO %7C 377</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDA %7C 373</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDG %7C 261</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDV %7C 960</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MEX %7C 52</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MHL %7C 692</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MKD %7C 389</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MLI %7C 223</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MLT %7C 356</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MMR %7C 95</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNE %7C 382</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNG %7C 976</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNP %7C 1-670</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MOZ %7C 258</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MRT %7C 222</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MSR %7C 1-664</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MUS %7C 230</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MWI %7C 265</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MYS %7C 60</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MYT %7C 262</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NAM %7C 264</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NCL %7C 687</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NER %7C 227</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NGA %7C 234</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NIC %7C 505</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NIU %7C 683</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NLD %7C 31</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NOR %7C 47</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NPL %7C 977</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NRU %7C 674</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NZL %7C 64</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OMN %7C 968</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAK %7C 92</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAN %7C 507</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PCN %7C 64</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PER %7C 51</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PHL %7C 63</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PLW %7C 680</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PNG %7C 675</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>POL %7C 48</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRI %7C 1-787%2C 1-939</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRK %7C 850</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRT %7C 351</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRY %7C 595</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PSE %7C 970</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PYF %7C 689</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>QAT %7C 974</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>REU %7C 262</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ROU %7C 40</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RUS %7C 7</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RWA %7C 250</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SAU %7C 966</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SDN %7C 249</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SEN %7C 221</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SGP %7C 65</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SHN %7C 290</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SJM %7C 47</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLB %7C 677</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLE %7C 232</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLV %7C 503</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SMR %7C 378</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SOM %7C 252</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SPM %7C 508</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SRB %7C 381</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSD %7C 211</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>STP %7C 239</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SUR %7C 597</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SVK %7C 421</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SVN %7C 386</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SWE %7C 46</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SWZ %7C 268</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SXM %7C 1-721</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SYC %7C 248</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SYR %7C 963</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TCA %7C 1-649</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TCD %7C 235</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TGO %7C 228</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>THA %7C 66</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TJK %7C 992</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TKL %7C 690</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TKM %7C 993</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TLS %7C 670</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TON %7C 676</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TTO %7C 1-868</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUN %7C 216</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUR %7C 90</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUV %7C 688</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TWN %7C 886</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TZA %7C 255</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UGA %7C 256</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKR %7C 380</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>URY %7C 598</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>USA %7C 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UZB %7C 998</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VAT %7C 379</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VCT %7C 1-784</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VEN %7C 58</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VGB %7C 1-284</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VIR %7C 1-340</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VNM %7C 84</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VUT %7C 678</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WLF %7C 681</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WSM %7C 685</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>XKX %7C 383</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>YEM %7C 967</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZAF %7C 27</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZMB %7C 260</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZWE %7C 263</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ladaline_phone_id__c</picklist>
+        <values>
+            <fullName>ABW %7C 297</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AFG %7C 93</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AGO %7C 244</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AIA %7C 1-264</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ALB %7C 355</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AND %7C 376</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANT %7C 599</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARE %7C 971</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARG %7C 54</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ARM %7C 374</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ASM %7C 1-684</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ATA %7C 672</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ATG %7C 1-268</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUS %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUT %7C 43</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AZE %7C 994</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BDI %7C 257</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BEL %7C 32</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BEN %7C 229</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BFA %7C 226</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BGD %7C 880</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BGR %7C 359</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BHR %7C 973</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BHS %7C 1-242</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BIH %7C 387</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLM %7C 590</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLR %7C 375</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BLZ %7C 501</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BMU %7C 1-441</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BOL %7C 591</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRA %7C 55</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRB %7C 1-246</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BRN %7C 673</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BTN %7C 975</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BWA %7C 267</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAF %7C 236</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAN %7C 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CCK %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHE %7C 41</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHL %7C 56</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CHN %7C 86</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIV %7C 225</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CMR %7C 237</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COD %7C 243</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COG %7C 242</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COK %7C 682</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COL %7C 57</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COM %7C 269</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CPV %7C 238</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CRI %7C 506</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CUB %7C 53</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CUW %7C 599</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CXR %7C 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CYM %7C 1-345</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CYP %7C 357</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CZE %7C 420</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DEU %7C 49</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DJI %7C 253</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DMA %7C 1-767</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DNK %7C 45</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DOM %7C 1-809%2C 1-829%2C 1-849</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DZA %7C 213</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ECU %7C 593</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EGY %7C 20</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ERI %7C 291</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ESH %7C 212</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ESP %7C 34</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EST %7C 372</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ETH %7C 251</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FIN %7C 358</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FJI %7C 679</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FLK %7C 500</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FRA %7C 33</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FRO %7C 298</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FSM %7C 691</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GAB %7C 241</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GBR %7C 44</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GEO %7C 995</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GGY %7C 44-1481</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GHA %7C 233</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIB %7C 350</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIN %7C 224</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GMB %7C 220</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GNB %7C 245</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GNQ %7C 240</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRC %7C 30</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRD %7C 1-473</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GRL %7C 299</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GTM %7C 502</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GUM %7C 1-671</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GUY %7C 592</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HKG %7C 852</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HND %7C 504</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HRV %7C 385</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HTI %7C 509</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HUN %7C 36</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IDN %7C 62</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IMN %7C 44-1624</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IND %7C 91</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IOT %7C 246</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRL %7C 353</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRN %7C 98</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRQ %7C 964</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISL %7C 354</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ISR %7C 972</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ITA %7C 39</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JAM %7C 1-876</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JEY %7C 44-1534</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JOR %7C 962</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JPN %7C 81</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KAZ %7C 7</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KEN %7C 254</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KGZ %7C 996</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KHM %7C 855</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KIR %7C 686</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KNA %7C 1-869</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KOR %7C 82</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KWT %7C 965</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LAO %7C 856</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBN %7C 961</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBR %7C 231</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LBY %7C 218</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LCA %7C 1-758</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIE %7C 423</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LKA %7C 94</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LSO %7C 266</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LTU %7C 370</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LUX %7C 352</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LVA %7C 371</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAC %7C 853</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAF %7C 590</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAR %7C 212</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MCO %7C 377</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDA %7C 373</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDG %7C 261</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MDV %7C 960</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MEX %7C 52</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MHL %7C 692</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MKD %7C 389</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MLI %7C 223</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MLT %7C 356</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MMR %7C 95</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNE %7C 382</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNG %7C 976</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MNP %7C 1-670</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MOZ %7C 258</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MRT %7C 222</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MSR %7C 1-664</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MUS %7C 230</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MWI %7C 265</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MYS %7C 60</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MYT %7C 262</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NAM %7C 264</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NCL %7C 687</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NER %7C 227</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NGA %7C 234</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NIC %7C 505</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NIU %7C 683</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NLD %7C 31</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NOR %7C 47</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NPL %7C 977</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NRU %7C 674</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NZL %7C 64</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OMN %7C 968</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAK %7C 92</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAN %7C 507</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PCN %7C 64</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PER %7C 51</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PHL %7C 63</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PLW %7C 680</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PNG %7C 675</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>POL %7C 48</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRI %7C 1-787%2C 1-939</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRK %7C 850</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRT %7C 351</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PRY %7C 595</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PSE %7C 970</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PYF %7C 689</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>QAT %7C 974</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>REU %7C 262</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ROU %7C 40</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RUS %7C 7</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RWA %7C 250</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SAU %7C 966</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SDN %7C 249</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SEN %7C 221</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SGP %7C 65</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SHN %7C 290</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SJM %7C 47</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLB %7C 677</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLE %7C 232</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SLV %7C 503</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SMR %7C 378</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SOM %7C 252</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SPM %7C 508</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SRB %7C 381</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SSD %7C 211</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>STP %7C 239</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SUR %7C 597</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SVK %7C 421</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SVN %7C 386</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SWE %7C 46</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SWZ %7C 268</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SXM %7C 1-721</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SYC %7C 248</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SYR %7C 963</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TCA %7C 1-649</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TCD %7C 235</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TGO %7C 228</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>THA %7C 66</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TJK %7C 992</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TKL %7C 690</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TKM %7C 993</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TLS %7C 670</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TON %7C 676</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TTO %7C 1-868</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUN %7C 216</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUR %7C 90</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TUV %7C 688</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TWN %7C 886</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TZA %7C 255</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UGA %7C 256</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKR %7C 380</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>URY %7C 598</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>USA %7C 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UZB %7C 998</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VAT %7C 379</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VCT %7C 1-784</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VEN %7C 58</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VGB %7C 1-284</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VIR %7C 1-340</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VNM %7C 84</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VUT %7C 678</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WLF %7C 681</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WSM %7C 685</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>XKX %7C 383</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>YEM %7C 967</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZAF %7C 27</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZMB %7C 260</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ZWE %7C 263</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>nps_discard_reason_type__c</picklist>
+        <values>
+            <fullName>Client does not want to be contacted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact changed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact changed role in the company</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact is no longer working in the company</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact is not relevant - No banker is covering the client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer is in liquidation process</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NPS checkbox was checked by mistake</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

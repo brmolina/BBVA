@@ -1,5 +1,5 @@
 @JsonAccess(serializable='always' deserializable='always')
-public class DMT_Engines_Wrapper {
+public with sharing class DMT_Engines_Wrapper {
 
     @AuraEnabled
     public List<ConsumptionLimitItem> data;

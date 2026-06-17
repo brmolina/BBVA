@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Paises__c</fullName>
+    <description>Este campo contiene una lista de selección múltiple de los países en los cuales operan las cuentas filiales. Los valores seleccionados en este campo se utilizan para verificar y validar la relación entre los países de las filiales y los CTM asignados. Cada selección en este campo representa un país con el que la filial tiene presencia o cobertura, permitiendo definir y visualizar las asignaciones por país en el sistema.</description>
+    <inlineHelpText>Seleccione todos los países en los que la cuenta filial tiene presencia o cobertura. Esta información se usará para validar las asignaciones de los miembros del equipo de cobertura en cada país correspondiente.</inlineHelpText>
+    <label>Paises Visibles</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>arce__Countries</valueSetName>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

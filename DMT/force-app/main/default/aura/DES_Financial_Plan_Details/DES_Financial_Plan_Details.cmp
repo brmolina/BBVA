@@ -1,0 +1,17 @@
+<aura:component controller="dtde.GBL_DynamicRelatedTableController"
+	  implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+	  access="global">
+    
+    <aura:attribute name="recordId" type="String" access="public" 
+        description="recordId" />
+    <aura:attribute name="cssClassName" type="String" default="View Details" access="public" description="'View Details', 'View PF', 'View data in Engloba'" />
+    
+    <div class="slds-grid">
+      <div class="slds-col slds-size--5-of-6">
+          <c:DES_Simple_Financial_Plan sObjectName="{!v.sObjectName}" recordId="{!v.recordId}"/>
+        </div>
+         <div class="slds-col slds-size--1-of-6">
+    		<c:DES_Simple_Button cssClassName="{!v.cssClassName}" sObjectName="{!v.sObjectName}" recordId="{!v.recordId}"/>
+        </div>
+    </div>
+</aura:component>

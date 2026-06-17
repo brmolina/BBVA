@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Selected Product Price">
+	 <aura:attribute name="selectedPrice" type="PRC_PFS_Scenario"/>
+</aura:event>

@@ -1,0 +1,56 @@
+.THIS .slds-table_header-fixed_container{
+	border-left:1px solid rgb(243, 242, 242) !important;
+    border-right:1px solid rgb(243, 242, 242) !important;
+}
+
+.THIS.customHeader {
+	background-color:#FFF;
+	border-top:1px solid rgb(243, 242, 242);
+	border-left:1px solid rgb(243, 242, 242);
+	border-right:1px solid rgb(243, 242, 242);
+}
+
+.THIS.customP {
+	 text-align:center;
+	 padding:10px 0px;
+	 border-bottom:1px solid #E4E4E4;
+	 border-left:1px solid #E4E4E4;
+	 border-right:1px solid #E4E4E4;
+	 border-radius:10px;
+	
+}
+
+.THIS.tableNoData {
+	 padding:15px;
+	 text-align: center;
+	 border:1px #CDCDCD solid;
+	 border-radius:5px;
+}
+
+.THIS .mobileCustomDiv {
+	height:100%;
+	width:100%;
+}
+
+.THIS .mobileCustomHeader {
+	 background-color:#FFF;
+	 border-top:1px solid rgb(243, 242, 242);
+	 border-left:1px solid rgb(243, 242, 242);
+	 border-right:1px solid rgb(243, 242, 242);
+}
+
+.THIS .mobileCustomDiv2 {
+	padding:15px;
+	text-align: center;
+	border:1px #CDCDCD solid;
+	border-radius:5px;
+}
+
+.THIS .mobileCustomP {
+	text-align:center;
+	padding:10px 0px;
+	border-bottom:1px solid #E4E4E4;
+	border-left:1px solid #E4E4E4;
+	border-right:1px solid #E4E4E4;
+	border-radius:10px;
+}

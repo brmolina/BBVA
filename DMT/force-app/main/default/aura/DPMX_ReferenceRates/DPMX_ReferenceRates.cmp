@@ -1,0 +1,145 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="acquirerActivityWrapper" type="Object"/>
+    <aura:attribute name="interchangeRates" type="Object"/>
+    <aura:attribute name="discountRates" type="Object"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <div class="slds-box slds-m-vertical_x-small">
+        <!-- <div class="slds-text-title"><strong>{!$Label.c.DPMX_ReferenceRates_Title} - {!v.month}&nbsp;{!v.year}</strong></div> -->
+        <div class="slds-text-heading_small slds-m-top_small">
+            <p><strong>{!$Label.c.DPMX_ReferenceRates_Title}&nbsp;{!v.acquirerActivityWrapper.familyAcquirer} - {!v.acquirerActivityWrapper.monthName}&nbsp;{!v.acquirerActivityWrapper.year}</strong></p>
+        </div>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-p-vertical_xx-small slds-m-right_small">
+                <span>
+                    <div class="slds-m-top_small slds-m-bottom_xxx-small">
+                        <p>{!$Label.c.DPMX_ReferenceRates_Section1}</p>
+                    </div>
+                    <table class="slds-table slds-table--col-bordered roundtable slds-theme_shade">
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <!-- <div> -->
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Debit}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.interchangeRates.debit}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Credit}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.interchangeRates.credit}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_International}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.interchangeRates.international}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                    </table>
+                </span>
+            </div>
+            <div class="slds-p-vertical_xx-small slds-m-right_small slds-m-left_medium">
+                <span>
+                    <div class="slds-m-top_small slds-m-bottom_xxx-small">
+                        <p>{!$Label.c.DPMX_ReferenceRates_Section2}</p>
+                    </div>
+                    <table class="slds-table slds-table--col-bordered roundtable">
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Debit}</span></div>
+                                    <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.discountRates.debit}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_Credit}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.discountRates.credit}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                        <td border="1">
+                            <tr>
+                                <div>
+                                    <div>
+                                        <span class="slds-truncate">{!$Label.c.DPMX_International}</span>
+                                    </div>
+                                    <div class="slds-text-heading--medium">
+                                        <strong>
+                                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.discountRates.international}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </tr>
+                        </td>
+                    </table>
+                </span>
+            </div>
+            <div class="slds-p-vertical_xx-small slds-m-left_medium">
+                <div>
+                    <span>
+                        <div class="slds-m-top_small slds-m-bottom_xxx-small"> 
+                            <p>{!$Label.c.DPMX_ReferenceRates_Section3}</p>
+                        </div>
+                        <table class="slds-table slds-table--col-bordered roundtable">
+                            <td border="1">
+                                <tr>
+                                    <div>
+                                        <div>
+                                            <span class="slds-truncate">{!$Label.c.DPMX_Debit}</span>
+                                        </div>
+                                        <div class="slds-text-heading--medium slds-p-bottom_xxx-small">
+                                            <strong>
+                                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.discount.amount.amount}" currencyText="{!v.acquirerActivityWrapper.discount.amount.currency_y}"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </tr>
+                            </td>
+                        </table>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

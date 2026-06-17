@@ -1,0 +1,102 @@
+<aura:component extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="KPI_DetailTableController">
+
+    <aura:attribute name="contract" type="Object" />
+    <aura:attribute name="waiting" type="Boolean" default="false"/>
+    <aura:attribute name="showSaveButton" type="Boolean" default="false"/>
+
+    <aura:attribute name="detailData" type="Object" default="[]"/>
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="errors" type="Object" default="[]"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+
+    <aura:set attribute="title" value="KPI Details" />
+
+    <div class="slds-modal__content slds-p-around_medium slds-is-relative " id="modal-content-id-1">
+        <aura:if isTrue="{!v.waiting}">
+            <lightning:spinner variant="brand" alternativeText="Loading..." />
+        </aura:if >
+        <lightning:card title="{!'KPI Details for contract #' + v.contract.operationId}"  class="slds-p-bottom_medium kpidetails">
+
+            <div class="c-container">
+                <lightning:layout >
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Business area">Business area</p>
+                            <p>{!v.contract.businessArea}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Operation Id">Operation Id</p>
+                            <p>{!v.contract.operationId}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Client">Client</p>
+                            <p>{!v.contract.client}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Initial date">Initial date</p>
+                            <p>{!v.contract.initialDate}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Final date">Final date</p>
+                            <p>{!v.contract.finallDate}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Initial amount">Initial amount</p>
+                            <p>{!v.contract.initialAmount}&nbsp;{!v.contract.currency}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Field 1">Booking Country</p>
+                            <p>{!v.contract.bookingCountry}</p>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-medium">
+                        <div class="header-column">
+                            <p class="field-title title_contract" title="Activity">Activity</p>
+                            <p>{!v.contract.sustainableSubCategory}</p>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+
+            <div id="detailKPITable" class="classTableCmp slds-table_col-bordered slds-p-around_small">
+                <lightning:datatable
+                    class="table-test"
+                    data="{!v.detailData}"
+                    columns="{!v.columns}"
+                    keyField="id"
+                    hideCheckboxColumn="true"
+                    errors="{!v.errors}"
+                    suppressBottomBar="true"
+                    onrowaction="{!c.handleRowActions}"
+                    draftValues="{!v.draftValues}"
+                    oncellchange="{!c.handleChange}"
+                />
+            </div>
+
+        </lightning:card>
+    </div>
+    <footer class="slds-modal__footer">
+        <aura:if isTrue="{!v.showSaveButton}">
+            <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+            <lightning:button label="Save" onclick="{!c.handleSave}" variant="brand" class="slds-m-top_x-small" />
+        </aura:if>
+        <lightning:button label="Close" onclick="{!c.handleClose}" class="slds-m-top_x-small float-left" />
+    </footer>
+</aura:component>

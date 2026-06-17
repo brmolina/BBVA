@@ -1,5 +1,5 @@
-@IsTest
-private class DMT_Custom_Association_Client_PETTr_Test {
+@isTest
+private without sharing class DMT_Custom_Association_Client_PETTr_Test {
 
     @testSetup
     static void setupTestData() {

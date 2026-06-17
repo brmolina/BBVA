@@ -22,8 +22,10 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_Scenarios_Text:"SCENARIOS",
+              @track Label={DMT_ImageDescriptionText:"Image description",
+        dmt_cl_Scenarios_Text:"SCENARIOS",
         dmt_cl_ButtonCurrentOpp_Text:"Current opportunities",
+        DMT_BasicOpportunitiesText:"Basic Opportunities",
         dmt_cl_SelectOpportunity_Text:"Select Opportunity Type:",
         dmt_cl_NoOppsMessage:"There aren't opportunities for this client.",
         dmt_cl_ProfObsoletePassportMessage_Text:"Opportunity template values have been modified. Please recalculate passport for:",
@@ -46,9 +48,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L5ZEYA0"
+                  " card-0koKE000000L94GYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003obk02AA");
+                this.loadCustomStylesheetAttachement("00PKE000001vmkp2AA");
                 
                 
               }

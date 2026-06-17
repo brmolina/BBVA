@@ -1,0 +1,43 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_Contracts_Appraisals_Controller" access="global">
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="configurationId" type="String" access="global" description="Table configuration identifier"/>
+    <aura:attribute name="tableType" type="String" access="global" description="Table type to differentiate among tables"/>
+    <aura:attribute name="relatedName" type="String" access="global" description="Relationship field to arce__account_has_analysis__c object"/>
+    <aura:attribute name="sObjectType" type="String" access="global" description="Object table api name"/>
+    <aura:attribute name="apexClassSave" type="String" access="global" description="Save class logic from table"/>
+    <aura:attribute name="fieldsApiName" type="String" access="global" description="Api names from fields"/>
+    <aura:attribute name="filterTable" type="String" access="global" description="Record order conditions"/>
+    <aura:attribute name="viewTable" type="String" access="global" default="true" description="Boolean value to show or hide table"/>
+    <aura:attribute name="showButton" type="Boolean" access="global" default="false" description="Table type to differentiate among tables"/>
+    <aura:attribute name="currency" type="String" access="global" description="Currency of the table"/>
+    <aura:attribute name="unit" type="String" access="global" description="Unit of the table"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLibrary" />
+
+    <div class="row">
+      <h1 class="slds-text-heading--medium slds-m-bottom_small text-padding">{!$Label.c.Arc_Gen_ContractsAppraisalsTitle}</h1>
+    </div>
+    <aura:if isTrue="{!v.viewTable}">
+    <div class="slds-grid slds-gutters">
+      <div class="slds-col"><lightning:input name="input1" readonly="true" label="{!$Label.c.Arc_Gen_Currency}" disabled="true" value="{!v.currency}"  class="slds-form-element slds-hint-parent slds-p-bottom_xx-small slds-has-divider_bottom"/></div>
+      <div class="slds-col">
+        <lightning:input name="input2" readonly="true" label="{!$Label.c.Arc_Gen_Unit}" disabled="true" value="{!v.unit}"  class="slds-form-element slds-hint-parent slds-p-bottom_xx-small slds-has-divider_bottom" />
+      </div>
+      <div class="slds-col">
+        <span></span>
+      </div>
+      <div class="slds-col"> <span></span> </div>
+    </div>
+    <dwp_dv:Configurable_Table_Display_cmp
+                                          configurationId="{!v.configurationId}"
+                                          refreshOnRefreshViewEvent="true"
+                                          recordId="{!v.hasRecordId}"
+                                          tableId="{!v.tableId}"
+                                          />
+    </aura:if>
+    <aura:if isTrue="{!v.showButton}">
+      <div>
+        <lightning:button variant="Neutral" label="{!$Label.c.Arc_Gen_ManageHotelAppraisals}" title="{!$Label.c.Arc_Gen_ManageHotelAppraisals}" onclick="{!c.showModal}"/>
+      </div>
+    </aura:if>
+</aura:component>

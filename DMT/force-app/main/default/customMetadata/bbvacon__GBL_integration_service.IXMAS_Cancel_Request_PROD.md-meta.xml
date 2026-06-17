@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IXMAS_Cancel_Request_PROD</label>
+    <protected>false</protected>
+    <values>
+        <field>bbvacon__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">IXMAS_Cancel_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">IXMAS_Cancel_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Default_Integration_User__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>bbvacon__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json&quot;}</value>
+    </values>
+    <values>
+        <field>bbvacon__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>bbvacon__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;idUser&quot;: &quot;#idUser#&quot;,
+&quot;idRequestedBy&quot;: &quot;#idRequestedBy#&quot;,
+&quot;idCompany&quot;: &quot;#idCompany#&quot;,
+&quot;idRole&quot;: &quot;#idRole#&quot;,
+&quot;comment&quot;: &quot;#comment#&quot;,
+&quot;idOffice&quot;:&quot;#idOffice#&quot;,
+&quot;idMacroRegion&quot;: &quot;#idMacroRegion#&quot;,
+&quot;idSubsidiary&quot;: #idSubsidiary#
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;meta&quot;:{&quot;message&quot;:&quot;OK (0ms)&quot;},&quot;message&quot;:&quot;OK&quot;,&quot;timestamp&quot;:&quot;2026-03-05T04:42:11.793073+01:00&quot;}</value>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

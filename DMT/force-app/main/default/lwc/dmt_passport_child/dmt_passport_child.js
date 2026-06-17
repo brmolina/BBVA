@@ -3,13 +3,11 @@ import { NavigationMixin, CurrentPageReference } from "lightning/navigation";
 import dmt_case_comment_modal_v2 from 'c/dmt_case_comment_modal_v2';
 import TIME_ZONE  from '@salesforce/i18n/timeZone';
 
-export default class Dmt_passport_child extends NavigationMixin(LightningElement)
-{
+export default class Dmt_passport_child extends NavigationMixin(LightningElement) {
     @api showWarning;
     @api showfeaturesTable;
     @api wrapper;
     @api isBig;
-    @api columns;
     @api messageError;
     @api isTaskModalOpen;
     @api noShowInfo;
@@ -23,16 +21,24 @@ export default class Dmt_passport_child extends NavigationMixin(LightningElement
     @api isCaseModalOpen = false;
     @api approver;
     @api featureid;
-  
-   
-    get columnsWithClass()
-    {
-        console.log(this.wrapper);
-        return this.columns.map(col => ({
-          ...col,
-          class: `slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header fixed-row-header ${col.isNarrow}`
-        }));
-        
+
+    @track _columnsWithClass = [];
+    _columns = [];
+
+    get columns() {
+        return this._columns;
+    }
+
+    @api 
+    set columns(value) {
+        this._columns = value;
+        if (value) {
+            // Mapping only happens when the columns definition actually changes
+            this._columnsWithClass = value.map(col => ({
+                ...col,
+                class: `slds-is-sortable _slds-is-resizable slds-text-title--caps fixed-header fixed-row-header ${col.isNarrow}`
+            }));
+        }
     }
 
     get userTimeZone() {

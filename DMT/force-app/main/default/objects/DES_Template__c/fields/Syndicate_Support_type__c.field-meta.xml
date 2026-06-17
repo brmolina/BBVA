@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Syndicate_Support_type__c</fullName>
+    <label>Syndicate Support</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Syndicate Supportive</fullName>
+                <default>false</default>
+                <label>Syndicate Supportive</label>
+            </value>
+            <value>
+                <fullName>Syndicate Non Supportive</fullName>
+                <default>false</default>
+                <label>Syndicate Non Supportive</label>
+            </value>
+            <value>
+                <fullName>Portfolio Management Supportive</fullName>
+                <default>false</default>
+                <label>Portfolio Management Supportive</label>
+            </value>
+            <value>
+                <fullName>Portfolio Management Non Supportive</fullName>
+                <default>false</default>
+                <label>Portfolio Management Non Supportive</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <label>N/A</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

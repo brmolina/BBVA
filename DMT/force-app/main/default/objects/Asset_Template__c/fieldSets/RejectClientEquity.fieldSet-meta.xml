@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FieldSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RejectClientEquity</fullName>
+    <description>RejectClientEquity</description>
+    <displayedFields>
+        <field>Client__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <label>RejectClientEquity</label>
+</FieldSet>

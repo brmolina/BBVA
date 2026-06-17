@@ -22,9 +22,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_ProfAmortizationFieldsMessage_Text:"Amortization fields are not available for Opportunity with Amortization Type :",
-        dmt_cl_ProfTenorAmortizationMessage_Text:"Tenor fields are not available for Opportunity with Amortization Type :"
-        };
+              
               pubsubEvent = [];
               customEvent = [];
               
@@ -35,8 +33,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                this.customLabels = this.Label;
-                      
+                
                 this.setDefinition(data);
  this.registerEvents();
                 

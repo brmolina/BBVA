@@ -1,0 +1,23 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.date-range-container {
+    width: 100%;
+}
+
+.date-row {
+    display: flex;
+    gap: 0.65rem; /* Reducimos el hueco interno entre Start Date y End Date */
+    width: 100%;
+}
+.date-row lightning-input {
+    flex: 1 1 0;
+}
+
+.date-range-error {
+    color: #ba0517;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}

@@ -1,0 +1,36 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 09-27-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller = "GDT_ArceSummary_Controller"   implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="pathSelect" type="String" />
+    <aura:attribute name="editB" type="String"/>
+    <aura:attribute name="path01" type="Boolean" default="false"/>
+    <aura:attribute name="path02" type="Boolean" default="false"/>
+    <aura:attribute name="path1" type="Boolean" default="false"/>
+    <aura:attribute name="path2" type="Boolean" default="false"/>
+    <aura:attribute name="path3" type="Boolean" default="false"/>
+    <aura:attribute name="isValidated" type="Boolean" default="false" access="global"/>  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue = "{!v.isValidated}">
+    	<aura:if isTrue = "{!v.path01}">
+            <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="Arce-Summary" msgConfirmCancel="true"/>
+    	</aura:if>
+        <aura:if isTrue = "{!v.path02}">
+            <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="Arce-Summary" msgConfirmCancel="true"/>
+    	</aura:if>
+        <aura:if isTrue = "{!v.path1}">
+            <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="Arce-Summary" msgConfirmCancel="true"/>
+    	</aura:if>
+        <aura:if isTrue = "{!v.path2}">
+            <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="Arce-Summary" msgConfirmCancel="true"/>
+    	</aura:if>
+        <aura:if isTrue = "{!v.path3}">
+            <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="Arce-Summary" msgConfirmCancel="true"/>
+    	</aura:if>
+    </aura:if>
+</aura:component>

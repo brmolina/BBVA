@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AvoidEditNotDraft</fullName>
+    <active>true</active>
+    <errorConditionFormula>(ISCHANGED(Name) || ISCHANGED( Booking_Geography__c ) ||
+ISCHANGED( CurrencyIsoCode) || 
+	ISCHANGED( Start_Date__c)  || 
+	ISCHANGED( DvP_Amount__c)|| 
+	ISCHANGED( FD_Amount__c)|| 
+	ISCHANGED( Repos_Limit__c)|| 
+	ISCHANGED( Repos_Limit_6M__c)|| 
+	ISCHANGED( First_Breakclause__c)|| 
+	ISCHANGED( Breakclause_Frequency__c)|| 
+	ISCHANGED( Waiver__c) || 
+	ISCHANGED( Client__c)|| 
+	ISCHANGED( Amount__c)|| 
+	ISCHANGED( DMT_LastLevelId__c)) &amp;&amp; 
+	!ISPICKVAL(Status__c, &quot;Draft&quot;) &amp;&amp; !DMT_Allow_Approval_Edit__c  &amp;&amp;
+	$Profile.Name != &quot;Desktop Integration&quot; &amp;&amp; 
+	$Profile.Name != &quot;System Administrator&quot; &amp;&amp; !DMT_Cancel__c</errorConditionFormula>
+    <errorMessage>Line information change is not allowed for the current state.</errorMessage>
+</ValidationRule>

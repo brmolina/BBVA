@@ -1,16 +1,57 @@
 <template>
-
-        <div class={containerStyleWarining}>
-            
-        <lightning-combobox class=" slds-dropdown_length-5 slds-scrollable_y" id={fieldname} name="picklist" label={label} value={value} placeholder={placeholder} options={optionsValue}
-            onchange={handleChange} onclick={handleClick} read-only={readOnlyField}></lightning-combobox>
-                    <!-- Icono de advertencia solo si showReadOnlyWarning es true -->
+    <div class="main-wrapper" style="position: relative; height: 32px;">
+        <div class="slds-combobox_container" onfocus={handleWrapperFocus} role="none">
+            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                
+                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" onfocus={handleWrapperFocus} role="none">
+                    <input
+                        class="slds-input picklist-trigger"
+                        type="text"
+                        placeholder={placeholder}
+                        value={selectedLabel}
+                        readonly
+                        disabled={readOnlyField}
+                        onclick={handleInputClick}
+                        onblur={handleBlur}
+                        onkeydown={handleKeyDown}
+                    />
+                    <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                        <lightning-icon icon-name="utility:down" size="x-small" class="slds-icon-text-default"></lightning-icon>
+                    </span>
+                </div>
+    
+                <template if:true={showDropdown}>
+                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid slds-dropdown_left" 
+                         role="listbox" 
+                         style={dropdownStyle}
+                         onmousedown={handleDropdownMouseDown}>
+                         
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <template for:each={optionsValue} for:item="opt">
+                                <li key={opt.value} role="presentation" class="slds-listbox__item">
+                                    <div class={opt.className} 
+                                        data-value={opt.value}
+                                        onclick={handleSelect}>
+                                        <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                        <span class="slds-media__body">
+                                            <span class="slds-truncate" title={opt.label}>{opt.label}</span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+    
+            </div>
+        </div>
+        
         <template if:true={readonlywarning}>
-            <lightning-helptext
-                content={labels.DMT_HELPTEXT_WARNING}
-                icon-name="utility:warning"
+            <lightning-helptext 
+                content={labels.DMT_HELPTEXT_WARNING} 
+                icon-name="utility:warning" 
                 icon-variant="warning"
-                class="slds-m-left_x-small slds-m-top_small" >
+                class="slds-m-left_x-small field-warning">
             </lightning-helptext>
         </template>
     </div>

@@ -1,0 +1,13 @@
+.THIS .roundtable{
+    border-radius: 5px;
+    border: 0.1px;
+    border-style: solid;
+    border-color: #bebdbf;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+.THIS .color{
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: #F3F3F3;
+  }

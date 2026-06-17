@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Source_RPP_Calculator__c</columns>
+    <columns>Version__c</columns>
+    <columns>Simulated__c</columns>
+    <columns>Final_Simulation__c</columns>
+    <columns>Tax_Id__c</columns>
+    <columns>Seller_Assignor__c</columns>
+    <columns>Total_Amount_EUR__c</columns>
+    <columns>Total_Limit_EUR__c</columns>
+    <columns>Internal_Rating__c</columns>
+    <columns>External_Rating__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>

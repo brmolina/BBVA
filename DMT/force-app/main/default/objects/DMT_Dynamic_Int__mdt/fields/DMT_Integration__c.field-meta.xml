@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Integration__c</fullName>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Integration</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>IASO</fullName>
+                <default>true</default>
+                <label>IASO</label>
+            </value>
+            <value>
+                <fullName>IXMAS</fullName>
+                <default>false</default>
+                <label>IXMAS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,84 @@
+<aura:component>
+	<aura:attribute name="fieldObject" type="Object"/>
+	<aura:attribute name="saveHtml" type="Boolean" default="false" />
+	<aura:if isTrue="{!v.saveHtml}">
+		<div>
+			<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+			<div class="slds-form-element__control">
+				<span class="slds-form-element__static">
+					{!v.fieldObject.htmlInput}
+				</span>
+			</div>
+		</div>
+		<aura:set attribute="else">
+			<aura:if isTrue="{!v.fieldObject.type == 'PERCENT'}">
+				<div class="slds-form-element">
+					<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+					<div class="slds-form-element__control">
+						<span class="slds-form-element__static">
+							<lightning:formattedNumber value="{!v.fieldObject.value}"/> %
+						</span>
+					</div>
+				</div>
+				<aura:set attribute="else">
+					<aura:if isTrue="{!v.fieldObject.type == 'BOOLEAN'}">
+						<div class="slds-form-element">
+							<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+							<div class="slds-form-element__control">
+								<span class="slds-form-element__static">
+									<ui:outputCheckbox value="{!v.fieldObject.value}"/>
+								</span>
+							</div>
+						</div>
+						<aura:set attribute="else">
+							<aura:if isTrue="{!v.fieldObject.type == 'DOUBLE'}">
+								<div class="slds-form-element">
+									<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+									<div class="slds-form-element__control">
+										<span class="slds-form-element__static">
+											<lightning:formattedNumber value="{!v.fieldObject.value}"/>
+										</span>
+									</div>
+								</div>
+								<aura:set attribute="else">
+									<aura:if isTrue="{!v.fieldObject.type == 'DATE'}"> 
+										<div class="slds-form-element">
+											<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+											<div class="slds-form-element__control">
+												<span class="slds-form-element__static">
+													<ui:outputDate value="{!v.fieldObject.value}" format="dd/MM/yyyy"/>
+												</span>
+											</div>
+										</div>
+										<aura:set attribute="else">
+											<aura:if isTrue="{!v.fieldObject.type == 'CURRENCY'}">
+												<div class="slds-form-element">
+													<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+													<div class="slds-form-element__control">
+														<span class="slds-form-element__static">
+															<ui:outputCurrency currencyCode="{!v.fieldObject.CurrencyIsoCode +' '}" value="{!v.fieldObject.value}" />
+														</span>
+													</div>
+												</div>
+												<aura:set attribute="else">
+													<div class="slds-form-element">
+														<span class="slds-form-element__label">{!v.fieldObject.label}</span>
+														<div class="slds-form-element__control">
+															<span class="slds-form-element__static">
+																<ui:outputText value="{!v.fieldObject.value}" />
+															</span>
+														</div>
+													</div>
+												</aura:set>
+                                        	</aura:if>
+										</aura:set>
+									</aura:if>
+								</aura:set>
+							</aura:if>
+						</aura:set>
+					</aura:if>
+				</aura:set>
+			</aura:if>
+		</aura:set>
+	</aura:if>
+</aura:component>

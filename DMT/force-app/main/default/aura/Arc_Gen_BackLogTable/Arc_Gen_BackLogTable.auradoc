@@ -1,0 +1,10 @@
+<aura:documentation>
+    <aura:description>
+      <h5><b>Component - that show a table in the Business Risk Tab. </b></h5>
+      <p>showModal - boolean to show or hide the edit modal</p>
+      <p>columns - variable to show columns</p>
+      <p>data - variable to show rows and data</p>
+      <p>recordtypeid - variable that contain the id of a recordType</p>
+      <p><code>c:Arc_Gen_BackLogTable</code></p>
+    </aura:description>
+</aura:documentation>

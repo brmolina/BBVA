@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_External_Rating__c</fullName>
+    <label>External Rating</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>S&amp;P</fullName>
+                <default>false</default>
+                <label>S&amp;P</label>
+            </value>
+            <value>
+                <fullName>Moody&apos;s</fullName>
+                <default>false</default>
+                <label>Moody&apos;s</label>
+            </value>
+            <value>
+                <fullName>Fitch</fullName>
+                <default>false</default>
+                <label>Fitch</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,32 @@
+<aura:component controller="Commitment_ctrl">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:attribute name="oppRecordId" type="String" default=""/>
+	<aura:attribute name="objSetup" type="Object" />
+	<aura:attribute name="isLoad" type="Boolean" default="false"/>
+	<aura:attribute name="hasRecord" type="Boolean" default="false"/>
+	<aura:attribute name="readOnly" type="Boolean" default="false"/>
+	<div class="{!v.readOnly?'':'slds-modal__content slds-p-around_medium'}" >
+		<aura:if isTrue="{!v.isLoad}">
+			<aura:if isTrue="{!v.oppRecordId}">
+				<aura:if isTrue="{!v.hasRecord}">
+					<table class="slds-table slds-table_bordered slds-table_cell-buffer" role="grid">
+					<thead>
+						<tr>
+							<aura:iteration items="{!v.objSetup.lstHead}" var="head" indexVar="i">
+								<th scope="col" class="slds-is-sortable slds-is-resizable">
+									{! i==1?$Label.c.Currency:head}
+								</th>
+							</aura:iteration>
+						</tr>
+					</thead>
+					<tbody>
+ 						<aura:iteration items="{!v.objSetup.lstData}" var="row">
+							<c:CommitmentsRow_cmp row="{!row}" readOnly="{!v.readOnly}"/>
+						</aura:iteration>
+					</tbody>
+				</table>
+			</aura:if>
+		</aura:if>
+		</aura:if>
+	</div>
+</aura:component>

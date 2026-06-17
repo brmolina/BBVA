@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_RORCStart_Before_Update_RORCEnd</fullName>
+    <active>true</active>
+    <description>Valida que se haya ingresa valor en el campo RORC Start, antes de asignar valor al campo RORC End</description>
+    <errorConditionFormula>AND(
+ISCHANGED(FCSC_RORC_Fin_Compromiso__c ),
+ISBLANK(FCSC_RORC_Inicio_Compromiso__c )
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_RORC_Inicio_Compromiso__c</errorDisplayField>
+    <errorMessage>RORC Start Commitment is empty</errorMessage>
+</ValidationRule>

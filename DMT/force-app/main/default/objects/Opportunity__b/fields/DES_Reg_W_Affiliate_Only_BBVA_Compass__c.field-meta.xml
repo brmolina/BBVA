@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Reg_W_Affiliate_Only_BBVA_Compass__c</fullName>
+    <externalId>false</externalId>
+    <label>Reg W Affiliate(Only BBVA Compass)</label>
+    <length>5</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

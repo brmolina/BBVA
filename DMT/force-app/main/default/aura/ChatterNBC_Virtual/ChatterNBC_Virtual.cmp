@@ -1,0 +1,33 @@
+<aura:component
+  implements="flexipage:availableForAllPageTypes,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,force:appHostable"
+  controller="Chatter_NBCVirtual_Controller" access="global">
+  <aura:attribute name="view" type="Boolean" default="false" />
+  <aura:attribute name="recordId" type="Id" />
+  <aura:attribute name="iden" type="Id" />
+  <aura:attribute name="oppSel" type="Id" />
+  <aura:attribute name="myVal" type="String" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.handleComponentEvent}" />
+  <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.handleComponentEvent}" />
+  <aura:attribute name="articleId" type="String" access="global" />
+  <aura:if isTrue="{!v.iden != null}">
+  	<aura:if isTrue="{!v.view}">
+        <div class="ground">
+          <div class="slds-box">
+            <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+              {!v.body}
+            </aura:if>
+            <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP'}">
+              <lightning:inputRichText variant="bottom-toolbar" value="{!v.myVal}" placeholder="Share an update..."/>
+              <br/>
+              <lightning:button class="slds-float--right" variant="brand" label="Share" title="Share" onclick="{! c.insertPost }" />
+            </aura:if>
+              <c:ChatterFeed recordId="{!v.recordId}" oppSel="{!v.oppSel}"/>
+            <div aura:id="feedContainer" class="feed-container slds-hide">
+              <forceChatter:feed/>
+            </div>
+          </div>
+        </div>
+    </aura:if>
+  </aura:if>
+</aura:component>

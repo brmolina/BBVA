@@ -1,5 +1,5 @@
 @isTest
-public class DMT_Engines_Test {
+public without sharing class DMT_Engines_Test {
 
     @testSetup static void setup() {
 

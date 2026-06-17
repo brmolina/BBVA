@@ -1,0 +1,3509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Default AP Page for AP Admin Application</comment>
+        <content>acpl__Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Default AP Page for AP Admin Application</comment>
+        <content>acpl__Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+    </actionOverrides>
+    <brand>
+        <headerColor>#0070D2</headerColor>
+        <logoVersion>2</logoVersion>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Account Planning Administration</label>
+    <navType>Standard</navType>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Desktop Integration</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Desktop Integration</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>System Dataloader</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>System Dataloader</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Team_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__AP_Team__c</pageOrSobjectType>
+        <recordType>bupl__AP_Team__c.DES_Account_Planning_member</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Standard User</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Standard User</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Account_Planning_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Account_Planning</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Group_Analysis_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>DES_Group_Analysis__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Growth_Driver_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_GrowthDriver__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Period_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_PeriodConfiguration__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Question_Catalog</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning__c</pageOrSobjectType>
+        <recordType>acpl__Account_Planning__c.acpl__Question_Catalog</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>DES_Need_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>bupl__BP_Need__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Item_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success_Item__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Type_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__Account_Planning_Type__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GTB Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>gfsc__Guidance_for_Success_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>gfsc__Guidance_for_Success__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Planning_Configuration_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>acpl__AP_Period__c</pageOrSobjectType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Administrator Business</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop ARCE</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop CIB Management</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Compliance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop Finance</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GCC Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop GM Click To Dial</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Business Development</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop IBF Standard</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>BBVA Desktop SP</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Large</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Consultation IT</profile>
+    </profileActionOverrides>
+    <profileActionOverrides>
+        <actionName>View</actionName>
+        <content>acpl__Account_Plan_Validation</content>
+        <formFactor>Small</formFactor>
+        <pageOrSobjectType>Case</pageOrSobjectType>
+        <recordType>Case.acpl__Account_Plan_Validation</recordType>
+        <type>Flexipage</type>
+        <profile>Admin</profile>
+    </profileActionOverrides>
+    <setupExperience>all</setupExperience>
+    <tabs>DES_Home_Account_Planning</tabs>
+    <tabs>acpl__Account_Planning__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>Account_Plans_Dashboards</tabs>
+    <tabs>AP_notif__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

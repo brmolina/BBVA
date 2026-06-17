@@ -1,0 +1,16 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	
+    <!-- Button Redirecting to CLAN's URL -->
+    <div class="slds-box">
+    	<div class="slds-page-header__name-title">
+         	<h1>
+        		<span class="slds-page-header__title slds-truncate" title="Pricing Calculator Title">Pricing Calculator</span>
+        		<br/>
+    	 	</h1>
+        	<div class="slds-align_absolute-center" >
+        		<lightning:button variant="brand" label="CLAN Pricing" title="CLAN Pricing Button" onclick="{! c.CLANredirect }" />
+            </div>
+    	</div>
+    </div>
+    
+</aura:component>

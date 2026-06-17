@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Initiative_rep__c</fullName>
+    <description>Initiative Name for reports</description>
+    <externalId>false</externalId>
+    <formula>IF(
+ NOT( ISBLANK( intt__campaign_id__c ) )
+,
+  intt__campaign_id__r.intt__InitiativeName__c
+,
+  intt__gf_group_campaign_id__r.cond__campaign_id__r.intt__InitiativeName__c
+)</formula>
+    <label>Initiative</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

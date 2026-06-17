@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discarded_or_Duplicated_wo_Task</fullName>
+    <active>false</active>
+    <description>Any case with at least one task can’t be discarded or duplicated</description>
+    <errorConditionFormula>AND(
+ ISPICKVAL(SER_Business_Case_Type__c, &quot;EGS&quot;),
+ ISPICKVAL(SER_Classification__c, &quot;Discarded / Duplicated&quot;),
+ SER_TaskCreated_EGS__c = TRUE
+)</errorConditionFormula>
+    <errorMessage>A case with at least one task can’t be discarded or duplicated</errorMessage>
+</ValidationRule>

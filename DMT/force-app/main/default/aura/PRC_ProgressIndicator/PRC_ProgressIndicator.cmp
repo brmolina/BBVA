@@ -1,0 +1,11 @@
+<aura:component >
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+  <aura:attribute name="currentstep" type="String"/>
+  <aura:attribute name="refresh" type="Boolean" default="false" />
+    <lightning:progressIndicator currentStep="x" variant="base">
+      
+    </lightning:progressIndicator>
+  <div aura:id="container">
+
+  </div>
+</aura:component>

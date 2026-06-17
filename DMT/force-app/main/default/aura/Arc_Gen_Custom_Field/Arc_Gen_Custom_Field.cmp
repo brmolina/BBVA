@@ -1,0 +1,34 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 10-31-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_Custom_Field_Controller" access="global">
+
+    <aura:attribute name="objectName" type="String" access="global" />
+    <aura:attribute name="fieldName" type="String" access="global" />
+    <aura:attribute name="fieldLabel" type="String" access="global" />
+    <aura:attribute name="fieldValue" type="String" default="default value" />
+
+    <aura:handler event="arce:Arc_Gen_Ratios_Calculator_evt" action="{!c.init}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" description="Init variable" />
+
+    <div class="slds-size_1-of-1 slds-col slds-text-body__regular">
+        <div role="listitem" data-aura-class="forcePageBlockItem slds-text-color__default" class="slds-text-color__default" aria-label="NaN">
+            <div class="slds-form-element slds-hint-parent slds-p-bottom_xx-small slds-has-divider_bottom">
+                <div class="labelCol slds-form-element__label contentLabel">
+                    <span class="itemLabel">{!v.fieldLabel}</span>
+                </div>
+                <div class="itemBody slds-form-element__control">
+                    <div class="output-text-container slds-cell-wrap slds-no-space slds-scrollable_x">
+                        <span class="uiOutputTextArea" data-aura-class="uiOutputTextArea">{!v.fieldValue}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

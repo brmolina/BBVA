@@ -45,6 +45,10 @@ export default class Dmt_view_structure extends LightningElement {
                 this.objectApiName = 'DMT_Line__c';
                 this.recordTypeApiName = 'OtherProducts';
                 break;
+            case 'Line_Sanction':
+                this.objectApiName = 'DMT_Line__c';
+                this.recordTypeApiName = 'Sanction';
+                break;
             case 'Opportunity':
                 this.objectApiName = 'Opportunity';
                 this.recordTypeApiName = 'DMT_Opportunity';

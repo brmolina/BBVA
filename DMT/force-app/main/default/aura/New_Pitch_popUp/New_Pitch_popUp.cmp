@@ -1,0 +1,42 @@
+<aura:component controller="NewPitchPopupCnt"
+    implements="lightning:availableForFlowActions,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="isOpen" type="Boolean" default="true" access="global"/>
+    <aura:attribute name="IsVisible" type="Boolean" default="" access="global"/>
+    <aura:attribute name="control" type="String" default="false" access="global"/>
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="targetRecord" type="Object" access="global"/>
+    <aura:attribute type="String" name="visible3" access="global"/>
+    <aura:attribute name="contro2" type="String" default="{!v.targetRecord.gf_recent_pitch_type__c}" access="global"/>
+    <aura:if isTrue="{!v.isOpen}">
+        <aura:if isTrue="{!v.IsVisible==false}">
+            <lightning:card title="{!v.title}" class="slds-scrollable_y slds-hide" aura:id="Start">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open isvisible">
+                    <div class="slds-modal__container">
+                        <aura:if isTrue="{!v.IsVisible==false}">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button--icon-inverse slds-modal__close"
+                                    onclick="{!c.closeFlowModal}">
+                                    <lightning:icon iconName="utility:close" size="medium" variant="bare" />
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Pitch
+                                </h2>
+                            </header>
+                            <lightning:card title="{!v.title}" class="slds-scrollable_y">
+                                <lightning:flow aura:id="Pitch_FileUpload" onstatuschange="{!c.handleStatusChange}" />
+                            </lightning:card>
+                            <footer class="slds-modal__footer">
+                                <button class="slds-button slds-button_brand slds-float_right"
+                                    onclick="{!c.closeFlowModal}">Continue</button>
+                            </footer>
+                        </aura:if>
+                    </div>
+                </section>
+            </lightning:card>
+            <div class="slds-backdrop slds-backdrop_open isvisible"></div>
+        </aura:if>
+    </aura:if>
+</aura:component>

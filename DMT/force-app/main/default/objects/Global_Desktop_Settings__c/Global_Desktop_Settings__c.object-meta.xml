@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Custom Settings que contiene las funcionalidades que se pueden activar y desactivar de Global Desktop</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Global Desktop Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

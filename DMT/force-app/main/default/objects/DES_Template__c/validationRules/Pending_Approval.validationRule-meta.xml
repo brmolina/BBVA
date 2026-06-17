@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Approval</fullName>
+    <active>true</active>
+    <description>Lock the template when is approved or pending approval</description>
+    <errorConditionFormula>(ISBLANK(TEXT(opportunity_id__r.NBC_Decision_Taken_type__c)) &amp;&amp;
+(Pending_approval_type__c ||  Template_approved_type__c )) &amp;&amp;
+NOT(ISCHANGED(Template_approved_type__c)) &amp;&amp;
+NOT(ISCHANGED(Pending_approval_type__c))&amp;&amp;  NOT($Permission.Templates_SP) 
+&amp;&amp; $Profile.Name != &quot;System Administrator&quot; &amp;&amp; NOT(ISCHANGED(opportunity_nbc_comments_desc__c))</errorConditionFormula>
+    <errorMessage>Cannot edit the template when has been approved or is waiting for an approval.</errorMessage>
+</ValidationRule>

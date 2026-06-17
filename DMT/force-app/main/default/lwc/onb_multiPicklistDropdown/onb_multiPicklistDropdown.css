@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.slds-combobox_container,
+.slds-combobox {
+  width: 100%;
+}
+
+.slds-combobox__form-element {
+  width: 100%;
+}
+
+.slds-combobox__input {
+  width: 100%;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.slds-dropdown {
+  width: 100%;
+  max-height: 220px;
+  overflow: auto;
+  z-index: 9000;
+}
+
+.onb-option {
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.onb-option:hover {
+  background: var(--lwc-colorBackgroundRowHover, #f3f3f3);
+}

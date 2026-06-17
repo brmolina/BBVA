@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Opportunity_Custom</fullName>
+    <availability>online</availability>
+    <description>Custom Button to override the standard New opportunity button. Also, it update the field Asset Class</description>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>New Opportunity</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>{!requireScript(&quot;/soap/ajax/32.0/connection.js&quot;)}
+{!requireScript(&quot;/support/console/32.0/integration.js&quot;)}
+
+
+var asset = &apos;{!User.Asset_Class__c}&apos;;
+var accId = &apos;{!Account.Id}&apos;;
+var assetFieldID = &apos;{!$Setup.Application_Settings_Hierarchy__c.OpportunityAssetClass_fieldID__c}&apos;;
+
+var params = &apos;&amp;retURL=%2F&apos;;
+
+if (accId != &apos;&apos;) {
+//alert(&apos;accId: &apos; + accId );
+params  += accId + &apos;&amp;accid=&apos; + accId ;
+}else{
+params += &apos;006%2Fo&apos;;
+}
+
+
+if(asset != &apos;&apos;){
+var a = asset.split(&apos;;&apos;);
+//if(a.length==1){
+if (a[0] == &apos;EQ&apos;){
+  a[0] = &apos;Cash Equity&apos;;
+}
+params += &apos;&amp;&apos; + assetFieldID  + &apos;=&apos; + a[0];
+
+
+//}
+}
+if (sforce.console.isInConsole()) {
+   openSubTab(&apos;/006/e?&apos; + params, &apos;New Opportunity&apos;, true);
+}else{
+  window.parent.location.assign(&apos;/006/e?&apos; + params);
+}
+
+
+
+function openSubTab(url, title, refreshOnClose) {
+	var refreshPrimaryTab = function() {
+		sforce.console.getEnclosingPrimaryTabId(function(result) {
+			sforce.console.refreshPrimaryTabById(result.id, true);
+		});
+	}
+
+	sforce.console.getEnclosingPrimaryTabId(function(result) {
+		var primaryTabId = result.id;
+if (primaryTabId  != null){
+		sforce.console.openSubtab(primaryTabId, url, true, title, null, function(r) {
+			if (refreshOnClose)
+				sforce.console.addEventListener(sforce.console.ConsoleEvent.CLOSE_TAB,
+					refreshPrimaryTab, {tabId: r.id});
+		});
+}else{
+//srcUp(url);
+sforce.console.openPrimaryTab(null, url, true, &apos;New Opportunity&apos;);
+}
+	});
+}</url>
+</WebLink>

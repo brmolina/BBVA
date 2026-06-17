@@ -1,0 +1,18 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,force:appHostable"
+  controller="Chatter_NBCVirtual_Controller" access="global">
+  <aura:attribute name="view" type="Boolean" default="false" />
+  <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+  <aura:attribute name="iden" type="Id" />
+    <aura:attribute name="lon" type="Integer" default="0" />
+  <aura:attribute name="oppSel" type="Id" />
+  <aura:attribute name="myVal" type="String" />
+  <aura:handler name="init" value="{!this}" action="{!c.handleComponentEvent}" />
+  <aura:attribute name="articleId" type="String" access="global" />
+  <aura:if isTrue="{!v.iden != null}">
+  	<aura:if isTrue="{!v.view}">
+            <div aura:id="feedContainer" class="feed-container" onmouseover="{!c.refresh}" ontouchmove="{!c.refresh}">
+              <forceChatter:feed />
+            </div>
+    </aura:if>
+  </aura:if>
+</aura:component>

@@ -25,6 +25,7 @@ public without sharing class Arc_Gen_ReturnButton_controller {
     * @date     2019-05-13
     * @example  private Arc_Gen_ReturnButton_controller ()
     **/
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @TestVisible
     private Arc_Gen_ReturnButton_controller () {
     }
@@ -91,7 +92,8 @@ public without sharing class Arc_Gen_ReturnButton_controller {
     */
     @AuraEnabled
     public static String evaluateIdentification(Id accHasAnalysisId, Object wrapper, String userId, String reason) {
-        if (!arce.Arc_Gen_GenericUtilities.isButtonAvailable(accHasAnalysisId, 'Arc_Gen_BtnReturn')) {
+        if (!arce.Arc_Gen_GenericUtilities.isButtonAvailable(accHasAnalysisId, 'Arc_Gen_BtnReturn') &&
+            !arce.Arc_Gen_GenericUtilities.isButtonAvailable(accHasAnalysisId, 'Arc_Gen_Return_2021RTC')) {
             throw new AuraHandledException(System.Label.Arc_Gen_Generic_ButtonNotAllowed);
         }
 

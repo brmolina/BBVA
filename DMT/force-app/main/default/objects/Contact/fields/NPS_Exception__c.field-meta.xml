@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NPS_Exception__c</fullName>
+    <formula>AND(
+				survey_nps_contact_type__c = true,
+				DES_Client_NPS__c = false
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>NPS Exception</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -26,20 +26,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         };
               pubsubEvent = [];
               customEvent = [];
-               
-        firstRender3 = true;
-        @wire(getRecord , {recordId: "$recordId" , fields:"DMT_Line__c.Id",optionalFields: $cmp.getWireOptionalFields(data.events[3])})
-          wiredRecord3({ error, data }){
-            if (this.objectApiName === 'DMT_Line__c'){
-              if(data && this.firstRender3){
-                this.firstRender3 = false;
-                return;
-              }else{
-                this.recordChangeEventHandler(error,data,3)
-              }
-            }
-          }
-        
+              
               connectedCallback() {
                 super.connectedCallback();
                 this.setThemeClass(data);
@@ -53,9 +40,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L5xJYAS"
+                  " card-0koKE000000L75zYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003p00v2AA");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ1E2AW");
                 
                 
               }
@@ -70,6 +57,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
 
               registerEvents() {
                 
+        this.pubsubEvent[0] = {
+          [interpolateWithRegex(`refresh`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[3],3)
+        };
+        this.pubsubChannel0 = interpolateWithRegex(`linestab`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
+
             this.customEventName0 = interpolateWithRegex(`riskSelected`,this._allMergeFields,this._regexPattern,"noparse");
             this.customEvent[0] = this.handleEventAction.bind(this, data.events[0],0);
 
@@ -97,7 +90,8 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               }
 
               unregisterEvents(){
-                
+                pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
             this.template.removeEventListener(this.customEventName1,this.customEvent[1]);

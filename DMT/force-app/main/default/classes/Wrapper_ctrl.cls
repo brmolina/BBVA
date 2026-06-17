@@ -41,7 +41,6 @@ public with sharing class Wrapper_ctrl {
             googleConfig = new gcal.GBL_Configuration_wrp();
             googleConfig.synchronizeAll = true;
             googleConfig.notifications = notifications;
-            //gcal.GBL_EventHandler.synchronizeEvent (new List<Id>{eventList[0].Id},googleConfig);
         }
     }
 }

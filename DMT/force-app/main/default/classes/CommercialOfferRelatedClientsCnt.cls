@@ -46,7 +46,7 @@ public with sharing class CommercialOfferRelatedClientsCnt {
         accIds.addAll(relVisits(cOfferId));
 
         //Recupera todas las cuentas relacionadas
-        final List<Account> accReturn = [SELECT Id, Name, DES_Client_Type__c, DES_Global_banker__c, toLabel(DES_Country_Client__c), SER_CClient__c,
+        final List<Account> accReturn = [SELECT Id, Name, DES_Client_Type__c, DES_Global_banker__c, toLabel(DES_Country_Client__c), g_customer_id__c,
                                    DES_Country_of_Management__c, DES_RAR_YTD__c, rar_entity_last_12m_amount__c, convertCurrency(DES_GROSS_MARGIN__c),
                                    DES_RORC_YTD__c FROM Account WHERE Id IN :accIds];
         
@@ -54,7 +54,7 @@ public with sharing class CommercialOfferRelatedClientsCnt {
         //Construye la clase wrapper
         final List<wrapperClass> listWrapperClass = new List<wrapperClass>();
         for(Account acc : accReturn) {
-            listWrapperClass.add(new wrapperClass(acc.Id, acc.Name, acc.DES_Client_Type__c, acc.DES_Global_banker__c, acc.SER_CClient__c,
+            listWrapperClass.add(new wrapperClass(acc.Id, acc.Name, acc.DES_Client_Type__c, acc.DES_Global_banker__c, acc.g_customer_id__c,
                                                  acc.DES_Country_Client__c, acc.DES_Country_of_Management__c, String.valueOf(acc.DES_RAR_YTD__c),
                                                  String.valueOf(acc.rar_entity_last_12m_amount__c), String.valueOf(acc.DES_GROSS_MARGIN__c),
                                                  String.valueOf(acc.DES_RORC_YTD__c)));

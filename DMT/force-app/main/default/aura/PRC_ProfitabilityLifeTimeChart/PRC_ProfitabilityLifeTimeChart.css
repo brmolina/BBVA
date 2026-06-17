@@ -1,0 +1,43 @@
+.THIS .content{
+    border:1px #CDCDCD solid;
+    border-radius:5px;
+    margin:5px;
+    padding:20px 10px 10px 10px;
+}
+.THIS h1{
+    font-weight:bold;
+    font-size:1.3em;
+}
+.THIS .pCenter {
+    height:200px;
+    text-align:center;
+    padding-top:100px;
+}
+.THIS .customBox {
+    padding:30px 30px 50px 30px;
+}
+.THIS .maxDimensions {
+    height:100%; width:100%;
+}
+
+.THIS.customDiv{
+	padding:30px 30px 50px 30px;
+}
+
+.THIS .customP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .customCanvas {
+	width:300;
+    height:350px;
+}
+
+
+.THIS.mobileCustomDiv {
+	padding:30px 30px 50px 30px;
+	height:100%;
+	width:100%
+}

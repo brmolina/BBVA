@@ -1,0 +1,32 @@
+<!--
+@Component Name     : Arc_Gen_LeveragedMateriality.cmp
+@Description        : Component that displays the materiality (risk) used for leveraged calculations. This component automatically updates
+when the risk changes.
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : joseluis.garcia4.contractor@bbva.com
+@Last Modified On   : 18/09/2020
+@Modification Log   :
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    18/09/2020      joseluis.garcia4.contractor@bbva.com     Initial Version
+-->
+<aura:component implements="force:hasRecordId" access="global">
+    <aura:attribute name="ahaFields" type="Object" description="Object with the returned date field"/>
+    <aura:attribute name="value" type="Integer" description="Object with the returned date field"/>
+
+    <force:recordData aura:id="ahaRecord"
+      fields="arce__current_proposed_amount__c"
+      recordId="{!v.recordId}"
+      targetFields="{!v.ahaFields}"
+      recordUpdated= "{!c.onUpdate}" />
+
+    <div class="slds-form-element">
+        <label class="slds-form-element__label">{!$Label.c.Arc_Gen_LeveragedMateriality}</label>
+        <div class="slds-form-element__control">
+            <div class="slds-form-element__static slds-text-body_small">
+                <lightning:formattedNumber value="{!v.value}" maximumFractionDigits="0"/>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Risk_Grade__c</fullName>
+    <description>Answer to: Select the risk grade according to the following Risk Alignment matrix</description>
+    <label>Risk Grade</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Risk level 1</fullName>
+                <default>false</default>
+                <label>Risk level 1</label>
+            </value>
+            <value>
+                <fullName>Risk level 2</fullName>
+                <default>false</default>
+                <label>Risk level 2</label>
+            </value>
+            <value>
+                <fullName>Risk level 3</fullName>
+                <default>false</default>
+                <label>Risk level 3</label>
+            </value>
+            <value>
+                <fullName>Risk level 4</fullName>
+                <default>false</default>
+                <label>Risk level 4</label>
+            </value>
+            <value>
+                <fullName>Risk level 5</fullName>
+                <default>false</default>
+                <label>Risk level 5</label>
+            </value>
+            <value>
+                <fullName>Risk level 6</fullName>
+                <default>false</default>
+                <label>Risk level 6</label>
+            </value>
+            <value>
+                <fullName>Not applicable</fullName>
+                <default>true</default>
+                <label>Not applicable</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

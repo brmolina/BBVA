@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event template" >
+  <aura:attribute name="codesstatus" type="String"/>
+  <aura:attribute name="codeserror" type="String"/>
+</aura:event>

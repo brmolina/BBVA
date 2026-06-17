@@ -1,0 +1,70 @@
+<aura:component
+    implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens"
+    access="global">
+    <aura:attribute name="recordId" type="Id" access="global" />
+    <aura:attribute name="rtId" type="String" default="" access="global"/>
+    <aura:attribute name="Name" type="String" default="" access="global"/>
+    <aura:attribute name="ClientName" type="String" default="" access="global"/>
+    <aura:attribute name="BBVATeam" type="String" default="" access="global"/>
+    <aura:attribute name="ProductFamily" type="String" default="" access="global"/>
+    <aura:attribute name="Product" type="String" default="" access="global"/>
+    <aura:attribute name="Country" type="String" default="" access="global"/>
+    <aura:attribute name="Description" type="String" default="" access="global"/>
+    <aura:attribute name="countryField" type="String" default="" access="global"/>
+    <aura:attribute name="CountryIsVisible" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="showError" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="accept" type="List" default="['.pdf', '.ppt']" access="global"/>
+    <aura:attribute name="multiple" type="Boolean" default="true" access="global"/>
+    <aura:attribute name="disabled" type="Boolean" default="false" access="global"/>
+    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="pith__Pitch__c" class="slds-scrollable_y">
+        <aura:if isTrue="{!v.showError}">
+            <div class="slds-grid slds-p-top_small slds-wrap">
+                <div class="slds-notify slds-notify_toast slds-theme_error slds-col slds-size_1-of-1" role="status">
+                    <span class="slds-assistive-text">ERROR</span>
+                    <div class="slds-notify__content slds-col slds-size_1-of-1">
+                        <p class="slds-text-heading_small">Review the errors on this page.</p>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <p class="slds-text-color_error">{!v.errorMessage}</p>
+                </div>
+            </div>
+        </aura:if>
+        <div class="slds-modal__content">
+            <lightning:messages />
+            <div aura:id="divnames" class=" slds-form-element">
+                <lightning:inputField fieldName="Name" class="customRequired" data-testing-id="nameField"
+                    aura:id="nameField" value="{!v.Name}" title="required" />
+            </div>
+            <div aura:id="divclient" class="slds-p-right_small">
+                <lightning:inputField fieldName="gf_filter_type_participant_id__c" data-testing-id="clientFields"
+                    aura:id="clientFields" value="{!v.ClientName}" />
+            </div>
+            <div aura:id="divproductF" class="slds-p-right_small">
+                <lightning:inputField fieldName="pith__solution_category_name__c" data-testing-id="productFamilyField"
+                    aura:id="productFamilyField" value="{!v.ProductFamily}" />
+            </div>
+            <div aura:id="divproduct" class="slds-p-right_small">
+                <lightning:inputField fieldName="pith__solution_name_path_desc__c" data-testing-id="productField"
+                    aura:id="productField" value="{!v.Product}" />
+            </div>
+            <aura:if isTrue="{!v.CountryIsVisible}">
+                <div aura:id="divcountry" class="slds-p-right_small">
+                    <lightning:inputField fieldName="pith__country_name__c" class="customRequired"
+                        data-testing-id="countryField" aura:id="countryField" title="required" />
+                </div>
+            </aura:if>
+            <div aura:id="divdescription">
+                <lightning:inputField fieldName="pith__pitch_desc__c" data-testing-id="descriptionField"
+                    aura:id="descriptionField" value="{!v.Description}" />
+            </div>
+        </div>
+    </lightning:recordEditForm>
+    <footer class="slds-modal__footer">
+        <!-- <lightning:button aura:id="cancelButton" class="slds-button slds-button_neutral " variant="neutral"
+            name="cancel" onclick="{!c.cancelar}" label="Cancel" />
+       -->
+        <lightning:button aura:id="NEXT" label="Next" variant="brand" class="slds-button slds-button_brand"
+            onclick="{!c.saveForm}" />
+    </footer>
+</aura:component>

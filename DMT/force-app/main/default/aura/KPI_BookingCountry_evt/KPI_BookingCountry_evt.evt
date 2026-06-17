@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event fired from MainTable to search cmp to get the ms filled">
+    <aura:attribute name="countries" type="String[]"/>
+</aura:event>

@@ -1,0 +1,89 @@
+/* SECTION TITLE */
+.section-title {
+    font-weight: 700;
+    background-color: #dddbda;
+    text-align: center;
+    padding: 4px;
+}
+
+/* INPUT ADJUSTMENT */
+lightning-input {
+    margin-bottom: 0;
+}
+
+/* TABLE STYLES */
+.comparison-table td {
+    padding: 4px 8px;
+    vertical-align: top; /* Changed to top so text aligns nicely if one side wraps */
+    height: 1px; /* Allows the inner div to stretch to 100% of the cell */
+}
+
+.comparison-table th {
+    text-transform: uppercase;
+    font-weight: 700;
+    background-color: #f3f3f3;
+    border-bottom: 2px solid #dddbda;
+    padding: 4px 8px;
+    text-align: left;
+}
+
+.comparison-table tr {
+    border-bottom: 1px solid #dddbda; 
+}
+
+.comparison-table td {
+    padding: 4px 8px;
+    vertical-align: middle;
+    height: 1px; /* CSS trick: allows child divs to use height: 100% */
+}
+
+.diff-cell {
+    border: 2px solid; 
+    font-weight: 700;
+    
+    /* FIX: Remove vertical margins and paddings so the border doesn't inflate the row height */
+    margin: 0; 
+    padding: 0 4px; 
+    
+    display: flex; 
+    align-items: center; 
+    
+    /* Bare minimum height to encompass the \u00A0 non-breaking space */
+    min-height: 20px; 
+    height: 100%;
+    
+    word-break: break-word; 
+    box-sizing: border-box;
+}
+
+/* TRAFFIC LIGHTS */
+.traffic-light-container {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    min-height: 14px; 
+}
+
+.traffic-dot {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-style: solid;
+}
+
+/* Border matches background to look like a solid filled circle */
+.traffic-dot_grey   { background-color: #BDBDBD; border-color: #BDBDBD; }
+.traffic-dot_yellow { background-color: #F8CC52; border-color: #F8CC52; }
+.traffic-dot_green  { background-color: #47AD5A; border-color: #47AD5A; }
+.traffic-dot_red    { background-color: #D73F52; border-color: #D73F52; }
+
+/* White on White = Invisible */
+.traffic-dot_white  { background-color: #ffffff; border-color: #ffffff; }
+.traffic-dot_default{ background-color: #e0e0e0; border-color: #e0e0e0; }
+
+.content-body {
+    padding: 1rem;
+}

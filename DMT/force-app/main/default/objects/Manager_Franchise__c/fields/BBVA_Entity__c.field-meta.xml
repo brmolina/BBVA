@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BBVA_Entity__c</fullName>
+    <label>BBVA Entity</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BBVA SA</fullName>
+                <default>true</default>
+                <label>BBVA SA</label>
+            </value>
+            <value>
+                <fullName>BBVA BSI</fullName>
+                <default>false</default>
+                <label>BBVA BSI</label>
+            </value>
+            <value>
+                <fullName>BBVA PORTUGAL</fullName>
+                <default>false</default>
+                <label>BBVA PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>ALTURA</fullName>
+                <default>false</default>
+                <label>ALTURA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

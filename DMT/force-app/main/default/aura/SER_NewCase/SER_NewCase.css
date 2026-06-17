@@ -1,0 +1,17 @@
+.THIS{
+
+}
+
+.THIS .cls_modalcontainer_console_aligned {
+  width: 100%;
+  height: 85%;
+  top: 15%;
+}
+
+.THIS .bodyHeight {
+  height: 230px;
+}
+
+.THIS .index10000 {
+	z-index: 10000;
+}

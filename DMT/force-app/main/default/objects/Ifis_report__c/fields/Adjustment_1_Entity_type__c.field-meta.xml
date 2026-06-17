@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Adjustment_1_Entity_type__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Account_has_Analysis__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__IFIS_EntityType__c == &apos;1&apos;, &apos;Same activity&apos;,IF(Account_has_Analysis__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__IFIS_EntityType__c == &apos;2&apos;, &apos;Different activity&apos;,IF(Account_has_Analysis__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__IFIS_EntityType__c == &apos;3&apos;, &apos;Joint venture&apos;,IF(Account_has_Analysis__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__IFIS_EntityType__c == &apos;4&apos;,&apos;Non financial&apos;,&apos;&apos;))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Adjustment 1 - Entity type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

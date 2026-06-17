@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Go_through_each_step</fullName>
+    <active>true</active>
+    <errorConditionFormula>((ISPICKVAL(Status__c, &quot;Approval&quot;) &amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Proposal&quot;)&amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Ready to close&quot;) &amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Closed&quot;))
+|| (ISPICKVAL(Status__c, &quot;Ready to close&quot;) &amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Approval&quot;)&amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Closed&quot;))
+|| (ISPICKVAL(Status__c, &quot;Closed&quot;) &amp;&amp; ((!ISPICKVAL(PRIORVALUE(Status__c), &quot;Ready to close&quot;) &amp;&amp;  ISPICKVAL(Booking_Geography__c ,&apos;PE&apos;)) || (!ISPICKVAL(PRIORVALUE(Status__c), &quot;Ready to close&quot;) &amp;&amp; !ISPICKVAL(PRIORVALUE(Status__c), &quot;Approval&quot;) &amp;&amp;  !ISPICKVAL(Booking_Geography__c ,&apos;PE&apos;)) ))) &amp;&amp;  ISCHANGED(Status__c) &amp;&amp;  $Profile.Name != &quot;Desktop Integration&quot; &amp;&amp;  $Profile.Name != &quot;System Administrator&quot; &amp;&amp;  !DMT_Cancel__c</errorConditionFormula>
+    <errorMessage>It is mandatory to go through all the states of the line in the indicated order.</errorMessage>
+</ValidationRule>

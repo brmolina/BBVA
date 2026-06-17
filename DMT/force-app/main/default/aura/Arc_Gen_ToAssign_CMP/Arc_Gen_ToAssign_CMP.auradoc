@@ -1,0 +1,14 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component that handle the logic of the Assign Button</b></h5>
+    <p>ltsUsers - List with the users</p>
+    <p>isOpen - show/hide the modal</p>
+    <p>userSelected - User selected in the modal</p>
+    <p>idUserSelected - id of the user selected un the modal</p>
+    <p>spinner - show/hide the spiner</p>
+    <p>isVisibleOptions - show/hide verticalNavigation</p>
+    <p>isVisibleButton - show/hide save button</p>
+    <p>validations - Map with configs values</p>
+    <p><code>c:Arc_Gen_ToAssign_CMP</code></p>
+  </aura:description>
+</aura:documentation>

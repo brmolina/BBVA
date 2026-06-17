@@ -1,0 +1,25 @@
+/*.THIS .slds-modal__content {
+	min-height: 90%;
+}*/
+
+.THIS .customDiv {
+	height: 95%;
+}
+
+.THIS .slds-modal__container{
+       max-width: 60rem !important;
+       width:60% !important;
+
+}
+
+.THIS .bottom {
+	position:absolute;
+	left:0;
+	bottom:3%;
+	right:0;
+}
+
+.THIS .customPosition {
+	margin: auto;
+    width: 60%;
+}

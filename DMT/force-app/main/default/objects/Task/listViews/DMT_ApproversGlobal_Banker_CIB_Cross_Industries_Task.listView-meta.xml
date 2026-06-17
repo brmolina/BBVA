@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGlobal_Banker_CIB_Cross_Industries_Task</fullName>
+    <filterScope>Queue</filterScope>
+    <label>Global_Banker_CIB_Cross_Industries</label>
+    <queue>DMT_ApproversGlobal_Banker_CIB_Cross_Industries</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

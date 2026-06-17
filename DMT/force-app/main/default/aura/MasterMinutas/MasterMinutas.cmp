@@ -1,0 +1,44 @@
+<aura:component controller="MasterMinutasCnt" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome" access="global">
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+  <aura:attribute name="sortedBy" type="String"/>
+  <aura:attribute name="sortedDirection" type="String"/>
+  <aura:attribute name="defaultSortDirection" type="String"/>
+  <aura:attribute name="recordId" type="String" default=""/>
+	<aura:attribute name="userISOCode" type="String"/>
+	<aura:attribute name="year" type="Integer"/>
+
+	<div class="header-fixed">
+		<aura:if isTrue="{! empty(v.myData)}">
+			{!$Label.c.DES_Chart_No_Data}
+			<aura:set attribute="else">
+				<lightning:datatable data="{!v.myData}"
+					columns="{!v.myColumns}"
+					keyField="id"
+		            sortedBy="{!v.sortedBy}"
+		            minColumnWidth="150"
+		            sortedDirection="{!v.sortedDirection}"
+		            defaultSortDirection="{!v.defaultSortDirection}"
+		            onsort="{!c.updateColumnSorting}"
+		            hideCheckboxColumn="true"
+		            class="table-minute"/>
+			</aura:set>
+		</aura:if>
+	</div>
+
+		<lightning:layout verticalAlign="end" class="slds-form slds-form_horizontal">
+    	<lightning:layoutitem size="1" flexibility="auto">
+					<lightning:input name="year" minlength="4" maxlength="4" pattern="^[0-9]{4}$" messageWhenPatternMismatch="Only years" class="padding-0" value ="{!v.year}"/>
+    	</lightning:layoutitem>
+    	<lightning:layoutitem padding="around-small" flexibility="auto">
+					<lightning:button variant="neutral" label="Search Year" iconName="utility:search" iconPosition="left" onclick="{!c.search_year}" />
+			</lightning:layoutitem>
+			<lightning:layoutitem padding="around-small" flexibility="auto" alignmentBump="right">
+					<lightning:button variant="neutral" label="Download As CSV" onclick="{!c.downloadCsv}" class="padding-right" />
+			</lightning:layoutitem>
+		</lightning:layout>
+
+</aura:component>

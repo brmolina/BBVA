@@ -1,0 +1,9 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that updates the committe </b></h5>
+        <p>recordId- variable for row.name</p>
+        <p>pathArray- variable to get path from url</p>
+        <p>committees- variable for the name of committee</p>
+        <p><code>c:Arc_Gen_ScheduleInSanction</code></p>
+    </aura:description>
+</aura:documentation>

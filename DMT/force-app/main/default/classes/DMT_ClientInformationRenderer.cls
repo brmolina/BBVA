@@ -2,9 +2,13 @@ public with sharing class DMT_ClientInformationRenderer implements DMT_ViewRende
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
-        Map<String, Schema.RecordTypeInfo> rtInfos_Opportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
-        Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
-        recordTypeRenderers.put(dmtOpportunityId, new DMT_OpportunityClientInformationRenderer());
+        Map<String, Schema.RecordTypeInfo> rtInfos = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName();
+        Map<String, Schema.RecordTypeInfo> rtInfosOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
+        Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
+        Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
+        Id dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
+        
+        recordTypeRenderers.put(dmtOpportunityId, new DMT_OppClientInformationRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {
@@ -17,7 +21,7 @@ public with sharing class DMT_ClientInformationRenderer implements DMT_ViewRende
                 throw new IllegalArgumentException('No Client Information renderer for record type Id: ' + data.recordTypeId);
             }
             return renderer.renderHtml(data);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';
         }

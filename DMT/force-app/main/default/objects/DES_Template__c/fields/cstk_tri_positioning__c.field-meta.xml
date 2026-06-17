@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cstk_tri_positioning__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(cstk_tri__c &gt; 0, TEXT(cstk_tri__c) &amp;  &quot; (&quot; &amp; cstk_positioning__c &amp; &quot;)&quot;, &quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>TRI</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,17 @@
+<aura:component controller="BBVA_SBS_Classification_cls" implements="flexipage:availableForAllPageTypes,force:lightningQuickAction,force:hasRecordId" access="GLOBAL">
+    <aura:attribute name="Indicador" type="String" />
+    <aura:attribute name="JsonReporte" type="List" default=""/>
+    <aura:attribute name="mesesLista" type="List"/>
+    <aura:attribute name="Nor" type="List"/>
+    <aura:attribute name="CPP" type="List"/>
+    <aura:attribute name="Def" type="List"/>
+    <aura:attribute name="Dud" type="List"/>
+    <aura:attribute name="Per" type="List"/>
+    <aura:attribute name="SBS" type="List"/>
+    <aura:attribute name="valoresBBVA" type="List"/>
+    <div style="width:100%;">
+    <canvas id="DWPChart"/>
+   </div>    
+ 
+    <ltng:require scripts="{!$Resource.ChartJS23}" afterScriptsLoaded="{!c.init}"/> 
+    </aura:component>

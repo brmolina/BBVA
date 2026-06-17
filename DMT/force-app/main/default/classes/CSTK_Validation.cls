@@ -88,7 +88,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
                 res = validateSample(toolkitId, inputFields, rule, field);
             }
         }
-        
+
         return res;
     }
 
@@ -104,25 +104,25 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         Map<String, Object> res = new Map<String, Object>();
         Map<String, Object> fields = getInputFields(inputFields);
         Integer valueNetZeroTargetDate;
-        
+
         Map<string, Object> netZeroTargetDate = (Map<string, Object>)fields.get('cstk__net_zero_target_date__c');
 		if (String.isEmpty(String.valueOf(netZeroTargetDate.get('value')))) {
-            
+
         } else {
             valueNetZeroTargetDate = Integer.valueOf(netZeroTargetDate.get('value'));
         }
-        
+
         Map<string, Object> targetSBTi = (Map<string, Object>)fields.get('cstk__science_based_target__c');
 		String valueTargetSBTi = (String)targetSBTi.get('value');
-        
+
         Map<string, Object> netZeroTarget = (Map<string, Object>)fields.get('cstk__net_zero_target__c');
 		String valueNetZeroTarget = (String)netZeroTarget.get('value');
-        
+
         Boolean rule1 = (String.isEmpty(valueNetZeroTarget) || valueNetZeroTarget == 'NO' || valueNetZeroTarget == 'UNK') && valueNetZeroTargetDate != null;
 		Boolean rule2 = !String.isEmpty(valueNetZeroTarget) && valueNetZeroTarget != 'NO' && valueNetZeroTarget != 'UNK' && valueNetZeroTargetDate == null;
 		Boolean rule4 = valueNetZeroTargetDate == null || (valueNetZeroTargetDate != null && Pattern.matches('\\d{4}', String.valueOf(valueNetZeroTargetDate)) && valueNetZeroTargetDate >= 2010 && valueNetZeroTargetDate <= 2100);
-		Boolean rule5 = !String.isEmpty(valueTargetSBTi) && valueTargetSBTi != 'no_target' && valueNetZeroTargetDate != null && valueNetZeroTargetDate > 2050;
-                             
+		Boolean rule5 = !String.isEmpty(valueTargetSBTi) && valueTargetSBTi != 'NO' && valueNetZeroTargetDate != null && valueNetZeroTargetDate > 2050;
+
 		if (rule2) {
     		res.put('success', false);
     		res.put('errorMessage', 'Value for Net Zero Target Date cannot be null if Net Zero Target is informed.');
@@ -141,7 +141,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
         return res;
     }
-    
+
     /**
     * @description Method to validate that the sum of all top geographies does not exceed 100%
     * @param toolkitId: Id of the sector record
@@ -151,7 +151,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     * @return Map<String, Object> map with validation
     */
     private Map<String, Object> validateTopGeographiesValue(Id toolkitId, String inputFields, String rule, String field) {
-        
+
         Map<String, Object> res = new Map<String, Object>();
         Map<String, Object> fields = getInputFields(inputFields);
         Double totalOtherGeoValue = 0;
@@ -203,7 +203,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             otherGeoValues.add(geo.mainGeo1EBITDA);
         }
         System.debug(otherGeoValues);
-        
+
         for (Double value : otherGeoValues) {
             totalOtherGeoValue += value;
             System.debug(totalOtherGeovalue);
@@ -300,15 +300,15 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         // Max 255 chars validation (cstk__comments__c)
         if (field == 'emissions_comment_edit' && !String.isBlank(emissionsCommentsValue)) {
             if (emissionsCommentsValue.length() <= 255) {
-            	res.put('success', true);                
+            	res.put('success', true);
             }
         	else {
                 res.put('success', false);
-                res.put('errorMessage', 'You must write less or equals 255 characters');            
+                res.put('errorMessage', 'You must write less or equals 255 characters');
                 return res;
             }
         }
-        
+
         // Fill required validation
         if(rule1 && rule2 && rule3 && rule4 && rule5) {
             res.put('success', true);
@@ -316,7 +316,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             res.put('success', false);
             res.put('errorMessage', 'If the difference between the scope with the previous year is greater than 20%, this field is required');
         }
-        
+
         return res;
     }
 
@@ -357,16 +357,19 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         }
 
         //Boolean rule2 = scope12 != null && scope3 != null && scope123 != null;
-        
+
         if(scope1Value != null && scope2Value != null && scope12Value != null) {
             res.put('success', false);
             res.put('errorMessage', 'If scopes 1 & 2 are informed, Scope 1 + 2 is calculated');
         } else if (scope12Value != null && scope12Value < 0) {
             res.put('success', false);
             res.put('errorMessage', 'Value must be greater than 0');
-        } else if (validateDecimals(Decimal.valueOf(scope12Value), 6)){
+        } else if (scope12Value != null && validateDecimals(Decimal.valueOf(scope12Value), 6)){
             res.put('success', false);
             res.put('errorMessage', 'Number of decimal places must be less or equal 6');
+        } else if (scope12Value != null && validateDigits(Decimal.valueOf(scope12Value), 12)){
+            res.put('success', false);
+            res.put('errorMessage', 'Number of digits must be less or equal 12');
         } else {
             res.put('success', true);
         }
@@ -410,16 +413,19 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         }
 
         Boolean rule1 = scope12 != null && scope3 != null && scope123 != null;
-        
+
         if(scope12Value != null && scope3Value != null && scope123Value != null) {
             res.put('success', false);
             res.put('errorMessage', 'If Scope 1 + 2 & Scope 3 are informed, Scope 1 + 2 + 3 is calculated.');
         } else if (scope123Value != null && scope123Value < 0) {
             res.put('success', false);
             res.put('errorMessage', 'Vale must be greater than 0');
-        } else if (validateDecimals(Decimal.valueOf(scope123Value), 6)){
+        } else if (scope123Value != null && validateDecimals(Decimal.valueOf(scope123Value), 6)){
             res.put('success', false);
             res.put('errorMessage', 'Number of decimal places must be less or equal 6');
+        } else if (scope12Value != null && validateDigits(Decimal.valueOf(scope12Value), 12)){
+            res.put('success', false);
+            res.put('errorMessage', 'Number of digits must be less or equal 12');
         } else {
             res.put('success', true);
         }
@@ -450,7 +456,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         } else {
             emisIntValue = Double.valueOf(emisInt.get('value'));
         }
-        
+
         Map<string, Object> emisIntUnit = (Map<string, Object>)fields.get('cstk__emissions_intensity_units__c');
         emisIntUnitsValue = (String)emisIntUnit.get('value');
         System.debug(field + '************** eiuv ' + emisIntUnitsValue);
@@ -461,15 +467,15 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         cstk.GhgEmissions_Wrapper wrapper = cstk.GhgEmissions_Service.getEmissionRecords(realToolkitId, yearValue);
         cstk.GhgEmissions_Wrapper.GhgEmissionsDetails wrapperYear1 = wrapper.currentYear1;
         System.debug('Int: ' + wrapperYear1.emissionsIntensity);
-        
+
         if(field == 'emissions_units_edit' && String.isBlank(emisIntUnitsValue)){
              System.debug('************** eiv ' + emisIntValue);
             if(emisIntValue == null){
-                res.put('success', true); 
+                res.put('success', true);
             }
             else {
                 res.put('success', false);
-                res.put('errorMessage', 'You must select a value for intensity units if the emission intensity has been filled');            
+                res.put('errorMessage', 'You must select a value for intensity units if the emission intensity has been filled');
                 return res;
             }
         }
@@ -477,15 +483,15 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         // Max 255 chars validation (cstk__emissions_intensity_comments__c)
         else if(field == 'emissions_int_comment_edit' && !String.isBlank(emisIntCommentsValue)) {
             if (emisIntCommentsValue.length() <= 255) {
-            	res.put('success', true);                
+            	res.put('success', true);
             }
         	else {
                 res.put('success', false);
-                res.put('errorMessage', 'You must write less or equals 255 characters');            
+                res.put('errorMessage', 'You must write less or equals 255 characters');
                 return res;
             }
         }
-        
+
         else if(field == 'emissions_int_comment_edit' && String.isBlank(emisIntCommentsValue)){
             if(getVariation(emisIntValue, wrapperYear1.emissionsIntensity) < 0.2){
                 res.put('success', true);
@@ -501,7 +507,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
         return res;
     }
-    
+
     /**
     * @description Sample validation method
     * @param toolkitId: Id of the Toolkit
@@ -520,18 +526,18 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         Boolean allNumeric = true;
         Boolean notNumeric = false;
         Boolean correctDecimals = true;
-        
+
         for (String fieldName : fieldNames) {
             Map<string, Object> fieldMap = (Map<string, Object>)fields.get(fieldName);
-                        
+
             if (!((String)fieldMap.get('value') == '') && !Pattern.matches('(0(\\.\\d+))', (String)fieldMap.get('value')) && !(Decimal.valueOf((String)fieldMap.get('value')) == 1)) {
-                
+
                 if (fieldName == 'cstk__P' + field.Substring(1) + '__c') {
                     notNumeric = true;
                 }
                 allNumeric = false;
                 break;
-            } else if (validateDecimals(Decimal.valueOf((String)fieldMap.get('value')), 11)) {
+            } else if (!((String)fieldMap.get('value') == '') && validateDecimals(Decimal.valueOf((String)fieldMap.get('value')), 11)) {
                 correctDecimals = false;
                 break;
             } else {
@@ -553,10 +559,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         } else {
             res.put('success', true);
         }
-        
+
         return res;
     }
-    
+
     /**
     * @description Coal exit year validation method
     * @param toolkitId: Id of the Toolkit
@@ -583,10 +589,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
                 }
             }
         }
-        
+
         Map<String, Object> thisLctpAutopartsField = (Map<String, Object>)fields.get('cstk__' + field + '__c');
         String thisLctpAutopartsFieldValue = (String)thisLctpAutopartsField.get('value');
-        
+
         if (!String.isEmpty(thisLctpAutopartsFieldValue)) {
             if (Decimal.ValueOf(thisLctpAutopartsFieldValue) < 0) {
                 res.put('success', false);
@@ -628,13 +634,13 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     * @return Map<String, Boolean> map with validation
     */
     private Map<String, Object> validateCoalExitYear(Id toolkitId, String inputFields, String rule, String field) {
-        
+
         Map<String, Object> res = new Map<String, Object>();
         Map<String, Object> fields = getInputFields(inputFields);
-        
+
         Map<string, Object> coalExitYear = (Map<string, Object>)fields.get('cstk__Coal_exit_year__c');
         String coalExitYearValue = (String)coalExitYear.get('value');
-        
+
         Id realToolkitId = cstk.Utils.getToolkitIdFromRecord(toolkitId);
         String yearValue = (String)fields.get('year');
         cstk.Sector_Utility_Wrapper utilityWrapper = cstk.Sector_Utility_Service.getSectorUtilInformation(realToolkitId, yearValue);
@@ -643,7 +649,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             validDate = Pattern.matches('\\d{4}', String.valueOf(coalExitYearValue));
 
         }
-        
+
         if (!String.isEmpty(coalExitYearValue) && !validDate){
             res.put('success', false);
             res.put('errorMessage', 'The date must have the format YYYY');
@@ -652,7 +658,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         }
         return res;
     }
-    
+
     /**
     * @description bev and phev pct validation method
     * @param toolkitId: Id of the Toolkit
@@ -661,7 +667,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     * @return Map<String, Boolean> map with validation
     */
     private Map<String, Object> validateBevPhev(Id toolkitId, String inputFields, String rule, String field) {
-        
+
         Map<String, Object> res = new Map<String, Object>();
         Map<String, Object> fields = getInputFields(inputFields);
         Integer bevPhevValue;
@@ -687,7 +693,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         } else {
             totalCarSalesValue = Integer.valueOf(totalCarSales.get('value'));
         }
-        
+
         Id realToolkitId = cstk.Utils.getToolkitIdFromRecord(toolkitId);
         String yearValue = (String)fields.get('year');
 
@@ -695,7 +701,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             year = Integer.valueOf(yearValue) - 1;
         }
         String yearToCompare = String.valueOf(year);
-        
+
         cstk.Sector_Auto_Wrapper autoWrapper = cstk.Sector_Auto_Service.getSectorAutoInformation(realToolkitId, yearToCompare);
         cstk.Sector_Auto_Wrapper autoWrapperAc = cstk.Sector_Auto_Service.getSectorAutoInformation(realToolkitId, yearValue);
         Double variation = getVariation(bevPhevValue, autoWrapper.bevAndPhev);
@@ -706,7 +712,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         Boolean validPctRange = validatePctRange(bevPhevPctValue);
         if(bevPhevPctValue != null && !validPctRange){
            res.put('success', false);
-           res.put('errorMessage', 'Value must be between 0 and 100'); 
+           res.put('errorMessage', 'Value must be between 0 and 100');
         } else if (field == 'bev_and_phev_pct' && validateDecimals(Decimal.valueOf(bevPhevPctValue), 9)) {
             res.put('success', false);
             res.put('errorMessage', 'Number of decimal places must be less or equal 9');
@@ -714,7 +720,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             res.put('success', false);
             res.put('errorMessage', 'Number of decimal places must be less or equal 0');
         }
-        /*        
+        /*
         if (totalCarSalesValue != null && bevPhevValue > totalCarSalesValue) {
             res.put('success', false);
             res.put('errorMessage', 'This field cannot be greater than total car sales');
@@ -732,7 +738,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         }
         return res;
     }
-    
+
     /**
     * @description sbti validation method
     * @param toolkitId: Id of the Toolkit
@@ -741,10 +747,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     * @return Map<String, Boolean> map with validation
     */
     private Map<String, Object> validateSbti(Id toolkitId, String inputFields, String rule, String field) {
-        
+
         Map<String, Object> res = new Map<String, Object>();
         Map<String, Object> fields = getInputFields(inputFields);
-        Integer year; 
+        Integer year;
 
         Map<string, Object> parisAlign = (Map<string, Object>)fields.get('cstk__paris_alignment__c');
         String parisAlignValue = (String)parisAlign.get('value');
@@ -867,14 +873,14 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
         if (String.isEmpty(categoryValue)) {
             res.put('success', false);
-            res.put('errorMessage', 'Value cannot be null');    
+            res.put('errorMessage', 'Value cannot be null');
         } else if (source == 'cdp' && categoryValue != 'global') {
             res.put('success', false);
             res.put('errorMessage', 'If source CDP is chosen, category must be global');
         } else {
             res.put('success', true);
         }
-        
+
         return res;
     }
 
@@ -894,17 +900,17 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             String expsrceShortHaulFlightsPctValue = (String)expsrceShortHaulFlightsPct.get('value');
 
             if (expsrceShortHaulFlightsPctValue != null) {
-            
+
                 Decimal data = Decimal.ValueOf(expsrceShortHaulFlightsPctValue).stripTrailingZeros();
             	String cleanData = String.ValueOf(data);
             	List<String> steps = cleanData.split('.', 2);
 
                 if (Decimal.ValueOf(expsrceShortHaulFlightsPctValue) < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be negative');    
+                    res.put('errorMessage', 'Percentage cannot be negative');
                 } else if (Decimal.ValueOf(expsrceShortHaulFlightsPctValue) > 1) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be greater than 100%');    
+                    res.put('errorMessage', 'Percentage cannot be greater than 100%');
                 } else if(steps.size() > 0 && steps[1].length() > 7) {
                 	res.put('success', false);
                 	res.put('errorMessage', 'Number of decimal places must be less or equal 4');
@@ -925,10 +931,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
                 if (safUseTargetValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be negative');    
+                    res.put('errorMessage', 'Percentage cannot be negative');
                 } else if (safUseTargetValueDouble > 100) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be greater than 100%');    
+                    res.put('errorMessage', 'Percentage cannot be greater than 100%');
                 } else {
                     res.put('success', true);
                 }
@@ -946,7 +952,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
                 if (fleetAgeAverageValueInt < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'This field cannot be negative');    
+                    res.put('errorMessage', 'This field cannot be negative');
                 } else {
                     res.put('success', true);
                 }
@@ -964,7 +970,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
                 if (emissionsIntensityScope12PKMValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'This field cannot be negative');    
+                    res.put('errorMessage', 'This field cannot be negative');
                 } else {
                     res.put('success', true);
                 }
@@ -1014,13 +1020,13 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             String fossilFuelPoweredValue = (String)fossilFuelPowered.get('value');
             if (fossilFuelPoweredValue != null) {
                 Double fossilFuelPoweredValueDouble = Double.valueOf(fossilFuelPoweredValue);
-    
+
                 if (fossilFuelPoweredValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be negative');    
+                    res.put('errorMessage', 'Percentage cannot be negative');
                 } else if (fossilFuelPoweredValueDouble > 100) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Percentage cannot be greater than 100%');    
+                    res.put('errorMessage', 'Percentage cannot be greater than 100%');
                 } else {
                     res.put('success', true);
                 }
@@ -1034,10 +1040,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             String so2EmissionIntensityValue = (String)so2EmissionIntensity.get('value');
             if (so2EmissionIntensityValue != null) {
                 Double so2EmissionIntensityValueDouble = Double.valueOf(so2EmissionIntensityValue);
-    
+
                 if (so2EmissionIntensityValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'This field cannot be negative');    
+                    res.put('errorMessage', 'This field cannot be negative');
                 } else {
                     res.put('success', true);
                 }
@@ -1051,10 +1057,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             String lngValue = (String)lng.get('value');
             if (lngValue != null) {
                 Double lngValueDouble = Double.valueOf(lngValue);
-    
+
                 if (lngValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'This field cannot be negative');    
+                    res.put('errorMessage', 'This field cannot be negative');
                 } else {
                     res.put('success', true);
                 }
@@ -1068,10 +1074,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             String lowEmissionsTecValue = (String)lowEmissionsTec.get('value');
             if (lowEmissionsTecValue != null) {
                 Double lowEmissionsTecValueDouble = Double.valueOf(lowEmissionsTecValue);
-    
+
                 if (lowEmissionsTecValueDouble < 0) {
                     res.put('success', false);
-                    res.put('errorMessage', 'This field cannot be negative');    
+                    res.put('errorMessage', 'This field cannot be negative');
                 } else {
                     res.put('success', true);
                 }
@@ -1100,10 +1106,10 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         if (salesTargetAltPropValue != null) {
             if (Decimal.valueOf(salesTargetAltPropValue) < 0) {
                 res.put('success', false);
-                res.put('errorMessage', 'Percentage cannot be negative');    
+                res.put('errorMessage', 'Percentage cannot be negative');
             } else if (Decimal.valueOf(salesTargetAltPropValue) > 1) {
                 res.put('success', false);
-                res.put('errorMessage', 'Percentage cannot be greater than 100%');    
+                res.put('errorMessage', 'Percentage cannot be greater than 100%');
             } else if(validateDecimals(Decimal.valueOf(salesTargetAltPropValue), 11)) {
                 res.put('success', false);
                 res.put('errorMessage', 'Number of decimal places must be less or equal 9');
@@ -1113,7 +1119,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         } else {
             res.put('success', true);
         }
-        
+
         return res;
     }
 
@@ -1132,7 +1138,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
             Map<string, Object> pctRenEnrgyFrmTotal = (Map<string, Object>)fields.get('cstk__gf_t_el_cons_rw_sources_electricity_per__c');
             String pctRenEnrgyFrmTotalValue = (String)pctRenEnrgyFrmTotal.get('value');
 
-            if (pctRenEnrgyFrmTotalValue != null) {
+            if (String.isNotBlank(pctRenEnrgyFrmTotalValue)) {
                 if (Decimal.valueOf(pctRenEnrgyFrmTotalValue) < 0) {
                     res.put('success', false);
                     res.put('errorMessage', 'Percentage cannot be negative');
@@ -1153,15 +1159,15 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         if (field == 'explPrtflSustImproveTarget') {
             Map<string, Object> explPrtflSustImproveTarget = (Map<string, Object>)fields.get('cstk__gf_best_en_e_ltts_sus_crtfns_pf_ob_desc__c');
             String explPrtflSustImproveTargetValue = (String)explPrtflSustImproveTarget.get('value');
-			System.debug('====explPrtflSustImproveTargetValue: ' + explPrtflSustImproveTargetValue);
-			System.debug('====explPrtflSustImproveTargetValue.length: ' + explPrtflSustImproveTargetValue.length());
-            if (explPrtflSustImproveTargetValue != null) {
+            if (String.isNotBlank(explPrtflSustImproveTargetValue)) {
                 if (explPrtflSustImproveTargetValue.length() > 500) {
                     res.put('success', false);
-                    res.put('errorMessage', 'Comment length must be under 500 characters');    
+                    res.put('errorMessage', 'Comment length must be under 500 characters');
                 } else {
                     res.put('success', true);
                 }
+            } else {
+                res.put('success', true);
             }
         }
 
@@ -1190,7 +1196,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     * @return Boolean value
     */
     private Boolean validatePctRange(Double percent) {
-        
+
         Boolean validatedPct = false;
 
         if (percent >= 0 && percent <= 1) {
@@ -1199,7 +1205,7 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
         return validatedPct;
     }
-    
+
     /**
     * @description Retrieve input fields method
     * @param inputFields: Id of the Toolkit
@@ -1207,20 +1213,20 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     */
     private static Map<String, Object> getInputFields(String inputFields) {
 
-    final Map<String, Object> res = new Map<string, Object>();    
+    final Map<String, Object> res = new Map<string, Object>();
     final Map<String, Object> inputMap = (Map<String, Object>)JSON.deserializeUntyped(inputFields);
 
     res.put('source', (String)inputMap.get('source'));
     res.put('year', (String)inputMap.get('year'));
     res.put('date', (String)inputMap.get('date'));
-    
+
     final Map<String, Object> data = (Map<String, Object>)inputMap.get('data');
-    
+
     for(String key : data.keySet()) {
         final List<Object> obj = (List<Object>)data.get(key);
         for(Object section : obj) {
             final Map<String, Object> inputs = (Map<String, Object>)section;
-            final List<Object> objFields = (List<Object>)inputs.get('fields');        
+            final List<Object> objFields = (List<Object>)inputs.get('fields');
             for(Object field : objFields) {
                 final Map<String, Object> input = (Map<String, Object>)field;
                 res.put((String)input.get('name'), input);
@@ -1230,6 +1236,12 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
     return res;
     }
 
+    /**
+    * @description Return the variation between two numéric values
+    * @param var1: Numeric value 1
+    * @param var2: Numeric value 2
+    * @return Double variation number value
+    */
     private static Double getVariation(Double Var1, Double Var2) {
         Double res = 0;
 
@@ -1242,7 +1254,8 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
 
     /**
     * @description validate decimals of value
-    * @param inputFields: Id of the Toolkit
+    * @param value: Numeric value
+    * @param maxDecimals: Max number of decimals allowed
     * @return true if value has more decimals than allowed
     */
     private static Boolean validateDecimals(Decimal value, Integer maxDecimals) {
@@ -1251,6 +1264,25 @@ global with sharing class CSTK_Validation implements cstk.Validation_Itf {
         if(value != null && maxDecimals != null) {
             final Integer numDecimals = value.stripTrailingZeros().scale();
             if (numDecimals > maxDecimals){
+                res = true;
+            }
+        }
+
+        return res;
+    }
+
+    /**
+    * @description validate digits of value
+    * @param value: Numeric value
+    * @param maxDigits: Maximum number of digits allowed
+    * @return true if value has more digits than allowed
+    */
+    private static Boolean validateDigits(Decimal value, Integer maxDigits) {
+        Boolean res = false;
+
+        if(value != null && maxDigits != null) {
+            final Integer numDigits = value.precision();
+            if (numDigits > maxDigits){
                 res = true;
             }
         }

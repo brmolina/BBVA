@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_upfront_undwr_fees_amount__c</fullName>
+    <description>Sumatorio de las de las comisiones Upfront Fees amount to be sold más las Underwriting fee</description>
+    <externalId>false</externalId>
+    <formula>gf_own_undwr_mk_rsk_fee_amount__c +  underwriting_fee_amount__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Available fees to market</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

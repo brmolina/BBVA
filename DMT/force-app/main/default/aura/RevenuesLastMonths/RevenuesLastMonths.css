@@ -1,0 +1,63 @@
+.THIS .mainText {
+  height:200px;
+  text-align:center;
+  padding-top:100px;
+}
+.THIS .spanFooterDesc {
+  margin-right:10px;
+}
+.THIS .footerContainer {
+  width:100%;
+  margin-top:10px;
+  max-height: inherit !important;
+  max-width: inherit !important;
+}
+
+.THIS .canvasPie {
+  height: 300px !important;
+  width: 100%;
+  max-height: inherit !important;
+  max-width: inherit !important;
+}
+
+.THIS .minHeight {
+  min-height: 300px;
+}
+
+.THIS .customSpan {
+  float:right;
+}
+.THIS .textAR {
+  text-align: right;
+}
+
+.THIS.customNoData {
+  padding:15px;
+  text-align: center;
+  border:1px #CDCDCD solid;
+  border-radius:5px;
+}
+
+.THIS .badgenodata {
+  --slds-c-badge-color-background: #f3f3f3;
+  --slds-c-badge-radius-border: 3px;
+}
+
+.THIS .sectiontitle {
+  color: #03234d;
+}
+
+.THIS .weight700 {
+  font-weight: 700;
+  color: #5c5c5c;
+}
+
+.THIS .radiusbutton {
+  --slds-c-button-radius-border: 25px;
+}
+
+.THIS .boxsection {
+  border-radius: 0.75rem;
+  border: 2px solid #e5e5e5;
+  background-color:#FFF;
+}

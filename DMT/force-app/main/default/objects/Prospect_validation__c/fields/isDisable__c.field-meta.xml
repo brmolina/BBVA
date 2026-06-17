@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isDisable__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Allows you to continue with the creation of a prospect even when the system has detected duplicate records that meet the percentage and number of matching fields.</description>
+    <inlineHelpText>Allows you to continue with the creation of a prospect even when the system has detected duplicate records that meet the percentage and number of matching fields.</inlineHelpText>
+    <label>is Disable</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

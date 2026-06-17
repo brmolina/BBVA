@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Vision__c</fullName>
+    <description>Vision&apos;s values</description>
+    <label>Vision</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Internal Networks</fullName>
+                <default>false</default>
+                <label>Internal Networks</label>
+            </value>
+            <value>
+                <fullName>Equity Derivatives</fullName>
+                <default>false</default>
+                <label>Equity Derivatives</label>
+            </value>
+            <value>
+                <fullName>Flow FI &amp; FX</fullName>
+                <default>false</default>
+                <label>Flow FI &amp; FX</label>
+            </value>
+            <value>
+                <fullName>Corporates</fullName>
+                <default>false</default>
+                <label>Corporates</label>
+            </value>
+            <value>
+                <fullName>Structured FI Investors</fullName>
+                <default>false</default>
+                <label>Structured FI Investors</label>
+            </value>
+            <value>
+                <fullName>Cash Equity</fullName>
+                <default>false</default>
+                <label>Cash Equity</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>EQUITIES</fullName>
+                <default>false</default>
+                <label>EQUITIES</label>
+            </value>
+            <value>
+                <fullName>RATES</fullName>
+                <default>false</default>
+                <label>RATES</label>
+            </value>
+            <value>
+                <fullName>CREDIT</fullName>
+                <default>false</default>
+                <label>CREDIT</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>GTB</fullName>
+                <default>false</default>
+                <label>GTB</label>
+            </value>
+            <value>
+                <fullName>BPyP</fullName>
+                <default>false</default>
+                <label>BPyP</label>
+            </value>
+            <value>
+                <fullName>Corporares</fullName>
+                <default>false</default>
+                <label>Corporares</label>
+            </value>
+            <value>
+                <fullName>Inversores EQ</fullName>
+                <default>false</default>
+                <label>Inversores EQ</label>
+            </value>
+            <value>
+                <fullName>Inversores FI &amp; FX</fullName>
+                <default>false</default>
+                <label>Inversores FI &amp; FX</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -50,7 +50,7 @@ public with sharing class PRW_TabContainerCtrl {
     system.debug(acc);
     try {
       final List<Account> lstAccount = new List<Account>([
-        SELECT id, Name, DES_Client_Type__c, SER_CClient__c
+        SELECT id, Name, DES_Client_Type__c, g_customer_id__c
         FROM Account
         WHERE Id = :recordId
       ]);

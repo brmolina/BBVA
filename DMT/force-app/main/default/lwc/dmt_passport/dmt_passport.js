@@ -13,7 +13,6 @@ import {loadStyle } from 'lightning/platformResourceLoader';
 import overflowyscroll from '@salesforce/resourceUrl/DMT_overflowyscroll';
 
 import getInformationPassport from '@salesforce/apex/DMT_Passport_Handler.getInformationPassport';
-import validateOppBeforePassport from '@salesforce/apex/DMT_Passport_Handler.validateOppBeforePassport';
 import getFeatureTypeByApproverType from '@salesforce/apex/DMT_Passport_Handler.getFeatureTypeByApproverType';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { getRecord, getFieldValue, getRecordNotifyChange } from "lightning/uiRecordApi";
@@ -30,6 +29,7 @@ import CLIENTID_FIELD from "@salesforce/schema/DMT_Line__c.Client__c";
 import AMOUNT_FIELD from "@salesforce/schema/DMT_Line__c.Amount__c";
 import LASTLVLID_FIELD from "@salesforce/schema/DMT_Line__c.DMT_LastLevelId__c";
 import CURRENCYLINE_FIELD from "@salesforce/schema/DMT_Line__c.CurrencyIsoCode";
+import LINE_RECORDTYPE_FIELD from "@salesforce/schema/DMT_Line__c.RecordType.DeveloperName";
 import STATUSOPPORTUNITY_FIELD from "@salesforce/schema/Opportunity.StageName";
 import CLIENTTYPEOPPORTUNITY_FIELD from "@salesforce/schema/Opportunity.DMT_Client_Type__c";
 import CLIENTIDOPPORTUNITY_FIELD from "@salesforce/schema/Opportunity.AccountId";
@@ -39,14 +39,13 @@ import Success_MSG from '@salesforce/label/c.Success';
 import Required_MSG from '@salesforce/label/c.DMT_PassportMsgRequired';
 const CUSTOMER_STRG = 'Customer';
 import { CurrentPageReference } from 'lightning/navigation';
-
+import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 
 export default class Dmt_passport extends LightningElement {
 
   myPayload = [];
   wrapper = [];
   refreshContainerID;
-  responseValidationOpp= [];
 
   @api isBigVersion;
   @api recordId;
@@ -55,10 +54,11 @@ export default class Dmt_passport extends LightningElement {
   get getservice() {
     return this.getservicevalue;
   }
+
   set getservice(value) {
     this.getservicevalue = value;
-    if(value.toLowerCase() == 'true'){
-      this.callService();
+    if (value && value.toLowerCase() === 'true') {
+        this.executeSafeSync('MANUAL');
     }
   }
 
@@ -68,11 +68,14 @@ export default class Dmt_passport extends LightningElement {
   validations = [];
   childProps;
   componentConstructor;
+  _hasInitialized = false;
+  _isStale = false;
   _showSpinner = true;
   @track messageError;
   userPermission = false;
   lastDate;
   recordType;
+  hasRendered = false;
 
   //Visualización de Modales
   isTaskModalOpen = false;
@@ -99,9 +102,9 @@ export default class Dmt_passport extends LightningElement {
   @track amountLine;
   @track lastLvlLine;
   @track currencyIsoCode;
-  additional_Restrictions;
   previousOpportunityStatus;
   statusRefreshInProgress = false;
+
 
   //Change Data Capture
   channelNamePassport = '/data/Passport__ChangeEvent';
@@ -141,7 +144,7 @@ export default class Dmt_passport extends LightningElement {
 
   @wire(CurrentPageReference)
     getStateParameters(currentPageReference) {
-        if (currentPageReference) {            
+        if (currentPageReference) {
             // Check standard and custom state parameters
             this.recordId = currentPageReference.state?.recordId || currentPageReference.state?.c__recordId || currentPageReference.attributes?.recordId;
         }
@@ -185,22 +188,13 @@ export default class Dmt_passport extends LightningElement {
     this.refreshContainerID = registerRefreshContainer(this, this.refreshContainer);
     this.registerErrorListener();
     this.registerSubscribe();
-    if(this.isBigVersion !== 'true'){
-      window.onscroll = function (){
+  }
 
-        var body = window.document.body; //IE 'quirks'
-        var document = window.document.documentElement; //IE with doctype
-        document = (document?.clientHeight) ? document : body;console.log('document', document);console.log('body', body);
-        let newTop = (330 + document.querySelector(".slds-path")?.clientHeight) - Math.round(document.scrollTop);console.log('newTop', newTop);
-        newTop = 215 < newTop ? newTop : 215;
-        if(document.scrollTop === 0){
-          document.querySelector(".slds-passport").style.removeProperty('top');
-        }
-        else{
-          document.querySelector(".slds-passport").style.setProperty('top', `${newTop}px`);
-        }
-      };
-    }
+  renderedCallback() {
+      if (!this.hasRendered) {
+          this.onScrollPassport();
+          this.hasRendered = true;
+      }
   }
 
   disconnectedCallback() {
@@ -217,60 +211,184 @@ export default class Dmt_passport extends LightningElement {
   }
 
   @wire(getRelatedListRecords, {
-    parentRecordId: "$lineId",
-    relatedListId: 'Risk_Line_Terms__r',
-    fields: ['DMT_Risk_Line_Term__c.Id']
-  }) relatedRiksList;
+      parentRecordId: "$lineId",
+      relatedListId: 'Risk_Line_Terms__r',
+      fields: ['DMT_Risk_Line_Term__c.Id']
+    }) relatedRiksList;
 
-  //WIREDS
   @wire(getRecord, { recordId: "$passportId", fields: [OBSOLETED_FIELD, JSON_FIELD] })
-  wiredRecordPassport(result){
+  wiredRecordPassport(result) {
     this.wiredPassportResult = result;
     const { error, data } = result;
-    if(error){
-      this.handleError(error);
-    }
-    else if(data){
+    if (data) {
       let tempPayload = getFieldValue(data, JSON_FIELD);
-      if (!tempPayload || tempPayload === '') {
-        this.showWarning = false;
-      }else{
-        this.showWarning = getFieldValue(data, OBSOLETED_FIELD);
-      }
+      console.warn('[WIRE-PASSPORT] Data arrived.');
+          this.showWarning = (this._showSpinner) ? false : (tempPayload ? getFieldValue(data, OBSOLETED_FIELD) : false);
 
-      if(this.rawPayload !== tempPayload){
-        this.proccessPayload(tempPayload);
-      }
+        if (this.rawPayload === tempPayload) {
+            this._showSpinner = false; // Disable spinner if the record updated but data is the same
+            return;
+        }
 
-      refreshApex(this.relatedRiksList);
-      refreshApex(this.wiredLineResult);
+          this.rawPayload = tempPayload;
+          this.messageError = '';
+
+          // SHIELD: If we are currently making a callout or haven't finished the first load,
+          // do NOT trigger a re-render.
+          if (this._isStale) {
+              console.log('[ORCHESTRATOR] Passport wire blocked: Data is currently stale.');
+              return;
+          }
+
+          this.executeSafeSync('PASSPORT_UPDATED');
+      }
+  }
+
+  // The Gatekeeper
+  tryInit(reason) {
+    // SILENT CHECK
+    // Check here to avoid unnecessary timers and spinner flickers
+    if (!this.validateIntegrity(true)) {
+        console.warn(`[ORCHESTRATOR] Aborted: Data Integrity check failed.`);
+        return;
     }
+
+    if (this.isReady()) {
+        console.log(`[ORCHESTRATOR] Ready (${reason}). Scheduling...`);
+        this.scheduleOrchestrate(reason);
+    } else if (this._retryCount < this.MAX_RETRIES) {
+        this._retryCount++;
+        this.scheduleOrchestrate('RETRY', 600);
+    }
+}
+
+  // The Debouncer (The "Chiller")
+  scheduleOrchestrate(reason, delayMs = 400) {
+      if (this._orchTimer) {
+          clearTimeout(this._orchTimer);
+      }
+
+      // eslint-disable-next-line @lwc/lwc/no-async-operation
+      this._orchTimer = setTimeout(() => {
+          this.executeSafeSync(reason);
+      }, delayMs);
   }
 
   //WIREDS
-  @wire(getRecord, { recordId: "$lineId", fields: [STATUSLINE_FIELD, CLIENTTYPE_FIELD, CLIENTID_FIELD, AMOUNT_FIELD, LASTLVLID_FIELD, CLOSEDLINE_FIELD, CURRENCYLINE_FIELD] })
+  @wire(getRecord, { recordId: "$lineId", fields: [STATUSLINE_FIELD, CLIENTTYPE_FIELD, CLIENTID_FIELD, AMOUNT_FIELD, LASTLVLID_FIELD, CLOSEDLINE_FIELD, CURRENCYLINE_FIELD, LINE_RECORDTYPE_FIELD] })
   wiredRecordLine(result){
-    this.wiredLineResult = result;
-    const { error, data } = result;
-    if(error){
-      this.handleError(error);
+      this.wiredLineResult = result;
+      const { error, data } = result;
+
+      if (error) {
+          this.handleError(error);
+      }
+      else if (data) {
+        // 1. Assign local variables (Passive sync)
+        this.recordType = getFieldValue(result.data, LINE_RECORDTYPE_FIELD);
+        this.clientType = getFieldValue(data, CLIENTTYPE_FIELD);
+        this.clientId = getFieldValue(data, CLIENTID_FIELD);
+        this.amountLine = getFieldValue(data, AMOUNT_FIELD);
+        this.lastLvlLine = getFieldValue(data, LASTLVLID_FIELD);
+        this.currencyIsoCode = getFieldValue(data, CURRENCYLINE_FIELD);
+
+        // 2. ONLY INITIAL LOAD TRIGGER
+        /* if (!this._hasInitialized) {
+            console.log('[ORCHESTRATOR] IDs Ready. Performing Initial Load Callout.');
+            this._hasInitialized = true;
+            this.tryInit('LINE_WIRE');
+        } */
+
+        // 3. Detect Status changes to show the spinner while the backend works
+        const newLineStatus = getFieldValue(data, STATUSLINE_FIELD);
+        if (this.lineStatus !== undefined && this.lineStatus !== newLineStatus) {
+            this._showSpinner = true; 
+        }
+
+        this.lineStatus = newLineStatus;
+        this.lineClosed = getFieldValue(data, CLOSEDLINE_FIELD);
     }
-    else if(data){
-      this.clientType = getFieldValue(data, CLIENTTYPE_FIELD);
-      this.clientId = getFieldValue(data, CLIENTID_FIELD);
-      this.amountLine = getFieldValue(data, AMOUNT_FIELD);
-      this.lastLvlLine = getFieldValue(data, LASTLVLID_FIELD);
-      console.log('logg in line','amountLine: ' + this.amountLine + ' lastLvlLine: ' + this.lastLvlLine + ' relatedRiksList:'+ this.relatedRiksList);
-      if(this.lineStatus !== undefined && (this.lineStatus !== getFieldValue(data, STATUSLINE_FIELD) || this.lineClosed !== getFieldValue(data, CLOSEDLINE_FIELD)) && this.isBigVersion !== 'true'){
-        this.handleStatusChange();
+  }
+
+  isReady() {
+      // Check for the minimum required data for a callout
+      const hasIds = this.passportId && this.lineId;
+      const hasClient = this.clientId !== undefined;
+      const hasDate = this.lastDate !== undefined;
+
+      return hasIds && hasClient && hasDate;
+  }
+
+  // Add a parameter to decide if we show the toast or stay silent
+  validateIntegrity(isSilent = true) {
+      if (this.recordType === 'OtherProducts') {
+          const hasNoAmount = (this.amountLine === null || this.amountLine === undefined);
+          const hasNoRisk = (this.lastLvlLine === null || this.lastLvlLine === undefined);
+          const hasNoProducts = !this.relatedRiksList?.data?.records?.length;
+
+          if (hasNoAmount || hasNoRisk || hasNoProducts) {
+              if (!isSilent) {
+                  this.handleError(this.csLabels.lineValidationMsg1);
+              }
+              // CLEANUP: If we aren't valid, we shouldn't have data in memory
+              this.showfeaturesTable = false;
+              this.wrapper = [];
+              this._showSpinner = false;
+              this._isStale = false; // Release shield if validation fails
+              return false;
+          }
+      }
+      return true;
+  }
+
+  async executeSafeSync(origin) {
+    this._lastOrigin = origin; // Track the origin every time we enter
+      console.warn('[ORCHESTRATOR] Entry:', origin, 'Shield Status (isStale):', this._isStale);
+
+      // If the user triggered this manually, we want to show errors (isSilent = false).
+      // Otherwise (Wires/Initial load), we stay silent.
+      const isSilent = (origin !== 'MANUAL');
+
+      // RACE CONDITION FIX:
+      // Await the absolute latest data from the server for the Line and Related Risks
+      // BEFORE we check integrity. This guarantees we don't fail due to stale UI cache.
+      try {
+          let refreshPromises = [refreshApex(this.wiredLineResult)];
+          
+          if (this.recordType === 'OtherProducts') {
+              refreshPromises.push(refreshApex(this.relatedRiksList));
       }
 
-      this.lineStatus = getFieldValue(data, STATUSLINE_FIELD);
-      this.lineClosed = getFieldValue(data, CLOSEDLINE_FIELD);
-      this.currencyIsoCode = getFieldValue(data, CURRENCYLINE_FIELD);
-      //refreshApex(this.relatedRiksList);
-      //refreshApex(this.wiredLineResult);
-    }
+          await Promise.all(refreshPromises);
+      } catch (err) {
+          console.error('Failed to sync Line Data before integrity check', err);
+      }
+
+      // 1. GUARD: Evaluate integrity using the freshly awaited data
+      if (!this.validateIntegrity(isSilent)) {
+          console.log('[ORCHESTRATOR] Aborted: Data Integrity check failed..');
+          return;
+      }
+      if (origin === 'PASSPORT_UPDATED') {
+          await this.proccessPayload(this.rawPayload);
+          return;
+      }
+      if (origin === 'TASK_UPDATED') {
+          return;
+      }
+
+      // Entering integration path
+      this._isStale = true;
+      this._showSpinner = true;
+      this.showfeaturesTable = false;
+
+      try {
+          await this.callService(origin);
+      } catch (error) {
+          this.handleError(error);
+          this._showSpinner = false;
+          this._isStale = false;
+      }
   }
 
   //WIREDS
@@ -286,6 +404,7 @@ export default class Dmt_passport extends LightningElement {
       this.clientId = getFieldValue(data, CLIENTIDOPPORTUNITY_FIELD);
 
       if (this.previousOpportunityStatus !== undefined && this.previousOpportunityStatus !== newStatus && this.isBigVersion !== 'true'){
+        console.error(`[INVESTIGATION] REACTIVE TRIGGER: Opportunity Stage Updated. New Stage: ${newStatus}`);
         this.handleStatusChange();
       }
 
@@ -296,7 +415,6 @@ export default class Dmt_passport extends LightningElement {
 
   @wire(getInformationPassport, { recordId: "$recordId" })
   wiredInformationPassport(result) {
-    console.log('recordId in wiredInformationPassport');
     this.wiredInformationPassportResult = result;
     if(result.error){
       this.handleError(result.error);
@@ -304,17 +422,13 @@ export default class Dmt_passport extends LightningElement {
     else if (result.data) {
       let response = JSON.parse(result.data);
       this.externalId = response.externalId;
-      console.log('external Id', this.externalId);
       this.passportId = response.passportId;
       this.lineId = response.lineId;
-      console.log('line Id', this.lineId);
       this.opportunityId = response.opportunityId;
-      console.log('opp Id', this.opportunityId);
       this.tasksId = JSON.parse(response.tasksId);
       this.userPermission = response.userPermission;
       this.recordType = response.recordType;
       this.groupMembers = response.groupMembers;
-      this.additional_Restrictions = response.additional_Restrictions;
     }
   }
 
@@ -342,123 +456,96 @@ export default class Dmt_passport extends LightningElement {
   }
 
   handleStatusChange() {
-    if (this.statusRefreshInProgress){
-      return;
-    }
+      if (this.statusRefreshInProgress) return;
 
-    this.statusRefreshInProgress = true;
+      this.statusRefreshInProgress = true;
+      this.dispatchEvent(new RefreshEvent());
 
-    this.dispatchEvent(new RefreshEvent());
-    this.callService()
-    .finally(() => {
-      this.statusRefreshInProgress = false;
-    });
+      // Instead of calling callService directly, call the Orchestrator
+      this.executeSafeSync('WIRE').finally(() => {
+          this.statusRefreshInProgress = false;
+      });
   }
 
 
-  proccessPayload(newPayload) {
-    const parsedValue = this.parseJson(newPayload);
+  async proccessPayload(newPayload) {
+      const parsedValue = this.parseJson(newPayload);
+      console.warn('[PROCESSOR] Building Buffer for Date:', JSON.stringify(parsedValue?.data?.auditDate));
+      if (parsedValue?.data !== undefined) {
+          // Clear any previous error messages now that we have valid data
+        //  this.messageError = '';
+          this.rawPayload = newPayload;
+          this.myPayload = parsedValue.data;
 
-    if(parsedValue?.data !== undefined){
-      this.rawPayload = newPayload;
-      this.myPayload = parsedValue.data;
-      this.wrapper = [];
-      try {
-        this.createrWrapper();
-        this.sortFeaturesByPassportSanction();
+          let buffer = [];
 
-        this._showSpinner = true; // Ensure spinner is on
+          try {
+              this.buildWrapperList(buffer);
+              this.sortBuffer(buffer);
 
-        Promise.all([
-          new Promise((resolve, reject) => {
-            this.checkWorkflowStatus()
-              .then(result => resolve(result))
-              .catch(error => reject(error));
-          }),
-          new Promise((resolve, reject) => {
-            this.initRefreshTasksInProgress()
-              .then(result => resolve(result))
-              .catch(error => reject(error));
-          })
-        ])
-        .then(() => {
-          return this.updateFeatureType();
-        })
-        .then(() => {
-          this.showfeaturesTable = true;
+              // WAIT for all async data to populate the buffer
+              await Promise.all([
+                  this.checkWorkflowStatus(buffer),
+                  this.initRefreshTasksInProgress(buffer)
+              ]);
+
+              await this.updateFeatureType(buffer);
+
+              // ATOMIC REVEAL
+              this.wrapper = [...buffer];
+              this.showfeaturesTable = true;
+              this._showSpinner = false;
+
+          } catch (error) {
+              this.handleError(error);
+              this._showSpinner = false;
+          }
+      } else {
           this._showSpinner = false;
-        })
-        .catch(error => {
-          this.handleError(error);
-          this._showSpinner = false;
-        });
       }
-      catch(error){
-        this.handleError(error);
-      }
-    }
-    else{
-      this._showSpinner = false;
-    }
   }
 
-  createrWrapper(){
+  buildWrapperList(buffer) {
+      if (!this.myPayload || !this.myPayload.features) return;
 
-    if (!this.myPayload || !this.myPayload.features) {
-      return;
-    }
-
-    this.myPayload.features.forEach(ftr => {
-      if(ftr.motorDesc === 'Salesforce'){
-        this.wrapper.push({id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, idProccess: ftr.id});
-      }
-      /*else if(this.recordType === 'OtherProducts')
-      {
-        ftr.lastLevels.forEach(lv =>
-        {
-          this.wrapper.push({id: ftr.id, name: `${ftr.name}/${lv.lastLevelId}`, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: lv.stateName, active: ftr.active, validations: lv.validations, tasks: lv.tasks, consumptionLimits: lv.consumptionLimits, idProccess: `${ftr.id}-${lv.lastLevelId}`});
-        });
-      }*/
-      else{
-        this.wrapper.push({ id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, tasks: ftr.tasks, consumptionLimits: ftr.consumptionLimits, idProccess: ftr.id, profitability: ftr.profitability, orderNumber: ftr.orderNumber });
-      }
-
-    });
+      this.myPayload.features.forEach(ftr => {
+          if(ftr.motorDesc === 'Salesforce'){
+              buffer.push({id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, idProccess: ftr.id});
+          } else {
+              buffer.push({ id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, tasks: ftr.tasks, consumptionLimits: ftr.consumptionLimits, idProccess: ftr.id, profitability: ftr.profitability, orderNumber: ftr.orderNumber });
+          }
+      });
   }
 
-  sortFeaturesByPassportSanction() {
-    let passportSanction;
-    let featuresTemp = [];
+  sortBuffer(buffer) {
+      let passportSanction;
+      let featuresTemp = [];
 
-    this.wrapper.sort((a, b) => {
-      const nameA = a.passportSanction?.toUpperCase();
-      const nameB = b.passportSanction?.toUpperCase();
-      if (nameA === 'APPROVAL' && nameB === 'PASSPORT') {
-        return 1;
-      }
-      if (nameA === 'PASSPORT' && nameB === 'APPROVAL') {
-        return -1;
-      }
-      return 0;
-    });
+      buffer.sort((a, b) => {
+          const nameA = a.passportSanction?.toUpperCase();
+          const nameB = b.passportSanction?.toUpperCase();
+          if (nameA === 'APPROVAL' && nameB === 'PASSPORT') return 1;
+          if (nameA === 'PASSPORT' && nameB === 'APPROVAL') return -1;
+          return 0;
+      });
 
-    this.wrapper.forEach((ftr, indexftr) => {
-      if (indexftr === 0) {
-        ftr.variadito = true;
-        passportSanction = ftr.passportSanction?.toUpperCase();
-        if (passportSanction !== 'PASSPORT') {
-          featuresTemp.push({ changeSanction: true, id: 'changeSanction', name: passportSanction });
-        }
-      }
+      buffer.forEach((ftr, indexftr) => {
+          if (indexftr === 0) {
+              ftr.variadito = true;
+              passportSanction = ftr.passportSanction?.toUpperCase();
+              if (passportSanction !== 'PASSPORT') {
+                  featuresTemp.push({ changeSanction: true, id: 'changeSanction', name: passportSanction });
+              }
+          }
+          if (passportSanction !== ftr.passportSanction?.toUpperCase()) {
+              passportSanction = ftr.passportSanction?.toUpperCase();
+              featuresTemp.push({ changeSanction: true, id: 'changeSanction', name: passportSanction === 'APPROVAL' ? 'APPROVAL PROCESS' : passportSanction });
+          }
+          featuresTemp.push(ftr);
+      });
 
-      if (passportSanction !== ftr.passportSanction?.toUpperCase()) {
-        passportSanction = ftr.passportSanction?.toUpperCase();
-        featuresTemp.push({ changeSanction: true, id: 'changeSanction', name: passportSanction === 'APPROVAL' ? 'APPROVAL PROCESS' : passportSanction });
-      }
-      featuresTemp.push(ftr);
-    });
-
-    this.wrapper = featuresTemp;
+      buffer.length = 0;
+      buffer.push(...featuresTemp);
   }
 
   setFeatureProperties(ftr) {
@@ -498,7 +585,7 @@ export default class Dmt_passport extends LightningElement {
           if (task.approvers !== undefined && task.approvers.length !== 0) {
             ftr.taskTemplate = task;
             ftr.taskTemplate.status = 'Not started';
-            ftr.taskTemplate.approver = task.approvers[0].name;
+            ftr.taskTemplate.approver = task.approvers?.[0]?.name;
           } else {
             ftr.taskTemplate = null;
           }
@@ -509,7 +596,8 @@ export default class Dmt_passport extends LightningElement {
 
   //HANDLE METHODS
   handleError(error){
-    console.log('error',JSON.stringify(error));
+    console.error('error.message',error?.message);
+    console.error('error.stack',error?.stack);
     let message = "Unknown error";
     if (Array.isArray(error.body)) {
       message = error.body.map((e) => e.message).join(", ");
@@ -532,41 +620,45 @@ export default class Dmt_passport extends LightningElement {
     );
 
     this._showSpinner = false;
+    this._isStale = false;
+
+    // SOFT LANDING: Force a render of whatever is currently in this.rawPayload
+    // so the user sees the last known good Passport instead of a spinner.
+    const isProcessingError = (this._lastOrigin === 'PASSPORT_UPDATED');
+
+    if (this.rawPayload && !isProcessingError) {
+        console.warn('[ORCHESTRATOR] Attempting Soft Landing...');
+        this.executeSafeSync('PASSPORT_UPDATED');
+    } else {
+        console.error('[ORCHESTRATOR] Loop blocked or No Payload. Killing render.');
+        this.showfeaturesTable = false;
+        this.wrapper = [];
+    }
 
   }
 
-  //TODO: Retornar el campo de color o relizar comprobaciones: si no hay approver ni tarea deberia estar gris. Estemetodo no sera necesario si nos mandan un campo dde color del workflow
-  async checkWorkflowStatus(){
-    console.log('checkWorkflowStatus');
-    let arrayFeatures = [];
-    this.wrapper.forEach(feature => {
-      arrayFeatures.push(feature.id);
-    });
-    return this.isValidateFeature(arrayFeatures);
+  async checkWorkflowStatus(buffer) {
+      let arrayFeatures = buffer.filter(f => f.id).map(f => f.id);
+      return this.isValidateFeature(arrayFeatures, buffer);
   }
 
-  //TODO : Hablar con carlos lo de la featuretype, de donde tiene que tirar, porque esta mockeado
-  isValidateFeature(feature) {
-    return getAllsValidate({
-      lineId: this.lineId,
-      opptyId: this.opportunityId,
-      featureType: feature
-    }).then(response => {
-      let result = JSON.parse(response);
-
-      if(result !== undefined){
-        this.wrapper.forEach(f => {
-          if(result[f.id] !== undefined){
-            this.validFeature(f, result[f.id]);
+  isValidateFeature(featureIds, buffer) {
+      return getAllsValidate({
+          lineId: this.lineId,
+          opptyId: this.opportunityId,
+          featureType: featureIds
+      }).then(response => {
+          let result = JSON.parse(response);
+          if (result !== undefined) {
+              buffer.forEach(f => {
+                  if (result[f.id] !== undefined) {
+                      // It updates the object reference 'f' inside the buffer.
+                    this.validFeature(f, result[f.id]);
+                  }
+                  this.setFeatureProperties(f);
+              });
           }
-          this.setFeatureProperties(f);
-        });
-      }
-      this.wrapper = [...this.wrapper]; // Immutable re-assign to force reactivity
-      this._showSpinner = false;
-    }).catch((error) => {
-      this.handleError(error);
-    });
+      });
   }
 
   validFeature(feature,response){
@@ -595,6 +687,7 @@ export default class Dmt_passport extends LightningElement {
       lineExternalId: this.externalId
     }).then(responseTasks => {
       if(responseTasks){
+        console.log('Jimmy history', JSON.stringify(responseTasks));
         if (responseTasks[0].itemKey == 'Closed' || responseTasks[0].itemKey == 'Finished') {
           if (responseTasks[0].subitems[0]) {
             record.featureTasksHistory = responseTasks[0].subitems[0].subitems;
@@ -637,116 +730,81 @@ export default class Dmt_passport extends LightningElement {
     return day+'-'+mnt+'-'+year;
   }
 
-  async initRefreshTasksInProgress() {
-    console.log('initRefreshTasksInProgress');
-    var idsFeaturesWithWorkflow = [];
-
-    this.wrapper.forEach(feature => {
-      //If feature doest have approver or task with value workflow dont apply
-      if (feature.id != null && feature.tasks?.length > 0 && feature.tasks[0]?.approvers?.length > 0) {
-        idsFeaturesWithWorkflow.push(feature.id);
-      }
-      if(feature.tasks === undefined || feature.tasks.length === 0){
-        feature.tasks = undefined;
-      }
-    });
-
-    if(idsFeaturesWithWorkflow.length > 0){
-      let apexPromise;
-
-      if (this.opportunityId) {
-          apexPromise = getCurrentStepFromFeaturesOpp({
-              featuresIds: idsFeaturesWithWorkflow,
-              oppExternalId: this.externalId
-          });
-      } else if (this.lineId) {
-          apexPromise = getCurrentStepFromFeatures({
-              featuresIds: idsFeaturesWithWorkflow,
-              lineExternalId: this.externalId
-          });
-      } else {
-          return Promise.resolve();
-      }
-
-      return apexPromise.then(rspTask => {
-        this._showSpinner = true;
-        if (rspTask) {
-          // Preprocesar rspTask en un Map para acceso rápido por featureId
-          const taskMap = new Map();
-          rspTask.forEach(currentTask => {
-            let currentTaskArray = [];
-            if (currentTask.itemKey === 'Closed' || currentTask.itemKey === 'Finished') {
-              currentTaskArray = JSON.parse(JSON.stringify(currentTask.subitems));
-            } else {
-              currentTaskArray.push(currentTask);
-            }
-            currentTaskArray.forEach(taskItem => {
-              // Si hay varias tareas por featureId, nos quedamos con la última (o puedes adaptar la lógica)
-              taskMap.set(taskItem.featureId, taskItem);
-            });
-          });
-
-          this.wrapper.forEach(ftr => {
-            ftr.hasSFtask = false;
-            if (ftr.tasks !== undefined && ftr.tasks.length > 0) {
-              // Solo procesar el primer task para taskTemplate
-              const firstTask = ftr.tasks[0];
-              if (firstTask.approvers !== undefined && firstTask.approvers.length !== 0) {
-                ftr.taskTemplate = firstTask;
-                ftr.taskTemplate.status = 'Not started';
-                ftr.taskTemplate.approver = firstTask.approvers[0].name;
-                ftr.showHistoryButton = false;
-              } else {
-                ftr.taskTemplate = null;
-              }
-
-              // Buscar la tarea actual por featureId
-              const currentTaskIteration = taskMap.get(ftr.id);
-              if (currentTaskIteration) {
-                ftr.sfCurrentTask = currentTaskIteration;
-                if(ftr.sfCurrentTask?.startDate){
-                  ftr.sfCurrentTask.startDate = this.formatDate(ftr.sfCurrentTask.startDate);
-                }
-                if(ftr.sfCurrentTask?.endDate){
-                  ftr.sfCurrentTask.endDate = this.formatDate(ftr.sfCurrentTask.endDate);
-                }
-                ftr.isApprover = this.groupMembers.includes(ftr.sfCurrentTask.approver);
-                if(ftr.sfCurrentTask.caseStatus != 'Finished'){
-                  ftr.isNotFinishedTask = true;
-                }else{
-                  ftr.isNotFinishedTask = false;
-                }
-                ftr.sfCurrentTask.openModal = ftr.sfCurrentTask?.step?.urlValue === 'c-modal-container';
-                ftr.hasSFtask = true;
-                ftr.showHistoryButton = currentTaskIteration.taskSize != null && currentTaskIteration.taskSize > 1;
-                if (currentTaskIteration.caseStatus === 'Pending' || currentTaskIteration.caseStatus === 'In Progress') {
-                  ftr.workflowColor = 'yellow';
-                } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === 'No') {
-                  ftr.workflowColor = 'red';
-                } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === 'Yes') {
-                  ftr.workflowColor = 'green';
-                } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === undefined) {
-                  ftr.workflowColor = 'grey';
-                  ftr.workflowIsNotValid = true;
-                  ftr.workflowErrorMessage = 'Task without result and case finised';
-                }
-              }
-            }
-          });
-        }
-        this.wrapper = [...this.wrapper]; // Immutable re-assign to force reactivity
-        this._showSpinner = false;
-      }).catch((error) => {
-        this.handleError(error);
+  async initRefreshTasksInProgress(buffer) {
+      var idsFeaturesWithWorkflow = [];
+      buffer.forEach(feature => {
+          if (feature.id != null && feature.tasks?.length > 0 && feature.tasks[0]?.approvers?.length > 0) {
+              idsFeaturesWithWorkflow.push(feature.id);
+          }
+          if (feature.tasks === undefined || feature.tasks.length === 0) {
+              feature.tasks = undefined;
+          }
       });
-    } else {
-      // No features - resolve immediately
+
+      if (idsFeaturesWithWorkflow.length > 0) {
+          let apexPromise = this.opportunityId ?
+              getCurrentStepFromFeaturesOpp({ featuresIds: idsFeaturesWithWorkflow, oppExternalId: this.externalId }) :
+              getCurrentStepFromFeatures({ featuresIds: idsFeaturesWithWorkflow, lineExternalId: this.externalId });
+
+          return apexPromise.then(rspTask => {
+              if (rspTask) {
+                  const taskMap = new Map();
+                  rspTask.forEach(currentTask => {
+                      let currentTaskArray = (currentTask.itemKey === 'Closed' || currentTask.itemKey === 'Finished') ?
+                          JSON.parse(JSON.stringify(currentTask.subitems)) : [currentTask];
+                      currentTaskArray.forEach(taskItem => taskMap.set(taskItem.featureId, taskItem));
+                  });
+
+                  var readyToClose = true;
+                  buffer.forEach(ftr => {
+                      ftr.hasSFtask = false;
+                      if (ftr.tasks !== undefined && ftr.tasks.length > 0) {
+                        const firstTask = ftr.tasks?.[0];
+                          if (firstTask.approvers?.length > 0) {
+                              ftr.taskTemplate = firstTask;
+                              ftr.taskTemplate.status = 'Not started';
+                              ftr.taskTemplate.approver = firstTask.approvers?.[0]?.name;
+                              ftr.showHistoryButton = false;
+                          }
+
+                          const currentTaskIteration = taskMap.get(ftr.id);
+                          if (currentTaskIteration) {
+                              ftr.sfCurrentTask = currentTaskIteration;
+                              if(ftr.sfCurrentTask?.startDate) ftr.sfCurrentTask.startDate = this.formatDate(ftr.sfCurrentTask.startDate);
+                              if(ftr.sfCurrentTask?.endDate) ftr.sfCurrentTask.endDate = this.formatDate(ftr.sfCurrentTask.endDate);
+
+                              ftr.isApprover = this.groupMembers.includes(ftr.sfCurrentTask.approver);
+                              ftr.isApproverOrGod = ftr.isApprover || hasLineGodPermission;
+                              ftr.isNotFinishedTask = ftr.sfCurrentTask.caseStatus != 'Finished';
+                              ftr.sfCurrentTask.openModal = ftr.sfCurrentTask?.step?.urlValue === 'c-modal-container';
+                              ftr.hasSFtask = true;
+                              ftr.showHistoryButton = currentTaskIteration.taskSize > 1;
+
+                              if (currentTaskIteration.caseStatus === 'Pending' || currentTaskIteration.caseStatus === 'In Progress') {
+                                  ftr.workflowColor = 'yellow';
+                                  if(ftr.featureType == 'approval') readyToClose = false;
+                              } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === 'No') {
+                                  ftr.workflowColor = 'red';
+                                  if(ftr.featureType == 'approval') readyToClose = false;
+                              } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === 'Yes') {
+                                  ftr.workflowColor = 'green';
+                              } else if (currentTaskIteration.caseStatus === 'Finished' && currentTaskIteration.rawresult === undefined) {
+                                  ftr.workflowColor = 'grey';
+                                  if(ftr.featureType == 'approval') readyToClose = false;
+                                  ftr.workflowIsNotValid = true;
+                                  ftr.workflowErrorMessage = 'Task without result and case finished';
+                              }
+                          }
+                      }
+                  });
+              }
+          });
+      }
       return Promise.resolve();
-    }
   }
 
   openModal(event){
-   
+
     let featureId = event.detail;
     let consumptionLimits = [];
     this.limits = null;
@@ -829,7 +887,7 @@ export default class Dmt_passport extends LightningElement {
         {"backgroundColor": "rgba(189, 189, 189, 1)", "data": dataNewOpportunity, "hoverBackgroundColor": "rgba(189, 189, 189, 1)","label": "New Opportunity"}
       ];
 
-      this.limits = {conditions: conditions, currencies: currencies, datasets: datasets, labels: labels, limitLights: limitLights, originCurrency: this.currencyIsoCode, sections: sections, targetColor: 'red', targets: targets, additional_Restrictions: this.additional_Restrictions};
+      this.limits = {conditions: conditions, currencies: currencies, datasets: datasets, labels: labels, limitLights: limitLights, originCurrency: this.currencyIsoCode, sections: sections, targetColor: 'red', targets: targets};
     }
 
     passportModal.open({
@@ -879,7 +937,7 @@ export default class Dmt_passport extends LightningElement {
     });
   }
 
-  startCase(event) {
+  async startCase(event) {
     this._showSpinner = true;
     const {idProccess, comment} = event.detail;
     var externalLineid;
@@ -892,9 +950,9 @@ export default class Dmt_passport extends LightningElement {
     this.wrapper.forEach(record => {
       if (record.idProccess === idProccess) {
         externalLineid = this.myPayload.opportunityId;
-        approverId = record.tasks[0].approvers[0].id;
+        approverId = record.tasks?.[0]?.approvers?.[0].id;
         featureName = record.name;
-        taskId = record.tasks[0].id;
+        taskId = record.tasks?.[0].id;
         taskList = [...record.tasks];
         featureid = record.id;
         passportSanction = record.passportSanction;
@@ -913,20 +971,31 @@ export default class Dmt_passport extends LightningElement {
       featureName: featureName,
       comment: comment,
       passportSanction: passportSanction
-    }).then(response => {
+    }).then(async response => {
+      if (!response.success) {
+        this.handleError(response.message);
+        this._showSpinner = false;
+        return;
+      }
       const evt = new ShowToastEvent({
         title: this.csLabels.successMsg,
-        message: 'The workflow has been successfully requested',
+        message: response.message,
         variant: 'success',
       });
       this.dispatchEvent(evt);
       this.dispatchEvent(new RefreshEvent());
 
-      this.initRefreshTasksInProgress();
+      let buffer = [...this.wrapper];
+      await this.initRefreshTasksInProgress(buffer);
+      this.wrapper = [...buffer]; // Force reactivity
 
     }).catch((error) => {
       this.handleError(error);
-    });
+    })
+    .finally(() => {
+        // ULTIMATE GUARD: Ensure spinner dies even if logic above is complex
+      this._showSpinner = false;
+    });;
 
   }
 
@@ -963,7 +1032,17 @@ export default class Dmt_passport extends LightningElement {
     try {
       const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds; // avoid deconstruction
       if(recordIds.includes(this.passportId)){
-        getRecordNotifyChange([{ recordId: this.passportId }]); // Refresh all components
+          getRecordNotifyChange([{ recordId: this.passportId }]); // Refresh all components
+          console.warn('[CDC] Passport changed. Forcing Wire Refresh.');
+
+          // This forces the wire to go back to the server and get the JSON updated by the Trigger
+          refreshApex(this.wiredPassportResult);
+
+          if (this.opportunityId) {
+            getRecordNotifyChange([{ recordId: this.opportunityId }]);
+          } else if (this.lineId) {
+            getRecordNotifyChange([{ recordId: this.lineId }]);
+          }
       }
     } catch (err) {
       this.handleError(error);
@@ -975,11 +1054,11 @@ export default class Dmt_passport extends LightningElement {
       const recordIds = changeEvent.data.payload.records__c.split(',');
       const operation = changeEvent.data.payload.Operation__c;
 
-      if(operation === 'CREATE'){
+   //   if(operation === 'CREATE'){
         refreshApex(this.wiredInformationPassportResult).then(result => {
           this.searchTask(recordIds);
         });
-      }
+   //   }
       this.searchTask(recordIds);
 
     } catch (err) {
@@ -987,52 +1066,35 @@ export default class Dmt_passport extends LightningElement {
     }
   }
 
-  searchTask(recordIds){
-    this.tasksId.forEach(t => {
-      if(recordIds.includes(t)){
-        this.checkWorkflowStatus();
-        this.initRefreshTasksInProgress();
-        refreshApex(this.wiredInformationPassportResult);
-        return true;
+  searchTask(recordIds) {
+      // 1. Check if any of the updated tasks belong to this passport
+      const isRelatedTask = this.tasksId.some(t => recordIds.includes(t));
+      
+      if (isRelatedTask) {
+          // 2. Refresh the wire to get latest IDs, then run the Orchestrator
+          refreshApex(this.wiredInformationPassportResult).then(() => {
+              if (this.rawPayload) {
+                  // This safely rebuilds the buffer, checks the server, and renders the UI
+                  this.executeSafeSync('TASK_UPDATED');
+              }
+          });
       }
-
-    });
   }
-
-  async validateOppBeforePassportService() {
-          this.responseValidationOpp = await validateOppBeforePassport({ oppId : this.opportunityId });
-          return this.responseValidationOpp;
-    }
 
   @api
   async callService() {
     this.messageError = '';
 
     try{
-      if(this.opportunityId !== undefined){
-        await this.validateOppBeforePassportService();
-          if(!this.responseValidationOpp?.success){
-              this.handleError(this.responseValidationOpp.message);
-              return;
-            }
-      }else{
-          await refreshApex(this.wiredLineResult);
-          await refreshApex(this.relatedRiksList);
-          if(this.recordType === 'OtherProducts' &&
-            (this.amountLine === null || this.lastLvlLine === null || this.relatedRiksList?.data?.records?.length === 0)) {
-            this.handleError(this.csLabels.lineValidationMsg1);
-            return;
-          }
-      }
 
       const params = {
             selectedTab: 'passport',
             clientId: this.clientType === CUSTOMER_STRG ? undefined : this.clientId,
             lCountries: ["ALL"],
             searchDate: this.lastDate,
-            clientPositionsType: this.clientType !== CUSTOMER_STRG ? 'Y' : 'N',
+            clientPositionsType: this.clientType === 'Group' ? 'Y' : 'N',
             page: 1,
-            pageSize: '5000',
+            pageSize: this.clientType === 'Group' ? '100' : '5000',
             customerId: this.clientType !== CUSTOMER_STRG ? undefined : this.clientId,
           };
 
@@ -1040,138 +1102,138 @@ export default class Dmt_passport extends LightningElement {
     }catch (error) {
       this.handleError(error);
     }
-
-    /* refreshApex(this.wiredLineResult)
-      .then(() => {
-        return refreshApex(this.relatedRiksList);
-      })
-      .then(response => {
-        //console.log('Wired relatedRiksList:', JSON.stringify(this.relatedRiksList));
-        //console.log('After refresh: amountLine:', this.amountLine, 'lastLvlLine:', this.lastLvlLine, 'relatedRiksList records:', this.relatedRiksList?.data?.records?.length);
-        if(this.recordType === 'OtherProducts' &&
-          (this.amountLine === null || this.lastLvlLine === null || this.relatedRiksList?.data?.records?.length === 0)) {
-          this.handleError('It is mandatory to add Amount, type of risk and at least one product to the line');
-          return;
-        }
-
-        const params = {
-          selectedTab: 'passport',
-          clientId: this.clientType === 'Customer' ? undefined : this.clientId,
-          lCountries: ["ALL"],
-          searchDate: this.lastDate,
-          clientPositionsType: this.clientType !== 'Customer' ? 'Y' : 'N',
-          page: 1,
-          pageSize: '100',
-          customerId: this.clientType !== 'Customer' ? undefined : this.clientId,
-        };
-
-        this.template.querySelector("c-dmt_call_passport").fetchData(params);
-      })
-      .catch((error) => {
-        this.handleError(error);
-      }); */
   }
 
-  handleCallServiceEvent(event){
-    console.log('handleCallServiceEvent');
-    event.stopPropagation();
-    this._showSpinner = true;
+  handleCallServiceEvent(event) {
+      event.stopPropagation();
+      let message = JSON.parse(event.detail);
 
-    let message = JSON.parse(event.detail);
+      if (message.result) {
+          buttonCallPassport({
+              recordId: this.recordId,
+              clientesGroup: message.body
+          }).then(async (response) => {
+              let result = JSON.parse(response);
+              if (result.result && result.payload) {
+                  refreshApex(this.wiredPassportResult);
+                  refreshApex(this.wiredLineResult);
 
-    if(message.result){
-      buttonCallPassport({
-        recordId: this.recordId,
-        clientesGroup: message.body
-      }).then(response => {
-        console.log('buttonCallPassport response', response);
-        let result = JSON.parse(response);
-        this._showSpinner = false;  // Add this to stop spinner on success
-        if(!result.result){
-          this.handleError(result.message);
-        }
-      }).catch((error) => {
-        this.handleError(error);
-      })
-    }
-    else {
-      this.handleError(this.csLabels.clientsValidationMsg1);
-    }
+                  this.showWarning = result.isObsolete !== undefined ? result.isObsolete : false;
+
+                  this._isStale = false; // UNLOCK
+                  await this.proccessPayload(result.payload);
+
+              } else if (result.result) {
+                  // Fallback if for some reason payload wasn't returned
+                  this._isStale = false;
+                  await this.proccessPayload(this.rawPayload);
+              } else {
+                  this.handleError(result.message);
+                  this._isStale = false;
+                  this._showSpinner = false;
+              }
+          }).catch((error) => {
+              this.handleError(error);
+              this._isStale = false;
+              this._showSpinner = false;
+          });
+      } else {
+        this.handleError(this.csLabels.clientsValidationMsg1);
+      }
   }
 
-  async updateFeatureType(){
-    console.log('Calculating feature types');
+  async updateFeatureType(buffer) {
     let arrayFeaturesApproverId = [];
     let tempFeatureToModifyType = [];
-    this.wrapper.forEach(feature => {
-      if(feature.passportSanction?.toUpperCase() == 'APPROVAL' && feature?.tasks){
-        arrayFeaturesApproverId.push(feature?.tasks?.[0].approvers?.[0].id);
-        tempFeatureToModifyType.push(feature);
-      } 
+    buffer.forEach(feature => {
+        if (feature.passportSanction?.toUpperCase() == 'APPROVAL' && feature?.tasks) {
+            arrayFeaturesApproverId.push(feature?.tasks?.[0].approvers?.[0].id);
+            tempFeatureToModifyType.push(feature);
+        }
     });
 
-    if( arrayFeaturesApproverId.length > 0 ){ 
-      return getFeatureTypeByApproverType({featuresApproverIds: arrayFeaturesApproverId}).then(response => {
-        if(response !== undefined){
-          const featureTypeMap = {};
-          response.forEach(item => {
-            if(item?.approverId) {
-              featureTypeMap[item.approverId] = item.featureType;
-            }
-          });
+    if (arrayFeaturesApproverId.length > 0) {
+        return getFeatureTypeByApproverType({ featuresApproverIds: arrayFeaturesApproverId }).then(response => {
+            if (response) {
+                const featureTypeMap = {};
+                response.forEach(item => { if(item?.approverId) featureTypeMap[item.approverId] = item.featureType; });
 
-          tempFeatureToModifyType.forEach(f => {
-            const approverId = f.tasks?.[0].approvers?.[0].id;
-            if(approverId){
-              f.featureType = featureTypeMap[approverId];
-              const idx = this.wrapper.findIndex(w => w.id === f.id);
-              if(idx !== -1){
-                this.wrapper[idx] = { ...this.wrapper[idx], featureType: f.featureType };
-              }
-                //console.log( 'Feature Type for feature ' + f.name + ': ' + f.featureType);
-                //console.log( 'Approver Id for feature ' + f.name + ': ' + f.tasks[0]?.approvers[0]?.id);
+                tempFeatureToModifyType.forEach(f => {
+                    const approverId = f.tasks?.[0].approvers?.[0].id;
+                    if (approverId) {
+                        f.featureType = featureTypeMap[approverId];
+                    }
+                });
+                this.calculateApprovalRequestActive(tempFeatureToModifyType, buffer);
             }
-          });
-          this.calculateApprovalRequestActive(tempFeatureToModifyType);
+        });
+    }
+}
+
+calculateApprovalRequestActive(features, buffer) {
+    if (this.lineStatus != 'Approval') return;
+
+    const withFeatureTypeBusiness = features.filter(item => item.featureType == 'Business').sort((a, b) => a.orderNumber - b.orderNumber);
+    const withFeatureTypeRisk = features.filter(item => item.featureType == 'Risk').sort((a, b) => a.orderNumber - b.orderNumber);
+
+    // 1. Check for the first unfinished Business Feature
+    const firstUnfinishedBusiness = withFeatureTypeBusiness.find(item => 
+        item.isNotFinishedTask == undefined || item.isNotFinishedTask
+    );
+
+    if (firstUnfinishedBusiness) {
+        const featInBuffer = buffer.find(w => w.id === firstUnfinishedBusiness.id);
+        if (featInBuffer) {
+            featInBuffer.request = true;
         }
-        this.wrapper = [...this.wrapper];
-      }).catch((error) => {
-        this.handleError(error);
-      });
+    } else {
+        // 2. If Business features are done, find ONLY the FIRST unfinished Risk Feature
+        const firstUnfinishedRisk = withFeatureTypeRisk.find(item => 
+            item.isNotFinishedTask == undefined || item.isNotFinishedTask
+        );
+        
+        if (firstUnfinishedRisk) {
+            const featInBuffer = buffer.find(w => w.id === firstUnfinishedRisk.id);
+            if (featInBuffer) {
+                featInBuffer.request = true;
+            }
+        }
     }
   }
 
-  calculateApprovalRequestActive(features){
-    if(this.lineStatus != 'Approval'){
-      return;
-    }
-    let requestOn = true;
-    let requestOff = false;
-    let firstFeatureBusiness = null;
-    let firstFeatureRisk = null;
+  onScrollPassport() {
+      if (this.isBigVersion !== 'true') {
 
-    //First divide features by type
-    const withFeatureTypeBusiness = features.filter(item => item.featureType=='Business');
-    const withFeatureTypeRisk = features.filter(item => item.featureType=='Risk');
+          let dynamicInitialOffset = 325;
 
-    //If we have business type features, the first one will have request on, ordered by orderNumber
-    if(withFeatureTypeBusiness.length > 0){
-      withFeatureTypeBusiness.sort((a, b) => a.orderNumber - b.orderNumber);
-      console.log('withFeatureTypeBusiness sorted', JSON.stringify(withFeatureTypeBusiness));
-      firstFeatureBusiness = withFeatureTypeBusiness[0];
-      const idx = this.wrapper.findIndex(w => w.id === firstFeatureBusiness?.id);
-              if(idx !== -1){
-                this.wrapper[idx] = { ...this.wrapper[idx], request: requestOn  };
+          window.onscroll = () => {
+              let body = window?.document?.body;
+              let documentNode = window?.document?.documentElement;
+              documentNode = (documentNode?.clientHeight) ? documentNode : body;
+
+              // 1. Securely find the anchor
+              let stickyAnchor = this.template.querySelector('.stickyAnchor');
+              if (!stickyAnchor) return;
+
+              // 2. Traverse UP to the specific parent wrapper
+              let passportElement = stickyAnchor.closest('.slds-passport');
+              if (!passportElement) return;
+
+              // 4. Pure math using the dynamic offset
+              let newTop = dynamicInitialOffset - Math.round(documentNode.scrollTop);
+              newTop = 165 < newTop ? newTop : 165;
+
+              // 5. Apply the style
+              if (documentNode.scrollTop === 0) {
+                  // When hitting the top, we remove the inline style.
+                  // This allows Step 3 to recalculate the perfect height on the next scroll!
+                  passportElement.style.removeProperty('top');
+              } else {
+                  // The moment this applies, Step 3 stops calculating, locking the math in place.
+                  passportElement.style.setProperty('top', `${newTop}px`);
               }
-    }else{
-      //If we dont have business type features, the first risk type feature will have request on, ordered by orderNumber
-      withFeatureTypeRisk.sort((a, b) => a.orderNumber - b.orderNumber);
-      console.log('withFeatureTypeRisk sorted', JSON.stringify(withFeatureTypeRisk));
-      firstFeatureRisk = withFeatureTypeRisk[0];
-      const idx = this.wrapper.findIndex(w => w.id === firstFeatureRisk?.id);
-              if(idx !== -1){
-                this.wrapper[idx] = { ...this.wrapper[idx], request: requestOn  };
-              }
-    }
-  } 
+          };
+      }
+  }
+
 }

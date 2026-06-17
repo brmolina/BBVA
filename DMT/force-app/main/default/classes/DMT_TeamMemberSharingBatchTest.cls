@@ -1,5 +1,5 @@
-@IsTest
-private class DMT_TeamMemberSharingBatchTest {
+@isTest
+private without sharing class DMT_TeamMemberSharingBatchTest {
     
     // Método de configuración de datos de prueba
     @TestSetup

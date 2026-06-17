@@ -1,0 +1,10 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" description="Sustainable Deals" access="global">
+    <lightning:card title="Sustainable Deals" iconName="custom:custom5" class="slds-p-bottom_medium">
+        <div class="slds-size_4-of-4">
+            <div class="slds-text-align_right slds-p-bottom_xx-small slds-p-right_small">
+                <lightning:button aura:id="kpi_wdigetButton" label="Go to Sustainable Deals>" variant="neutral"
+                    onclick="{!c.onButtonPressed}"/>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

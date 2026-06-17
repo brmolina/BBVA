@@ -1,0 +1,48 @@
+<template>
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_12-of-12">
+            <c-onb_dynamic-path
+                steps={steps}
+                current-step={currentStep}
+                selected-step={selectedStep}
+                disable-mark-complete={disableMarkComplete}
+                onstepselect={handlePathStepSelect}
+                onmarkcomplete={handleMarkComplete}>
+            </c-onb_dynamic-path>
+        </div>
+        <div class="slds-col slds-size_8-of-12 slds-m-top_small">
+            <template if:true={isAmlKyc}>
+                <!-- <c-onb_main-container record-id={recordId}>
+                </c-onb_main-container> -->
+                <c-onb_aml-kyc-state
+                    record-id={recordId}
+                    >
+                </c-onb_aml-kyc-state>
+            </template>
+
+            <template if:true={isFunds}>
+                <c-onb-funds-state record-id={recordId}>
+                </c-onb-funds-state>
+            </template>
+
+            <template if:true={isProducts}>
+                <c-onb_product-state record-id={recordId}>
+                </c-onb_product-state>
+            </template>
+
+            <template if:true={isContract}>
+                <c-onb_contract-state record-id={recordId}>
+                </c-onb_contract-state>
+            </template>
+
+            <template if:true={isRiskInfo}>
+                <c-onb_risk-state record-id={recordId}>
+                </c-onb_risk-state>
+            </template>
+        </div>
+        <div class="slds-col slds-size_4-of-12">
+            <c-onb_summary-container record-id={recordId}>
+            </c-onb_summary-container>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_ContactClient__c</fullName>
+    <externalId>false</externalId>
+    <formula>HYPERLINK( &quot;/lightning/r/Account/&quot; + dwp_kitv__contact_id__r.AccountId + &quot;/view&quot;, dwp_kitv__contact_id__r.Account_Name__c,&quot;_self&quot;)</formula>
+    <label>Client</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

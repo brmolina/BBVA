@@ -1,0 +1,1706 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Type_GNC__c</fullName>
+    <label>Element</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>SER_Country__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Abono Recaudacion CL</fullName>
+                <default>false</default>
+                <label>Abono Recaudacion CL</label>
+            </value>
+            <value>
+                <fullName>Acceso MX</fullName>
+                <default>false</default>
+                <label>Acceso MX</label>
+            </value>
+            <value>
+                <fullName>Acceso Salto Pais</fullName>
+                <default>false</default>
+                <label>Acceso Salto Pais</label>
+            </value>
+            <value>
+                <fullName>Activacion</fullName>
+                <default>false</default>
+                <label>Activacion</label>
+            </value>
+            <value>
+                <fullName>Actividad en el Canal MX</fullName>
+                <default>false</default>
+                <label>Actividad en el Canal MX</label>
+            </value>
+            <value>
+                <fullName>Administracion Global/Configuracion Personal</fullName>
+                <default>false</default>
+                <label>Administracion Global/Configuracion Personal</label>
+            </value>
+            <value>
+                <fullName>Administracion Global/Configuraciones Globales</fullName>
+                <default>false</default>
+                <label>Administracion Global/Configuraciones Globales</label>
+            </value>
+            <value>
+                <fullName>Administracion Global/Gestion Tokens</fullName>
+                <default>false</default>
+                <label>Administracion Global/Gestion Tokens</label>
+            </value>
+            <value>
+                <fullName>Administracion y Control VE</fullName>
+                <default>false</default>
+                <label>Administracion y Control VE</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones MX</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones MX</label>
+            </value>
+            <value>
+                <fullName>Alertas</fullName>
+                <default>false</default>
+                <label>Alertas</label>
+            </value>
+            <value>
+                <fullName>Alertas Y Correo Seguro ES</fullName>
+                <default>false</default>
+                <label>Alertas Y Correo Seguro ES</label>
+            </value>
+            <value>
+                <fullName>Aplicaciones PT</fullName>
+                <default>false</default>
+                <label>Aplicaciones PT</label>
+            </value>
+            <value>
+                <fullName>Archivos VE</fullName>
+                <default>false</default>
+                <label>Archivos VE</label>
+            </value>
+            <value>
+                <fullName>Autogestion CO</fullName>
+                <default>false</default>
+                <label>Autogestion CO</label>
+            </value>
+            <value>
+                <fullName>Bitacora de Operaciones CL</fullName>
+                <default>false</default>
+                <label>Bitacora de Operaciones CL</label>
+            </value>
+            <value>
+                <fullName>Boleta de Garantia CL</fullName>
+                <default>false</default>
+                <label>Boleta de Garantia CL</label>
+            </value>
+            <value>
+                <fullName>Cartola de Transferencia de Fondos CL</fullName>
+                <default>false</default>
+                <label>Cartola de Transferencia de Fondos CL</label>
+            </value>
+            <value>
+                <fullName>Centralizacion MX</fullName>
+                <default>false</default>
+                <label>Centralizacion MX</label>
+            </value>
+            <value>
+                <fullName>Cheque en linea MX</fullName>
+                <default>false</default>
+                <label>Cheque en linea MX</label>
+            </value>
+            <value>
+                <fullName>Cheques MX</fullName>
+                <default>false</default>
+                <label>Cheques MX</label>
+            </value>
+            <value>
+                <fullName>Cobranza y Recaudación MX</fullName>
+                <default>false</default>
+                <label>Cobranza y Recaudación MX</label>
+            </value>
+            <value>
+                <fullName>Cobros CO</fullName>
+                <default>false</default>
+                <label>Cobros CO</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior CO</fullName>
+                <default>false</default>
+                <label>Comercio Exterior CO</label>
+            </value>
+            <value>
+                <fullName>Comercios AR</fullName>
+                <default>false</default>
+                <label>Comercios AR</label>
+            </value>
+            <value>
+                <fullName>Compra y Venta de Divisas CL</fullName>
+                <default>false</default>
+                <label>Compra y Venta de Divisas CL</label>
+            </value>
+            <value>
+                <fullName>Confirming CL</fullName>
+                <default>false</default>
+                <label>Confirming CL</label>
+            </value>
+            <value>
+                <fullName>Consulta de Cheques CL</fullName>
+                <default>false</default>
+                <label>Consulta de Cheques CL</label>
+            </value>
+            <value>
+                <fullName>Consulta de Comisiones MX</fullName>
+                <default>false</default>
+                <label>Consulta de Comisiones MX</label>
+            </value>
+            <value>
+                <fullName>Consulta de lotes MX</fullName>
+                <default>false</default>
+                <label>Consulta de lotes MX</label>
+            </value>
+            <value>
+                <fullName>Consulta de Operaciones CL</fullName>
+                <default>false</default>
+                <label>Consulta de Operaciones CL</label>
+            </value>
+            <value>
+                <fullName>Consultas PE</fullName>
+                <default>false</default>
+                <label>Consultas PE</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias MX</fullName>
+                <default>false</default>
+                <label>Consultas Varias MX</label>
+            </value>
+            <value>
+                <fullName>E-Resumen AR</fullName>
+                <default>false</default>
+                <label>E-Resumen AR</label>
+            </value>
+            <value>
+                <fullName>Factoring CL</fullName>
+                <default>false</default>
+                <label>Factoring CL</label>
+            </value>
+            <value>
+                <fullName>Factura Integral ES</fullName>
+                <default>false</default>
+                <label>Factura Integral ES</label>
+            </value>
+            <value>
+                <fullName>Ficheros PT</fullName>
+                <default>false</default>
+                <label>Ficheros PT</label>
+            </value>
+            <value>
+                <fullName>Financiacion CO</fullName>
+                <default>false</default>
+                <label>Financiacion CO</label>
+            </value>
+            <value>
+                <fullName>Financiamiento CL</fullName>
+                <default>false</default>
+                <label>Financiamiento CL</label>
+            </value>
+            <value>
+                <fullName>Financiamiento y Tarjetas MX</fullName>
+                <default>false</default>
+                <label>Financiamiento y Tarjetas MX</label>
+            </value>
+            <value>
+                <fullName>Firmas AR</fullName>
+                <default>false</default>
+                <label>Firmas AR</label>
+            </value>
+            <value>
+                <fullName>Firmas y Envio MX</fullName>
+                <default>false</default>
+                <label>Firmas y Envio MX</label>
+            </value>
+            <value>
+                <fullName>Fraudes</fullName>
+                <default>false</default>
+                <label>Fraudes</label>
+            </value>
+            <value>
+                <fullName>Generador De Ordenes ES</fullName>
+                <default>false</default>
+                <label>Generador De Ordenes ES</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso MX</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso MX</label>
+            </value>
+            <value>
+                <fullName>Gestion Equipo Client Support</fullName>
+                <default>false</default>
+                <label>Gestion Equipo Client Support</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina PT</fullName>
+                <default>false</default>
+                <label>Gestion Oficina PT</label>
+            </value>
+            <value>
+                <fullName>Host Bbva PT</fullName>
+                <default>false</default>
+                <label>Host Bbva PT</label>
+            </value>
+            <value>
+                <fullName>Host to Host MX</fullName>
+                <default>false</default>
+                <label>Host to Host MX</label>
+            </value>
+            <value>
+                <fullName>Idioma</fullName>
+                <default>false</default>
+                <label>Idioma</label>
+            </value>
+            <value>
+                <fullName>Impuestos y Contribuciones MX</fullName>
+                <default>false</default>
+                <label>Impuestos y Contribuciones MX</label>
+            </value>
+            <value>
+                <fullName>Información de cuentas MX</fullName>
+                <default>false</default>
+                <label>Información de cuentas MX</label>
+            </value>
+            <value>
+                <fullName>Inversiones AR</fullName>
+                <default>false</default>
+                <label>Inversiones AR</label>
+            </value>
+            <value>
+                <fullName>Inversiones y Mercado MX</fullName>
+                <default>false</default>
+                <label>Inversiones y Mercado MX</label>
+            </value>
+            <value>
+                <fullName>Leasing CO</fullName>
+                <default>false</default>
+                <label>Leasing CO</label>
+            </value>
+            <value>
+                <fullName>Mercados VE</fullName>
+                <default>false</default>
+                <label>Mercados VE</label>
+            </value>
+            <value>
+                <fullName>Nomina MX</fullName>
+                <default>false</default>
+                <label>Nomina MX</label>
+            </value>
+            <value>
+                <fullName>Oficina Bbva PT</fullName>
+                <default>false</default>
+                <label>Oficina Bbva PT</label>
+            </value>
+            <value>
+                <fullName>Operaciones AR</fullName>
+                <default>false</default>
+                <label>Operaciones AR</label>
+            </value>
+            <value>
+                <fullName>Operaciones y Archivos CL</fullName>
+                <default>false</default>
+                <label>Operaciones y Archivos CL</label>
+            </value>
+            <value>
+                <fullName>Operativa Global / Gestion de Ordenes</fullName>
+                <default>false</default>
+                <label>Operativa Global / Gestion de Ordenes</label>
+            </value>
+            <value>
+                <fullName>Operativa Global / Informacion de cuentas</fullName>
+                <default>false</default>
+                <label>Operativa Global / Informacion de cuentas</label>
+            </value>
+            <value>
+                <fullName>Operativa Global / Pagos globales</fullName>
+                <default>false</default>
+                <label>Operativa Global / Pagos globales</label>
+            </value>
+            <value>
+                <fullName>Operativa Global/ Decarga de ficheros</fullName>
+                <default>false</default>
+                <label>Operativa Global/ Decarga de ficheros</label>
+            </value>
+            <value>
+                <fullName>Otras Operaciones PT</fullName>
+                <default>false</default>
+                <label>Otras Operaciones PT</label>
+            </value>
+            <value>
+                <fullName>Pago de Servicios CL</fullName>
+                <default>false</default>
+                <label>Pago de Servicios CL</label>
+            </value>
+            <value>
+                <fullName>Pagos CO</fullName>
+                <default>false</default>
+                <label>Pagos CO</label>
+            </value>
+            <value>
+                <fullName>Pagos a su Favor CL</fullName>
+                <default>false</default>
+                <label>Pagos a su Favor CL</label>
+            </value>
+            <value>
+                <fullName>Pagos Alto Valor CL</fullName>
+                <default>false</default>
+                <label>Pagos Alto Valor CL</label>
+            </value>
+            <value>
+                <fullName>Pagos y Transferencias MX</fullName>
+                <default>false</default>
+                <label>Pagos y Transferencias MX</label>
+            </value>
+            <value>
+                <fullName>Peticiones Especiales PT</fullName>
+                <default>false</default>
+                <label>Peticiones Especiales PT</label>
+            </value>
+            <value>
+                <fullName>Posicion Financiera AR</fullName>
+                <default>false</default>
+                <label>Posicion Financiera AR</label>
+            </value>
+            <value>
+                <fullName>Posicion Integral PT</fullName>
+                <default>false</default>
+                <label>Posicion Integral PT</label>
+            </value>
+            <value>
+                <fullName>Recaudaciones CL</fullName>
+                <default>false</default>
+                <label>Recaudaciones CL</label>
+            </value>
+            <value>
+                <fullName>Saldos y cuentas CL</fullName>
+                <default>false</default>
+                <label>Saldos y cuentas CL</label>
+            </value>
+            <value>
+                <fullName>Saldos y Movimientos AR</fullName>
+                <default>false</default>
+                <label>Saldos y Movimientos AR</label>
+            </value>
+            <value>
+                <fullName>Servicios Adicionales AR</fullName>
+                <default>false</default>
+                <label>Servicios Adicionales AR</label>
+            </value>
+            <value>
+                <fullName>Tarjetas CO</fullName>
+                <default>false</default>
+                <label>Tarjetas CO</label>
+            </value>
+            <value>
+                <fullName>Tarjetas de Credito VE</fullName>
+                <default>false</default>
+                <label>Tarjetas de Credito VE</label>
+            </value>
+            <value>
+                <fullName>Tarjetas De Empresa PT</fullName>
+                <default>false</default>
+                <label>Tarjetas De Empresa PT</label>
+            </value>
+            <value>
+                <fullName>Tokens PT</fullName>
+                <default>false</default>
+                <label>Tokens PT</label>
+            </value>
+            <value>
+                <fullName>Tokens Globales</fullName>
+                <default>false</default>
+                <label>Tokens Globales</label>
+            </value>
+            <value>
+                <fullName>Transferencias AR</fullName>
+                <default>false</default>
+                <label>Transferencias AR</label>
+            </value>
+            <value>
+                <fullName>Utilerias MX</fullName>
+                <default>false</default>
+                <label>Utilerias MX</label>
+            </value>
+            <value>
+                <fullName>Utilidades CO</fullName>
+                <default>false</default>
+                <label>Utilidades CO</label>
+            </value>
+            <value>
+                <fullName>Validaciones De Ficheros PT</fullName>
+                <default>false</default>
+                <label>Validaciones De Ficheros PT</label>
+            </value>
+            <value>
+                <fullName>Acceso CO</fullName>
+                <default>false</default>
+                <label>Acceso CO</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones CO</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones CO</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias CO</fullName>
+                <default>false</default>
+                <label>Consultas Varias CO</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso CO</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso CO</label>
+            </value>
+            <value>
+                <fullName>Información de cuentas CO</fullName>
+                <default>false</default>
+                <label>Información de cuentas CO</label>
+            </value>
+            <value>
+                <fullName>Inversiones y Mercado CO</fullName>
+                <default>false</default>
+                <label>Inversiones y Mercado CO</label>
+            </value>
+            <value>
+                <fullName>Acceso AR</fullName>
+                <default>false</default>
+                <label>Acceso AR</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones AR</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones AR</label>
+            </value>
+            <value>
+                <fullName>Cheques AR</fullName>
+                <default>false</default>
+                <label>Cheques AR</label>
+            </value>
+            <value>
+                <fullName>Cobros AR</fullName>
+                <default>false</default>
+                <label>Cobros AR</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior AR</fullName>
+                <default>false</default>
+                <label>Comercio Exterior AR</label>
+            </value>
+            <value>
+                <fullName>Financiacion AR</fullName>
+                <default>false</default>
+                <label>Financiacion AR</label>
+            </value>
+            <value>
+                <fullName>Pagos AR</fullName>
+                <default>false</default>
+                <label>Pagos AR</label>
+            </value>
+            <value>
+                <fullName>Tarjetas AR</fullName>
+                <default>false</default>
+                <label>Tarjetas AR</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias AR</fullName>
+                <default>false</default>
+                <label>Consultas Varias AR</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso AR</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso AR</label>
+            </value>
+            <value>
+                <fullName>Acceso CL</fullName>
+                <default>false</default>
+                <label>Acceso CL</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones CL</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones CL</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior CL</fullName>
+                <default>false</default>
+                <label>Comercio Exterior CL</label>
+            </value>
+            <value>
+                <fullName>Firmas CL</fullName>
+                <default>false</default>
+                <label>Firmas CL</label>
+            </value>
+            <value>
+                <fullName>Inversiones y Mercado CL</fullName>
+                <default>false</default>
+                <label>Inversiones y Mercado CL</label>
+            </value>
+            <value>
+                <fullName>Leasing CL</fullName>
+                <default>false</default>
+                <label>Leasing CL</label>
+            </value>
+            <value>
+                <fullName>Pagos CL</fullName>
+                <default>false</default>
+                <label>Pagos CL</label>
+            </value>
+            <value>
+                <fullName>Tarjetas CL</fullName>
+                <default>false</default>
+                <label>Tarjetas CL</label>
+            </value>
+            <value>
+                <fullName>Transferencias CL</fullName>
+                <default>false</default>
+                <label>Transferencias CL</label>
+            </value>
+            <value>
+                <fullName>Utilidades CL</fullName>
+                <default>false</default>
+                <label>Utilidades CL</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias CL</fullName>
+                <default>false</default>
+                <label>Consultas Varias CL</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso CL</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso CL</label>
+            </value>
+            <value>
+                <fullName>Acceso</fullName>
+                <default>false</default>
+                <label>Acceso</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias</fullName>
+                <default>false</default>
+                <label>Consultas Varias</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso</label>
+            </value>
+            <value>
+                <fullName>Acceso PE</fullName>
+                <default>false</default>
+                <label>Acceso PE</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones PE</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones PE</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias PE</fullName>
+                <default>false</default>
+                <label>Consultas Varias PE</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso PE</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso PE</label>
+            </value>
+            <value>
+                <fullName>Operaciones PE</fullName>
+                <default>false</default>
+                <label>Operaciones PE</label>
+            </value>
+            <value>
+                <fullName>Acceso VE</fullName>
+                <default>false</default>
+                <label>Acceso VE</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones VE</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones VE</label>
+            </value>
+            <value>
+                <fullName>Cheques VE</fullName>
+                <default>false</default>
+                <label>Cheques VE</label>
+            </value>
+            <value>
+                <fullName>Cobros VE</fullName>
+                <default>false</default>
+                <label>Cobros VE</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior VE</fullName>
+                <default>false</default>
+                <label>Comercio Exterior VE</label>
+            </value>
+            <value>
+                <fullName>Consultas VE</fullName>
+                <default>false</default>
+                <label>Consultas VE</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias VE</fullName>
+                <default>false</default>
+                <label>Consultas Varias VE</label>
+            </value>
+            <value>
+                <fullName>Financiación VE</fullName>
+                <default>false</default>
+                <label>Financiación VE</label>
+            </value>
+            <value>
+                <fullName>Firmas VE</fullName>
+                <default>false</default>
+                <label>Firmas VE</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso VE</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso VE</label>
+            </value>
+            <value>
+                <fullName>Pagos VE</fullName>
+                <default>false</default>
+                <label>Pagos VE</label>
+            </value>
+            <value>
+                <fullName>Acceso PT</fullName>
+                <default>false</default>
+                <label>Acceso PT</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones PT</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones PT</label>
+            </value>
+            <value>
+                <fullName>Cobros PT</fullName>
+                <default>false</default>
+                <label>Cobros PT</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior PT</fullName>
+                <default>false</default>
+                <label>Comercio Exterior PT</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias PT</fullName>
+                <default>false</default>
+                <label>Consultas Varias PT</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso PT</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso PT</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas PT</fullName>
+                <default>false</default>
+                <label>Informacion De Cuentas PT</label>
+            </value>
+            <value>
+                <fullName>Inversiones y Mercados PT</fullName>
+                <default>false</default>
+                <label>Inversiones y Mercados PT</label>
+            </value>
+            <value>
+                <fullName>Pagos PT</fullName>
+                <default>false</default>
+                <label>Pagos PT</label>
+            </value>
+            <value>
+                <fullName>Utilidades PT</fullName>
+                <default>false</default>
+                <label>Utilidades PT</label>
+            </value>
+            <value>
+                <fullName>Firmas PT</fullName>
+                <default>false</default>
+                <label>Firmas PT</label>
+            </value>
+            <value>
+                <fullName>Acceso Bruselas</fullName>
+                <default>false</default>
+                <label>Acceso Bruselas</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones Bruselas</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones Bruselas</label>
+            </value>
+            <value>
+                <fullName>Cobros Bruselas</fullName>
+                <default>false</default>
+                <label>Cobros Bruselas</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias Bruselas</fullName>
+                <default>false</default>
+                <label>Consultas Varias Bruselas</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso Bruselas</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso Bruselas</label>
+            </value>
+            <value>
+                <fullName>Pagos Bruselas</fullName>
+                <default>false</default>
+                <label>Pagos Bruselas</label>
+            </value>
+            <value>
+                <fullName>Acceso Hong Kong</fullName>
+                <default>false</default>
+                <label>Acceso Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones Hong Kong</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Cobros Hong Kong</fullName>
+                <default>false</default>
+                <label>Cobros Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias Hong Kong</fullName>
+                <default>false</default>
+                <label>Consultas Varias Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso Hong Kong</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina Hong Kong</fullName>
+                <default>false</default>
+                <label>Gestion Oficina Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Pagos Hong Kong</fullName>
+                <default>false</default>
+                <label>Pagos Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Acceso Londres</fullName>
+                <default>false</default>
+                <label>Acceso Londres</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones Londres</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones Londres</label>
+            </value>
+            <value>
+                <fullName>Cobros Londres</fullName>
+                <default>false</default>
+                <label>Cobros Londres</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias Londres</fullName>
+                <default>false</default>
+                <label>Consultas Varias Londres</label>
+            </value>
+            <value>
+                <fullName>Pagos Londres</fullName>
+                <default>false</default>
+                <label>Pagos Londres</label>
+            </value>
+            <value>
+                <fullName>Acceso Nueva York</fullName>
+                <default>false</default>
+                <label>Acceso Nueva York</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones Nueva York</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones Nueva York</label>
+            </value>
+            <value>
+                <fullName>Cobros Nueva York</fullName>
+                <default>false</default>
+                <label>Cobros Nueva York</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias Nueva York</fullName>
+                <default>false</default>
+                <label>Consultas Varias Nueva York</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso Nueva York</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso Nueva York</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina Nueva York</fullName>
+                <default>false</default>
+                <label>Gestion Oficina Nueva York</label>
+            </value>
+            <value>
+                <fullName>Pagos Nueva York</fullName>
+                <default>false</default>
+                <label>Pagos Nueva York</label>
+            </value>
+            <value>
+                <fullName>Acceso Paris</fullName>
+                <default>false</default>
+                <label>Acceso Paris</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones Paris</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones Paris</label>
+            </value>
+            <value>
+                <fullName>Cobros Paris</fullName>
+                <default>false</default>
+                <label>Cobros Paris</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias Paris</fullName>
+                <default>false</default>
+                <label>Consultas Varias Paris</label>
+            </value>
+            <value>
+                <fullName>Pagos Paris</fullName>
+                <default>false</default>
+                <label>Pagos Paris</label>
+            </value>
+            <value>
+                <fullName>Acceso ES</fullName>
+                <default>false</default>
+                <label>Acceso ES</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones ES</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones ES</label>
+            </value>
+            <value>
+                <fullName>Cobros ES</fullName>
+                <default>false</default>
+                <label>Cobros ES</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior ES</fullName>
+                <default>false</default>
+                <label>Comercio Exterior ES</label>
+            </value>
+            <value>
+                <fullName>Ficheros ES</fullName>
+                <default>false</default>
+                <label>Ficheros ES</label>
+            </value>
+            <value>
+                <fullName>Firmas ES</fullName>
+                <default>false</default>
+                <label>Firmas ES</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas ES</fullName>
+                <default>false</default>
+                <label>Informacion De Cuentas ES</label>
+            </value>
+            <value>
+                <fullName>Inversiones y Mercados ES</fullName>
+                <default>false</default>
+                <label>Inversiones y Mercados ES</label>
+            </value>
+            <value>
+                <fullName>Pagos ES</fullName>
+                <default>false</default>
+                <label>Pagos ES</label>
+            </value>
+            <value>
+                <fullName>Posicion Integral ES</fullName>
+                <default>false</default>
+                <label>Posicion Integral ES</label>
+            </value>
+            <value>
+                <fullName>Tarjetas De Empresa ES</fullName>
+                <default>false</default>
+                <label>Tarjetas De Empresa ES</label>
+            </value>
+            <value>
+                <fullName>Utilidades ES</fullName>
+                <default>false</default>
+                <label>Utilidades ES</label>
+            </value>
+            <value>
+                <fullName>Validaciones De Ficheros ES</fullName>
+                <default>false</default>
+                <label>Validaciones De Ficheros ES</label>
+            </value>
+            <value>
+                <fullName>V1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>V1</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Consultas PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Acceso PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Administracion/Configuraciones PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Consultas Varias PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONTINENTAL NET CASH PERU</controllingFieldValue>
+            <valueName>Operaciones PE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Administracion y Control VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Archivos VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Mercados VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Tarjetas de Credito VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Acceso VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Administracion/Configuraciones VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Cheques VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Cobros VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Comercio Exterior VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Consultas VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Consultas Varias VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Financiación VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Firmas VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PROVINCIAL NET CASH VENEZUELA</controllingFieldValue>
+            <valueName>Pagos VE</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Acceso Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Administracion/Configuraciones Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Cobros Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Consultas Varias Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Pagos Bruselas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Alertas Y Correo Seguro ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Factura Integral ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Generador De Ordenes ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Acceso ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Administracion/Configuraciones ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Cobros ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Comercio Exterior ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Ficheros ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Firmas ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Informacion De Cuentas ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Inversiones y Mercados ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Pagos ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Posicion Integral ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Tarjetas De Empresa ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Utilidades ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH ESPAÑA</controllingFieldValue>
+            <valueName>Validaciones De Ficheros ES</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Acceso Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Administracion/Configuraciones Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Cobros Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Consultas Varias Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Gestion Oficina Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Pagos Hong Kong</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Acceso Londres</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Administracion/Configuraciones Londres</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Cobros Londres</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Consultas Varias Londres</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Pagos Londres</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Acceso Salto Pais</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Activacion</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Administracion Global/Configuracion Personal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Administracion Global/Configuraciones Globales</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Administracion Global/Gestion Tokens</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Alertas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Fraudes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Gestion Equipo Client Support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Idioma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Operativa Global / Gestion de Ordenes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Operativa Global / Informacion de cuentas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Operativa Global / Pagos globales</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Operativa Global/ Decarga de ficheros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Tokens Globales</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Acceso</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Consultas Varias</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GNC</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Acceso Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Administracion/Configuraciones Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Cobros Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Consultas Varias Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Gestion Oficina Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Pagos Nueva York</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Comercios AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>E-Resumen AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Firmas AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Inversiones AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Operaciones AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Posicion Financiera AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Saldos y Movimientos AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Servicios Adicionales AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Transferencias AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Acceso AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Administracion/Configuraciones AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Cheques AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Cobros AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Comercio Exterior AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Financiacion AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Pagos AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Tarjetas AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Consultas Varias AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FRANCES NET CASH ARGENTINA</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso AR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Acceso Paris</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Administracion/Configuraciones Paris</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Cobros Paris</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Consultas Varias Paris</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Pagos Paris</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Abono Recaudacion CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Bitacora de Operaciones CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Boleta de Garantia CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Cartola de Transferencia de Fondos CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Compra y Venta de Divisas CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Confirming CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Consulta de Cheques CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Consulta de Operaciones CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Factoring CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Financiamiento CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Operaciones y Archivos CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Pago de Servicios CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Pagos a su Favor CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Pagos Alto Valor CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Recaudaciones CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Saldos y cuentas CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Acceso CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Administracion/Configuraciones CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Comercio Exterior CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Firmas CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Inversiones y Mercado CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Leasing CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Pagos CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Tarjetas CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Transferencias CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Utilidades CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Consultas Varias CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH CHILE</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso CL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Aplicaciones PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Ficheros PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Gestion Oficina PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Host Bbva PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Oficina Bbva PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Otras Operaciones PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Peticiones Especiales PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Posicion Integral PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Tarjetas De Empresa PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Tokens PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Validaciones De Ficheros PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Acceso PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Administracion/Configuraciones PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Cobros PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Comercio Exterior PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Consultas Varias PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Informacion De Cuentas PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Inversiones y Mercados PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Pagos PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Utilidades PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Firmas PT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Autogestion CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Cobros CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Comercio Exterior CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Financiacion CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Leasing CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Pagos CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Tarjetas CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Utilidades CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Acceso CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Administracion/Configuraciones CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Consultas Varias CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Información de cuentas CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH COLOMBIA</controllingFieldValue>
+            <valueName>Inversiones y Mercado CO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Acceso MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Actividad en el Canal MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Administracion/Configuraciones MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Centralizacion MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Cheque en linea MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Cheques MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Cobranza y Recaudación MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Consulta de Comisiones MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Consulta de lotes MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Consultas Varias MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Financiamiento y Tarjetas MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Firmas y Envio MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Host to Host MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Impuestos y Contribuciones MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Información de cuentas MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Inversiones y Mercado MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Nomina MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Pagos y Transferencias MX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BANCOMER NET CASH MEXICO</controllingFieldValue>
+            <valueName>Utilerias MX</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

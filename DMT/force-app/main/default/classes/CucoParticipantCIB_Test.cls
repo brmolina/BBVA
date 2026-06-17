@@ -13,6 +13,7 @@
 * @changes
 *
 * ────────────────────────────────────────────────────────────────────
+*
 */
 @IsTest
 public class CucoParticipantCIB_Test {
@@ -29,14 +30,14 @@ public class CucoParticipantCIB_Test {
         Account sampleAccountChild2 = accounts[3];
 
         // create relationships
-        final List<dwp_acmh__GBL_Account_Relationship__c> relationships =  new List<dwp_acmh__GBL_Account_Relationship__c>();
-        final dwp_acmh__GBL_Account_Relationship__c relationship1 = utilClass.createAccRelationship(sampleAccountSupra, sampleAccountParent);
+        final List<AMH_GBL_Account_Relationship__c> relationships =  new List<AMH_GBL_Account_Relationship__c>();
+        final AMH_GBL_Account_Relationship__c relationship1 = utilClass.createAccRelationship(sampleAccountSupra, sampleAccountParent);
         relationships.add(relationship1);
 
-        final dwp_acmh__GBL_Account_Relationship__c relationship2 = utilClass.createAccRelationship(sampleAccountParent, sampleAccountChild1);
+        final AMH_GBL_Account_Relationship__c relationship2 = utilClass.createAccRelationship(sampleAccountParent, sampleAccountChild1);
         relationships.add(relationship2);
 
-        final dwp_acmh__GBL_Account_Relationship__c relationship3 = utilClass.createAccRelationship(sampleAccountParent, sampleAccountChild2);
+        final AMH_GBL_Account_Relationship__c relationship3 = utilClass.createAccRelationship(sampleAccountParent, sampleAccountChild2);
         relationships.add(relationship3);
 
         insert relationships;
@@ -76,7 +77,7 @@ public class CucoParticipantCIB_Test {
         final Account sampleAccountSupra = UnitTestUtils.GetStandardAccount();
         sampleAccountSupra.Name = 'Account Test SupraGroup';
         sampleAccountSupra.OwnerId = UserInfo.getUserId();
-        sampleAccountSupra.SER_CClient__c = '000000020';
+        sampleAccountSupra.g_customer_id__c = 'ES0182000000020';
         sampleAccountSupra.DES_BBVA_Segmentation__c = 'C';
         sampleAccountSupra.DES_Structure_Type__c = 'SupraGroup';
         sampleAccountSupra.RecordTypeId = supraRecordTypeId;
@@ -87,7 +88,7 @@ public class CucoParticipantCIB_Test {
         sampleAccountParent.DES_Main_Parent__c = sampleAccountParent.Id;
         sampleAccountParent.Name = 'Account Test 0';
         sampleAccountParent.OwnerId = UserInfo.getUserId();
-        sampleAccountParent.SER_CClient__c = '000000010';
+        sampleAccountParent.g_customer_id__c = 'ES0182000000010';
         sampleAccountParent.DES_BBVA_Segmentation__c = 'C';
         sampleAccountParent.DES_Structure_Type__c = 'Group';
         sampleAccountParent.ParentId = sampleAccountSupra.Id;
@@ -100,7 +101,7 @@ public class CucoParticipantCIB_Test {
         sampleAccountChild1.ParentId = sampleAccountParent.Id;
         sampleAccountChild1.Name = 'Account Test Child 0';
         sampleAccountChild1.OwnerId = UserInfo.getUserId();
-        sampleAccountChild1.SER_CClient__c = '000000011';
+        sampleAccountChild1.g_customer_id__c = 'ES0182000000011';
         sampleAccountChild1.DES_BBVA_Segmentation__c = 'C';
         sampleAccountChild1.DES_Structure_Type__c = 'Subsidiary';
         sampleAccountChild1.DES_Entity_Type__c = 'Subsidiary';
@@ -114,7 +115,7 @@ public class CucoParticipantCIB_Test {
         sampleAccountChild2.ParentId = sampleAccountParent.Id;
         sampleAccountChild2.Name = 'Account Test Child 1';
         sampleAccountChild2.OwnerId = UserInfo.getUserId();
-        sampleAccountChild2.SER_CClient__c = '000000021';
+        sampleAccountChild2.g_customer_id__c = 'ES0182000000021';
         sampleAccountChild2.DES_BBVA_Segmentation__c =  'C';
         sampleAccountChild2.DES_Structure_Type__c = 'Subsidiary';
         sampleAccountChild2.DES_Entity_Type__c = 'Subsidiary';
@@ -130,16 +131,16 @@ public class CucoParticipantCIB_Test {
     static void getParticipantDetailsTest1() {
 
         Test.startTest();
-            final List<Account> lstAcc = [SELECT Id, Name, Rating, SER_CClient__c FROM Account WHERE Name = 'Account Test Child 0' LIMIT 1];
+            final List<Account> lstAcc = [SELECT Id, Name, Rating, g_customer_id__c FROM Account WHERE Name = 'Account Test Child 0' LIMIT 1];
             final List<cuco.Participant_Wrapper> expectedWrapper = new List<cuco.Participant_Wrapper>();
             final cuco.Participant_Wrapper pWrapp = new cuco.Participant_Wrapper();
             pWrapp.participantId = lstAcc[0].Id;
             pWrapp.participantName = lstAcc[0].Name;
-            pWrapp.documentNumber = lstAcc[0].SER_CClient__c;
+            pWrapp.documentNumber = lstAcc[0].g_customer_id__c;
             pWrapp.documentType = 'CIF';
             pWrapp.documentTypeCode = '2';
-            pWrapp.participantCode = lstAcc[0].SER_CClient__c;
-            pWrapp.participantIntegrationId = 'ES0182' + lstAcc[0].SER_CClient__c + 'C';
+            pWrapp.participantCode = lstAcc[0].g_customer_id__c;
+            pWrapp.participantIntegrationId = lstAcc[0].g_customer_id__c + 'C';
             pWrapp.isCustomer = true;
             pWrapp.rating = lstAcc[0].Rating;
             expectedWrapper.add(pWrapp);
@@ -155,17 +156,17 @@ public class CucoParticipantCIB_Test {
     static void getParticipantDetailsTest2() {
 
         Test.startTest();
-            final List<Account> lstAcc = [SELECT Id, Name, Rating, SER_CClient__c FROM Account WHERE Name = 'Account Test 0' LIMIT 1];
+            final List<Account> lstAcc = [SELECT Id, Name, Rating, g_customer_id__c FROM Account WHERE Name = 'Account Test 0' LIMIT 1];
             final List<cuco.Participant_Wrapper> expectedWrapper = new List<cuco.Participant_Wrapper>();
 
             final cuco.Participant_Wrapper pWrapp = new cuco.Participant_Wrapper();
             pWrapp.participantId = lstAcc[0].Id;
             pWrapp.participantName = lstAcc[0].Name;
-            pWrapp.documentNumber = lstAcc[0].SER_CClient__c;
+            pWrapp.documentNumber = lstAcc[0].g_customer_id__c;
             pWrapp.documentType = 'CIF';
             pWrapp.documentTypeCode = '2';
-            pWrapp.participantCode = lstAcc[0].SER_CClient__c;
-            pWrapp.participantIntegrationId = 'ES0182' + lstAcc[0].SER_CClient__c + 'C';
+            pWrapp.participantCode = lstAcc[0].g_customer_id__c;
+            pWrapp.participantIntegrationId = lstAcc[0].g_customer_id__c + 'C';
             pWrapp.isCustomer = true;
             pWrapp.rating = lstAcc[0].Rating;
             expectedWrapper.add(pWrapp);
@@ -180,7 +181,7 @@ public class CucoParticipantCIB_Test {
     @IsTest
     static void getParticipantHierarchy1() {
         Test.startTest();
-            final List<Account> lstAcc = [SELECT Id, Name, Rating, SER_CClient__c FROM Account WHERE Name = 'Account Test 0' LIMIT 1];
+            final List<Account> lstAcc = [SELECT Id, Name, Rating, g_customer_id__c FROM Account WHERE Name = 'Account Test 0' LIMIT 1];
             final cuco.ParticipantHierarchy_Wrapper expectedWrapper = new cuco.ParticipantHierarchy_Wrapper();
             final CucoParticipantCIB partSample = new CucoParticipantCIB();
             final cuco.ParticipantHierarchy_Wrapper actualWrapper = partSample.getParticipantHierarchy(lstAcc[0].Id);
@@ -193,7 +194,7 @@ public class CucoParticipantCIB_Test {
     @IsTest
     static void getParticipantHierarchy2() {
         Test.startTest();
-            final List<Account> lstAcc = [SELECT Id, Name, Rating, SER_CClient__c FROM Account WHERE Name = 'Account Test SupraGroup' LIMIT 1];
+            final List<Account> lstAcc = [SELECT Id, Name, Rating, g_customer_id__c FROM Account WHERE Name = 'Account Test SupraGroup' LIMIT 1];
             final cuco.ParticipantHierarchy_Wrapper expectedWrapper = new cuco.ParticipantHierarchy_Wrapper();
             final CucoParticipantCIB partSample = new CucoParticipantCIB();
             final cuco.ParticipantHierarchy_Wrapper actualWrapper = partSample.getParticipantHierarchy(lstAcc[0].Id);
@@ -206,7 +207,7 @@ public class CucoParticipantCIB_Test {
     @IsTest
     static void getPartipantHierarchy3() {
         Test.startTest();
-            final List<Account> lstAcc = [SELECT Id, Name, Rating, SER_CClient__c FROM Account WHERE Name = 'Account Test Child 0' LIMIT 1];
+            final List<Account> lstAcc = [SELECT Id, Name, Rating, g_customer_id__c FROM Account WHERE Name = 'Account Test Child 0' LIMIT 1];
             final cuco.ParticipantHierarchy_Wrapper expectedWrapper = new cuco.ParticipantHierarchy_Wrapper();
             final CucoParticipantCIB partSample = new CucoParticipantCIB();
             final cuco.ParticipantHierarchy_Wrapper actualWrapper = partSample.getParticipantHierarchy(lstAcc[0].Id);
@@ -219,9 +220,9 @@ public class CucoParticipantCIB_Test {
     @IsTest
     static void getPartipantIdsTest() {
         Test.startTest();
-            final List<cuco__profitability_sheet_participant__c> participants = [SELECT Id, cuco__participant_id__c, cuco__participant_id__r.Name, cuco__participant_id__r.SER_CClient__c FROM cuco__profitability_sheet_participant__c WHERE cuco__participant_id__r.Name = 'Account Test Child 0' LIMIT 1];
+            final List<cuco__profitability_sheet_participant__c> participants = [SELECT Id, cuco__participant_id__c, cuco__participant_id__r.Name, cuco__participant_id__r.g_customer_id__c FROM cuco__profitability_sheet_participant__c WHERE cuco__participant_id__r.Name = 'Account Test Child 0' LIMIT 1];
             Set<String> integrationIds = new Set<string>{'ES0182000000011'};
-            Map<String, Id> expected = new Map<String, Id>{participants[0].cuco__participant_id__r.SER_CClient__c => participants[0].cuco__participant_id__c};
+            Map<String, Id> expected = new Map<String, Id>{participants[0].cuco__participant_id__r.g_customer_id__c => participants[0].cuco__participant_id__c};
             Map<String, Id> participantIds = CucoParticipantCIB.getParticipantsIds(integrationIds);
             System.assertEquals(expected, participantIds, 'Error at CucoParticipantCIB_Test getPartipantIdsTest');
         Test.stopTest();

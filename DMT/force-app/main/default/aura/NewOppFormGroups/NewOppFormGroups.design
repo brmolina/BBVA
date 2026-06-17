@@ -1,0 +1,6 @@
+<design:component>
+
+	<design:attribute name="accountId" label="accountId" default=""/>
+	<design:attribute name="initiatives" label="Get ID" default="false"/>
+	<design:attribute name="idFilial" label="Subsidiary ID" default=""/>
+</design:component>

@@ -85,7 +85,7 @@
   *             sp2Analysis type added to getExistingArce method.
   * -----------------------------------------------------------------------------------------------
   */
-@SuppressWarnings('PMD.ExcessivePublicCount, sf:TooManyMethods')
+@SuppressWarnings('PMD.ExcessivePublicCount, sf:TooManyMethods, PMD.CognitiveComplexity, PMD.CyclomaticComplexity')
 public with sharing class Arc_Gen_NewAnalysis_Controller {
     /**
     * @Description: String with SUBSIDIARY string
@@ -120,6 +120,10 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     */
     static final String REMOVE_REASON = '2';
     /**
+    * @Description String value used to describe callable class.
+    */
+    private static final String CALLABLE_CLASS = Test.isRunningTest() ? 'Arc_Gen_CallableFromCore_Mock' : 'arce.Arc_Gen_CallableFromCore';
+    /**
     *-------------------------------------------------------------------------------
     * @description Empty constructor method
     *-------------------------------------------------------------------------------
@@ -127,6 +131,7 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     *@date 2021-04-30
     */
     @TestVisible
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     private Arc_Gen_NewAnalysis_Controller() { }
     /**
     *-------------------------------------------------------------------------------
@@ -157,6 +162,19 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     @AuraEnabled
     public static String economicarticipants(String encryptedClient) {
         return JSON.serialize(Arc_Gen_CallEconomicParticipants.callEconomicParticipations(encryptedClient));
+    }
+    /**
+    *-------------------------------------------------------------------------------
+    * @description check permission to analysis flow
+    *--------------------------------------------------------------------------------
+    * @date 02/03/2026
+    * @author hectorjeshua.vasquez.contractor@bbva.com
+    * @param clientId clientId - id of the account
+    * @return Boolean
+    */
+    @AuraEnabled
+    public static Boolean accountIrpEnabler(Id clientId) {
+        return new Des_GetPermission_Locator().accountIrpEnabler(clientId);
     }
      /**
     * --------------------------------------------------------------------------------------
@@ -200,6 +218,7 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     * @example setupAnalysis(String recordId, String analysisType) {
     */
     @AuraEnabled
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     public static String constructgroupstructure(String listparticipant, String economicparticipant, String accountNumber, Boolean isOrphan) {
         Arc_Gen_CallEconomicParticipants.innertoreturn economicparticipants = new Arc_Gen_CallEconomicParticipants.innertoreturn();
         Arc_Gen_CallEconomicParticipants.Groupdata groupData = new Arc_Gen_CallEconomicParticipants.Groupdata();
@@ -408,6 +427,7 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     * @return   Arc_Gen_NewAnalysis_Service_Helper.PreviousARCEData - Wrapper that contains all the Previous ARCE data
     */
     @AuraEnabled
+    @SuppressWarnings('PMD.ExcessiveParameterList,PMD.AvoidDeeplyNestedIfStmts')
     public static Arc_Gen_NewAnalysis_Service_Helper.PreviousARCEData getExistingArce(String recordId, String accountswraper, String arceType, String structure) {
         final Arc_Gen_NewAnalysis_Service_Helper.PreviousARCEData previousArce =
             Arc_Gen_NewAnalysis_Service.getPreviousArceOnline(recordId, accountswraper, arceType);
@@ -464,6 +484,7 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
             Arc_Gen_Remove_Service.updateRemoveInfo(accHasId, REMOVE_REASON, System.Label.Arc_Gen_RevokeArceByChangesStrucGroup, '');
         }
     }
+
     /**
     *---------------------------------------------------------------------------------------------------------------------
     * @Description Validates if the analysis can be modified
@@ -584,5 +605,27 @@ public with sharing class Arc_Gen_NewAnalysis_Controller {
     public static String getAccOrLocalClientId(String analysisId) {
         final arce__Account_has_Analysis__c aha = Arc_Gen_NewAnalysis_data.getAnalysisAnalizedClients(analysisId)[0];
         return arce.Arc_Gen_AccHasAnalysis_Data.getCorrectIdWAhas(aha);
+    }
+
+    /**
+    *-------------------------------------------------------------------------------
+    * @Description Rollback analysis 2021RTC
+    *-------------------------------------------------------------------------------
+    * @date 29/08/2025
+    * @author francisco.munoz.torres.tech@bbva.com
+    * @return String
+    * @example rollback2021RTC(analysisId)
+    *-------------------------------------------------------------------------------
+    */
+    @AuraEnabled
+    public static void rollback2021RTC(String analysisId) {
+        final List<arce__Analysis__c> analysisList = arce.Arc_Gen_ArceAnalysis_Data.getArceAnalysisData(new List<Id>{analysisId});
+        if(!analysisList.isEmpty()) {
+            final arce__Analysis__c analysis = analysisList[0];
+            if (analysis.arce__wf_status_id__c == '01' && analysis.arce__is_RTC__c == true) {
+                final Callable callableFromCore = (Callable) Type.forName(CALLABLE_CLASS).newInstance();
+                callableFromCore.call('rollback2021RTC', new Map<String, Object> {'analysisId' => analysisId});
+            }
+        }
     }
 }

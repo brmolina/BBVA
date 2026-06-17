@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Mandatory_Ready_to_close_Win</fullName>
+    <active>true</active>
+    <description>Para ganar una oportunidad, es necesario pasar por el estado Ready to close</description>
+    <errorConditionFormula>AND(
+opportunity_expiration_ind_type__c = false,
+OR(RecordType.DeveloperName=&apos;Business_Opportunity&apos;,RecordType.DeveloperName=&apos;Draft_Opportunity&apos;,
+RecordType.DeveloperName=&apos;Confidential_Opportunity&apos;,RecordType.DeveloperName=&apos;Privileged_Opportunity&apos;),
+OR(ISPICKVAL(PRIORVALUE(StageName), &apos;Proposal&apos;), ISPICKVAL(PRIORVALUE(StageName), &apos;Approval&apos;)),
+ISPICKVAL(StageName, &apos;Closed Won&apos;),
+ISCHANGED(StageName)
+)</errorConditionFormula>
+    <errorMessage>We are almost finished! In order to close the opportunity, please go to the stage &apos;Ready to close&apos;.</errorMessage>
+</ValidationRule>

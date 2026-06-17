@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>period__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(MONTH(year_month_day_date__c), 1, &apos;ENERO&apos;, 2, &apos;FEBRERO&apos;, 3, &apos;MARZO&apos;, 4, &apos;ABRIL&apos;, 5, &apos;MAYO&apos;, 6, &apos;JUNIO&apos;, 7, &apos;JULIO&apos;, 8, &apos;AGOSTO&apos;, 9, &apos;SEPTIEMBRE&apos;, 10, &apos;OCTUBRE&apos;, 11, &apos;NOVIEMBRE&apos;, 12, &apos;DICIEMBRE&apos;,&apos;SIN MES&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>period</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

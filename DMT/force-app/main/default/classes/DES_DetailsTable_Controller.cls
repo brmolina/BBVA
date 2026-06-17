@@ -49,20 +49,26 @@ global with sharing class DES_DetailsTable_Controller {
         }
 
 
-        Final String recordIdEscaped = String.escapeSingleQuotes(recordId);
+        /* Final String recordIdEscaped = String.escapeSingleQuotes(recordId);
         Final String soql = 'SELECT CurrencyIsoCode, id, ' + selectFields + ' FROM ' + objectName + ' WHERE id=:recordIdEscaped';
 
         System.debug('soql ' + soql);
-        System.debug('isAccessible ' + isAccessible);
+        System.debug('isAccessible ' + isAccessible); */
 
-        Final List<SObject> queryResult = Database.query(soql);//NOSONAR
+        //Final List<SObject> queryResult = Database.query(soql);//NOSONAR
+        Final List<SObject> queryResult =[SELECT CurrencyIsoCode, id, 
+            DES_RAR_YTD__c,DES_RAR_YOY_picture_formula__c,DES_RORC_YTD__c, gtb_revenue_cyr_amount__c, gm_revenue_cyr_amount__c, gf_ibf_cyr_revenue_amount__c,
+            DES_Rating_Int__c,DES_LIMIT_PF__c,DES_PF_RENEWAL_DATE__c, DES_Operating_Expenses__c,DES_EL__c,DES_Taxes__c,
+            DES_Economic_Profit__c,DES_Capital_Charge__c,DES_EVA__C,DES_RARinfo_Capital_Consumption__c, DES_Revenues__c,
+            DES_Operating_Expenses_RORC__c,DES_RORC_Provisions__c,DES_Taxes_RORC__c,DES_RORC_NI__c,DES_RORC_NI_Annualized__c,
+            DES_RORC_RWA_SMA__c,DES_RORC_CET1_clientTable__c FROM Account WHERE id=:recordId];
 
         if(queryResult.isEmpty()){
             System.debug('::::lista vacia return null');
             return null;
         }
 
-        if(isAccessible != null && !isAccessible.isEmpty()) {
+        if(isAccessible != null && !isAccessible.isEmpty()) { 
             for (String fieldName : isAccessible){
                 fieldLabels.add(fieldMap.get(fieldName).getDescribe().getLabel()); //It provides to get the object fields label.
             }

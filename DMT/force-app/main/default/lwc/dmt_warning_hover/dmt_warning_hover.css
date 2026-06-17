@@ -2,3 +2,11 @@
     fill: rgb(156, 108, 1) !important;
     top:-3px;
 }
+
+.slds-icon-text-info {
+    position: relative;
+}
+
+.slds-icon-text-info .slds-form-element__icon {
+    padding-top:0 !important; 
+}

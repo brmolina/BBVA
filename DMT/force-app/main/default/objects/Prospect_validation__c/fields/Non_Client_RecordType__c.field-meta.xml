@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Non_Client_RecordType__c</fullName>
+    <description>This field must contain the Api Name of the RecordType of Account that will be used for Non Client.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>This field must contain the Api Name of the RecordType of Account that will be used for Non Client.</inlineHelpText>
+    <label>Non Client RecordType</label>
+    <length>100</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,42 @@
+.THIS .mainText {
+    height:200px;
+    text-align:center;
+    padding-top:100px;
+}
+.THIS .floatRight {
+    float:right;
+}
+.THIS .floatLeft {
+    float:left;
+}
+.THIS .spanFooterDesc {
+    margin-right:10px;
+}
+/* .THIS .spanFooter {
+} */
+.THIS .footerContainer {
+    width:100%;
+    margin-top:10px;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+.THIS .canvasPie {
+    height: 300px !important;
+    width: 100%;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+
+.THIS .badgenodata {
+  --slds-c-badge-color-background: #f3f3f3;
+  --slds-c-badge-radius-border: 4px;
+}
+
+.THIS .radiusbutton {
+  --slds-c-button-radius-border: 25px;
+}
+
+.THIS .weight700 {
+  font-weight: 700;
+  color: #5c5c5c;
+}

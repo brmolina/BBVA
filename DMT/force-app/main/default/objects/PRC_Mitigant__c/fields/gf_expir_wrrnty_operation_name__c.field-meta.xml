@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_expir_wrrnty_operation_name__c</fullName>
+    <description>Campo para indicar si la garantía llega al final de la operación o no</description>
+    <label>Expiration</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>DEAL_MATURITY</fullName>
+                <default>false</default>
+                <label>Deal Maturity</label>
+            </value>
+            <value>
+                <fullName>LESS_THAN_DEAL_MATURITY</fullName>
+                <default>false</default>
+                <label>Less than deal maturity</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

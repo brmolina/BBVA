@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Activity__c</fullName>
+    <label>Activity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Local governments</fullName>
+                <default>false</default>
+                <label>Local governments</label>
+            </value>
+            <value>
+                <fullName>Other funds/investment companies (SICAVs etc.)</fullName>
+                <default>false</default>
+                <label>Other funds/investment companies (SICAVs etc.)</label>
+            </value>
+            <value>
+                <fullName>Oilfield services</fullName>
+                <default>false</default>
+                <label>Oilfield services</label>
+            </value>
+            <value>
+                <fullName>Hotels restaurants and other leisure services</fullName>
+                <default>false</default>
+                <label>Hotels restaurants and other leisure services</label>
+            </value>
+            <value>
+                <fullName>Private equity funds</fullName>
+                <default>false</default>
+                <label>Private equity funds</label>
+            </value>
+            <value>
+                <fullName>Pension funds</fullName>
+                <default>false</default>
+                <label>Pension funds</label>
+            </value>
+            <value>
+                <fullName>Machinery</fullName>
+                <default>false</default>
+                <label>Machinery</label>
+            </value>
+            <value>
+                <fullName>Telecommunication services</fullName>
+                <default>false</default>
+                <label>Telecommunication services</label>
+            </value>
+            <value>
+                <fullName>Construction &amp; Infrastructure</fullName>
+                <default>false</default>
+                <label>Construction &amp; Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Food</fullName>
+                <default>false</default>
+                <label>Food</label>
+            </value>
+            <value>
+                <fullName>Mining &amp; metals</fullName>
+                <default>false</default>
+                <label>Mining &amp; metals</label>
+            </value>
+            <value>
+                <fullName>Natural gas distribution &amp; transportation</fullName>
+                <default>false</default>
+                <label>Natural gas distribution &amp; transportation</label>
+            </value>
+            <value>
+                <fullName>Central-government state-owned enterprises</fullName>
+                <default>false</default>
+                <label>Central-government state-owned enterprises</label>
+            </value>
+            <value>
+                <fullName>Credit institutions (banks savings banks and credit unions)</fullName>
+                <default>false</default>
+                <label>Credit institutions (banks savings banks and credit unions)</label>
+            </value>
+            <value>
+                <fullName>Healthcare service providers</fullName>
+                <default>false</default>
+                <label>Healthcare service providers</label>
+            </value>
+            <value>
+                <fullName>Undefined</fullName>
+                <default>false</default>
+                <label>Undefined</label>
+            </value>
+            <value>
+                <fullName>Real estate</fullName>
+                <default>false</default>
+                <label>Real estate</label>
+            </value>
+            <value>
+                <fullName>Electric power: generation transportation and distribution</fullName>
+                <default>false</default>
+                <label>Electric power: generation transportation and distribution</label>
+            </value>
+            <value>
+                <fullName>Pharmatheutical products</fullName>
+                <default>false</default>
+                <label>Pharmatheutical products</label>
+            </value>
+            <value>
+                <fullName>Logistic services and air freight transportation</fullName>
+                <default>false</default>
+                <label>Logistic services and air freight transportation</label>
+            </value>
+            <value>
+                <fullName>Maritime transportation</fullName>
+                <default>false</default>
+                <label>Maritime transportation</label>
+            </value>
+            <value>
+                <fullName>Sewage system</fullName>
+                <default>false</default>
+                <label>Sewage system</label>
+            </value>
+            <value>
+                <fullName>Oil &amp; gas production extraction and refinery</fullName>
+                <default>false</default>
+                <label>Oil &amp; gas production extraction and refinery</label>
+            </value>
+            <value>
+                <fullName>Asset Managers</fullName>
+                <default>false</default>
+                <label>Asset Managers</label>
+            </value>
+            <value>
+                <fullName>Other retail</fullName>
+                <default>false</default>
+                <label>Other retail</label>
+            </value>
+            <value>
+                <fullName>Household durables</fullName>
+                <default>false</default>
+                <label>Household durables</label>
+            </value>
+            <value>
+                <fullName>Software and service providers</fullName>
+                <default>false</default>
+                <label>Software and service providers</label>
+            </value>
+            <value>
+                <fullName>Information technology services</fullName>
+                <default>false</default>
+                <label>Information technology services</label>
+            </value>
+            <value>
+                <fullName>Basic essentials (wholesale &amp; retail): food beverage health etc</fullName>
+                <default>false</default>
+                <label>Basic essentials (wholesale &amp; retail): food beverage health etc</label>
+            </value>
+            <value>
+                <fullName>Labor unions/political parties/private non-profit institutions/other</fullName>
+                <default>false</default>
+                <label>Labor unions/political parties/private non-profit institutions/other</label>
+            </value>
+            <value>
+                <fullName>Automotive (OEMs does not include auto dealers)</fullName>
+                <default>false</default>
+                <label>Automotive (OEMs does not include auto dealers)</label>
+            </value>
+            <value>
+                <fullName>Medical supplies &amp; services</fullName>
+                <default>false</default>
+                <label>Medical supplies &amp; services</label>
+            </value>
+            <value>
+                <fullName>Other building products (glass and ceramics)</fullName>
+                <default>false</default>
+                <label>Other building products (glass and ceramics)</label>
+            </value>
+            <value>
+                <fullName>Insurance Companies</fullName>
+                <default>false</default>
+                <label>Insurance Companies</label>
+            </value>
+            <value>
+                <fullName>Hedge Funds</fullName>
+                <default>false</default>
+                <label>Hedge Funds</label>
+            </value>
+            <value>
+                <fullName>Beverage</fullName>
+                <default>false</default>
+                <label>Beverage</label>
+            </value>
+            <value>
+                <fullName>Specialty retail (auto dealers A+V equipment etc)</fullName>
+                <default>false</default>
+                <label>Specialty retail (auto dealers A+V equipment etc)</label>
+            </value>
+            <value>
+                <fullName>Professional scientific &amp; management services</fullName>
+                <default>false</default>
+                <label>Professional scientific &amp; management services</label>
+            </value>
+            <value>
+                <fullName>Sales by catalog &amp; internet</fullName>
+                <default>false</default>
+                <label>Sales by catalog &amp; internet</label>
+            </value>
+            <value>
+                <fullName>Air transportation</fullName>
+                <default>false</default>
+                <label>Air transportation</label>
+            </value>
+            <value>
+                <fullName>Other Financial Services (only for customer level)</fullName>
+                <default>false</default>
+                <label>Other Financial Services (only for customer level)</label>
+            </value>
+            <value>
+                <fullName>Textiles &amp; apparel</fullName>
+                <default>false</default>
+                <label>Textiles &amp; apparel</label>
+            </value>
+            <value>
+                <fullName>Building materials</fullName>
+                <default>false</default>
+                <label>Building materials</label>
+            </value>
+            <value>
+                <fullName>Other telecommunications</fullName>
+                <default>false</default>
+                <label>Other telecommunications</label>
+            </value>
+            <value>
+                <fullName>Central government</fullName>
+                <default>false</default>
+                <label>Central government</label>
+            </value>
+            <value>
+                <fullName>Electric equipment</fullName>
+                <default>false</default>
+                <label>Electric equipment</label>
+            </value>
+            <value>
+                <fullName>Public development banks similar to sovereign</fullName>
+                <default>false</default>
+                <label>Public development banks similar to sovereign</label>
+            </value>
+            <value>
+                <fullName>Sovereign wealth funds assimilated by sovereign risk</fullName>
+                <default>false</default>
+                <label>Sovereign wealth funds assimilated by sovereign risk</label>
+            </value>
+            <value>
+                <fullName>Medical equipment</fullName>
+                <default>false</default>
+                <label>Medical equipment</label>
+            </value>
+            <value>
+                <fullName>Auto parts suppliers</fullName>
+                <default>false</default>
+                <label>Auto parts suppliers</label>
+            </value>
+            <value>
+                <fullName>Chemicals</fullName>
+                <default>false</default>
+                <label>Chemicals</label>
+            </value>
+            <value>
+                <fullName>Auxiliary activities for financial services</fullName>
+                <default>false</default>
+                <label>Auxiliary activities for financial services</label>
+            </value>
+            <value>
+                <fullName>Mutual funds</fullName>
+                <default>false</default>
+                <label>Mutual funds</label>
+            </value>
+            <value>
+                <fullName>Diversified financial services (brokers factoring leasing etc.)</fullName>
+                <default>false</default>
+                <label>Diversified financial services (brokers factoring leasing etc.)</label>
+            </value>
+            <value>
+                <fullName>Regional governments</fullName>
+                <default>false</default>
+                <label>Regional governments</label>
+            </value>
+            <value>
+                <fullName>Road and rail transportation</fullName>
+                <default>false</default>
+                <label>Road and rail transportation</label>
+            </value>
+            <value>
+                <fullName>Diversified services (Education	 Arts	 Entertainment	 Recreation etc.)</fullName>
+                <default>false</default>
+                <label>Diversified services (Education	 Arts	 Entertainment	 Recreation etc.)</label>
+            </value>
+            <value>
+                <fullName>Media  (communication)</fullName>
+                <default>false</default>
+                <label>Media  (communication)</label>
+            </value>
+            <value>
+                <fullName>Multilateral banks</fullName>
+                <default>false</default>
+                <label>Multilateral banks</label>
+            </value>
+            <value>
+                <fullName>Paper &amp; plastic packaging</fullName>
+                <default>false</default>
+                <label>Paper &amp; plastic packaging</label>
+            </value>
+            <value>
+                <fullName>Wholesalers</fullName>
+                <default>false</default>
+                <label>Wholesalers</label>
+            </value>
+            <value>
+                <fullName>Aerospace &amp; Defense</fullName>
+                <default>false</default>
+                <label>Aerospace &amp; Defense</label>
+            </value>
+            <value>
+                <fullName>Other institutions (only for customer level)</fullName>
+                <default>false</default>
+                <label>Other institutions (only for customer level)</label>
+            </value>
+            <value>
+                <fullName>Wireless telecommunication services</fullName>
+                <default>false</default>
+                <label>Wireless telecommunication services</label>
+            </value>
+            <value>
+                <fullName>Electronic equipment &amp; instruments</fullName>
+                <default>false</default>
+                <label>Electronic equipment &amp; instruments</label>
+            </value>
+            <value>
+                <fullName>Central bank</fullName>
+                <default>false</default>
+                <label>Central bank</label>
+            </value>
+            <value>
+                <fullName>Manufacturing: soap detergents cosmetics and toiletries</fullName>
+                <default>false</default>
+                <label>Manufacturing: soap detergents cosmetics and toiletries</label>
+            </value>
+            <value>
+                <fullName>Clearing houses</fullName>
+                <default>false</default>
+                <label>Clearing houses</label>
+            </value>
+            <value>
+                <fullName>Communications equipment</fullName>
+                <default>false</default>
+                <label>Communications equipment</label>
+            </value>
+            <value>
+                <fullName>Computer &amp; peripherals</fullName>
+                <default>false</default>
+                <label>Computer &amp; peripherals</label>
+            </value>
+            <value>
+                <fullName>Office electronic equipment</fullName>
+                <default>false</default>
+                <label>Office electronic equipment</label>
+            </value>
+            <value>
+                <fullName>Pulp &amp; paper</fullName>
+                <default>false</default>
+                <label>Pulp &amp; paper</label>
+            </value>
+            <value>
+                <fullName>Water supply  and irrigation systems</fullName>
+                <default>false</default>
+                <label>Water supply  and irrigation systems</label>
+            </value>
+            <value>
+                <fullName>BAC</fullName>
+                <default>false</default>
+                <label>BAC</label>
+            </value>
+            <value>
+                <fullName>Wireless Telecommunications Services</fullName>
+                <default>false</default>
+                <label>Wireless Telecommunications Services</label>
+            </value>
+            <value>
+                <fullName>Multilateral non-financial bodies</fullName>
+                <default>false</default>
+                <label>Multilateral non-financial bodies</label>
+            </value>
+            <value>
+                <fullName>Cable telecommunications services</fullName>
+                <default>false</default>
+                <label>Cable telecommunications services</label>
+            </value>
+            <value>
+                <fullName>Tobacco</fullName>
+                <default>false</default>
+                <label>Tobacco</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

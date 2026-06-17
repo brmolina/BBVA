@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Claim_solution__c</fullName>
+    <defaultValue>&quot;Asumimos -el importe de Amount finally assumed-&quot;</defaultValue>
+    <description>Brief description of the final resolution of the problem</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Claim solution</label>
+    <length>32768</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

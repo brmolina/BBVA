@@ -1,0 +1,76 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" 
+                controller="RelatedAccOppInProgressController" access="global">
+                
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+	
+	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+    <div class="slds-page-header customHeader">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunities in progress">
+					<lightning:icon iconName="standard:opportunity" size="medium" alternativeText="Report"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">Opportunities</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Opportunities in progress">Opportunities in progress ({!v.data[0].oppNumber})</h1>
+			</div>
+		</div>
+	</div>
+    
+     <aura:if isTrue="{!empty(v.data)}">
+        <div class="tableNoData">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+    	<lightning:datatable data="{!v.data}" 
+                                     columns="{!v.columns}" 
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/> 
+                    <p class="customP">
+                <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+        </aura:set>
+    </aura:if>   
+    
+    
+    <aura:set attribute="else">
+    <div class="mobileCustomDiv"> 
+    <div class="slds-page-header mobileCustomHeader">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunities in progress">
+					<lightning:icon iconName="standard:opportunity" size="medium" alternativeText="Report"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">Opportunities</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Opportunities in progress">Opportunities in progress ({!v.data[0].oppNumber})</h1>
+			</div>
+		</div>
+	</div>
+    
+     <aura:if isTrue="{!empty(v.data)}">
+        <div class="tableNoData mobileCustomDiv2">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+    	<lightning:datatable data="{!v.data}" 
+                                     columns="{!v.columns}" 
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/> 
+                    <p class="mobileCustomP">
+                <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+        </aura:set>
+    </aura:if>
+    </div>
+    
+    </aura:set>
+   	</aura:if>   
+
+    
+</aura:component>

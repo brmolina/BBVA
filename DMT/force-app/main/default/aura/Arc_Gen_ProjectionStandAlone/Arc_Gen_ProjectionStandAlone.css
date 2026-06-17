@@ -1,0 +1,30 @@
+.THIS .spins::after {
+  position: absolute;
+  content: 'Please wait while loading ...';
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+}
+
+.THIS .spinsR::after {
+  position: absolute;
+  content: 'Calculating Scenarios Simulation ...';
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+}
+
+.THIS .perspective-parent {
+  border-bottom: 0;
+}
+
+.THIS .perspective-label {
+  font-weight: bold;
+  padding: 0;
+}
+
+.THIS .perspective-value {
+  padding-top: 9px;
+}

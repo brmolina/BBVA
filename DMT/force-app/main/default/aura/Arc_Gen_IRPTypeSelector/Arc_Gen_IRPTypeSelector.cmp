@@ -1,0 +1,114 @@
+<!--
+  @Component Name     : Arc_Gen_IRPTypeSelector.cmp
+  @Description        : Tool to select the IRP process between Rating, Adjustment or Override.
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 01-09-2024
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    XX/03/2021                  ARCE TEAM     		        Initial Version
+  1.1    04/22/2021                  ARCE TEAM     		        cards are deactivated by attribute
+  1.2    11/05/2021                  ARCE TEAM     		        Add combobox rarRatingTool Selector for CRP flow.
+-->
+<aura:component>
+    <!-- Public attributes. -->
+    <aura:attribute name="processSelected" type="String" description="Selected process" access="public"/>
+    <aura:attribute name="rarRtngSelected" type="String" description="Selected process" access="public"/>
+    <aura:attribute name="model" type="String" access="public"/>
+    <aura:attribute name="participantType" type="String" default="DEFAULT" access="public"/>
+    <aura:attribute name="optionsWF" type="List" access="public"/>
+
+    <!-- Private attributes. -->
+    <aura:attribute name="isArceTypeEnabled" type="Map" />
+    <aura:attribute name="ratingValue" type="String" description="value for rating"/>
+    <aura:attribute name="adjustmentValue" type="String" description="value for adjustment"/>
+    <aura:attribute name="overrideValue" type="String" description="value for override"/>
+    <aura:attribute name="isDisabled" type="Boolean" default="false" description="disabled"/>
+    <aura:attribute name="ratingTypeOptions" type="List" description="CRP type options"/>
+    <!-- Event handlers. -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Component body. -->
+    <fieldset class="slds-form-element options-container">
+        <div class="slds-form-element__control options-container__options">
+            <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="rating-option" value="{!v.ratingValue}" name="arce-type" disabled="{!!v.isArceTypeEnabled.Rating || v.isDisabled}"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="rating-option">
+                  <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                      <lightning:icon iconName="utility:favorite" alternativeText="Rating" size="large" />
+                    </span>
+                  </span>
+                  <span class="slds-visual-picker__body">
+                    <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewIRP_FullRating}</span>
+                    <aura:if isTrue="{!and(v.participantType == 'SUBSIDIARY', v.model == '2019')}">
+                      <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_FullRatingDesc2019}</span>
+                      <aura:set attribute="else">
+                        <aura:if isTrue="{!v.model == '2021RTC'}">
+                          <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_FullRatingDescRTC}</span>
+                          <aura:set attribute="else">
+                            <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_FullRatingDesc}</span>
+                          </aura:set>
+                        </aura:if>
+                      </aura:set>
+                    </aura:if>
+                  </span>
+                  <span class="slds-icon_container slds-visual-picker__text-check">
+                    <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                  </span>
+                </label>
+            </div>
+
+            <aura:if isTrue="{!v.model != '2021RTC'}">
+              <div class="slds-visual-picker slds-visual-picker_medium">
+                  <input type="radio" id="adjustment-option" value="{!v.adjustmentValue}" name="arce-type" disabled="{!!v.isArceTypeEnabled.Adjustment || v.isDisabled}"
+                          onchange="{!c.changeArceSelection}" />
+                  <label for="adjustment-option">
+                    <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                      <span>
+                        <lightning:icon iconName="utility:richtextindent" alternativeText="Adjustment" size="large" />
+                      </span>
+                    </span>
+                    <span class="slds-visual-picker__body">
+                      <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewIRP_Overlay}</span>
+                      <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_OverlayDesc}</span>
+                    </span>
+                    <span class="slds-icon_container slds-visual-picker__text-check">
+                      <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                    </span>
+                  </label>
+              </div>
+
+              <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="override-option" value="{!v.overrideValue}" name="arce-type" disabled="{!!v.isArceTypeEnabled.Override || v.isDisabled}"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="override-option">
+                  <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                      <lightning:icon iconName="utility:approval" alternativeText="Override" size="large" />
+                    </span>
+                    </span>
+                    <span class="slds-visual-picker__body">
+                      <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewIRP_Override}</span>
+                      <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_OverrideDesc}</span>
+                    </span>
+                    <span class="slds-icon_container slds-visual-picker__text-check">
+                      <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                    </span>
+                  </label>
+              </div>
+            </aura:if>
+        </div>
+    </fieldset>
+    <aura:if isTrue="{! v.processSelected == v.overrideValue}">
+      <div class="slds-align_absolute-center slds-p-bottom_xx-large">
+        <div style="width:40%;">
+          <lightning:combobox name="progress" value="{!v.rarRtngSelected}" placeholder="Select rar rating tool" options="{!v.ratingTypeOptions}"/>
+        </div>
+      </div>
+    </aura:if>
+</aura:component>

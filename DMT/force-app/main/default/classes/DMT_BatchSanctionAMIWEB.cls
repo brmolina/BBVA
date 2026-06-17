@@ -1,13 +1,12 @@
 /**-------------------------------------------------------------------------------------------
-* @Name     DMT Sanction AMIWEB
-* @Author   diego.peran.tech@bbva.com
-* @Date     Created: 2024-010-24
-* ------------------------------------------------------------------------------------------------
-* @Description This batch runs every night  and update Dmt_Lines with AMIWEB origin and Draft Status
-* ------------------------------------------------------------------------------------------------
-*/
-global class DMT_BatchSanctionAMIWEB implements Database.Batchable<sObject>, Schedulable {
-
+ * @Name     DMT Sanction AMIWEB
+ * @Author   diego.peran.tech@bbva.com
+ * @Date     Created: 2024-010-24
+ * ------------------------------------------------------------------------------------------------
+ * @Description This batch runs every night  and update Dmt_Lines with AMIWEB origin and Draft Status
+ * ------------------------------------------------------------------------------------------------
+ */
+global without sharing class DMT_BatchSanctionAMIWEB implements Database.Batchable<sObject>, Schedulable{
     global final String query;
 
     public DMT_BatchSanctionAMIWEB() {
@@ -20,7 +19,7 @@ global class DMT_BatchSanctionAMIWEB implements Database.Batchable<sObject>, Sch
 
     global void execute(Database.BatchableContext bc, List<DMT_Line__c> lines) {
 
-        Map<String, String> mapStatus = new Map<String, String>{'DR' => 'Draft', 'PR' => 'Proposal', 'AP' => 'Approval', 'CS' => 'Ready to close', 'CL' => 'Closed', 'CW' => 'Closed'};
+        Map<String, String> mapStatus = new Map<String, String>{'DR' => 'Draft', 'PR' => 'Proposal', 'AP' => 'Approval', 'RC' => 'Ready to close', 'CL' => 'Closed', 'CW' => 'Closed'};
         for (DMT_Line__c line : lines) {
             line.Status__c = mapStatus.get(line.g_line_status_type__c);
             if(line.g_line_status_type__c == 'CW'){
@@ -54,7 +53,9 @@ global class DMT_BatchSanctionAMIWEB implements Database.Batchable<sObject>, Sch
         mail.setPlainTextBody
         ('The batch AMIWEB Sanctions processed ' + a.TotalJobItems +
         ' batches with '+ a.NumberOfErrors + ' failures.');
-        Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+        if (!Test.isRunningTest()) {
+            Messaging.sendEmail(new Messaging.SingleEmailMessage[]{ mail });
+        }
     }
 
     global void execute(SchedulableContext sc) {

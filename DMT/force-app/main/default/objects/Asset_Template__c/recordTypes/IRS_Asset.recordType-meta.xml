@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IRS_Asset</fullName>
+    <active>true</active>
+    <label>Asset Class: IRS</label>
+    <picklistValues>
+        <picklist>Asset_Class__c</picklist>
+        <values>
+            <fullName>Equity</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fixed Income</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IRS</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Client_Type__c</picklist>
+        <values>
+            <fullName>Corporate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GIN Minorista</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Institutionals</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Do_you_already_work_with_this_client__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Onboarding_Type__c</picklist>
+        <values>
+            <fullName>New Client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New Product</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New User</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Platform Addition</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Reject Client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Reject User</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Rejection_Reason__c</picklist>
+        <values>
+            <fullName>As per Sales Request</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>As per Trading request</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Awaiting Sales Approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Client is a broker%2Fdealer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lack of client documentation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>N%2FA</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Client Rejected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Completed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Implement</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Validate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wrong Data</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Streaming__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>User_Rejection_Reason__c</picklist>
+        <values>
+            <fullName>Belonging to a different desk%2Fgeography</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Competitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Requested by Trading</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

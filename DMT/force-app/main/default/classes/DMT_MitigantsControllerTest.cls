@@ -1,5 +1,5 @@
-@IsTest
-private class DMT_MitigantsControllerTest {
+@isTest
+private without sharing class DMT_MitigantsControllerTest {
 
     @IsTest
     static void testGetCurrencyValues() {

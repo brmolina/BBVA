@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>profitability_category_type_order__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(UPPER( profitability_category_type__c ),&apos;ALTAS&apos;,1,&apos;SPREAD&apos;,3,&apos;TASA&apos;,2,&apos;DI&apos;,4,&apos;MARGEN FINANCIERO&apos;,5,&apos;COMISIONES&apos;,6,&apos;MARGEN ORDINARIO&apos;,7,&apos;ROF&apos;,8,0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Category order</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

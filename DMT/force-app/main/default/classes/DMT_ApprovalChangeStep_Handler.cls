@@ -58,8 +58,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         Task task = DMT_ApprovalChangeStep_Selector.getTaskById(recordId);
         Case relatedCase = DMT_ApprovalChangeStep_Selector.getCaseById(task.WhatId);
 
-        DMT_Line__c relatedLine;
-        Opportunity relatedOpportunity;
 
         Id approverViewId = getApproverViewId(task.OwnerId, relatedCase);
         List<DMT_Items__c> itemsList = DMT_ApprovalChangeStep_Selector.getItemsByDmtView(approverViewId);
@@ -73,7 +71,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             // We get a list of each Object.Field
             //List<String> fields = item?.DMT_Campos_componente_Refact__c.split(';', 0);
 
-            List<String> fields = new List<String>(); 
+            List<String> fields = new List<String>();
             // Comprueba que 'item' exista Y que el campo tenga valor.
             if (item != null && String.isNotBlank(item.DMT_Campos_componente_Refact__c)) {
 
@@ -209,7 +207,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                     List<DMT_Opportunity_Tenor__c> opportunityTenorRetrieved = Database.query(String.escapeSingleQuotes(query));
                     Map<Integer, Map<String, Object>> opportunityTenorFormatted = new Map<Integer, Map<String, Object>>();
                     Integer counter = 1;
-    
+
                     // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                     for (DMT_Opportunity_Tenor__c tenor : opportunityTenorRetrieved){
                         // Creamos un mapa interno para los atributos de cada registro.
@@ -222,7 +220,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         opportunityTenorFormatted.put(counter, termAttributes);
                         counter++;
                     }
-    
+
                     // 5. Asignamos el mapa formateado al objeto final.
                     jsonFinal.opportunityTenor = opportunityTenorFormatted;
                 }
@@ -234,7 +232,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                     List<DMT_Opportunity_Mitigant__c> opportunityMitigantRetrieved = Database.query(String.escapeSingleQuotes(query));
                     Map<Integer, Map<String, Object>> opportunityMitigantFormatted = new Map<Integer, Map<String, Object>>();
                     Integer counter = 1;
-    
+
                     // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                     for (DMT_Opportunity_Mitigant__c mitigant : opportunityMitigantRetrieved){
                         // Creamos un mapa interno para los atributos de cada registro.
@@ -247,7 +245,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         opportunityMitigantFormatted.put(counter, termAttributes);
                         counter++;
                     }
-    
+
                     // 5. Asignamos el mapa formateado al objeto final.
                     jsonFinal.opportunityMitigant = opportunityMitigantFormatted;
                 }
@@ -259,7 +257,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                     List<OpportunityLineItem> opportunityLineItemRetrieved = Database.query(String.escapeSingleQuotes(query));
                     Map<Integer, Map<String, Object>> opportunityLineItemFormatted = new Map<Integer, Map<String, Object>>();
                     Integer counter = 1;
-    
+
                     // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                     for (OpportunityLineItem oppItem : opportunityLineItemRetrieved){
                         // Creamos un mapa interno para los atributos de cada registro.
@@ -298,7 +296,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             taskStatus.DMT_AllFieldsInStatus__c = allFields;
 
             if (createPdf){
-                //DMT_ViewController.generateContentDocumentForView(taskStatus.Case__c, recordId, 'JSON', '');
+                //content version and core documents are generated elsewhere. if deprecated.
             }
 
             if (task.DMT_ViewStatusAtClose__c != null){
@@ -309,7 +307,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 task.DMT_ViewStatusAtClose__c = taskStatus.Id;
                 update task;
             }
-        
+
     }
     public static Id getApproverViewId(String ownerId, Case relatedCase) {
         // We make all these queries to obtain the items which contains the fields we want to store within the task
@@ -333,14 +331,17 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         }
         return approverViewId;
     }
-    /*
-    
-    @future(callout=true)
-    public static void generateContentFuture(Id caseId, Id recordId, String type, String input)
-    {   
-        DMT_ViewController.generateContentDocumentForView(caseId, recordId, type, input);
+
+
+    @AuraEnabled(cacheable=false)
+    public static void compareTasksFromCaseLWC(String lineId) {
+        List<Case> records = [SELECT Id, DMT_Related_feature_name__c, DMT_LineOpportunity__c, DMT_Line__c, opportunity_id__c
+                              FROM Case
+                              WHERE DMT_Line__c = :lineId];
+        DMT_ApprovalChangeStep_Handler.Request request = new DMT_ApprovalChangeStep_Handler.Request();
+        request.records= records;system.debug('record case'+records);
+        compareTasksFromCase(new List<DMT_ApprovalChangeStep_Handler.Request>{request});
     }
-    */
 
     /**
      * @description Method that updates the task with the current status of the records from the view
@@ -350,18 +351,41 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
     @InvocableMethod(label = 'Compare tasks from case' description = 'Compares tasks from a list of cases')
     public static void compareTasksFromCase(List<Request> request){
         List<Case> records = request.get(0).records;
+        String passportSanctionFilter = request.get(0).passportSanctionFilter;
+
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+
+        // This filter only applies to Opportunity-related cases and is optional.
+        // If no filter is provided, the current behavior remains unchanged.
+        if (records.get(0).DMT_LineOpportunity__c == 'O' && String.isNotBlank(passportSanctionFilter)) {
+            String normalizedFilter = passportSanctionFilter.trim().toLowerCase();
+            List<Case> filteredRecords = new List<Case>();
+            for (Case c : records) {
+                if (c.DMT_Passport_Sanction__c != null && c.DMT_Passport_Sanction__c.trim().toLowerCase() == normalizedFilter) {
+                    filteredRecords.add(c);
+                }
+            }
+            records = filteredRecords;
+
+            if (records.isEmpty()) {
+                return;
+            }
+        }
+
         Status_JSON_Wrapper jsonFinal = new Status_JSON_Wrapper();
         // Map that contains each Object and a list of its field Names
         Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
         //Case relatedCase = [SELECT DMT_Line__c, DMT_Line__r.Custom_Association__c, DMT_LineOpportunity__c FROM Case WHERE Id IN :recordId WITH SECURITY_ENFORCED LIMIT 1];
-        
-        
+
+
         Set<Id> casesIds = new Set<Id>();
         for (Case c : records){
             casesIds.add(c.Id);
         }
 
-        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
+        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, Owner.Name, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
                                                     FROM Task
                                                     WHERE WhatId IN:casesIds AND Status != :DMT_Constants.CANCELLED AND DMT_Not_Restart__c = false]);
 
@@ -533,7 +557,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         List<DMT_Opportunity_Tenor__c> opportunityTenorRetrieved = Database.query(String.escapeSingleQuotes(query));
                         Map<Integer, Map<String, Object>> opportunityTenorFormatted = new Map<Integer, Map<String, Object>>();
                         Integer counter = 1;
-        
+
                         // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                         for (DMT_Opportunity_Tenor__c tenor : opportunityTenorRetrieved){
                             // Creamos un mapa interno para los atributos de cada registro.
@@ -546,7 +570,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                             opportunityTenorFormatted.put(counter, termAttributes);
                             counter++;
                         }
-        
+
                         // 5. Asignamos el mapa formateado al objeto final.
                         jsonFinal.opportunityTenor = opportunityTenorFormatted;
                     }
@@ -558,7 +582,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         List<DMT_Opportunity_Mitigant__c> opportunityMitigantRetrieved = Database.query(String.escapeSingleQuotes(query));
                         Map<Integer, Map<String, Object>> opportunityMitigantFormatted = new Map<Integer, Map<String, Object>>();
                         Integer counter = 1;
-        
+
                         // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                         for (DMT_Opportunity_Mitigant__c mitigant : opportunityMitigantRetrieved){
                             // Creamos un mapa interno para los atributos de cada registro.
@@ -571,7 +595,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                             opportunityMitigantFormatted.put(counter, termAttributes);
                             counter++;
                         }
-        
+
                         // 5. Asignamos el mapa formateado al objeto final.
                         jsonFinal.opportunityMitigant = opportunityMitigantFormatted;
                     }
@@ -583,7 +607,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         List<OpportunityLineItem> opportunityLineItemRetrieved = Database.query(String.escapeSingleQuotes(query));
                         Map<Integer, Map<String, Object>> opportunityLineItemFormatted = new Map<Integer, Map<String, Object>>();
                         Integer counter = 1;
-        
+
                         // 4. Iteramos sobre los resultados para construir el nuevo mapa.
                         for (OpportunityLineItem oppItem : opportunityLineItemRetrieved){
                             // Creamos un mapa interno para los atributos de cada registro.
@@ -614,8 +638,8 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                     }
             }
         }
-       
-       
+
+
 
         String jsonFinalSerialized = System.JSON.serialize(jsonFinal, true).replaceAll('"attributes":\\{[^\\}]*\\},?', '');
         Map<String, Object> mapJsonFinal = (Map<String, Object>)JSON.deserializeUntyped(jsonFinalSerialized);
@@ -625,7 +649,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
 
         for (Id caseId : mapCasesTaskStatus.keySet()){
             Boolean isDifferent = false;
-            Id taskType;
 
             for (Integer i = 0; i < mapCasesTaskStatus.get(caseId).size(); i++){
                 Map<String, Object> mapTaskStatusJson = (Map<String, Object>)JSON.deserializeUntyped(mapCasesTaskStatus.get(caseId)[i].DMT_ViewFieldStatusAtClose__c);
@@ -735,21 +758,25 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             }
 
         }
+        System.debug('Queries usadas before tasksToUpdate: ' + Limits.getQueries());
         if (tasksToUpdate.size() > 0){
             update tasksToUpdate;
         }
-
+        System.debug('Queries usadas before casesToUpdate: ' + Limits.getQueries());
         if (casesToUpdate.size() > 0){
             update casesToUpdate;
         }
-
+        System.debug('Queries usadas before tasksToCreate: ' + Limits.getQueries());
         if (tasksToCreate.size() > 0){
             insert tasksToCreate;
         }
-
-        //List<Task> tasks = [SELECT Id, OwnerId, DMT_Task_Type__c, WhatId, Subject FROM Task WHERE DMT_ViewStatusAtClose__c IN: taskStatusIdsToSend];
-
-        //return new List<List<Task>> {tasks.values()};
+        System.debug('Queries usadas before updateTaskWithStatus: ' + Limits.getQueries());
+        for (Task t : tasksToCreate) {
+            System.debug('t debug: ' + t);
+            System.debug('Queries usadas inside for: ' + Limits.getQueries());
+            updateTaskWithStatus(t.Id, false);
+        }
+        System.debug('Queries usadas after updateTaskWithStatus: ' + Limits.getQueries());
     }
 
     /**
@@ -773,7 +800,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             mapCasesFeatureName.put(c.Id, c.DMT_Related_feature_name__c);
         }
 
-        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
+        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, Owner.Name, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
                                                     FROM Task
                                                     WHERE WhatId IN:mapCasesFeatureName.keySet() AND Status != :DMT_Constants.CANCELLED AND DMT_Not_Restart__c = false]);
 
@@ -922,7 +949,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
 
         for (Id caseId : mapCasesTaskStatus.keySet()){
             Boolean isDifferent = false;
-            Id taskType;
 
             for (Integer i = 0; i < mapCasesTaskStatus.get(caseId).size(); i++){
                 Map<String, Object> mapTaskStatusJson = (Map<String, Object>)JSON.deserializeUntyped(mapCasesTaskStatus.get(caseId)[i].DMT_ViewFieldStatusAtClose__c);
@@ -1077,7 +1103,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         public Map<Integer, Map<String, Object>>  opportunityLineItem;
         public Map<Id, 	altm__Commercial_Alert__c>  altmCommercialAlert;
         public Map<Id, 	DMT_X_Sell__c>  opportunityXSell;
-        
+
     }
 
     public class Response{
@@ -1088,6 +1114,9 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
     public class Request{
         @InvocableVariable
         public List<Case> records;
+
+        @InvocableVariable
+        public String passportSanctionFilter;
     }
 
     public class WRAPPER_Response_Flow{

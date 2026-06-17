@@ -1,0 +1,54 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" 
+                access="global" controller="DES_AP_CircularProgressController">
+    
+    <aura:attribute name="recordId" type="Id" description="Id of record on which this component is hosted." />
+    <aura:attribute name="sObjectName" type="String" description="API name of record on which this component is hosted." />
+    
+    <aura:attribute name="Legend" type="String" description="Legend to display" />
+    
+    <aura:attribute name="perText" type="String" default="0%" description="Text to display inside circle. It is auto calculated field and used internally." />
+    <aura:attribute name="cirDeg" type="String" default="0" description="Degree of Progress to show. It is auto calculated field and used internally." />
+    
+    <aura:attribute name="totalProgress" type="String" default="100" description="Total progress. It can be number OR API name of field." />
+    <aura:attribute name="actualProgress" type="String" default="50" description="Actual progress. It can be number OR API name of field." />
+    
+    <aura:attribute name="theme" type="String" default="blue" description="Theme of Circular Progress Bar. Possible values are blue, green, orange." />
+    <aura:attribute name="size" type="String" default="medium" description="Size of Circular Progress Bar. Possible values are small, medium, big." />
+    
+    <aura:attribute name="typeOfCircle" type="String" access="global" />
+    <aura:attribute name="currencyISOCode" type="String" access="global" />
+    <aura:attribute name="currentRevenues" type="String" access="global" />
+    <aura:attribute name="yoyPer" type="String" access="global" />
+    <aura:attribute name="chartTitle" type="String" access="global" />
+    <aura:attribute name="chartInformation" type="String" access="global" />
+    <aura:attribute name="noExpDataInfo" type="String" access="global" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-box customDiv">
+        <h1>{!v.chartTitle}</h1>
+        <div class="clearFloats slds-align--absolute-center">
+            
+            <div class="{! ( v.cirDeg >
+                        179 ) ? 'container p50plus '+v.theme+' '+v.size : 'container '+v.theme +' '+v.size }">
+                <span>{!v.perText}</span>
+                <div class="slice">
+                    <div class="bar" style="{! '-webkit-transform: rotate('+v.cirDeg+'deg); -moz-transform: rotate('+v.cirDeg+'deg); -ms-transform: rotate('+v.cirDeg+'deg); -o-transform: rotate('+v.cirDeg+'deg); transform: rotate('+v.cirDeg+'deg); -ms-transform: rotate('+v.cirDeg+'deg);'}"></div>
+                    <div class="fill"></div>
+                </div>
+            </div>
+        </div>
+        <div class="clearFloats slds-align--absolute-center"> 
+            {!v.noExpDataInfo}
+        </div>
+        <div class="clearFloats slds-align--absolute-center"> 
+            <span class="currentRevenues">{!v.currentRevenues}</span>
+        </div>
+        <div class="clearFloats slds-align--absolute-center"> 
+            {!v.yoyPer}
+        </div>
+        <div class="clearFloats slds-align--absolute-center"> 
+            {!v.chartInformation}
+        </div>
+    </div>
+</aura:component>

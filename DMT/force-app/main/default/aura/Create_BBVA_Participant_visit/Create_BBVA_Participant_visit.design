@@ -1,0 +1,4 @@
+<design:component >
+  <design:attribute name="UserVal" label="UserVal" />
+  <design:attribute name="visitName" label="visitName" />
+</design:component>

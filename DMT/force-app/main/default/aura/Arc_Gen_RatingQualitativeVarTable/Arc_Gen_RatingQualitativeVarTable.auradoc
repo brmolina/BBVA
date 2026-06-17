@@ -1,0 +1,11 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Tree Grid Table of the different rating variables.</b></h5>
+        <p>The table has two levels of rows: Blocks and features</p>
+        <p>The variable blocks can ber Cualitative, Cuantitative and Behavioral</p>
+        <p><code>c:Arc_Gen_RatingVariablesTable_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_RatingQualitativeVarTable" ref="c:Arc_Gen_RatingQualitativeVarTable" label="Rating Variables Table">
+        <p>Component to view the rating variables obtained by the rating engine service of a selected FFSS</p>
+    </aura:example>
+</aura:documentation>

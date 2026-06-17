@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_rfp_status_name__c</fullName>
+    <label>RFP Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Analysing bid/no bid</fullName>
+                <default>false</default>
+                <label>Analysing bid/no bid</label>
+            </value>
+            <value>
+                <fullName>Q&amp;A process with client</fullName>
+                <default>false</default>
+                <label>Q&amp;A process with client</label>
+            </value>
+            <value>
+                <fullName>Responding RFP</fullName>
+                <default>false</default>
+                <label>Responding RFP</label>
+            </value>
+            <value>
+                <fullName>RFP delivered to client</fullName>
+                <default>false</default>
+                <label>RFP delivered to client</label>
+            </value>
+            <value>
+                <fullName>RFP second round presentation</fullName>
+                <default>false</default>
+                <label>RFP second round presentation</label>
+            </value>
+            <value>
+                <fullName>Waiting for client final decision</fullName>
+                <default>false</default>
+                <label>Waiting for client final decision</label>
+            </value>
+            <value>
+                <fullName>Won</fullName>
+                <default>false</default>
+                <label>Won</label>
+            </value>
+            <value>
+                <fullName>Lost</fullName>
+                <default>false</default>
+                <label>Lost</label>
+            </value>
+            <value>
+                <fullName>Partially won</fullName>
+                <default>false</default>
+                <label>Partially won</label>
+            </value>
+            <value>
+                <fullName>Partially lost</fullName>
+                <default>false</default>
+                <label>Partially lost</label>
+            </value>
+            <value>
+                <fullName>Not assigned by client</fullName>
+                <default>false</default>
+                <label>Not assigned by client</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

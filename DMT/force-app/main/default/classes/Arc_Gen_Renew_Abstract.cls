@@ -26,7 +26,7 @@ public with sharing abstract class Arc_Gen_Renew_Abstract {
     * @Description YEAR.
     * ---------------------------------------------------------------------------------------------------- **/
     private static final Integer YEAR = 12;
-        /** ----------------------------------------------------------------------------------------------------
+    /** ----------------------------------------------------------------------------------------------------
     * @Description fieldsMap.
     * ---------------------------------------------------------------------------------------------------- **/
     private static Map<String, String> mapFields2012 = new Map<String, String>{'arce__gf_subactivity_id__c'=>'arce__gf_subactivity_id_2012__c',
@@ -112,7 +112,6 @@ public with sharing abstract class Arc_Gen_Renew_Abstract {
     * @return Map<String(tabCode), tabAttributes(tabConfigAttr)> tabsConfigs
     * @example public static Map<String, List<Section>> getTabConfig(gotTabs, monthsBtwe)
     **/
-    @AuraEnabled
     public static Map<String, List<String>> getTabConfig(List<String > gotTabs, Integer monthsBtwe) {
         final Map<String, List<String>> toReturn = new Map<String, List<String>>();
         final String configtoGet = monthsBtwe <= 5 ? 'sections5' : monthsBtwe >= YEAR ? 'sections12' : 'sections512';

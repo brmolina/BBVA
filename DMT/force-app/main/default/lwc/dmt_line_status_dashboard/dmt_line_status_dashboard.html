@@ -1,0 +1,102 @@
+<template>
+    <lightning-card title="DMT Line Status Dashboard">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4">
+                    <lightning-input
+                        type="date"
+                        label="Created Date From"
+                        value={filters.startDate}
+                        onchange={handleStartDateChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4">
+                    <lightning-input
+                        type="date"
+                        label="Created Date To"
+                        value={filters.endDate}
+                        onchange={handleEndDateChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4">
+                    <lightning-combobox
+                        label="Line Template"
+                        value={filters.lineTemplate}
+                        options={lineTemplateOptions}
+                        onchange={handleLineTemplateChange}>
+                    </lightning-combobox>
+                </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4">
+                    <lightning-combobox
+                        label="Booking Geography"
+                        value={filters.bookingGeography}
+                        options={bookingGeographyOptions}
+                        onchange={handleBookingGeographyChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <div class="slds-m-top_medium">
+                <lightning-button
+                    variant="brand"
+                    label="Apply Filters"
+                    onclick={loadDashboard}>
+                </lightning-button>
+
+                <lightning-button
+                    class="slds-m-left_small"
+                    label="Reset"
+                    onclick={handleReset}>
+                </lightning-button>
+            </div>
+
+            <template if:true={isLoading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:true={dashboard}>
+                <div class="slds-grid slds-wrap slds-gutters slds-m-top_large">
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning-card title="Total Lines">
+                            <div class="kpi">{dashboard.totalRecords}</div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning-card title="Avg Lifecycle Hours">
+                            <div class="kpi">{dashboard.avgLifecycleHours}</div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning-card title="Longest Avg State">
+                            <div class="kpi">{dashboard.longestState}</div>
+                        </lightning-card>
+                    </div>
+                </div>
+
+                <div class="chart-container slds-m-top_large">
+                    <canvas class="statusChart" lwc:dom="manual"></canvas>
+                </div>
+
+                <div class="slds-m-top_large">
+                    <lightning-datatable
+                        key-field="state"
+                        data={dashboard.metrics}
+                        columns={columns}
+                        hide-checkbox-column>
+                    </lightning-datatable>
+                </div>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-top_medium">{error}</div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

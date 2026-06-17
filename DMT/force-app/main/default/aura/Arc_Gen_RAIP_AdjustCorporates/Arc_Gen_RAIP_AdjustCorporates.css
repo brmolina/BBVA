@@ -1,0 +1,16 @@
+.THIS .slds-modal__content {
+  overflow: initial;
+}
+
+.THIS #warningMsg {
+  border-radius: 10px;
+}
+
+.THIS #errorMsg {
+  border-radius: 10px;
+}
+
+.THIS #spinnerContainer {
+  height: 6rem;
+  position: relative;
+}

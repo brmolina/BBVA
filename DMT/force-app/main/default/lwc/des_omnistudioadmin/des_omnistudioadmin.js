@@ -83,7 +83,7 @@ export default class Des_omnistudioadmin extends LightningElement {
                 .then(result => {
                     console.log('URL recibida: ' + result);
                     const url = 'microsoft-edge:' + result;
-                    //window.open(url);
+                    window.open(url, '_blank');
                     this.isLoading = false;
                 })
                 .catch(error => {

@@ -1,0 +1,149 @@
+<template>
+    <lightning-modal-header class="slds-modal__title slds-hyphenate"
+        label={labels.DMT_titleRenewLine}></lightning-modal-header>
+
+    <lightning-modal-body>
+        <div style="position: relative;">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
+            </template>
+
+            <div class="slds-grid slds-gutters_large">
+                <!-- LEFT COLUMN -->
+                <div class="slds-col slds-size_1-of-2  slds-p-top_small slds-m-bottom_small">
+                    <article class="slds-tile slds-media slds-p-left_medium">
+                        <div class="slds-media__figure slds-p-left_small">
+                            <lightning-icon icon-name="action:new_account" alternative-text={labels.DMT_AccountText} title={label.DMT_AccountText} 
+                                size="medium">
+                            </lightning-icon>
+                        </div>
+
+                        <div class="slds-media__body slds-m-top_x-small">
+                            <div class="slds-tile__title" title={companyName}>
+                                <a style="font-weight: bold;" class="slds-text-color_default slds-m-bottom_x-small"
+                                    href={companyHref} target="_blank" rel="noopener noreferrer">
+                                    {companyName}
+                                </a>
+                            </div>
+
+                            <div class="slds-grid slds-grid_vertical slds-m-top_small" style="row-gap: 0.5rem;">
+
+                                <template if:true={showClientType}>
+                                    <div class="slds-col slds-grid slds-p-around_none">
+                                        <div class="slds-col slds-size_2-of-6 slds-p-around_none slds-text-color_weak">
+                                            {labels.DMT_ClientType}:
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
+                                            {clientType}
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template if:true={showClientCode}>
+                                    <div class="slds-col slds-grid slds-p-around_none">
+                                        <div class="slds-col slds-size_2-of-6 slds-p-around_none slds-text-color_weak">
+                                            {labels.DMT_ClientCode}:
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
+                                            {clientCode}
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template if:true={showGroupCode}>
+                                    <div class="slds-col slds-grid slds-p-around_none">
+                                        <div class="slds-col slds-size_2-of-6 slds-p-around_none slds-text-color_weak">
+                                            {labels.DMT_GroupCode}:
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
+                                            {groupCode}
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template if:true={showCountry}>
+                                    <div class="slds-col slds-grid slds-p-around_none">
+                                        <div class="slds-col slds-size_2-of-6 slds-p-around_none slds-text-color_weak">
+                                            {labels.DMT_Country}:
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
+                                            {country}
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template if:true={showTaxPayer}>
+                                    <div class="slds-col slds-grid slds-p-around_none">
+                                        <div class="slds-col slds-size_2-of-6 slds-p-around_none slds-text-color_weak">
+                                            {labels.DMT_TaxPayer}:
+                                        </div>
+                                        <div
+                                            class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
+                                            {taxPayer}
+                                        </div>
+                                    </div>
+                                </template>
+
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="slds-col slds-size_1-of-2 slds-m-bottom_x-small">
+                    <div class="slds-p-right_x-large">
+                        <lightning-combobox label={labels.DMT_LineType} value={lineType} options={lineTypeOptions}
+                            onchange={handleLineTypeChange} placeholder={labels.DMT_SelectLineTypText}
+                            class="slds-m-bottom_small" disabled="true">
+                        </lightning-combobox>
+
+
+                        <lightning-input name="lineName" label={labels.DMT_Name} value={name}
+                            onchange={handleNameChange} disabled={isNameDisabled} maxlength="50" required
+                            class="slds-m-bottom_small">
+                        </lightning-input>
+                    </div>
+                </div>
+
+            </div>
+            <template if:true={hasValidItems}>
+                <lightning-accordion class="slds-p-left_medium slds-p-right_medium" active-section-name={activeSection}
+                    onsectiontoggle={handleToggle} allow-multiple-sections-open="false">
+                    <lightning-accordion-section name="A" label={labels.DMT_ProductsRenew}>
+                        <div class="slds-m-top_small">
+                            <template for:each={validItems} for:item="item">
+                                <div key={item.Id} class="slds-p-vertical_xx-small slds-grid slds-align_absolute-left">
+                                    <lightning-input type="checkbox" checked disabled={item.isDisabled}
+                                        data-id={item.Id}></lightning-input>
+
+                                    <span class="slds-m-left_small slds-text-body_regular">
+            {item.Name}
+          </span>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </template>
+
+        </div>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <div class="slds-grid slds-grid_align-center slds-gutters_small">
+            <div class="slds-col">
+                <lightning-button label={labels.DMT_CancelText} variant="neutral" onclick={handleCancel} disabled={isLoading}>
+                </lightning-button>
+            </div>
+            <div class="slds-col">
+                <lightning-button class="slds-m-left_small" label={labels.DMT_SaveAndEditText} variant="brand"
+                    onclick={handleSaveAndEdit} disabled={isSaveDisabled}>
+                </lightning-button>
+            </div>
+        </div>
+    </lightning-modal-footer>
+</template>

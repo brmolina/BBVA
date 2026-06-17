@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Taxonomy_RS_Conditions</label>
+    <protected>false</protected>
+    <values>
+        <field>arce__JSON_input__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;geographies&quot;: {
+    &quot;ES&quot;: {
+      &quot;corporates&quot;: [&quot;RS03&quot;],
+      &quot;ifis&quot;: [&quot;RS04&quot;]
+    },
+    &quot;MX&quot;: {
+      &quot;corporates&quot;: [&quot;RS2&quot;],
+      &quot;ifis&quot;: [&quot;SD04&quot;]
+    }
+  },
+  &quot;special&quot;: [&quot;N/A&quot;,&quot;RSXX&quot;,&quot;RS99&quot;]
+}</value>
+    </values>
+    <values>
+        <field>arce__api_field_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>arce__iasoVariables__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

@@ -130,6 +130,7 @@ export default class Dmt_item_selector extends LightningElement {
 
     handleViewTypeChange(event) {
         this.viewType = event.target.value;
+        console.log('viewType changed to:', this.viewType);
         this.viewName = '';
         this.isComponentDisabled = true;
         this.updateComponentItemLabel();
@@ -169,6 +170,7 @@ export default class Dmt_item_selector extends LightningElement {
     wiredComponentOptions({ error, data }) {
         if (data) {
             this.componentOptions = data.map(option => ({ label: option, value: option }));
+            console.log('Component options loaded:', JSON.stringify(this.componentOptions));
         } else if (error) {
             this.componentOptions = [];
             this.dispatchEvent(new ShowToastEvent({

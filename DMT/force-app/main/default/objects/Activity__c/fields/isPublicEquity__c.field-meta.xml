@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isPublicEquity__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Variable que se utiliza para controlar la visualización (reglas de compartición) de la ActivityCustom.
+Por defecto cuando se crea será siempre FALSE, cuando un Manager de Equity quiera actualizar una tarea y hacerla pública a todo Equity se pondrá a TRUE</description>
+    <inlineHelpText>Only for EQ activities, this field determines whether the activity is public for all EQ or private.</inlineHelpText>
+    <label>Is Public Equity</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,20 @@
+.toolbar-wrap {
+    gap: 1rem;
+}
+
+.toolbar-left {
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.final-list-wrap {
+    min-width: 260px;
+}
+
+.connect-toggle-wrap {
+    min-height: 2rem;
+}
+
+.connect-toggle-label {
+    white-space: nowrap;
+}

@@ -1,0 +1,24 @@
+<aura:component controller="PrcPriceMatrixBrowser_Ctrl">
+    <aura:attribute name="scenarios" type="PRC_PFS_Scenario[]" access="public" />
+    <aura:attribute name="selectedPriceId" type="String" access="public" default="false" />
+    <aura:attribute name="matrixAxis1" type="String" access="public" default="MARGIN" />
+    <aura:attribute name="matrixAxis2" type="String" access="public" default="TERM" />
+    <aura:attribute name="matrixColumns" type="Integer" access="public" />
+
+
+    <!-- lightning:layout horizontalAlign="center" multipleRows="true" class="slds-grid_vertical max-5" -->
+    <div>
+        <aura:iteration items="{!v.scenarios}" var="price" indexVar="myIndex">
+            <aura:if isTrue="{! and(price.axis[0].id == v.matrixAxis1,price.axis[1].id == v.matrixAxis2)}">
+                <!-- lightning:layoutItem size="3" -->
+                    <c:prcPriceTile price="{!price}" matrixAxis1="{!v.matrixAxis1}" matrixAxis2="{!v.matrixAxis2}" selected="{!price.id == v.selectedPriceId}" />
+                <!-- /lightning:layoutItem-->
+                <aura:if isTrue="{!mod(myIndex+1,v.matrixColumns) == 0}">
+                    <br/>
+  				</aura:if>
+  			</aura:if>
+        </aura:iteration>
+      </div>
+    <!-- /lightning:layout -->
+
+</aura:component>

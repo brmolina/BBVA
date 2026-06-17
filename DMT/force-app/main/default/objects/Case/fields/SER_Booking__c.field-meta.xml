@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Booking__c</fullName>
+    <description>Center where the operation is registered</description>
+    <label>Booking Center</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BBVA (HK) Seoul</fullName>
+                <default>false</default>
+                <label>BBVA (HK) Seoul</label>
+            </value>
+            <value>
+                <fullName>BBVA (HK) Singapore</fullName>
+                <default>false</default>
+                <label>BBVA (HK) Singapore</label>
+            </value>
+            <value>
+                <fullName>BBVA (HK) Taiwan</fullName>
+                <default>false</default>
+                <label>BBVA (HK) Taiwan</label>
+            </value>
+            <value>
+                <fullName>BBVA (HK) Tokio</fullName>
+                <default>false</default>
+                <label>BBVA (HK) Tokio</label>
+            </value>
+            <value>
+                <fullName>BBVA Asset Management</fullName>
+                <default>false</default>
+                <label>BBVA Asset Management</label>
+            </value>
+            <value>
+                <fullName>BBVA Banco Continental</fullName>
+                <default>false</default>
+                <label>BBVA Banco Continental</label>
+            </value>
+            <value>
+                <fullName>BBVA Bancomer</fullName>
+                <default>false</default>
+                <label>BBVA Bancomer</label>
+            </value>
+            <value>
+                <fullName>BBVA Colombia</fullName>
+                <default>false</default>
+                <label>BBVA Colombia</label>
+            </value>
+            <value>
+                <fullName>BBVA Dusseldorf - Frankfurt</fullName>
+                <default>false</default>
+                <label>BBVA Dusseldorf - Frankfurt</label>
+            </value>
+            <value>
+                <fullName>BBVA France</fullName>
+                <default>false</default>
+                <label>BBVA France</label>
+            </value>
+            <value>
+                <fullName>BBVA Hong Kong</fullName>
+                <default>false</default>
+                <label>BBVA Hong Kong</label>
+            </value>
+            <value>
+                <fullName>BBVA Lisboa</fullName>
+                <default>false</default>
+                <label>BBVA Lisboa</label>
+            </value>
+            <value>
+                <fullName>BBVA London</fullName>
+                <default>false</default>
+                <label>BBVA London</label>
+            </value>
+            <value>
+                <fullName>BBVA Madrid</fullName>
+                <default>false</default>
+                <label>BBVA Madrid</label>
+            </value>
+            <value>
+                <fullName>BBVA Milan</fullName>
+                <default>false</default>
+                <label>BBVA Milan</label>
+            </value>
+            <value>
+                <fullName>BBVA New York</fullName>
+                <default>false</default>
+                <label>BBVA New York</label>
+            </value>
+            <value>
+                <fullName>BBVA Paris</fullName>
+                <default>false</default>
+                <label>BBVA Paris</label>
+            </value>
+            <value>
+                <fullName>BBVA Provincial</fullName>
+                <default>false</default>
+                <label>BBVA Provincial</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

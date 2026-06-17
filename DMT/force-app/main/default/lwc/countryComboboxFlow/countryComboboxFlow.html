@@ -1,82 +1,352 @@
 <template>
-    
-    <div class="content-container">
-        <template if:false={isFiltersVisible}>
-            <div class="section-container">
-                <p>Please select a Email Template</p>
-                <div class="combobox-button-container">
-                    <lightning-combobox
-                        class="full-width"
-                        label="Select Email Template"
-                        value={selectedTemplateId}
-                        options={emailTemplates}
-                        onchange={handleTemplateChange}
-                        placeholder="Select a Template">
-                    </lightning-combobox>
-        
-                    <!-- Botón "Continuar" alineado a la derecha -->
-                    <lightning-button 
-                        label="Continuar" 
-                        onclick={handleNext} 
-                        class="continue-button"
-                        disabled={disableButtonContinue}>
+
+    <!-- ========================= -->
+    <!-- MAIN INTERFACE -->
+    <!-- ========================= -->
+    <template if:true={showInterface}>
+        <lightning-layout multiple-rows>
+
+            <!-- COLUMNA IZQUIERDA -->
+            <lightning-layout-item size="6" padding="around-small">
+                <lightning-card title="Email Template Selection">
+
+                    <lightning-button
+                        label="View All Email Templates"
+                        title="Open Email Template List View"
+                        onclick={navigateToEmailTemplates}
+                        slot="actions"
+                        variant="neutral">
                     </lightning-button>
-                </div>
-                <template if:true={isTemplateSelected}>
-                    <div class="section-container template-preview">
-                        <lightning-formatted-rich-text value={selectedTemplateHtml}></lightning-formatted-rich-text>
+
+                    <div class="slds-p-around_medium">
+                        <lightning-record-picker
+                            object-api-name="EmailTemplate"
+                            label="Email Templates"
+                            display-info={displayInfo}
+                            onchange={handleTemplateSelect}>
+                        </lightning-record-picker>
                     </div>
-                    <br>   
-                </template>
-            </div>
-        </template>
-        <template if:true={isFiltersVisible}>
-            <p>You can select the user type and country.</p>
-            <span >It is optional; if you don't select any filter, the email will be sent to all users.</span>    
-            <div class="section-container">
-                <lightning-radio-group
-                    label="User Type"
-                    options={userTypeOptions}
-                    value={selectedUserType}
-                    onchange={handleUserTypeChange}>
-                </lightning-radio-group>
-            </div>
-            <div class="section-container">
-                <!-- <lightning-combobox
-                    label="Select Country"
-                    placeholder="Select one or more countries"
-                    options={filteredCountries}
-                    value={selectedCountries}
-                    onchange={handleCountryChange}
-                    multiple>
-                </lightning-combobox> -->
-                <lightning-dual-listbox name="countries"
-                    label="Select Countries"
-                    source-label="Available"
-                    selected-label="Selected"
-                    field-level-help="Select your preferred languages"
-                    options={countryOptions}
-                    onchange={handleCountryChange}>
-                </lightning-dual-listbox>
-            </div>
-            
-            <!-- <template if:true={selectedCountries.length}>
-                <div class="pill-container">
-                    <template for:each={selectedCountries} for:item="country">
-                        <lightning-pill 
-                            key={country}
-                            label={country}
-                            onremove={handleRemoveCountry}>
-                        </lightning-pill>
+
+                    <template if:true={isTemplateSelected}>
+                        <div class="slds-m-top_medium">
+                            <div class="slds-box slds-theme_shade slds-m-bottom_small">
+                                <p class="slds-text-title_bold">Subject:</p>
+                                <p class="slds-text-body_medium">{selectedTemplateSubject}</p>
+                            </div>
+
+                            <p class="slds-text-title_bold slds-m-bottom_xx-small">Body Preview:</p>
+                            <div class="slds-box slds-scrollable_y template-preview-scroll">
+                                <lightning-formatted-rich-text
+                                    value={selectedTemplateHtml}>
+                                </lightning-formatted-rich-text>
+                            </div>
+                        </div>
                     </template>
+
+                </lightning-card>
+            </lightning-layout-item>
+
+            <!-- COLUMNA DERECHA -->
+            <lightning-layout-item size="6" padding="around-small">
+                <lightning-card>
+
+                    <lightning-tabset>
+
+                        <!-- TAB CONFIGURE -->
+                        <lightning-tab label="Configure Email">
+
+                            <div class="slds-p-around_medium">
+                                <lightning-combobox
+                                    label="From Address"
+                                    options={orgWideOptions}
+                                    value={selectedOrgWideId}
+                                    onchange={handleOrgWideChange}
+                                    required
+                                    disabled={isFiltersVisible}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-p-around_medium slds-border_bottom">
+                                <lightning-layout vertical-align="end">
+                                    <lightning-layout-item flexibility="grow">
+                                        <lightning-input 
+                                            type="datetime" 
+                                            label="Schedule Send (Optional)" 
+                                            value={scheduledDateTime}
+                                            onchange={handleScheduleChange}
+                                            min={minDateTime}
+                                            message-when-range-underflow="You cannot schedule a date in the past"
+                                            disabled={isFiltersVisible}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item class="slds-p-left_small">
+                                        <lightning-button 
+                                            label="Clear Schedule" 
+                                            variant="neutral" 
+                                            onclick={clearSchedule}
+                                            disabled={isFiltersVisible}>
+                                        </lightning-button>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <template if:true={scheduledDateTime}>
+                                    <p class="slds-text-color_success slds-m-top_x-small">
+                                        <lightning-icon icon-name="utility:clock" size="x-small" variant="success"></lightning-icon>
+                                        This email will be sent on {formattedScheduleLabel}
+                                    </p>
+                                </template>
+                            </div>
+
+                            <lightning-card class="slds-card_boundary">
+
+                                <div slot="title"
+                                     class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                    <span class="slds-text-heading_small">
+                                        User Filters
+                                    </span>
+                                </div>
+
+                                <lightning-button
+                                    label="Send Emails"
+                                    variant="brand"
+                                    icon-name="utility:send"
+                                    onclick={handleSendEmails}
+                                    slot="actions"
+                                    disabled={isFiltersVisible}>
+                                </lightning-button>
+
+                                <!-- User Type -->
+                                <div class="slds-p-around_medium">
+                                    <lightning-radio-group
+                                        label="User Type"
+                                        options={userTypeOptions}
+                                        value={selectedUserType}
+                                        onchange={handleUserTypeChange}
+                                        disabled={isFiltersVisible}>
+                                    </lightning-radio-group>
+                                </div>
+
+                                <!-- Filter Logic -->
+                                <div class="slds-p-around_medium">
+                                    <lightning-radio-group
+                                        label="Condition Requirements"
+                                        options={filterOptions}
+                                        value={selectedFilter}
+                                        onchange={handleSelectFilterType}
+                                        disabled={isFiltersVisible}>
+                                    </lightning-radio-group>
+                                </div>
+
+                                <!-- Custom Logic -->
+                                <template if:true={isCustomLogic}>
+                                    <div class="slds-p-around_medium">
+                                        <lightning-input
+                                            label="Custom Logic"
+                                            value={customLogicInput}
+                                            onchange={handleCustomLogicInput}>
+                                        </lightning-input>
+                                    </div>
+                                </template>
+
+                                <!-- Levels -->
+                                <div class="slds-p-around_medium">
+                                    <lightning-layout multiple-rows>
+                                        <template for:each={levelOptions} for:item="level">
+                                            <lightning-layout-item key={level.value}
+                                                size="4"
+                                                padding="around-small">
+                                                <lightning-input
+                                                    type="text"
+                                                    label={level.label}
+                                                    data-field={level.value}
+                                                    onchange={handleLevelChange}
+                                                    disabled={isFiltersVisible}>
+                                                </lightning-input>
+                                            </lightning-layout-item>
+                                        </template>
+                                    </lightning-layout>
+                                </div>
+
+                                <!-- Countries -->
+                                <div class="slds-p-around_medium">
+                                    <lightning-dual-listbox
+                                        label="Select Countries"
+                                        options={countryOptions}
+                                        onchange={handleCountryChange}
+                                        disabled={isFiltersVisible}>
+                                    </lightning-dual-listbox>
+                                </div>
+
+                                <!-- Permission Sets -->
+                                <div class="slds-p-around_medium">
+                                    <lightning-dual-listbox
+                                        label="Select PermissionSet"
+                                        options={permissionSetOptions}
+                                        onchange={handlePermissionSetChange}
+                                        disabled={isFiltersVisible}>
+                                    </lightning-dual-listbox>
+                                </div>
+
+                            </lightning-card>
+                        </lightning-tab>
+
+                        <!-- TAB HISTORIC -->
+                        <lightning-tab label="Historic">
+                            <lightning-card title="Email Send History">
+                                <div class="slds-p-around_medium">
+                                    <lightning-datatable
+                                        key-field="Id"
+                                        data={historyData}
+                                        columns={historyColumns}
+                                        onrowaction={handleRowAction}>
+                                    </lightning-datatable>
+                                </div>
+                            </lightning-card>
+                        </lightning-tab>
+
+                    </lightning-tabset>
+
+                </lightning-card>
+            </lightning-layout-item>
+
+        </lightning-layout>
+    </template>
+
+    <!-- ========================= -->
+    <!-- MODAL -->
+    <!-- ========================= -->
+    <template if:true={showDetailModal}>
+        <template if:true={selectedHistoryRecord}>
+
+            <section role="dialog"
+                     aria-modal="true"
+                     class="slds-modal slds-fade-in-open slds-modal_large">
+
+                <div class="slds-modal__container">
+
+                    <!-- HEADER -->
+                    <header class="slds-modal__header">
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            class="slds-modal__close"
+                            onclick={closeModal}>
+                        </lightning-button-icon>
+
+                        <h2 class="slds-text-heading_medium">
+                            Email Send Details
+                        </h2>
+                    </header>
+
+                    <!-- BODY -->
+                    <div class="slds-modal__content slds-p-around_medium">
+
+                        <div class="slds-grid slds-wrap slds-m-bottom_medium">
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>From:</strong></p>
+                                <p>{selectedHistoryRecord.DES_fld_FromAddress__c}</p>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Sent By:</strong></p>
+                                <p>{selectedHistoryRecord.CreatedByName}</p>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Template:</strong></p>
+                                <p>{selectedHistoryRecord.DES_fld_EmailTemplate__c}</p>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Status:</strong></p>
+                                <p>{selectedHistoryRecord.DES_fld_Status__c}</p>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2">
+                                <p><strong>Total Users:</strong></p>
+                                <p>{selectedHistoryRecord.DES_fld_TotalUsers__c}</p>
+                            </div>
+
+                        </div>
+                        <template if:true={parsedFilters}>
+
+                            <div class="slds-box slds-m-bottom_medium">
+
+                                <p class="slds-text-title_bold slds-m-bottom_small">
+                                    Filters Used
+                                </p>
+
+                                <!-- User Type -->
+                                <template if:true={parsedFilters.userType}>
+                                    <p><strong>User Type:</strong> {parsedFilters.userType}</p>
+                                </template>
+
+                                <!-- Countries -->
+                                <template if:true={parsedFilters.countries}>
+                                    <p>
+                                        <strong>Countries: </strong>
+                                        <lightning-formatted-text
+                                            value={formattedCountries}>
+                                        </lightning-formatted-text>
+                                    </p>
+                                </template>
+
+                                <!-- Permission Sets -->
+                                <template if:true={parsedFilters.permissionSets}>
+                                    <p>
+                                        <strong>Permission Sets: </strong>
+                                        <lightning-formatted-text
+                                            value={formattedPermissionSets}>
+                                        </lightning-formatted-text>
+                                    </p>
+                                </template>
+
+                                <!-- Filter Logic -->
+                                <template if:true={parsedFilters.filterLogic}>
+                                    <p><strong>Logic:</strong> {parsedFilters.filterLogic}</p>
+                                </template>
+
+                                <!-- Custom Logic -->
+                                <template if:true={parsedFilters.customLogic}>
+                                    <p><strong>Custom Logic:</strong> {parsedFilters.customLogic}</p>
+                                </template>
+
+                            </div>
+
+                        </template>
+
+                        <!-- ERROR -->
+                        <template if:true={isFailed}>
+                            <div class="slds-box slds-theme_error slds-m-bottom_medium">
+                                <lightning-formatted-text
+                                    value={selectedHistoryRecord.DES_fld_ErrorLog__c}>
+                                </lightning-formatted-text>
+                            </div>
+                        </template>
+
+                        <!-- USERS -->
+                        <lightning-datatable
+                            key-field="Id"
+                            data={historyUsers}
+                            columns={userColumns}
+                            hide-checkbox-column>
+                        </lightning-datatable>
+
+                    </div>
+
+                    <!-- FOOTER -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            label="Close"
+                            onclick={closeModal}>
+                        </lightning-button>
+                    </footer>
+
                 </div>
-            </template> -->
-        
-            <div class="button-container">
-                <lightning-button label="Back" onclick={handleBack} class="slds-m-right_small"></lightning-button>
-                
-                <lightning-button label="Send Emails"  variant="brand" onclick={handleSendEmails} class="slds-m-top_medium"></lightning-button>
-            </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+
         </template>
-    </div>
+    </template>
+
 </template>

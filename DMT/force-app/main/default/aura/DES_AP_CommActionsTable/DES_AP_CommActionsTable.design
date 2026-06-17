@@ -1,0 +1,4 @@
+<design:component>
+    <design:attribute name="fieldLabels" label="Titles for the cards, separated by comma"
+      default="Avge. revenues by won opportunity VS Last Year" />
+</design:component>

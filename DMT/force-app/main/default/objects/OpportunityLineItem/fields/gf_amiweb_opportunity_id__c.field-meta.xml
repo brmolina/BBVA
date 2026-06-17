@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_amiweb_opportunity_id__c</fullName>
+    <description>PRICING: Campo formula que contiene al ID Amiweb que está en la Oportunidad. Tenerlo a nivel de OppLineItem sirve para controlar si se puede editar/eliminar/añadir oppLineItems</description>
+    <externalId>false</externalId>
+    <formula>Opportunity.gf_amiweb_opportunity_id__c</formula>
+    <label>ID Amiweb</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

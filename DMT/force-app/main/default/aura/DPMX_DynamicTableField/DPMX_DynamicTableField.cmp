@@ -1,0 +1,71 @@
+<aura:component access="public">
+    <aura:attribute name="waiting" type="Boolean" default="false" />
+    <aura:attribute name="fieldType" type="String" />
+    <aura:attribute name="fieldValue" type="String" />
+    <aura:attribute name="currencyText" type="String" />
+    <aura:attribute name="showSymbol" type="Boolean" default="false" />
+    <aura:attribute name="showCurrency" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.fieldType =='STRING'}">
+        <aura:if isTrue="{!and(v.fieldValue !='',v.fieldValue != NULL)}">
+            <ui:outputText value="{!v.fieldValue}" />
+            <aura:set attribute="else">
+                -
+            </aura:set>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='CURRENCY'}">
+        <aura:if isTrue="{!and(v.fieldValue !='',v.fieldValue != NULL)}">
+            <aura:if isTrue="{!v.currencyText == 'MXN'}"></aura:if>
+            <ui:outputNumber value="{!v.fieldValue}" format="#,###,###,###,###,##0.00" />
+            <aura:set attribute="else">
+                -.--
+            </aura:set>
+        </aura:if>
+        <aura:if isTrue="{!and(v.currencyText !='',v.currencyText != 'null')}">&nbsp;{!v.currencyText}</aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='INTEGER'}">
+        <aura:if isTrue="{!and(v.fieldValue !='',v.fieldValue != NULL)}">
+            <ui:outputNumber value="{!v.fieldValue}" format="###,###,###,###,###,##0" />
+            <aura:set attribute="else">
+                -
+            </aura:set>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!OR(v.fieldType =='PERCENT', v.fieldType == 'PERCENTAGE')}">
+        <aura:if isTrue="{!and(v.fieldValue !='',v.fieldValue != NULL)}">
+            <ui:outputNumber value="{!v.fieldValue}" format="###,###,###,##0.00" />
+            <aura:set attribute="else">
+                -.--
+            </aura:set>
+        </aura:if>
+        %
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='CHECKBOX'}">
+        <ui:outputCheckbox value="{!v.fieldValue}" />
+    </aura:if>
+
+    <aura:if isTrue="{!v.fieldType =='NUMBER'}">
+        <ui:outputNumber value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='DOUBLE'}">
+        <ui:outputNumber value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='DATE'}">
+        <ui:outputDate value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='EMAIL'}">
+        <ui:outputEmail value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='PHONE'}">
+        <ui:outputText value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='PICKLIST'}">
+        <ui:outputText value="{!v.fieldValue}" />
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='REFERENCE'}">
+        <ui:outputText value="{!v.fieldValue}" />
+    </aura:if>
+</aura:component>

@@ -1,0 +1,43 @@
+.THIS table.tableRight{
+    margin-left: 25px!important;
+}
+
+.THIS .slds-card {
+    margin-left: 25px!important;
+}
+
+.THIS .slds-card__header {
+    font-weight: bold!important;
+}
+
+.THIS H1.text-grey1 {
+  color: #a8b7c7;
+}
+
+.THIS H1.text-grey2 {
+  color: #72706d;
+}
+
+.THIS H1.text-grey3 {
+  color: #c3d0de;
+}
+
+.THIS H1.text-black {
+  color: black;
+}
+
+.THIS H1.text-large {
+  font-size: large;
+}
+
+.THIS H1.text-small {
+  font-size: smaller;
+}
+
+.THIS H1.text-bold {
+  font-weight: bold;
+}
+
+.THIS H1.line-spacing-small {
+  line-height: 97%;
+}

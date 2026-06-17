@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to manage refresh in auto retail Table">
+    <aura:attribute name="table" type="String" description="Manage refresh in auto retail Table"/>
+</aura:event>

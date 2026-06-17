@@ -1,0 +1,64 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 06-08-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" controller="GDT_ConnectedClient_Controller" access="global" >
+    <aura:attribute name="hasRecordId"     type="String"       default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="spinnerCmp"      type="Boolean"      default="true" description="Indicates if the spinner is active"/>
+    <aura:attribute name="displayedData"   type="Object[]"     access="private"/>
+    <aura:attribute name="allData"   type="Object[]"     access="private"/>
+    <aura:attribute name="connClientsCols"      type="List"         access="global" />
+    <aura:attribute name="recordsPerPageOpts" type="Object[]"  access="private" />
+    <aura:attribute name="recordsPerPage"      type="String"       access="public" default="10"/>
+    <aura:attribute name="connClientsCheckOpts" type="Object[]"  access="private" />
+    <aura:attribute name="connClientsCheck"      type="String"       access="public"/>
+    <aura:attribute name="currentPage"     type="Integer"      access="private" default="1"/>
+    <aura:attribute name="totalPages"      type="Integer"      access="private" default="1"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.spinnerCmp}">
+      <div class="slds-align_absolute-center slds-m-top_x-large">
+          <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+              <span class="slds-assistive-text">{!$Label.c.GDT_Loading}</span>
+              <div class="slds-spinner__dot-a"></div>
+              <div class="slds-spinner__dot-b"></div>
+          </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{! !v.spinnerCmp}">
+        <div class="slds-grid slds-p-bottom_small">
+          <span class="slds-col slds-size--1-of-2 slds-form-element__label">{!$Label.c.GDT_Connected_Clients}</span>
+          <div class="clsButtonIcon slds-col slds-size--1-of-2">
+            <lightning:buttonIcon iconName="utility:refresh" variant="border" alternativeText="Refresh table" title="Refresh" disabled="false" onclick="{!c.refreshTable}" aura:id="refreshButton"/>
+          </div>
+        </div>
+        <div class="slds-align_absolute-center">
+          <lightning:datatable class="tablecol"
+          keyField="id"
+          data="{! v.displayedData}"
+          columns="{! v.connClientsCols}"
+          hideCheckboxColumn="true"/>
+        </div>
+        
+        <div class="slds-grid slds-p-vertical_x-small slds-has-divider_bottom">
+          <div class="slds-col slds-size_3-of-7">
+            <div class="clsRecordsPage slds-is-absolute slds-text-align_center">
+              <lightning:combobox  variant="label-hidden" value="{!v.recordsPerPage}" options="{!v.recordsPerPageOpts}" onchange="{!c.recPerPageChanged}"/>
+              <span class="slds-m-horizontal_x-small">{!$Label.c.GDT_Records_per_page}</span>
+            </div>
+          </div>
+          <div class="slds-col slds-size_4-of-7">
+            <lightning:button label="&lt;&lt;" title="Neutral action" onclick="{!c.clickNavigation}" name="first" disabled="{!v.currentPage == 1}" />
+            <lightning:button label="&lt;" title="Neutral action" onclick="{!c.clickNavigation}" name="previous" disabled="{!v.currentPage == 1}" />
+            <span class="slds-m-horizontal_x-small">{!v.currentPage} / {!v.totalPages}</span>
+            <lightning:button label=">" title="Neutral action" onclick="{!c.clickNavigation}" name="next" disabled="{!v.currentPage == v.totalPages}" />
+            <lightning:button label=">>" title="Neutral action" onclick="{!c.clickNavigation}" name="last" disabled="{!v.currentPage == v.totalPages}" />
+          </div>
+        </div>
+    </aura:if>
+</aura:component>

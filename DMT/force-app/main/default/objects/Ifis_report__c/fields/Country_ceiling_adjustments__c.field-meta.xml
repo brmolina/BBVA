@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Country_ceiling_adjustments__c</fullName>
+    <externalId>false</externalId>
+    <formula>Account_has_Analysis__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__IFIS_CountryCeilingAdjustment__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Country ceiling adjustments</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

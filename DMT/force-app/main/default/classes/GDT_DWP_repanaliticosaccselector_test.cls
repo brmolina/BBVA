@@ -14,14 +14,14 @@ public class GDT_DWP_repanaliticosaccselector_test {
   @testSetup   static void testsetup() {
          	final Account testAccount = new Account();
  			testAccount.Name='Test Account';
-         	testAccount.SER_CClient__c='1234567';			
+         	testAccount.g_customer_id__c='1234567';			
          
  			insert testAccount;
 
          	final GDT_Rep_Analiticos__c testreport = new GDT_Rep_Analiticos__c();
          	testreport.gf_first_part_fix_url_desc__c = 'test1';
 			testreport.gf_first_part_var_url_desc__c = 'Name';
-            testreport.gf_second_part_var_url_desc__c = 'SER_CClient__c';
+            testreport.gf_second_part_var_url_desc__c = 'g_customer_id__c';
             testreport.gf_second_part_fix_url_desc__c = 'test1';
             testreport.gf_record_id__c = 'Ficha de cliente';
             insert testreport;

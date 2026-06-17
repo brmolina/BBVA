@@ -1,0 +1,29 @@
+.THIS .customTabs {
+  font-size: 12px;
+  font-weight: 700;
+
+}
+.THIS .mainWrapper {
+  /* display: inline-block; */
+  width: 100%;
+  /* position: relative; */
+}
+
+.THIS .sectiontitle {
+  color: #03234d;
+}
+
+.THIS.boxsection {
+  border-radius: 0.75rem;
+  border: 2px solid #e5e5e5;
+  background-color:#FFF;
+}
+
+.THIS .weight700 {
+  font-weight: 700;
+  color: #5c5c5c;
+}
+
+.THIS .radiusbutton {
+  --slds-c-button-radius-border: 25px;
+}

@@ -1,0 +1,229 @@
+.Title{
+    font-size:11pt;
+    width:30;
+    color:dark-gray;
+    margin:-20px;
+}
+.TitleBold{
+    font-size:11pt;
+    font-weight:bold;
+    width:30;
+    color:dark-gray;
+    margin:-20px;
+}
+.SubTitle{
+    font-size:11pt;
+    width:30;
+    color:dark-gray;
+    margin:-20px;
+}
+
+
+
+table{
+    border-collapse: collapse;
+}
+/*
+.content{
+    overflow-x: scroll;
+    height: 450px;
+}*/
+/*.formula-row td{
+    background-color: #114A9F;
+    color: white;
+    text-align: right;
+}
+.formula-cell {
+    background-color: #114A9F;
+    color: white;
+    text-align: right;
+}
+*/
+td{
+    padding:5px;
+    border: 1px solid black;
+}
+.align-center{
+    text-align: center;
+}
+.separator-30{
+    height: 19px;
+}
+.table-title th{
+    font-size:12px;
+    text-align: center;
+}
+.input-border-none{
+    outline: none;
+    border: 0px;
+    max-width:125px;
+    width:95px;
+    min-width:50px;
+}
+.cell-without-border{
+    border:0px;
+    padding: 0px 15px;
+}
+.first-table{
+    margin: 0px 25px 50px 0px;
+}
+.inline-block{
+    display:inline-block;
+}
+table tr:first-child>td{
+    padding-bottom: 5px;
+}
+.textarea-width-100{
+    width:100%;
+}
+.text-red{
+    color:red;
+    font-weight: bold;
+    font-style: italic;
+}
+.text-grey{
+    color:grey;
+    font-style: italic;
+}
+.disabled-input{
+    background-color: white;
+}
+
+
+
+.input-border-none2{
+    outline: none;
+    border: 0px;
+}
+.formula-row td{
+    background-color: #114A9F;
+    color: white;
+}
+.formula-field{
+    color: white;
+}
+
+.bottom-row td:first-child{
+    background-color: #114A9F;
+    color: white;
+}
+/*
+.bottom-row input{
+    background-color: #114A9F;
+    color: white;
+}
+*/
+.bottom-field:first-child{
+    color: white;
+}
+
+.row-without-borders td{
+    border: 0px;
+    text-align: center;
+}
+
+.business-table tr>td:nth-child(1){
+    width:25%;
+}
+.form-center{
+    margin: 0 auto;
+}
+
+
+.content{
+    overflow-x: scroll;
+    height: 450px;
+    margin:0 auto;
+}
+.formula-row2 td{
+    background-color: #114A9F;
+    color: white;
+    text-align: right;
+}
+.formula-cell {
+    background-color: #114A9F;
+    color: white;
+    text-align: right;
+}
+.input-border-none3{
+    outline: none;
+    border: 0px;
+    width:80px;
+}
+
+
+.one-row{
+    height: 10px;
+}
+.two-row{
+    height: 20px;
+}
+.three-row{
+    height: 30px;
+}
+.five-row{
+    height: 50px;
+}
+
+
+.no-margin{
+    margin:-20px;
+}
+.border-top{
+    border-top: 1px solid black !important;
+    padding: 3px 15px !important;
+}
+.input-width-85{
+    width:85px;
+    -moz-height: 40px;
+}
+.input-width-170{
+    width:170px;
+}
+.text-right{
+    text-align: right;
+}
+table tr:first-child>td{
+    padding-bottom: 5px;
+}
+.float-right{
+    float: right;
+}
+.text-blue{
+    color:#0e48a5;
+}
+.background-grey{
+    background-color: #c4c8ce;
+}
+.td-three-rows{
+    height: 70px;
+}
+textarea{
+    height: 40px;
+}
+.text-anotation{
+    color: grey;
+}
+
+
+.center-pdf{
+	margin: 30px 0px;
+    text-align: center;
+}
+.align-right{
+	margin-top:20px;
+	text-align: right;
+}
+body .bPageBlock, .slds-vf-scope .bPageBlock{
+	border:none;
+	box-shadow:none;
+	-webkit-box-shadow:none;
+	padding-top:30px;
+
+}
+.padding-top-30{
+    padding-top:30px;
+}
+.padding-top-30 tr{
+    border: none !important;
+}

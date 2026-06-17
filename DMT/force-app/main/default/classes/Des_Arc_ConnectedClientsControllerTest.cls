@@ -7,7 +7,7 @@
 **/
 @isTest
 global with sharing class Des_Arc_ConnectedClientsControllerTest {
-	
+  
     @TestSetup
     static void testSetup() {
         Local_Client__c lclAcc = TestFactory.createLocalClient();
@@ -24,10 +24,10 @@ global with sharing class Des_Arc_ConnectedClientsControllerTest {
         lstAccountSearch[0].DES_Entity_Hierarchy__c = 'S'; 
         update lstAccountSearch;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation2 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation2.dwp_acmh__Parent_Account__c = testAcc1.Id;
-        testRelation2.dwp_acmh__Child_Account__c = lclAcc2.Cib_Client__c;
-        testRelation2.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation2 = new AMH_GBL_Account_Relationship__c();
+        testRelation2.AMH_Parent_Account__c = testAcc1.Id;
+        testRelation2.AMH_Child_Account__c = lclAcc2.Cib_Client__c;
+        testRelation2.AMH_Vision__c = 'Riesgos';
         testRelation2.DES_Main_Parent__c = 'S';
         insert testRelation2;
     }

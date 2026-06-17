@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>my_franchise_YTD_PriorYear__c</fullName>
+    <description>% YTD Total Franchise ​/​ Prior Year Franchise</description>
+    <formula>if( Prior_year_Franchise__c &lt;&gt; 0, (YTD_Total_Franchise__c  /  Prior_year_Franchise__c) * 100, 0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>% YTD Total Franchise ​/​ Prior Year Franchise</inlineHelpText>
+    <label>% my franchise &apos;18/&apos;17</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

@@ -1,0 +1,50 @@
+.THIS H1.text-large {
+ font-size: larger!important;
+}
+
+
+.THIS .inputitem{
+  display: inline-flex;
+  width: 50%;
+  /*vertical-align: middle;*/
+  /*padding-bottom: 2px;*/
+  margin-bottom: -8px;
+}
+.THIS .inputfield{
+  position: relative;
+  /*top: 10px;
+    margin-top: -10px;*/
+}
+.THIS .slds-form-element__label {
+  display:none !important
+}
+.THIS .inputcontainer{
+  /*margin-top: 10px;
+  margin-bottom: 10px;*/
+  border-top: 1px solid #dddbda!important;
+  /*border-bottom: 1px solid #dddbda!important;*/
+  /*margin-bottom: -10px; */
+}
+
+.THIS .borderTop{
+  border-top: 1px solid #dddbda!important;
+}
+.THIS .borderBotom {
+  border-bottom: 1px solid #dddbda!important;
+}
+
+.THIS H1.text-large {
+ font-size: larger!important;
+}
+
+.THIS DIV.form-width  {
+  width: 70%!important;
+}
+
+.THIS DIV.cPRC_PriceForm  {
+  width: 70%!important;
+}
+
+.THIS .slds-modal_large .slds-modal__container {
+    width: 70%!important;
+}

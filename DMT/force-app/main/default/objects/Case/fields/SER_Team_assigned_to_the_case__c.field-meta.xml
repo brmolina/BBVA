@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Team_assigned_to_the_case__c</fullName>
+    <description>Team responsible for managing approval.</description>
+    <label>Team assigned to the case</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>SER_Classification__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Claim Support</fullName>
+                <default>false</default>
+                <label>Claim Support</label>
+            </value>
+            <value>
+                <fullName>Clients STF</fullName>
+                <default>false</default>
+                <label>Clients STF</label>
+            </value>
+            <value>
+                <fullName>Clients TTF</fullName>
+                <default>false</default>
+                <label>Clients TTF</label>
+            </value>
+            <value>
+                <fullName>Collaterals</fullName>
+                <default>false</default>
+                <label>Collaterals</label>
+            </value>
+            <value>
+                <fullName>Corporate Clients</fullName>
+                <default>false</default>
+                <label>Corporate Clients</label>
+            </value>
+            <value>
+                <fullName>Correspondent</fullName>
+                <default>false</default>
+                <label>Correspondent</label>
+            </value>
+            <value>
+                <fullName>Customer Support</fullName>
+                <default>false</default>
+                <label>Customer Support</label>
+            </value>
+            <value>
+                <fullName>Database Management</fullName>
+                <default>false</default>
+                <label>Database Management</label>
+            </value>
+            <value>
+                <fullName>Documentation</fullName>
+                <default>false</default>
+                <label>Documentation</label>
+            </value>
+            <value>
+                <fullName>Equity Settlements</fullName>
+                <default>false</default>
+                <label>Equity Settlements</label>
+            </value>
+            <value>
+                <fullName>Fixed Income Settlements</fullName>
+                <default>false</default>
+                <label>Fixed Income Settlements</label>
+            </value>
+            <value>
+                <fullName>Fixing</fullName>
+                <default>false</default>
+                <label>Fixing</label>
+            </value>
+            <value>
+                <fullName>Front office</fullName>
+                <default>false</default>
+                <label>Front office</label>
+            </value>
+            <value>
+                <fullName>HUB ASIA</fullName>
+                <default>false</default>
+                <label>HUB ASIA</label>
+            </value>
+            <value>
+                <fullName>HUB NY</fullName>
+                <default>false</default>
+                <label>HUB NY</label>
+            </value>
+            <value>
+                <fullName>REDEX</fullName>
+                <default>false</default>
+                <label>REDEX</label>
+            </value>
+            <value>
+                <fullName>Settlement - Custody</fullName>
+                <default>false</default>
+                <label>Settlement - Custody</label>
+            </value>
+            <value>
+                <fullName>Settlement - Equity execution</fullName>
+                <default>false</default>
+                <label>Settlement - Equity execution</label>
+            </value>
+            <value>
+                <fullName>Settlement - OTC Markets</fullName>
+                <default>false</default>
+                <label>Settlement - OTC Markets</label>
+            </value>
+            <value>
+                <fullName>Sindicated loans</fullName>
+                <default>false</default>
+                <label>Sindicated loans</label>
+            </value>
+            <value>
+                <fullName>Trade finance -LT</fullName>
+                <default>false</default>
+                <label>Trade finance -LT</label>
+            </value>
+            <value>
+                <fullName>Trade finance -ST</fullName>
+                <default>false</default>
+                <label>Trade finance -ST</label>
+            </value>
+            <value>
+                <fullName>UCLI</fullName>
+                <default>false</default>
+                <label>UCLI</label>
+            </value>
+            <value>
+                <fullName>Validation</fullName>
+                <default>false</default>
+                <label>Validation</label>
+            </value>
+            <value>
+                <fullName>Valores</fullName>
+                <default>false</default>
+                <label>Valores</label>
+            </value>
+            <value>
+                <fullName>Equity &amp; Custody</fullName>
+                <default>false</default>
+                <label>Equity &amp; Custody</label>
+            </value>
+            <value>
+                <fullName>Derivatives</fullName>
+                <default>false</default>
+                <label>Derivatives</label>
+            </value>
+            <value>
+                <fullName>FX/MM</fullName>
+                <default>false</default>
+                <label>FX/MM</label>
+            </value>
+            <value>
+                <fullName>Lending</fullName>
+                <default>false</default>
+                <label>Lending</label>
+            </value>
+            <value>
+                <fullName>Trade finance</fullName>
+                <default>false</default>
+                <label>Trade finance</label>
+            </value>
+            <value>
+                <fullName>Customer Data</fullName>
+                <default>false</default>
+                <label>Customer Data</label>
+            </value>
+            <value>
+                <fullName>Liquidity &amp; CLS</fullName>
+                <default>false</default>
+                <label>Liquidity &amp; CLS</label>
+            </value>
+            <value>
+                <fullName>Fixed Income</fullName>
+                <default>false</default>
+                <label>Fixed Income</label>
+            </value>
+            <value>
+                <fullName>Primary Markets &amp; Cross Data</fullName>
+                <default>false</default>
+                <label>Primary Markets &amp; Cross Data</label>
+            </value>
+            <value>
+                <fullName>Clearings</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Clearings</label>
+            </value>
+            <value>
+                <fullName>Settlement - Funds &amp; Bourses</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Settlement - Funds &amp; Bourses</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Claim Support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Clients STF</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Clients TTF</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Collaterals</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Corporate Clients</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Correspondent</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Customer Support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Database Management</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Documentation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Equity Settlements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Fixed Income Settlements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Fixing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Front office</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>HUB ASIA</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>HUB NY</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>REDEX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Settlement - Custody</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Settlement - Equity execution</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Settlement - OTC Markets</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Sindicated loans</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Trade finance -LT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Trade finance -ST</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>UCLI</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Validation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <valueName>Valores</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Equity &amp; Custody</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Derivatives</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>FX/MM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Lending</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Trade finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Customer Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Liquidity &amp; CLS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Fixed Income</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Primary Markets &amp; Cross Data</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Templates_pendientes_revisar_EMEA</fullName>
+    <columns>NAME</columns>
+    <columns>opportunity_id__c</columns>
+    <columns>Product_Name__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Template_approved_type__c</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <filters>
+        <field>Pending_approval_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>DES_Opportunity_Stage__c</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>NbcRegion__c</field>
+        <operation>equals</operation>
+        <value>EMEA</value>
+    </filters>
+    <label>Templates pendientes revisar - EMEA</label>
+    <sharedTo>
+        <role>S_P_TEAM</role>
+    </sharedTo>
+</ListView>

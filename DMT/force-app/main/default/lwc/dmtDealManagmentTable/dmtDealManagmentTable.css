@@ -1,0 +1,55 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Quita el max-height: 65vh y usa flex */
+.containerWithData {
+    display: block;
+    flex: 1 1 auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    white-space: nowrap;
+    min-height: 0;
+    max-height: 100%;
+}
+
+.containerWithOutData {
+    display: block;
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space: nowrap;
+    min-height: 0;
+    max-height: 100%;
+}
+
+.empty-state {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.empty-svg {
+  max-width: 380px;   
+  width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
+}
+
+.tableWithData {
+    display: inline-block;
+    min-width: -moz-available;
+    min-width: -webkit-fill-available;
+    min-width: stretch;
+}
+.spinnerOverlay {
+  position: absolute;
+  inset: 0;                 
+  display: flex;
+  align-items: center;      
+  justify-content: center;  
+  z-index: 10;
+}

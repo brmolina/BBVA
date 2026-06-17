@@ -1,0 +1,14 @@
+.THIS H1.text-large {
+  font-size: large!important;
+}
+
+.THIS div.overwrite-width {
+    /* width: 90%; */
+    max-width: none;
+    min-width: 40rem;
+}
+
+
+.THIS div.align-left {
+  text-align: left;
+}

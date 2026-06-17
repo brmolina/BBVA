@@ -1,0 +1,20 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component that show Contracts and Appraisals table</b></h5>
+    <p>attribute configurationId: Table configuration identifier</p>
+    <p>attribute tableType: Table type to differentiate among tables</p>
+    <p>attribute relatedName: Relationship field to arce__account_has_analysis__c object</p>
+    <p>attribute sObjectType: Object table api name</p>
+    <p>attribute apexClassSave: Save class logic from table</p>
+    <p>attribute fieldsApiName: Api names from fields</p>
+    <p>attribute filterTable: Record order conditions</p>
+    <p>attribute viewTable: Show/Hide Table</p>
+    <p>attribute showButton: Show/Hide edit button</p>
+    <p>attribute currency: Currency of the table</p>
+    <p>attribute unit: Unit of the table</p>
+    <p><code>c:Arc_Gen_Contracts_Appraisals_Table_cmp</code></p>
+  </aura:description>
+  <aura:example name="Arc_Gen_Contracts_Appraisals_Table_cmp" ref="c:Arc_Gen_Contracts_Appraisals_Table_cmp" label="Contracts and Appraisals Table">
+    <p>Component that show the Contracts and Appraisals table</p>
+  </aura:example>
+</aura:documentation>

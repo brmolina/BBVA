@@ -1,0 +1,16 @@
+.THIS .information-no-data {
+  padding: 5px;
+  text-align: center;
+}
+
+.THIS .float-right {
+  float: right;
+}
+
+.THIS .text-bold {
+  font-weight: bold;
+}
+
+.THIS .height-640 {
+  height: 640px;
+}

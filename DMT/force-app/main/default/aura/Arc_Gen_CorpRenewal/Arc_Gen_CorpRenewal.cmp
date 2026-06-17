@@ -1,0 +1,53 @@
+<!--
+  @Component Name     : Arc_Gen_CorpRenewal.cmp
+  @Description        : Tool to select if the client wants a new analysis or renew an existed analysis.
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : amunguia.contractor@bbva.com
+  @Last Modified On   : 04-26-2022
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    XX/03/2022                  ARCE TEAM     		        Initial Version
+-->
+<aura:component controller="Arc_Gen_CorpRenewal_Controller">
+    <!-- Attributes. -->
+    <aura:attribute name="arceList" type="List" default="[]"/>
+    <aura:attribute name="data" type="object"/>
+    <aura:attribute name="options" type="List" default="[{'label': 'Yes', 'value': 'yes'},{'label': 'No', 'value': 'no'}]"/>
+    <aura:attribute name="isRenew" type="String" access="global"/>
+    <aura:attribute name="mycolumns" type="List"/>
+
+    <!-- Event handlers. -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- HTML content. -->
+    <aura:html tag="style">
+        .slds-table_header-fixed_container, .slds-table--header-fixed_container{
+            background-color:white !important;
+        }
+    </aura:html>
+    <div class="slds-grid slds-grid_vertical">
+        <div class="slds-col slds-align_absolute-center">
+            <div style="height:1.5rem">{!$Label.c.Arc_Gen_RenewalCorpInit}</div>
+        </div>
+        <div class="slds-col slds-align_absolute-center">
+            <lightning:radioGroup name="wantRewal"
+                                options="{! v.options}"
+                                onchange="{!c.newOrRenewal}"
+                                value = "{!v.isRenew}"
+                                type="button"/>
+        </div>
+        <div class="slds-card slds-card__header slds-grid">
+            <aura:if isTrue="{!v.data}">
+                <div style="height: 200px" class="slds-grid slds-grid_align-spread slds-p-top_medium">
+                    <lightning:datatable data="{! v.arceList }"
+                                          columns="{! v.mycolumns }"
+                                          keyField="ident"
+                                          hideCheckboxColumn="true"/>
+                  </div>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

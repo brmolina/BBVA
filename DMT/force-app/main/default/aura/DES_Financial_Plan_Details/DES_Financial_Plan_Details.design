@@ -1,0 +1,5 @@
+<design:component label="DES Financial Plan Details">
+    <design:attribute name="cssClassName" label="The class name for setting the button label"
+          datasource="View Details,View PF,View data in Engloba"
+          default="View Details" />	
+</design:component>

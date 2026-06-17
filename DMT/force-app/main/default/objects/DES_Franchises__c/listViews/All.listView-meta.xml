@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>DES_Clave_Externa__c</columns>
+    <columns>DES_Client__c</columns>
+    <columns>DES_Type_of_vision__c</columns>
+    <columns>DES_Vision__c</columns>
+    <columns>DES_PY_Franchise__c</columns>
+    <columns>DES_PYTD_Franchise__c</columns>
+    <columns>DES_YTD_Franchise__c</columns>
+    <columns>NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>DES_Clave_Externa__c</field>
+        <operation>contains</operation>
+        <value>G00000000000510</value>
+    </filters>
+    <label>All</label>
+</ListView>

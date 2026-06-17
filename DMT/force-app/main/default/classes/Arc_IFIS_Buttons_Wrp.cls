@@ -14,7 +14,7 @@
 * -----------------------------------------------------------------------------------------------
 **/
 @SuppressWarnings('PMD.ExcessivePublicCount')
-public class Arc_IFIS_Buttons_Wrp {
+global class Arc_IFIS_Buttons_Wrp {
     /**
     * -----------------------------------------------------------------------------------------------
     * @description Delegation wrapper.
@@ -23,23 +23,23 @@ public class Arc_IFIS_Buttons_Wrp {
     * @date     29-08-2023
     * -----------------------------------------------------------------------------------------------
     **/
-    public class DelegationWrapper {
+    global class DelegationWrapper {
         /** @description Analysis id**/
-        public Id analysisId { get; set; }
+        global Id analysisId { get; set; }
         /** @description Ambit current user**/
-        public String ambit { get; set; }
+        global String ambit { get; set; }
         /** @description Ambit sanction**/
-        public String sanctionAmbit { get; set; }
+        global String sanctionAmbit { get; set; }
         /** @description Status of if the analysis has delegation. Values: YES,NO,NOTCALCULATED**/
-        public String hasDelegation { get; set; }
+        global String hasDelegation { get; set; }
         /** @description List of ambit**/
-        public List<Map<String, String>> lstAmbits { get; set; }
+        global List<Map<String, String>> lstAmbits { get; set; }
         /** @description List of comittees**/
-        public Integer codStatus { get; set; }
+        global Integer codStatus { get; set; }
         /** @description Message info in the errors handling**/
-        public String msgInfo { get; set; }
+        global String msgInfo { get; set; }
         /** @description List of users**/
-        public List<Map<String, String>> lstUsers { get; set; }
+        global List<Map<String, String>> lstUsers { get; set; }
     }
 
     /**
@@ -50,16 +50,16 @@ public class Arc_IFIS_Buttons_Wrp {
     * @date     25-05-2023
     * -----------------------------------------------------------------------------------------------
     **/
-    public class ValidateResponse {
+    global class ValidateResponse {
         /** @description The data returned by the operation**/
         @AuraEnabled
-        public Map<String, Object> data { get; set; }
+        global Map<String, Object> data { get; set; }
         /** @description Whether the operation succeeded or not**/
         @AuraEnabled
-        public Boolean success { get; set; }
+        global Boolean success { get; set; }
         /** @description The message associated with the operation result**/
         @AuraEnabled
-        public String message { get; set; }
+        global String message { get; set; }
         /**
         * -----------------------------------------------------------------------------------------------
         * @description Initializes a new instance of the ValidateResponse class.
@@ -73,7 +73,7 @@ public class Arc_IFIS_Buttons_Wrp {
         * @example  createResponseObj(data, success, message)
         * -----------------------------------------------------------------------------------------------
         **/
-        public ValidateResponse(Map<String, Object> data, Boolean success, String message) {
+        global ValidateResponse(Map<String, Object> data, Boolean success, String message) {
             this.data = data;
             this.success = success;
             this.message = message;
@@ -88,17 +88,17 @@ public class Arc_IFIS_Buttons_Wrp {
     * @date     02-08-2023
     * -----------------------------------------------------------------------------------------------
     **/
-    public class ValidationData {
+    global class ValidationData {
         /** @description String storing arce__Account_has_Analysis__c Id**/
-        public String ahaId { get; set; }
+        global String ahaId { get; set; }
         /** @description String storing current User Id**/
-        public String validatedById { get; set; }
+        global String validatedById { get; set; }
         /** @description String storing arce__rating__c Id**/
-        public String ratingId { get; set; }
+        global String ratingId { get; set; }
         /** @description String storing validation ambit**/
-        public String ambit { get; set; }
+        global String ambit { get; set; }
         /** @description String storing validation description**/
-        public String description { get; set; }
+        global String description { get; set; }
     }
 
     /**
@@ -109,33 +109,33 @@ public class Arc_IFIS_Buttons_Wrp {
     * @date     04-09-2023
     * -----------------------------------------------------------------------------------------------
     **/
-    public class ServPersisenceParams {
+    global class ServPersisenceParams {
         /** @description Event type name**/
-        public String eventType { get; set; }
+        global String eventType { get; set; }
         /** @description Su event type name**/
-        public String subEventType { get; set; }
+        global String subEventType { get; set; }
         /** @description Business agent id**/
-        public String businessAgentId { get; set; }
+        global String businessAgentId { get; set; }
         /** @description Bank id**/
-        public String bankId { get; set; }
+        global String bankId { get; set; }
         /** @description Branch id**/
-        public String branchId { get; set; }
+        global String branchId { get; set; }
         /** @description Branch level**/
-        public String branchLevel { get; set; }
+        global String branchLevel { get; set; }
         /** @description Participant id**/
-        public String participantId { get; set; }
+        global String participantId { get; set; }
         /** @description Participant type**/
-        public String participantType { get; set; }
+        global String participantType { get; set; }
         /** @description Evaluation date**/
-        public String evaluationDate { get; set; }
+        global String evaluationDate { get; set; }
         /** @description Risk assessment id**/
-        public String riskAssessmentId { get; set; }
+        global String riskAssessmentId { get; set; }
         /** @description Rating id**/
-        public String ratingid { get; set; }
+        global String ratingid { get; set; }
         /** @Description: Indicates the client type (IFIS).**/
-        public String clientType { get; set; }
+        global String clientType { get; set; }
     }
 
-    public class ButtonsException extends Exception {
+    global class ButtonsException extends Exception {
     }
 }

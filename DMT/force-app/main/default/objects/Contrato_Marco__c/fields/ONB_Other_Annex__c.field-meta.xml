@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ONB_Other_Annex__c</fullName>
+    <label>Other Annex</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>master_agreement_type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <label>N/A</label>
+            </value>
+            <value>
+                <fullName>Guarantee</fullName>
+                <default>false</default>
+                <label>Guarantee</label>
+            </value>
+            <value>
+                <fullName>EUA Annex</fullName>
+                <default>false</default>
+                <label>EUA Annex</label>
+            </value>
+            <value>
+                <fullName>Clearing</fullName>
+                <default>false</default>
+                <label>Clearing</label>
+            </value>
+            <value>
+                <fullName>Prime Broker Agreement</fullName>
+                <default>false</default>
+                <label>Prime Broker Agreement</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>GMRA</controllingFieldValue>
+            <controllingFieldValue>GMRA Triparty</controllingFieldValue>
+            <controllingFieldValue>GMSLA</controllingFieldValue>
+            <controllingFieldValue>CDEA USA</controllingFieldValue>
+            <controllingFieldValue>ISDA</controllingFieldValue>
+            <controllingFieldValue>CMOF</controllingFieldValue>
+            <controllingFieldValue>MRA</controllingFieldValue>
+            <controllingFieldValue>CMOF reducido</controllingFieldValue>
+            <controllingFieldValue>NAFMII</controllingFieldValue>
+            <controllingFieldValue>DRV derivatives</controllingFieldValue>
+            <controllingFieldValue>DRV repos</controllingFieldValue>
+            <controllingFieldValue>EMA</controllingFieldValue>
+            <controllingFieldValue>FBF Pensions Livrees</controllingFieldValue>
+            <controllingFieldValue>FBF</controllingFieldValue>
+            <controllingFieldValue>FBF PL</controllingFieldValue>
+            <valueName>N/A</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GMRA</controllingFieldValue>
+            <controllingFieldValue>GMRA Triparty</controllingFieldValue>
+            <controllingFieldValue>GMSLA</controllingFieldValue>
+            <controllingFieldValue>ISDA</controllingFieldValue>
+            <controllingFieldValue>CMOF</controllingFieldValue>
+            <controllingFieldValue>MRA</controllingFieldValue>
+            <controllingFieldValue>CMOF reducido</controllingFieldValue>
+            <controllingFieldValue>DRV derivatives</controllingFieldValue>
+            <controllingFieldValue>DRV repos</controllingFieldValue>
+            <controllingFieldValue>EMA</controllingFieldValue>
+            <controllingFieldValue>FBF Pensions Livrees</controllingFieldValue>
+            <controllingFieldValue>FBF</controllingFieldValue>
+            <valueName>Guarantee</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>ISDA</controllingFieldValue>
+            <controllingFieldValue>CMOF</controllingFieldValue>
+            <controllingFieldValue>DRV derivatives</controllingFieldValue>
+            <controllingFieldValue>FBF</controllingFieldValue>
+            <valueName>EUA Annex</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>ISDA</controllingFieldValue>
+            <valueName>Prime Broker Agreement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CMOF</controllingFieldValue>
+            <controllingFieldValue>DRV derivatives</controllingFieldValue>
+            <controllingFieldValue>FBF</controllingFieldValue>
+            <valueName>Clearing</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

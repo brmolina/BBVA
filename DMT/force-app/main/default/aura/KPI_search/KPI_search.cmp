@@ -1,0 +1,255 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable"
+  access="global"
+  controller="KPI_searchController"
+>
+  <!--Attributes-->
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="waiting" type="Boolean" default="false" />
+  <aura:attribute
+    name="appPageLocation"
+    type="String"
+    default="Tab"
+    access="global"
+  />
+  <aura:attribute name="userBusinessArea" type="String" />
+  <aura:attribute name="clientId" type="String" default="" />
+  <aura:attribute name="groupId" type="String" default="" />
+  <aura:attribute name="toolkitId" type="String" default="" />
+  <aura:attribute name="disableGroup" type="Boolean" default="" />
+  <aura:attribute name="product" type="Object" default="" />
+  <aura:attribute name="disableSearch" type="Boolean" default="true" />
+  <aura:attribute name="disableClientSearch" type="Boolean" default="true" />
+
+  <aura:attribute name="productOptions" type="String[]" default="" />
+  <aura:attribute name="productSelected" type="List" default="[]" />
+  <aura:attribute name="productSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="businessAreaOptions" type="String[]" default="" />
+  <aura:attribute name="businessAreaSelected" type="List" default="[]" />
+  <aura:attribute name="businessAreaSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="sectorOptions" type="String[]" default="" />
+  <aura:attribute name="sectorSelected" type="List" default="[]" />
+  <aura:attribute name="sectorSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="KPICatalogOptions" type="String[]" default="" />
+  <aura:attribute name="KPICatalogSelected" type="List" default="[]" />
+  <aura:attribute name="KPICatalogSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="bookingCountryOptions" type="String[]" default="" />
+  <aura:attribute name="bookingCountrySelected" type="List" default="[]" />
+  <aura:attribute
+    name="bookingCountrySelectedValues"
+    type="List"
+    default="[]"
+  />
+
+  <aura:attribute name="groupOptions" type="String[]" default="" />
+  <aura:attribute name="groupSelected" type="List" default="[]" />
+  <aura:attribute name="groupSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="clientOptions" type="String[]" default="" />
+  <aura:attribute name="clientSelected" type="List" default="[]" />
+  <aura:attribute name="clientSelectedValues" type="List" default="[]" />
+
+  <aura:attribute name="initialDate" type="Date" />
+
+  <aura:attribute name="options5" type="String[]" default="" />
+  <aura:attribute name="selectedOpt5" type="List" default="" />
+
+  <aura:attribute name="mainTableData" type="Object" default="[]" />
+  <aura:attribute name="mainTableDataFiltered" type="Object" default="[]" />
+  <aura:attribute name="showTable" type="Boolean" />
+  <aura:attribute name="isLoading" type="Boolean" />
+  <aura:attribute name="pageSize" type="Integer" default="10" />
+  <aura:attribute name="firstIndex" type="Integer" default="0" />
+  <aura:attribute name="secondIndex" type="Integer" default="9" />
+  <aura:attribute name="totalContracts" type="Integer" default="0" />
+  <aura:attribute name="numberOfPages" type="Integer" default="0" />
+  <aura:attribute name="page" type="Integer" default="1" />
+  <aura:attribute name="disabledPrevious" type="Boolean" />
+  <aura:attribute name="disabledNext" type="Boolean" />
+
+  <!--Handlers-->
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <!--Handlers-->
+  <aura:handler
+    name="MainTableRendered"
+    event="c:KPI_MainTable_evt"
+    action="{!c.handleMainTable}"
+  />
+
+  <article>
+    <div class="slds-box">
+      <lightning:card title="ESG KPI Linked" class="slds-p-bottom_medium">
+        <aura:if isTrue="{!v.waiting}">
+          <lightning:spinner variant="brand" />
+        </aura:if>
+        <p class="slds-p-left_small">
+          <div class="slds-grid slds-gutters slds-wrap">
+            <div
+              class="slds-col slds-size_1-of-4 slds-p-bottom_medium slds-p-right_small"
+            >
+              <div class="slds-p-body_regular slds-p-bottom_xx-small">
+                <!-- en el componente las opciones seleccionadas son selectedOptions-->
+                <c:combobox
+                  label="Business Area"
+                  options="{!v.businessAreaOptions}"
+                  origin="businessArea"
+                  multiselect="true"
+                  autocomplete="true"
+                  onchange="{!c.handleSelectChange}"
+                  value="{!v.businessAreaSelectedValues}"
+                />
+              </div>
+            </div>
+            <div
+              class="slds-col slds-size_1-of-4 slds-p-bottom_medium slds-p-right_small"
+            >
+              <c:combobox
+                label="Industry"
+                options="{!v.sectorOptions}"
+                origin="sector"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.sectorSelectedValues}"
+              />
+            </div>
+            <div
+              class="slds-col slds-size_1-of-4 slds-p-bottom_medium slds-p-right_small"
+              style="width: 20%"
+            >
+              <c:combobox
+                label="Group"
+                options="{!v.groupOptions}"
+                origin="group"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.groupSelectedValues}"
+              />
+            </div>
+            <div
+              class="slds-col slds-size_1-of-4 slds-p-bottom_medium slds-p-left_medium"
+              style="width: 20%"
+            >
+              <c:combobox
+                label="Client"
+                options="{!v.clientOptions}"
+                origin="client"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.clientSelectedValues}"
+              />
+            </div>
+          </div>
+          <div class="slds-grid slds-gutters slds-wrap">
+            <div class="slds-col slds-size_1-of-4 slds-p-bottom_medium">
+              <c:combobox
+                label="KPI Catalogue"
+                options="{!v.KPICatalogOptions}"
+                origin="KPICatalog"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.KPICatalogSelectedValues}"
+              />
+            </div>
+            <div class="slds-col slds-size_1-of-4 slds-p-bottom_medium">
+              <c:combobox
+                label="Booking Country"
+                options="{!v.bookingCountryOptions}"
+                origin="bookingCountry"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.bookingCountrySelectedValues}"
+              />
+            </div>
+            <div class="slds-col slds-size_1-of-4 slds-p-bottom_medium">
+              <c:combobox
+                label="Product"
+                options="{!v.productOptions}"
+                origin="product"
+                multiselect="true"
+                autocomplete="true"
+                onchange="{!c.handleSelectChange}"
+                value="{!v.productSelectedValues}"
+              />
+            </div>
+          </div>
+          <div class="slds-p-vertical_medium slds-p-left_x-small">
+            <lightning:button
+              variant="brand"
+              label="Search"
+              title="Search"
+              onclick="{!c.handleSearch}"
+              disabled="{!v.disableSearch}"
+            />
+            <lightning:button
+              variant="brand"
+              label="Reset"
+              title="Reset"
+              onclick="{!c.handleReset}"
+            />
+            <div class="slds-p-right_medium slds-text-align_right">
+              <lightning:button
+                variant="brand"
+                label="Go to DOMO"
+                title="DOMO"
+                onclick="{!c.handleDomo}"
+              />
+            </div>
+          </div>
+          <div
+            class="slds-p-vertical_medium slds-p-around_xx-small slds-p-right_medium slds-text-align_right"
+          >
+            <p><i>The data is updated every Friday</i></p>
+          </div>
+        </p>
+        <div class="slds-p-vertical_medium slds-p-left_x-small">
+          <aura:if isTrue="{!v.showTable}">
+            <div>
+              <c:KPI_MainTable
+                aura:id="KPI_MainTable"
+                mainData="{!v.mainTableDataFiltered}"
+              />
+            </div>
+            <div class="slds-grid slds-gutters">
+              <div class="slds-col slds-size_2-of-3">
+                <p>
+                  Displaying {!v.firstIndex} to {!v.secondIndex} of
+                  {!v.totalContracts}. Page {!v.page} of {!v.numberOfPages}
+                </p>
+              </div>
+              <div class="slds-col slds-size_1-of-3" style="text-align: right">
+                <lightning:button
+                  label="Previous"
+                  disabled="{!v.disabledPrevious}"
+                  onclick="{!c.handlePrevious}"
+                  class="slds-m-top_x-small"
+                />
+                <lightning:button
+                  label="Next"
+                  disabled="{!v.disabledNext}"
+                  onclick="{!c.handleNext}"
+                  variant="brand"
+                  class="slds-m-top_x-small"
+                />
+              </div>
+            </div>
+          </aura:if>
+          <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" />
+          </aura:if>
+        </div>
+      </lightning:card>
+    </div>
+  </article>
+  {!v.body}
+</aura:component>

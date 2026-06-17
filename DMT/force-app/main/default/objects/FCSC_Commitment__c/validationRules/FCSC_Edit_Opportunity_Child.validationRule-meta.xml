@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Edit_Opportunity_Child</fullName>
+    <active>true</active>
+    <description>Impide que se modifique la Oportunidad que se genera relacionada al Commitment, ya que esta se establece mediante es un flujo automatizado</description>
+    <errorConditionFormula>AND(
+  OR(
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Open Opportunity&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Lost&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Won&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Expired&quot;)
+  ),
+ NOT(ISCHANGED(FCSC_Estatus_Contacto__c)),
+ ISCHANGED(FCSC_Oportunidad_Generada__c),
+ NOT(ISBLANK(FCSC_Oportunidad_Generada__c)) 
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_Oportunidad_Generada__c</errorDisplayField>
+    <errorMessage>Not change Child Opportunity</errorMessage>
+</ValidationRule>

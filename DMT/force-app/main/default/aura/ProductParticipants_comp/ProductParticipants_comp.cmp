@@ -1,0 +1,57 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL" controller="Product_cls">
+	<aura:attribute name="rowsP" type="Object[]" />
+	<aura:attribute name="recordId" type="Id" />
+	<aura:attribute name="ProductId" type="Id" />
+	<aura:attribute name="title" type="String" default="Añadir interviniente"/>
+	<aura:attribute name="PParticipant" type="Object[]" />
+	<aura:attribute name="showModal" type="Boolean" default="false" />
+	<aura:attribute name="errMessage" type="String" default=""/>
+	<aura:attribute name="refreshTable" type="Boolean" default="false" />
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+	<aura:renderIf isTrue="{!v.refreshTable}">
+	<aura:if isTrue="{!v.refreshTable}">
+		<table class="slds-table slds-table_bordered slds-table_resizable-cols slds-table_fixed-layout" role="grid">
+			<thead>
+				<tr>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Nombre">Nombre</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="DOI">DOI</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="N°DOI">N°DOI</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Participación">Participación</div>
+					</th>
+					<th scope="col" class="slds-is-sortable slds-is-resizable">
+						<div class="slds-truncate" title="Estado civil">Estado civil</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<aura:iteration items="{!v.rowsP}" var="row" indexVar="rowIndex">
+					<tr class="slds-is-sortable slds-is-resizable" style="overflow-x:auto;">
+						<th role="gridcell" class="slds-is-sortable slds-is-resizable">
+							<div class="slds-truncate" title="{!row.Name__c}">{!row.Name__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.fiscal_identifier_type__c}">{!row.fiscal_identifier_type__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.taxpayer_id__c}">{!row.taxpayer_id__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.participant_type__c}">{!row.participant_type__c}</div>
+						</th>
+						<th>
+							<div class="slds-truncate" title="{!row.guarantor_marital_status_type__c}">{!row.guarantor_marital_status_type__c}&nbsp;{!row.Periodicity__c}</div>
+						</th>
+						</tr>
+					</aura:iteration>
+				</tbody>
+        	</table>
+		</aura:if>
+	</aura:renderIf>
+</aura:component>

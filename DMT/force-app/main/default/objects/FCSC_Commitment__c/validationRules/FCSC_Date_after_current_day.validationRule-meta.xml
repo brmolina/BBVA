@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Date_after_current_day</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+     OR(
+        ISBLANK(Id),
+        ISCHANGED(FCSC_Fecha_Vencimiento__c) 
+     ),
+
+     FCSC_Fecha_Vencimiento__c &lt;=  TODAY() 
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_Fecha_Vencimiento__c</errorDisplayField>
+    <errorMessage>The Estimated closing date must be a date after current day.</errorMessage>
+</ValidationRule>

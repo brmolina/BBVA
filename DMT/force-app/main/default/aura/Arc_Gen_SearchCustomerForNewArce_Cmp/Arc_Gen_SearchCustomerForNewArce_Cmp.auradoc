@@ -1,0 +1,14 @@
+<aura:documentation>
+    <aura:description>
+        <p>name="objectAPIName" description="Object API name used for searching records"</p>
+        <p>name="placeholder" description="Placeholder text for input search filed"</p>
+        <p>name="fieldLabel" description="input search field Label"</p>
+        <p>name="chosenRecordId" description="Used to store the selected record id.
+            While calling this component from other component,
+            set this attribute to the lookup field API name"</p>
+        <p>name="chosenRecordLabel" description="This is used to show the selected record Name in search input"</p>
+        <p>name="subHeadingFieldsAPI" description="Field API for the fields to be shown under the record Name.
+            Must be comma separated. Example: Email,Phone"</p>
+        <p>name="matchingRecords"   description="List of records returned from server side call."</p>
+    </aura:description>
+</aura:documentation>

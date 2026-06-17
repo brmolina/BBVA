@@ -10,11 +10,13 @@
         <target>lightning__HomePage</target>
         </targets>
       <targetConfigs>
-    <targetConfig targets="lightning__RecordPage">
-                        <property name="debug" type="Boolean"></property>
-                        <property name="recordId" type="String"></property>
-                      </targetConfig><targetConfig targets="lightning__AppPage">
-                      <property name="debug" type="Boolean"></property>
-                      <property name="recordId" type="String"></property>
+    
+    <targetConfig xmlns="http://soap.sforce.com/2006/04/metadata" targets="lightning__RecordPage">
+                        <property name="debug" type="Boolean"/>
+                        <property name="recordId" type="String"/>
+                      </targetConfig><targetConfig xmlns="http://soap.sforce.com/2006/04/metadata" targets="lightning__AppPage">
+                      <property name="debug" type="Boolean"/>
+                      <property name="recordId" type="String"/>
                     </targetConfig>
+    
     </targetConfigs></LightningComponentBundle>

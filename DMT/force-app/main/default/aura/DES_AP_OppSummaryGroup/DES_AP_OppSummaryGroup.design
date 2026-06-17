@@ -1,0 +1,5 @@
+<design:component>
+	  <design:attribute name="summaryType" label="Time Scope"
+      datasource="LastYear,Last4Months"
+      default="LastYear"/>
+</design:component>

@@ -1,0 +1,21 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+  access="global" controller="PRW_CucoFromGroup">
+  <aura:attribute name="pageReference" type="Object"/>
+  <aura:attribute name="clientNotSpain" type="Boolean" default="false" />
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+  <lightning:navigation aura:id="navService"/>
+
+  <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading" />
+    </aura:if >
+    <aura:if isTrue="{!v.clientNotSpain}">
+      <div class="slds-m-top_large">
+        {!$Label.c.PRW_SelectCucoFromGroup_ClientNotSpain}
+      </div>
+    </aura:if >
+  </div>
+
+</aura:component>

@@ -1,0 +1,93 @@
+{
+  "profitability": {
+    "audit": {
+      "engineVersion": "0.7",
+      "isError": false,
+      "raroecThreshold": "0.12",
+      "rorcThreshold": "0.09"
+    },
+    "results": [
+      {
+        "productId": "01",
+        "economicCcf": 50.0,
+        "regulatoryCcf": 40.0,
+        "economicLgd": 40.0,
+        "regulatoryLgd": 40.0,
+        "taxRate": 30.0,
+        "economicEad": 12000000.0,
+        "regulatoryEad": 12000000.0,
+        "averageLife": 1.0000000000000002,
+        "spreadDbPbs": 0.0,
+        "spreadFbPbs": 0.0,
+        "fundingFbPbs": 0.0,
+        "fundingDbPbs": 11.0,
+        "bonificationFunding": 0.0,
+        "raroec": -0.01632103255903066,
+        "raroecProspected": -0.073346,
+        "rorc": -0.0003197826534343216,
+        "rorcProspected": -0.081383,
+        "totalYears": [
+          {
+            "year": 2026,
+            "eadEcoYearly": 12000000.0,
+            "eadRegYearly": 12000000.0,
+            "rorcYearly": -0.0003197826534343216,
+            "raroecYearly": -0.01632103255903066
+          },
+          {
+            "year": 2027,
+            "eadEcoYearly": 11500000.0,
+            "eadRegYearly": 11500000.0,
+            "rorcYearly": -0.0002789345623156789,
+            "raroecYearly": -0.01456789012345678
+          },
+          {
+            "year": 2028,
+            "eadEcoYearly": 11000000.0,
+            "eadRegYearly": 11000000.0,
+            "rorcYearly": -0.0002234567890123456,
+            "raroecYearly": -0.01234567890123456
+          }
+        ]
+      },
+      {
+        "productId": "02",
+        "economicCcf": 50.0,
+        "regulatoryCcf": 40.0,
+        "economicLgd": 40.0,
+        "regulatoryLgd": 40.0,
+        "taxRate": 30.0,
+        "economicEad": 12000000.0,
+        "regulatoryEad": 12000000.0,
+        "averageLife": 1.0,
+        "raroec": -0.01632103255903066,
+        "raroecProspected": -0.07334572463213702,
+        "rorc": -0.0003197826534343216,
+        "rorcProspected": -0.0813834719686989,
+        "totalYears": [
+          {
+            "year": 2026,
+            "eadEcoYearly": 12000000.0,
+            "eadRegYearly": 12000000.0,
+            "rorcYearly": 0.0045123456789012,
+            "raroecYearly": 0.0234567890123456
+          },
+          {
+            "year": 2027,
+            "eadEcoYearly": 11500000.0,
+            "eadRegYearly": 11500000.0,
+            "rorcYearly": 0.0052345678901234,
+            "raroecYearly": 0.0256789012345678
+          },
+          {
+            "year": 2028,
+            "eadEcoYearly": 11000000.0,
+            "eadRegYearly": 11000000.0,
+            "rorcYearly": 0.0058901234567890,
+            "raroecYearly": 0.0278901234567890
+          }
+        ]
+      }
+    ]
+  }
+}

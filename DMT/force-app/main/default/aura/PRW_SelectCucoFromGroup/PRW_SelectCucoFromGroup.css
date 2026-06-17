@@ -1,0 +1,31 @@
+.THIS .closeButton{
+    color:white;
+}
+
+.THIS .textBold{
+    font-weight: bold;
+}
+
+.THIS svg[data-key="success"]{
+    fill: var(--sds-c-icon-color-foreground-success,#027e46);
+    width: .875rem;
+    height: .875rem;
+    line-height: 1;
+}
+
+.THIS .dt-outer-container {
+    height: auto !important;
+}
+
+.THIS .slds-modal__container {
+    max-width: 50%;
+}
+
+.THIS .client-row svg{
+    display: none;
+}
+
+.THIS .no-url a{
+    pointer-events: none;
+    color: black;
+}

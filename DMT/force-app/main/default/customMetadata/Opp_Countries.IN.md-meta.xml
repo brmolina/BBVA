@@ -15,6 +15,10 @@
         <value xsi:type="xsd:string">INR</value>
     </values>
     <values>
+        <field>DES_DisableAARequest__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
         <field>NBC_Region__c</field>
         <value xsi:type="xsd:string">ASIA</value>
     </values>

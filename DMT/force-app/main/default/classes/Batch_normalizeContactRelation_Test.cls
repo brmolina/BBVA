@@ -15,7 +15,7 @@ public class Batch_normalizeContactRelation_Test {
         insert acc;
         final Account acc2 = testClass.createClient();
         insert acc2;
-        final dwp_acmh__GBL_Account_Relationship__c relation = testClass.createAccRelationship(acc2, acc);
+        final AMH_GBL_Account_Relationship__c relation = testClass.createAccRelationship(acc2, acc);
         insert relation;
         final Contact con = testClass.createContact(acc);
         insert con;

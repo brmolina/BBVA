@@ -1,0 +1,17 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_Expandible_Table_Controller">
+  <aura:attribute name="exposureId" type="Id" access="global" description="Contains the id of the record to edit" />
+  <aura:attribute name="accHasAnId" type="Id" access="global" description="Contains the id of the account has analyis object" />
+  <aura:attribute name="recordTypeId" type="Id" access="global" description="Contains the id of the record type for typology"/>
+  <lightning:overlayLibrary aura:id="overlayLibEdition"/>
+    <lightning:recordForm aura:id="EditForm"
+        recordId= "{!v.exposureId}"
+        onsubmit="{!c.saveFields}"
+        objectApiName="arce__risk_position_summary__c"
+        mode="edit"
+        columns="2"
+        layoutType="Full"
+        recordTypeId="{!v.recordTypeId}"
+        onsuccess="{!c.handleSaveSuccess}"
+        >
+    </lightning:recordForm>
+</aura:component>

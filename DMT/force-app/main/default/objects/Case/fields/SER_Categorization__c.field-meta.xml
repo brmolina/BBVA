@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Categorization__c</fullName>
+    <label>Categorization</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Comentario negativo</fullName>
+                <default>false</default>
+                <label>Comentario negativo</label>
+            </value>
+            <value>
+                <fullName>Comentario positivo</fullName>
+                <default>false</default>
+                <label>Comentario positivo</label>
+            </value>
+            <value>
+                <fullName>Consulta</fullName>
+                <default>false</default>
+                <label>Consulta</label>
+            </value>
+            <value>
+                <fullName>Mejora</fullName>
+                <default>false</default>
+                <label>Mejora</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

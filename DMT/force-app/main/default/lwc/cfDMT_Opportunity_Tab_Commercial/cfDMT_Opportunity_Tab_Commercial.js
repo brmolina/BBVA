@@ -69,10 +69,26 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`Button`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
+            this.customEventName0 = interpolateWithRegex(`editModeTableOliFees`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[2],2);
+
+            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
+            this.customEventName1 = interpolateWithRegex(`tableOliFeesChange`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+
+            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
 
               }
             

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGRM_CIB_Peru_Autos_Transportation_Task</fullName>
+    <filterScope>Queue</filterScope>
+    <label>GRM_CIB_Peru_Autos_Transportation</label>
+    <queue>DMT_ApproversGRM_CIB_Peru_Autos_Transportation</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

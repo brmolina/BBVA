@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_TeamMember_HasAccessLevel</fullName>
+    <active>true</active>
+    <description>Validates that the field access Level has a value.</description>
+    <errorConditionFormula>ISBLANK(TEXT(AccessLevel__c))</errorConditionFormula>
+    <errorDisplayField>AccessLevel__c</errorDisplayField>
+    <errorMessage>You must fill in the Access Level field.</errorMessage>
+</ValidationRule>

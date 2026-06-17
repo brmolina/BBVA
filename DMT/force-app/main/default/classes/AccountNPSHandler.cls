@@ -38,14 +38,14 @@ public with sharing class AccountNPSHandler {
         final Set <Id> groupsIds = new Set <Id>();
         final Map <Id, Boolean> npsForGroups = new Map <Id, Boolean>();
 
-        for(dwp_acmh__GBL_Account_Relationship__c relation : [SELECT Id, dwp_acmh__Child_Account__c, dwp_acmh__Child_Account__r.RecordTypeId, dwp_acmh__Parent_Account__r.survey_nps_contact_type__c
-            FROM dwp_acmh__GBL_Account_Relationship__c
-            WHERE dwp_acmh__Parent_Account__c IN :accsId AND dwp_acmh__Child_Account__r.RecordTypeId = :Schema.SObjectType.Account.getRecordTypeInfosByName().get(Label.DES_RT_Group).getRecordTypeId()]) {
-            if(!groupsIds.contains(relation.dwp_acmh__Child_Account__c)) {
-                groupsIds.add(relation.dwp_acmh__Child_Account__c);
+        for(AMH_GBL_Account_Relationship__c relation : [SELECT Id, AMH_Child_Account__c, AMH_Child_Account__r.RecordTypeId, AMH_Parent_Account__r.survey_nps_contact_type__c
+            FROM AMH_GBL_Account_Relationship__c
+            WHERE AMH_Parent_Account__c IN :accsId AND AMH_Child_Account__r.RecordTypeId = :Schema.SObjectType.Account.getRecordTypeInfosByName().get(Label.DES_RT_Group).getRecordTypeId()]) {
+            if(!groupsIds.contains(relation.AMH_Child_Account__c)) {
+                groupsIds.add(relation.AMH_Child_Account__c);
             }
-            if(npsForGroups.get(relation.dwp_acmh__Child_Account__c) == null) {
-                npsForGroups.put(relation.dwp_acmh__Child_Account__c, relation.dwp_acmh__Parent_Account__r.survey_nps_contact_type__c);
+            if(npsForGroups.get(relation.AMH_Child_Account__c) == null) {
+                npsForGroups.put(relation.AMH_Child_Account__c, relation.AMH_Parent_Account__r.survey_nps_contact_type__c);
             }
         }
 

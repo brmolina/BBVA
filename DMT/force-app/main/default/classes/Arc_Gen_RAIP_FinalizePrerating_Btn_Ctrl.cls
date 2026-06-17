@@ -16,17 +16,6 @@
 @SuppressWarnings('PMD.ExcessivePublicCount, sf:TooManyMethods, sf:AvoidUsingTestIsRunningTest, PMD.ExcessiveParameterList')
 public class Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl {
     /**
-    *-------------------------------------------------------------------------------
-    * @description empty constructor to sonar validations
-    *--------------------------------------------------------------------------------
-    * @date		27/01/2020
-    * @author	alberto.martinez.carrero.tech@bbva.com
-    */
-    @testVisible
-    private Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl() {
-
-    }
-    /**
     * @Description: String with value for FINAL_STAGE in ARCE
     */
     static final String FINAL_STAGE = Boolean.valueOf(arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('RAIPSelectWorkflow')[0].arce__Value1__c) == true ? '14' : '10';
@@ -42,6 +31,21 @@ public class Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl {
     * @Description: String with value for TRUE_LITERAL in ARCE
     */
     static final String TRUE_LITERAL = 'true';
+    /** String with value for SUCCESS code */
+    static final String SUCCESS = '200';
+
+    /**
+    *-------------------------------------------------------------------------------
+    * @description empty constructor to sonar validations
+    *--------------------------------------------------------------------------------
+    * @date		27/01/2020
+    * @author	alberto.martinez.carrero.tech@bbva.com
+    */
+    @testVisible
+    private Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl() {
+        System.debug('Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl instantiated');
+    }
+
     /**
     *-------------------------------------------------------------------------------
     * @description Method that finalizes a prerating.
@@ -52,27 +56,29 @@ public class Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl {
     */
     @AuraEnabled
     public static void finalizePrerating(String arceId) {
-        try {
-            // Finalize RAIP and set discard reason.
-            final String discardReason = System.Label.Arc_Gen_FinalizePreratingDiscardReason;
-            final arce__Analysis__c analysisToUpdate = new arce__Analysis__c(
-                Id = arceId,
-                arce__Stage__c = '3',
-                arce__wf_status_id__c = '13',
-                arce__anlys_wkfl_discard_reason_id__c = discardReason,
-                arce__end_date__c = System.today()
-            );
-            arce.Arc_Gen_ArceAnalysis_Data.updateArce(new List<arce__Analysis__c> { analysisToUpdate });
+        if(!getArceConfig('RAIPValidatePrerating')) {
+            try {
+                // Finalize RAIP and set discard reason.
+                final String discardReason = System.Label.Arc_Gen_FinalizePreratingDiscardReason;
+                final arce__Analysis__c analysisToUpdate = new arce__Analysis__c(
+                    Id = arceId,
+                    arce__Stage__c = '3',
+                    arce__wf_status_id__c = '13',
+                    arce__anlys_wkfl_discard_reason_id__c = discardReason,
+                    arce__end_date__c = System.today()
+                );
+                arce.Arc_Gen_ArceAnalysis_Data.updateArce(new List<arce__Analysis__c> { analysisToUpdate });
 
-            // Create traceability record.
-            final List<arce__Account_has_Analysis__c> lstAccHas = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnFromArce(arceId);
-            final Map<String, String> auditAttr = Arc_Gen_Traceability.genAuditAttr(discardReason, 'approve', discardReason, lstAccHas[0].Name);
-            final Map<String, String> auditWF = new Map<String, String>();
-            Arc_Gen_Traceability.saveTrace(arceId, auditAttr, auditWF);
-        } catch(DmlException ex) {
-            throw new AuraHandledException(System.Label.Arc_Gen_Generic_ErrorSumPersOR);  // NOSONAR
-        } catch(Exception ex) {
-            throw new AuraHandledException(System.Label.Lc_arce_NewARCE_UnexpectedError);  // NOSONAR
+                // Create traceability record.
+                final List<arce__Account_has_Analysis__c> lstAccHas = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnFromArce(arceId);
+                final Map<String, String> auditAttr = Arc_Gen_Traceability.genAuditAttr(discardReason, 'approve', discardReason, lstAccHas[0].Name);
+                final Map<String, String> auditWF = new Map<String, String>();
+                Arc_Gen_Traceability.saveTrace(arceId, auditAttr, auditWF);
+            } catch(DmlException ex) {
+                throw new AuraHandledException(System.Label.Arc_Gen_Generic_ErrorSumPersOR);  // NOSONAR
+            } catch(Exception ex) {
+                throw new AuraHandledException(System.Label.Lc_arce_NewARCE_UnexpectedError);  // NOSONAR
+            }
         }
     }
   /**
@@ -87,11 +93,10 @@ public class Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl {
     @AuraEnabled
     public static void validatePrerating(String arceId) {
         if(getArceConfig('RAIPValidatePrerating')) {
-            final arce.Arc_Gen_ServiceAndSaveResponse response;
             final arce__Account_has_Analysis__c aha = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnFromArce(arceId)[0];
             //Get local class from config.
-            response = Arc_Gen_ValidateRating_service.setupValidateRating(aha.Id, aha.arce__ffss_for_rating_id__r.arce__rating_id__c, null, false);
-            if(response.serviceCode != '200') {
+            final arce.Arc_Gen_ServiceAndSaveResponse response = Arc_Gen_ValidateRating_service.setupValidateRating(aha.Id, aha.arce__ffss_for_rating_id__r.arce__rating_id__c, null, false);
+            if(response.serviceCode != SUCCESS) {
                 throw new AuraHandledException(System.Label.Arc_Gen_ValidatePrerating);  // NOSONAR
             }
         }
@@ -144,12 +149,32 @@ public class Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl {
     * @author alberto.martinez.carrero.contractor@bbva.com
     * @date 2022-06-03
     * @param String arce account has analysis Id
-    * @return arce.Arc_Gen_ServiceAndSaveResponse - A wrapper with information of saving records
-    * @example public static arce.Arc_Gen_ServiceAndSaveResponse
+    * @return Boolean - true if successful, false otherwise
+    * @example public static Boolean callLimitAdvisor(String aHaId)
     **/
     @AuraEnabled
     public static Boolean callLimitAdvisor(String aHaId) {
-        final arce.Arc_Gen_LimitAdvisor_RP response = arce.Arc_Gen_LimitAdvisor_Service.callLimitAdvisor(aHaId, true, null, false);
-        return response.message.detailedMessage == 'SUCCESS' ? true : false;
+        final arce__Account_has_Analysis__c accHasAnalysis = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ aHaId })[0];
+        Boolean result = false;
+        try {
+            if(accHasAnalysis.arce__Analysis__r.arce__is_prospect__c == '1') {
+                result = true; // If it's a prospect, we skip the limit advisor validation and return true directly.
+            } else {
+                final Map<String, Object> args = new Map<String, Object>{
+                    'ahaId' => aHaId,
+                    'isValidate' => true,
+                    'limitAdvisor' => null,
+                    'isProposal' => false
+                };
+                final Map<String, Object> response = (Map<String, Object>) arce.Arc_Gen_GenericUtilities.callCallableService('Arc_Gen_CallableFromCore', 'callLimitAdvisor', args);
+
+            final Map<String, Object> messageMap = (Map<String, Object>) response.get('message');
+                final String detailedMessage = messageMap == null ? '' : (String) messageMap.get('detailedMessage');
+                result = detailedMessage == 'SUCCESS';
+            }
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
     }
 }

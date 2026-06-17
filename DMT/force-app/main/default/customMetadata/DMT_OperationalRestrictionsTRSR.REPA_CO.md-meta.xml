@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>REPA_CO</label>
+    <protected>false</protected>
+    <values>
+        <field>Apply_Validations_DVP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Apply_Validations_FD__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DERIVATIVES_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DERIVATIVES_Editable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>DMT_Operational_Restrictions_Name__c</field>
+        <value xsi:type="xsd:string">REPA</value>
+    </values>
+    <values>
+        <field>DVP_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DVP_Editable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DVP_dependent_Derivatives__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Derivatives: Repo (BBVA is financed by counterparty) // DvP: N/A // FD: for initial and maturity exchange of asset and cash</value>
+    </values>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">CO</value>
+    </values>
+    <values>
+        <field>FD_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FD_Editable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FD_dependent_Derivatives__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>MaturityTerm_Disabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>OrderRestriction__c</field>
+        <value xsi:type="xsd:double">6.0</value>
+    </values>
+    <values>
+        <field>Product_Group__c</field>
+        <value xsi:type="xsd:string">Repo (BBVA is financed by the counterparty)</value>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

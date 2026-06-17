@@ -1,0 +1,41 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_TableVolumeCtrl">
+  <aura:attribute name="loaded" type="Boolean" default="false" />
+  <aura:attribute name="columns" type="List" />
+  <aura:attribute name="errors" type="Object" default="[]"/>
+  <aura:attribute name="data" type="Object" default="[]"/>
+  <aura:attribute name="lAccountId" type="String" />
+  <aura:attribute name="profSheet" type="Object" />
+  <aura:attribute name="profSheetSFId" type="String" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="profSheetEnd" type="Date" />
+  <aura:attribute name="profSheetStart" type="Date" />
+  <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+  <aura:attribute name="maximumDate" type="Date" />
+
+  <aura:if isTrue="{!v.loaded}">
+    <p style="margin: 10px;display:flex">
+      {!$Label.c.PRW_MaximumDate} 
+      <div style="margin-left:5px">
+        {!v.maximumDate}
+      </div>
+    </p>
+    <aura:if isTrue="{!empty(v.data)}">
+	  	<div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+        {!$Label.c.PRW_NoInfoVolume}
+      </div>
+	  	<aura:set attribute="else">
+        <div id="tableDataVolume" class="classTableCmp">
+          <lightning:datatable
+            class="table-test"
+            data="{!v.data}"
+            columns="{!v.columns}"
+            keyField="id"
+            hideCheckboxColumn="true"
+            errors="{!v.errors}"
+            suppressBottomBar="true"
+          />
+        </div>
+      </aura:set>
+	  </aura:if>
+  </aura:if>
+</aura:component>

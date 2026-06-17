@@ -1,6 +1,6 @@
 // Clase utilitaria
 @JsonAccess(serializable='always' deserializable='always')
-global without sharing class DMT_Utils implements Callable {
+global with sharing class DMT_Utils implements Callable {
 
     global Object call(String action, Map<String, Object> args) {
 
@@ -12,7 +12,6 @@ global without sharing class DMT_Utils implements Callable {
     }
 
     private Object invokeMethod(String methodName, Map<String, Object> inputMap, Map<String, Object> outMap, Map<String, Object> options) {
-        System.debug('invokeMethod methodname, '+methodName);
         try {
             Map<String, Object> result;
             if (methodName == 'hasWriteAccess') {
@@ -24,6 +23,28 @@ global without sharing class DMT_Utils implements Callable {
             }else  if (methodName == 'checkLineGodUser') {
                 Boolean access = checkLineGodUser();
                 result = new Map<String, Object>{ 'result' => access };
+            }else  if (methodName == 'checkNotApprovalRequiredUser') {
+                Boolean access = checkNotApprovalRequiredUser();
+                result = new Map<String, Object>{ 'result' => access };
+            }else  if (methodName == 'BaseURL') {
+                String URL = BaseURL();
+                result = new Map<String, Object>{ 'result' => URL };
+            }else if (methodName == 'extractFieldCustomValidationMessage') {
+                System.debug('inputMap in extractFieldCustomValidationMessage: ' + JSON.serialize(inputMap));
+                String errorMessage = (String) inputMap.get('errorMessage');
+                if (String.isBlank(errorMessage)) {
+                    try {
+                        List<Object>        args    = (List<Object>)        inputMap.get('arguments');
+                        Map<String, Object> arg0    = (Map<String, Object>) args[0];
+                        List<Object>        case1   = (List<Object>)        arg0.get('Case_1');
+                        Map<String, Object> case0   = (Map<String, Object>) case1[0];
+                        errorMessage = (String) case0.get('UpsertError');
+                    } catch (Exception ex) {
+                        System.debug('Could not extract UpsertError: ' + ex.getMessage());
+                    }
+                }
+                String parsedMessage = extractFieldCustomValidationMessage(errorMessage);
+                result = new Map<String, Object>{ 'result' => parsedMessage };
             }if (result != null) {
                 outMap.putAll(result);
             }
@@ -80,7 +101,8 @@ global without sharing class DMT_Utils implements Callable {
     }
     // Método para llamar al servicio
     public static HttpResponse callService(String serviceName, Map<String, Object> request) {
-        return  DMT_HPG_Utils.callService_DMT(serviceName, request);
+        System.debug('Calling service: ' + serviceName + ' with request: ' + JSON.serialize(request));
+        return  DMT_HPG_Utils.callService(serviceName, request);
     }
     public static String listToString(List<String> stringList, String delimiter) {
         // Verifica si la lista es nula o está vacía
@@ -89,6 +111,38 @@ global without sharing class DMT_Utils implements Callable {
         }
         // Usa el método String.join para concatenar los elementos de la lista
         return String.join(stringList, delimiter);
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String extractFieldCustomValidationMessage(String errorMessage) {
+        final String validationToken = 'FIELD_CUSTOM_VALIDATION_EXCEPTION:';
+        final String fallbackMessage = 'There is an incorrect value in the line, which is why the approval process cannot be completed.';
+
+        if (String.isBlank(errorMessage) || !errorMessage.contains(validationToken)) {
+            return fallbackMessage;
+        }
+
+        String extractedMessage = errorMessage.substringAfter(validationToken).trim();
+
+        if (extractedMessage.contains('You can look up ExceptionCode values in the SOAP API Developer Guide.')) {
+            extractedMessage = extractedMessage.substringBefore('You can look up ExceptionCode values in the SOAP API Developer Guide.').trim();
+        }
+
+        if (extractedMessage.contains('Error ID:')) {
+            extractedMessage = extractedMessage.substringBefore('Error ID:').trim();
+        }
+
+        while (extractedMessage.endsWith('.')) {
+            extractedMessage = extractedMessage.substring(0, extractedMessage.length() - 1).trim();
+        }
+
+        System.debug('ErrorMessage: '+extractedMessage);
+        return String.isBlank(extractedMessage) ? fallbackMessage : extractedMessage + '.';
+    }
+
+    //returns the BASEURL of the org
+    public static String BaseURL() {
+        return URL.getOrgDomainUrl().toExternalForm();
     }
 
      /**
@@ -116,6 +170,14 @@ global without sharing class DMT_Utils implements Callable {
     }
 
     /**
+     * Determines if the current user has the custom permission of DMT_Line_God
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean checkNotApprovalRequiredUser() {
+        return FeatureManagement.checkPermission('DMT_Not_Approval_Required');
+    }
+
+    /**
      * Flow-invocable method to check Write access from roles.
      */
     @InvocableMethod(label='Has Write Access from Roles?' description='Returns true if current user has any role with Read/Write access in DES_User_Roles__mdt.')
@@ -127,7 +189,6 @@ global without sharing class DMT_Utils implements Callable {
         try {
             // Build payload
             Map<String, Object> payload = new Map<String, Object>();
-            payload.put('initDate', String.valueOf(Date.today()));
 
             Map<String, Object> clientMap = new Map<String, Object>();
             clientMap.put('groupId', (String) inputMap.get('groupId'));
@@ -137,7 +198,7 @@ global without sharing class DMT_Utils implements Callable {
             request.put('jsonInput', JSON.serialize(payload));
 
             // Call the service
-            HttpResponse response = DMT_HPG_Utils.callService_DMT(serviceName, request, true);
+            HttpResponse response = callService(serviceName, request);
 
             // Return OK/KO depending on status
             if (response != null && response.getStatusCode() == 204) {
@@ -147,10 +208,13 @@ global without sharing class DMT_Utils implements Callable {
                 return 'KO';
             }
         } catch (Exception e) {
-            DMT_Integration_GenericService.commitAllLogsViaBatch();
-            System.debug('Error in postConsumptionReassign: ' + e.getMessage()+ 'line number: ' + e.getLineNumber());
+            System.debug('Error in postConsumptionReassign: ' + e.getMessage()+ 'line number: ' + e.getLineNumber() + ' stack trace: ' + e.getStackTraceString());
             return 'KO';
         }
+    }
+     @AuraEnabled
+    public static String consumptionReassign( Map<String, Object> inputMap) {
+        return postConsumptionReassign('DMT_consumptionsReassign', inputMap);
     }
 
 
@@ -166,4 +230,30 @@ global without sharing class DMT_Utils implements Callable {
         }
     }
 
+    public static String getComparisonAccountName(Id oppAccountId) {
+        if (oppAccountId == null) {
+            return null;
+        }
+
+        try {
+            Map<String, Object> comparisonAccountResult = DMT_Opportunity_Utils.getComparisonAccount(
+                new Map<String, Object>{ 'oppAccountId' => oppAccountId },
+                new Map<String, Object>(),
+                new Map<String, Object>()
+            );
+
+            Boolean foundComparisonAccount = comparisonAccountResult != null && comparisonAccountResult.containsKey('foundComparisonAccount')
+                ? (Boolean) comparisonAccountResult.get('foundComparisonAccount')
+                : false;
+
+            if (foundComparisonAccount && comparisonAccountResult.containsKey('comparisonAccountName')) {
+                return (String) comparisonAccountResult.get('comparisonAccountName');
+            }
+        } catch (Exception e) {
+            System.debug('Error resolving comparison account name in DMT_FormattingUtils, ' + e.getMessage() + ' ' + e.getLineNumber());
+            DES_Exception_Utils.logException(e,'DMT_FormattingUtils', 'getComparisonAccountName', 'DMT', '');
+        }
+
+        return null;
+    }
 }

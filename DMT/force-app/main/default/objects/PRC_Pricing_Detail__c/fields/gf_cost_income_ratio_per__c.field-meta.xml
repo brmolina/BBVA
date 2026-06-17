@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_cost_income_ratio_per__c</fullName>
+    <description>Cost-to-income ratio of the operation. The measure of the costs of running a company in relation to its operating income.</description>
+    <label>Cost to Income (%)</label>
+    <precision>5</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

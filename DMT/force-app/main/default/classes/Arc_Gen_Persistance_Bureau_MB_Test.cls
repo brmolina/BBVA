@@ -68,11 +68,13 @@ public class Arc_Gen_Persistance_Bureau_MB_Test {
         accHasAnaClient.arce__capital_provision_desc__c = 'Capital provision';
         accHasAnaClient.arce__fin_covenants_breach_type__c = '1';
         accHasAnaClient.arce__fin_covenants_breach_desc__c = 'Covenant breach';
+        accHasAnaClient.arce__RAR_rating_tool_id__c = 'sp22012';
         insert accHasAnaClient;
 
         arce__Account_has_Analysis__c ahaGroup = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(sect.Id, newArce.Id, groupAccount.accId, '1');
         ahaGroup.arce__group_asset_header_type__c = '1';
         ahaGroup.arce__InReview__c = true;
+        ahaGroup.arce__RAR_rating_tool_id__c = 'sp22012';
         insert ahaGroup;
 
         Arc_UtilitysDataTest_tst.setupProducts();

@@ -403,6 +403,9 @@ private class DES_OpportunityTriggerTest {
             insert templateTest;
 
             ContentVersion ctntVerTest;
+
+            testClass.createCustomSettingByPass();
+            
             ctntVerTest = testClass.createContentVersion(true);
             List<ContentDocument> documents;
             documents = [SELECT Id, Title, LatestPublishedVersionId FROM ContentDocument];

@@ -1,0 +1,11 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component - that allow insert records. </b></h5>
+        <p>apiNameObject - variable for objectApiName</p>
+        <p>recordTypeId - variable to select record layout</p>
+        <p>error - boolean to show error message</p>
+        <p>error - boolean to show error message</p>
+        <p>productos - list of products child of tipologies</p>
+        <p><code>c:Arc_Gen_Insertion</code></p>
+    </aura:description>
+</aura:documentation>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Survey Link Button</masterLabel>
+    <description>Reusable button that opens a URL and publishes a Platform Event to trigger surveys via metadata.</description>
+    
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordAction</target>
+    </targets>
+    
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage">
+            <property name="label" type="String" default="Open NotebookLM" label="Button label"/>
+            <property name="title" type="String" label="Tooltip (title)"/>
+            <property name="url" type="String" label="Target URL" required="true"/>
+            <property name="surveyName" type="String" default="SupportWUT" label="Event Name" required="true"/>
+            
+            <property name="variant" type="String" default="brand" label="Variant (brand, neutral, destructive...)" required="true"/>
+            <property name="iconName" type="String" label="Icon name (e.g., utility:link)"/>
+            <property name="iconPosition" type="String" default="left" label="Icon position (left/right)"/>
+            
+            <property name="openInNewTab" type="Boolean" default="true" label="Open in new tab"/>
+            <property name="disabled" type="Boolean" default="false" label="Disabled"/>
+            <property name="isNotQuickAction" type="Boolean" default="true" label="Event Name" required="false"/>
+            
+            <property name="showSuccessToast" type="Boolean" default="false" label="Show success toast"/>
+            <property name="showErrorToast" type="Boolean" default="true" label="Show error toast"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

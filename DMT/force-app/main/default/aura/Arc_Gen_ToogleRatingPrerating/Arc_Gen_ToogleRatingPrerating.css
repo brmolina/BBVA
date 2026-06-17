@@ -1,0 +1,11 @@
+.THIS span.slds-checkbox_on {
+  display: none !important;
+}
+
+.THIS span.slds-checkbox_off {
+  display: none !important;
+}
+
+.THIS .slds-checkbox_toggle span {
+  font-size: 0.9rem !important;
+}

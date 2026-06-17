@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_loan_br_ctpty_id__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Loan Counterparty</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Value does not exist or the Client is not a &apos;Subsidiary&apos;.</errorMessage>
+        <filterItems>
+            <field>Account.DES_Structure_Type__c</field>
+            <operation>equals</operation>
+            <value>Subsidiary</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Sold Orders</relationshipLabel>
+    <relationshipName>Sold_Orders</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

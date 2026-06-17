@@ -1,0 +1,41 @@
+<template>
+    <div class="slds-page-header slds-page-header_record-home">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:email" size="medium"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <span class="slds-page-header__title slds-truncate">My Requests</span>
+                                </h1>
+                            </div>
+                        </div>
+                        <p class="slds-page-header__name-meta">
+                            {totalCount} Items • Updates a few seconds ago.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-p-horizontal_small slds-p-top_small">
+        <lightning-datatable
+            key-field="rowKey"
+            data={rows}
+            columns={columns}
+            sorted-by={sortedBy}
+            sorted-direction={sortedDirection}
+            onsort={handleSort}
+            hide-checkbox-column>
+        </lightning-datatable>
+    </div> 
+    <div class="slds-p-around_small slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+            <lightning-button label="< Prev" onclick={handlePrev} disabled={disablePrev}></lightning-button>
+            <span class="slds-m-horizontal_medium slds-text-body_small">Page {page} of {totalPages}</span>
+            <lightning-button class="slds-m-left_x-small" label="Next >" onclick={handleNext} disabled={disableNext}></lightning-button>
+    </div> 
+</template>

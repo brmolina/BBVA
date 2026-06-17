@@ -1,12 +1,12 @@
 /**
  * @description       : Test class for DMT_Des_ExceptionViewerController
  * @author            : Javier Portilla
- * @group             : 
+ * @group             :
  * @last modified on  : 03-14-2025
  * @last modified by  : Javier Portilla
 **/
 @isTest
-private class DMT_Des_ExceptionViewerControllerTest {
+private without sharing class DMT_Des_ExceptionViewerControllerTest {
 
     @isTest
     static void logError() {
@@ -28,6 +28,21 @@ private class DMT_Des_ExceptionViewerControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'The result should not be null');
+    }
+
+    @isTest
+    static void testGetReportData() {
+        Exception exc = createException();
+        DES_Exception_Utils.logException(exc, 'DES_Exception_Test', 'logExceptionTest', 'DMT', 'Math');
+
+        Datetime timestampFrom = System.now().addDays(-1);
+        Datetime timestampTo = System.now().addDays(1);
+
+        Test.startTest();
+        List<DES_Exceptions__b> result = DMT_Des_ExceptionViewerController.getReportData(timestampFrom, timestampTo);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'The report result should not be null');
     }
 
     private static Exception createException(){

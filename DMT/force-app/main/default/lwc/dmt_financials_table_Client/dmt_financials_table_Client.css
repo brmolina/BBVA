@@ -1,3 +1,7 @@
+.tablaStyles{
+    height: 500px;
+}
+
 .slds-hint-parent td {
     position: relative;
     padding-right: 2rem;

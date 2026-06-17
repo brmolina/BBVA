@@ -1,0 +1,437 @@
+<aura:component controller="DES_DetailsTable_Controller"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable"
+                access="global">
+    <aura:attribute name="TableHeading" type="String" access="public"
+                    description="A free text showed in the table heading" />
+    <aura:attribute name="fieldsToDisplay" type="String" access="public"
+                    description="Which fields display, entering the API fields of the Object seperated by commas (field1,field2,field3)" />
+    <aura:attribute name="inNumberOfDecimals" type="String" access="public"
+                    description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+    <aura:attribute name="cssClassName" type="String" default="Vertical_Clear" access="public"
+                    description="Choose a class name for the table: 'Horizontal_Grey_Space', 'Horizontal_Grey_No_Space', 'Vertical_Clear or Vertical_Grey','Row','Vertical_fourColumns','Vertical_fourColumnsFamilyProducts'" />
+    <aura:attribute name="noRecordscustomLabelAPIname" type="String" access="public" description="A Custom Label's API Name to display when no records was found. If no Custom Label is filled then when there's no records appears the following text 'There are no records for this object'.
+                                                                                                  See 'Custom Labels' in Salesforce documentation for more information." />
+    <aura:attribute name="tableMessage" type="String" access="public"
+                    description="A Custom message to display below the table" />
+    <aura:attribute name="rowTitle" type="String" access="public"
+                    description="A Custom message to display as table title" />
+    <aura:attribute name="rowSubitle" type="String" access="public"
+                    description="A Custom message to display as table subtitle" />
+    <aura:attribute name="prettyHeader" type="Boolean" access="public" description="Cabecera con estilo" />
+    <aura:attribute name="filial" type="Boolean" access="public" default="false" />
+    
+    <aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="sObjectName" type="String" access="public" />
+    <aura:attribute name="fieldsArray" type="Object" access="private" />
+    <aura:attribute name="complexObject" type="Object" access="private" />
+    <aura:attribute name="fieldLabels" type="String[]" access="private" />
+    <aura:attribute name="detailsComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="showComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="Vertical_Clear" type="Boolean" default="0" access="private" />
+    <aura:attribute name="Horizontal_Grey_Space" type="Boolean" access="private" />
+    <aura:attribute name="Horizontal_Grey_No_Space" type="Boolean" access="private" />
+    <aura:attribute name="Vertical_Grey" type="Boolean" access="private" />
+    <aura:attribute name="Row" type="Boolean" default="0" access="private" />
+    <aura:attribute name="Vertical_fourColumns" type="Boolean" default="0" access="private" />
+    <aura:attribute name="Vertical_fourColumnsFamilyProducts" type="Boolean" default="0" access="private" />
+    <aura:attribute name="RowFields" type="Boolean" default="0" access="private" />
+    <aura:attribute name="fieldLabelSize" type="Integer" access="private" />
+    <aura:attribute name="noRecordsReturned" type="Boolean" access="private" default="false" />
+    <aura:attribute name="NoRecordsLabelMessage" type="String" access="private" />
+    <aura:attribute name="accountRecord" type="Object" />
+    <aura:attribute name="country" type="String" default="no" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+    <aura:attribute name="ratingC" type="Boolean" default="false" />
+    
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="nav" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.noData}">
+        <div class="slds-grid slds-grid_vertical slds-grid_align-center slds-grid_vertical-align-center slds-size_1-of-1">
+            <div class="slds-text-align_center tableNoData customNoData">
+                <span class="slds-badge slds-text-title_caps badgenodata">
+                    {!$Label.c.DES_Chart_No_Data}
+                </span>
+            </div>
+        </div>
+        
+        
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.showComponent}">
+                
+                <aura:if isTrue="{!v.Vertical_fourColumns}">
+                    <aura:if isTrue="{!v.prettyHeader}">
+                        <div aura:id="changeIt">
+                            <div class="divBusiness">
+                                <table id="tabled" class="no-border">
+                                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                        <th scope="col" class="slds-size_1-of-4 slds-truncate" id="{!fieldLabels}" onclick="{!c.navigateToFamilySection}">
+                                            <div class="{!x > 0 ? 'slds-p-around_x-small subDivRisk' : 'slds-p-around_x-small'}">
+                                                <div class="slds-text-title--caps slds-truncate riskTile" id="{!fieldLabels}">{!fieldLabels}</div>
+                                                <div class="slds-text-title--caps slds-truncate subtitle" id="{!fieldLabels}">{!v.rowSubitle}</div>
+                                                <div class="horizontal slds-text-heading--medium valueBusiness slds-p-top_small" id="{!fieldLabels}">
+                                                    <strong id="{!fieldLabels}">
+                                                        <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                      mapObject="{!v.complexObject}"
+                                                                                      detailsComponent="{!v.detailsComponent}" Field="{!v.fieldsArray}"
+                                                                                      numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <aura:set attribute="else">
+                            <div aura:id="changeIt">
+                                <div class="divBusiness">
+                                    <table id="tabled" class="no-border">
+                                        <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                            <th scope="col" class="slds-size_1-of-4 slds-truncate">
+                                                <div class="{!x > 0 ? 'slds-p-around_x-small subDivRisk' : 'slds-p-around_x-small'}">
+                                                    <div aura:id="labelsFourColumns" class="slds-text-title--caps slds-truncate riskTile">{!fieldLabels}</div>
+                                                    <div aura:id="subtitleFourColumns" class="slds-text-title--caps slds-truncate subtitle">{!v.rowSubitle}</div>
+                                                    <div class="horizontal slds-text-heading--medium valueBusiness slds-p-top_small">
+                                                        <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                      mapObject="{!v.complexObject}"
+                                                                                      detailsComponent="{!v.detailsComponent}"
+                                                                                      Field="{!v.fieldsArray}"
+                                                                                      numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </aura:iteration>
+                                    </table>
+                                </div>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </aura:if>
+                
+                
+                <aura:if isTrue="{!v.Vertical_fourColumnsFamilyProducts}">
+                    <aura:if isTrue="{!v.prettyHeader}">
+                        
+                        <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                            <div class="slds-box slds-theme_default boxsection">
+                                <div class="customDiv1 slds-grid slds-wrap slds-p-left_xx-small slds-p-top_xx-small slds-p-Bottom_xx-small" aura:id="changeIt">
+                                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                        <div class="slds-p-right_xx-small box slds-col slds-col slds-size_1-of-3" id="{!fieldLabels}" onclick="{!c.navigateToFamilySection}">
+                                            <div class="boderCard morePadding customDiv1 hoverDiv" >
+                                                <div class="slds-text-title--caps slds-m-bottom_small slds-truncate title" id="{!fieldLabels}">{!fieldLabels}</div>
+                                                <div class="slds-text-title--caps slds-m-bottom_x-small slds-truncate subtitle" id="{!fieldLabels}">{!v.rowSubitle}</div>
+                                                <div class="horizontal slds-m-bottom_x-smallslds-text-heading--medium" id="{!fieldLabels}">
+                                                    <p id="{!fieldLabels}" class="titleM">
+                                                        <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                      mapObject="{!v.complexObject}"
+                                                                                      detailsComponent="{!v.detailsComponent}"
+                                                                                      Field="{!v.fieldsArray}"
+                                                                                      numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                    </p>
+                                                </div>
+                                                
+                                                <div class="customDiv2" id="{!fieldLabels}">
+                                                    <aura:if isTrue="{!fieldLabels == 'GTB'}">
+                                                        <aura:if isTrue="{!v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                         +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                            <span class="fontStl">
+                                                                <span class="slds-badge badgerating colorBadg">
+                                                                    <ui:outputNumber value="{!((v.accountRecord.gtb_revenue_cyr_amount__c)
+                                                                                            /(v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                            +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                            *100}" />%
+                                                                </span>&nbsp;of the BBVA bussiness with the client
+                                                            </span>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!fieldLabels == 'IBF'}">
+                                                        <aura:if isTrue="{!v.accountRecord.gf_ibf_cyr_revenue_amount__c+v.accountRecord.gtb_revenue_cyr_amount__c
+                                                                         +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                            <span class="fontStl">
+                                                                <span class="slds-badge badgerating colorBadg">
+                                                                    <ui:outputNumber value="{!((v.accountRecord.gf_ibf_cyr_revenue_amount__c)
+                                                                                            /(v.accountRecord.gf_ibf_cyr_revenue_amount__c+v.accountRecord.gtb_revenue_cyr_amount__c
+                                                                                            +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                            *100}" />%
+                                                                </span>&nbsp;of the BBVA bussiness with the client
+                                                            </span>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                    
+                                                    <aura:if isTrue="{!fieldLabels == 'GM'}">
+                                                        <aura:if isTrue="{!v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                         +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                            <span class="fontStl">
+                                                                <span class="slds-badge badgerating colorBadg">
+                                                                    <ui:outputNumber value="{!((v.accountRecord.gm_revenue_cyr_amount__c)
+                                                                                            /(v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                            +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                            *100}" />%
+                                                                </span>&nbsp;of the BBVA bussiness with the client
+                                                            </span>
+                                                        </aura:if>
+                                                    </aura:if>                                        
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-box slds-theme_default boxsection">
+                                    <div aura:id="changeIt" style="height:100%; width:100%;" class="slds-scrollable">
+                                        <table class="no-border">
+                                            <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                                <th scope="col" class="tableThNavi" id="{!fieldLabels}" onclick="{!c.navigateToFamilySection}">
+                                                    <div class="boderCard customDiv1 morePadding slds-m-right_xx-small slds-m-top_xxx-small hoverDiv">
+                                                        <div class="slds-text-title--caps slds-m-bottom_small slds-truncate title" id="{!fieldLabels}">{!fieldLabels}</div>
+                                                        <div class="slds-text-title--caps slds-m-bottom_x-small slds-truncate subtitle" id="{!fieldLabels}">{!v.rowSubitle}</div>
+                                                        <div class="horizontal slds-m-bottom_x-smallslds-text-heading--medium" id="{!fieldLabels}">
+                                                            <p id="{!fieldLabels}" class="titleM">
+                                                                <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                              mapObject="{!v.complexObject}"
+                                                                                              detailsComponent="{!v.detailsComponent}"
+                                                                                              Field="{!v.fieldsArray}"
+                                                                                              numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <div class="customGtb" id="{!fieldLabels}">
+                                                            <aura:if isTrue="{!fieldLabels == 'GTB'}">
+                                                                <aura:if isTrue="{!v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                 +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                                    <span class="fontStl">
+                                                                        <span class="slds-badge badgerating colorBadg">
+                                                                            <ui:outputNumber value="{!((v.accountRecord.gtb_revenue_cyr_amount__c)
+                                                                                                    /(v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                                    +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                                    *100}" />%
+                                                                        </span>
+                                                                    </span>&nbsp;of the BBVA bussiness with the client
+                                                                    <br/>
+                                                                </aura:if>
+                                                            </aura:if>
+                                                            
+                                                            <aura:if isTrue="{!fieldLabels == 'IBF'}">
+                                                                <aura:if isTrue="{!v.accountRecord.gf_ibf_cyr_revenue_amount__c+v.accountRecord.gtb_revenue_cyr_amount__c
+                                                                                 +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                                    <span class="fontStl">
+                                                                        <span class="slds-badge badgerating colorBadg">
+                                                                            <ui:outputNumber value="{!((v.accountRecord.gf_ibf_cyr_revenue_amount__c)
+                                                                                                    /(v.accountRecord.gf_ibf_cyr_revenue_amount__c+v.accountRecord.gtb_revenue_cyr_amount__c
+                                                                                                    +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                                    *100}" />%
+                                                                        </span>
+                                                                    </span>&nbsp;of the BBVA bussiness with the client
+                                                                    <br />
+                                                                </aura:if>
+                                                            </aura:if>
+                                                            
+                                                            <aura:if isTrue="{!fieldLabels == 'GM'}">
+                                                                <aura:if isTrue="{!v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                 +v.accountRecord.gm_revenue_cyr_amount__c > 0}">
+                                                                    <span class="fontStl">
+                                                                        <span class="slds-badge badgerating colorBadg">
+                                                                            <ui:outputNumber value="{!((v.accountRecord.gm_revenue_cyr_amount__c)
+                                                                                                    /(v.accountRecord.gtb_revenue_cyr_amount__c+v.accountRecord.gf_ibf_cyr_revenue_amount__c
+                                                                                                    +v.accountRecord.gm_revenue_cyr_amount__c))
+                                                                                                    *100}" />%
+                                                                        </span>
+                                                                    </span>&nbsp;of the BBVA bussiness with the client
+                                                                    <br />
+                                                                </aura:if>
+                                                            </aura:if>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                        
+                        
+                        <aura:set attribute="else">
+                            <div aura:id="changeIt">
+                                <table id="tabled" class="slds-card slds-table slds-table--col-bordered">
+                                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                        <th scope="col" class="slds-size_1-of-4 slds-truncate">
+                                            <div aura:id="labelsFourColumns"
+                                                 class="slds-text-title--caps slds-truncate">{!fieldLabels}</div>
+                                            <div aura:id="subtitleFourColumns"
+                                                 class="slds-text-title--caps slds-truncate">{!v.rowSubitle}</div>
+                                            <div class="horizontal slds-text-heading--medium">
+                                                <strong>
+                                                    <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                  mapObject="{!v.complexObject}"
+                                                                                  detailsComponent="{!v.detailsComponent}"
+                                                                                  Field="{!v.fieldsArray}"
+                                                                                  numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                </strong>
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                </table>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </aura:if>
+                
+                
+                <aura:if isTrue="{!v.Vertical_Clear}">
+                    <div aura:id="changeIt">
+                        <div class="divRisk">
+                            <table class="no-border">
+                                <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                    <td border="1">
+                                        <div class="{!fieldLabels == 'INTERNAL RATING' &amp;&amp; v.ratingC ? 'ratingC' : ''}">
+                                            <div class="{!x > 0 ? 'subDivRisk' : ''}">
+                                                <tr>
+                                                    <div class="{!fieldLabels == 'INTERNAL RATING' &amp;&amp; v.ratingC ? 'horizontal slds-text-title--caps ratingC' : 'horizontal slds-text-title--caps riskTile2'}"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                                    <div class="horizontal riskValue">
+                                                        <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                      mapObject="{!v.complexObject}"
+                                                                                      detailsComponent="{!v.detailsComponent}"
+                                                                                      Field="{!v.fieldsArray}"
+                                                                                      numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                    </div>
+                                                </tr>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </aura:if>
+                
+                
+                <aura:if isTrue="{!v.Horizontal_Grey_Space}">
+                    <div aura:id="changeIt">
+                        <table class="slds-table slds-resizable ">
+                            <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                <td class="slds-card horizontal" border="1">
+                                    <div>
+                                        <div class="horizontal slds-text-title--caps"><span
+                                                                                            class="slds-truncate">{!fieldLabels}</span></div>
+                                        <div class="horizontal">
+                                            <strong>
+                                                <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                              mapObject="{!v.complexObject}"
+                                                                              detailsComponent="{!v.detailsComponent}" Field="{!v.fieldsArray}"
+                                                                              numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <aura:renderIf isTrue="{!v.fieldLabelSize != x}">
+                                    <td>
+                                    </td>
+                                </aura:renderIf>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Horizontal_Grey_No_Space}">
+                    <div aura:id="changeIt">
+                        <table class="slds-card slds-table slds-resizable slds-table--col-bordered">
+                            <tr>
+                                <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                    <td class="slds-card horizontal" border="1">
+                                        <div>
+                                            <div class=" horizontal slds-text-title--caps"><span
+                                                                                                 class="slds-truncate">{!fieldLabels}</span></div>
+                                            <div class="horizontal">
+                                                <strong>
+                                                    <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                  mapObject="{!v.complexObject}"
+                                                                                  detailsComponent="{!v.detailsComponent}"
+                                                                                  Field="{!v.fieldsArray}"
+                                                                                  numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </table>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Vertical_Grey}">
+                    <div aura:id="changeIt">
+                        <table class="slds-table slds-resizable">
+                            <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                <td class="slds-card">
+                                    <tr>
+                                        <div>
+                                            <div class="horizontal slds-text-title--caps"><span
+                                                                                                class="slds-truncate">{!fieldLabels}</span></div>
+                                            <div class="horizontal">
+                                                <strong>
+                                                    <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                  mapObject="{!v.complexObject}"
+                                                                                  detailsComponent="{!v.detailsComponent}"
+                                                                                  Field="{!v.fieldsArray}"
+                                                                                  numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </tr>
+                                </td>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Row}"><br />
+                    <div>
+                        <aura:if isTrue="{!v.noRecordsReturned}">
+                            {!v.noRecordscustomLabelAPIname}
+                            <aura:set attribute="else">
+                                <div aura:id="changeIt" class="slds-table--bordered slds-card slds-resizable"
+                                     role="banner">
+                                    <table class="slds-card slds-table slds-resizable slds-table--row-bordered"
+                                           role="grid">
+                                        <tr>
+                                            <th scope="col" class="dataRow" colspan="2">
+                                                <div>{!v.rowTitle}</div>
+                                            </th>
+                                        </tr>
+                                        <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                                            <tr class="dataRow">
+                                                <td scope="col">
+                                                    <div class="horizontal ">{!fieldLabels}</div>
+                                                </td>
+                                                <td scope="col" class="slds-text-align--right horizontal">
+                                                    <div class="slds-truncate">
+                                                        <c:DES_DynamicTableField_Comp fieldIndex="{!x}"
+                                                                                      mapObject="{!v.complexObject}"
+                                                                                      detailsComponent="{!v.detailsComponent}"
+                                                                                      Field="{!v.fieldsArray}"
+                                                                                      numberOfDecimals="{!v.inNumberOfDecimals}" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </table>
+                                    <div class="slds-align_absolute-center slds-m-top_x-small">{!v.tableMessage}</div>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </aura:if>
+                
+            </aura:if>
+            
+            
+        </aura:set>
+    </aura:if>
+</aura:component>

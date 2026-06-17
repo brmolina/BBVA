@@ -1,0 +1,41 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  controller="Arc_Gen_groupTable_controller" access="global">
+    <aura:attribute name="showtable" type="Boolean" default="false" description="data retrieved from Acc has analysis" />
+    <aura:attribute name="showmessage" type="Boolean" default="true" description="data retrieved from Acc has analysis" />
+    <aura:attribute name="data" type="Object" description="data retrieved from Acc has analysis" />
+    <aura:attribute name="columns" type="List" description="columns to show of acc has analysis" />
+    <aura:attribute name="errorMessage" type="String" description="There is no arce for this account" />
+    <aura:attribute name="currentId" type="string" description="The  id of the current account or group account" />
+    <aura:attribute name="accounts" type="String"  description="String with the list participants" access="Global"/>
+    <aura:handler name="init" value="{! this }" action="{! c.onInit }" />
+    <aura:if isTrue="{!v.showmessage}">
+        <center><strong>
+            <h1>{!$Label.c.Arc_Gen_showingGroupStr}</h1>
+        </strong></center>
+    </aura:if>
+    <aura:if isTrue="{!v.showtable}">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered " style="white-space: pre-line;">
+        <thead style="white-space: pre-line;">
+            <tr class="slds-line-height_reset" style="white-space: pre-line;">
+            <th class="" scope="col">
+                <div class="slds-truncate">{!$Label.c.Arc_Gen_CustomerName}</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate">{!$Label.c.Arc_Gen_CustomerIdent}</div>
+            </th>
+            </tr>
+        </thead>
+        <tbody style="white-space: pre-line;">
+            <aura:iteration items="{!v.data}" var="data">
+            <tr class="slds-hint-parent" style="white-space: pre-line;">
+                <td data-label="" style="white-space: pre-line;">
+                <div class="slds-truncate" title="" style="white-space: pre-line;">{!data.customer}</div>
+                </td>
+                <td data-label="" style="white-space: pre-line;">
+                <div class="slds-truncate" title="" style="white-space: pre-line;">{!data.CustomerNumber}</div>
+                </td>
+            </tr>
+            </aura:iteration>
+        </tbody>
+        </table>
+    </aura:if>
+</aura:component>

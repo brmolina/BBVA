@@ -1,0 +1,103 @@
+.uw-scope .slds-modal_medium,
+.uw-scope .slds-modal__container {
+    margin: 0 auto !important;
+    width: 55% !important;
+    max-width: 40rem !important;
+    min-width: 20rem !important;
+}
+
+.uw-scope .slds-p-around_medium,
+.uw-scope .slds-p-around--medium {
+    padding: 0;
+    border-radius: 0.25rem;
+}
+
+.uw-scope .slds-modal__content {
+    padding: 0;
+    border-radius: 0.25rem;
+}
+
+.uw-scope .slds-modal__container {
+    margin: 0 auto;
+    width: 50%;
+    max-width: 40rem;
+    min-width: 20rem;
+}
+
+.uw-scope c-dmt_underwriting_form table tbody td button.slds-button.slds-button_neutral {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.uw-scope .slds-button__icon_left,
+.uw-scope .slds-button__icon--left {
+    margin-right: 0;
+    padding: 0;
+}
+
+.uw-scope c-datatable-picklist .slds-dropdown-trigger_click,
+.uw-scope c-datatable-picklist .slds-dropdown-trigger--click {
+    display: block;
+    height: inherit;
+}
+
+.uw-scope c-datatable-picklist .slds-dropdown {
+    position: relative;
+    max-width: 27vh;
+}
+
+.uw-scope .slds-popover_full-width {
+    width: 25em;
+}
+
+.uw-scope .slds-hint-parent .slds-cell-edit .slds-button__icon_edit,
+.uw-scope .slds-hint-parent .slds-cell-edit .slds-button__icon--edit,
+.uw-scope .slds-hint-parent .slds-cell-edit .slds-button__icon_lock,
+.uw-scope .slds-hint-parent .slds-cell-edit .slds-button__icon--lock {
+    opacity: 1;
+}
+
+.uw-scope .slds-popover_edit,
+.uw-scope .slds-popover--edit {
+    width: auto;
+    left: 20rem;
+}
+
+.uw-scope .slds-table_bordered,
+.uw-scope .slds-table--bordered {
+    border-collapse: collapse;
+}
+
+.uw-scope .rounded-box {
+    border-radius: 0.5rem;
+    border: 1px solid #d8dde6;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: white;
+}
+
+.uw-scope c-datatable-picklist .slds-combobox__dropdown {
+    max-height: 10rem !important;
+    overflow-y: auto !important;
+    z-index: 9999 !important;
+    position: absolute !important;
+
+    min-width: 16rem !important;
+    max-width: 21rem !important;
+    width: 16rem !important;
+}
+
+.uw-scope .slds-form-element {
+    position: relative;
+}
+
+.uw-scope c-datatable-picklist .slds-dropdown__list,
+.uw-scope c-datatable-picklist .slds-listbox {
+    max-height: 10rem !important;
+    overflow-y: auto !important;
+}
+
+.uw-scope c-datatable-picklist .slds-dropdown-trigger_click .slds-dropdown,
+.uw-scope c-datatable-picklist .slds-dropdown-trigger--click .slds-dropdown {
+    height: auto !important;
+}

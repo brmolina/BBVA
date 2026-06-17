@@ -12,6 +12,8 @@ public with sharing class DMT_OtherClientRenderer implements DMT_ViewRenderer {
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.Client__r.Name) + '</td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Client Type:</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.line.Client_Type__c) + '</td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>Internal Rating (Short):</strong></td>'
+                + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(data.ratingMonoHolder) + '</td>'
                 + '</tr>'
                 + '</table>'
                 + '</div>'
@@ -66,8 +68,13 @@ public with sharing class DMT_OtherClientRenderer implements DMT_ViewRenderer {
                 Map<String, Object> textClient = new Map<String, Object>();
                 List<String> name = new List<String>{'Client:','Client Type:'};
                 List<String> value = new List<String>{DMT_FormattingUtils.checkNull(data.line.Client__r.Name),DMT_FormattingUtils.checkNull(data.line.Client_Type__c)};
+                if(data.isSubsidiary){
+                    name.add('Internal Rating (Short):');
+                    value.add(DMT_FormattingUtils.checkNull(data.ratingMonoHolder));
+                }
                     textClient = DMT_Create_Pdf_Controller.createListText(name, value, '');
                     contentListTable.add(textClient);
+              
                     if(!data.customAssociationClientList.isEmpty()){
                 List<List<String>> headers = new List<List<String>>();
                 Map<String, Object> tableComponent = new Map<String, Object>();

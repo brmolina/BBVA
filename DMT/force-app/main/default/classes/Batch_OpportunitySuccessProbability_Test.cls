@@ -15,11 +15,11 @@ public class Batch_OpportunitySuccessProbability_Test{
         final Opportunity opp = utilTestClass.createOpportunity(acc);
         opp.DES_Expected_Probability__c = 20;
         insert opp;
-	    final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm = new dwp_acmh__Denorm_Account_Opportunity__c ();
-	    oppDenorm.dwp_acmh__AccountId__c = acc.Id;
-	    oppDenorm.dwp_acmh__OpportunityId__c = opp.Id;
-	    insert oppDenorm;
+      final AMH_Denorm_Account_Opportunity__c oppDenorm = new AMH_Denorm_Account_Opportunity__c ();
+      oppDenorm.AMH_AccountId__c = acc.Id;
+      oppDenorm.AMH_OpportunityId__c = opp.Id;
+      insert oppDenorm;
         Id batchJobId = Database.executeBatch(new Batch_OpportunitySuccessProbability(), 200);
-        System.assertEquals(oppDenorm.dwp_acmh__AccountId__c, acc.id, 'ERROR');
+        System.assertEquals(oppDenorm.AMH_AccountId__c, acc.id, 'ERROR');
     }
 }

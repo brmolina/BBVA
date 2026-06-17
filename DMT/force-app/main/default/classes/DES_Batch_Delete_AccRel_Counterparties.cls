@@ -1,7 +1,7 @@
 /**********************************************************************************
 * @author       Accenture
 * @date         
-* @description  Manejador del Batch para el borrado de JerarquíaClientes_Counterparties (dwp_acmh__GBL_Account_Relationship__c)
+* @description  Manejador del Batch para el borrado de JerarquíaClientes_Counterparties (AMH_GBL_Account_Relationship__c)
 * @Revision     
                 03/12/2018 Se añade la instrucción después de cada borrado masivo para vaciar la papelera de reciclaje
 **********************************************************************************/
@@ -10,7 +10,7 @@ public without sharing class DES_Batch_Delete_AccRel_Counterparties implements D
   //--------------------------------------- PRIVATE ATTRIBUTES ------------------------------------
   private Integer recordsProcessed = 0;
   //private Integer relationshipsCreated = 0;
-  private String query = 'SELECT Id FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Type__c = \'04 - Contrapartida\'';
+  private String query = 'SELECT Id FROM AMH_GBL_Account_Relationship__c WHERE AMH_Type__c = \'04 - Contrapartida\'';
 
   //--------------------------------------- CONSTRUCTOR METHODS -----------------------------------
   public DES_Batch_Delete_AccRel_Counterparties() {
@@ -22,7 +22,7 @@ public without sharing class DES_Batch_Delete_AccRel_Counterparties implements D
     return Database.getQueryLocator(query);
   }
 
-  public void execute(Database.BatchableContext bc, List<dwp_acmh__GBL_Account_Relationship__c> listAccRel) {
+  public void execute(Database.BatchableContext bc, List<AMH_GBL_Account_Relationship__c> listAccRel) {
     system.debug('>>>>> BATCH listAccRel: ' + listAccRel);
     DES_Batch_Delete_AccRelHandler.borrarAccRel(listAccRel);
     recordsProcessed += listAccRel.size();

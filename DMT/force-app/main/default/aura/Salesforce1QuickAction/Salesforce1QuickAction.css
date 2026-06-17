@@ -1,0 +1,48 @@
+.THIS .eachField.narrowRegion{
+    width:100%;
+}
+.THIS .eachField{
+    width:50%;
+    display:inline-block;
+}
+.THIS .srollWrap {
+height:100%;
+width:100%;
+}
+
+.THIS .customDiv {
+	height: 95%;
+}
+
+.THIS .customDiv2 {
+	height:100%;
+	width:95%;
+}
+
+.THIS .customDivLonggForm {
+	width:100%;
+}
+
+.THIS .customDivSections {
+	height:100%;
+	width:100%;
+}
+
+.THIS .sWrapTest {
+	height:100vh;
+	width:100vw;
+	padding-bottom: 300px;
+}
+
+.THIS .sWrapTestDesktop {
+	height:100%;
+	width:100%;
+}
+
+.THIS.outerScroller {
+	border-radius: 11px;
+}
+
+.THIS.innerScroller {
+	border-radius: 10px;
+}

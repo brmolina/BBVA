@@ -1,0 +1,42 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global">
+  <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+
+  <aura:attribute name="waiting"  type="Boolean" default="false"/>
+  <aura:attribute name="products" type="Object" />
+  <aura:attribute name="strategy" type="String" default=""/>
+  <aura:attribute name="elasticity" type="String" default=""/>
+  <aura:attribute name="optimalP" type="String" default=""/>
+  <aura:attribute name="optimalQ" type="String" default=""/>
+  <aura:attribute name="observations" type="String" default=""/>
+
+  <aura:set attribute="title" value="{!$Label.c.PRW_CommentsTitle}" />
+
+  <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <div class="slds-m-top_medium">
+      <!-- <span>
+        <p><strong>Elasticity: </strong>{!v.elasticity}</p>
+      </span>
+      <span>
+        <p><strong>Strategy: </strong>{!v.strategy}</p>
+      </span> -->
+      <span>
+        <p><strong>Optimal P: </strong>{!v.optimalP}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Optimal Q: </strong>{!v.optimalQ}</p>
+      </span>
+      <span>
+        <p><strong>Observations: </strong>{!v.observations}</p>
+      </span>
+    </div>
+  </div>
+  <footer class="slds-modal__footer">
+    <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+  </footer>
+  {!v.body}
+</aura:component>

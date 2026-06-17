@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Campos_componente__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(DMT_Component_Item__c, &quot;Participants&quot;),&quot;DMT_TeamMember__c.Full_Name_User__c;DMT_TeamMember__c.AccessLevel__c&quot;,
+IF(ISPICKVAL(DMT_Component_Item__c, &quot;Products&quot;),&quot;DMT_Line__c.Repos_Limit__c;DMT_Line__c.Repos_Limit_6M__c;DMT_Line__c.First_Breakclause__c;DMT_Line__c.Breakclause_Frequency__c;DMT_Line__c.First_Breakclause_Date__c;DMT_Line__c.Waiver__c;DMT_Line__c.DvP_Amount__c;DMT_Line__c.FD_Amount__c;DMT_Line__c.CurrencyIsoCode;DMT_Risk_Line_Term__c.DMT_Init_Term__c;DMT_Risk_Line_Term__c.DMT_End_Term__c;DMT_Risk_Line_Term__c.DMT_Amount__c;DMT_Line_Product_Item__c.Name;DMT_Line_Product_Item__c.DMT_DerivativeRestriction__c;DMT_Line_Product_Item__c.Max_Tenor_WC__c;DMT_Line_Product_Item__c.DMT_FDRestriction__c;DMT_Line_Product_Item__c.DMT_DVPRestriction__c&quot;,
+IF(ISPICKVAL(DMT_Component_Item__c, &quot;Client&quot;),&quot;DMT_Line__c.Client_Type__c;DMT_Line__c.Client__r.Name;Custom_Association_Client__c.Name;Custom_Association_Client__c.DMT_ClientStarCode__c;Custom_Association_Client__c.Alpha_Code_Client__c;Custom_Association_Client__c.DMT_Amount__c;Custom_Association_Client__c.DMT_Term__c;Custom_Association_Client__c.DMT_FDAmount__c;Custom_Association_Client__c.DMT_DVPAmount__c;Custom_Association_Client__c.DMT_ClientContracts__c&quot;,
+IF(ISPICKVAL(DMT_Component_Item__c, &quot;Approval Process Data&quot;),&quot;DMT_Line__c.DMT_Operation__c;DMT_Line__c.DMT_RAROEC_RORC_Proposal__c;DMT_Line__c.DMT_Nominal__c;DMT_Line__c.DMT_Comments__c;DMT_Line__c.DMT_Franchise_L12M__c&quot;,
+IF(ISPICKVAL(DMT_Component_Item__c, &quot;Line Info&quot;),&quot;DMT_Line__c.Name;DMT_Line__c.Booking_Geography__c;DMT_Line__c.Start_Date__c;DMT_Line__c.End_Date__c;DMT_Line__c.Line_Term__c;DMT_Line__c.CurrencyIsoCode&quot;,&quot;&quot;)))))</formula>
+    <label>Campos componente</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

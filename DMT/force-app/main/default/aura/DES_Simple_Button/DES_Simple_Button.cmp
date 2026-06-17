@@ -1,0 +1,26 @@
+<aura:component controller="DES_Simple_Table_Controller"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction" 
+                access="global" >
+    
+    <aura:attribute name="recordId" type="Id" access="public"/>
+    <aura:attribute name="cssClassName" type="String" default="View Details" description="'View Details', 'View PF', 'View data in Engloba'" access="public" />
+
+    <aura:attribute name="cuenta" type="Account" access="public"/>
+    <aura:attribute name="today" type="Date" access="public"/>
+	<aura:attribute name="View_Details" type="Boolean" default="0" access="public" />
+    <aura:attribute name="View_PF" type="Boolean" access="public" />
+    <aura:attribute name="View_data_in_Engloba" type="Boolean" access="public" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.View_Details}">
+        <ui:button class="slds-float_right" label="View Details" press="{!c.openViewDetails}"/><br/><br/>
+    </aura:if>
+    <aura:if isTrue="{!v.View_PF}">
+        <ui:button class="slds-float_right" label="View PF" press="{!c.openPDF}"/><br/><br/>
+	</aura:if>
+        <aura:if isTrue="{!v.View_data_in_Engloba}">
+        <ui:button class="slds-float_right" label="View data in Engloba" press="{!c.openEngloba}"/><br/><br/>
+    </aura:if>
+    
+</aura:component>

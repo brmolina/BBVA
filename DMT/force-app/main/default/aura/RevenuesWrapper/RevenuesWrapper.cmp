@@ -1,0 +1,99 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+    access="global">
+
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="familyChecked" type="String" description="Familia de productos a mostrar" />
+    <aura:attribute name="countryParam" type="String" description="Country de client a filtrar" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:attribute name="showViewDetails" type="Boolean" default="true"/>
+    <lightning:navigation aura:id="nav" />
+
+
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+             class="slds-text-body_regular slds-p-top_small slds-p-right_small">
+            <div class="slds-m-bottom_medium">
+                <lightning:formattedText class="slds-text-heading_medium sectiontitle" value="Opportunities by Product" /><br />
+            </div>
+            <lightning:tabset selectedTabId="all" variant="scoped">
+                <lightning:tab class="customTabs" label="All" id="all">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byProduct="true" showViewDetails="{! v.showViewDetails}" stageOption="All" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Live" id="live">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byProduct="true" showViewDetails="{! v.showViewDetails}" stageOption="Live" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Won (YTD)" id="won">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byProduct="true" showViewDetails="{! v.showViewDetails}" stageOption="Won" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Lost (YTD)" id="lost">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byProduct="true" showViewDetails="{! v.showViewDetails}" stageOption="Lost" />
+                        </div>
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+        </lightning:layoutItem>
+
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-p-top_small slds-p-left_small">
+            <div class="slds-m-bottom_medium">
+                <lightning:formattedText class="slds-text-heading_medium sectiontitle" value="Opportunities by Country" /><br />
+            </div>
+            <lightning:tabset selectedTabId="all" variant="scoped">
+                <lightning:tab class="customTabs" label="All" id="all">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byCountry="true" showViewDetails="{! v.showViewDetails}" stageOption="All" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Live" id="live">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byCountry="true" showViewDetails="{! v.showViewDetails}" stageOption="Live" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Won (YTD)" id="won">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byCountry="true" showViewDetails="{! v.showViewDetails}" stageOption="Won" />
+                        </div>
+                    </div>
+                </lightning:tab>
+                <lightning:tab class="customTabs" label="Lost (YTD)" id="lost">
+                    <div class="slds-align_absolute-center">
+                        <div class="mainWrapper">
+                            <c:OpportunitiesPie familyParam="{! v.familyChecked}" countryParam="{! v.countryParam}" recordId="{! v.recordId}" byCountry="true" showViewDetails="{! v.showViewDetails}" stageOption="Lost" />
+                        </div>
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+
+
+        </lightning:layoutItem>
+    </lightning:layout>
+
+
+
+
+</aura:component>

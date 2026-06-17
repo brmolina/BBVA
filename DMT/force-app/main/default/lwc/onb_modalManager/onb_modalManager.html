@@ -1,0 +1,11 @@
+<template>
+    <template if:true={buttonLabel}>
+        <lightning-button
+            class={className}
+            label={buttonLabel}
+            icon-name={buttonIcon}
+            onclick={handleOpenModal}
+            disabled={disableContinue}>
+        </lightning-button>
+    </template>
+</template>

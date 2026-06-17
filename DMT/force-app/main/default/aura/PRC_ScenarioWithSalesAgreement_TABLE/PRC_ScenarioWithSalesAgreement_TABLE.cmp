@@ -1,0 +1,14 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+  access="global" controller="PRC_ScenarioWSA_CONTROLLER">
+  <h1>Scenario With Sales Agreement</h1>
+  <aura:attribute name="data" type="List" default="[]"/>
+  <aura:attribute name="columns" type="List" default="[]"/>
+  <aura:attribute name="recordId" type="Id"/>
+  
+  <!-- handlers-->
+  <aura:handler name="init" value="{! this }" action="{! c.doinit }" />
+  <div>
+    <lightning:datatable keyField="Id" data="{! v.data }" columns="{! v.columns }" hideCheckboxColumn="true" />
+      <br/>
+  </div>
+</aura:component>

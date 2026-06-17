@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_PS_Product_Family_and_Product_empty</fullName>
+    <active>true</active>
+    <description>Un Product Specialist no puede tener PS Product Family y PS Product vacío</description>
+    <errorConditionFormula>AND (
+ISPICKVAL(DES_Member_Role__c, &apos;Product Specialist&apos;),
+OR (
+ISBLANK(TEXT(DES_PS_Product_Family__c)),
+ISBLANK(DES_PS_Product__c)
+)
+)</errorConditionFormula>
+    <errorMessage>A Product Specialist must have Product Family and Product associated.</errorMessage>
+</ValidationRule>

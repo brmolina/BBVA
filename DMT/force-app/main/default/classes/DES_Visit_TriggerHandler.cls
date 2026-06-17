@@ -383,16 +383,18 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   * @author Global Desktop
   * @Description fillClientNBCVisit
   */
-  public static void fillClientNBCVisit(List<dwp_kitv__Visit__c> triggerNew) {
-    final String rtype = Schema.SObjectType.Account.getRecordTypeInfosByName().get(Label.DES_RT_CLIENT_NBC).getRecordTypeId();
-    final List <Account> accounts = [Select id from Account where RecordTypeId = :rtype LIMIT 1];
-        system.debug('>>>rtClase -> ' + rtype);
-        system.debug('>>>accounts -> ' + accounts);
-    for(dwp_kitv__Visit__c visit : triggerNew) {
-      if(visit.Committee_id__c != null && !accounts.isEmpty()) {
-        visit.dwp_kitv__account_id__c = accounts.get(0).id;
+    public static void fillClientNBCVisit(List<dwp_kitv__Visit__c> triggerNew) {
+      Id clientNbcAccountId = TriggerCacheManager.getInstance().getClientNbcAccountId();
+      
+      if (clientNbcAccountId == null) {
+          return;
       }
-    }
+      
+      for (dwp_kitv__Visit__c visit : triggerNew) {
+          if (visit.Committee_id__c != null) {
+              visit.dwp_kitv__account_id__c = clientNbcAccountId;
+          }
+      }
   }
 
 /*
@@ -404,12 +406,13 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
     final List<dwp_kitv__Visit__c> triggerNew = (List<dwp_kitv__Visit__c>)JSON.deserialize(listNew, List<dwp_kitv__Visit__c>.class);
     final Set<Id> nbcId = new Set<Id>();
 
-    final List <NBC_Member__c> membersEMEA = new List <NBC_Member__c>([SELECT id, BBVA_participant__c, Other_BBVA_participant__c, region_emea__c, region_latam__c, region_usa__c from NBC_Member__c where region_emea__c = true]);
-    final List <NBC_Member__c> membersLATAM = new List <NBC_Member__c>([SELECT id, BBVA_participant__c, Other_BBVA_participant__c, region_emea__c, region_latam__c, region_usa__c from NBC_Member__c where region_latam__c = true]);
-    final List <NBC_Member__c> membersUSA = new List <NBC_Member__c>([SELECT id, BBVA_participant__c, Other_BBVA_participant__c, region_emea__c, region_latam__c, region_usa__c from NBC_Member__c where region_usa__c = true]);
-	  system.debug('membersEMEA -> ' + membersEMEA);
-	  system.debug('membersLATAM -> ' + membersLATAM);
-	  system.debug('membersUSA -> ' + membersUSA);
+    TriggerCacheManager cache = TriggerCacheManager.getInstance();
+    List<NBC_Member__c> membersEMEA = cache.getNbcMembersEMEA();
+    List<NBC_Member__c> membersLATAM = cache.getNbcMembersLATAM();
+    List<NBC_Member__c> membersUSA = cache.getNbcMembersUSA();
+      system.debug('membersEMEA -> ' + membersEMEA);
+      system.debug('membersLATAM -> ' + membersLATAM);
+      system.debug('membersUSA -> ' + membersUSA);
 
     for(dwp_kitv__Visit__c visit : triggerNew) {
       if(visit.Committee_id__c != null) {
@@ -569,9 +572,9 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   ComentadasCampañasAlertasParaSubidaPosterior    */
 
   /*
-	* @author Global Desktop
-	* @Description checkNullError
-	*/
+    * @author Global Desktop
+    * @Description checkNullError
+    */
   public static void checkNullError(List<dwp_kitv__Visit__c> triggerNew) {
     for(dwp_kitv__Visit__c visit : triggerNew) {
       if(visit.dwp_kitv__solution_name_path_desc__c != null && visit.dwp_kitv__solution_name_path_desc__c.contains(';null')) {
@@ -602,14 +605,14 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   * @Description auxMethod confidential
   */
   private static boolean toConfidential(dwp_kitv__Visit__c visit) {
-  	boolean confidential;
-  	confidential = false;
-  	if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Visit).getRecordTypeId()
-		|| visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_Inside_Visit).getRecordTypeId())
-		&& visit.disclosure_info_type__c == Label.DES_OP_CONFIDENTIAL) {
-		confidential = true;
-	}
-  	return confidential;
+    boolean confidential;
+    confidential = false;
+    if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Visit).getRecordTypeId()
+        || visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_Inside_Visit).getRecordTypeId())
+        && visit.disclosure_info_type__c == Label.DES_OP_CONFIDENTIAL) {
+        confidential = true;
+    }
+    return confidential;
   }
 
   /*
@@ -617,14 +620,14 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   * @Description auxMethod public
   */
   private static boolean toPublic(dwp_kitv__Visit__c visit) {
-  	boolean notapplicable;
-  	notapplicable = false;
-  	if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Confidential_Visit).getRecordTypeId()
-		|| visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_Inside_Visit).getRecordTypeId())
-		&& visit.disclosure_info_type__c == Label.DES_OP_NOT_APPLICABLE) {
-		notapplicable = true;
-	}
-  	return notapplicable;
+    boolean notapplicable;
+    notapplicable = false;
+    if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Confidential_Visit).getRecordTypeId()
+        || visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_Inside_Visit).getRecordTypeId())
+        && visit.disclosure_info_type__c == Label.DES_OP_NOT_APPLICABLE) {
+        notapplicable = true;
+    }
+    return notapplicable;
   }
 
   /*
@@ -632,14 +635,14 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   * @Description auxMethod inside
   */
   private static boolean toInside(dwp_kitv__Visit__c visit) {
-  	boolean inside;
-  	inside = false;
-  	if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Confidential_Visit).getRecordTypeId()
-		|| visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Visit).getRecordTypeId())
-		&& visit.disclosure_info_type__c == Label.DES_OP_Inside) {
-		inside = true;
-	}
-  	return inside;
+    boolean inside;
+    inside = false;
+    if((visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Confidential_Visit).getRecordTypeId()
+        || visit.RecordTypeId == Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get(Label.DES_RT_VISIT_Account_Visit).getRecordTypeId())
+        && visit.disclosure_info_type__c == Label.DES_OP_Inside) {
+        inside = true;
+    }
+    return inside;
   }
 
   /*
@@ -773,38 +776,38 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
     }
   }
 
-	/*
-  	* @author Global Desktop
-  	* @Description method que completa el pais de la visita con el pais del cliente asociado en caso de que no venga informado
-  	*/
-	private static void autoCompleteCountry(List<dwp_kitv__Visit__c> triggerNew) {
-		final List<String> countryValues = retrievePickListVisitValues();
-		set<Id> accountsId;
+    /*
+    * @author Global Desktop
+    * @Description method que completa el pais de la visita con el pais del cliente asociado en caso de que no venga informado
+    */
+    private static void autoCompleteCountry(List<dwp_kitv__Visit__c> triggerNew) {
+        final List<String> countryValues = retrievePickListVisitValues();
+        set<Id> accountsId;
     accountsId = new set<Id>();
-		for(dwp_kitv__Visit__c vis : triggerNew) {
-			accountsId.add(vis.dwp_kitv__account_id__c);
-		}
-		final Map<Id,Account> accList = new Map<Id,Account>([SELECT id, DES_Country_Client__c FROM Account WHERE Id IN :accountsId]);
-		for(dwp_kitv__Visit__c vis2 : triggerNew) {
-			if(vis2.dwp_kitv__account_id__c != null && vis2.dwp_kitv__country_name__c == null && countryValues.contains(accList.get(vis2.dwp_kitv__account_id__c).DES_Country_Client__c)) {
-			vis2.dwp_kitv__country_name__c = accList.get(vis2.dwp_kitv__account_id__c).DES_Country_Client__c;
-			}
-		}
-	}
+        for(dwp_kitv__Visit__c vis : triggerNew) {
+            accountsId.add(vis.dwp_kitv__account_id__c);
+        }
+        final Map<Id,Account> accList = new Map<Id,Account>([SELECT id, DES_Country_Client__c FROM Account WHERE Id IN :accountsId]);
+        for(dwp_kitv__Visit__c vis2 : triggerNew) {
+            if(vis2.dwp_kitv__account_id__c != null && vis2.dwp_kitv__country_name__c == null && countryValues.contains(accList.get(vis2.dwp_kitv__account_id__c).DES_Country_Client__c)) {
+            vis2.dwp_kitv__country_name__c = accList.get(vis2.dwp_kitv__account_id__c).DES_Country_Client__c;
+            }
+        }
+    }
 
-	/*
-  	* @author Global Desktop
-  	* @Description Devuelve el nombre API de los valores de la picklist de pais del objeto visita.
-  	*/
-	private static List<String> retrievePickListVisitValues() {
+    /*
+    * @author Global Desktop
+    * @Description Devuelve el nombre API de los valores de la picklist de pais del objeto visita.
+    */
+    private static List<String> retrievePickListVisitValues() {
     List<String> pckValues;
     pckValues= new List<String>();
-		final Schema.DescribeFieldResult fieldResult = dwp_kitv__Visit__c.dwp_kitv__country_name__c.getDescribe();
-		final List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-		for( Schema.PicklistEntry pickListVal : ple) {
-			pckValues.add(pickListVal.getValue());
-		}
-		return pckValues;
+        final Schema.DescribeFieldResult fieldResult = dwp_kitv__Visit__c.dwp_kitv__country_name__c.getDescribe();
+        final List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        for( Schema.PicklistEntry pickListVal : ple) {
+            pckValues.add(pickListVal.getValue());
+        }
+        return pckValues;
     }
 
   /**
@@ -1161,24 +1164,27 @@ public with sharing class DES_Visit_TriggerHandler { //NOSONAR
   * @Description Method to get profile name from the current user
   */
   public static String gtProfileName() {
-    return [SELECT Name FROM Profile WHERE Id =: UserInfo.getProfileId()].get(0).Name;
+      return TriggerCacheManager.getInstance().getCurrentUserProfileName();
   }
    /* 
-	  * @Description Method que valida que solo el propietario de la visita pueda borrar la visita  
-	  * @Author Pedro Antonio Lozano Rios pedroantonio.lozano@bbva.com
-	  * @Date 27-05-25
-	  * @Params List<dwp_kitv__Visit__c> triggerOld lista de visitas
-	  * @return null
-	  */ 
-	    public static void checkOwnerDelete(List<dwp_kitv__Visit__c> triggerOld) {
-      Final Id currentUserId = UserInfo.getUserId();
-      Final User currentUser = [Select id,Name from User where id =:UserInfo.getUserId()];
-      Final Set <String> profiPerm = new Set<string> {'System Administrator','Administrador del Sistema'};   
-		  Final  String visitRcdType = Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get('AccountVisit').getRecordTypeId();
-		  for (dwp_kitv__Visit__c lstvisit : triggerOld) {
-			  if (lstvisit.OwnerId != currentUserId && !profiPerm.contains(currentUser.Name)   && lstvisit.RecordTypeId == visitRcdType) {
-				  lstvisit.addError('Only the owner of this record can delete this visit .');
-			  }
-		  }
-	  }
+      * @Description Method que valida que solo el propietario de la visita pueda borrar la visita  
+      * @Author Pedro Antonio Lozano Rios pedroantonio.lozano@bbva.com
+      * @Date 27-05-25
+      * @Params List<dwp_kitv__Visit__c> triggerOld lista de visitas
+      * @return null
+      */ 
+        public static void checkOwnerDelete(List<dwp_kitv__Visit__c> triggerOld) {
+        Id currentUserId = UserInfo.getUserId();
+        String currentUserName = TriggerCacheManager.getInstance().getCurrentUserName();
+        Set<String> profiPerm = new Set<String>{'System Administrator', 'Administrador del Sistema'};
+        Id visitRcdType = Schema.SObjectType.dwp_kitv__Visit__c.getRecordTypeInfosByName().get('AccountVisit').getRecordTypeId();
+        
+        for (dwp_kitv__Visit__c lstvisit : triggerOld) {
+            if (lstvisit.OwnerId != currentUserId && 
+                !profiPerm.contains(currentUserName) && 
+                lstvisit.RecordTypeId == visitRcdType) {
+                lstvisit.addError('Only the owner of this record can delete this visit.');
+            }
+        }
+    }
 }

@@ -1,0 +1,123 @@
+<aura:component implements="flexipage:availableForRecordHome,cuco:extraParticipantAction_itf" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="CucoParticipantMove_Ctrl">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="waiting" type="Boolean" default="false" />
+    <aura:attribute name="existing" type="Boolean" default="false" />
+    <aura:attribute name="new" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:set attribute="title" value="Move Participant" />
+    <aura:set attribute="modalSizeSLDS" value="slds-modal_small" />
+	<aura:attribute name="clonefg" type="Boolean" default="false" />
+	<aura:attribute name="clonefr" type="Boolean" default="false" />
+  	<aura:attribute name="clonesc" type="Boolean" default="false" />
+	<aura:attribute name="existingProfSheetList" type="List" default="[]"/>
+	<aura:attribute name="moveOptionsList" type="List" default="[]"/>
+	<aura:attribute name="existingProfSheet" type="Object"/>
+	<aura:attribute name="moveOptions" type="Object"/>
+	<aura:attribute name="participantsRemoveBannerMsg" type="String" />
+	<aura:attribute name="stage" type="Integer" />
+	<aura:attribute name="papName" type="String" />
+	<aura:attribute name="hasReqPkg" type="Boolean" default="false" />
+	<aura:attribute name="hasExtPkg" type="Boolean" default="false" />
+    <aura:attribute name="extPkgName" type="String" />
+	<aura:attribute name="hasPackages" type="Boolean" default="false" />
+	<aura:attribute name="hasConditions" type="Boolean" default="false" />
+	<aura:attribute name="hasFlatRates" type="Boolean" default="false" />
+	<aura:attribute name="participantId" type="String" />
+	<aura:attribute name="profAnId" type="String" />
+	<aura:attribute name="optionRadioButton" type="List" />
+	<aura:attribute name="valueRadioButton" type="String" />
+	<aura:registerEvent name="refresh_participants_evt" type="cuco.refresh_participants_evt"/>
+	<aura:registerEvent name="refresh_comm_packages_evt" type="cuco.refresh_comm_packages_evt"/>
+    <aura:registerEvent name="refresh_forfait_packages_evt" type="cuco.refresh_forfait_packages_evt"/>
+    <aura:registerEvent name="refresh_gip_packages_evt" type="cuco.refresh_gip_packages_evt"/>
+    <aura:registerEvent name="refresh_flat_rates_evt" type="cuco.refresh_flat_rates_evt"/>
+
+    <div class="slds-modal__content slds-p-around_large slds-is-relative" id="modal-content-id-1">
+        <aura:if isTrue="{!v.waiting}">
+          <lightning:spinner variant="brand" alternativeText="Loading" />
+        </aura:if>
+		<aura:if isTrue="{!v.hasExtPkg}">
+			<div class="slds-m-bottom_large">
+				<div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+					<span class="slds-icon_container slds-icon-utility-error slds-m-horizontal_small slds-no-flex slds-align-top" title="Description of icon when needed">
+						<lightning:buttonIcon iconName="utility:warning" variant="bare" disabled="true" class="slds-input__icon slds-input__icon_left" />
+					</span>
+					<div class="slds-notify__content">
+						<h2 class="slds-text-heading_small slds-text-align_left">{!v.papName}&nbsp;{!$Label.cuco.has_extended_pkg}. {!$Label.c.cuco_move_has_extended_pkg_post}
+						<br></br>
+						{!$Label.cuco.extended_pkg}&nbsp;{!v.extPkgName}
+						</h2>
+					</div>
+				</div>
+			</div>
+		</aura:if>
+		<div class="slds-m-top_small slds-m-bottom_medium slds-text-heading_small">
+			<lightning:icon iconName="utility:info" size="small" class="slds-m-right_small"/>
+			{!$Label.c.cuco_move_important}
+        </div>
+		<div class="slds-m-vertical_medium">
+			<lightning:select name="moveOption" aura:id="moveOption" label="{!$Label.c.cuco_move_new_destination}" required="true" value="{!v.moveOptions}" onchange="{!c.handleMoveOptionChange}">
+				<option value="">{!$Label.c.cuco_move_please_select}</option>
+				<aura:iteration items="{!v.moveOptionsList}" var="moveOptionsElement">
+					<option text="{!moveOptionsElement.label}" value="{!moveOptionsElement.value}"/>
+				</aura:iteration>
+			</lightning:select>
+		</div>
+        <aura:if isTrue="{!v.existing}">
+            <div class="slds-m-vertical_medium">
+                <lightning:select name="existingProfSheet" aura:id="existingProfSheet" label="{!$Label.c.cuco_move_destiny}" required="true" value="{!v.existingProfSheet}">
+					<option value="">{!$Label.c.cuco_move_please_select}</option>
+					<aura:iteration items="{!v.existingProfSheetList}" var="existingProfSheetElement">
+						<option text="{!existingProfSheetElement.name}" value="{!existingProfSheetElement.id}"/>
+					</aura:iteration>
+                </lightning:select>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.new}">
+            <div class="slds-m-vertical_medium">
+                <lightning:input name="newName" aura:id="newName" label="{!$Label.c.cuco_move_name}" required="true" />
+            </div>
+        </aura:if>
+		<aura:if isTrue="{!or(v.new,v.existing)}">
+			<aura:if isTrue="{!or((v.hasPackages),and((v.new),or(v.hasFlatRates,v.hasConditions)))}">
+				<div class="slds-text-title"><b>{!$Label.c.cuco_move_existing_conditions}</b></div>
+			</aura:if>
+			<aura:if isTrue="{!v.hasPackages}">
+				<div class="slds-grid slds-var-p-around_small">
+					<div class="slds-col slds-size_1-of-12">
+						<lightning:input type="toggle" aura:id="clonefg" name="clonefg" messageToggleActive="" messageToggleInactive="" checked="{!v.clonefg}"></lightning:input>
+					</div>
+					<div class="slds-col slds-size_1-of-2">
+						{!$Label.c.cuco_move_keep_packages}
+					</div>
+				</div>
+			</aura:if>
+        </aura:if>
+		<aura:if isTrue="{!v.new}">
+			<aura:if isTrue="{!v.hasFlatRates}">
+				<div class="slds-grid slds-var-p-around_small">
+					<div class="slds-col slds-size_1-of-12">
+						<lightning:input type="toggle" aura:id="clonefr" name="clonefr" messageToggleActive="" messageToggleInactive="" checked="{!v.clonefr}"></lightning:input>
+					</div>
+					<div class="slds-col slds-size_1-of-2">
+						{!$Label.c.cuco_move_clone_flat_fees}
+					</div>
+				</div>
+			</aura:if>
+			<aura:if isTrue="{!v.hasConditions}">
+				<div class="slds-grid slds-var-p-around_small">
+					<div class="slds-col slds-size_1-of-12">
+						<lightning:input type="toggle" aura:id="clonesc" name="clonesc" messageToggleActive="" messageToggleInactive="" checked="{!v.clonesc}"></lightning:input>
+					</div>
+					<div class="slds-col slds-size_1-of-2">
+						{!$Label.c.cuco_move_clone_special_conditions}
+					</div>
+				</div>
+			</aura:if>
+        </aura:if>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button label="{!$Label.cuco.cancel}" onclick="{!c.handleCancel}" disabled="{!v.waiting}" class="slds-m-top_none" />
+        <lightning:button label="Move" onclick="{!c.handleOnSubmit}" disabled="{!v.waiting}" variant="brand" class="slds-m-top_none" />
+    </footer>
+</aura:component>

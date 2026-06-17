@@ -1,0 +1,59 @@
+<template>
+  <div class="modal-overlay">
+    <div class="modal-container">
+      <template if:true={isLoading}>
+        <div class="spinner-overlay">
+          <lightning-spinner
+            alternative-text="Loading"
+            size="medium"
+            variant="brand">
+          </lightning-spinner>
+        </div>
+      </template>
+
+      <div class="modal-header">
+        <h2 class="modal-title">Send to closed lost</h2>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Picklist lost reason -->
+        <div class="form-group">
+          <label class="form-label" for="categorySelect">Select a Close Lost reason...</label>
+          <lightning-combobox
+            id="categorySelect"
+            name="category"
+            label="Select a Close Lost reason..."
+            variant="label-hidden"
+            value={selectedCategory}
+            options={categoryOptions}
+            onchange={handleCategoryChange}
+            required>
+          </lightning-combobox>
+        </div>
+
+        <!-- Textarea for comment -->
+        <div class="form-group">
+          <label class="form-label" for="commentText">Enter your comment</label>
+          <lightning-textarea
+            id="commentText"
+            name="comment"
+            label="Enter your comment"
+            variant="label-hidden"
+            value={comment}
+            onchange={handleCommentChange}
+            required>
+          </lightning-textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="button-submit"
+          onclick={handleCloseOpportunity}
+          disabled={isLoading}>
+          <span>{submitButtonLabel}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>

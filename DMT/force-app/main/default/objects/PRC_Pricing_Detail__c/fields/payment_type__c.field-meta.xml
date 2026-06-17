@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>payment_type__c</fullName>
+    <description>Payment type.</description>
+    <label>Payment rate</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>EURIBOR</fullName>
+                <default>false</default>
+                <label>Euribor Funding + Spread</label>
+            </value>
+            <value>
+                <fullName>FIXED</fullName>
+                <default>false</default>
+                <label>Fixed Rate</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

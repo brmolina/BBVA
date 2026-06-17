@@ -1,0 +1,444 @@
+.summary-sidebar-container {
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    background: #ffffff;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-sidebar-container.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.resizer {
+    width: 4px;
+    background: #e5e5e5;
+    cursor: col-resize;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.resizer:hover {
+    background: #2196f3;
+}
+
+.resizer:active {
+    background: #1976d2;
+}
+
+.summary-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    flex: 1;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: #fff;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.close-button:hover {
+    background: #e5e7eb;
+}
+
+.close-button svg {
+    color: #6b7280;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.message-id {
+    background: #f3f4f6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.message-id .label {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.message-id .value {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.content-section,
+.explicability-section {
+    margin-bottom: 24px;
+}
+
+.section-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.copy-full-btn,
+.copy-section-btn {
+    border: none;
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-full-btn:hover,
+.copy-section-btn:hover {
+    background: #f8fafc;
+}
+
+.copy-full-btn:focus-visible,
+.copy-section-btn:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.copy-btn-icon {
+    display: block;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+.content-text,
+.explicability-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2937;
+    background: #f9fafb;
+    padding: 16px;
+    border-radius: 8px;
+    /* border-left removed */
+}
+
+.summary-block.copy-hover-target .content-text {
+    box-shadow: inset 0 0 0 1px #1a73e8;
+}
+
+.explicability-text {
+    border-left-color: #10b981;
+    overflow-x: auto; /* Permitir scroll horizontal */
+}
+
+/* Estilos para tablas con SLDS */
+.content-text .slds-table,
+.explicability-text .slds-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    margin: 16px 0;
+}
+
+.content-text .slds-scrollable_x,
+.explicability-text .slds-scrollable_x {
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+.content-text .slds-table thead th,
+.explicability-text .slds-table thead th {
+    background-color: #f3f4f6;
+    color: #3e3e3c;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.0625rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-top: 1px solid #dddbda;
+    border-bottom: 2px solid #dddbda;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.content-text .slds-table tbody td,
+.explicability-text .slds-table tbody td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #dddbda;
+    color: #3e3e3c;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.content-text .slds-table tbody tr:hover,
+.explicability-text .slds-table tbody tr:hover {
+    background-color: #f3f3f3;
+}
+
+.content-text .slds-table tbody tr:nth-child(even),
+.explicability-text .slds-table tbody tr:nth-child(even) {
+    background-color: #fafaf9;
+}
+
+.content-text .slds-table tbody tr:nth-child(even):hover,
+.explicability-text .slds-table tbody tr:nth-child(even):hover {
+    background-color: #f3f3f3;
+}
+
+/* Estilos para strong/bold en tablas */
+.content-text .slds-table strong,
+.explicability-text .slds-table strong {
+    font-weight: 700;
+    color: #080707;
+}
+
+/* Estilos para headings con SLDS */
+.content-text h1,
+.content-text h2,
+.content-text h3,
+.explicability-text h1,
+.explicability-text h2,
+.explicability-text h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #080707;
+}
+
+.content-text .slds-text-heading_large,
+.explicability-text .slds-text-heading_large {
+    font-size: 1.75rem;
+    line-height: 1.25;
+}
+
+.content-text .slds-text-heading_medium,
+.explicability-text .slds-text-heading_medium {
+    font-size: 1.25rem;
+    line-height: 1.25;
+}
+
+.content-text .slds-text-heading_small,
+.explicability-text .slds-text-heading_small {
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+/* Estilos para listas */
+.content-text .slds-list_dotted,
+.explicability-text .slds-list_dotted {
+    margin-left: 1.5rem;
+    list-style: disc;
+}
+
+.content-text .slds-list_dotted li,
+.explicability-text .slds-list_dotted li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+/* Responsive: Tablas en pantallas pequeñas */
+@media (max-width: 768px) {
+    .content-text .slds-table,
+    .explicability-text .slds-table {
+        font-size: 0.75rem;
+    }
+    
+    .content-text .slds-table thead th,
+    .explicability-text .slds-table thead th,
+    .content-text .slds-table tbody td,
+    .explicability-text .slds-table tbody td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        white-space: normal; /* Permitir wrap en móviles */
+    }
+}
+
+/* Estilos para listas (compatibilidad con estilos legacy) */
+.content-text ul:not(.slds-list_dotted),
+.explicability-text ul:not(.slds-list_dotted) {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.content-text ul:not(.slds-list_dotted) li,
+.explicability-text ul:not(.slds-list_dotted) li {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.empty-state svg {
+    margin-bottom: 16px;
+    color: #d1d5db;
+}
+
+.empty-state p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Responsive - tablets */
+@media (max-width: 1024px) {
+    .summary-sidebar-container {
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* Responsive - mobile */
+@media (max-width: 768px) {
+    .summary-sidebar-container {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .resizer {
+        display: none;
+    }
+    
+    .sidebar-header {
+        padding: 16px 20px;
+    }
+    
+    .sidebar-title {
+        font-size: 18px;
+    }
+    
+    .sidebar-content {
+        padding: 20px;
+    }
+
+    .section-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Scrollbar styling */
+.sidebar-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #0070d2;
+    border-top-color: transparent;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}

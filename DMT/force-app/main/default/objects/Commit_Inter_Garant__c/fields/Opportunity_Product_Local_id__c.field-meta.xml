@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Product_Local_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Opportunity_Product_Local_id</label>
+    <referenceTo>OpportunityLineItem_Local__c</referenceTo>
+    <relationshipLabel>Commit_Inter_Garant</relationshipLabel>
+    <relationshipName>Commit_Inter_Garant</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

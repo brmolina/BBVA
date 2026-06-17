@@ -81,12 +81,11 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
             table += '<div>'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse;">'
                 + '<tr>'
-                + '<td colspan="5" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>OPERATIONAL RESTRICTIONS</strong></td>'
+                + '<td colspan="4" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>OPERATIONAL RESTRICTIONS</strong></td>'
                 + '</tr>'
                 + '<tr>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>PRODUCT GROUP</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>DERIVATIVES LINE</strong></td>'
-                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>MATURITY TERM</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>FD LINE: (0 ' + DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode) + ')</strong></td>'
                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3;"><strong>DVP LINE: (0 ' + DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode) + ')</strong></td>'
                 + '</tr>';
@@ -94,7 +93,6 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
                 table += '<tr>'
                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.checkNull(lineProduct.Name) + '</td>'
                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><div class="checkbox">' + (lineProduct.DMT_DerivativeRestriction__c ? '&#10003;' : '') + '</div></td>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(lineProduct.Max_Tenor_WC__c)) + '</td>'
                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><div class="checkbox">' + (lineProduct.DMT_FDRestriction__c ? '&#10003;' : '') + '</div></td>'
                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><div class="checkbox">' + (lineProduct.DMT_DVPRestriction__c ? '&#10003;' : '') + '</div></td>'
                     + '</tr>';
@@ -105,7 +103,7 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
     }
 
     public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        
+
         if (data == null || data.line == null || data.lineProductList == null) {
             return new Map<String, Object>();
         }
@@ -132,7 +130,7 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
             'type' => 'pageBreak',
             'threshold' => 30
         };
-        
+
         contentListProduct.add(pageBreak);
 
         //TITLE PROECESS DARA
@@ -140,7 +138,7 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
         //CREATE COMPONENT TEXT PRODUCT
         Map<String, Object> textProduct = new Map<String, Object>();
         List<String> name = new List<String>();
-        List<String> value = new List<String>();   
+        List<String> value = new List<String>();
             name.add('Delivery vs Payment (DvP) Amount:');
             value.add(DMT_FormattingUtils.formatCurrencyAmount(data.line.DvP_Amount__c, data.line.currencyIsoCode));
             name.add('Free Delivery (FD) Amount (Units EUR):');
@@ -170,16 +168,16 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
         Map<String, Object> tableComponentCounteparty = new Map<String, Object>();
         List<List<String>> headersCounteparty = new List<List<String>>();
         List<String> listHeadersCounteparty = new List<String>{'INIT TERM', 'END TERM', 'AMOUNT'};
-        headersCounteparty.add(listHeadersCounteparty);     
+        headersCounteparty.add(listHeadersCounteparty);
         List<List<String>> bodyCounteparty = new List<List<String>>();
         for (DMT_Risk_Line_Term__c riskLineDerivate : riskLineDerivatesList) {
-                List<String> row = new List<String>();
-                row.add(DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(riskLineDerivate?.DMT_Init_Term__c)));
-                row.add(DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(riskLineDerivate?.DMT_End_Term__c)));
-                row.add(DMT_FormattingUtils.formatCurrencyAmount(riskLineDerivate?.DMT_Amount__c, data.line.CurrencyIsoCode));
-                bodyCounteparty.add(row);
+            List<String> row = new List<String>();
+            row.add(DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(riskLineDerivate?.DMT_Init_Term__c)));
+            row.add(DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(riskLineDerivate?.DMT_End_Term__c)));
+            row.add(DMT_FormattingUtils.formatCurrencyAmount(riskLineDerivate?.DMT_Amount__c, data.line.CurrencyIsoCode));
+            bodyCounteparty.add(row);
         }
-        
+
         contentListProduct.add(pageBreak);
 
         titleSection = DMT_Create_Pdf_Controller.createTitleSection('COUNTERPARTY RISK (DERIVATIVES RISK LINE)');
@@ -193,68 +191,62 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
         tableComponentCounteparty.put('type', 'table');
         contentListProduct.add(tableComponentCounteparty);
         //CREATE TABLE SECTION ONE-OFF TRANSACTION
-            Map<String, Object> tableComponentSingular = new Map<String, Object>();
+        Map<String, Object> tableComponentSingular = new Map<String, Object>();
             List<List<String>> headersSingular = new List<List<String>>{new List<String>{'TRANSACTION', 'AMOUNT', 'TERM', 'MAX DATE', 'ACTIVE'}};
-            List<List<String>> bodySingular = new List<List<String>>();
-            for (DMT_Risk_Line_Term__c riskLine : riskLineSingularList) {
-                List<String> row = new List<String>{
-                    DMT_FormattingUtils.checkNull(riskLine.DMT_Singular_Operation__c),
-                    DMT_FormattingUtils.formatCurrencyAmount(riskLine.DMT_Amount__c, riskLine.CurrencyIsoCode),
-                    DMT_FormattingUtils.checkNull(riskLine.DMT_Term__c),
-                    DMT_FormattingUtils.changeDateFormat(DMT_FormattingUtils.checkNull(riskLine.DMT_Max_Date__c)),
-                    riskLine.DMT_Singular_Active__c ? 'Yes' : 'No'
-                };
-                bodySingular.add(row);
-            }
-            tableComponentSingular.put('type', 'table');
-            tableComponentSingular.put('head', headersSingular);
-            tableComponentSingular.put('body', bodySingular);
-            tableComponentSingular.put('style', stylesTable);
-            tableComponentSingular.put('headStyles', headStyles);
-            tableComponentSingular.put('margin', stylesTable.get('margin'));
-            
-            contentListProduct.add(pageBreak);
-            titleSection = DMT_Create_Pdf_Controller.createTitleSection('ONE-OFF-TRANSACTION');
-            contentListProduct.add(titleSection[0]);
-            contentListProduct.add(titleSection[1]);
-            contentListProduct.add(tableComponentSingular);
+        List<List<String>> bodySingular = new List<List<String>>();
+        for (DMT_Risk_Line_Term__c riskLine : riskLineSingularList) {
+            List<String> row = new List<String>{
+                DMT_FormattingUtils.checkNull(riskLine.DMT_Singular_Operation__c),
+                DMT_FormattingUtils.formatCurrencyAmount(riskLine.DMT_Amount__c, riskLine.CurrencyIsoCode),
+                DMT_FormattingUtils.checkNull(riskLine.DMT_Term__c),
+                DMT_FormattingUtils.changeDateFormat(DMT_FormattingUtils.checkNull(riskLine.DMT_Max_Date__c)),
+                riskLine.DMT_Singular_Active__c ? 'Yes' : 'No'
+            };
+            bodySingular.add(row);
+        }
+        tableComponentSingular.put('type', 'table');
+        tableComponentSingular.put('head', headersSingular);
+        tableComponentSingular.put('body', bodySingular);
+        tableComponentSingular.put('style', stylesTable);
+        tableComponentSingular.put('headStyles', headStyles);
+        tableComponentSingular.put('margin', stylesTable.get('margin'));
+
+        contentListProduct.add(pageBreak);
+        titleSection = DMT_Create_Pdf_Controller.createTitleSection('ONE-OFF-TRANSACTION');
+        contentListProduct.add(titleSection[0]);
+        contentListProduct.add(titleSection[1]);
+        contentListProduct.add(tableComponentSingular);
         //CREATE TABLE SECTION OPERATIONAL RESTRICTIONS
+        List<String> listHeadersRestrictions = new List<String>{
+            'PRODUCT GROUP', 'DERIVATIVES LINE',
+            'FD LINE: (0 ' + DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode) + ')',
+            'DVP LINE: (0 ' + DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode) + ')'
+        };
         List<List<String>> headersRestrictions = new List<List<String>>();
-        List<String> listHeadersRestrictions  = new List<String>{'PRODUCT GROUP', 'DERIVATIVES LINE', 'MATURITY TERM', 'FD LINE: (0 '+DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode)+')', 'DVP LINE: (0 '+DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode)+')'};     
         headersRestrictions.add(listHeadersRestrictions);
         Map<String, Object> tableComponentRestrictions = new Map<String, Object>();
-        List<List<String>> bodyRestrictions  = new List<List<String>>();
+        List<List<String>> bodyRestrictions = new List<List<String>>();
         for (DMT_Line_Product_Item__c lineProduct : data.lineProductList) {
-                List<String> row = new List<String>();
-                row.add(DMT_FormattingUtils.checkNull(lineProduct?.Name));
-                row.add(lineProduct?.DMT_DerivativeRestriction__c ? '3' : '');
-                row.add(DMT_FormattingUtils.traductorDate(DMT_FormattingUtils.checkNull(lineProduct?.Max_Tenor_WC__c)));
-                row.add(lineProduct?.DMT_FDRestriction__c ? '3' : '');
-                row.add(lineProduct?.DMT_DVPRestriction__c ? '3' : '');
-                bodyRestrictions.add(row);
-        } 
-        Map<String, Object> columnStyles= new Map<String, Object>();
-        Map<String, Object> column4= new Map<String, Object>();
-            column4.put('halign', 'center');
-            column4.put('font', 'Zapfdingbats');
-            columnStyles.put('4', column4);
-        Map<String, Object> column3= new Map<String, Object>();
-            column3.put('halign', 'center');
-            column3.put('font', 'Zapfdingbats');
-            columnStyles.put('3', column3);
-        Map<String, Object> column2= new Map<String, Object>();
-            column2.put('halign', 'left');
-            columnStyles.put('2', column2);
-        Map<String, Object> column1= new Map<String, Object>();
-            column1.put('halign', 'center');
-            column1.put('font', 'Zapfdingbats');
-            columnStyles.put('1', column1);
-        Map<String, Object> column0= new Map<String, Object>();
-            column0.put('halign', 'left');
-            columnStyles.put('0', column0);
-        
+            List<String> row = new List<String>();
+            row.add(DMT_FormattingUtils.checkNull(lineProduct?.Name));
+            row.add(lineProduct?.DMT_DerivativeRestriction__c ? '3' : '');
+            row.add(lineProduct?.DMT_FDRestriction__c ? '3' : '');
+            row.add(lineProduct?.DMT_DVPRestriction__c ? '3' : '');
+            bodyRestrictions.add(row);
+        }
+
+        Map<String, Object> columnStyles = new Map<String, Object>();
+        Map<String, Object> column0 = new Map<String, Object>{'halign' => 'left'};
+        columnStyles.put('0', column0);
+        Map<String, Object> column1 = new Map<String, Object>{'halign' => 'center', 'font' => 'Zapfdingbats'};
+        columnStyles.put('1', column1);
+        Map<String, Object> column2 = new Map<String, Object>{'halign' => 'center', 'font' => 'Zapfdingbats'};
+        columnStyles.put('2', column2);
+        Map<String, Object> column3 = new Map<String, Object>{'halign' => 'center', 'font' => 'Zapfdingbats'};
+        columnStyles.put('3', column3);
+
         contentListProduct.add(pageBreak);
-        
+
         titleSection = DMT_Create_Pdf_Controller.createTitleSection('OPERATIONAL RESTRICTIONS');
         contentListProduct.add(titleSection[0]);
         contentListProduct.add(titleSection[1]);
@@ -270,7 +262,7 @@ public with sharing class DMT_TreasuryProductsRenderer_CO implements DMT_ViewRen
         //CREATE TABLE SECTION PRODUCTS
         componentProduct.put('content', contentListProduct);
         componentProduct.put('name', 'PRODUCTS');
-               
+
         return componentProduct;
     }
 }

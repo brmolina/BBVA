@@ -1,0 +1,60 @@
+.THIS.classTableCmp {
+    padding-top:1% !important;
+    padding-bottom:1% !important;
+}
+
+.THIS svg[data-key="edit"] {
+    opacity: 1 !important;
+    fill: #39A3F1;
+}
+
+.THIS svg[data-key="anywhere_chat"] {
+    fill: #39A3F1;
+}
+
+.THIS svg[data-key="warning"] {
+    fill: #c9c200;
+}
+
+
+.THIS tr[data-row-key-value='row-0'] {
+    pointer-events: none;
+}
+
+.THIS tr[data-row-key-value='row-0'] svg {
+    opacity: 0 !important;
+}
+
+.THIS tr[data-row-key-value='row-0'] td:last-child button {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.THIS.classSpinner{
+    position: relative;
+    display: inline-block;
+    margin-left: 50%;
+    width: 55px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.THIS .classButton button{
+    border: 0px !important;
+}
+
+.THIS .table-test thead th span {
+    background-color: #16325c;
+    color: white;
+    word-break: break-word;
+    white-space: pre-line;
+}
+
+.THIS .slds-table .slds-row-number:after {
+    content: counter(none) !important ;
+    display: none !important ;
+}
+
+.THIS .slds-table tr th:first-child{
+    width: 0px !important;
+}

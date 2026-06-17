@@ -1,0 +1,10 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component - Show the Potition Bank Table. </b></h5>
+    <p>rows - Contains information to build the rows of the table</p>
+    <p>columns - Contains information to build the columns of the table</p>
+    <p>inputClass - Name of the class controller</p>
+    <p>refreshVariable - Control the refresh of the table</p>
+    <p><code>c:Arc_Gen_PotitionBankTable</code></p>
+  </aura:description>
+</aura:documentation>

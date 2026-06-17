@@ -1,0 +1,19 @@
+.opp-prof-selector{
+  top: 100% !important;
+  bottom: auto !important;
+
+}
+
+.modal-dialog.slds-modal__container:has(.modal_large_opp_prof){
+  max-width: 75%;
+  min-width: 60%;
+  width: auto;
+}
+/*Contenido*/
+.modal-dialog.slds-modal__container .modal_large_opp_prof{
+    max-width: 97%;
+    min-width: 60%;
+    width: auto;
+    
+      
+}

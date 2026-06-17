@@ -61,6 +61,10 @@ global with sharing class DMT_Opportunity_Handler implements Callable {
 
                 Object rawValueOppId = inputMap.get('oppId');
                 result = DMT_Opportunity_Utils.createProductsOpportunity(products,rawValueOppId);
+
+            } else if (methodName == 'getComparisonAccount') {
+                result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
+
             }  
             else {
                 throw new DTM_Currency_Exception('Metodo no definido');
@@ -93,6 +97,45 @@ global with sharing class DMT_Opportunity_Handler implements Callable {
         } catch (Exception e) {
             System.debug('safeParseDate() failed: ' + e.getMessage());
             return null;
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String getWebLinkUrl(String recordDeveloperName) {
+        // Fetch the metadata record from cache using its DeveloperName
+        DMT_Web_Link__mdt webLinkConfig = DMT_Web_Link__mdt.getInstance(recordDeveloperName);
+
+        if (webLinkConfig != null) {
+            return webLinkConfig.url__c;
+        }
+        return null; // Return null if the record isn't found
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static AssociatedLineInfo getAssociatedSanctionLine(String opportunityExternalId) {
+        if (String.isBlank(opportunityExternalId)) {
+            return null;
+        }
+
+        Opportunity opportunityRecord = DMT_Opportunity_Selector.getOpportunityByExternalIdWithSanction(opportunityExternalId);
+
+        if (opportunityRecord == null || opportunityRecord.DMT_Sanction__c == null) {
+            return null;
+        }
+
+        return new AssociatedLineInfo(
+            opportunityRecord.DMT_Sanction__c,
+            opportunityRecord.DMT_Sanction__r.Name
+        );
+    }
+
+    public class AssociatedLineInfo {
+        @AuraEnabled public Id lineId { get; set; }
+        @AuraEnabled public String lineLabel { get; set; }
+
+        public AssociatedLineInfo(Id lineId, String lineLabel) {
+            this.lineId = lineId;
+            this.lineLabel = lineLabel;
         }
     }
 

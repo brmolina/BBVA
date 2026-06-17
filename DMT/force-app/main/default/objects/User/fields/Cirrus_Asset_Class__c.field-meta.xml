@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cirrus_Asset_Class__c</fullName>
+    <label>Default Asset Class</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>FI</fullName>
+                <default>false</default>
+                <label>FI</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>EQ</fullName>
+                <default>false</default>
+                <label>EQ</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

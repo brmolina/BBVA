@@ -1,0 +1,97 @@
+<template>
+    <lightning-card>
+        <div class="slds-p-around_small">
+
+            <!-- Legal Client Contact -->
+            <div class="onb-group slds-m-top_medium">
+                <div class="onb-row onb-row-two">
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            object-api-name={objContactApiName}
+                            record-id={externalContactId}
+                            title={label.ONB_LEGAL_CLIENT_CONTACT}
+                            field-names={sections.legalClientContactLeft.fields}
+                            field-custom-labels={sections.legalClientContactLeft.labels}
+                            field-rules={rules.legalClientContactLeft}
+                            all-required
+                            handle-save-on-wrapper
+                            onvaluechange={handleContactFieldChange}>
+                        </c-onb_onboarding-form>
+                    </div>
+
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            object-api-name={objContactApiName}
+                            record-id={externalContactId}
+                            field-names={sections.legalClientContactRight.fields}
+                            field-custom-labels={sections.legalClientContactRight.labels}
+                            field-rules={rules.legalClientContactRight}
+                            all-required
+                            handle-save-on-wrapper
+                            onvaluechange={handleContactFieldChange}>
+                        </c-onb_onboarding-form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="onb-row slds-m-vertical_medium">
+                <div class="onb-card" style="width:100%">
+                    <c-onb_onboarding-table
+                        title={label.ONB_MASTER_AGREEMENTS_CARD}
+                        empty-state-message={label.ONB_EMPTY_STATE_CONTRACT_MSSG}
+                        record-id={recordId}
+                        object-api-name={onboardingContractObjApiName}
+                        parent-field-api-name={parentFieldApiName}
+                        columns={columns}
+                        initial-rows={rows}
+                        contract-type-options-by-row-id={contractTypeOptionsByRowId}
+                        add-label={label.ONB_ADD_NEW_CONTRACT}
+                        add-label-aux={label.ONB_ADD_EXISTING_CONTRACT}
+                        show-add={shouldAllowAddNewContract}
+                        show-connect=true
+                        connect-tooltip-text="Connect the funds you created in the previous step with the corresponding contracts."
+                        show-add-aux=true
+                        show-delete=true
+                        actions-column-label="Funds"
+                        row-read-only-when={rowReadOnlyWhen}
+                        create-record-on-add=true
+                        required-field-api-names={requiredFieldApiNames}
+                        conditional-required-rules={conditionalRequiredRules}
+                        cell-disabled-when={cellDisabledWhen}
+                        onrowcreated={handleRowChange}
+                        onrowdeleted={handleRowChange}
+                        onrowunlink={handleRowUnlink}
+                        onaddexistingcontract={handleAddExistingContract}
+                        onrowconnect={handleConnectRow}>
+                    </c-onb_onboarding-table>
+                </div>
+            </div>
+
+            <div class="onb-row onb-row-two">
+                <div class="onb-card">
+                    <c-onb_user-multi-picker
+                        record-id={recordId}
+                        title={label.ONB_INTERNAL_NOTIFICATION}
+                        help-text={label.ONB_INTERNAL_NOTIFICATION_INCLUDE_USERS}
+                        placeholder="Search user"
+                        user-ids={internalNotificationUserIds}
+                        onuseradd={handleInternalNotifAdd}
+                        onuserremove={handleInternalNotifRemove}>
+                    </c-onb_user-multi-picker>
+                </div>
+
+
+                <div class="onb-card">
+                    <c-onb_onboarding-form 
+                        object-api-name={onboardingObjApiName}
+                        record-id={recordId}
+                        title={label.ONB_ADDITIONAL_COMMENTS}
+                        field-names={sections.additionalComments.fields}
+                        field-custom-labels={sections.additionalComments.labels}
+                        field-rules={rules.additionalComments}>
+                    </c-onb_onboarding-form>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

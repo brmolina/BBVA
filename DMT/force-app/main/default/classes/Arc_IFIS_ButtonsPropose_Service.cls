@@ -14,6 +14,9 @@
 * -----------------------------------------------------------------------------------------------
 **/
 public with sharing class Arc_IFIS_ButtonsPropose_Service {
+    /** @description Callable class name.**/
+    static final String CALLABLE_CLASS = Test.isRunningTest() ? 'Arc_Gen_CallableFromCore_Mock' : 'arce.Arc_IFIS_CallableFromCore';
+
     /**
     * -----------------------------------------------------------------------------------------------
     * @description Main method with the logic of the rating proposal process.
@@ -45,7 +48,13 @@ public with sharing class Arc_IFIS_ButtonsPropose_Service {
             new List<sObject>{ analysisToUpd, ratingToUpd }
         );
         if (response.status == 'true') {
-            arce.Arc_IFIS_Buttons_Helper.sendNotifications(analysisId, System.Label.arce.Arc_IFIS_Notification_Propose);
+            final List<User> usersToNotify = new List<User>{ new User(Id = currentUserId) };
+            final Callable callableFromCore = (Callable) Type.forName(CALLABLE_CLASS).newInstance();
+            callableFromCore.call('sendNotifications', new Map<String, Object>{
+                'analysisId' => analysisId,
+                'message' => System.Label.arce.Arc_IFIS_Notification_Propose,
+                'usersToNotify' => usersToNotify
+            });
             setTraceability(analysisId, selectedAmbit, currentUserId);
         }
 

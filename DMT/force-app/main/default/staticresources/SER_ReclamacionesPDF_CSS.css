@@ -1,0 +1,318 @@
+/*Hoja CSS SER_ReclamacionesPDF_CSS*/
+body
+{
+	margin: 0 !important; 
+	/*border: 1px black solid;*/
+	border: 0;
+	padding: 2%;
+	height: 100vh;
+	width: 100vw;
+	min-height:  100vh;
+	min-width:  100vw;
+	float: left;
+	font-family: 'Dialog';
+}
+
+/*TAGS GENERIC STYLING*/
+div
+{
+	position: relative;
+}
+span
+{
+	position: relative;
+	display: block;
+	width: auto;
+}
+/*----------------------*/
+
+
+.wp_BodyWrapper
+{
+	width: 100%;
+	height: auto;
+	min-width: 100%;
+	clear: both;
+	margin-bottom: 10px;
+	float: left;
+}
+.wp_BodyWrapper_WithBorder
+{
+	border: 0.5px black solid;
+	padding: 2px;
+	float: left;
+}
+
+/*-----------------------------------------*/
+#dv_HeaderWP div
+{
+	float: left;
+}
+#dv_HeaderIMG
+{
+	width: 59%;
+}
+#dv_HeaderIMG img
+{
+	width: 100%;
+	height: 100%;
+}
+/*-----------------------------------------*/
+
+/*----------------------------------------*/
+#dv_HeaderFields
+{
+	width: 39%;
+	text-align: center;
+	color: #004481;
+	font-size: 12px;
+}
+	#dv_HeaderFields div
+	{
+		margin: 0;
+		border: 0;
+		height: 98%;
+		width: 43.5%;
+		padding-left: 3%;
+		padding-right: 3%;
+		clear: none;
+	}
+	#dv_HeaderFields span
+	{
+		width: auto;
+	}
+	#dv_HeaderFields_FieldLabels
+	{
+		text-align: right;
+	}
+	#dv_HeaderFields_FieldValues
+	{
+		text-align: left;
+		/*width: auto;*/
+		max-width: inherit;
+	}
+/*-----------------------------------------*/
+
+/*-----------------------------------------*/
+#dv_AccountFinallyAssumed_Wrapper .dv_FieldDisplay
+{
+	width: 40% !important;
+}
+#dv_AccountFinallyAssumed_Wrapper .dv_FieldDisplay span
+{
+	float: none;
+	display: inline;
+}
+#dv_OperationalRiskWrapper .dv_FieldDisplay
+{
+	width: 40% !important;
+}
+#dv_OperationalRiskWrapper .dv_FieldDisplay span
+{
+	float: none;
+	display: inline;
+}
+#dv_AmountRecoveredWrapper .dv_FieldDisplay
+{
+	width: 40% !important;
+}
+#dv_AmountRecoveredWrapper .dv_FieldDisplay span
+{
+	float: none;
+	display: inline;
+}
+
+#dv_WaiverWrapper .dv_FieldDisplay
+{
+	width: 40% !important;
+}
+#dv_WaiverWrapper .dv_FieldDisplay span
+{
+	float: none;
+	display: inline;
+}
+/*-----------------------------------------*/
+
+/*-----------------------------------------*/
+	#dv_Payer_AccountingDate .dv_FieldDisplay
+	{
+		width: 40% !important;
+	}
+	#dv_Payer_AccountingDate .dv_FieldDisplay span
+	{
+		float: none;
+		display: inline;
+	}
+	#dv_Payer_AccountingDate .sc_FieldLabelOutput
+	{
+		width: 40%;
+		margin-right: 5%;
+	}
+	#dv_Payer_AccountingDate .sc_FieldValueOutput
+	{
+		width: 40%;
+	}
+/*-----------------------------------------*/
+
+
+/*Global Classes Stylying START*/
+
+/*FIELD DISPLAY - SPAN CLASSES 00000000000000*/
+	.sc_FieldLabelOutput
+	{
+		color: #004481;
+		font-weight: bold;
+		font-style: italic;
+		font-size: 13px;
+	}
+
+	.sc_FieldValueOutput
+	{
+		color: #004481;
+		font-size: 12px;
+	}
+/*FIELD DISPLAY - SPAN CLASSES XXXXXXXXXXXXXX*/
+.dv_HeaderTag
+{
+	color: #2A86CA;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+	font-size: 14px;
+}
+
+/*CASE NUMBER DISPLAY 00000000000*/
+	.sc_CaseNumberDisplay
+	{
+		color: #004498;
+		font-style: italic;
+		font-weight: bold;
+		font-size: 12px;
+	}
+/*CASE NUMBER DISPLAY XXXXXXXXXXX*/
+
+/*CLIENT INFO DISPLAY 00000000000*/
+	.sc_ClientINFODisplay
+	{
+		color: #2A86CA;
+		font-weight: bold;
+		font-size: 20px;
+	}
+/*CLIENT INFO DISPLAY XXXXXXXXXXX*/
+
+/*Authorizers DISPLAY 00000000000*/
+	#dv_AuthorizerDisplayWrapper .dv_BlockFieldDisplay
+	{
+		width: 40%;
+		margin: 0;
+		border: 0;
+	}
+/*Authorizers DISPLAY XXXXXXXXXXX*/
+
+/*Classification DISPLAY 00000000000*/
+	#dv_ClassificationDisplayWrapper .dv_BlockFieldDisplay
+	{
+		width: 30%;
+		margin: 0;
+		border: 0;
+	}
+/*Classification DISPLAY XXXXXXXXXXX*/
+
+/*ANALYSIS 00000000000*/
+/*ANALYSIS XXXXXXXXXXX*/
+
+
+/*DIV - FIELD DISPLAY WRAPPERS ----------------------------------*/
+	.dv_FieldDisplay_Wrapper
+	{
+		width: 100%;
+		border: 0;
+		margin: 0;
+		padding: 0;
+		clear: both;
+	}
+
+	.dv_FieldDisplay_Wrapper div
+	{
+		height: 100%;
+		width: auto;
+	}
+
+	.dv_FieldDisplay
+	{
+		float: left;
+	}
+	.dv_FieldDisplay span
+	{
+		float: none;
+		display: inline;
+	}
+	.dv_BlockFieldDisplay
+	{
+		float: left;
+		margin-right: 5%;
+	}
+	.dv_BlockFieldDisplay span
+	{
+		float: none;
+	}
+	.dv_SingleFieldDisplay
+	{
+		float: left;
+		clear: both;
+	}
+	.dv_SingleFieldDisplay span
+	{
+		float: none;
+		display: inline;
+		margin-right: 5%;
+	}
+
+	.dv_TextAreaFieldDisplayWrapper
+	{
+		padding: 5px;
+		height: 100%;
+	}
+	.dv_TextAreaFieldDisplayWrapper div
+	{
+		width: 30%;
+		margin: 0;
+		float: left;
+	}
+	.dv_TextAreaFieldDisplayWrapper div span
+	{
+	}
+	.sc_TextArea
+	{
+		width: 60% !important;
+		border: 0.5px solid black;
+	}
+/*DIV - FIELD DISPLAY WRAPPERS ----------------------------------*/
+/*Global Classes Styling END*/
+
+#caseNumberDisplay
+{
+	font-weight: bold;
+	font-size: 15px;
+}
+#dv_TeamAssignedToTheCase
+{
+	margin-top: 10px;
+}
+.solutionFields
+{
+	font-size: 13px;
+}
+
+/* Forzar que cada dv_FieldDisplay sea vertical dentro de los bloques de amounts */
+.dv_ClaimAmmountsWRAPPER .dv_FieldDisplay {
+    display: block !important;
+    width: 100%;
+    margin-bottom: 2px; /*espacio entre filas */
+}
+
+.dv_ClaimAmmountsWRAPPER .dv_FieldDisplay span {
+    float: none;
+    display: inline;
+}
+

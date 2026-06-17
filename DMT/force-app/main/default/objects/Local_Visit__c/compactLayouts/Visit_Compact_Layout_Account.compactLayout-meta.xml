@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Visit_Compact_Layout_Account</fullName>
+    <fields>Local_Client_id__c</fields>
+    <fields>account_type__c</fields>
+    <fields>visit_start_date__c</fields>
+    <fields>visit_duration_number__c</fields>
+    <fields>visit_status_type__c</fields>
+    <fields>Notify_meeting_changed_peru__c</fields>
+    <label>Visit Compact Layout Account</label>
+</CompactLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Opportunity_passport</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>DMT_HightPanelOpp</compactLayoutAssignment>
+    <label>Opportunity passport</label>
+</RecordType>

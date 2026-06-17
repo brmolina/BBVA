@@ -1,0 +1,8 @@
+<aura:documentation>
+    <aura:description>
+        <p>An <code>arce:Arc_IFIS_RatingSystem</code> component is designed to capture user input and initiate events related to rating system calculation.</p>
+    </aura:description>
+    <aura:example name="Sample" ref="arce:Arc_IFIS_RatingSystem" label="Using the arce:Arc_IFIS_RatingSystem Component">
+        <p>This example shows a simple setup of <code>Arc_IFIS_RatingSystem</code>.</p>
+    </aura:example>
+</aura:documentation>

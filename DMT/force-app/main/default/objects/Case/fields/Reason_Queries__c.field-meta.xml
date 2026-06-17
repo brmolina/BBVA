@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reason_Queries__c</fullName>
+    <description>Nuevo campo &apos;Reason&apos; debido a cambios en la jerarquía de campos debido a que no se puede asociar dos campos a un solo Controlling (Limitación de Salesforce).</description>
+    <label>Reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>SER_Classification__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Discarded</fullName>
+                <default>false</default>
+                <label>Discarded</label>
+            </value>
+            <value>
+                <fullName>Duplicated</fullName>
+                <default>false</default>
+                <label>Duplicated</label>
+            </value>
+            <value>
+                <fullName>Complaints</fullName>
+                <default>false</default>
+                <label>Complaints</label>
+            </value>
+            <value>
+                <fullName>Audit requests</fullName>
+                <default>false</default>
+                <label>Audit requests</label>
+            </value>
+            <value>
+                <fullName>Certificates</fullName>
+                <default>false</default>
+                <label>Certificates</label>
+            </value>
+            <value>
+                <fullName>Monthly reports</fullName>
+                <default>false</default>
+                <label>Monthly reports</label>
+            </value>
+            <value>
+                <fullName>Reports</fullName>
+                <default>false</default>
+                <label>Reports</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Discarded</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Duplicated</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Complaints</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Audit requests</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Certificates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Monthly reports</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Reports</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Others</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

@@ -28,6 +28,7 @@
 *               Rollback last commit  (PR: 1231)
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.ApexCRUDViolation, PMD.EmptyStatementBlock')
 public with sharing class Arc_Gen_PersistanceArceId_data {
     /**
     *-------------------------------------------------------------------------------
@@ -71,7 +72,8 @@ public with sharing class Arc_Gen_PersistanceArceId_data {
             arce__debt_comt_not_disb_amount__c, arce__exposure_at_default_date__c,
             arce__limit_asset_allocation_amount__c, arce__rating_econ_sector_tmpl_id__c, arce__subsector_desc__c,
             arce__WF_Stage_WF_Status__c, arce__portfolio_class_type__c,
-            arce__Customer__r.controlled_by_sponsor_type__c, arce__risk_assessment_persisted__c, arce__CustomAccountID__c
+            arce__Customer__r.controlled_by_sponsor_type__c, arce__risk_assessment_persisted__c, arce__CustomAccountID__c,
+            arce__RAR_rating_tool_id__c
             from arce__Account_has_Analysis__c
             where arce__Analysis__c = :analysisId and arce__group_asset_header_type__c = '2' and arce__Customer__c = :idArceS];
     }

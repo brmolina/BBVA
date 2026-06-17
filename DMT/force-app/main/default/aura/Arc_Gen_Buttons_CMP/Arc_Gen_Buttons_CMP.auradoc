@@ -1,0 +1,9 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component to show buttons</b></h5>
+        <p><code>c:Arc_Gen_Buttons_CMP</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_Buttons_CMP" ref="c:Arc_Gen_Buttons_CMP" label="Buttons">
+        <p>Component to show buttons.</p>
+    </aura:example>
+</aura:documentation>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Email_addresses__c</fullName>
+    <description>Contains the email addresses (separated by semicolons) to which the email notifying the onboarding of a prospect will be sent.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains the email addresses (separated by semicolons) to which the email notifying the onboarding of a prospect will be sent.</inlineHelpText>
+    <label>Email addresses</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

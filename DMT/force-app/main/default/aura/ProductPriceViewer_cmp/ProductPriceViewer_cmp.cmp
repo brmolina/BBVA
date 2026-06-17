@@ -1,0 +1,16 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="SanctionPrice_ctrl">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:handler event="force:refreshView" action="{!c.doInitRefreshView}" />
+	<aura:attribute name="objectInput" type="Object" />
+	<aura:attribute name="isLoad" type="Boolean" default="false"/>
+	<aura:attribute name="hasOLI" type="Boolean" default="false"/>
+	<aura:attribute name="priceIndicator" type="Boolean" default="false"/>
+	<aura:if isTrue="{!v.isLoad &amp;&amp; v.hasOLI &amp;&amp; v.priceIndicator}">
+		<div class="slds-m-bottom_medium">
+            <c:PriceSection_cmp isCollapsed="true" sectionTitle="{!$Label.c.Price}" recordId="{!v.recordId}" objectInput="{!v.objectInput}" />
+		</div>
+		<div class="slds-m-bottom_medium">
+			<c:CommitmentsSection_cmp isCollapsed="true" sectionTitle="{!$Label.c.Commitments}" recordId="{!v.recordId}" />
+		</div>
+	</aura:if>
+</aura:component>

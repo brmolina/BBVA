@@ -1,0 +1,113 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+  <!-- ya no es necesario aura:attribute name="matrixColumns" type="Integer" access="public" /  -->
+  <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+  <aura:attribute
+    name="operations"
+    type="PRC_PFS_Operation[]"
+    access="public"
+  />
+  <aura:attribute name="recordError" access="private" type="String" />
+  <aura:attribute name="colSeparator" type="Integer" access="private" />
+
+  <force:recordData
+    aura:id="recordLoader"
+    recordId="{!v.price.priceId}"
+    targetFields="{!v.price}"
+    targetError="{!v.recordError}"
+    fields="term.value,term.unit,funds[0].onBalance,funds[0].offBalance,
+                              sensitivities[0].margin.onBalance,sensitivities[0].margin.offBalance"
+  />
+  <!-- ya no es necesario
+        aura:handler name="init" value="{!this}" action="{!c.doInit}" / -->
+
+  <div>
+    <lightning:card title="Selected price">
+      <!-- table class="tableRight" -->
+      <table>
+        <tr>
+          <td colspan="2">
+            <h1 class="truncate text-grey2">Term</h1>
+            <h1 class="truncate text-black" style="text-transform: lowercase;">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.price.term.value}"
+              />&nbsp;{!v.price.term.unit}
+            </h1>
+            <br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <h1 class="truncate text-grey2">Nominal OnB</h1>
+            <!-- value="{!v.price.funds[0].onBalance}" -->
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.operations[0].amortization.notional.onBalance}"
+              />
+            </h1>
+            <br />
+          </td>
+          <td>
+            <h1 class="truncate text-grey2">Nominal OffB</h1>
+            <!-- value="{!v.price.funds[0].offBalance}" -->
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.operations[0].amortization.notional.offBalance}"
+              />
+            </h1>
+            <br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <h1 class="truncate text-grey2">Margin OnB</h1>
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.price.operations[0].margin.onBalance}"
+              />
+            </h1>
+            <br />
+          </td>
+          <td>
+            <h1 class="truncate text-grey2">Margin OffB</h1>
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.price.operations[0].margin.offBalance}"
+              />
+            </h1>
+            <br />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <h1 class="truncate text-grey2">Non accrual Fees</h1>
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.price.operations[0].fee.nonAccrual}"
+              />
+            </h1>
+            <br />
+          </td>
+          <td>
+            <h1 class="truncate text-grey2">Accrual Fees</h1>
+            <h1 class="truncate text-black">
+              <ui:outPutNumber
+                format="0.00"
+                value="{!v.price.operations[0].fee.accrual}"
+              />
+            </h1>
+            <br />
+          </td>
+        </tr>
+        <!-- tr> 
+                   <td colspan="2" height="{!v.colSeparator}"></td>
+               </tr -->
+      </table>
+    </lightning:card>
+  </div>
+</aura:component>

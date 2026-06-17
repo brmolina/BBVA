@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>scopeNotNull_ValidationRule</fullName>
+    <active>true</active>
+    <description>Scope field must not be blank</description>
+    <errorConditionFormula>AND(!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c, NOT(ISNEW()), ISBLANK(DES_Scope__c), RecordType.DeveloperName = &apos;Desktop_Contact&apos;)</errorConditionFormula>
+    <errorMessage>Scope field must be fulfilled</errorMessage>
+</ValidationRule>

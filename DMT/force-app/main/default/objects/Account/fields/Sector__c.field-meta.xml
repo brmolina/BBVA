@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sector__c</fullName>
+    <label>Sector (deprecated)</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Asset Management</fullName>
+                <default>false</default>
+                <label>Asset Management</label>
+            </value>
+            <value>
+                <fullName>Banks</fullName>
+                <default>false</default>
+                <label>Banks</label>
+            </value>
+            <value>
+                <fullName>Central Banks</fullName>
+                <default>false</default>
+                <label>Central Banks</label>
+            </value>
+            <value>
+                <fullName>Corporates</fullName>
+                <default>false</default>
+                <label>Corporates</label>
+            </value>
+            <value>
+                <fullName>Financial Institutions</fullName>
+                <default>false</default>
+                <label>Financial Institutions</label>
+            </value>
+            <value>
+                <fullName>Hedge Funds</fullName>
+                <default>false</default>
+                <label>Hedge Funds</label>
+            </value>
+            <value>
+                <fullName>Insurance</fullName>
+                <default>false</default>
+                <label>Insurance</label>
+            </value>
+            <value>
+                <fullName>Investment Funds</fullName>
+                <default>false</default>
+                <label>Investment Funds</label>
+            </value>
+            <value>
+                <fullName>Pension Funds</fullName>
+                <default>false</default>
+                <label>Pension Funds</label>
+            </value>
+            <value>
+                <fullName>Private Banking</fullName>
+                <default>false</default>
+                <label>Private Banking</label>
+            </value>
+            <value>
+                <fullName>Private Institutions</fullName>
+                <default>false</default>
+                <label>Private Institutions</label>
+            </value>
+            <value>
+                <fullName>Public Institutions</fullName>
+                <default>false</default>
+                <label>Public Institutions</label>
+            </value>
+            <value>
+                <fullName>Retail</fullName>
+                <default>false</default>
+                <label>Retail</label>
+            </value>
+            <value>
+                <fullName>Saving Banks</fullName>
+                <default>false</default>
+                <label>Saving Banks</label>
+            </value>
+            <value>
+                <fullName>SME</fullName>
+                <default>false</default>
+                <label>SME</label>
+            </value>
+            <value>
+                <fullName>Without Sector</fullName>
+                <default>false</default>
+                <label>Without Sector</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,63 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="NextVisitsByFamilyCont" access="global">
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="idAcc" type="String" access="public" description="id del registro de cuenta desde el que se accede al componente." />
+    <aura:attribute name="famParamAll" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <lightning:navigation aura:id="nav" />
+
+    <force:recordData aura:id="forceRecordCmp"
+        recordId="{!v.idAcc}"
+        layoutType="{!v.layout}"
+        fields="Id, Name"
+        mode="VIEW"
+        targetRecord="{!v.record}"
+        targetFields="{!v.simpleRecord}"
+        targetError="{!v.error}" />
+
+     <div class="slds-page-header" style="height: 77px; z-index: 9999999">
+        <lightning:layout>
+            <lightning:layoutItem class="slds-media__figure">
+                <lightning:icon iconName="custom:custom84" size="large" alternativeText="Report" />
+            </lightning:layoutItem>
+            <lightning:layoutItem class="slds-media__body">
+                <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Next Visits({!v.data[0].visNumber}) - {!v.famParamAll}</h1>
+                <lightning:breadcrumbs>
+                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                                          label="{!v.simpleRecord.Name}"
+                                          onclick="{! c.onClickButtonAcc}"
+                                          title="Go back to the client"
+                                          />
+                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                                          label="{!v.famParamAll}"
+                                          onclick="{! c.onClickButtonFamily}"
+                                          title="Go back the family section"
+                                          />
+                </lightning:breadcrumbs>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+
+
+    <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+        <div class="reportTabla">
+            <aura:if isTrue="{!empty(v.data)}">
+                {!$Label.c.DES_Chart_No_Data}
+                <aura:set attribute="else">
+                        <lightning:datatable data="{!v.data}"
+                            columns="{!v.columns}"
+                            keyField="id"
+                            hideCheckboxColumn="true"/>
+                </aura:set>
+            </aura:if>
+        </div>
+    </ui:scrollerWrapper>
+
+
+</aura:component>

@@ -1,91 +1,101 @@
 <template>
-    <lightning-card>
-        <div class="slds-form-element">
-            <label class="slds-form-element__label">
-                <span class="slds-required" if:true={required}>*</span>
-                {label}
-            </label>
-            <div class="slds-form-element__control">
-                <div class="slds-combobox_container">
-                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
-                        <div class="slds-combobox__form-element slds-input-has-fixed-addon" role="none">
+    <div class="slds-form-element">
+        <label class="slds-form-element__label" for="combobox-input">
+            <abbr if:true={required} class="slds-required" title="required">*</abbr>
+            {label}
+        </label>
+
+        <div class="slds-form-element__control slds-is-relative">
+            <div class="slds-combobox_container">
+                <div class={comboboxClass} aria-expanded={showDropdown} aria-haspopup="listbox" role="combobox">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                            <template if:false={hasSelection}>
                             <input class="slds-input slds-combobox__input"
-                                   type="text"
-                                   placeholder={placeholder}
-                                   value={searchTerm}
-                                   oninput={handleSearch}
-                                   onblur={handleBlur}
-                                   disabled={disabled}
-                                   aria-autocomplete="list"
-                                   aria-controls="dropdown-id" />
-                            
-                            <span class="slds-icon_container slds-input__icon slds-input__icon_right">
-                                <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
+                                id="combobox-input"
+                                type="text"
+                                placeholder={placeholder}
+                                value={searchTerm}
+                                oninput={handleSearch}
+                                onblur={handleBlur}
+                                onfocus={handleFocus}
+                                disabled={disabled}
+                                role="textbox"
+                                autocomplete="off" />
+
+                            <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                    title="Clear"
+                                    onclick={handleClear}>
+                                <lightning-icon
+                                    icon-name={rightIconName}
+                                    size="x-small"
+                                    class="slds-icon slds-icon_small slds-icon-text-default">
+                                </lightning-icon>
+                            </button>
+                        </template>
+
+                        <template if:true={hasSelection}>
+                            <div class="slds-pill_container slds-p-right_large">
+                            <span class="slds-pill" title={selectedApprover.name}>
+                                <span class="slds-pill__label">{selectedApprover.name}</span>
+                                <button
+                                class="slds-button slds-button_icon slds-pill__remove"
+                                title="Remove"
+                                onclick={handleClear}
+                                disabled={disabled}>
+                                <lightning-icon icon-name="utility:close" size="x-small"></lightning-icon>
+                                </button>
                             </span>
-                        </div>
-                        <div if:true={showDropdown} id="dropdown-id" 
-                              role="listbox">
-                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            </div>
+
+                            <!-- icono derecha (X) opcional, si quieres mantenerlo igual -->
+                            <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                                    title="Clear"
+                                    onclick={handleClear}
+                                    disabled={disabled}>
+                            <lightning-icon icon-name="utility:clear" size="x-small"></lightning-icon>
+                            </button>
+                        </template>
+                    </div>
+
+                    <div if:true={showDropdown}
+                         class="slds-dropdown slds-dropdown_fluid slds-dropdown_length-with-icon-7 slds-dropdown_left custom-dropdown-style"
+                         role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <template if:true={hasResults}>
                                 <template for:each={searchResults} for:item="result">
-                                    <li key={result.id} 
-                                        class="slds-listbox__item"
-                                        role="presentation">
-                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity" 
-                                             role="option"
-                                             data-id={result.id}
-                                             onclick={handleSelect}>
-                                            <div class="slds-media__figure">
-                                                <span class="slds-icon_container">
-                                                    <lightning-icon icon-name={result.icon} size="x-small"></lightning-icon>
-                                                </span>
-                                            </div>
-                                            <div class="slds-media__body">
-                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">
-                                                    {result.name}
-                                                </span>
+                                    <li key={result.id} role="presentation" class="slds-listbox__item">
+                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                            role="option"
+                                            data-id={result.id}
+                                            onmousedown={handleSelect}> <span class="slds-media__figure slds-listbox__option-icon">
+                                                <lightning-icon icon-name={result.icon} size="small"></lightning-icon>
+                                            </span>
+                                            <span class="slds-media__body">
+                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">{result.name}</span>
                                                 <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
-                                                    {result.subtitle}-{result.entific}
+                                                    {result.subtitle} • {result.entific}
                                                 </span>
-                                                <!-- <div if:true={haveMembers}>
-                                                    <small>Members: 
-                                                        <template for:each={result.members} for:item="member">
-                                                            <span key={member.name}>{member.name}, </span>
-                                                        </template>
-                                                    </small>
-                                                </div> -->
-                                            </div>
+                                            </span>
                                         </div>
                                     </li>
                                 </template>
-                            </ul>
-                        </div>
+                            </template>
+                            <template if:true={showNoResults}>
+                                <li role="presentation" class="slds-listbox__item">
+                                    <div class="slds-p-around_small slds-text-align_center slds-text-color_weak no-results">
+                                    <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                    <span>No records to display</span>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
-                
-                <!-- Mostrar approver seleccionado -->
-                <div if:true={selectedApprover} class="slds-m-top_small">
-                    <article class="slds-tile">
-                        <div class="slds-tile__detail">
-                            <p class="slds-tile__title slds-truncate">
-                                <strong>Selected:</strong> {selectedApprover.name}
-                            </p>
-                            <p class="slds-tile__meta" if:true={selectedApprover.subtitle}>
-                                {selectedApprover.subtitle}
-                            </p>
-                        </div>
-                        <button class="slds-button slds-button_icon slds-button_icon-border-filled"
-                                onclick={handleClear}
-                                title="Clear selection">
-                            <lightning-icon icon-name="utility:clear" size="x-small"></lightning-icon>
-                        </button>
-                    </article>
-                </div>
-                
-                <!-- Loading spinner -->
-                <div if:true={isLoading} class="slds-m-top_x-small">
-                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
-                </div>
+            </div>
+
+            <div if:true={isLoading} class="slds-is-relative slds-m-top_xx-small">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
             </div>
         </div>
-    </lightning-card>
+    </div>
 </template>

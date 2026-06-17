@@ -1,0 +1,19 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:hasSObjectName,force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="NONC_NonClientTabPage_ctlr">
+  <aura:attribute name="listViewName" type="String" default=""/>
+  <aura:attribute name="isVisible" type="Boolean" default="false"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:if isTrue="{!v.isVisible}">
+    <div class="tab-section">
+      <lightning:button class="button-new"  label="{!$Label.c.NClient_lbl_NewProspect}" title="{!$Label.c.NClient_lbl_NewProspect}" onclick="{! c.create }" />
+      <lightning:listView aura:id="listViewAccounts"
+                          objectApiName="Account"
+                          listName="{!v.listViewName}"
+                          rows="50"
+                          showSearchBar="true"
+                          showActionBar="false"
+                          enableInlineEdit="true"
+                          showRowLevelActions="true" />
+    </div>
+    <div aura:id="showChildModal" ></div>
+  </aura:if>
+</aura:component>

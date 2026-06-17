@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SubjectCloned__c</fullName>
+    <description>Workflow para rellenar con el mismo valor del campo estándar Subject. La razón es que el campo estándard Subject no se puede usar en para agrupar en una query SOQL, y si se utiliza un campofórmula para traer el valor de &quot;Subject&quot; tampoco se puede agrupar</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Subject (Text)</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

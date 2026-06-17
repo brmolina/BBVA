@@ -12,11 +12,12 @@
 * ____________________________________________________________________________
 * @changes
 *
+*
 * ____________________________________________________________________________
 */
 global class CucoDeleteParticipantsBatch implements Database.Batchable<sObject>, Database.Stateful {
 
-    final private String query = 'SELECT Id, cuco__gf_profitability_sheet_id__c, Valid_Participant__c, cuco__participant_id__r.Name, cuco__participant_id__r.SER_CClient__c FROM cuco__profitability_sheet_participant__c WHERE Valid_Participant__c = false AND cuco__gf_profitability_sheet_id__r.cuco__gf_prftbly_sheet_stt_type_name__c NOT IN (\'10\', \'12\')';
+    final private String query = 'SELECT Id, cuco__gf_profitability_sheet_id__c, Valid_Participant__c, cuco__participant_id__r.Name, cuco__participant_id__r.g_customer_id__c FROM cuco__profitability_sheet_participant__c WHERE Valid_Participant__c = false AND cuco__gf_profitability_sheet_id__r.cuco__gf_prftbly_sheet_stt_type_name__c NOT IN (\'10\', \'12\')';
     private Integer recordsDeleted = 0;
 
     global Database.QueryLocator start(Database.BatchableContext batchContext) {
@@ -51,7 +52,7 @@ global class CucoDeleteParticipantsBatch implements Database.Batchable<sObject>,
         for (cuco__profitability_sheet_participant__c record : records) {
 
             final dwp_cvad__Action_Audit__c audit = new dwp_cvad__Action_Audit__c();
-            final string name = record.cuco__participant_id__r.SER_CClient__c + ' - ' + record.cuco__participant_id__r.Name + ' was removed from participants.';
+            final string name = record.cuco__participant_id__r.g_customer_id__c + ' - ' + record.cuco__participant_id__r.Name + ' was removed from participants.';
 
             if(name.length() > 255) {
                 final string strippedName = name.substring(0,251) + '...';

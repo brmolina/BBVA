@@ -1,0 +1,25 @@
+<!-- /*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/ -->
+<aura:component access="global">
+    <aura:attribute name="clientName" type="String" default=""/>
+    <aura:attribute name="isOnAccount" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalRT" type="Boolean" default="false"/>
+    <aura:attribute name="getDataFirstScreen" type="String" default=""/>
+    <aura:attribute name="headerText" type="String" default="default Header" />
+
+    <aura:registerEvent name="cmpEvent" type="c:NONC_ceEvent"/>
+
+    <!-- Bridge component:
+         - Keeps legacy Aura event contract expected by NONC_createNonClient
+         - Hosts the new LWC form implementation
+         - Forwards same input payload coming from duplicate-search screen -->
+    <c:nONC_createNonClientOverwriteLWC
+        headerText="{!v.headerText}"
+        isOnAccount="{!v.isOnAccount}"
+        isAdditionalRT="{!v.isAdditionalRT}"
+        clientName="{!v.clientName}"
+        getDataFirstScreen="{!v.getDataFirstScreen}"
+        oncancel="{!c.handleCancel}"
+        onclose="{!c.handleClose}"
+        onback="{!c.handleBack}" />
+</aura:component>
+    <!-- /*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/ -->

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Partial_Diagnosis__c</fullName>
+    <label>Partial Diagnosis</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Volver a llamar</fullName>
+                <default>false</default>
+                <label>Volver a llamar</label>
+            </value>
+            <value>
+                <fullName>Faltan requisitos</fullName>
+                <default>false</default>
+                <label>Faltan requisitos</label>
+            </value>
+            <value>
+                <fullName>Incidencia</fullName>
+                <default>false</default>
+                <label>Incidencia</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

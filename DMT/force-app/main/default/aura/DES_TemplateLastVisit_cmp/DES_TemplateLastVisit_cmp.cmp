@@ -1,0 +1,8 @@
+<aura:component controller="DES_TemplateLastVisit_Ctrl"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+                access="global">
+
+    <aura:attribute name="recordId" type="String" default="false"/>
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" oncomplete="window.location.reload()"/>
+
+  </aura:component>

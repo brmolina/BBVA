@@ -1,6 +1,6 @@
 /***********************************************************************************************************************************
  * @author       Accenture
- * @date			01/03/2016
+ * @date      01/03/2016
  * @description  Manejador del trigger para el objeto Contact. No implementar logica aquí, para ello utilizar ActivitiesUtils
  * @Revision    2017/10/26 Se deja de utilizar customActivity (Activity__c) y se comentan las líneas de código que ya no aplican
  * @Revision    2018/11/08 Se añade la funcionalida para relacionar los contactos con los clientes superiores en la jerarquía
@@ -21,11 +21,11 @@ public with sharing class ContactTriggerHandler {
   final private Set<String> setAccIdHierarchy = new Set<String>();   //Set used to avoid duplicate id's
 
   /**
-   *	@author GlobalDesktop
+   *  @author GlobalDesktop
    */
   private static ContactTriggerHandler instance;
   /**
-   *	@author GlobalDesktop
+   *  @author GlobalDesktop
    */
   public static ContactTriggerHandler getInstance() { //NOSONAR
     if (instance == null) {
@@ -182,11 +182,11 @@ public with sharing class ContactTriggerHandler {
     }
 
     //Retrieve the parents for the account passed
-    final List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT Id, dwp_acmh__Parent_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c = :accId];
+    final List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT Id, AMH_Parent_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c = :accId];
 
     //iterate to recursively add the opportunity to each parent in the hierarchy
-    for (dwp_acmh__GBL_Account_Relationship__c accRel : listAccRel) {
-      recursiveFxn(accRel.dwp_acmh__Parent_Account__c, accInicial);
+    for (AMH_GBL_Account_Relationship__c accRel : listAccRel) {
+      recursiveFxn(accRel.AMH_Parent_Account__c, accInicial);
     }
   }
   /*

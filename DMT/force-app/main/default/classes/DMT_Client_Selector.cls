@@ -1,10 +1,16 @@
 public with sharing class DMT_Client_Selector {
-
+    
     @AuraEnabled
     public static Account getStructureTypeByGroupCode(String groupCode) {
-        System.debug('groupCode: ' + groupCode);
-        return [SELECT Id,DES_Structure_Type__c FROM Account WHERE DES_Group_Code__c =: groupCode WITH SECURITY_ENFORCED LIMIT 1 ];
+      
+        return [SELECT Id, Name, DES_Structure_Type__c FROM Account WHERE DES_Group_Code__c =: groupCode WITH USER_MODE LIMIT 1 ];
     }
+
+    @AuraEnabled
+    public static Account getAccountById(String accountId) {
+        return [SELECT Id, Name, DES_Structure_Type__c, RecordType.Id, DES_Group_Code__c FROM Account WHERE Id =: accountId WITH USER_MODE LIMIT 1 ];
+    }
+    
     @AuraEnabled
     public static List<Account> searchClient(String searchTerm) {
         if(String.isBlank(searchTerm)) {
@@ -14,7 +20,7 @@ public with sharing class DMT_Client_Selector {
         String searchQuery = 'FIND :searchClientClone IN ALL FIELDS RETURNING Account(Id, Name, DES_Group_Code__c)';
         List<List<SObject>> searchResults = search.query(searchQuery);
         List<Account> accounts = (List<Account>) searchResults[0];
-        return accounts;
+        return accounts;      
     }
 
     public static String getAccountRecordCode(String accountId){ // CIBGLOBALD-2119
@@ -26,7 +32,7 @@ public with sharing class DMT_Client_Selector {
                     )
                 FROM Account
                 WHERE Id = :accountId
-                WITH SECURITY_ENFORCED LIMIT 1];
+                WITH USER_MODE LIMIT 1];
 
         if(String.isNotBlank(acc.DES_Group_Code__c)){
             recordCode = acc.DES_Group_Code__c;

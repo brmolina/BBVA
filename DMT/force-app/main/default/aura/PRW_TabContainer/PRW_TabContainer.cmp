@@ -1,0 +1,39 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_TabContainerCtrl">
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="lAccountId" type="String" />
+  <aura:attribute name="lAccountNames" type="List" />
+  <aura:attribute name="profSheet" type="Object" />
+  <aura:attribute name="profSheetSFId" type="String" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="profSheetEnd" type="Date" />
+  <aura:attribute name="profSheetStart" type="Date" />
+  <aura:attribute name="isGroup" type="String"/>
+  <aura:attribute name="isEconomicGroup" type="String"/>
+  <aura:attribute name="acc" type="Account" />
+  <aura:attribute name="conditionWrp" type="String"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <aura:registerEvent name="PRW_ServiceCUCOevt" type="c:PRW_ServiceCUCOEvt"/>
+  <aura:registerEvent name="PRW_FirstCalculateEvt" type="c:PRW_FirstCalculateEvt"/>
+
+
+  <aura:if isTrue="{!v.accountId}">
+    <c:PRW_RecordCompactLayout iconType="standard" iconName="proposition" accountId="{!v.accountId}" lAccountId="{!v.lAccountId}" lAccountNames="{!v.lAccountNames}" acc="{!v.acc}" profSheet="{!v.profSheet}" profSheetSFId="{!v.profSheetSFId}" profSheetId="{!v.profSheetId}" profSheetStart="{!v.profSheetStart}" profSheetEnd="{!v.profSheetEnd}" isGroup="{!v.isGroup}" subTitle="Pricing Simulation" />
+    <lightning:tabset>
+      <lightning:tab label="SIMULATION">
+        <c:PRW_FirstTabContent accountId="{!v.accountId}" lAccountId="{!v.lAccountId}" profSheetId="{!v.profSheetId}" isGroup="{!v.isGroup}" acc="{!v.acc}"/>
+      </lightning:tab>
+      <aura:if isTrue="{!v.profSheetId}">
+        <lightning:tab label="INFORMATION">
+          <c:PRW_SecondTabContent profSheetSFId="{!v.profSheetSFId}" profSheetId="{!v.profSheetId}" profSheetStart="{!v.profSheetStart}" profSheetEnd="{!v.profSheetEnd}"/>
+        </lightning:tab>
+      </aura:if>
+      <lightning:tab label="BUNDLES">
+        <c:PRW_FourthTabContent acc="{!v.acc}" profSheetId="{!v.profSheetId}" accountId="{!v.accountId}" lAccountId="{!v.lAccountId}" />
+      </lightning:tab>
+    </lightning:tabset>
+    <aura:set attribute="else">
+      Sorry, you have to access from Price Simulation button in client page.
+    </aura:set>
+  </aura:if>
+</aura:component>

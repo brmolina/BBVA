@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+   <aura:attribute name="title" type="String"/>
+   <aura:attribute name="description" type="String"/>
+   <aura:attribute name="url" type="String"/>
+   <aura:attribute name="icon" type="String"/>
+   <aura:attribute name="iconVariant" type="String"/>
+   <aura:attribute name="className" type="String" default="slds-welcome-mat__tiles slds-size_2-of-2 slds-p-around_medium"/>
+
+   <div class="{!v.className}">
+               <a href="{!v.url}" target="_blank" class="slds-box slds-box_link slds-box_x-small slds-media slds-welcome-mat__tile">
+                   <div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center slds-m-left_xx-small">
+                   <div class="slds-welcome-mat__tile-icon-container">
+                       <span class="slds-icon_container">
+                           <lightning:icon iconName="{!v.icon}" variant="{!v.iconVariant}"/>
+                       </span>
+                   </div>
+                   </div>
+                   <div class="slds-media__body slds-border_left slds-p-around_small">
+                   <h3 class="slds-text-heading_medium">{!v.title}</h3>
+                   <p class="slds-welcome-mat__tile-description slds-truncate">{!v.description}</p>
+                   </div>
+               </a>
+       </div>
+</aura:component>

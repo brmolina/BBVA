@@ -1,0 +1,50 @@
+body .bPageBlock .pbBody {
+	background-color: #DFDFDF;         
+}
+
+.selectForm {
+	background-color: #DFDFDF!important;	
+}
+
+.displayNone {
+	display:none;
+}
+
+.processPanel {
+	background-color: #DFDFDF;
+	display:none;
+}
+
+.remedySppiner {
+	font-weight:bold;
+	font-size: 90%;
+	padding-left: 7px;
+}
+
+.width500px {
+	width: 500px
+}
+
+.width300px {
+	width: 300px
+}
+
+.lastComment {
+	border: 0.5px solid black;
+	background-color: white;
+	width: 500px;
+	max-width: 500px;
+}
+
+.remedyButton {
+	width:150px;
+}
+
+.cancelButtonRemedy {
+	margin-left:15px;
+	width:150px;
+}
+
+.weightBold {
+	font-weight: bold;
+}

@@ -1,0 +1,92 @@
+<!--
+  @description       : 
+  @author            : Javier Setién Rivas - [javier_setien@epamneoris.com]
+  @group             : 
+  @last modified on  : 05-03-2026
+  @last modified by  : Javier Setién Rivas - [javier_setien@epamneoris.com] 
+  Modifications Log
+  Ver   Date         Author                                                 Modification
+  1.0   05-03-2026   Javier Setién Rivas - [javier_setien@epamneoris.com]   Initial Version
+-->
+<template>
+    <!-- === Boton lanzador (estado inicial) === -->
+    <template if:false={chatActivated}>
+        <div class="launcher-container">
+            <button class={launcherBtnClass} onclick={handleActivateChat} disabled={_launcherLoading}>
+                <template if:false={_launcherLoading}>
+                    <span class="launcher-logo" lwc:dom="manual"></span>
+                    <span class="launcher-title">{label.aiChatRobot2_MiniChatTitle}</span>
+                    <span class="launcher-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                </template>
+                <template if:true={_launcherLoading}>
+                    <span class="launcher-spinner"></span>
+                    <span class="launcher-title">{label.aiChatRobot2_Loading}</span>
+                </template>
+            </button>
+        </div>
+    </template>
+    <!-- === Chat (despues de la activacion) === -->
+    <template if:true={chatActivated}>
+        <section class={layoutClass}>
+            <!-- === Area de chat (columna unica, sin barra lateral izquierda) === -->
+            <div class="chat-area">
+                <!-- Encabezado: titulo + nuevo chat + maximizar -->
+                <header class="chat-header">
+                    <div class="title">{titleText}</div>
+                    <div class="header-actions">
+                        <template if:true={showRequestReportButton}>
+                            <button class={reportButtonClass} onclick={handleReportButtonClick} title={reportButtonLabel} disabled={isReportButtonDisabled}>
+                                {reportButtonLabel}
+                            </button>
+                        </template>
+                        <button class="header-icon-btn" onclick={handleNewConversation} title="New conversation">
+                            <span class="new-chat-icon" lwc:dom="manual"></span>
+                        </button>
+                        <button class="header-icon-btn maximize-btn" onclick={handleMaximize} title="Expand chat">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </header>
+                <!-- Mensajes (incluye reporte inline como mensaje especial) -->
+                <div class="messages-wrapper">
+                    <c-ai-chat-robot2-message-list
+                        messages={messages}
+                        is-thinking={isThinking}
+                        conversation-id={conversationId}
+                        user-id={userKey}
+                        user-country={userCountry}
+                        user-segment={userSegment}
+                        onsuggestionselect={handleSuggestionSelect}
+                        onfeedback={handleFeedback}
+                        oncopied={handleCopied}
+                        onfeedbacksent={handleFeedbackSent}
+                        onopenreportinmodal={handleOpenReportInModal}
+                    ></c-ai-chat-robot2-message-list>
+                </div>
+                <!-- Entrada + selector de idioma -->
+                <footer class={footerClass}>
+                    <div class="input-wrapper">
+                        <c-ai-chat-robot2-input
+                            disabled={inputDisabled}
+                            char-limit={_textInputCharLimit}
+                            onmessagesend={handleSend}
+                        ></c-ai-chat-robot2-input>
+                        <div class="language-selector-slot">
+                            <template if:true={showLanguageSelector}>
+                                <c-ai-chat-robot2-language-selector
+                                    onlanguagechange={handleLanguageChange}
+                                ></c-ai-chat-robot2-language-selector>
+                            </template>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </template>
+</template>

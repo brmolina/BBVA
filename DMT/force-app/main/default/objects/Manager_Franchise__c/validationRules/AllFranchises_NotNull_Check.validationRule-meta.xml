@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AllFranchises_NotNull_Check</fullName>
+    <active>false</active>
+    <description>Check if all franchise fields are null</description>
+    <errorConditionFormula>AND(
+OR(ISNULL(MTD_Total_Franchise__c), MTD_Total_Franchise__c = 0),
+OR(ISNULL(YTD_Total_Franchise__c), YTD_Total_Franchise__c = 0),
+OR(ISNULL(Prior_year_Franchise__c), Prior_year_Franchise__c = 0)
+)</errorConditionFormula>
+    <errorMessage>All franchise fields cannot be null</errorMessage>
+</ValidationRule>

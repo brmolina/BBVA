@@ -40,6 +40,11 @@ public with sharing class SER_ReclamacionesPDFGeneratorController {
   */
   public String stAmmouFnlAssEUR {get; set;}
   /**
+  * description: stAmmounFinallyAssumedUSD
+  * @author Adrián Salinas
+  */
+  public String stAmmouFinalAssUSD {get; set;}
+  /**
   * description: stAFACurrency
   * @author Victor Velandia
   */
@@ -54,6 +59,11 @@ public with sharing class SER_ReclamacionesPDFGeneratorController {
   * @author Victor Velandia
   */
   public String stOpertionRiskEUR {get; set;}
+  /**
+  * description: stOperationalRiskUSD
+  * @author Adrián Salinas
+  */
+  public String stOperationalRiskUSD {get; set;}
   /**
   * description: stOPRCurrency
   * @author Victor Velandia
@@ -70,6 +80,26 @@ public with sharing class SER_ReclamacionesPDFGeneratorController {
   */
   public String stAmouRecoverEUR {get; set;}
   /**
+  * description: stAmountRecoveredUSD
+  * @author Adrián Salinas
+  */
+  public String stAmountRecoveredUSD {get; set;}
+  /**
+  * description: stWaiver
+  * @author Adrián Salinas
+  */
+  public String stWaiver {get; set;}
+  /**
+  * description: stWaiverEUR
+  * @author Adrián Salinas
+  */
+  public String stWaiverEUR {get; set;}
+  /**
+  * description: stWaiverUSD
+  * @author Adrián Salinas
+  */
+  public String stWaiverUSD {get; set;}
+  /**
   * description: stCARCurrency
   * @author Victor Velandia
   */
@@ -84,7 +114,7 @@ public with sharing class SER_ReclamacionesPDFGeneratorController {
 
     Case caso;
     caso = new Case();
-    caso = [ SELECT Id,CaseNumber,Status,AccountId,Account.Name,CreatedDate,CreatedById,LastModifiedDate,LastModifiedById,SER_Responsible__r.Name,SER_Currency__c,SER_Accounting_date__c,SER_Transactional_Reference__c,SER_Transactional_Reference__r.Name,SER_Amount_finally_assumed__c,SER_Amount_finally_assumed_EUR__c,SER_Operational_risk__c,SER_Operational_risk_EUR__c,SER_Amount_recovered_EUR__c,SER_Claim_partially_recovered__c FROM Case WHERE Id = :this.caso.Id ];
+    caso = [ SELECT Id,CaseNumber,Status,AccountId,Account.Name,CreatedDate,CreatedById,LastModifiedDate,LastModifiedById,SER_Responsible__r.Name,SER_Currency__c,SER_Accounting_date__c,SER_Transactional_Reference__c,SER_Transactional_Reference__r.Name,SER_Amount_finally_assumed__c,SER_Amount_finally_assumed_EUR__c,SER_Amount_finally_assumed_USD__c,SER_Operational_risk__c,SER_Operational_risk_EUR__c,SER_Operational_risk_USD__c,SER_Amount_recovered_EUR__c,SER_Amount_recovered_USD__c,SER_Claim_partially_recovered__c, SER_Waiver__c, SER_Waiver_EUR__c, SER_Waiver_USD__c  FROM Case WHERE Id = :this.caso.Id ];
     this.caso = caso;
 
     this.dtCreDatDateOnly       = String.valueOf(this.caso.CreatedDate.date());
@@ -92,20 +122,27 @@ public with sharing class SER_ReclamacionesPDFGeneratorController {
 
     this.stAmmouFinalAssm       = formato(caso.SER_Amount_finally_assumed__c);
     this.stAmmouFnlAssEUR       = formato(caso.SER_Amount_finally_assumed_EUR__c);
+    this.stAmmouFinalAssUSD     = formato(caso.SER_Amount_finally_assumed_USD__c);
     if ( caso.SER_Amount_finally_assumed__c != null ) {
       this.stAFACurrency      = caso.SER_Currency__c;
     }
 
     this.stOperationalRisk      = formato(caso.SER_Operational_risk__c);
     this.stOpertionRiskEUR      = formato(caso.SER_Operational_risk_EUR__c);
+    this.stOperationalRiskUSD   = formato(caso.SER_Operational_risk_USD__c);
     if ( caso.SER_Operational_risk__c != null ) {
       this.stOPRCurrency      = caso.SER_Currency__c;
     }
     this.stClaimRecovered       = formato(caso.SER_Claim_partially_recovered__c);
     this.stAmouRecoverEUR       = formato(caso.SER_Amount_recovered_EUR__c);
+    this.stAmountRecoveredUSD   = formato(caso.SER_Amount_recovered_USD__c);
     if ( caso.SER_Claim_partially_recovered__c != null ) {
       this.stCARCurrency      = caso.SER_Currency__c;
     }
+
+    this.stWaiver               = formato(caso.SER_Waiver__c);
+    this.stWaiverEUR            = formato(caso.SER_Waiver_EUR__c);
+    this.stWaiverUSD            = formato(caso.SER_Waiver_USD__c);
 
     this.dtAccDatDateOnly       = formato(caso.SER_Accounting_date__c);
   }

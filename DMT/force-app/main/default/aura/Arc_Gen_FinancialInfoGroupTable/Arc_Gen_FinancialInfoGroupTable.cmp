@@ -1,0 +1,66 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_FinInfoGroupTable_Ctrl" access="global" >
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="row" type="Object" access="global" description="recordId from the customer"/>
+    <aura:attribute name="columns" type="List" access="global" description="recordId from the customer"/>
+    <aura:attribute name="columnsYear" type="List" access="global" description="recordId from the customer"/>
+    <aura:attribute name="rowYear" type="Object" access="global" description="recordId from the customer"/>
+    <aura:attribute name="unitsVal" type="String" access="global" description="units of the current eeff"/>
+    <aura:attribute name="currencyVal" type="String" access="global" description="currency of the current eeff"/>
+    <aura:attribute name="tablesTitle" type="String" access="global" description="title of tables"/>
+    <aura:attribute name="hideCheckboxColumn" type="Boolean" description="Controls checkboxes visibility" default="true"/>
+    <aura:attribute name="showValidTable" type="Boolean" description="Controls checkboxes visibility" default="true" access="global"/>
+    <aura:attribute name="showPrevTable" type="Boolean" description="Controls checkboxes visibility" default="true" access="global"/>
+    <aura:attribute name="buttonEnabled" type="boolean" access="global" default="false" description="Disables button with lightningEdit" />
+    <aura:attribute name="edit" type="boolean" access="global" default="false" description="Edit Permission" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.buttonEnabled}">
+        <lightning:button variant="Neutral" label="Buscar Información financiera" title="Buscar Información financiera" onclick="{! c.refresCmp }" />
+    </aura:if>
+    <br></br><br></br><br></br>
+    <aura:if isTrue="{!v.showValidTable}">
+        <div style="font-size: 18px;text-align: left;">
+            {!$Label.c.Arc_Gen_FinancialInfoCurrentYear}
+        </div>
+        <div style="font-size: 14px;text-align: Center;">
+            {!v.tablesTitle}
+        </div>
+        <div aura:id="finInfoTable" style="width: 100%;">
+            <lightning:datatable
+                columns="{!v.columns}"
+                data="{!v.row}"
+                keyField="name"
+                hideCheckboxColumn="{! v.hideCheckboxColumn }"
+                />
+        </div>
+        <aura:set attribute="else">
+            <br></br><br></br><br></br>
+            <div style="font-size: 24px;text-align: center;">
+                {!$Label.c.Arc_Gen_finInfoCurrentYear}
+            </div>
+        </aura:set>
+    </aura:if>
+    <aura:if isTrue="{!v.showPrevTable}">
+        <br></br><br></br><br></br>
+        <div style="font-size: 18px;text-align: left;">
+            {!$Label.c.Arc_Gen_FinancialInfoPreviousYear}
+        </div>
+        <div style="font-size: 14px;text-align: Center;">
+            {!v.tablesTitle}
+        </div>
+        <div aura:id="finInfoTablePrevYear" style="width: 100%;">
+            <lightning:datatable
+                columns="{!v.columnsYear}"
+                data="{!v.rowYear}"
+                keyField="name"
+                hideCheckboxColumn="{! v.hideCheckboxColumn }"
+                />
+        </div>
+        <aura:set attribute="else">
+            <br></br><br></br><br></br>
+            <div style="font-size: 24px;text-align: center;">
+                {!$Label.c.Arc_Gen_finInfoPrevYear}
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

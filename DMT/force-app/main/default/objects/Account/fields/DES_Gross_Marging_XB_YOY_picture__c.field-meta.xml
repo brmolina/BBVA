@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Gross_Marging_XB_YOY_picture__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( DES_GROSS_MARGIN_XB_YOY__c &gt; 0 , IMAGE(&quot;/servlet/servlet.FileDownload?file=0154E0000001Wu9&quot;, &quot;Green&quot;,20,20) , IMAGE(&quot;/servlet/servlet.FileDownload?file=0154E0000001WuE&quot;, &quot;Red&quot;,20,20) )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Var</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

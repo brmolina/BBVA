@@ -1,0 +1,92 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+  controller="HistoricVisitCnt" access="global">
+
+  <aura:attribute name="breadcrumbsActive" type="Boolean"/>
+  <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+  <aura:attribute name="data" type="Object" />
+  <aura:attribute name="columns" type="List" />
+  <aura:attribute name="detailForm" type="Boolean" default="false" />
+  <aura:attribute name="tableSize" type="String" default="5" />
+  <aura:attribute name="record" type="Object"/>
+  <aura:attribute name="simpleRecord" type="Object"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <lightning:navigation aura:id="nav" />
+
+  <force:recordData aura:id="forceRecordCmp"
+			          recordId="{!v.recordId}"
+			          layoutType="{!v.layout}"
+			          fields="Id, Name"
+			          mode="VIEW"
+			          targetRecord="{!v.record}"
+			          targetFields="{!v.simpleRecord}"
+			          targetError="{!v.error}" />
+
+  <aura:if isTrue="{!!v.detailForm}">
+    <div class="boxsection">
+    <div class="customContainer">
+      <div class="slds-media slds-m-top_small slds-m-bottom_x-small">
+        <div class="slds-media__figure">
+          <span class="slds-icon_container slds-icon_container_circle" title="Historic Visits">
+            <lightning:icon iconName="standard:shift_type" size="medium" alternativeText="Report" />
+          </span>
+        </div>
+        <div class="slds-media__body">
+          <p class="slds-text-body_small slds-line-height_reset slds-m-bottom_xx-small title">Historic Visits</p>
+          <h1 class="slds-truncate slds-align-middle subtitle" title="Opportunities in progress">Historic Visits</h1>
+        </div>
+      </div>
+    </div>
+
+    <aura:if isTrue="{!empty(v.data)}">
+      <div class="slds-text-align_center tableNoData customNoData">
+        <span class="slds-m-bottom_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+      </div>
+      <aura:set attribute="else">
+        <lightning:datatable data="{!v.data}" columns="{!v.columns}" keyField="id" hideCheckboxColumn="true" />
+        <div class="slds-m-top_small slds-p-vertical_x-small slds-text-align_center customBox">
+          <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+        </div>
+      </aura:set>
+    </aura:if>
+    </div>
+    <aura:set attribute="else">
+      <div class="boxsection">
+        <div class="customContainer">
+          <div class="slds-media slds-m-top_small slds-m-bottom_x-small">
+            <div class="slds-media__figure">
+              <span class="slds-icon_container slds-icon_container_circle" title="Historic Visits">
+                <lightning:icon iconName="custom:custom82" size="medium" alternativeText="Report" />
+              </span>
+            </div>
+            <div class="slds-media__body">
+              <h1 class="slds-truncate slds-align-middle subtitle">{!v.simpleRecord.Name}: Historic Visits  ({!v.data[0].visitNumber})</h1>
+            	<aura:if isTrue="{!v.breadcrumbsActive}">
+                <lightning:breadcrumbs>
+                    <lightning:breadcrumb class="slds-text-heading_small"
+                                          label="{!v.simpleRecord.Name}"
+                                          onclick="{! c.onClickButtonAcc}"
+                                          title="Go back to the client"
+                                          />
+                </lightning:breadcrumbs>
+              </aura:if>
+            </div>
+          </div>
+        </div>
+
+      <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+        <div class="reportTabla slds-p-horizontal_x-small slds-p-bottom_small">
+          <aura:if isTrue="{!empty(v.data)}">
+            <div class="slds-text-align_center tableNoData customNoData">
+              <span class="slds-m-bottom_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.DES_Chart_No_Data}</span>
+            </div>
+            <aura:set attribute="else">
+              <lightning:datatable data="{!v.data}" columns="{!v.columns}" keyField="id" hideCheckboxColumn="true"/>
+            </aura:set>
+          </aura:if>
+        </div>
+      </ui:scrollerWrapper>
+    </div>
+    </aura:set>
+  </aura:if>
+</aura:component>

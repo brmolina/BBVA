@@ -40,9 +40,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6RUYA0"
+                  " card-0koKE000000L7bHYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pUlY2AU");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ2C2AW");
                 
                 
               }
@@ -63,10 +63,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`select`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
+            this.customEventName0 = interpolateWithRegex(`sustainabilityChanges`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[1],1);
+
+            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+
+            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
               }
             

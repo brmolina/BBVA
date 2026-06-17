@@ -9,7 +9,7 @@
                 </div>
                 <template lwc:if={isClient}> 
                     <div class="slds-truncate " title={taxpayerId}>
-                        <span class="meta">{countryIfoId} - {Id} - {taxpayerId}</span>
+                        <span class="meta">{clientInfo}</span>
                     </div>
                 </template>
 
@@ -17,7 +17,7 @@
 
             <template lwc:if={isSelected}> 
                 <div class="toggle-container">
-                    <span class="priority-label">{labels.DMT_Main_Holder}</span>
+                    <span class="priority-label">{mainRoleLabel}</span>
                     <label class="slds-checkbox_toggle tiny-toggle" for={toggleId}>
                         <input type="checkbox" id={toggleId} name="input1" checked={ismainholder} onchange={handleToggleChange}>
                         <span class="slds-checkbox_faux_container" aria-live="polite">
@@ -77,9 +77,10 @@
                         onblur={handleChange}></lightning-input>
                 </template>
                 <template lwc:elseif={isCombobox}>
-                    <lightning-combobox data-id="term" class="slds-dropdown_length-5" options={column.options} label=""
-                        value={value} variant="label-hidden" onchange={handleChange}
-                        style="min-width: 6rem;"></lightning-combobox>
+                    <div class="combobox-wrapper">
+                        <lightning-combobox data-id="term" class="slds-dropdown_length-5 combobox-dropdown" options={column.options} label=""
+                            value={value} variant="label-hidden" onchange={handleChange}></lightning-combobox>
+                    </div>
                 </template>
                 <template lwc:elseif={isCurrencylabel}>
                     <lightning-formatted-text title={title} value={currencyrow}></lightning-formatted-text>

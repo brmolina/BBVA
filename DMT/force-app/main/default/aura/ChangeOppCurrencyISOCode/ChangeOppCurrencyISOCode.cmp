@@ -1,0 +1,82 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens"
+  controller="ChangeOppCurrencyISOCode_Controller" access="global">
+  <aura:attribute name="recordId" type="String"/>
+  <aura:attribute name="message" type="String" default=""/>
+  <aura:attribute name="isoCodeOrig" type="String" default=""/>
+  <aura:attribute name="templateId" type="String" default=""/>
+  <aura:attribute name="chkDeleteTemplate" type="Boolean" default="false"/>
+  <aura:attribute name="isoCodeSelected" type="String" default=""/>
+  <aura:attribute name="stageName" type="String" default=""/>
+  <aura:attribute name="saveClicked" type="String" default="false"/>
+  <aura:attribute name="showError" type="Boolean" default="false"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+
+  <aura:if isTrue="{!v.saveClicked}">
+      <div align="center">
+          Loading, please wait...<br/>
+          <lightning:spinner alternativeText="Loading" size="large" variant="brand"/>
+      </div>
+    <aura:set attribute="else">
+
+      <aura:if isTrue="{!v.stageName == 'Draft Opp' || v.stageName == 'Proposal' }">
+        <aura:if isTrue="{!v.message == ''}">
+          <lightning:recordEditForm
+                        objectApiName="Opportunity"
+                        recordId="{!v.recordId}" >
+            <lightning:messages />
+              <lightning:inputField fieldName="CurrencyIsoCode" aura:id="isoCodeId" value="{!v.isoCodeSelected}"/>
+            <br />
+            <aura:if isTrue="{!v.templateId != null}">
+              <div>
+                Please notice NBC template must be deleted in order to change the currency. Please select <b>"Delete template"</b> in order to continue and change the opportunity currency.
+                <br/>This action will remove the template
+                <lightning:input type="checkbox" name="confirmDeleteTemplate" label="Delete Template" aura:id="confirmDeleteTemplate"
+                class="slds-p-vertical_small" checked="{!v.chkDeleteTemplate}" />
+              </div>
+              <aura:set attribute="else">
+                <div class="height-md"></div>
+              </aura:set>
+            </aura:if>
+          </lightning:recordEditForm>
+          <br /><br />
+
+          <div aura:id="actionButtonBar" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+            <div class="slds-float_right">
+              <aura:if isTrue="{!v.isoCodeOrig != v.isoCodeSelected &amp;&amp; (v.templateId == null || v.chkDeleteTemplate)}">
+                <lightning:button aura:id="Save" label="Save" variant="brand" onclick="{!c.saveForm}" />
+                <aura:set attribute="else">
+                  <lightning:button aura:id="SaveDisabled" label="Save" variant="brand" onclick="{!c.saveForm}" disabled="true"/>
+                </aura:set>
+              </aura:if>
+            </div>
+          </div>
+
+          <aura:set attribute="else">
+            <div>
+              <h1>{!v.message}</h1>
+            </div>
+          </aura:set>
+        </aura:if>
+        <aura:set attribute="else">
+          <div>
+            <lightning:recordEditForm
+              objectApiName="Opportunity"
+              recordId="{!v.recordId}" >
+              <lightning:inputField fieldName="CurrencyIsoCode" aura:id="isoCodeIdReadOnly" value="{!v.isoCodeSelected}" disabled="true"/>
+              <h1 class="text-center padding-top-lg">You can not modify the Opportunity Currency in this Stage.</h1>
+              <div class="height-md"></div>
+              <div aura:id="actionButtonBarreadOnly" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+                <div class="slds-float_right">
+                  <lightning:button aura:id="SaveReadOnly" label="Save" variant="brand" onclick="{!c.saveForm}" disabled="true"/>
+                </div>
+              </div>
+            </lightning:recordEditForm>
+          </div>
+        </aura:set>
+      </aura:if>
+    </aura:set>
+  </aura:if>
+
+
+</aura:component>

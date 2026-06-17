@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SAL_Sales_Team__c</fullName>
+    <label>Sales Team</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>AJUSTES</fullName>
+                <default>false</default>
+                <label>AJUSTES</label>
+            </value>
+            <value>
+                <fullName>CASH EQUITY</fullName>
+                <default>false</default>
+                <label>CASH EQUITY</label>
+            </value>
+            <value>
+                <fullName>CORPORATES</fullName>
+                <default>false</default>
+                <label>CORPORATES</label>
+            </value>
+            <value>
+                <fullName>CORPOTARES RCC&amp;E</fullName>
+                <default>false</default>
+                <label>CORPOTARES RCC&amp;E</label>
+            </value>
+            <value>
+                <fullName>CREDIT FLOW</fullName>
+                <default>false</default>
+                <label>CREDIT FLOW</label>
+            </value>
+            <value>
+                <fullName>CROSS ASSET SALES</fullName>
+                <default>false</default>
+                <label>CROSS ASSET SALES</label>
+            </value>
+            <value>
+                <fullName>DCM ORIGINATION</fullName>
+                <default>false</default>
+                <label>DCM ORIGINATION</label>
+            </value>
+            <value>
+                <fullName>DIST CORPORATIVA</fullName>
+                <default>false</default>
+                <label>DIST CORPORATIVA</label>
+            </value>
+            <value>
+                <fullName>DIST CORRETAJE</fullName>
+                <default>false</default>
+                <label>DIST CORRETAJE</label>
+            </value>
+            <value>
+                <fullName>DIST INSTITUCIONAL</fullName>
+                <default>false</default>
+                <label>DIST INSTITUCIONAL</label>
+            </value>
+            <value>
+                <fullName>EJECUCION</fullName>
+                <default>false</default>
+                <label>EJECUCION</label>
+            </value>
+            <value>
+                <fullName>EMERGING MARKETS</fullName>
+                <default>false</default>
+                <label>EMERGING MARKETS</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS Y SP</fullName>
+                <default>false</default>
+                <label>EMPRESAS Y SP</label>
+            </value>
+            <value>
+                <fullName>EQUITIES</fullName>
+                <default>false</default>
+                <label>EQUITIES</label>
+            </value>
+            <value>
+                <fullName>EQUITIES DERIVATIVES</fullName>
+                <default>false</default>
+                <label>EQUITIES DERIVATIVES</label>
+            </value>
+            <value>
+                <fullName>FIXED INCOME INVESTORS</fullName>
+                <default>false</default>
+                <label>FIXED INCOME INVESTORS</label>
+            </value>
+            <value>
+                <fullName>FLOW RATES &amp; CREDIT</fullName>
+                <default>false</default>
+                <label>FLOW RATES &amp; CREDIT</label>
+            </value>
+            <value>
+                <fullName>FOREX</fullName>
+                <default>false</default>
+                <label>FOREX</label>
+            </value>
+            <value>
+                <fullName>INSTITUCIONAL</fullName>
+                <default>false</default>
+                <label>INSTITUCIONAL</label>
+            </value>
+            <value>
+                <fullName>INVERSORES</fullName>
+                <default>false</default>
+                <label>INVERSORES</label>
+            </value>
+            <value>
+                <fullName>INVERSORES LATAM</fullName>
+                <default>false</default>
+                <label>INVERSORES LATAM</label>
+            </value>
+            <value>
+                <fullName>IR&amp;FX</fullName>
+                <default>false</default>
+                <label>IR&amp;FX</label>
+            </value>
+            <value>
+                <fullName>IR CORPORATES</fullName>
+                <default>false</default>
+                <label>IR CORPORATES</label>
+            </value>
+            <value>
+                <fullName>MINORISTA</fullName>
+                <default>false</default>
+                <label>MINORISTA</label>
+            </value>
+            <value>
+                <fullName>STRUCTURES FI INVESTORS</fullName>
+                <default>false</default>
+                <label>STRUCTURES FI INVESTORS</label>
+            </value>
+            <value>
+                <fullName>VTA CRUZADA RECIBIDA</fullName>
+                <default>false</default>
+                <label>VTA CRUZADA RECIBIDA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>10</visibleLines>
+</CustomField>

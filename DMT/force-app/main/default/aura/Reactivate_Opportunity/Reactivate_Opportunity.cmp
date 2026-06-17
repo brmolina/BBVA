@@ -1,0 +1,55 @@
+<aura:component controller="Reactivate_Opportunity_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes" access="GLOBAL">
+  <aura:attribute name="recordId" type="Id"/>
+  <aura:attribute name="save_disabled" type="Boolean" default="true"/>
+  <aura:attribute name="isModalOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="opportunity" type="Object"/>
+  <aura:attribute name="estimated_closing_date" type="String"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+  <aura:if isTrue="{!v.isModalOpen}">
+    <div class="modal-custom-style">
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+              onclick="{!c.closeModal}"
+              alternativeText="close"
+              variant="bare-inverse"
+              class="slds-modal__close"/>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Reactivate Opportunity</h2>
+          </header>
+
+          <aura:if isTrue="{!v.isOpen}">
+            <lightning:recordEditForm aura:id="recordEditForm"
+              recordId="{!v.recordId}"
+              objectApiName="Opportunity"
+              onsubmit="{!c.closeModalOnFinish}">
+              <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p style="text-align: left">Select a new estimated closing date.</p>
+                <br/>
+                <lightning:input type="date"
+                  aura:id="estimated_closing_date"
+                  name="estimated_closing_date"
+                  value="{!v.estimated_closing_date}"
+                  onchange="{!c.save_enable}"
+                  required="true"
+                  label="Estimated Closing Date"
+                  placeholder="Enter a new closing date"/>
+                <br/>
+
+                <footer class="slds-modal__footer bottom">
+                  <lightning:button class="slds-float_left" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                  <lightning:button variant="brand" label="Save" disabled="{!v.save_disabled}" title="Save" type="submit"/>
+                </footer>
+              </div>
+            </lightning:recordEditForm>
+          </aura:if>
+        </div>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+</aura:component>

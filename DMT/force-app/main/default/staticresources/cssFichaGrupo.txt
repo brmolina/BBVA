@@ -1,0 +1,29 @@
+.THIS .fgcss_mainText {
+    height:200px;
+    text-align:center;
+    padding-top:100px;
+}
+.THIS .fgcss_floatRight {
+    float:right;
+}
+.THIS .fgcss_floatLeft {
+    float:left;
+}
+.THIS .fgcss_spanFooterDesc {
+    margin-right:10px;
+}
+.THIS .fgcss_footerContainer {
+    width:100%;
+    margin-top:10px;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+.THIS .fgcss_canvasPie {
+    height: 300px !important;
+    width: 100%;
+    max-height: inherit !important;
+    max-width: inherit !important;
+}
+.THIS .slds-button_icon-bare {
+display:none;
+}

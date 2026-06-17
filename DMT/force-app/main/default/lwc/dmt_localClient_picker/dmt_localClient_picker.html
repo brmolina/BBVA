@@ -1,13 +1,14 @@
 <template>
     <template if:true={hasValueEntity}>
         <lightning-record-picker
-            label="Select Guarantor"
-            placeholder="Search Guarantor..."
+            label={labelValue}
+            placeholder={placeholderValue}
             filter={filter}
             object-api-name="Local_Client__c"
             if:true={hasValue}
             value={clientId}
             matching-info={matchingInfo}
+            required
             display-info={displayInfo}
             disabled={disabled}
             onchange={handleChange}>
@@ -15,11 +16,12 @@
 
         <template if:false={hasValue}>
             <lightning-record-picker
-                label="Select Guarantor"
-                placeholder="Search Guarantor..."
+                label={labelValue}
+                placeholder={placeholderValue}
                 filter={filter}
                 object-api-name="Local_Client__c"
-                matching-info={matchingInfo}
+                matching-info={matchingInfo}  
+                required
                 display-info={displayInfo}
                 disabled={disabled}
                 onchange={handleChange}>
@@ -29,12 +31,13 @@
 
     <template if:false={hasValueEntity}>
         <lightning-record-picker
-            label="Select Guarantor"
-            placeholder="Search Guarantor..."
+            label={labelValue}
+            placeholder={placeholderValue}
             object-api-name="Local_Client__c"
             if:true={hasValue}
             value={clientId}
             matching-info={matchingInfo}
+            required
             display-info={displayInfo}
             disabled={disabled}
             onchange={handleChange}>
@@ -42,11 +45,12 @@
 
         <template if:false={hasValue}>
             <lightning-record-picker
-                label="Select Guarantor"
-                placeholder="Search Guarantor..."
+                label={labelValue}
+                placeholder={placeholderValue}
                 object-api-name="Local_Client__c"
                 matching-info={matchingInfo}
                 display-info={displayInfo}
+                required
                 disabled={disabled}
                 onchange={handleChange}>
             </lightning-record-picker>

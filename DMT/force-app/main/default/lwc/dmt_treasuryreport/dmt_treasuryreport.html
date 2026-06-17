@@ -1,264 +1,249 @@
 <template>
-    <div class="slds-card">
-        <div class="slds-card__header slds-grid">
-            <header class="slds-media slds-media_center slds-has-flexi-truncate">
-                <div class="slds-media__body">
-                    <h2 class="slds-card__header-title">
-                        <span class="slds-text-heading_small">Treasury Line Report</span>
-                    </h2>
-                </div>
-            </header>
+    <template if:false={accessAllowed}>
+        <c-dmt_no_access_message></c-dmt_no_access_message>
+    </template>    
+
+    <template if:true={accessAllowed}>
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="slds-text-heading_small">Treasury Line Report</span>
+                        </h2>
+                    </div>
+                </header>
             </div>
             <div class="slds-media__figure">
-    <div class="filters-container">
-         <div class="slds-form-element">
-                            <div class="slds-form-element__control slds-m-left_medium">
-                                           <lightning-input
-                                            name="enter-search"
-                                            variant="label-hidden"
-                                            placeholder="Filter results..."
-                                            type="search"
-                                            onchange={handleGeneralSearch}
-                                            oncommit={handleGeneralSearchKeyDown}
-                                        ></lightning-input>
+                <div class="filters-container">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control slds-m-left_medium">
+                            <lightning-input
+                                name="enter-search"
+                                variant="label-hidden"
+                                placeholder="Filter results..."
+                                type="search"
+                                onchange={handleGeneralSearch}
+                                oncommit={handleGeneralSearchKeyDown}
+                            ></lightning-input>
+                        </div>
+                    </div>
+
+                    <!-- FILTRO POR BOOKING GEOGRAPHY -->
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-select_container">
+                                <select class="slds-select"
+                                        value={selectedGeography}
+                                        onchange={handleGeographyChange}>
+                                    <option value="">All</option>
+                                    <option value="CO">CO-Colombia</option>
+                                    <option value="AR">AR-Argentina</option>
+                                    <option value="MX">MX-México</option>
+                                </select>
                             </div>
                         </div>
-        
-        <!-- FILTRO POR BOOKING GEOGRAPHY -->
-        <div class="slds-form-element">
-            <div class="slds-form-element__control">
-                <div class="slds-select_container">
-                    <select class="slds-select" 
-                            value={selectedGeography}
-                            onchange={handleGeographyChange}>
-                        <option value="">All</option>
-                        <option value="CO">CO-Colombia</option>
-                        <option value="AR">AR-Argentina</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <!-- BOTÓN LIMPIAR FILTROS -->
-        <template if:true={hasActiveFilters}>
-            <lightning-button
-                label="Remove filters"
-                variant="base"
-                onclick={clearFilters}
-                class="slds-m-right_small">
-            </lightning-button>
-        </template>
-            <div class="export-buttons">
-        <lightning-button
-            class="slds-form-element"
-            label="Export to CSV"
-            variant="outline-brand"
-            onclick={exportToCSV}>
-        </lightning-button>
-    </div>
-    </div>
-        </div>
-        <div class="slds-card__body slds-card__body_inner">
-            <!-- CONTENEDOR RESPONSIVE CON SCROLL -->
-            <div class="table-container-responsive">
-                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped responsive-table" role="grid">
-                    <thead>
-                        <tr class="slds-line-height_reset">
-                            <!-- Nivel 1: Group -->
-                            <th scope="col" class="slds-border_right group-header">
-                                <div class="slds-truncate">Group Name</div>
-                            </th>
-                            
-                            <!-- Nivel 2: Client -->
-                            <th scope="col" class="slds-border_right client-header">
-                                <div class="slds-truncate">Client Name</div>
-                            </th>
-                            
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Customer ID</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Star Code</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Fiscal ID</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Rating</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Sector</div>
-                            </th>
-                            
-                            <!-- Nivel 3: Line -->
-                            <th scope="col" class="slds-border_right line-header">
-                                <div class="slds-truncate">Line ID</div>
-                            </th>
-                            <th scope="col" class="slds-border_right line-header">
-                                <div class="slds-truncate">Last Updated</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Status</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Start Date</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">End Date</div>
-                            </th>
-                            
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Entific</div>
-                            </th>
-                            <th scope="col" class="slds-border_right">
-                                <div class="slds-truncate">Currency</div>
-                            </th>
-                            
-                            <!-- Nivel 4: Risk -->
-                            
-                            <th scope="col">
-                                <div class="slds-truncate">Type of Risk</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">Product</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">N/A to N/A</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">0D to 3Y</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">3Y to 5Y</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">5Y to 8Y</div>
-                            </th>
-                            <th scope="col">
-                                <div class="slds-truncate">8Y to 10Y</div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- (El contenido de las filas se mantiene igual) -->
-                        <template for:each={filteredData} for:item="group" for:index="groupIndex">
-                            <template for:each={group.clients} for:item="client" for:index="clientIndex">
-                                <template for:each={client.lines} for:item="line" for:index="lineIndex">
-                                    <template for:each={line.risks} for:item="risk" for:index="riskIndex">
-                                        <tr key={risk.key} class="slds-hint-parent"  data-id={line.dmtLineId}>
-                                            
-                                            <!-- GROUP CODE (Nivel 1) - Solo en primera fila del grupo -->
-                                            <template if:true={risk.isFirstInGroup}>
-                                                <td rowspan={group.totalRows} class="slds-border_right group-cell">
-                                                    <div class="slds-truncate slds-text-heading_small" title={group.groupCode}>
-                                                        {group.groupCode}
-                                                    </div>
-                                                </td>
-                                            </template>
-                                            
-                                            <!-- CLIENT DATA (Nivel 2) - Solo en primera fila del cliente -->
-                                            <template if:true={risk.isFirstInClient}>
-                                                <td rowspan={client.totalRows} class="slds-border_right client-cell">
-                                                    <div class="slds-truncate slds-text-body_regular" title={client.accountName}>
-                                                        {client.accountName}
-                                                    </div>
-                                                </td>
-                                                
-                                                <td rowspan={client.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={client.customerId}>{client.customerId}</div>
-                                                </td>
-                                                <td rowspan={client.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={client.customerId}>{client.starCode}</div>
-                                                </td>
-                                                <td rowspan={client.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={client.fiscalId}>{client.fiscalId}</div>
-                                                </td>
-                                                <td rowspan={client.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={client.rating}>{client.rating}</div>
-                                                </td>
-                                                <td rowspan={client.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={client.sector}>{client.sector}</div>
-                                                </td>
-                                            </template>
-                                            
-                                            <!-- LINE DATA (Nivel 3) - Solo en primera fila de la línea -->
-                                            <template if:true={risk.isFirstInLine}>
-                                                <td rowspan={line.totalRows} class="slds-border_right line-cell">
-                                                    <div class="slds-truncate" title={line.lineId}>
-                                                        <a  onclick={handleRowClick} class="slds-text-link" data-id={line.dmtLineId}>
-                                                            {line.lineId}
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <lightning-formatted-date-time value={line.lastUpdated} year="numeric" month="numeric" day="numeric" hour="2-digit"
-                                        minute="2-digit" ></lightning-formatted-date-time>
-                                                </td>
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={line.status}>{line.status}</div>
-                                                </td>
-                                                
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={line.startDateFormatted}>{line.startDateFormatted}</div>
-                                                </td>
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={line.endDateFormatted}>{line.endDateFormatted}</div>
-                                                </td>
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={line.bookingGeography}>{line.bookingGeography}</div>
-                                                </td>
-                                                <td rowspan={line.totalRows} class="slds-border_right">
-                                                    <div class="slds-truncate" title={line.currencyIsoCode}>{line.currencyIsoCode}</div>
-                                                </td>
-                                            </template>
-                                            
-                                            <!-- RISK DATA (Nivel 4) - Siempre visible -->
-                                           
-                                            <td>
-                                                <div class="slds-truncate" title={risk.typeOfRisk}>{risk.typeOfRisk}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.product}>{risk.product}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.naToNa}>{risk.naToNa}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.zeroDaysTo3Years}>{risk.zeroDaysTo3Years}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.threeYearsTo5Years}>{risk.threeYearsTo5Years}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.fiveYearsTo8Years}>{risk.fiveYearsTo8Years}</div>
-                                            </td>
-                                            <td>
-                                                <div class="slds-truncate" title={risk.eightYearsTo10Years}>{risk.eightYearsTo10Years}</div>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </template>
-                            </template>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
-            
-            <template if:true={isLoading}>
-                <div class="slds-align_absolute-center slds-m-top_medium">
-                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
-                </div>
-            </template>
+                    </div>
 
-            <template if:true={error}>
-                <div class="slds-notify slds-notify_alert slds-theme_error slds-m-top_medium" role="alert">
-                    <span class="slds-assistive-text">Error</span>
-                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Error">
-                        <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
-                    </span>
-                    <h2>Error loading data: {error}</h2>
+                    <!-- BOTÓN LIMPIAR FILTROS -->
+                    <template if:true={hasActiveFilters}>
+                        <lightning-button
+                            label="Remove filters"
+                            variant="base"
+                            onclick={clearFilters}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                    </template>
+                    <div class="export-buttons">
+                        <lightning-button
+                            class="slds-form-element"
+                            label="Export to CSV"
+                            variant="outline-brand"
+                            onclick={exportToCSV}>
+                        </lightning-button>
+                    </div>
                 </div>
-            </template>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- CONTENEDOR RESPONSIVE CON SCROLL -->
+                <div class="table-container-responsive">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped responsive-table" role="grid">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Group Name</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Client Name</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Customer ID</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Star Code</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Fiscal ID</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Rating</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Sector</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Line ID</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Last Updated</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Status</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Start Date</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">End Date</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Geography</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Currency</div>
+                                </th>
+                                <th scope="col" class="slds-border_right">
+                                    <div class="slds-truncate">Additional Products</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">Type of Risk</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">Product</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">N/A to N/A</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">0D to 3Y</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">3Y to 5Y</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">5Y to 8Y</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate">8Y to 10Y</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={filteredData} for:item="item" for:index="index">
+                                <tr key={item.key} class="slds-hint-parent" data-id={item.dmtLineId}>
+                                    <!-- GROUP - Solo visible en la primera fila de cada línea -->
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.groupCode}>
+                                            {item.groupCode}
+                                        </div>
+                                    </td>
+
+                                    <!-- CLIENT DATA - Solo visible en la primera fila de cada línea -->
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.accountName}>
+                                            {item.accountName}
+                                        </div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.customerId}>{item.customerId}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.starCode}>{item.starCode}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.fiscalId}>{item.fiscalId}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.rating}>{item.rating}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.sector}>{item.sector}</div>
+                                    </td>
+
+                                    <!-- LINE DATA - Solo visible en la primera fila de cada línea -->
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.lineId}>
+                                            <a onclick={handleRowClick} class="slds-text-link" data-id={item.dmtLineId}>
+                                                {item.lineId}
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <lightning-formatted-date-time value={item.lastUpdated} year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.status}>{item.status}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.startDateFormatted}>{item.startDateFormatted}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.endDateFormatted}>{item.endDateFormatted}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.bookingGeography}>{item.bookingGeography}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.currencyIsoCode}>{item.currencyIsoCode}</div>
+                                    </td>
+                                    <td class="slds-border_right" rowspan={item.totalRisksInLine} if:true={item.isFirstInLine}>
+                                        <div class="slds-truncate" title={item.additionalProducts}>{item.additionalProducts}</div>
+                                    </td>
+
+                                    <!-- RISK DATA - Siempre visible -->
+                                    <td>
+                                        <div class="slds-truncate" title={item.typeOfRisk}>{item.typeOfRisk}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title={item.product}>{item.product}</div>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <div class="slds-truncate" title={item.naToNa}>{item.naToNa}</div>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <div class="slds-truncate" title={item.zeroDaysTo3Years}>{item.zeroDaysTo3Years}</div>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <div class="slds-truncate" title={item.threeYearsTo5Years}>{item.threeYearsTo5Years}</div>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <div class="slds-truncate" title={item.fiveYearsTo8Years}>{item.fiveYearsTo8Years}</div>
+                                    </td>
+                                    <td class="slds-text-align_right">
+                                        <div class="slds-truncate" title={item.eightYearsTo10Years}>{item.eightYearsTo10Years}</div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <template if:true={isLoading}>
+                    <div class="slds-align_absolute-center slds-m-top_medium">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+
+                <template if:true={error}>
+                    <div class="slds-notify slds-notify_alert slds-theme_error slds-m-top_medium" role="alert">
+                        <span class="slds-assistive-text">Error</span>
+                        <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Error">
+                            <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
+                        </span>
+                        <h2>Error loading data: {error}</h2>
+                    </div>
+                </template>
+            </div>
         </div>
-    </div>
+    </template>
 </template>

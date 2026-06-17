@@ -87,7 +87,7 @@ global without sharing class DES_DenormalizeAlertsUtils {
 
         //Retrieve the parents for the account passed
         //List<AMHI__GBL_Account_Relationship__c> listAccRel = [SELECT Id, AMHI__Parent_Account__c FROM AMHI__GBL_Account_Relationship__c WHERE AMHI__Child_Account__c = :accId];
-        List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT ID, dwp_acmh__Parent_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c =: accId];
+        List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT ID, AMH_Parent_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c =: accId];
 
         //iterate to recursively add the dwp_kitv.dwp_kitv__Visit__c to each parent in the hierarchy
         //Boolean bol = false;
@@ -96,9 +96,9 @@ global without sharing class DES_DenormalizeAlertsUtils {
             RecursiveFxn(accRel.AMHI__Parent_Account__c, visitId, visName, visStartDate);
             //bol = true;
         }*/
-        for (dwp_acmh__GBL_Account_Relationship__c accRel : listAccRel) {
+        for (AMH_GBL_Account_Relationship__c accRel : listAccRel) {
 
-            RecursiveFxn(accRel.dwp_acmh__Parent_Account__c, alertId, alertName);
+            RecursiveFxn(accRel.AMH_Parent_Account__c, alertId, alertName);
             //bol = true;
         }
 

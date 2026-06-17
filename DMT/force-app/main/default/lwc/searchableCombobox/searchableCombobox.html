@@ -1,7 +1,7 @@
 <template>
     <div class="slds-card slds-p-around_medium" style="padding-bottom: 0px;padding-top: 0px;">
        <div class="slds-form-element">
-            <div class="slds-form-element__control">
+            <div class="slds-form-element__control anchor-measurement">
                 <lightning-input
                     label=""
                     style=""
@@ -11,43 +11,46 @@
                     value={selectedValue}
                     read-only={readOnlyUser}
                     disabled={readOnlyUser}
-                    variant = "label-hidden"
+                    variant="label-hidden"
                     oncommit={handleClear}
                 >
                 </lightning-input>
-                <template lwc:if={showResults}> 
-                    <div 
-                    class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
-                    role="listbox"
+                <template lwc:if={showResults}>
+                    <div
+                        class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                        role="listbox"
+                        style={dropdownStyle}
+                        onmouseenter={handleDropdownEnter}
+                        onmouseleave={handleDropdownLeave}
                     >
-                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                        <template for:each={searchResults} for:item="searchResult">
-                            <li 
-                                key={searchResult.value} 
-                                id={searchResult.value} 
-                                data-value={searchResult.value} 
-                                role="presentation" 
-                                onclick={selectSearchResult} 
-                                class="slds-listbox__item"
-                            >
-                                <div 
-                                    class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" 
-                                    role="option"
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <template for:each={searchResults} for:item="searchResult">
+                                <li
+                                    key={searchResult.value}
+                                    id={searchResult.value}
+                                    data-value={searchResult.value}
+                                    role="presentation"
+                                    onclick={selectSearchResult}
+                                    class="slds-listbox__item"
                                 >
-                                    <span class="slds-media__body">
-                                        <span 
-                                            class="slds-truncate" 
-                                            title={searchResult.label}
-                                        >
-                                            {searchResult.label}
+                                    <div
+                                        class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                        role="option"
+                                    >
+                                        <span class="slds-media__body">
+                                            <span
+                                                class="slds-truncate"
+                                                title={searchResult.label}
+                                            >
+                                                {searchResult.label}
+                                            </span>
                                         </span>
-                                    </span>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
-                </div> 
-                </template>      
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
             </div>
         </div>
     </div>

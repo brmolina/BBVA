@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SSIs_for_USTs__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Please confirm that US Domestic SSIs of the client have been sent to &lt;ssi@bbva.com&gt; &amp; &lt;fixedincomeny@bbva.com&gt;and that they have been stored in our backoffice systems.Only Fedwire accounts are admitted. Without the SSIs, the onboarding process can´t go on</inlineHelpText>
+    <label>SSIs for USTs</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

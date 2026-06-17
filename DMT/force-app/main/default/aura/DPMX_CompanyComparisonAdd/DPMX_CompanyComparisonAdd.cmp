@@ -1,0 +1,59 @@
+<aura:component access="global" extends="dwp_mdal:ModalTemplate_cmp" controller="DPMX_CompanyComparisonAdd_Ctrl" implements="force:hasRecordId">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="accountsOptions" type="List" default="[]" />
+    <aura:attribute name="accountsFiltred" type="List" default="[]" />
+    <aura:attribute name="accountsSelected" type="List" default="[]" />
+    <aura:attribute name="returnList" type="List" default="[]" />
+    <aura:attribute name="returnCom" type="DPMX_Company_Comparison__c" />
+    <aura:attribute name="companyComparisonList" type="List" default="[]" />
+    <aura:attribute name="customerId" type="String" default="test" />
+    <aura:attribute name="acquirerCategoryId" type="String" default="test" />
+    <aura:attribute name="newList" type="List" default="[]" />
+    <aura:attribute name="v.handleAddOpen" type="boolean" default="true" />
+    <aura:attribute name="hasHeader" type="boolean" default="false" />
+    <aura:attribute name="min" type="Integer" default="0" />
+    <aura:attribute name="max" type="Integer" default="5" />
+    <aura:attribute name="dynamicPricing" type="Object" /> 
+    <aura:attribute name="myAttribute" type="String" default="test" />
+    <aura:attribute name="dynamicId" type="String" default="test" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+
+    <aura:if isTrue="{!v.handleAddOpen}">
+        <section role="dialog" class="slds-modal slds-fade-in-open" aria-labelledby="modal-heading-01" tabindex="-1" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container slds-size_full">
+                <header class="slds-modal__header">
+                    <b>{!$Label.c.DPMX_CompanyComparison_Title}</b>
+                    <br></br>
+                    <i>{!$Label.c.DPMX_CompanyComparisonAdd_Text1}</i>
+                </header>
+                <!-- -->
+                <div class="slds-modal__content slds-p-around_xx-large" id="modal-content-id-1">
+                    <!--<div class="slds-form-element">
+                        <label class="slds-form-element__label" for="text-input-id-47">
+                      <abbr class="slds-required" title="required"></abbr></label>
+                        <div class="slds-form-element__control">
+                            <lightning:recordEditForm aura:id="dynamicPricingForm" objectApiName="DPMX_Dynamic_Pricing__c" class="slds-card__body_inner">
+                                <div class="slds-grid">
+                                    <div class="slds-col">
+                                        Escribe el nombre de la empresa a buscar:
+                                        <lightning:inputField fieldName="Name" variant="label-hidden" readonly="" aura:id="accountSearch" onchange="{!c.handleSearch}" />
+                                    </div>
+                                </div>
+                            </lightning:recordEditForm>
+                        </div>
+                    </div>-->
+                    <lightning:dualListbox name="companies" sourceLabel="Empresas" selectedLabel="Empresas seleccionadas" options="{!v.accountsFiltred}" value="{!v.accountsSelected}" min="{!v.min}" max="{!v.max}" />
+                </div>
+                <footer class="slds-modal__footer">
+                    <div class="slds-clearfix">
+                        <lightning:button class="slds-float_right slds-m-horizontal_medium" label="{!$Label.c.DPMX_Save}" onclick="{!c.handleOnSave}" variant="brand" />
+
+                        <lightning:button class="slds-m-top_none slds-float_right" label="{!$Label.c.DPMX_Cancel}" onclick="{!c.handleOnCancel}" />
+                    </div>
+                </footer>
+            </div>
+        </section>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,30 @@
+<template>
+    <div class="custom-div">
+        <div class="slds-media slds-media_center slds-m-bottom_medium">
+            <div class="slds-media__figure">
+                <div class="blue-icon-circle">
+                    <lightning-icon icon-name="utility:event" size="small" variant="inverse"></lightning-icon>
+                </div>
+            </div>
+            <div class="slds-media__body">
+                <p class="subtitle-text">Visits</p>
+                <h2 class="metrics-title">Metrics Visits</h2>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-gutters_small">
+            <div class="slds-col slds-size_1-of-2">
+                <div class="inner-card">
+                    <span class="label-title">Tier</span>
+                    <span class="value-text">{tier}</span>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <div class="inner-card">
+                    <span class="label-title">Total Visits</span>
+                    <span class="value-text">{totalVisits}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

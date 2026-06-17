@@ -1,7 +1,11 @@
 @isTest
-private class DMT_Opp_Currency_Conversion_Handler_Test {
-    
-        private static Map<String, Object> createArgs(Map<String, Object> input) {
+private without sharing class DMT_Opp_Currency_Conversion_Handler_Test {
+
+    private static final List<String> VALID_ACTIONS = new List<String>{
+        'convertArrayAmount', 'testTaxo', 'getMinAndMaxDates'
+    };
+
+    private static Map<String, Object> createArgs(Map<String, Object> input) {
         Map<String, Object> outputMap = new Map<String, Object>();
         Map<String, Object> optionsMap = new Map<String, Object>();
         return new Map<String, Object>{
@@ -11,13 +15,9 @@ private class DMT_Opp_Currency_Conversion_Handler_Test {
         };
     }
 
-    private static final List<String> VALID_ACTIONS = new List<String>{
-        'convertArrayAmount', 'testTaxo', 'getMinAndMaxDates'
-    };
-
     @isTest
-    static void testAllValidActions_LogSuccessfully() {
-        
+    static void testAllValidActionsLogSuccessfully() {
+
         DMT_Opp_Currency_Conversion_Handler handler = new DMT_Opp_Currency_Conversion_Handler();
 
         Test.startTest();
@@ -35,14 +35,14 @@ private class DMT_Opp_Currency_Conversion_Handler_Test {
     }
 
     @isTest
-    static void testCall_InvalidAction() {
+    static void testCallInvalidAction() {
         DMT_Opp_Currency_Conversion_Handler handler = new DMT_Opp_Currency_Conversion_Handler();
         String invalidAction = 'ThisActionDoesNotExist';
         Map<String, Object> inputMap = new Map<String, Object>{ 'someKey' => 'someValue' };
         Map<String, Object> args = createArgs(inputMap);
         Map<String, Object> outputMapRef = (Map<String, Object>)args.get('output');
-        Integer originalOutputSize = outputMapRef.size();
-        
+        //Integer originalOutputSize = outputMapRef.size();
+
         Test.startTest();
         Map<String, Object> resultMap = (Map<String, Object>) handler.call(invalidAction, args);
         Test.stopTest();
@@ -52,7 +52,7 @@ private class DMT_Opp_Currency_Conversion_Handler_Test {
     }
 
     @isTest
-    static void testInvokeMethod_CatchesSerializationException() {
+    static void testInvokeMethodCatchesSerializationException() {
 
         DMT_Opp_Currency_Conversion_Handler handler = new DMT_Opp_Currency_Conversion_Handler();
         String validAction = 'DMT_IP_TestTryCatch';
@@ -80,7 +80,7 @@ private class DMT_Opp_Currency_Conversion_Handler_Test {
     }
 
     @isTest
-    static void testInvalidAction_ThrowsException() {
+    static void testInvalidActionThrowsException() {
         DMT_Opp_Currency_Conversion_Handler handler = new DMT_Opp_Currency_Conversion_Handler();
         Map<String, Object> args = createArgs(new Map<String, Object>());
         Map<String, Object> output = (Map<String, Object>) args.get('output');

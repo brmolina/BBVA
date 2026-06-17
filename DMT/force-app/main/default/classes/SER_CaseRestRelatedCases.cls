@@ -145,14 +145,14 @@ global with sharing class SER_CaseRestRelatedCases {
         mmResult = result;
         for(Account acc :
             [
-                select id, name, recordtype.name,ser_cclient__c,
+                select id, name, recordtype.name,g_customer_id__c,
                 (select id, caseNumber, CreatedDate, subject, SER_Transactional_Reference__r.name,
                     SER_Product__c, SER_Classification__c, Priority, status, owner.name, Contact.name,
                     SER_User_Code_Web_Service__c, Description, Origin, Contact.Phone, Contact.Email,
                     ClosedDate, SER_Case_Creator__c, SER_Solution__c
                     from cases)
                 from account
-                where ser_cclient__c = :data.idClient
+                where g_customer_id__c = :data.idClient
             ]) {
                 system.debug('JLB - MAXM acc.id> ' + acc.id);
                 for (Case  caso: acc.cases) {
@@ -181,7 +181,7 @@ global with sharing class SER_CaseRestRelatedCases {
                     caseRelated.caseName = caso.Contact.name;
                     caseRelated.casePhone = caso.Contact.Phone;
                     caseRelated.caseMail = caso.Contact.Email;
-                    caseRelated.caseIdClient = acc.ser_cclient__c;
+                    caseRelated.caseIdClient = acc.g_customer_id__c;
                     caseRelated.clientName = acc.name;
                     if (caso.ClosedDate != null) {
                         caseRelated.caseClosedDate = caso.ClosedDate.format(DATE_FORMAT,GMT);
@@ -210,7 +210,7 @@ global with sharing class SER_CaseRestRelatedCases {
         mmResult = result;
         for(Account acc :
             [
-                select id, name, recordtype.name,ser_cclient__c,
+                select id, name, recordtype.name,g_customer_id__c,
                 (select id, caseNumber, CreatedDate, subject, SER_Transactional_Reference__r.name,
                     SER_Product__c, SER_Classification__c, Priority, status, owner.name, Contact.name,
                     SER_User_Code_Web_Service__c, Description, Origin, Contact.Phone, Contact.Email,
@@ -244,7 +244,7 @@ global with sharing class SER_CaseRestRelatedCases {
                 caseRelated.caseName = caso.Contact.name;
                 caseRelated.casePhone = caso.Contact.Phone;
                 caseRelated.caseMail = caso.Contact.Email;
-                caseRelated.caseIdClient = acc.ser_cclient__c;
+                caseRelated.caseIdClient = acc.g_customer_id__c;
                 caseRelated.clientName = acc.name;
                 if (caso.ClosedDate != null) {
                     caseRelated.caseClosedDate = caso.ClosedDate.format(DATE_FORMAT,GMT);

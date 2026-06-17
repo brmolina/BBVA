@@ -125,7 +125,7 @@ thead th {
 }
 
 .clientcollapsed {
-    display: none;
+    /* display: none; */
 }
 
 .l3collapsed {
@@ -137,11 +137,11 @@ thead th {
 }
 
 .clientName {
-    padding-left: 40px;
+    padding-left: 25px;
 }
 
 .l3ClientName {
-    padding-left: 80px;
+    /* padding-left: 80px; */
 }
 
 .clientName span {

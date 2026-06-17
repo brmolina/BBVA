@@ -1,0 +1,120 @@
+<!--
+  @description       :
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             :
+  @last modified on  : 01-15-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component extends="arce:Arc_IFIS_Aura_Utils" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="Arc_IFIS_ButtonsFinalize_Ctrl" access="global">
+    <aura:attribute name="ahaId" type="String" default="" description="Indicates the id of the current record" access="global" />
+    <aura:attribute name="ratingId" type="String" default="" description="Id of the rating__c object associated with the account has analysis in context" access="global" />
+    <aura:attribute name="modalHeader" type="String" default="" description="Indicates the title of the modal" access="global" />
+    <aura:attribute name="ambitOptions" type="Object[]" description="List fo available ambits" access="global" />
+    <aura:attribute name="userOptions" type="Object[]" description="List of available users for selected ambit" access="global" />
+    <aura:attribute name="selectedAmbitId" type="String" default="" description="Value ambit selected" access="global" />
+    <aura:attribute name="selectedUserId" type="String" default="" description="Value user selected" access="global" />
+    <aura:attribute name="proposeUserId" type="String" default="" description="User who proposed the rating" access="global" />
+    <aura:attribute name="validateDescr" type="String" default="" description="Description for validate action" access="global" />
+    <aura:attribute name="entity" type="String" default="" description="The entity which is going to be validated for (user/committee)" access="global" />
+    <aura:attribute name="blockedEntity" type="Boolean" default="false" description="Flag for blocking entity selection in case the subworkflow process was ARP or CRP" access="global" />
+    <aura:attribute name="subProcessType" type="String" default="" description="Subprocess rating" access="global" />
+    <aura:attribute name="wkfType" type="String" default="" description="Workflow type selected for this rating" access="global" />
+    <aura:attribute name="entityOptions" type="String[]" default="" description="Available entities that the rating can be validated by" access="global" />
+    <aura:attribute name="showModal" type="Boolean" default="false" description="Indicates to show or to hide the modal" access="global" />
+    <aura:attribute name="success" type="Boolean" default="false" description="If true, service and saving records were successful" access="global" />
+    <aura:attribute name="completed" type="Boolean" default="false" description="True when process has been completed succesfully" access="global" />
+    <aura:attribute name="errorMessage" type="String" default="" description="Message to show to the user if the process fails" access="global" />
+    <aura:attribute name="isLoading" type="Boolean" default="true" description="Spinner load variable" access="global" />
+    <aura:attribute name="finType" type="String" default="" description="Financial Type selected in Limit Advisor section" access="global" />
+    <aura:attribute name="geoOptions"             type="Object[]"                  description="List fo available ambits"                              access="global"/>
+    <aura:attribute name="levelOptions"           type="Object[]"                  description="List fo available ambits"                              access="global"/>
+    <aura:attribute name="selectedRegion"         type="String"  default=""        description="Value region selected"                                 access="global"/>
+    <aura:attribute name="selectedLevel"          type="String"  default=""        description="Value level selected"                                  access="global"/>
+    <aura:attribute name="show"                   type="Boolean" default="true"    description="Indicates to show or to hide the modal"                access="global"/>
+    <aura:attribute name="showUserDetls"          type="Boolean" default="true"    description="True to show user details"                             access="global"/>
+    <aura:attribute name="loading"                type="Boolean" default="true"    description="Spinner load variable"                                 access="global"/>
+    <aura:attribute name="isESGActive"            type="Boolean" default="false"   description="Flag for controlling if esg is Active" access="global" />
+    <aura:attribute name="showValidatedBy" type="Boolean" default="false" description="Indicates if the validated by field should be shown" access="global"/>
+    <aura:attribute name="isInitialLoading" type="Boolean" default="true" description="Indicates if the component is loading for the first time" access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <aura:if isTrue="{!!v.isLoading}">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!v.completed == 'true' ? c.handleFinish : c.handleClose}" alternativeText="{!$Label.arce.Arc_IFIS_Cancel_Close}"
+                            variant="bare-inverse" class="slds-modal__close" />
+                    </aura:if>
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!v.modalHeader}</h1>
+                </div>
+                <div class="slds-modal__content slds-var-p-horizontal_medium slds-var-p-vertical_large" id="modal-content-id-1">
+                    <div class="slds-size_1-of-1">
+                        <aura:renderIf isTrue="{!v.isLoading}">
+                            <div class="slds-align_absolute-center slds-m-top_large">
+                                <div role="status"
+                                    class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                    <span class="slds-assistive-text">{!$Label.arce.Arc_IFIS_Loading}</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                            <aura:set attribute="else">
+                                            <lightning:radioGroup disabled="{!v.blockedEntity}" options="{!v.entityOptions}" value="{!v.entity}" label="Validated By" onchange="{!v.changeEntity}" />
+                                            <aura:renderIf isTrue="{!and(v.entity == 'user', v.showUserDetls)}">
+                                            <h4 class="slds-m-top_medium">{!$Label.arce.Arc_ValidateRatingBy_UserRequired}</h4>
+                                            <div class="slds-p-top_medium">
+                                                <lightning:combobox name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_geoToPropose}" required="true" options="{!v.geoOptions}"
+                                                onchange="{!c.handleChangeRegion}" value="{!v.selectedRegion}" />
+                                            </div>
+                                            <div class="slds-p-top_medium">
+                                                <lightning:combobox aura:id="comboLevel" name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_levelToPropose}" required="true" options="{!v.levelOptions}"
+                                                onchange="{!c.handleChangeLevel}" value="{!v.selectedLevel}" /> 
+                                            </div>
+                                            <div class="slds-p-top_medium">
+                                                <lightning:combobox aura:id="comboAmbit" name="selectAmbit" label="Select the ambit" required="true" options="{!v.ambitOptions}"
+                                                onchange="{!c.changeAmbit}" value="{!v.selectedAmbitId}" />
+                                            </div>
+                                            <div class="slds-p-top_medium slds-m-bottom_x-large">
+                                                <lightning:combobox aura:id="comboUser" name="selectUser" label="Select the user" required="true" options="{!v.userOptions}" value="{!v.selectedUserId}" />
+                                            </div>
+                                            </aura:renderIf>
+                                            <lightning:textarea label="Commentary" placeholder="Observations about the validation" maxlength="255" value="{!v.validateDescr}" messageWhenTooLong="Maximum of 255 characters" />
+                            </aura:set>
+                        </aura:renderIf>
+                    </div>
+                </div>
+
+                <div class="slds-modal__footer">
+                    <div class="slds-clearfix">
+                        <div class="slds-grid slds-wrap">
+                            <aura:renderIf isTrue="{! v.completed}">
+                                <div class="slds-col slds-size_1-of-1">
+                                <div class="slds-float_right">
+                                    <lightning:button variant="brand" label="{!$Label.c.Lc_arce_finish}" title="{!$Label.c.Lc_arce_finish}" onclick="{!c.handleFinish}" />
+                                </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-float_left">
+                                        <lightning:button variant="neutral" label="{!$Label.dwp_dv.CancelLabel}"
+                                        title="{!$Label.dwp_dv.CancelLabel}" onclick="{!c.handleClose}" />
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-float_right">
+                                        <lightning:button disabled="{! (empty(v.selectedUserId) &amp;&amp; v.entity == 'user') || empty(v.entity) }" variant="brand" label="{!$Label.c.Lc_arce_ValidateRatingValidate}" title="{!$Label.c.Lc_arce_ValidateRatingValidate}" onclick="{!c.handleSave}" />
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:renderIf>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" />
+    </aura:if>
+    <arce:arcGenCustomSpinner showSpinner="{!v.isInitialLoading}" fullScreen="true" />
+</aura:component>

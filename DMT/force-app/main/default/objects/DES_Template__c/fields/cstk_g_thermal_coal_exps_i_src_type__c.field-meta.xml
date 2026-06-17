@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cstk_g_thermal_coal_exps_i_src_type__c</fullName>
+    <label>Thermal coal exposure indicator source</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Client report</fullName>
+                <default>false</default>
+                <label>Client report</label>
+            </value>
+            <value>
+                <fullName>Client disclosure</fullName>
+                <default>false</default>
+                <label>Client disclosure</label>
+            </value>
+            <value>
+                <fullName>Trucost</fullName>
+                <default>false</default>
+                <label>Trucost</label>
+            </value>
+            <value>
+                <fullName>Capital IQ</fullName>
+                <default>false</default>
+                <label>Capital IQ</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

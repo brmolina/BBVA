@@ -1,0 +1,85 @@
+<template>
+    <div class="onb-card">
+        <!--Formulario de LIQUIDATION THROUH CLS-->
+        <template lwc:if={showLiquidationThroughCls}>
+            <div class="onb-group slds-m-top_medium slds-m-horizontal_medium">
+                <div class="onb-row onb-row-two">
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            all-required
+                            record-id={recordId}
+                            title={label.ONB_PROD_LIQUIDATION_CLS}
+                            object-api-name={objOnboardingApiName}
+                            field-names={sections.businessCaseRight.fields}
+                            field-custom-labels={sections.businessCaseRight.labels}
+                            onvaluechange={handleOnboardingFieldChange}>
+                        </c-onb_onboarding-form>
+                    </div>
+                    <template lwc:if={showWhoIsContactPicklist}>
+                        <div class="onb-card onb-card-inside-group">
+                            <c-onb_onboarding-form
+                                all-required
+                                record-id={recordId}
+                                object-api-name={objOnboardingApiName}
+                                field-names={sections.businessCaseLeft.fields}
+                                field-custom-labels={sections.businessCaseLeft.labels}
+                                onvaluechange={handleOnboardingFieldChange}>
+                            </c-onb_onboarding-form>
+                        </div>
+                    </template>
+                </div>
+                <!--Form de cliente-->
+                <template lwc:if={showClientForm}>
+                    <div class="onb-row onb-row-two">
+                        <div class="onb-card onb-card-inside-group">
+                            <c-onb_onboarding-form
+                                all-required
+                                record-id={externalContactId}
+                                object-api-name={objContactApiName}
+                                field-names={sections.clientContactRight.fields}
+                                field-custom-labels={sections.clientContactRight.labels}
+                                handle-save-on-wrapper="true"
+                                onvaluechange={handleContactFieldChange}>
+                            </c-onb_onboarding-form>
+                        </div>
+                        <div class="onb-card onb-card-inside-group">
+                            <c-onb_onboarding-form
+                                all-required
+                                record-id={externalContactId}
+                                object-api-name={objContactApiName}
+                                field-names={sections.clientContactLeft.fields}
+                                field-custom-labels={sections.clientContactLeft.labels}
+                                handle-save-on-wrapper="true"
+                                onvaluechange={handleContactFieldChange}>
+                            </c-onb_onboarding-form>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!--Tabla de PRODUCTOS-->
+        <c-onb_onboarding-table
+            record-id={recordId}
+            object-api-name={objectApiName}
+            parent-field-api-name={parentFieldApiName}
+            columns={columns}
+            initial-rows={rows}
+            add-label="Add product"
+            show-add=true
+            show-clone=true
+            show-delete=true
+            create-record-on-add=true
+            required-field-api-names={requiredFieldApiNames}
+            product-options-by-row-id={productOptionsByRowId}
+            onrowcreated={handleRowCreated}
+            onrowdeleted={handleRowDeleted}
+            onrowunlink={handleRowUnlink}
+            onproductchange={handleProductChange}
+            onproductcategorychange={handleProductCategoryChange}
+            onbookingentitychange={handleBookingEntityChange}
+            conditional-required-rules={conditionalRequiredRules}
+            restrict-product-category-for-no-master-agreement={restrictProductCategoryForNoMasterAgreement}>
+        </c-onb_onboarding-table>
+    </div>
+</template>

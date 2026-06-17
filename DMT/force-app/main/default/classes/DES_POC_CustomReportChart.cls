@@ -2,7 +2,7 @@
 * @author       VASS - DSL
 * @date         12/04/2018
 * @description  Clase que recupera los datos de Oportunidades, los procesa y devuelve el resultado en el formato apropiado para poder crear posteriormente el chart con la libreria CHART.JS
-* @Revision     12/07/2018	-	VASS DSL	-	Se modifica la clase para que en la Query recoja tambien todas las oportunidades que son MIAS y son DRAFT
+* @Revision     12/07/2018  -  VASS DSL  -  Se modifica la clase para que en la Query recoja tambien todas las oportunidades que son MIAS y son DRAFT
 **********************************************************************************/
 global with sharing class DES_POC_CustomReportChart {
 
@@ -13,14 +13,14 @@ global with sharing class DES_POC_CustomReportChart {
     @AuraEnabled
     public static String getData(String clientId){
         system.debug('>>>>> FUNCION getData. ID CLIENTE : ' + clientId);
-		
-		Set<Id> setIdOppsDenormClient = new Set<Id>();
-		for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]){
-			if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-				setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
-			}
-		}
-		
+    
+    Set<Id> setIdOppsDenormClient = new Set<Id>();
+    for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]){
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
+      }
+    }
+    
         //Recojo todos los Opportunity Products que pertenezcan a alguna oportunidad de la cuenta de la tabla Desnormalizada 
         List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                     SELECT  DES_Product_Family__c,
@@ -69,11 +69,11 @@ global with sharing class DES_POC_CustomReportChart {
         system.debug('>>>>> clientId: ' + clientId);
         
         Set<Id> setIdOppsDenormClient = new Set<Id>();
-		for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]){
-			if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)){
-				setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
-			}
-		}
+    for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]){
+      if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)){
+        setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
+      }
+    }
         //Recojo todos los Opportunity Products que pertenezcan a alguna oportunidad de la cuenta de la tabla Desnormalizada 
         List<OpportunityLineItem> listOppProduct = new List<OpportunityLineItem>([
                                     SELECT  DES_Product_Family__c,

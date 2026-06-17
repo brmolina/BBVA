@@ -1,0 +1,34 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId" access="global">
+
+    <!--Atributos de padre-->
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 50%; max-width: 50rem; }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Rentabilidad de las tasas de descuento propuestas (Break Even)</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <div class="slds-form-element__control">
+                        <p>
+                        	La rentabilidad actual no corresponde a un escenario de break-even. La tasa que puedes proponer debe estar por encima de la tasa de intercambio. Te recomendamos ingresar esos datos como tasa personalizada para calcular la rentabilidad correcta.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Aceptar" onclick="{!c.handleClose}" />
+            </div>
+        </div>
+
+    </section>
+</aura:component>

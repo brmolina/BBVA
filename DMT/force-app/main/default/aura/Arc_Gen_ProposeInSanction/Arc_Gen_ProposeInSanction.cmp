@@ -1,0 +1,179 @@
+<!--
+@Component Name     : Arc_Gen_ProposeInSanction.cmp
+@Description        : Component to propose in sanction
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : javier.soto.carrascosa@bbva.com
+@Last Modified On   : 02/07/2020
+@Modification Log   :
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    17/05/2019                  ARCE TEAM     		    		    Initial Version
+1.1    02/07/2020      juanignacio.hita.contractor@bbva.com     Update title by step
+1.2    19/07/2020      juanignacio.hita.contractor@bbva.com     Add persistArceAction promise in finish action
+-->
+<aura:component controller="Arc_Gen_ProposeInSanction_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute name="listComboBox" type="List" description="variable that saves the customers for first modal"/>
+    <aura:attribute name="listStages" type="List" description="List of available stages"/>
+    <aura:attribute name="listAmbits" type="List" default="[]" description="List of available ambits"/>
+    <aura:attribute name="customerSelected" type="String" description="variable that save the customer selected"/>
+    <aura:attribute name="currentStep" type="String" default="1" description="variable that saves the step number of the modals"/>
+    <aura:attribute name="arceId" type="String" description="GetARCE id from the account has analysis"/>
+    <aura:attribute name="stagevalue" type="String" description="saves the selected stage"/>
+    <aura:attribute name="errorMessage" type="String" description="saves the error message"/>
+    <aura:attribute name="ambit" type="String" description="saves the selected ambit"/>
+    <aura:attribute name="customerDetailInfo" type="sObject[]" description="saves the information of the customers"/>
+    <aura:attribute name="mapCustomers" type="Object[]" description="variable that saves the customers with all the data"/>
+    <aura:attribute name="delegationWrapper" type="Object" description="Delegation wrapper"/>
+    <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner load variable"/>
+    <aura:attribute name="disableButtons" type="Boolean" default="true" description="Disables next/finish button"/>
+    <aura:attribute name="show" type="Boolean" description="show or hide modal" default="true"/>
+    <aura:attribute name="modeLight" type="Boolean" description="Mode of the component" default="true"/>
+    <aura:attribute name="getCustomersBoolean" type="Boolean" description="variable of control"/>
+    <aura:attribute name="title" type="String" default="" description="modal title"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:if isTrue="{!v.show}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                                onclick="{! c.cancelAction }"
+                                                alternativeText="close"
+                                                variant="bare-inverse"
+                                                class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        <ui:outputText value="{!v.title}"></ui:outputText></h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+
+                    <div class="{!v.currentStep == '1' ? 'slds-show' : 'slds-hide'}" >
+                        <div  style="margin-top:1em;">
+                            <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                <div class="slds-size_1-of-2" style="width:50%">
+                                    <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                        <aura:if isTrue="{!v.spinnerStatus}">
+                                            <div class="slds-align_absolute-center" style="margin-top:15px;">
+                                                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                                    <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                                                    <div class="slds-spinner__dot-a"></div>
+                                                    <div class="slds-spinner__dot-b"></div>
+                                                </div>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <lightning:combobox name="customer" value="{!v.customerSelected}" options="{!v.listComboBox}" onchange="{!c.onSelectCustomer}"/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <div class="slds-size_1-of-2" style="width:50%">
+                                    <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                        <ul class="slds-has-dividers_around-space">
+                                            <li class="slds-item">
+                                                <lightning:tile label="{!$Label.c.Arc_Gen_ProposeInSanctionCustomer}"  class="slds-tile_board">
+                                                    <p class="slds-truncate">{!v.customerDetailInfo[0].Name}</p>
+                                                </lightning:tile>
+                                                <lightning:tile label="{!$Label.c.Arc_Gen_ProposeInSanctionRating}"  class="slds-tile_board">
+                                                    <p class="slds-truncate">{!v.customerDetailInfo[0].Rating}</p>
+                                                </lightning:tile>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="{!v.currentStep == '2' ? 'slds-show' : 'slds-hide'}" style="color:black">
+                        <center>
+                            <strong>
+                                <h1>
+                                    <ui:outputText value="{!$Label.c.ARC_GEN_PROPOSE_SELECT_GROUP_STAGE}"/>
+                                </h1>
+                            </strong>
+                        </center>
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-size_2-of-2">
+                                <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                    <aura:if isTrue="{!v.spinnerStatus}">
+                                        <div class="slds-align_absolute-center" style="margin-top:15px;">
+                                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <lightning:combobox name="selectStage" value="{!v.stagevalue}" options="{!v.listStages}" onchange="{!c.setStageValue}"/>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="{!v.currentStep == '3' ? 'slds-show' : 'slds-hide'}"  >
+                        <center><strong><h1><ui:outputText value="{!$Label.c.ARC_GEN_PROPOSE_SELECTION_THE_SCOPE_OF_SANCTION}"/></h1></strong></center>
+                        <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                            <div class="slds-size_2-of-2">
+                                <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                                    <aura:if isTrue="{!v.spinnerStatus}">
+                                        <div class="slds-align_absolute-center" style="margin-top:15px;">
+                                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </div>
+                                        <aura:set attribute="else">
+                                            <lightning:combobox name="selectambit" options="{!v.listAmbits}" onchange="{!c.setAmbitValue}"/>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                                <aura:if isTrue="{!v.errorMessage}">
+                                    <div class="slds-size_1-of-2">
+                                        <div class="slds-text-color_destructive">{!v.errorMessage}</div>
+                                    </div>
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                        <div class="slds-size_2-of-2" style="width:50%">
+                            <aura:if isTrue="{!v.modeLight != true}">
+                                <lightning:button disabled="{!v.currentStep != '1' ? '' : 'disabled'}"
+                                            variant="neutral"
+                                            label="{!$Label.c.Lc_arce_back}"
+                                            onclick="{!c.moveBack}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!v.currentStep != '3'}">
+                                <lightning:button variant="brand"
+                                                label="{!$Label.c.Arc_Gen_Next}"
+                                                disabled="{!v.disableButtons}"
+                                                onclick="{!c.moveNext}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!v.currentStep == '3'}">
+                                <lightning:button variant="brand"
+                                                label="{!$Label.c.Lc_arce_finish}"
+                                                disabled="{!v.disableButtons}"
+                                                onclick="{!c.finish}"/>
+                            </aura:if>
+                        </div>
+                        <aura:if isTrue="{!v.modeLight != true}">
+                        <div class="slds-size_2-of-2" style="width:50%">
+                            <lightning:progressIndicator currentStep="{!v.currentStep}" type="base">
+                                <lightning:progressStep value="1"/>
+                                <lightning:progressStep value="2" label="{!$Label.c.ARC_GEN_PROPOSE_SELECT_GROUP_STAGE}"/>
+                                <lightning:progressStep value="3" label="{!$Label.c.ARC_GEN_PROPOSE_SELECTION_THE_SCOPE_OF_SANCTION}"/>
+                            </lightning:progressIndicator>
+                        </div>
+                        </aura:if>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Campaigns</fullName>
+    <columns>CAMPAIGN.NAME</columns>
+    <columns>cond__solution_category_name__c</columns>
+    <columns>country_name__c</columns>
+    <columns>CAMPAIGN.START_DATE</columns>
+    <columns>Owner__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Commercial Actions</label>
+</ListView>

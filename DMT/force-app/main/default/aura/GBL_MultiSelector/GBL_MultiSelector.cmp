@@ -1,0 +1,49 @@
+<aura:component >
+    <aura:attribute name="options" type="GBL_SelectItem[]" />
+    <aura:attribute name="options_" type="GBL_SelectItem[]" />
+    <aura:attribute name="selectedItems" type="String[]" />
+    <aura:attribute name="infoText" type="String" default="MultiSelector" />
+    <aura:attribute name="title" type="String" default="!title here!" />
+    <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+
+    <aura:registerEvent name="selectChange" type="c:GBL_selectChange" />
+    <aura:registerEvent name="optionsLoaded" type="c:GBL_optionsLoaded" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:method name="updateOptions" action="{!c.updateOptions}">
+        <aura:attribute name="newOptions" type="String"/>
+    </aura:method>
+
+    <div class="slds-form-element">
+        <label class="slds-form-element__label" for="multiSelectorCmb">
+          {!v.title}
+        </label>
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div aura:id="main-div" class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" aria-expanded="false" aria-haspopup="listbox" role="combobox" onclick="{!c.handleClick}">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <input type="text" class="slds-input slds-combobox__input" name="multiSelectorCmb" aura:id="multiSelectorCmb" id="multiSelectorCmb" aria-controls="multiSelectorLst" role="textbox" placeholder="{!v.infoText}" autocomplete="off" readonly="true" />
+                        <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right" title="Keep SHIFT key pressed while clicking in order to select multiple values. Press REFRESH button once values are selected.">
+                            <lightning:buttonIcon class="slds-icon slds-icon_x-small slds-icon-text-default" iconName="utility:down" variant="bare"/>
+                        </span>
+                    </div>
+                    <div id="multiSelectorLst" role="listbox" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+                        <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid" role="presentation">
+
+                            <aura:iteration items="{!v.options_}" var="option">
+                                <li role="presentation" class="slds-listbox__item" onclick="{!c.handleSelection}" data-value="{!option.value}" data-selected="{!option.selected}">
+                                    <span class="{!'slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-media_center ' + (option.selected ? 'slds-is-selected' : '')}" role="option">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon_container slds-icon-utility-check slds-media__figure slds-icon_x-small slds-listbox__icon-selected" />
+                                        <span class="slds-media__body">
+                                            <span title="{!option.label}" class="slds-truncate">{!option.label}</span>
+                                        </span>
+                                    </span>
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

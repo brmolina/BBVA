@@ -1,0 +1,182 @@
+.THIS .customTh {
+	display:inline;
+  	padding: 20px;
+  	float:left;
+  	table-layout:fixed;
+}
+
+.THIS .customDiv {
+   	font-size: 1.2rem;
+	font-weight: bold;
+}
+
+.THIS .customDiv2 {
+	display:block;  
+   	padding: 5px;
+}
+
+.THIS .subtitle{
+	margin-top: 3%;
+    color: grey;
+    font-size: .8rem;
+    font-weight: lighter;
+}
+
+/*.THIS.Normal td th{
+  display:inline;
+  padding: 20px;
+  float:left;
+  table-layout:fixed;
+}*/
+
+
+ /* CSS - Erik */  
+
+/*.THIS.Normal table{
+  border-collapse: separate;
+}
+
+
+.THIS.Normal div.horizontal{
+   display:block;  
+   padding: 5px;
+}
+
+.THIS div b {
+   color: rgb(22, 50, 92);
+   font-size: 1rem;
+}
+
+.THIS div b span {
+   color: rgb(22, 50, 92);
+   font-size: 1.25rem;
+}*/
+
+/*************/
+
+
+/*.THIS.One td th{
+    display:inline;
+    margin:0;
+    padding:0;  
+
+
+}
+
+
+.THIS.One table{
+   
+    border-collapse: collapse;
+
+}
+
+.THIS.One div.horizontal{
+    display:block;
+    font-size: 100%;
+    margin-right: 3%;
+    width: 100%;
+
+
+
+}
+
+
+
+.THIS.Two td th{
+    display:inline;
+    margin:0;
+    width: 100%;
+    margin-right: 10%;
+
+
+
+}
+
+
+.THIS.Two table{
+   
+    border-collapse: collapse;
+        table-layout:fixed;
+
+}
+
+.THIS.Two div.horizontal{
+    display:inline;
+    margin-right: 5%;
+
+
+}
+
+
+.THIS.Three td th{
+    display:inline;
+    margin:0;
+    padding:0;  
+    table-layout:fixed;
+    
+}
+.THIS.Three td{
+  width: 25px;
+
+}
+
+.THIS.Three table{
+   
+    border-collapse: collapse;
+}
+
+.THIS.Three div.horizontal{
+    display:inline;
+    margin:5%;
+}
+
+.THIS .icono svg{
+ fill: #3597CD;
+}
+
+.THIS tr th {
+	background-color: #DEE5EE;
+	color: #43557A;
+	font-weight: bold;
+}
+
+.THIS tr:nth-child(2n+3) {
+    background-color: #FAFAFA;
+}
+
+.THIS .dataRow:hover {
+    background-color: #ECEEEF;
+}
+
+.THIS .dataRow{
+    border-bottom: 1px solid #ddd;
+    padding: .20rem .5rem;
+}
+
+.THIS .labelsFourColumns{
+    padding: 34px;
+}
+.THIS .title{
+    padding: 0px 0px 10px 0px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+.THIS .subtitle{
+    color: grey;
+    font-size: .8rem;
+    font-weight: lighter;
+}
+
+.THIS .morePadding{
+  padding: 16px;
+}*/
+/*.THIS th:hover {
+  background-color: #ECEEEF;
+  border-top: 2px solid #ddd;
+  cursor: pointer;
+}*/
+
+/*.THIS .overflowingTable{
+	table-layout: fixed;
+	width: 100%;	
+}*/

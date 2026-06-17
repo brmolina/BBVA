@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IP_Opportunities_in_Progress</fullName>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>compliance_form_status_type__c</columns>
+    <columns>OPPORTUNITY.CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>equals</operation>
+        <value>Draft Opp,Proposal,Approval,Ready to close</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Opportunity.Privileged_Opportunity,Opportunity.Privileged_Sales_GM_Opportunity</value>
+    </filters>
+    <label>IP Opportunities in Progress</label>
+    <sharedTo>
+        <roleAndSubordinatesInternal>Compliance_TEAM</roleAndSubordinatesInternal>
+    </sharedTo>
+</ListView>

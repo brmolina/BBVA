@@ -2,6 +2,7 @@ public with sharing class DMT_TableTenors {
 
     public class TenorInitData {
         @AuraEnabled public List<DMT_Opportunity_Tenor__c> tenors;
+        public TenorInitData() { this.tenors = new List<DMT_Opportunity_Tenor__c>(); }
     }
 
     @AuraEnabled
@@ -10,38 +11,51 @@ public with sharing class DMT_TableTenors {
         Boolean isGodMode = FeatureManagement.checkPermission('DMT_Line_God');
         AccessLevel dbMode = isGodMode ? AccessLevel.SYSTEM_MODE : AccessLevel.USER_MODE;
 
-        // 1. QUERY INTERNAL CONTEXT
-        OpportunityLineItem parentProduct;
-        try {
-             parentProduct = (OpportunityLineItem) Database.query(
-                'SELECT Id, gf_initial_date__c, gf_maturity_date__c, g_currency_id__c, gf_amortization_type__c ' +
-                'FROM OpportunityLineItem ' +
-                'WHERE Id = :oppLineItemId LIMIT 1',
-                dbMode
-            );
-        } catch (Exception e) {
-            throw new AuraHandledException('Error: Parent Product not found or inaccessible.');
+        OpportunityLineItem parentProduct = new OpportunityLineItem(); 
+        
+        // 1. QUERY PARENT (Safely)
+        if (String.isNotBlank(oppLineItemId)) {
+            try {
+                // Validate ID format before querying to avoid "Invalid id" exception
+                Id validId = Id.valueOf(oppLineItemId); 
+                
+                List<OpportunityLineItem> parents = Database.query(
+                    'SELECT Id, gf_initial_date__c, gf_maturity_date__c, g_currency_id__c, gf_amortization_type__c ' +
+                    'FROM OpportunityLineItem ' +
+                    'WHERE Id = :validId LIMIT 1',
+                    dbMode
+                );
+                
+                if (!parents.isEmpty()) {
+                    parentProduct = parents[0];
+                }
+            } catch (Exception e) {
+                // Swallow invalid ID or query errors. Proceed with empty/dummy parent.
+                System.debug('Skipping parent query: ' + e.getMessage());
+            }
         }
 
-        // 2. FETCH EXISTING TENORS (Sorted by Date & Creation)
-        String query = 'SELECT Id, gf_tenor_date__c, ' +
-                       'gj_nominal_amount_db__c, gf_nominal_amount_fb__c, ' +
-                       'gf_spread_db__c, gf_spread_fb__c, ' +
-                       'gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c, ' +
-                       'DMT_Opportunity_Product__r.g_currency_id__c ' +
-                       'FROM DMT_Opportunity_Tenor__c ' +
-                       'WHERE DMT_Opportunity_Product__c = :oppLineItemId ' +
-                       'ORDER BY gf_tenor_date__c ASC, CreatedDate ASC';
+        // 2. FETCH EXISTING TENORS
+        List<DMT_Opportunity_Tenor__c> existingTenors = new List<DMT_Opportunity_Tenor__c>();
+        
+        if (parentProduct.Id != null) {
+            String query = 'SELECT Id, gf_tenor_date__c, ' +
+                           'gj_nominal_amount_db__c, gf_nominal_amount_fb__c, ' +
+                           'gf_spread_db__c, gf_spread_fb__c, ' +
+                           'gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c, ' +
+                           'DMT_Opportunity_Product__r.g_currency_id__c ' +
+                           'FROM DMT_Opportunity_Tenor__c ' +
+                           'WHERE DMT_Opportunity_Product__c = :oppLineItemId ' +
+                           'ORDER BY gf_tenor_date__c ASC, CreatedDate ASC';
+            existingTenors = Database.query(query, dbMode);
+        }
 
-        List<DMT_Opportunity_Tenor__c> existingTenors = Database.query(query, dbMode);
-
-        // --- [FIX] AUTO-CLEANUP (Duplicates + Invalid Middle Rows) --- THIS IS A WORKAROUND DUE TO DUPLICATION BUG ON THE FLEXCARD ---
+        // --- AUTO-CLEANUP ---
         if (!existingTenors.isEmpty()) {
             Map<Date, DMT_Opportunity_Tenor__c> uniqueMap = new Map<Date, DMT_Opportunity_Tenor__c>();
             List<DMT_Opportunity_Tenor__c> recordsToDelete = new List<DMT_Opportunity_Tenor__c>();
             List<DMT_Opportunity_Tenor__c> cleanList = new List<DMT_Opportunity_Tenor__c>();
 
-            // Context for Structure Validation
             Boolean isStrictStructure = (parentProduct.gf_amortization_type__c != 'User-Defined');
             Date initDate = parentProduct.gf_initial_date__c;
             Date matDate = parentProduct.gf_maturity_date__c;
@@ -49,11 +63,11 @@ public with sharing class DMT_TableTenors {
             for (DMT_Opportunity_Tenor__c t : existingTenors) {
                 Boolean shouldDelete = false;
 
-                // A. DUPLICATE CHECK (FlexCard Bug Workaround)
+                // A. DUPLICATE CHECK 
                 if (t.gf_tenor_date__c == null || uniqueMap.containsKey(t.gf_tenor_date__c)) {
                     shouldDelete = true;
                 }
-                // B. STRUCTURE CHECK (If not User-Defined, delete anything that isn't Start or End)
+                // B. STRUCTURE CHECK
                 else if (isStrictStructure && t.gf_tenor_date__c != initDate && t.gf_tenor_date__c != matDate) {
                     shouldDelete = true;
                 }
@@ -66,23 +80,19 @@ public with sharing class DMT_TableTenors {
                 }
             }
 
-            // Perform Cleanup if needed
             if (!recordsToDelete.isEmpty()) {
                 try {
                     Database.delete(recordsToDelete, dbMode);
-                    // System.debug('Auto-healed database: Deleted ' + recordsToDelete.size() + ' invalid rows.');
                 } catch (Exception e) {
                     System.debug('Error auto-cleaning rows: ' + e.getMessage());
                 }
-                // Use the clean list for the response
                 existingTenors = cleanList;
             }
         }
-        // -------------------------------------------
 
         // 3. GENERATE PLACEHOLDERS (If Empty)
         if (existingTenors.isEmpty()) {
-            result.tenors = generatePlaceholders(parentProduct);
+            result.tenors = generatePlaceholders(parentProduct, oppLineItemId);
         } else {
             result.tenors = existingTenors;
         }
@@ -108,17 +118,28 @@ public with sharing class DMT_TableTenors {
         return !DMT_Utils.hasWriteAccess();
     }
 
-    private static List<DMT_Opportunity_Tenor__c> generatePlaceholders(OpportunityLineItem product) {
-        // [Same as your code]
+    // [FIX] generatePlaceholders prevents assignment of Invalid IDs to Lookup Fields
+    private static List<DMT_Opportunity_Tenor__c> generatePlaceholders(OpportunityLineItem product, String rawId) {
         List<DMT_Opportunity_Tenor__c> placeholders = new List<DMT_Opportunity_Tenor__c>();
-
-        // Safety: If dates are null on product, return empty list to avoid null pointer errors
-        if (product.gf_initial_date__c == null || product.gf_maturity_date__c == null) {
-            return placeholders;
+        
+        // Determine a safe ID to assign. 
+        // If rawId is 'REC0', we cannot assign it to the Lookup field.
+        String safeLookupId = null;
+        if (product.Id != null) {
+            safeLookupId = product.Id;
+        } else if (String.isNotBlank(rawId)) {
+            try {
+                // Only use rawId if it passes ID validation
+                Id checkFormat = Id.valueOf(rawId); 
+                safeLookupId = rawId;
+            } catch(Exception e) {
+                // rawId is 'REC0' or invalid -> Leave safeLookupId as null
+            }
         }
 
+        // 1. Initial Row
         DMT_Opportunity_Tenor__c initRow = new DMT_Opportunity_Tenor__c();
-        initRow.DMT_Opportunity_Product__c = product.Id;
+        initRow.DMT_Opportunity_Product__c = safeLookupId; // Will be null if 'REC0'
         initRow.gf_tenor_date__c = product.gf_initial_date__c;
         initRow.CurrencyIsoCode = product.g_currency_id__c;
         initRow.gj_nominal_amount_db__c = 0; initRow.gf_nominal_amount_fb__c = 0;
@@ -126,9 +147,10 @@ public with sharing class DMT_TableTenors {
         initRow.gf_accrual_fees_bp__c = 0; initRow.gf_non_accrual_fees_bp__c = 0;
         placeholders.add(initRow);
 
-        if (product.gf_initial_date__c != product.gf_maturity_date__c) {
+        // 2. End Row
+        if (product.gf_initial_date__c != product.gf_maturity_date__c || product.gf_initial_date__c == null) {
             DMT_Opportunity_Tenor__c endRow = new DMT_Opportunity_Tenor__c();
-            endRow.DMT_Opportunity_Product__c = product.Id;
+            endRow.DMT_Opportunity_Product__c = safeLookupId; // Will be null if 'REC0'
             endRow.gf_tenor_date__c = product.gf_maturity_date__c;
             endRow.CurrencyIsoCode = product.g_currency_id__c;
             endRow.gj_nominal_amount_db__c = 0; endRow.gf_nominal_amount_fb__c = 0;

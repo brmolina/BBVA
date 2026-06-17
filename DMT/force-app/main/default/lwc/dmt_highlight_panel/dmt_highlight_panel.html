@@ -1,0 +1,203 @@
+<template>
+    <!-- Loading state -->
+    <template if:true={isLoading}>
+        <div class="slds-align_absolute-center slds-m-around_large">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </template>
+    
+    <!-- Error state -->
+    <template if:true={error}>
+        <div class="slds-align_absolute-center slds-m-around_large">
+            <lightning-icon icon-name="utility:error" size="large" class="slds-m-right_small"></lightning-icon>
+            <p class="slds-text-color_error">Error loading configuration</p>
+        </div>
+    </template>
+    
+    <!-- Main content -->
+    <template if:true={hasConfig}>
+        <div class="slds-page-header slds-page-header_record-home slds-m-bottom_xx-small">
+            
+            <!-- Primera fila: Icono, Título y Acciones -->
+            <div class="slds-page-header__row">
+                <!-- Columna del título con icono -->
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <!-- Icono configurable -->
+                        <div class="slds-media__figure slds-icon_container" if:true={mainIcon.hasIcon}>
+                            <!-- Static Resource Icon -->
+                            <template if:true={mainIcon.isStaticResource}>
+                                <img src={mainIcon.staticResourceUrl} 
+                                     alt={mainIcon.alternativeText}
+                                     class="slds-icon slds-icon_medium custom-icon" />
+                            </template>
+                            
+                            <!-- Custom Icon (URL/base64) -->
+                            <template if:true={mainIcon.isCustom}>
+                                <img src={mainIcon.customIconUrl} 
+                                     alt={mainIcon.alternativeText}
+                                     class="slds-icon slds-icon_medium custom-icon" />
+                            </template>
+                            
+                            <!-- Standard/Utility Icon -->
+                            <template if:true={mainIcon.isStandardOrUtility}>
+                                <lightning-icon
+                                    icon-name={mainIcon.iconName}
+                                    size={mainIcon.size}
+                                    alternative-text={mainIcon.alternativeText}>
+                                </lightning-icon>
+                            </template>
+                        </div>
+                        
+                        <!-- Título y subtítulo -->
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span if:true={recordInfoHasLabel}>{recordInfo.label}</span>
+                                        <span class="slds-page-header__title slds-truncate" title={recordInfo.name}>
+                                            {recordInfo.name}<template if:true={isConfidential}><span class="confidential-tag"> - CONFIDENTIAL</span></template>
+                                        </span>
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Columna de acciones -->
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning-button-group>
+                                <!-- Botones principales -->
+                                <template if:true={hasPrimaryActions}>
+                                    <template for:each={processedPrimaryActions} for:item="action">
+                                        <lightning-button
+                                            key={action.name}
+                                            label={action.label}
+                                            icon-name={action._iconName}
+                                            variant={action.variant}
+                                            onclick={handlePrimaryAction}
+                                            data-name={action.name}
+                                            disabled={action.disabled}>
+                                            
+                                            <!-- Iconos custom para botones -->
+                                            <span slot="prefix" if:true={action._hasCustomIcon}>
+                                                <img src={action._iconUrl} 
+                                                     alt=""
+                                                     class="slds-button__icon slds-button__icon_left" />
+                                            </span>
+                                        </lightning-button>
+                                    </template>
+                                </template>
+                                
+                                <!-- Menú desplegable -->
+                                <lightning-button-menu
+                                    if:true={hasMenuActions}
+                                    alternative-text="Más acciones"
+                                    icon-name="utility:down"
+                                    variant="border-filled"
+                                    menu-alignment="right"
+                                    onselect={handleMenuAction}>
+                                    
+                                    <template for:each={processedMenuActions} for:item="action">
+                                        <lightning-menu-item
+                                            key={action.name}
+                                            label={action.label}
+                                            value={action.name}
+                                            icon-name={action._iconName}>
+                                            
+                                            <!-- Iconos custom para menu items -->
+                                            <span slot="prefix" if:true={action._hasCustomIcon}>
+                                                <img src={action._iconUrl} 
+                                                     alt=""
+                                                     class="slds-icon slds-icon_x-small slds-m-right_x-small" />
+                                            </span>
+                                        </lightning-menu-item>
+                                    </template>
+                                </lightning-button-menu>
+                            </lightning-button-group>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Segunda fila: Campos configurables -->
+            <div class="slds-page-header__row slds-page-header__row_gutters" if:true={hasFields}>
+                <div class="slds-page-header__col-details">
+                    <ul class="slds-page-header__detail-row">
+                        <template for:each={processedFields} for:item="field" for:index="index">
+                            <li key={field.fieldApiName} 
+                                class="slds-page-header__detail-block ">
+                                
+                                <!-- Campo -->
+                                <div class="slds-truncate" 
+                                     onclick={handleFieldClick}
+                                     data-fieldname={field.fieldApiName}>
+                                    
+                                    <!-- Icono del campo -->
+                                    <template if:true={field._hasIcon}>
+                                        <lightning-icon
+                                            if:true={field._isStandardUtilityIcon}
+                                            icon-name={field._fieldIconName}
+                                            size="x-small"
+                                            class="slds-m-right_xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                    
+                                    <!-- Label -->
+                                    <p class="slds-text-title slds-truncate slds-m-right_xx-small">
+                                        {field.label}
+                                    </p>
+                                    
+                                    <!-- Badge -->
+                                    <template if:true={field._isBadge}>
+                                        <lightning-badge 
+                                            label={field.value}
+                                            variant={field.badgeVariant}>
+                                        </lightning-badge>
+                                    </template>
+                                    
+                                    <!-- Phone -->
+                                    <template if:true={field._isPhone}>
+                                        <a href={field._phoneUrl} class="fieldComponentcustom slds-text-body--regular slds-show_inline-block slds-truncate">
+                                            {field.value}
+                                        </a>
+                                    </template>
+                                    
+                                    <!-- Email -->
+                                    <template if:true={field._isEmail}>
+                                        <a href={field._emailUrl} class="fieldComponentcustom slds-text-body--regular slds-show_inline-block slds-truncate">
+                                            {field.value}
+                                        </a>
+                                    </template>
+                                    
+                                    <!-- URL -->
+                                    <template if:true={field._isUrl}>
+                                        <a href={field.value} target="_blank" class="fieldComponentcustom slds-text-body--regular slds-show_inline-block slds-truncate">
+                                            {field.value}
+                                        </a>
+                                    </template>
+                                    
+                                    <!-- Campo con acción -->
+                                    <template if:true={field._hasAction}>
+                                        <a href="#" onclick={handleFieldClick} data-fieldname={field.fieldApiName}
+                                           class="fieldComponentcustom slds-text-body--regular slds-show_inline-block slds-truncate">
+                                            {field.value}
+                                        </a>
+                                    </template>
+                                    
+                                    <!-- Campo básico (sin acción) -->
+                                    <template if:true={field._isBasicField}>
+                                        <p class="fieldComponentcustom slds-text-body--regular slds-show_inline-block slds-truncate">{field.value}</p>
+                                    </template>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

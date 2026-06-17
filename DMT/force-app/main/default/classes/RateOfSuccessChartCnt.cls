@@ -32,18 +32,18 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
         system.debug('>>>>> FUNCION getData. ID CLIENTE : ' + clientId);
         final date lastYear = system.today().addDays(-366);
         final Set<Id> setIdOppsDenormClient = new Set<Id>();//NOSONAR
-        final list<dwp_acmh__Denorm_Account_Opportunity__c> denOppList = [SELECT dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                                                                    dwp_acmh__OpportunityId__r.CreatedDate
-                                                                    FROM dwp_acmh__Denorm_Account_Opportunity__c
-                                                                    WHERE dwp_acmh__AccountId__c = :clientId
-                                                                      AND dwp_acmh__OpportunityId__r.CreatedDate > :lastYear ///*CloseDate*/
-                                                                      AND (dwp_acmh__OpportunityId__r.StageName = 'Closed Won'
-                                                                       OR dwp_acmh__OpportunityId__r.StageName = 'Closed Lost')
-                                                                 ORDER BY dwp_acmh__OpportunityId__r.CreatedDate DESC];
+        final list<AMH_Denorm_Account_Opportunity__c> denOppList = [SELECT AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                                                                    AMH_OpportunityId__r.CreatedDate
+                                                                    FROM AMH_Denorm_Account_Opportunity__c
+                                                                    WHERE AMH_AccountId__c = :clientId
+                                                                      AND AMH_OpportunityId__r.CreatedDate > :lastYear ///*CloseDate*/
+                                                                      AND (AMH_OpportunityId__r.StageName = 'Closed Won'
+                                                                       OR AMH_OpportunityId__r.StageName = 'Closed Lost')
+                                                                 ORDER BY AMH_OpportunityId__r.CreatedDate DESC];
 
-        for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : denOppList) {
-          if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-            setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+        for(AMH_Denorm_Account_Opportunity__c denOpp : denOppList) {
+          if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)) {
+            setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
           }
         }
 
@@ -147,7 +147,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
     }
 
 
-	/*
+  /*
     * @author Global Desktop
     * @description Recupera los productos de las oportunidades denormalizadas relacionadas a la cuenta
     */
@@ -156,9 +156,9 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
       system.debug('>>>>> clientId: ' + clientId);
       final date lastYear = system.today().addDays(-366);
       final Set<Id> setIdOppsDenormClient = new Set<Id>();//NOSONAR
-      for(dwp_acmh__Denorm_Account_Opportunity__c denOpp : [SELECT dwp_acmh__OpportunityId__c FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c = :clientId]) {
-        if(!setIdOppsDenormClient.contains(denOpp.dwp_acmh__OpportunityId__c)) {
-          setIdOppsDenormClient.add(denOpp.dwp_acmh__OpportunityId__c);
+      for(AMH_Denorm_Account_Opportunity__c denOpp : [SELECT AMH_OpportunityId__c FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c = :clientId]) {
+        if(!setIdOppsDenormClient.contains(denOpp.AMH_OpportunityId__c)) {
+          setIdOppsDenormClient.add(denOpp.AMH_OpportunityId__c);
         }
       }
 
@@ -211,7 +211,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
             }
         }
     }
-	/*
+  /*
     * @author Global Desktop
     * @description Met0d0 aux 1
     */
@@ -247,7 +247,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
                 }
             }
     }
-	/*
+  /*
     * @author Global Desktop
     * @description Met0d0 aux 3
     */
@@ -287,7 +287,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
             }
         return mapStage;
     }
-	/*
+  /*
     * @author Global Desktop
     * @description Recuera el Iso code del usuario logado
     */
@@ -296,7 +296,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
         return UserInfo.getDefaultCurrency();
     }
 
-	/*
+  /*
     * @author Global Desktop
     * @description construye la lista wrapper que devuelve la informacion al componente lightning
     */
@@ -354,7 +354,7 @@ public with sharing class RateOfSuccessChartCnt {//NOSONAR
       */
       final private String expectedProbability;//NOSONAR
 
-	  /**
+    /**
       * @author Global Desktop
       * @description Construye la clase wrapper
       */

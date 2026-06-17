@@ -1,0 +1,40 @@
+<aura:component controller="PrcPriceMatrixBrowser_Ctrl">
+    <aura:attribute name="scenarios" type="PRC_PFS_Scenario[]" access="public" />    
+    <aura:attribute name="selectedPriceId" type="Integer" access="public" />
+    <aura:attribute name="matrixAxis1" type="String" access="public" default="MARGIN" />
+    <aura:attribute name="matrixAxis2" type="String" access="public" default="TERM" />
+    <aura:attribute name="matrixColumns" type="Integer" access="public"/>
+    <!--aura:attribute name="numMatrix" type="Integer" access="public" / -->
+    <!--aura:handler name="init" value="{!this}" action="{!c.doInit}" / -->
+
+    
+    <!-- lightning:layout horizontalAlign="center" multipleRows="true" class="slds-grid_vertical max-5" -->
+    <div>
+        <aura:iteration items="{!v.scenarios}" var="price" indexVar="myIndex">
+            <aura:if isTrue="{!and(or(and(price.axis[0].id==v.matrixAxis1,price.axis[1].id==v.matrixAxis2),and(price.axis[1].id==v.matrixAxis1,price.axis[0].id==v.matrixAxis2)))}">
+                
+<!-- aura:if isTrue="{! or(myIndex+1==v.selectedPriceId,mod(myIndex+1,v.matrixColumns*v.matrixColumns)==v.selectedPriceId) }">
+    myIndex: {!myIndex+1} || v.selectedPriceId: {!v.selectedPriceId}
+ </aura:if -->
+                 
+                <!-- lightning:layoutItem size="3" -->
+                <!-- c:PRC_PriceTile selectedPriceId="{!v.selectedPriceId}" posIndex="{!myIndex+1}" matrixColumns="{!v.matrixColumns}" selected="{!if(mod(myIndex+1,v.matrixColumns*v.matrixColumns)==v.selectedPriceId,true,false)}" price="{!price}" matrixAxis1="{!v.matrixAxis1}" matrixAxis2="{!v.matrixAxis2}" /-->
+                <!-- {!mod(myIndex+1,v.matrixColumns*v.matrixColumns)}  __  {!v.selectedPriceId} -->
+                
+                <aura:if isTrue="{! mod(myIndex+1,v.matrixColumns*v.matrixColumns)==v.selectedPriceId }">
+                    <c:PRC_PriceTile selected="yes" price="{!price}" matrixAxis1="{!v.matrixAxis1}" matrixAxis2="{!v.matrixAxis2}" />
+                <aura:set attribute="else">                
+                    <c:PRC_PriceTile selected="no" price="{!price}" matrixAxis1="{!v.matrixAxis1}" matrixAxis2="{!v.matrixAxis2}" />
+                </aura:set>    
+                </aura:if>
+
+                <!-- /lightning:layoutItem-->
+                <aura:if isTrue="{!mod(myIndex+1,v.matrixColumns) == 0}">
+                    <br/>
+  				      </aura:if> 
+            </aura:if>
+        </aura:iteration>
+    </div>      
+    <!-- /lightning:layout -->
+    
+</aura:component>

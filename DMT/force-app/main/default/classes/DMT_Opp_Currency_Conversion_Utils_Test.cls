@@ -1,5 +1,5 @@
 @isTest
-private class DMT_Opp_Currency_Conversion_Utils_Test {
+private without sharing class DMT_Opp_Currency_Conversion_Utils_Test {
 
     // Helper: crea una Opportunity base
     private static Map<Id, Opportunity> loadTestData(){
@@ -18,7 +18,7 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
     // scaleNumbers
     // ============================================================
     @isTest
-    static void test_scaleNumbers_happyPath_nestedStructures() {
+    static void testScaleNumbersHappyPathNestedStructures() {
         Decimal factor = 1000;
 
         Map<String, Object> input = new Map<String, Object>{
@@ -35,25 +35,25 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
             out.put(k, DMT_Opp_Currency_Conversion_Utils.scaleNumbers(input.get(k), factor));
         }
 
-        System.assertEquals(5, out.get('intVal'));
-        System.assertEquals(12.345, out.get('decVal'));
-        System.assertEquals(98.765, out.get('dblVal'));
-        System.assertEquals('no-change', out.get('str'));
+        System.assertEquals(5, out.get('intVal'), 'The result is 5');
+        System.assertEquals(12.345, out.get('decVal'), 'The result is 12.345');
+        System.assertEquals(98.765, out.get('dblVal'), 'The result is 98.765');
+        System.assertEquals('no-change', out.get('str'), 'The result is no-change');
 
         List<Object> l = (List<Object>) out.get('list');
-        System.assertEquals(1, l.get(0));
-        System.assertEquals(2, l.get(1));
-        System.assertEquals('ok', l.get(2));
+        System.assertEquals(1, l.get(0), 'The result is 1');
+        System.assertEquals(2, l.get(1), 'The result is 2');
+        System.assertEquals('ok', l.get(2), 'The result is ok');
 
         Map<String, Object> m = (Map<String, Object>) out.get('map');
-        System.assertEquals(1, m.get('x'));
-        System.assertEquals('noop', m.get('y'));
+        System.assertEquals(1, m.get('x'), 'The result is 1');
+        System.assertEquals('noop', m.get('y'), 'The result is noop');
     }
 
     @isTest
-    static void test_scaleNumbers_nullOrZeroFactor_noChange() {
-        System.assertEquals(100, DMT_Opp_Currency_Conversion_Utils.scaleNumbers(100, null));
-        System.assertEquals(100, DMT_Opp_Currency_Conversion_Utils.scaleNumbers(100, 0));
+    static void testScaleNumbersNullOrZeroFactorNoChange() {
+        System.assertEquals(100, DMT_Opp_Currency_Conversion_Utils.scaleNumbers(100, null), 'The result is 100');
+        System.assertEquals(100, DMT_Opp_Currency_Conversion_Utils.scaleNumbers(100, 0), 'The result is 100');
     }
 
     // ============================================================
@@ -62,7 +62,7 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
 
     // Happy path usando la currency de la Opportunity + CMDT
     @isTest
-    static void test_ArrayAmountConversion_happyPath_withOppCurrency() {
+    static void testArrayAmountConversionHappyPathWithOppCurrency() {
 
         Opportunity opp = loadTestData().values().get(0);
         opp.CurrencyIsoCode = 'COP';
@@ -80,20 +80,20 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
         Map<String, Object> result = DMT_Opp_Currency_Conversion_Utils.DMT_Array_Amount_Conversion(input, outMap, new Map<String, Object>());
         Test.stopTest();
 
-        System.assert(!result.containsKey('error'));
-        System.assert(!result.containsKey('exceptionList'));
-        System.assertEquals(opp.Id, result.get('recordId'));
-        System.assertEquals('output', result.get('action'));
-        System.assertEquals(1, result.get('amount1'));
+        System.assert(!result.containsKey('error'), 'The result does not contain error');
+        System.assert(!result.containsKey('exceptionList'),  'The result does not contain exception');
+        System.assertEquals(opp.Id, result.get('recordId'), 'The recordId is like the opp Id');
+        System.assertEquals('output', result.get('action'), 'The action is output');
+        System.assertEquals(1, result.get('amount1'),  'The amount1 is 1');
 
         Map<String, Object> nested = (Map<String, Object>) result.get('nested');
-        System.assertEquals(2, nested.get('inner'));
+        System.assertEquals(2, nested.get('inner'), 'The result is 2');
     }
 
     // Negativo: falta recordId => lanza excepción propia
-    
+
     @isTest
-    static void test_ArrayAmountConversion_missingParams_throws() {
+    static void testArrayAmountConversionMissingParamsThrows() {
         Map<String, Object> inMap = new Map<String, Object>{ 'action' => 'output' };
         Test.startTest();
         Map<String, Object> result = DMT_Opp_Currency_Conversion_Utils.DMT_Array_Amount_Conversion(inMap, new Map<String, Object>(), new Map<String, Object>());
@@ -101,10 +101,10 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
         System.assert(result.containsKey('exceptionList'), 'El resultado debe contener la clave exceptionList');
 
     }
-    
+
     // Negativo: sin line items => devuelve claves con null
     @isTest
-    static void test_getOpportunityProductsMinMax_withoutLineItems_returnsNulls() {
+    static void testGetOpportunityProductsMinMaxWithoutLineItemsReturnsNulls() {
         Opportunity opp = loadTestData().values().get(0);
 
         Map<String, Object> input = new Map<String, Object>{ 'recordId' => opp.Id };
@@ -115,10 +115,10 @@ private class DMT_Opp_Currency_Conversion_Utils_Test {
         );
         Test.stopTest();
 
-        System.assert(result.containsKey('minInitialDate'));
-        System.assert(result.containsKey('maxMaturityDate'));
-        System.assertEquals(null, result.get('minInitialDate'));
-        System.assertEquals(null, result.get('maxMaturityDate'));
+        System.assert(result.containsKey('minInitialDate'),  'Result contains minInitialDate');
+        System.assert(result.containsKey('maxMaturityDate'), 'Result contains maxMaturityDate');
+        System.assertEquals(null, result.get('minInitialDate'), 'Result contains minInitialDate');
+        System.assertEquals(null, result.get('maxMaturityDate'), 'Result contains maxMaturityDate');
     }
 
 }

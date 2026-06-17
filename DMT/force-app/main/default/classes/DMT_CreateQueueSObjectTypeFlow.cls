@@ -1,4 +1,4 @@
-public without sharing class DMT_CreateQueueSObjectTypeFlow {
+public with sharing class DMT_CreateQueueSObjectTypeFlow {
 
     public class Request {
         @InvocableVariable(required=true)

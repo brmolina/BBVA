@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AllProspects</fullName>
+    <columns>LEAD.COMPANY</columns>
+    <columns>DES_Group__c</columns>
+    <columns>DES_Country_Global__c</columns>
+    <columns>FULL_NAME</columns>
+    <columns>LEAD.CREATED_DATE</columns>
+    <columns>CORE.USERS.FIRST_NAME</columns>
+    <columns>CORE.USERS.LAST_NAME</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Prospects</label>
+</ListView>

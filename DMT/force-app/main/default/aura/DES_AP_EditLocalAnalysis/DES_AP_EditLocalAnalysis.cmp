@@ -1,0 +1,22 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+                controller= "DES_AP_LocalAnalysis_cnt"
+                access="global" >
+    
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="country" type="String"/>
+    <aura:attribute name="sectionList" type="String[]"/>
+    <aura:attribute name="isTeamMember" type="Boolean"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+      <lightning:accordion allowMultipleSectionsOpen="true" class="slds-box">
+        <aura:iteration items="{!v.sectionList}" var="section">
+          <!--<div class="customDiv">-->
+            <lightning:accordionSection name="{!section.country_name__c}" label="{!section.country_name__c}" class="slds-box slds-box_xx-small slds-m-top_xxx-small">
+              <c:DES_AP_LocalAnalysis_Section localAnalysisId="{!section.Id}" country="{!v.section.country_name__c}" isTeamMember="{!v.isTeamMember}"/>
+            </lightning:accordionSection>
+          <!--</div>-->
+        </aura:iteration>
+      </lightning:accordion>
+    
+</aura:component>

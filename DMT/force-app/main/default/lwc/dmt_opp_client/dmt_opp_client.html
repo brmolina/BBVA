@@ -1,0 +1,89 @@
+<template>
+    <div class="slds-p-around_medium">
+
+        <!-- ── Save error (only for save failures, not HPG/load errors) ── -->
+        <template if:true={hasError}>
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_small"
+                 role="alert">
+                <span class="slds-assistive-text">Error</span>
+                {errorMessage}
+            </div>
+        </template>
+
+        <!-- ── Subsidiary identity panel ── -->
+        <template if:true={hasIdentityData}>
+            <div class="slds-p-horizontal_medium">
+                <c-dmt-opportunity-client-identity
+                    fields="countryIfoId,customerId,taxpayerId"
+                    client={customerHPG}
+                    account-name={customerName}
+                    account-id={opportunityAccountId}>
+                </c-dmt-opportunity-client-identity>
+            </div>
+        </template>
+
+        <!-- ── Table unavailable warning (shown above table, form still renders) ── -->
+        <template if:true={hasTableError}>
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning slds-m-bottom_small"
+                 role="alert">
+                <span class="slds-assistive-text">Warning</span>
+                <span class="slds-icon_container slds-m-right_small" title="Warning">
+                    <lightning-icon icon-name="utility:warning"
+                                    alternative-text="Warning"
+                                    size="x-small"
+                                    variant="inverse">
+                    </lightning-icon>
+                </span>
+                <div>{tableErrorMessage}</div>
+            </div>
+        </template>
+
+        <!-- ── Form renderer: always visible ── -->
+        <div class={formContainerClass}>
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..."
+                                   size="medium"
+                                   variant="brand">
+                </lightning-spinner>
+            </template>
+            <c-dmt_form_renderer
+                fields={fields}
+                is-edit-mode={isEditMode}
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
+            </c-dmt_form_renderer>
+        </div>
+
+        <!-- ── Client table: only for group types ── -->
+        <template if:false={isSubsidiary}>
+            <c-dmt_select_clients_in_opportunity
+                lwc:ref="selectClients"
+                record-id={recordId}
+                opp-id={recordId}
+                selected-tab="tcmopp"
+                stage-name={stageRecord}
+                is-loading={isLoading}
+                client-id={opportunity.AccountId}
+                search-date={searchDate}
+                priorselected-rows={priorRows}
+                service-unavailable={hasTableError}
+                oneditmode={handleEditMode}
+                onviewmodeselection={handleSelection}
+                onviewmodemainholder={handleMainHolder}
+                onloaderror={handleLoadError}>
+            </c-dmt_select_clients_in_opportunity>
+        </template>
+
+        <!-- ── Docked footer (edit mode only) ── -->
+        <template if:true={isEditMode}>
+            <c-dmt_docked_form_footer
+                is-loading={isLoading}
+                has-error={hasError}
+                error-message={errorMessage}
+                onsave={handleSave}
+                oncancel={handleCancel}>
+            </c-dmt_docked_form_footer>
+        </template>
+
+    </div>
+</template>

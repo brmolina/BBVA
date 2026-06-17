@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ID_User__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <defaultValue>$User.Id</defaultValue>
+    <description>BBVA UserID (required for automatic user load)</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>true</externalId>
+    <inlineHelpText>BBVA UserID (required for automatic user load)</inlineHelpText>
+    <label>ID User</label>
+    <length>20</length>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

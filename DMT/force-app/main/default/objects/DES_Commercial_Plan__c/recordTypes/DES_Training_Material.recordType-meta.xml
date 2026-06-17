@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Training_Material</fullName>
+    <active>true</active>
+    <description>Record Type que recoge los registros de tipo &quot;Material formativo&quot;</description>
+    <label>Training Material</label>
+</RecordType>

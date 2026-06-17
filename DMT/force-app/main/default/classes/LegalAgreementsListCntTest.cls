@@ -24,7 +24,7 @@ public class LegalAgreementsListCntTest {
 		cm1.Name = 'Contrato marco 1';
 		cm1.participant_id__c = acc.Id;
 		cm1.gf_agree_annex_typo_desc__c = 'CSAENGLAW';
-		cm1.master_agreement_type__c = 'CMOF09';
+		cm1.master_agreement_type__c = 'GMSLA';
 		cm1.star_counterparty_oper_desc__c = 'Counterparty 1';
 		cm1.bbva_entity_name__c = 'Entity 1';
 		cm1.gf_deal_signing_date__c = system.today();

@@ -1,0 +1,482 @@
+<aura:component controller="Commercial_Offer_CrRe_Controller" implements="force:appHostable,force:hasSObjectName,lightning:actionOverride,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global">
+
+    <aura:attribute name="stageOpp" type="String" default=""/>
+    <aura:attribute name="hasPermissions" type="Boolean" default="false"/>
+    <aura:attribute name="checkAccountConditions" type="Boolean" default="false"/>
+    <aura:attribute name="modalView" type="String" default="null"/>
+    <aura:attribute name="selectedOpp" type="sObject" default="{}"/>
+    <aura:attribute name="selectedAcc" type="sObject" default="{}"/>
+    <aura:attribute name="selectedCoff" type="sObject" default="{}"/>
+    <aura:attribute name="spinnerView" type="Boolean" default="false"/>
+    <aura:attribute name="picvalue" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="commOfferAtt"
+                    type="coff__Commercial_Offer__c"
+                    default="{'sobjectType':'coff__Commercial_Offer__c'}"/>
+
+    <aura:handler name="change" value="{!v.selectedAcc}" action="{!c.checkFields}"/>
+    <aura:handler name="change" value="{!v.selectedCoff}" action="{!c.checkRelate}"/>
+
+
+    <!--Handler utilizado para obtener el evento llamado por el borrado del Cliente-->
+    <aura:handler name="lookUpClearedEvent" event="c:selectedsOppEvent" action="{!c.accountChange}"/>
+
+    <aura:if isTrue="{!v.hasPermissions}">
+    <aura:if isTrue="{!v.checkAccountConditions}">    
+<!-- 1 VISUALIZACIÓN DE BOTONES CREAR O RELACIONAR PARA OPORTUNIDADES-->
+    <aura:if isTrue="{! v.modalView == 'oppButtons'}">
+        <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+        <header class="slds-modal__header custom-header">
+            <h2 class="slds-text-heading--medium">Commercial Offer</h2>
+        </header>
+            <div class="c-container" style="height: 100px;">
+                <div class="slds-align_absolute-center" style="margin-top: 50px;">
+                        <lightning:button label="Add to Commercial Offer" name="addCoffB" variant="neutral" class="slds-button slds-button_neutral" onclick="{!c.relateCoff}" />
+                        <lightning:button label="New Commercial Offer" name="newCoffB" variant="brand" class="slds-button slds-button_brand" onclick="{!c.createCoff}" />
+                </div>
+            </div>
+        <footer class="slds-modal__footer custom-footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+        </footer>
+    </aura:if>
+<!-- 1 FIN VISUALIZACIÓN DE BOTONES CREAR O RELACIONAR PARA OPORTUNIDADES-->
+
+<!-- 2 VISUALIZACION DE CONJUNTO PARA RELACIONAR OFERTA COMERCIAL A LA OPORTUNIDAD-->
+    <aura:if isTrue="{!v.modalView == 'relateCoff'}">
+        <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content{
+            overflow-y:hidden !important;
+            height:unset !important;
+            max-height:unset !important;
+        }
+    </aura:html>
+        <div class="slds-modal__container" style="width: 100%!important; padding-top:0px; padding-bottom:0px">
+            <header class="slds-modal__header custom-header">
+                <h2 class="slds-text-heading--medium">Relate To Commercial Offer</h2>
+            </header>
+            <aura:if isTrue="{! v.spinnerView }">
+                <div class="spinnerHolder">
+                    <lightning:spinner alternativeText="Loading" size="large" />
+                </div>
+            </aura:if>
+                <div style="width: 100%; height: 275px; ">
+                    <lightning:layout verticalAlign="center" class="x-large slds-align_absolute-center">
+                        <div class="slds-align_absolute-center" style="width: 100%; ">
+                                <lightning:layoutItem size="12" smallDeviceSize="6" mediumDeviceSize="4" largeDeviceSize="8" padding="around-small">
+                                    <c:customLookupCO objectAPIName="coff__Commercial_Offer__c" recordIdUp="{!v.recordId}" IconName="custom:custom60" selectedRecord="{!v.selectedCoff}" label="Commercial Offer Name"/>
+                                </lightning:layoutItem>
+                        </div>
+                    </lightning:layout>
+                </div>
+            <footer class="slds-modal__footer custom-footer">
+                <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+                <lightning:button aura:id="relateCoId" variant="brand" disabled="true" label="Save" onclick="{!c.saveRelateCo}"/>
+            </footer>
+        </div>
+    </aura:if>
+<!-- 2 FIN VISIUALIZACION DE CONJUNTO PARA RELACIONAR OFERTA COMERCIAL A LA OPORTUNIDAD-->
+
+
+<!-- 3 VISUALIZACIÓN DEL FORMULARIO DESDE QUICK ACTION PARA OPPORTUNITY Y CLIENTS -->
+    <aura:if isTrue="{! and((v.sObjectName == 'Opportunity' || v.sObjectName == 'Account') , v.modalView == 'newCoff' )}">
+        <aura:html tag="style">
+            .cuf-content {
+                padding: 0 0rem !important;
+                margin: 0 auto;
+            }
+            .slds-p-around--medium {
+                padding: 0rem !important;
+            }
+            .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+            }
+        </aura:html>
+        <div class="slds-modal__container" style="width: 100%!important; padding-top:0px; padding-bottom:0px">
+            <header class="slds-modal__header custom-header">
+                <h2 class="slds-text-heading--medium">New Commercial Offer</h2>
+            </header>
+            <aura:if isTrue="{! v.spinnerView }">
+                <div class="spinnerHolder">
+                    <lightning:spinner alternativeText="Loading" size="large" />
+                </div>
+            </aura:if>
+            <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap">
+                <div style="width: 90%; margin: 0 auto;" class="qa-test-div">
+                        <lightning:messages />
+                        <lightning:layout horizontalAlign="spread" multipleRows="true">
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                                <lightning:input type="String" required="true" onchange="{!c.checkFields}" name="nameCo" label="Commercial Offer Name" value="{!v.commOfferAtt.Name}"></lightning:input>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+
+                        <lightning:layout horizontalAlign="spread" multipleRows="true">
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                                <c:customLookupCO objectAPIName="account" fromObject="{!v.sObjectName}" accSelected="{!v.selectedAcc.Id}" recordIdUp="{!v.recordId}" IconName="standard:account" selectedRecord="{!v.selectedAcc}" label="Client"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                                <lightning:input name="Currency" disabled="true" required="true" label="Currency" value="{!v.commOfferAtt.CurrencyIsoCode}" ></lightning:input>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+
+                        <lightning:layout horizontalAlign="spread" multipleRows="true">
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                                <c:customLookupCO aura:id="childOpp" objectAPIName="opportunity" IconName="standard:opportunity" recordIdUp="{!v.recordId}" accSelected="{!v.selectedAcc.Id}" fromObject="{!v.sObjectName}" selectedRecord="{!v.selectedOpp}" label="Opportunity"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                                <ui:inputCheckbox aura:id="rfpCheck" name="rfpCheck" label="RFP" value="{!v.commOfferAtt.gf_proposal_requested_ind_type__c}" change="{!c.checkFields}"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+
+                        <lightning:layout horizontalAlign="spread" multipleRows="true">
+                            <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                                <lightning:textarea name="descrpCo" onchange="{!c.checkFields}" required="true" label="Description" value="{!v.commOfferAtt.coff__gf_commercial_offer_desc__c}"></lightning:textarea>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                </div>
+            </div>
+            <footer class="slds-modal__footer custom-footer">
+                <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+                <aura:if isTrue="{!v.commOfferAtt.gf_proposal_requested_ind_type__c}">
+                    <lightning:button variant="brand" aura:id="continueRfp" label="Continue" disabled='true' onclick="{!c.goToRfp}"/>
+                    <aura:set attribute="else">
+                        <lightning:button aura:id="saveCoff" variant="brand" label="Save" disabled='true' onclick="{!c.saveCo}"/>
+                    </aura:set>
+                </aura:if>
+            </footer>
+        </div>
+<!-- 3 FIN ** VISUALIZACIÓN DEL FORMULARIO DESDE QUICK ACTION PARA OPPORTUNITY Y CLIENTE -->
+
+<!-- 4 VISUALIZACIÓN DEL FORMULARIO DESDE EJECUCIÓN DE STANDARD OVERRIDE ACTION -->
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.modalView == 'standardAct'}">
+            <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading--medium">New Commercial Offer</h2>
+                    </div>
+                    <aura:if isTrue="{! v.spinnerView }">
+                        <div class="spinnerHolder">
+                            <lightning:spinner alternativeText="Loading" size="large" />
+                        </div>
+                    </aura:if>
+                    <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap">
+                        <div style="width: 90%; margin: 0 auto;" class="qa-test-div">
+                            <lightning:messages />
+                            <lightning:layout horizontalAlign="spread" multipleRows="true">
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                                    <lightning:input type="String" required="true" onchange="{!c.checkFields}" name="nameCo" label="Commercial Offer Name" value="{!v.commOfferAtt.Name}"></lightning:input>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+
+                            <lightning:layout horizontalAlign="spread" multipleRows="true">
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="6" class="slds-p-right_medium"><c:customLookupCO objectAPIName="account" fromObject="{!v.sObjectName}" accSelected="{!v.selectedAcc.Id}" recordIdUp="{!v.recordId}" IconName="standard:account" selectedRecord="{!v.selectedAcc}" label="Client"/></lightning:layoutItem>
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="6"><lightning:input name="Currency" disabled="true" required="true" label="Currency" value="{!v.commOfferAtt.CurrencyIsoCode}" ></lightning:input></lightning:layoutItem>
+                            </lightning:layout>
+
+                            <lightning:layout horizontalAlign="spread" multipleRows="true">
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium"><c:customLookupCO aura:id="childOpp" objectAPIName="opportunity" IconName="standard:opportunity" recordIdUp="{!v.recordId}" accSelected="{!v.selectedAcc.Id}" fromObject="{!v.sObjectName}" selectedRecord="{!v.selectedOpp}" label="Opportunity"/></lightning:layoutItem>
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6"><ui:inputCheckbox aura:id="rfpCheck" name="rfpCheck" label="RFP" value="{!v.commOfferAtt.gf_proposal_requested_ind_type__c}" change="{!c.checkFields}"/></lightning:layoutItem>
+                            </lightning:layout>
+
+                            <lightning:layout horizontalAlign="spread" multipleRows="true">
+                                <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                                    <lightning:textarea name="descrpCo" required="true" onchange="{!c.checkFields}" label="Description" value="{!v.commOfferAtt.coff__gf_commercial_offer_desc__c}" ></lightning:textarea>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer slds-size--1-of-1 slds-p-horizontal_x-small">
+                        <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCoSt}"/>
+                        <aura:if isTrue="{!v.commOfferAtt.gf_proposal_requested_ind_type__c}">
+                            <lightning:button aura:id="continueRfp" variant="brand" disabled="true" label="Continue" onclick="{!c.goToRfpOvrr}"/>
+                            <aura:set attribute="else">
+                                <lightning:button aura:id="saveCoff" variant="brand" label="Save" disabled='true' onclick="{!c.saveCo}"/>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            <div aura:id="overlay" class="slds-backdrop slds-backdrop--open"></div>
+        </aura:if>
+        </aura:set>
+<!-- 4 FIN **VISUALIZACIÓN DEL FORMULARIO DESDE EJECUCIÓN DE STANDARD OVERRIDE ACTION -->
+
+    </aura:if>
+
+<!-- 5 VISUALIZACIÓN DE ERROR POR TENER LA OPORTUNIDAD EN UN STAGE NO COMPATIBLE-->
+    <aura:if isTrue="{! v.modalView == 'coffNoCreatable'}">
+        <header class="slds-modal__header custom-header">
+            <h2 class="slds-text-heading--medium">Commercial Offer</h2>
+        </header>
+            <div class="c-container" style="height: 250px; display: table-cell; vertical-align: middle; padding-left: 100px">
+                <div class="slds-align_absolute-center">
+                    <ui:message title="Error" severity="error" >
+			            Please notice you cannot add opportunities or visits to the Commercial offer in the current status. Thanks
+	                </ui:message>
+                </div>
+            </div>
+        <footer class="slds-modal__footer custom-footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+        </footer>
+    </aura:if>
+<!-- 5 FIN VISUALIZACIÓN DE ERROR POR TENER LA OPORTUNIDAD EN UN STAGE NO COMPATIBLE-->
+
+<!-- 6 VISUALIZACIÓN DE CAMPOS RFP DESDE CLIENTE Y OPORTUNIDAD-->
+    <aura:if isTrue="{! v.modalView == 'rfpFields'}">
+        <aura:html tag="style">
+            .cuf-content {
+                padding: 0 0rem !important;
+            }
+            .slds-p-around--medium {
+                padding: 0rem !important;
+            }
+            .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+            }
+        </aura:html>
+        <div class="slds-modal__container" style="width: 100%!important; padding-top:0px; padding-bottom:0px">
+            <header class="slds-modal__header custom-header">
+                <h2 class="slds-text-heading--medium">New Commercial Offer: RFP Information</h2>
+            </header>
+            <aura:if isTrue="{! v.spinnerView }">
+                <div class="spinnerHolder">
+                    <lightning:spinner alternativeText="Loading" size="large" />
+                </div>
+            </aura:if>
+            <div class="slds-scrollable_y" style="max-height:300px;">
+            <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap">
+                <div style="width: 95%; margin: 0 auto;">
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                            <lightning:input aura:id="rfpIssueDate" onchange="{!c.rfpChech}" type="date" name="rfpIssueDate" label="RFP Issue Date" required="true" value="{!v.commOfferAtt.gf_rfp_participant_date__c}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:input aura:id="rfpReceived" onchange="{!c.rfpChech}" type="date" name="rfpRecei" label="RFP Received" required="true" value="{!v.commOfferAtt.gf_rfp_received_date__c}" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                            <lightning:input aura:id="rfpPartDe" onchange="{!c.rfpChech}" type="date" name="particDeadl" label="RFP Participation Deadline" required="true" value="{!v.commOfferAtt.gf_rfp_prtcp_deadline_date__c}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:input aura:id="rfpQaDe" onchange="{!c.rfpChech}" type="date"  name="qaDeadline" label="Q&amp;A Deadline" required="true" value="{!v.commOfferAtt.gf_dedln_dlvr_cust_ansqsn_date__c}" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                            <lightning:input aura:id="rfpDueDate" onchange="{!c.rfpChech}" type="date" name="rfpDueDate" label="RFP Due Date" required="true" value="{!v.commOfferAtt.gf_docn_req_deadline_date__c}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:select name="rfpDocAtt" label="RFP Documentation Attached" value="{!v.commOfferAtt.gf_file_attached_ind_type__c}">
+                                <option value="">Choose One ...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                            <lightning:select name="bidNoBid" label="Bid / No Bid" value="{!v.commOfferAtt.gf_bbva_prtcp_rfp_ind_type__c}">
+                                <option value="">Choose One ...</option>
+                                <option value="Bid">Bid</option>
+                                <option value="No Bid">No Bid</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:select name="rfpStat" value="{!v.commOfferAtt.gf_rfp_status_name__c}" label="RFP Status">
+                                    <aura:iteration items="{!v.picvalue}" var="s">
+                                            <option value="{!s}">{!s}</option>
+                                    </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                            <lightning:textarea name="reasonBid" label="Reason No-Bid (when applies)" value="{!v.commOfferAtt.gf_bbva_non_prtcp_rfp_desc__c}" ></lightning:textarea>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                            <lightning:textarea name="relevantInf" label="RFP relevant information" value="{!v.commOfferAtt.gf_rfp_comment_desc__c}" ></lightning:textarea>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+            </div>
+            </div>
+
+            <footer class="slds-modal__footer custom-footer">
+                <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+                <lightning:button aura:id="rfpSave" disabled='true' variant="brand"  type="submit" label="Save" onclick="{!c.saveCo}"/>
+            </footer>
+        </div>
+    </aura:if>
+<!-- 6 FIN VISUALIZACIÓN DE CAMPOS RFP DESDE CLIENTE Y OPORTUNIDAD-->
+
+<!-- 7 VISUALIZACION DE CAMPOS RFP DESDE STANDARD OVERRIDE-->
+<aura:if isTrue="{! v.modalView == 'rfpFieldsOvrr'}">
+<div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+        <div class="slds-modal__header">
+            <h2 class="slds-text-heading--medium">New Commercial Offer: RFP Information</h2>
+        </div>
+        <aura:if isTrue="{! v.spinnerView }">
+            <div class="spinnerHolder">
+                <lightning:spinner alternativeText="Loading" size="large" />
+            </div>
+        </aura:if>
+        <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap">
+            <div style="width: 90%; margin: 0 auto;">
+                <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                    <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                        <lightning:input aura:id="rfpIssueDate" onchange="{!c.rfpChech}" type="date" name="rfpIssueDate" label="RFP Issue Date" required="true" value="{!v.commOfferAtt.gf_rfp_participant_date__c}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                        <lightning:input aura:id="rfpReceived" onchange="{!c.rfpChech}" type="date" name="rfpRecei" label="RFP Received" required="true" value="{!v.commOfferAtt.gf_rfp_received_date__c}" />
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                    <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                        <lightning:input aura:id="rfpPartDe" onchange="{!c.rfpChech}" type="date" name="particDeadl" label="RFP Participation Deadline" required="true" value="{!v.commOfferAtt.gf_rfp_prtcp_deadline_date__c}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                        <lightning:input  aura:id="rfpQaDe" onchange="{!c.rfpChech}" type="date" name="qaDeadline" label="Q&amp;A Deadline" required="true" value="{!v.commOfferAtt.gf_dedln_dlvr_cust_ansqsn_date__c}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6" class="slds-p-right_medium">
+                            <lightning:input aura:id="rfpDueDate" onchange="{!c.rfpChech}" type="date" name="rfpDueDate" label="RFP Due Date" required="true" value="{!v.commOfferAtt.gf_docn_req_deadline_date__c}" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:select name="rfpDocAtt" label="RFP Documentation Attached" value="{!v.commOfferAtt.gf_file_attached_ind_type__c}">
+                                <option value="">Choose One ...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                    <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:select name="bidNobid" label="Bid / No Bid" class="slds-p-right_medium" value="{!v.commOfferAtt.gf_bbva_prtcp_rfp_ind_type__c}">
+                                <option value="">Choose One ...</option>
+                                <option value="Bid">Bid</option>
+                                <option value="No Bid">No Bid</option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="6" largeDeviceSize="6">
+                            <lightning:select name="rfpStat" value="{!v.commOfferAtt.gf_rfp_status_name__c}" label="RFP Status">
+                                    <aura:iteration items="{!v.picvalue}" var="s">
+                                            <option value="{!s}">{!s}</option>
+                                    </aura:iteration>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+                    <lightning:layout horizontalAlign="spread" multipleRows="true" class="slds-p-vertical_x-small">
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                            <lightning:textarea name="reasonBid" label="Reason No-Bid (when applies)" value="{!v.commOfferAtt.gf_bbva_non_prtcp_rfp_desc__c}" ></lightning:textarea>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="grow" size="12" mediumDeviceSize="12" largeDeviceSize="12">
+                            <lightning:textarea name="relevantInf" label="RFP relevant information" value="{!v.commOfferAtt.gf_rfp_comment_desc__c}" ></lightning:textarea>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+
+            </div>
+        </div>
+        <div class="slds-modal__footer slds-size--1-of-1 slds-p-horizontal_x-small">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCoSt}"/>
+            <lightning:button variant="brand" aura:id="rfpSave" disabled='true' type="submit" label="Save" onclick="{!c.saveCo}"/>
+        </div>
+    </div>
+</div>
+<div aura:id="overlay" class="slds-backdrop slds-backdrop--open"></div>
+</aura:if>
+<!-- FIN 7 VISUALIZACION DE CAMPOS RFP DESDE STANDARD OVERRIDE-->
+<aura:set attribute="else">
+    <aura:html tag="style">
+            .cuf-content {
+                padding: 0 0rem !important;
+                margin: 0 auto;
+            }
+            .slds-p-around--medium {
+                padding: 0rem !important;
+            }
+            .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+            }
+        </aura:html>
+        <div class="slds-modal__container" style="width: 100%!important; padding-top:0px; padding-bottom:0px">
+            <header class="slds-modal__header custom-header">
+                <h2 class="slds-text-heading--medium">New Commercial Offer</h2>
+            </header>
+        </div>
+        <div class="c-container" style="height: 250px; display: table-cell; vertical-align: middle; padding-left: 100px">
+            <div class="slds-align_absolute-center">
+                The client must be active, be of Prospect type or Counterparty type.
+            </div>
+        </div>
+        <footer class="slds-modal__footer custom-footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+        </footer>
+</aura:set>
+</aura:if>
+<aura:set attribute="else">
+    <aura:html tag="style">
+            .cuf-content {
+                padding: 0 0rem !important;
+                margin: 0 auto;
+            }
+            .slds-p-around--medium {
+                padding: 0rem !important;
+            }
+            .slds-modal__content{
+                overflow-y:hidden !important;
+                height:unset !important;
+                max-height:unset !important;
+            }
+        </aura:html>
+        <div class="slds-modal__container" style="width: 100%!important; padding-top:0px; padding-bottom:0px">
+            <header class="slds-modal__header custom-header">
+                <h2 class="slds-text-heading--medium">New Commercial Offer</h2>
+            </header>
+        </div>
+        <div class="c-container" style="height: 250px; display: table-cell; vertical-align: middle; padding-left: 100px">
+            <div class="slds-align_absolute-center">
+                Sorry, you don't have permissions to create Commercial Offer.
+            </div>
+        </div>
+        <footer class="slds-modal__footer custom-footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{!c.cancelCo}"/>
+        </footer>
+</aura:set>
+</aura:if>
+</aura:component>

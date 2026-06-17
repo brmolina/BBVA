@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Markets__c</fullName>
+    <label>Markets</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>FI</fullName>
+                <default>false</default>
+                <label>fi</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>fx</label>
+            </value>
+            <value>
+                <fullName>Credit</fullName>
+                <default>false</default>
+                <label>credit</label>
+            </value>
+            <value>
+                <fullName>Economics</fullName>
+                <default>false</default>
+                <label>economics</label>
+            </value>
+            <value>
+                <fullName>cross-asset</fullName>
+                <default>false</default>
+                <label>cross-asset</label>
+            </value>
+            <value>
+                <fullName>equity-cash</fullName>
+                <default>false</default>
+                <label>equity-cash</label>
+            </value>
+            <value>
+                <fullName>equity-derivatives</fullName>
+                <default>false</default>
+                <label>equity-derivatives</label>
+            </value>
+            <value>
+                <fullName>interest-rates</fullName>
+                <default>false</default>
+                <label>interest-rates</label>
+            </value>
+            <value>
+                <fullName>Cross asset</fullName>
+                <default>false</default>
+                <label>Cross asset</label>
+            </value>
+            <value>
+                <fullName>Equity cash</fullName>
+                <default>false</default>
+                <label>Equity cash</label>
+            </value>
+            <value>
+                <fullName>Equity derivatives</fullName>
+                <default>false</default>
+                <label>Equity derivatives</label>
+            </value>
+            <value>
+                <fullName>Rates</fullName>
+                <default>false</default>
+                <label>Rates</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

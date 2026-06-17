@@ -1,0 +1,5 @@
+<design:component>
+	<design:attribute name="lpPicklist" label="Button name"
+      datasource="Lock AP,Unlock AP,Edit event date,Custom notification,Period edition type,Set form questions,Delete Dynamic Form Questions,Guidelines configuration"
+      default="Lock AP" />
+</design:component>

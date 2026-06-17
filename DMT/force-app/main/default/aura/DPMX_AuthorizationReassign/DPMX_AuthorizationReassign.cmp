@@ -1,0 +1,40 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId" controller="DPMX_AuthorizationReassign_ctrl" access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:attribute name="userLst" type="List" default="[]" />
+    <aura:attribute name="existingUser" type="Object" />
+    <aura:attribute name="statusAuth" type="Boolean" default="false" />
+
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .cuf-content { padding: 0 0rem !important; } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; width:unset !important; max-width:unset !important;
+        }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Solicitud de autorización</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-grid slds-p-bottom_large slds-p-top_medium">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:select name="existingUser" aura:id="existingUser" label="Selecciona un usuario:" required="true" value="{!v.existingUser}">
+                            <option value="">Selecciona un usuario</option> 
+                            <aura:iteration items="{!v.userLst}" var="user">
+                                <option text="{!user.Assignee.Name}" value="{!user.Assignee.Id}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.handleClose}" />
+                <button class="slds-button slds-button_brand" name="{!v.savebutton}" label="Autorizar" onclick="{!c.handleSave}">Autorizar</button>
+            </div>
+        </div>
+    </section>
+</aura:component>

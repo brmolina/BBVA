@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_visit_users_products_desc__c</fullName>
+    <label>Involved Products</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>codeC</fullName>
+                <default>false</default>
+                <label>Credit</label>
+            </value>
+            <value>
+                <fullName>codeDCM</fullName>
+                <default>false</default>
+                <label>DCM</label>
+            </value>
+            <value>
+                <fullName>codeE</fullName>
+                <default>false</default>
+                <label>Equity</label>
+            </value>
+            <value>
+                <fullName>codeR</fullName>
+                <default>false</default>
+                <label>Rates</label>
+            </value>
+            <value>
+                <fullName>codeFX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>codeWC</fullName>
+                <default>false</default>
+                <label>WK</label>
+            </value>
+            <value>
+                <fullName>codeCR</fullName>
+                <default>false</default>
+                <label>CR</label>
+            </value>
+            <value>
+                <fullName>codeSS</fullName>
+                <default>false</default>
+                <label>SS</label>
+            </value>
+            <value>
+                <fullName>codeTTF</fullName>
+                <default>false</default>
+                <label>TTF</label>
+            </value>
+            <value>
+                <fullName>codeCM</fullName>
+                <default>false</default>
+                <label>CM</label>
+            </value>
+            <value>
+                <fullName>codePFL</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance PFL</label>
+            </value>
+            <value>
+                <fullName>codePFA</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance PFA</label>
+            </value>
+            <value>
+                <fullName>codeSTF</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance STF</label>
+            </value>
+            <value>
+                <fullName>codeLBOs</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance C. Lend LBO</label>
+            </value>
+            <value>
+                <fullName>codeCL</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance C. Lend CL</label>
+            </value>
+            <value>
+                <fullName>codeMA</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance Adv M&amp;A</label>
+            </value>
+            <value>
+                <fullName>codeECM</fullName>
+                <default>false</default>
+                <label>IB &amp; Finance Adv ECM</label>
+            </value>
+            <value>
+                <fullName>codeFCS</fullName>
+                <default>false</default>
+                <label>FI capital Solutions</label>
+            </value>
+            <value>
+                <fullName>codeRA</fullName>
+                <default>false</default>
+                <label>Rating Advisory</label>
+            </value>
+            <value>
+                <fullName>codeLM</fullName>
+                <default>false</default>
+                <label>Liability Management</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

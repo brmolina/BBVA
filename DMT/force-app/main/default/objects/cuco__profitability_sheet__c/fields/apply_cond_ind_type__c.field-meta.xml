@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>apply_cond_ind_type__c</fullName>
+    <description>Contract exception information comes from backend as S/N, Populating this field will automatically update the field &quot;Contracts Exception&quot; with a proper value (S=&gt;true, N=&gt;false)</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Contracts Exception (S/N)</label>
+    <length>1</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

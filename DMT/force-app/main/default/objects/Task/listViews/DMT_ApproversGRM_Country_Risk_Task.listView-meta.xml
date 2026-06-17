@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGRM_Country_Risk_Task</fullName>
+    <filterScope>Queue</filterScope>
+    <label>GRM_Country_Risk</label>
+    <queue>DMT_ApproversGRM_Country_Risk</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

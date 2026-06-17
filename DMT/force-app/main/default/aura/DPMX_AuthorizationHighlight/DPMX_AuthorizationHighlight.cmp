@@ -1,0 +1,27 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="DPMX_AuthorizationHighlight_ctrl">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="name" type="String" default="---"/>
+    <aura:attribute name="disableBtn" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+
+<div class="slds-box slds-box_small">
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-12">
+            <lightning:icon iconName="action:new_custom45" alternativeText="Autorización" title="Autorización" />
+            <strong>   {!v.name}</strong>
+        </div>
+        <div class="slds-col slds-size_11-of-12">
+            <div class="slds-float_right "> 
+                <button class="slds-button slds-button_neutral" name="Aceptar" disabled="{!v.disableBtn}" label="Aceptar" onclick="{!c.handleAccept}">Aceptar</button>
+                <button class="slds-button slds-button_neutral" name="Rechazar" disabled="{!v.disableBtn}" label="Rechazar" onclick="{!c.handleDecline}">Rechazar</button>
+                <button class="slds-button slds-button_brand" name="Reasignar" disabled="{!v.disableBtn}" label="Reasignar" onclick="{!c.handleReasign}">Reasignar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{!v.body}
+</aura:component>

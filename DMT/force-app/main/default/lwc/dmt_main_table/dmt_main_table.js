@@ -1,11 +1,18 @@
 import { LightningElement, track, api, wire } from 'lwc';
 import { labels } from './dmt_main_table_labels.js';
 import { getColumns, getVisibleColumns, getGrillFields } from './dmt_main_table_columns.js';
-import callExtensionImperative from '@salesforce/apex/DMT_MainTableCallableClass.callExtensionImperative';
-import fetchData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
+import pubsub from 'omnistudio/pubsub';
+import fetchInitialData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchClientInitialData';
+import saveLineClientFields from '@salesforce/apex/DMT_HPG_MainTableCustomController.saveLineClientFields';
+import saveCustomAssociation from '@salesforce/apex/DMT_HPG_MainTableCustomController.saveCustomAssociation';
+import saveLineClients from '@salesforce/apex/DMT_HPG_MainTableCustomController.saveLineClients';
+import fetchDataApex from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import DMT_PROSPECT_PREFIX from '@salesforce/label/c.dmt_cl_ProspectPrefix';
 
 const DISABLE_ACTIONS_CLIENT= 'disableactions';
+const PUBSUB_CHANNEL = 'selectClientsInLine';
+const PUBSUB_EVENT_RESPONSE = 'save';
 
 export default class dmt_main_table extends LightningElement {
 
@@ -28,7 +35,11 @@ export default class dmt_main_table extends LightningElement {
     @api filterClientsOperator;
     @api filterClientsValue;
     @api groupsSelected  = new Map();
-    @api clientCouldChange = false;
+    @api lineId;
+    @api externallineId;
+    @api lineStatus;
+    @api isLableHolder = false;
+
 
     @api
     get priorselectedRows() {
@@ -43,6 +54,49 @@ export default class dmt_main_table extends LightningElement {
             .map(item => item.customerId)   // map -> transformar
 
         this.mainHolderCustomer = this._priorselectedRows[0]?.mainHolder;
+
+        console.log('>>> priorselectedRows SET:', JSON.stringify(this._priorselectedRows));
+        console.log('>>> mainHolderSelectRows:', JSON.stringify(this.mainHolderSelectRows));
+        console.log('>>> mainHolderCustomer:', this.mainHolderCustomer);
+    }
+
+    @api
+    get selectedRows() {
+        return this._selectedRows;
+    }
+
+    set selectedRows(value) {
+        this._selectedRows = this.normalizeToArray(value);
+        console.log('>>> selectedRows SET:', JSON.stringify(this._selectedRows));
+        
+        /*if (!this.initcomponent && this._selectedRows && this._selectedRows.length > 0) {
+            this.saveEditableFields(this._selectedRows);
+        }*/
+    }
+
+    saveEditableFields(rows) {
+        if (!rows || rows.length === 0) return Promise.resolve();
+
+        const MILLION_CURRENCIES = ['COP'];
+        const applyMillion = MILLION_CURRENCIES.includes(this.currencyvalue);
+
+        const rowsToSave = rows.map(row => {
+            const r = { ...row };
+            if (applyMillion) {
+                if (r.amount    != null) r.amount    = r.amount    * 1_000_000;
+                if (r.amountFD  != null) r.amountFD  = r.amountFD  * 1_000_000;
+                if (r.amountDVP != null) r.amountDVP = r.amountDVP * 1_000_000;
+            }
+            return r;
+        });
+
+        return saveLineClientFields({
+            selectedClients: JSON.parse(JSON.stringify(rowsToSave)),
+            lineId: this.lineId
+        }).catch(error => {
+            console.error('[saveEditableFields] ERROR:', JSON.stringify(error));
+            this.showWarningToast('Error saving fields.', 'Error');
+        });
     }
 
     @api filterClients;
@@ -82,11 +136,16 @@ export default class dmt_main_table extends LightningElement {
     clientPositionsTypevalue;
     showSpinner = true;
     errorLoading = false;
+    isSaving = false;
 
     normalizeToArray(value) {
         if (Array.isArray(value)) return value.filter(v => v);
         if (value && typeof value === 'object') return [value];
         return [];
+    }
+
+    isProspect(client) {
+        return (client?.customerName && client.customerName.startsWith(DMT_PROSPECT_PREFIX));
     }
 
     @api
@@ -107,14 +166,14 @@ export default class dmt_main_table extends LightningElement {
         this.getReactiveData();
     }
 
-    @api
+    /*@api
     get  apexMethod() {
       return this.apexMethodvalue;
     }
   
     set apexMethod(value) {
         this.apexMethodvalue = value;
-    }
+    }*/
 
     @api
     get  nonSelect() {
@@ -139,6 +198,18 @@ export default class dmt_main_table extends LightningElement {
         this.currencyvalue = value;
     }
 
+    getNormalizedCurrencyValue() {
+        if (!this.currencyvalue) {
+            return this.currencyvalue;
+        }
+
+        return this.currencyvalue === 'Millions COP' ? 'COP' : this.currencyvalue;
+    }
+
+    shouldApplyMillionConversion() {
+        return this.getNormalizedCurrencyValue() === 'COP';
+    }
+
     @api
     get  clientId() {
       return this.clientIdvalue;
@@ -146,8 +217,7 @@ export default class dmt_main_table extends LightningElement {
   
     set clientId(value) {
         this.clientIdvalue = value;
-        //COndicional only for serarch in the modal of TCM Opp Mitigants
-        this.clientCouldChange?  this.handleApexMethod() : null;
+        //this.handleApexMethod();
     }
 
     @api
@@ -157,82 +227,156 @@ export default class dmt_main_table extends LightningElement {
   
     set searchDate(value) {
         this.searchDatevalue = value;
-        this.handleApexMethod();
+        //this.handleApexMethod();
     }
 
+    @wire(fetchInitialData, {
+        selectedTab: '$selectedTab',
+        clientId: '$clientIdvalue',
+        lCountries: '$countries',
+        searchDate: '$searchDatevalue',
+        clientPositionsType: '$clientPositionsType',
+        page: '$page',
+        pageSize: '$pageSize'
+        
+    }) response({ error, data }) {
+        this.handleActiveTab(this.selectedTab);
+        this.selectedData = { groups: [], toplevel: { clients: [] } };
+        this.groupedData = [];
 
-    handleApexMethod() {
-        try {
-            this.showSpinner = true;
-            this.errorLoading = false;
-            var args = {
-
-                     selectedTab: this.selectedTab,
-                     clientId: this.clientId,
-                     lCountries: this.countries,
-                     searchDate: this.searchDatevalue,
-                     clientPositionsType: this.clientPositionsType,
-                     page: this.page,
-                     pageSize: this.pageSize,
-                     timestamp: Date.now()
-            
-                 };
-            callExtensionImperative({ action: this.apexMethodvalue.split('.')[1],  auxiliarClass: this.apexMethodvalue.split('.')[0],  args: args }).then( data => {
-                if (data.success) {
-                    this.showSpinner = true;
-                    this.errorLoading = false;
-                    this.groupedData = this.groupedData.concat(data.data);
-                    this.groupedData = this.handleRatingExpiration();
-                        if(this.filterClientsVariable){
-                            this.filtergroupedData = [];
-                            this.groupedData.forEach( client => {
-                            let customerCode = client.customerId;
-                            if((client.subGroupId === this.filterClientsValue || client.groupId === this.filterClientsValue) && customerCode.startsWith(this.booking)){
+        if (data) {
+            if (data.success) {
+                this.groupedData = this.groupedData.concat(data.data);
+                this.groupedData = this.handleRatingExpiration();
+                this.filtergroupedData = [];
+                this.groupedData.forEach(client => {
+                            let customerCode = client?.customerId;
+                    const isProspect = this.isProspect(client);
+                    if (((!isProspect && (client.subGroupId === this.filterClientsValue || client.groupId === this.filterClientsValue) 
+                        && this.booking && customerCode?.startsWith(this.booking) && customerCode?.includes(this.filter)) 
+                        || (isProspect && this.booking && customerCode?.startsWith(this.booking)))
+                    ) {
                                 this.filtergroupedData.push(client);
                             }
                             });
-                        }
-                        this.groupData();
-                    //}
-                } else {
-                    setTimeout(5000);
-                    this.showSpinner = false;
-                    this.errorLoading = true;
-                    
-                    this.dispatchEvent(new CustomEvent(DISABLE_ACTIONS_CLIENT, {
-                        bubbles: true,
-                        composed: true,
-                        cancelable: true
-                    }));
 
-console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage);
-                    console.error(`[handleApexMethod] ERROR loading more data: Apex Method '${this.apexMethodvalue}':`, {
-                        errorMessage: data.errorMessage,
-                        apexResponse: data
-                    });
-                }
-            }).catch((error) => {
-                setTimeout(5000);
+                        this.groupData();
+                } else {
+                console.error('ERROR loading data: ' + data.errorMessage);
                 this.showSpinner = false;
-                this.errorLoading =true;
-                console.error('[handleApexMethod] ERROR FETCHING DATA: ' + error)
-            });
-        } catch (error) {
-            this.records = undefined;
+                this.errorLoading = true;
+
+                this.dispatchEvent(new CustomEvent(DISABLE_ACTIONS_CLIENT, {
+                    bubbles: true,
+                    composed: true,
+                    cancelable: true
+                }));
+            }
+        } else if (error) {
             this.error = error;
+            console.error('ERROR fetching data: ' + JSON.stringify(error));
+            this.showSpinner = false;
+            this.errorLoading = true;
+
+            this.dispatchEvent(new CustomEvent(DISABLE_ACTIONS_CLIENT, {
+                bubbles: true,
+                composed: true,
+                cancelable: true
+            }));
         }
-      }
+    }    
+    
+    @api
+    save() {
+        const normalizedCurrency = this.getNormalizedCurrencyValue();        
+        if (!this.mainHolderCustomer) {
+            return;
+        }        
+        saveCustomAssociation({
+            lineId: this.lineId,
+            mainHolderAlphaCode: this.mainHolderCustomer,
+            currencyLine: normalizedCurrency,
+            groupId: this.filterClientsValue,
+            groupSfId: this.clientIdvalue,
+            externallineId: this.externallineId
+        })
+        .then(() => {
+            return this.saveAllClients();
+        })
+        .then(() => {
+            return this.saveEditableFields(this._selectedRows);
+        })
+        .then(() => {
+            console.log('lineStatus:', this.lineStatus);
+            if (this.lineStatus == 'Closed') {
+                return;
+            }
+            pubsub.fire('dmtSaveCompleted', 'reload', { done: true });
+        })
+        .catch(error => {
+            console.error('[save] ERROR:', JSON.stringify(error));
+            this.showWarningToast('Error saving.', 'Error');
+        });
+    }
+
+    saveAllClients() {
+        const selectedClients = this.getSelectedClients();
+        return saveLineClients({
+            selectedClients: JSON.parse(JSON.stringify(selectedClients)),
+            lineId: this.lineId
+        });
+    }
+
+    saveEditableFields(rows) {
+        if (!rows || rows.length === 0) {
+            return Promise.resolve();
+        }
+        const applyMillion = this.shouldApplyMillionConversion();
+        const rowsToSave = rows.map(row => {
+            const rowToSave = { ...row };
+
+            if (applyMillion) {
+                if (rowToSave.amount != null) rowToSave.amount = rowToSave.amount * 1000000;
+                if (rowToSave.amountFD != null) rowToSave.amountFD = rowToSave.amountFD * 1000000;
+                if (rowToSave.amountDVP != null) rowToSave.amountDVP = rowToSave.amountDVP * 1000000;
+            }
+
+            return rowToSave;
+        });
+
+        console.log('[saveEditableFields] rows:', JSON.stringify(rows));
+        console.log('[saveEditableFields] lineId:', this.lineId);
+        return saveLineClientFields({
+            selectedClients: JSON.parse(JSON.stringify(rowsToSave)),
+            lineId: this.lineId
+        });
+    }
 
     connectedCallback() {
         this.columns = getColumns(this.selectedTab);
         this.visibleColumns = getVisibleColumns(this.selectedTab);
         this.handleActiveTab(this.selectedTab);
         this.groupSize = this.template.querySelectorAll('.clientName').length;
+        console.log('ABS TEST');
+
+        this._pubsubHandlerObj = {[PUBSUB_EVENT_RESPONSE]: this.handleSaveEvent.bind(this)};
+
+        pubsub.register(PUBSUB_CHANNEL, this._pubsubHandlerObj);
+        console.log('>>> PubSub selectClientsInLine register Irene:');
 
     }
 
-    renderedCallback() {
+    disconnectedCallback() {
+        pubsub.unregister(PUBSUB_CHANNEL, this._pubsubHandlerObj);
+        console.log('>>> PubSub selectClientsInLine unregister Irene:');
+    }
 
+    handleSaveEvent(data) {
+        console.log('>>> PubSub save received:', JSON.stringify(data));
+        this.save();
+    }
+
+    renderedCallback() {
         this.selectedData.groups.forEach( group => {
             this.toggleGroup(group.subGroupId);
         });
@@ -270,13 +414,31 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
         if(this.filterClients == 'true'){
             this.filterClientsResults();
         }
-         if(this.booking){
+        if(this.booking){
              var notBooking = this.template.querySelectorAll(`td:not([data-id^="${this.booking}"])`);
-             notBooking.forEach(el => el.classList.add('notfound'));
-         }
-
+             notBooking.forEach(el => {
+                const dataId = el.getAttribute('data-id');
+                const rowClient = this.groupedData.find(c => c.customerId === dataId);
+                if (!rowClient) {
+                    return;
+                }
+                const isProspect = rowClient.customerName && rowClient.customerName.startsWith(DMT_PROSPECT_PREFIX);
+                if (!isProspect) {
+                    el.classList.add('notfound');
+                    return;
+                }
+                if (rowClient.contextEntific !== this.booking) {
+                    el.classList.add('notfound');
+                }
+            });
+        }
         this.initcomponent = false;
         this.adjustScrollLines();
+
+        // Pintar main holder
+        if (this.mainHolderCustomer) {
+            this.getCellsByCustomer(this.mainHolderCustomer).forEach(cell => cell.activateMainHolderByDefault());
+        }
     }
 
     getReactiveData(){
@@ -295,7 +457,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
     // //Fetch Data Imperative
     @api
     fetchData(params) {
-         fetchData(params).then( data => {
+         fetchDataApex(params).then( data => {
              if (data.success) {
                  this.groupedData = this.groupedData.concat(data.data);
                 if (data.pagination.totalPages > data.pagination.page) {
@@ -351,8 +513,8 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                              client.push(this.fullselectedData.length);
                            });
                     }else{
-                    var selectedData = this.groupedData.map (
-                        row => this.columns.map (
+                    var selectedData = this.groupedData.map(
+                        row => this.columns.map(
                             column => row[column.field]
                         )
                     );
@@ -419,28 +581,49 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
     //GROUP SUBGROUPS
     groupSubgroups(data) {
         return new Promise((resolve, reject) => {
+            if (this.filterClientsVariable) {
+                const sortedClients = [...data].sort((a, b) => {
+                    if (a[3] !== b[3]) {
+                        return a[3] > b[3] ? -1 : 1;
+                    }
+                    const idA = a[6] || '';
+                    const idB = b[6] || '';
+                    return idA.localeCompare(idB);
+                });
+
+                resolve([
+                    {
+                        type: 'subgroup',
+                        subGroupId: '-1000',
+                        subGroupName: 'toplevelclients',
+                        clients: sortedClients
+                    }
+                ]);
+                return;
+            }
             var position = []
             var subGrouped = [];
             var i = 0;
-            data.forEach( client => {
-                if (client[6]) {
-                    if (!position.hasOwnProperty(client[3])) {
-                        position[client[3]] = i;
-                        subGrouped[i] = {
-                            name: (client[2]) ? client[2].toUpperCase() : 'GROUP UNDEFINED',
-                            type: 'subgroup',
-                            groupId: client[1],
-                            groupName: client[0],
-                            subGroupId: client[3],
-                            subGroupName: client[2],
-                            clients: [client],
-                            key: 'g' + i
-                        };
-                        i++;
-                    } else {
-                        var pos = position[client[3]];
-                        subGrouped[pos].clients.push(client);
-                    }
+
+            data.forEach(client => {
+            if (client[6]) { // customerId existe
+                if (!position.hasOwnProperty(client[3])) {
+                    position[client[3]] = i;
+                    subGrouped[i] = {
+                        name: (client[2]) ? client[2].toUpperCase() : 'GROUP UNDEFINED',
+                        type: 'subgroup',
+                        groupId: client[1],
+                        groupName: client[0],
+                        subGroupId: client[3],
+                        subGroupName: client[2],
+                        clients: [client],
+                        key: 'g' + i
+                    };
+                    i++;
+                } else {
+                    var pos = position[client[3]];
+                    subGrouped[pos].clients.push(client);
+                }
                 }
             });
             subGrouped.sort( function( a, b ) {
@@ -473,7 +656,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
             pageSize: pageSize,
             bubbles: false
         };
-        this.template.querySelector("c-hpg_fetcher").fireFetchMoreEvent(params);
+        this.template.querySelector("c-dmt_fetcher").fireFetchMoreEvent(params);
     }
 
     handleFetchMoreEvent(event) {
@@ -534,7 +717,61 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                     this.template.querySelector(`[data-id="${event.detail.customerId}"]`).classList.add('isSelected');
                 } 
             }
+            /*if (event.detail.initComponent === 'false') {
+                this.autoSaveLineClientsSelected();
+            }*/
     }
+
+    getSelectedClients() {
+        const selectedCells = this.template.querySelectorAll('td.isSelected[data-id]');
+    
+        const selectedIds = new Set();
+        selectedCells.forEach(cell => {
+            selectedIds.add(cell.getAttribute('data-id'));
+        });
+
+        const selectedClientsFull = this.groupedData.filter(client =>
+            selectedIds.has(client.customerId)
+        );
+
+        console.group('CLIENTES SELECCIONADOS - FULL DATA');
+        console.log('IDs seleccionados:', [...selectedIds]);
+        console.log('Clientes completos:', selectedClientsFull);
+        console.log('JSON completo Seleccionados Irene:', JSON.stringify(selectedClientsFull));
+        console.groupEnd();
+
+        return selectedClientsFull;
+    }
+
+    /*autoSaveLineClientsSelected() {
+        console.trace('[autoSaveLineClientsSelected] called from:');
+        if (this.initcomponent || !this.groupedData || this.groupedData.length === 0) {
+            console.log('[autoSaveLineClientsSelected] Component not ready yet, skipping save.');
+            return;
+        }
+
+        //this.isSaving = true;
+        //this.showSpinner = true;
+
+        const selectedClients = this.getSelectedClients();
+        console.log('[autoSaveLineClientsSelected] selectedClients:', JSON.stringify(selectedClients));
+
+        console.log ('recordId autosave Lines Irene', this.recordId);
+
+        saveLineClients({
+            selectedClients: JSON.parse(JSON.stringify(selectedClients)),
+            lineId: this.lineId
+        })
+        .finally(() => {
+            //this.showSpinner = false;
+            //this.isSaving = false;
+        })
+        .catch(error => {
+            //this.showSpinner = false;
+            console.error('[autoSaveLineClientsSelected] ERROR:', JSON.stringify(error));
+            this.showWarningToast('Error saving clients.', 'Error');
+        });
+    }*/
 
     handleToggleGroup(event) {
         event.preventDefault();
@@ -685,6 +922,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
     // }
 
     filterClientsResults(){
+
         var notSelected = this.template.querySelectorAll(`td:not(.isSelected)`);
         notSelected.forEach(el => el.classList.add('notfound'));
     }
@@ -698,7 +936,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
         var rows = this.template.querySelectorAll(`[data-id="mainTableRow"]`);
         var groups = [];
         rows.forEach( row => {
-            if (!this._filter) {
+            if (!this._filter) {console.log('undefined filter');
                 row.classList.remove('found');
                 row.classList.remove('notfound');
             } else if (row.outerText.toUpperCase().includes(this._filter.toUpperCase())) {
@@ -712,7 +950,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                 }
             } else {
                 
-                 if(this._filter == 'emptyFilter'){
+                 if(this._filter == 'emptyFilter'){console.log('empty filter');
                     row.classList.add('found');
                     row.classList.remove('notfound');
                     if (row.id.includes('G')) {
@@ -721,7 +959,7 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                     if (row.getAttribute('data-subgroup')) {
                         groups.push(row.getAttribute('data-subgroup'));
                     }
-                }else{
+                }else{console.log('else empty filter');
                     row.classList.add('notfound');
                     row.classList.remove('found');
                 }
@@ -832,7 +1070,6 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
 
     // Helper to update the main holder (deactivate old, update new, activate new)
     updateMainHolder(newCustomerId) {
-        
         if (this.mainHolderCustomer && this.mainHolderCustomer !== newCustomerId) {
             this.getCellsByCustomer(this.mainHolderCustomer).forEach(cell => cell.deactiveMainHolder());
         }
@@ -865,11 +1102,31 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                 break;
 
             case 'UPDATE_MAIN_HOLDER':
+                console.log('entra en update main holder');
+                console.log('entra en update main holder', customerId);
                 // Explicit update of the main holder
-                if (this.mainHolderSelectRows.includes(customerId)) {
+                /*if (this.mainHolderSelectRows.includes(customerId)) {
                     this.updateMainHolder(customerId);
                 }
+                break;*/
+
+                this.updateMainHolder(customerId); // ← sin el if includes()
                 break;
+                /*if (this.mainHolderSelectRows.includes(customerId)) {
+                    this.updateMainHolder(customerId);
+                    saveCustomAssociation({
+                        lineId: this.lineId,
+                        mainHolderAlphaCode: customerId,
+                        currencyLine: this.currencyvalue,
+                        groupId: this.filterClientsValue,
+                        groupSfId: this.clientIdvalue,
+                        externallineId: this.externallineId
+                    }).catch(error => {
+                        console.error('[saveCustomAssociation] ERROR:', JSON.stringify(error));
+                        this.showWarningToast('Error saving association.', 'Error');
+                    });
+                }
+                break;*/
             case 'CHECK_LAST_MAIN_HOLDER':
                 if(this.mainHolderSelectRows.length > 0 && this.mainHolderCustomer === customerId){
                     this.getCellsByCustomer(customerId).forEach(cell => cell.deactiveMainHolder());
@@ -879,14 +1136,8 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                 break;
         }
 
-        // If only one account remains → force it as default mainHolder
-        if (this.mainHolderSelectRows.length === 1) {
-            const onlyCustomerId = this.mainHolderSelectRows[0];
-            if (this.mainHolderCustomer && this.mainHolderCustomer !== onlyCustomerId) {
-                this.getCellsByCustomer(this.mainHolderCustomer).forEach(cell => cell.deactiveMainHolder());
-            }
-
-            this.updateMainHolder(onlyCustomerId);
+        if (!this.mainHolderCustomer && this.mainHolderSelectRows.length === 1) {
+            this.updateMainHolder(this.mainHolderSelectRows[0]);
         }
 
         //  Dispatch update event
@@ -907,7 +1158,26 @@ console.error('[handleApexMethod] ERROR loading more data: ' + data.errorMessage
                 composed: true,
                 cancelable: true,
                 detail
-            })); 
+            }));
+
+            /*if (!initComponent && this.mainHolderCustomer) {
+                console.log('[saveCustomAssociation] firing with', this.mainHolderCustomer);
+                saveCustomAssociation({
+                    lineId: this.lineId,
+                    mainHolderAlphaCode: this.mainHolderCustomer,
+                    currencyLine: this.currencyvalue,
+                    groupId: this.filterClientsValue,
+                    groupSfId: this.clientIdvalue,
+                    externallineId: this.externallineId
+                })
+                .then(() => {
+                    console.log('[saveCustomAssociation] OK → launching autoSaveLineClientsSelected');
+                    //this.autoSaveLineClientsSelected();
+                }).catch(error => {
+                    console.error('[saveCustomAssociation] ERROR:', JSON.stringify(error));
+                    this.showWarningToast('Error saving association.', 'Error');
+                });
+            }*/
     }
     
     showWarningToast(message, title = 'Advertencia') {

@@ -5,6 +5,7 @@
         </div>
     </template>
     <template lwc:else>
+        <div class="stickyAnchor">
         <c-dmt_passport_child show-warning={showWarning} 
                             showfeatures-table={showfeaturesTable} 
                             wrapper={wrapper} 
@@ -23,9 +24,9 @@
                             onopenmodal={openModal}
                             onstartcase={startCase}
                             onexpanded={expandedControlEvent}>
-                            
+
         </c-dmt_passport_child>
-        
+        </div>
     </template>
     
     <c-dmt_call_passport oncallservice={handleCallServiceEvent} ></c-dmt_call_passport>

@@ -1,8 +1,11 @@
 import { LightningElement, api, wire } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
-import chartJS from '@salesforce/resourceUrl/HPG_ChartJS';
+import chartJS from '@salesforce/resourceUrl/DMT_ChartJS';
 import getProductDetailsByIds from '@salesforce/apex/DMT_Profitability_utils.getProductDetailsByIds';
 import getNominalAmountsByOpportunityLineItemIds from '@salesforce/apex/DMT_Profitability_utils.getNominalAmountsByOpportunityLineItemIds';
+import convertNominalsToOppCurrency from '@salesforce/apex/DMT_Profitability_utils.convertNominalsToOppCurrency';
+import getRwaRegLinkInfo from '@salesforce/apex/DMT_Profitability_utils.getRwaRegLinkInfo';
+
 import OPP_NAME from '@salesforce/schema/Opportunity.Name';
 import { getRecord } from 'lightning/uiRecordApi';
 
@@ -14,17 +17,18 @@ export default class Dmt_profitability_chart extends LightningElement {
     table1Data = [];
     table2Data = [];
     table3Data = [];
+    higherRorc = false;
+    higherRoroec = false;
     summaryData = {
         raroec: '',
-        raroecNoxsell: '',
-        raroecProspected: '',
         rorc: '',
-        rorcNoxsell: '',
+        clientRorc: '',
         rorcProspected: ''
     };
 
     _cachedDetailsList = null;
     _cachedNominalMap = null;
+    _cachedNominalMapConverted = null;
 
     @api hidden = false;
     @api backgroundColor = '#ffffff';
@@ -38,6 +42,9 @@ export default class Dmt_profitability_chart extends LightningElement {
     productDetailsMap = {};
     nominalAmountsMap = {};
     opportunityDates = null;
+    showRwaRegLink = false;
+    rwaRegBaseExplanationId = '';
+    rwaRegCountry = '';
 
     @wire(getRecord, { recordId: '$opportunityId', fields: OPP_FIELDS })
     wiredOpportunityHandler({ data, error }) {
@@ -64,17 +71,29 @@ export default class Dmt_profitability_chart extends LightningElement {
             .map(r => r.productId);
 
         Promise.all([
-            getProductDetailsByIds({ productIds: ids }),
-            getNominalAmountsByOpportunityLineItemIds({ productIds: ids })
+            getProductDetailsByIds({ productIds: ids, oppId: this.opportunityId }),
+            getNominalAmountsByOpportunityLineItemIds({ productIds: ids, oppId: this.opportunityId }),
+            getRwaRegLinkInfo({ oppId: this.opportunityId })
         ])
-        .then(([detailsList, nominalMap]) => {
+        .then(([detailsList, nominalMap, rwaLinkInfo]) => {
             this._cachedDetailsList = detailsList;
-            this._cachedNominalMap = nominalMap || {};
+            this._cachedNominalMap = nominalMap;
+            this.showRwaRegLink = rwaLinkInfo?.enabled === true;
+            if (this.showRwaRegLink && rwaLinkInfo.explanationId) {
+                this.rwaRegBaseExplanationId = rwaLinkInfo.explanationId;
+                this.rwaRegCountry = rwaLinkInfo.entific || '';
+            }
 
-            this.refreshTables();
+            convertNominalsToOppCurrency({
+                productDetails: detailsList,
+                nominalAmounts: nominalMap || {}
+            }).then(convertedMap => {
+                //this._cachedNominalMap = convertedMap || {};
+                this._cachedNominalMapConverted = convertedMap || {};
+                this.refreshTables();
+            });
         })
         .catch(error => {
-            console.error('Error loading product details or nominal amounts', error);
             this.refreshTables(true);
         });
     }
@@ -84,27 +103,28 @@ export default class Dmt_profitability_chart extends LightningElement {
             this.productDetailsMap = {};
             this.opportunityDates = null;
             this.nominalAmountsMap = this._cachedNominalMap || {};
-
             if (this._cachedDetailsList) {
                 // NEW: Extract Opp Name from the first result (since they share the same Opp)
                 if (this._cachedDetailsList.length > 0 && this._cachedDetailsList[0].OppName) {
                     this.cachedOppNameFromApex = this._cachedDetailsList[0].OppName;
                 }
-
                 this._cachedDetailsList.forEach(d => {
-                    this.productDetailsMap[d.Id] = {
+                    this.productDetailsMap[d.gf_group_priority_opportunity_id__c] = {
                         name: d.Name,
                         initialDate: d.InitialDate,
-                        maturityDate: d.MaturityDate
+                        maturityDate: d.MaturityDate,
+                        currency: d.Currency
                     };
 
                     if (!this.opportunityDates && d.OppInitialDate && d.OppMaturityDate) {
                         this.opportunityDates = {
                             oppInitialDate: d.OppInitialDate,
-                            oppMaturityDate: d.OppMaturityDate
+                            oppMaturityDate: d.OppMaturityDate,
+                            oppCurrency: d.OppCurrency
                         };
                     }
                 });
+
             }
         }
 
@@ -115,14 +135,21 @@ export default class Dmt_profitability_chart extends LightningElement {
 
         const opportunity = this.profitability.results.find(r => !r.productId);
         if (opportunity) {
+
+            const rorcThresholdNum = parseFloat(this.profitability.audit.rorcThreshold);
+            const raroecThresholdNum = parseFloat(this.profitability.audit.raroecThreshold);
+
             this.summaryData = {
+                raroecThreshold: this.formatPercent(raroecThresholdNum),
+                rorcThreshold: this.formatPercent(rorcThresholdNum),
                 raroec: this.formatPercent(opportunity.raroec),
-                raroecNoxsell: this.formatPercent(opportunity.raroecNoxsell),
-                raroecProspected: this.formatPercent(opportunity.raroecProspected),
                 rorc: this.formatPercent(opportunity.rorc),
-                rorcNoxsell: this.formatPercent(opportunity.rorcNoxsell),
+                clientRorc: this.formatPercent(opportunity.clientRorc),
                 rorcProspected: this.formatPercent(opportunity.rorcProspected)
             };
+
+            this.higherRorc = rorcThresholdNum < opportunity.rorc;
+            this.higherRoroec = raroecThresholdNum < opportunity.raroec;
         }
     }
 
@@ -183,7 +210,7 @@ export default class Dmt_profitability_chart extends LightningElement {
 
     formatBps(value) {
         const numeric = parseFloat(value ?? 0);
-        return `${numeric.toFixed(3)} bps`;
+        return `${numeric.toFixed(0)} bps`;
     }
 
     formatPercent(value) {
@@ -192,7 +219,7 @@ export default class Dmt_profitability_chart extends LightningElement {
 
     formatThousands(value) {
         if (value === null || value === undefined || isNaN(value)) return '';
-        return parseFloat(value).toLocaleString('es-ES', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        return parseFloat(value).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     rowStyle(index) {
@@ -203,7 +230,6 @@ export default class Dmt_profitability_chart extends LightningElement {
         const results = jsonData.results;
         const rows = [];
         let opportunityRow;
-
         let totalNominalDb = 0;
         let totalNominalFb = 0;
 
@@ -220,35 +246,37 @@ export default class Dmt_profitability_chart extends LightningElement {
             let maturityDate = '—';
             let nominalDb = '—';
             let nominalFb = '—';
-
+            let product;
+            let nominals;
+            let nominalsConverted;
             if (result.productId) {
-                const product = this.productDetailsMap?.[result.productId];
-                const nominals = this.nominalAmountsMap?.[result.productId];
-
+                product = this.productDetailsMap?.[result.productId];
+                nominals = this.nominalAmountsMap?.[result.productId];
+                nominalsConverted = this._cachedNominalMapConverted?.[result.productId];
                 id = product?.name || result.productId;
                 initialDate = product?.initialDate || '—';
                 maturityDate = product?.maturityDate || '—';
 
                 if (nominals) {
-                    nominalDb = this.formatThousands(nominals.nominalDb) + ' EUR';
-                    nominalFb = this.formatThousands(nominals.nominalFb) + ' EUR';
-                    totalNominalDb += nominals.nominalDb || 0;
-                    totalNominalFb += nominals.nominalFb || 0;
+                    nominalDb = this.formatThousands(nominals.nominalDb) + ' ' + product?.currency;
+                    nominalFb = this.formatThousands(nominals.nominalFb) + ' ' + product?.currency;
+                    totalNominalDb += nominalsConverted.nominalDb || 0;
+                    totalNominalFb += nominalsConverted.nominalFb || 0;
                 }
             } else {
                 if (this.opportunityDates) {
                     initialDate = this.opportunityDates.oppInitialDate || '—';
                     maturityDate = this.opportunityDates.oppMaturityDate || '—';
                 }
-                nominalDb = this.formatThousands(totalNominalDb) + ' EUR';
-                nominalFb = this.formatThousands(totalNominalFb) + ' EUR';
+                nominalDb = this.formatThousands(totalNominalDb) + ' ' + this.opportunityDates.oppCurrency;
+                nominalFb = this.formatThousands(totalNominalFb) + ' ' + this.opportunityDates.oppCurrency;
             }
 
             const row = {
                 id,
                 initialDate,
                 maturityDate,
-                franchiseDeal: this.formatThousands(result?.franchiseDeal ? result.franchiseDeal : 0)+ ' EUR',
+                franchiseDeal: this.formatThousands(result?.franchiseDeal ? result.franchiseDeal : 0)+ ' ' +(result.productId ? product?.currency : this.opportunityDates.oppCurrency),
                 // Table 1
                 taxRate: this.formatPercent(result.taxRate / 100),
                 spreadDb: this.formatBps(result.spreadDbPbs),
@@ -260,24 +288,34 @@ export default class Dmt_profitability_chart extends LightningElement {
                 pe: this.formatBps(result.expectedLossPbs),
                 feesNonAccrual: this.formatBps(result.feesUpFrontPbs),
                 feesAccrual: this.formatBps(result.periodicFeesPbs),
-                bdi: this.formatThousands(result.bdi?.toFixed(3)),
-                // Table 2
+                bdi: this.formatThousands(result.bdi?.toFixed(2)) + ' ' +(result.productId ? product?.currency : this.opportunityDates.oppCurrency),
+                averageLife: this.formatThousands(result.averageLife),
+                tenor: '',
+                allInDb: this.formatBps(result.allInDb),
+                allInFb: this.formatBps(result.allInFb),
+                feesDrawn: this.formatBps(result.feesDbPbs),
+                feesUndrawn: this.formatBps(result.feesFbPbs),
+    
+                // Tabla 2
                 nominalDb,
                 nominalFb,
                 ccfEco: this.formatPercent(result.economicCcf / 100),
-                eadEco: this.formatThousands(result.economicEad),
+                eadEco: this.formatThousands(result.economicEad) + ' ' +(result.productId ? product?.currency : this.opportunityDates.oppCurrency),
                 lgdEco: this.formatPercent(result.economicLgd / 100),
                 rwaEco: this.formatPercent(result.economicApr / 100),
                 ce: this.formatThousands(result.economicCapital),
                 raroec: this.formatPercent(result.raroec),
                 bdiCdd: this.formatThousands(result.prospectedBdi),
                 ceCdd: this.formatThousands(result.prospectedEconomicCapital),
-                raroecCdd: this.formatPercent(result.raroecProspected),
                 // Table 3
                 ccfReg: this.formatPercent(result.regulatoryCcf / 100),
-                eadReg: this.formatThousands(result.regulatoryEad),
+                eadReg: this.formatThousands(result.regulatoryEad) + ' ' +(result.productId ? product?.currency : this.opportunityDates.oppCurrency),
                 lgdReg: this.formatPercent(result.regulatoryLgd / 100),
                 rwaReg: this.formatPercent(result.regulatoryApr / 100),
+                rwaRegIsLink: !isOpportunity && this.showRwaRegLink,
+                rwaRegUrl: !isOpportunity && this.showRwaRegLink
+                    ? `https://calculadoraholding-int.work-03.nextgen.igrupobbva/index.html?explanationId=${this.rwaRegBaseExplanationId}_${result.productId}&applicationId=1&country=${this.rwaRegCountry}`
+                    : '',
                 cr: this.formatThousands(result.regulatoryCapital),
                 rorc: this.formatPercent(result.rorc),
                 crCdd: this.formatThousands(result.prospectedRegulatoryCapital),
@@ -318,6 +356,8 @@ export default class Dmt_profitability_chart extends LightningElement {
             eadReg: r.eadReg,
             lgdReg: r.lgdReg,
             rwaReg: r.rwaReg,
+            rwaRegIsLink: r.rwaRegIsLink,
+            rwaRegUrl: r.rwaRegUrl,
             cr: r.cr,
             rorc: r.rorc,
             bdiCdd: r.bdiCdd,
@@ -352,11 +392,11 @@ export default class Dmt_profitability_chart extends LightningElement {
         let eadEcoData = years.map(y => (parseFloat(y.eadEcoYearly) / 1000000).toFixed(2));
         let eadRegData = years.map(y => (parseFloat(y.eadRegYearly) / 1000000).toFixed(2));
         let rorcData = years.map(y => {
-            const val = parseFloat(y.rorcYearly);
+            const val = parseFloat(y.rorcYearly * 100);
             return isNaN(val) ? null : val.toFixed(2);
         });
         let raroecData = years.map(y => {
-            const val = parseFloat(y.raroecYearly);
+            const val = parseFloat(y.raroecYearly * 100);
             return isNaN(val) ? null : val.toFixed(2);
         });
 

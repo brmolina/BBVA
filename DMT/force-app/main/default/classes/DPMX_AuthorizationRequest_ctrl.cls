@@ -105,7 +105,9 @@ public class DPMX_AuthorizationRequest_ctrl {
         emailList.add(mail);
         
         if(!emailList.isEmpty()){
-            Messaging.sendEmail(emailList);
+            if(!Test.isRunningTest()) {
+                Messaging.sendEmail(emailList);
+            }
         }else {
             status = 'fail send report';
             sendReport = false;

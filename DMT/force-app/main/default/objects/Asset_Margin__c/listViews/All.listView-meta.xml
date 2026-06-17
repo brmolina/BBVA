@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Forward_Margins__c</columns>
+    <columns>Forward_trading_pricing__c</columns>
+    <columns>Spot_Margins__c</columns>
+    <columns>Spot_trading_pricing__c</columns>
+    <columns>Disabled__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Disabled__c</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <label>All</label>
+</ListView>

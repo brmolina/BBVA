@@ -48,7 +48,7 @@ public with sharing class PRC_PricingDetails_CONTROLLER {
   @AuraEnabled
   public static void insertMitigant(Map<String, String> mapDataMitigant) {
     final List<Account> accs = new List<Account>([
-      SELECT Id, SER_CClient__c
+      SELECT Id, g_customer_id__c
       FROM Account
       WHERE Id = :mapDataMitigant.get('DES_Client_Mitigant__c')
     ]);
@@ -67,7 +67,7 @@ public with sharing class PRC_PricingDetails_CONTROLLER {
     }
 
     if(!accs.isEmpty()) {
-      mitigant.put('gf_providing_warranty_ent_id__c',accs.get(0).SER_CClient__c);
+      mitigant.put('gf_providing_warranty_ent_id__c',accs.get(0).g_customer_id__c);
     }
     upsert mitigant;
   }

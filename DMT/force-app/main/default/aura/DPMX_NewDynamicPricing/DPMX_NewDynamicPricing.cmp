@@ -1,0 +1,74 @@
+<aura:component implements="lightning:actionOverride,force:lightningQuickActionWithoutHeader,force:hasRecordId" access="global" controller="DPMX_NewDynamicPricing_Ctrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="waiting" type="Boolean" default="false" />
+    <aura:attribute name="disableButtons" type="Boolean" default="true" />
+    <aura:attribute name="moreThanOne" type="Boolean" default="true" />
+    <aura:attribute name="isCustom" type="Boolean" default="false" />
+    <aura:attribute name="userInfo" type="User" />
+    <aura:attribute name="clientInfo" type="Account" />
+    <aura:attribute name="clientLabel" type="String" />
+    <aura:attribute name="productLabel" type="String" />
+    <aura:attribute name="existingSubsList" type="List" default="[]" />
+    <aura:attribute name="razonSocialLst" type="List" default="[]" />
+    <aura:attribute name="existingSubs" type="Object" />
+    <aura:attribute name="razonSocialMp" type="Map" />
+    <aura:attribute name="companyNameLabel" type="String" />
+    <aura:attribute name="product" type="String" />
+    <aura:attribute name="requiredFmlMsg" type="String" default="Debe seleccionar una familia." />
+    <aura:html tag="style">
+        .cuf-content { padding: 0 0rem !important; } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; width:unset !important; max-width:unset !important;
+        }
+    </aura:html>
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium">{!$Label.c.DPMX_NewDynamicPricing_Title}</h4>
+    </div>
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative" aura:id="modalbody" id="modalbody">
+        <aura:if isTrue="{!v.waiting}">
+            <lightning:spinner variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <lightning:recordEditForm aura:id="dynamicPricingForm" objectApiName="DPMX_Dynamic_Pricing__c" class="slds-card__body_inner slds-size_5-of-6">
+            <lightning:messages/>
+            <div class="slds-grid slds-p-top_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="Name" aura:id="name" required="true" onchange="{!c.handleFieldChange}" />
+                </div>
+                <div class="slds-col slds-size_2-of-2 slds-p-horizontal_large">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">{!$Label.c.DPMX_Owner}</div>
+                        <div class="slds-col">{!v.userInfo.Name}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-p-top_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="slds-col">{!v.clientLabel}</div>
+                    <div class="slds-col">{!v.clientInfo.Name}</div>
+                </div>
+                <div class="slds-col slds-size_2-of-2 slds-p-horizontal_large">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">{!v.productLabel}</div>
+                        <div class="slds-col">{!v.product}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-p-bottom_large slds-p-top_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select name="existingSubs" aura:id="existingSubs" label="Familia" required="true" value="{!v.existingSubs}" onchange="{!c.handleFieldChange}">
+                        <aura:if isTrue="{!v.moreThanOne}">
+                            <option value="">Selecciona una Familia</option>
+                        </aura:if>
+                        <aura:iteration items="{!v.razonSocialLst}" var="razonSocial">
+                            <option text="{!razonSocial}" value="{!razonSocial}" />
+                        </aura:iteration>
+                    </lightning:select>
+                    <!--<div class="slds-form-element__help" id="error-01">{!v.requiredFmlMsg}</div>-->
+                </div>
+            </div>
+        </lightning:recordEditForm>
+    </div>
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <lightning:button label="{!$Label.c.DPMX_Cancel}" onclick="{!c.handleCancel}" disabled="{!v.waiting}" class="slds-m-top_none" />
+        <lightning:button label="{!$Label.c.DPMX_Create}" onclick="{!c.handleOnSubmit}" disabled="{!or(v.disableButtons,v.waiting)}" variant="brand" class="slds-m-top_none" />
+    </div>
+</aura:component>

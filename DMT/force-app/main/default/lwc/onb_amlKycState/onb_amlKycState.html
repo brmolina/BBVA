@@ -1,0 +1,45 @@
+<template>
+    <lightning-card>
+        <c-onb_autosave-banner-notification
+            menssage={label.AUTOSAVE_BANNER}
+            icon='utility:save'
+            variant='mainContainer'
+            title='Auto-save information'>
+        </c-onb_autosave-banner-notification>
+        <c-onb_aml-kyc-screen
+            record-id={recordId}
+            >
+        </c-onb_aml-kyc-screen>
+        <div class="slds-p-around_small">
+            <!-- RELATIONSHIP CONTACTS SECTION -->
+            <div class="onb-row slds-m-top_medium">
+                <div class="onb-card" style="width:100%">
+                    <c-onb_onboarding-table
+                        data-id="relatioshipContactTable"
+                        title={label.RELATIONSHIP_CONTACTS}
+                        empty-state-message={label.ONB_EMPTY_STATE_CONTACT_MSSG}
+                        label={columnsRelationShipContact.label}
+                        record-id={recordId}
+                        object-api-name={onboardingCntRltObjApiName}
+                        parent-field-api-name="OnboardingId__c"
+                        columns={columnsRelationShipContact}
+                        initial-rows={rows}
+                        add-label={label.BTN_ADD_PARTICIPANT}
+                        show-add=true
+                        show-delete=true
+                        create-record-on-add=true
+                        required-field-api-names={relationshipRequiredFields}
+                        onlookupchange={handleLookupChangeFromTable}
+                        modal-component-name={onboardingContactModalName}
+                        modal-button-label={label.ONB_BUTTOM_CREATE_CONTACT}
+                        onrefrescartabla={handleRefreshData}
+                        onrowcreated={handleRefreshData}
+                        onrowdeleted={handleRefreshData}
+                        onrowunlink={handleRefreshData}
+                        default-values={defaultContactValues}>
+                    </c-onb_onboarding-table>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

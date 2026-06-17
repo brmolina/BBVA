@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lei_not_editable</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    OR(
+        ISNEW(),  
+        ISCHANGED(lei_id__c)  
+    ),
+    LEN(TRIM(lei_id__c)) &gt; 0,  
+    NOT(
+        OR(
+            RecordType.DeveloperName = &quot;DES_Prospect_Desktop&quot;,
+            RecordType.DeveloperName = &quot;Prospect_Group&quot;,
+            RecordType.DeveloperName = &quot;DES_Prospect_Group_Desktop&quot;,
+            RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;,
+            RecordType.DeveloperName = &quot;New_Client_Onboarding&quot;
+        )
+    ),
+    NOT(
+        OR(
+            $Profile.Name = &quot;System Administrator&quot;,  
+            $Profile.Name = &quot;System Dataloader&quot;,     
+            $Profile.Name = &quot;Desktop Integration&quot;    
+        )
+    )
+)</errorConditionFormula>
+    <errorMessage>Lei is not editable</errorMessage>
+</ValidationRule>

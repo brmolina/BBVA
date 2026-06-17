@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>One_lookup_completed</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   NOT(ISBLANK( BBVA_participant__c )),
+   NOT(ISBLANK( Other_BBVA_participant__c ))
+)</errorConditionFormula>
+    <errorMessage>You only can complete one of BBVA participant or Other BBVA participant.</errorMessage>
+</ValidationRule>

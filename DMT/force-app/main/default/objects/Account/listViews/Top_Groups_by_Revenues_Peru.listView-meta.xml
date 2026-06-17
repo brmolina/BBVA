@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Top_Groups_by_Revenues_Peru</fullName>
+    <booleanFilter>1 AND 2 AND 3 AND 4 AND 5</booleanFilter>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>DES_Country_Client__c</columns>
+    <columns>DES_GROSS_MARGIN_YOY__c</columns>
+    <columns>DES_GROSS_MARGIN__c</columns>
+    <columns>DES_GROSS_MARGIN_XB_YOY__c</columns>
+    <columns>DES_GROSS_MARGIN_YTD_XB__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>DES_Client_Type__c</field>
+        <operation>contains</operation>
+        <value>CIB Group</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Group</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>notEqual</operation>
+        <value>BBVA</value>
+    </filters>
+    <filters>
+        <field>DES_GROSS_MARGIN__c</field>
+        <operation>greaterThan</operation>
+        <value>EUR 1000000</value>
+    </filters>
+    <filters>
+        <field>DES_Country_Client__c</field>
+        <operation>equals</operation>
+        <value>PE</value>
+    </filters>
+    <label>Top Groups by Revenues (Peru)</label>
+</ListView>

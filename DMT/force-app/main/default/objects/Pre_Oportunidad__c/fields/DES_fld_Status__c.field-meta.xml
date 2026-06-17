@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_fld_Status__c</fullName>
+    <label>Status</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Closed won</fullName>
+                <default>false</default>
+                <label>Closed won</label>
+            </value>
+            <value>
+                <fullName>Preparing NBC</fullName>
+                <default>false</default>
+                <label>Preparing NBC</label>
+            </value>
+            <value>
+                <fullName>Pitch Pending</fullName>
+                <default>false</default>
+                <label>Pitch Pending</label>
+            </value>
+            <value>
+                <fullName>Client pending</fullName>
+                <default>false</default>
+                <label>Client pending</label>
+            </value>
+            <value>
+                <fullName>Internal discussion</fullName>
+                <default>false</default>
+                <label>Internal discussion</label>
+            </value>
+            <value>
+                <fullName>In execution</fullName>
+                <default>false</default>
+                <label>In execution</label>
+            </value>
+            <value>
+                <fullName>Under risk review</fullName>
+                <default>false</default>
+                <label>Under risk review</label>
+            </value>
+            <value>
+                <fullName>Discarded / Lost</fullName>
+                <default>false</default>
+                <label>Discarded / Lost</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

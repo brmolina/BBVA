@@ -6,6 +6,10 @@ import getFinancials from '@salesforce/apex/DMT_BasicFinancialsController_Client
 import getFinancialsOpportunity from '@salesforce/apex/DMT_BasicFinancialsController.getFinancials';
 import pubsub from 'omnistudio/pubsub';
 
+import DMT_modify_financials_table from '@salesforce/label/c.DMT_modify_financials_table';
+import DTM_overwrite_confirmation from '@salesforce/label/c.DTM_overwrite_confirmation';
+
+
 const EVENT_SAVE = 'Save';
 const EVENT_BUTTON = 'Button';
 const EVENT_SET = 'Set';
@@ -24,6 +28,40 @@ export default class DmtFinancialsTableClient extends LightningElement {
     _isOpportunity = false;
     _isEditMode = false;
     _isReadOnly = false;
+    _isOppView = false;
+    _stageName;
+
+    label = {
+        DMT_modify_financials_table,
+        DTM_overwrite_confirmation
+    }
+    @api 
+    set isOppView(value){
+        this._isOppView = (value == 'true' || value === true);
+    }
+    get isOppView(){
+        return this._isOppView;
+    }
+
+    @api
+    get StageName() {
+        return this._stageName;
+    }
+    set StageName(value) {
+        this._stageName = value;
+        console.log('[dmt_financials_table_Client] StageName update:', JSON.stringify({
+            stageName: this._stageName,
+            isEditMode: this._isEditMode,
+            isReadOnlyUser: this._isReadOnly,
+            isEditPencilEnabled: this.isEditPencilEnabled
+        }, null, 2));
+    }
+
+    get isEditPencilEnabled() {
+        return this._isReadOnly === false
+            && (this._stageName === 'Draft' || this._stageName === 'Proposal');
+    }
+
     @api
     get recordId() {
         return this._recordId;
@@ -74,10 +112,24 @@ export default class DmtFinancialsTableClient extends LightningElement {
     }
     set isReadOnlyUser(value) {
         this._isReadOnly = (value == true || value == 'true');
+        console.log('[dmt_financials_table_Client] isReadOnlyUser update:', JSON.stringify({
+            rawValue: value,
+            isReadOnlyUser: this._isReadOnly,
+            isEditMode: this._isEditMode,
+            stageName: this._stageName,
+            isEditPencilEnabled: this.isEditPencilEnabled
+        }, null, 2));
         if (this.processedData) {
 
             const shouldEdit = this._isEditMode && !this._isReadOnly; 
-            console.log('shouldEdit', shouldEdit);
+            
+            console.log('[dmt_financials_table_Client] shouldEdit evaluation:', JSON.stringify({
+                shouldEdit: shouldEdit,
+                isEditMode: this._isEditMode,
+                isReadOnlyUser: this._isReadOnly,
+                stageName: this._stageName,
+                isEditPencilEnabled: this.isEditPencilEnabled
+            }, null, 2));
             this.toggleEditMode(shouldEdit); 
         }
     }
@@ -89,15 +141,31 @@ export default class DmtFinancialsTableClient extends LightningElement {
     set isEditMode(value) {
 
         this._isEditMode = (value == 'true' || value === true);
+        console.log('[dmt_financials_table_Client] isEditMode update:', JSON.stringify({
+            rawValue: value,
+            isEditMode: this._isEditMode,
+            isReadOnlyUser: this._isReadOnly,
+            stageName: this._stageName,
+            isEditPencilEnabled: this.isEditPencilEnabled
+        }, null, 2));
 
         if (this.processedData) {
             const shouldEdit = this._isEditMode && !this._isReadOnly;
-            console.log('shouldEdit', shouldEdit);
+            console.log('[dmt_financials_table_Client] shouldEdit evaluation:', JSON.stringify({
+                shouldEdit: shouldEdit,
+                isEditMode: this._isEditMode,
+                isReadOnlyUser: this._isReadOnly,
+                stageName: this._stageName,
+                isEditPencilEnabled: this.isEditPencilEnabled
+            }, null, 2));
             this.toggleEditMode(shouldEdit);
         }
         
     }
-
+    
+        
+    
+    
     @track originalData;
     @track processedData;
     isDataProcessed = false;
@@ -144,7 +212,8 @@ export default class DmtFinancialsTableClient extends LightningElement {
             this.fetchFinancialsFromApex();
         }
 
-        if (this.isOpportunity && this.isValidSalesforceId(this.recordId) && this.isValidSalesforceId(this.groupId)) {
+        // En Opportunity ya no se exige groupId para cargar. Si no viene, igualmente se muestra la tabla con los datos de Opportunity.
+        if (this.isOpportunity && this.isValidSalesforceId(this.recordId)) {
             this.fetchFinancialsFromApexOpportunity();
         }
     }
@@ -160,19 +229,30 @@ export default class DmtFinancialsTableClient extends LightningElement {
     async fetchFinancialsFromApexOpportunity() {
         try {
 
-            const [opportunityFinancials, accountData] = await Promise.all([
-                getFinancialsOpportunity({ recordId: this.recordId }),
-                getFinancials({ recordId: this.groupId })
-            ]);
+            // Se carga siempre Opportunity.
+            const opportunityFinancials = await getFinancialsOpportunity({ recordId: this.recordId });
 
-            if (!opportunityFinancials || opportunityFinancials.length === 0 || !accountData || accountData.length === 0) {
+            // La comparación contra cliente/grupo es opcional.
+            let accountData = [];
+            if (this.isValidSalesforceId(this.groupId)) {
+                try {
+                    accountData = await getFinancials({ recordId: this.groupId });
+                } catch (accountError) {
+                    console.error('Error cargando datos de comparación (group/client):', accountError);
+                    accountData = [];
+                }
+            }
+
+            if (!opportunityFinancials || opportunityFinancials.length === 0) {
 
                 this.data = [];
+                this.processDataForView();
                 return;
             }
 
             const opportunityRecord = opportunityFinancials[0];
-            const accountRecord = accountData[0];
+            // Si no hay accountData, se usa el objeto vacío para que visualmente quede N/A.
+            const accountRecord = accountData && accountData.length > 0 ? accountData[0] : {};
 
             this.data = Object.keys(this.categoryFieldMapping).map((label, index) => {
 
@@ -184,17 +264,17 @@ export default class DmtFinancialsTableClient extends LightningElement {
                     isEditable: !label.includes('Total'),
                     rowClass: 'slds-hint-parent',
 
-                    lastYear: opportunityRecord[`${apiName}_Last_Year_number__c`] || NA_VALUE,
-                    currentYear: opportunityRecord[`${apiName}_Current_Year_number__c`] || NA_VALUE,
-                    nextYear: opportunityRecord[`${apiName}_Next_Year_number__c`] || NA_VALUE,
-                    nextYear1: opportunityRecord[`${apiName}_Next_Year_1_number__c`] || NA_VALUE,
-                    nextYear2: opportunityRecord[`${apiName}_Next_Year_2_number__c`] || NA_VALUE,
+                    lastYear: opportunityRecord[`${apiName}_Last_Year_number__c`] ?? NA_VALUE,
+                    currentYear: opportunityRecord[`${apiName}_Current_Year_number__c`] ?? NA_VALUE,
+                    nextYear: opportunityRecord[`${apiName}_Next_Year_number__c`] ?? NA_VALUE,
+                    nextYear1: opportunityRecord[`${apiName}_Next_Year_1_number__c`] ?? NA_VALUE,
+                    nextYear2: opportunityRecord[`${apiName}_Next_Year_2_number__c`] ?? NA_VALUE,
 
-                    lastYearAccount: accountRecord[`${apiName}_Last_Year_number__c`] || NA_VALUE,
-                    currentYearAccount: accountRecord[`${apiName}_Current_Year_number__c`] || NA_VALUE,
-                    nextYearAccount: accountRecord[`${apiName}_Next_Year_number__c`] || NA_VALUE,
-                    nextYear1Account: accountRecord[`${apiName}_Next_Year_1_number__c`] || NA_VALUE,
-                    nextYear2Account: accountRecord[`${apiName}_Next_Year_2_number__c`] || NA_VALUE
+                    lastYearAccount: accountRecord[`${apiName}_Last_Year_number__c`] ?? NA_VALUE,
+                    currentYearAccount: accountRecord[`${apiName}_Current_Year_number__c`] ?? NA_VALUE,
+                    nextYearAccount: accountRecord[`${apiName}_Next_Year_number__c`] ?? NA_VALUE,
+                    nextYear1Account: accountRecord[`${apiName}_Next_Year_1_number__c`] ?? NA_VALUE,
+                    nextYear2Account: accountRecord[`${apiName}_Next_Year_2_number__c`] ?? NA_VALUE
                 };
             });
 
@@ -206,14 +286,16 @@ export default class DmtFinancialsTableClient extends LightningElement {
             }
 
         } catch (error) {
-
+            // Se evita spinner infinito si falla la carga.
+            this.data = [];
+            this.processDataForView();
             pubsub.fire("Set", "Error", { errorMessage: ERROR_INVALID_LOADING});
             console.error('Error detallado al obtener datos financieros:', JSON.stringify(error));
         }
     }
 
     /**
-     * @description Llama al método Apex para obtener los datos financieros.
+     * @description Llama al método Apex para obtener los datos financieros en modo Client.
      */
     async fetchFinancialsFromApex() {
         try {
@@ -222,6 +304,7 @@ export default class DmtFinancialsTableClient extends LightningElement {
 
             if (!result || result.length === 0) {
                 this.data = [];
+                this.processDataForView();
                 return;
             }
 
@@ -232,7 +315,7 @@ export default class DmtFinancialsTableClient extends LightningElement {
                 return {
                     Id: index,
                     category: label,
-                    isEditable:true, // Asumimos que todas son editables por defecto
+                    isEditable: true, // Asumimos que todas son editables por defecto
                     lastYear: financialsData[`${apiName}_Last_Year_number__c`] ?? NA_VALUE,
                     currentYear: financialsData[`${apiName}_Current_Year_number__c`] ?? NA_VALUE,
                     nextYear: financialsData[`${apiName}_Next_Year_number__c`] ?? NA_VALUE,
@@ -249,6 +332,9 @@ export default class DmtFinancialsTableClient extends LightningElement {
             }
 
         } catch (error) {
+            // Se evita spinner infinito en client mode.
+            this.data = [];
+            this.processDataForView();
             pubsub.fire("Set", "Error", { errorMessage: ERROR_INVALID_LOADING});
             console.error('Error detallado al obtener datos financieros:', JSON.stringify(error));
         }
@@ -256,24 +342,40 @@ export default class DmtFinancialsTableClient extends LightningElement {
 
     /**
      * @description Transforma los datos crudos en una estructura adecuada para la vista (template).
-     * Este enfoque de separar el modelo de datos (`this.data`) del modelo de vista (`this.processedData`) es robusto.
      */
     processDataForView() {
 
         this.processedData = this.data.map(row => ({
             ...row,
-            values: this.columns.map(column => ({
-                field: column.fieldName,
-                label: column.label,
-                value: row[column.fieldName],
-                accountValue: row[column.fieldName + 'Account'],
-                isEquals: row[column.fieldName + 'Account'] == row[column.fieldName],
-                isEditing: false,
-                isEditable: column.isEditable && row.isEditable,
-                styleRedo: row[column.fieldName + 'Account'] === row[column.fieldName] ? 'display:none;' : '',
-                withoutRedo: row[column.fieldName + 'Account'] === row[column.fieldName] ? 'margin:top: 40% !important;' : '',
-                cellClass: "slds-has-button slds-has-flexi-truncate"
-            }))
+            values: this.columns.map(column => {
+                const accountValueRaw = row[column.fieldName + 'Account'];
+
+                // Solo hay comparación real si existe valor origen
+                const hasComparisonValue = accountValueRaw !== undefined && accountValueRaw !== null && accountValueRaw !== '' && accountValueRaw !== NA_VALUE;
+                // Visualmente se muestra N/A cuando no hay dato origen
+                const accountValue = hasComparisonValue ? accountValueRaw : NA_VALUE;
+                const value = row[column.fieldName];
+
+                return {
+                    field: column.fieldName,
+                    label: column.label,
+                    // Valor actual en Opportunity
+                    value: value,
+                    // Valor origen (Client/Account)
+                    accountValue: accountValue,
+                    // Solo comparar si existe dato real de origen
+                    isEquals: hasComparisonValue ? accountValue == value : true,
+                    // Esta propiedad sirve para saber si hay comparación real
+                    hasComparisonValue: hasComparisonValue,
+                    isEditing: false,
+                    isEditable: column.isEditable && row.isEditable,
+                    // El botón redo aparece solo si hay comparación real y además es distinto
+                    styleRedo: hasComparisonValue && accountValue !== value ? '' : 'display:none;',
+                    // Ajuste visual cuando no hay redo
+                    withoutRedo: hasComparisonValue && accountValue === value ? 'margin-top: 40% !important;' : '',
+                    cellClass: "slds-has-button slds-has-flexi-truncate"
+                };
+            })
         }));
         this.isDataProcessed = true;
     }
@@ -283,7 +385,7 @@ export default class DmtFinancialsTableClient extends LightningElement {
      */
     toggleEditMode(isEditing) {
 
-        console.log('isEditing, ', isEditing);
+
         this._isEditMode = isEditing;
         if(this.processedData) {
             this.processedData = this.processedData.map(row => {
@@ -300,19 +402,27 @@ export default class DmtFinancialsTableClient extends LightningElement {
      * @description Dispara un evento para notificar a otros componentes que se ha iniciado la edición.
      */
     handleEdit() {
+        console.log('[dmt_financials_table_Client] handleEdit guard:', JSON.stringify({
+            isEditMode: this._isEditMode,
+            isReadOnlyUser: this._isReadOnly,
+            stageName: this._stageName,
+            isEditPencilEnabled: this.isEditPencilEnabled
+        }, null, 2));
+        if (!this.isEditPencilEnabled) {
+            return;
+        }
         pubsub.fire("Button", "Edit", {});
     }
     async handleRedoAllTable() {
         try {
             const result = await LightningConfirm.open({
-            message: 'Are you sure you want to make this change?',
+            message: this.label.DTM_overwrite_confirmation,
             label: 'Confirmation of Change',
             theme: 'alt-inverse' // 'default' | 'success' | 'warning' | 'error'
             });
 
             if (result) {
                 this.redoAllTable();
-                console.log('Se realiza el cambio');
             } else {
                 console.log('El usuario canceló la acción');
             }
@@ -326,7 +436,7 @@ export default class DmtFinancialsTableClient extends LightningElement {
         this.processedData = this.processedData.map(row => {
             row.values = row.values.map(cell => {
                 cell.isEditing = false;
-                cell.value = cell.accountValue === NA_VALUE ? 'N/A' : cell.accountValue;
+                cell.value = cell.accountValue === NA_VALUE ? null : cell.accountValue;
                 this.hasUnsavedChanges = true;
                 if(cell.value != null && cell.value != undefined){
                     row[cell.field] = cell.value;
@@ -337,11 +447,8 @@ export default class DmtFinancialsTableClient extends LightningElement {
             return row;
         });
         this.data = JSON.parse(JSON.stringify(this.processedData));
-        console.log('this.data' , JSON.stringify(this.data));
-        console.log('this.processedData' , JSON.stringify(this.processedData));
         this.handleSave();
     }
-    
     handleRedo(event) {
 
         const { id: rowId, field: fieldName } = event.target.dataset;
@@ -359,7 +466,7 @@ export default class DmtFinancialsTableClient extends LightningElement {
 
                     }
                     return cell;
-                })
+                });
             }
             return row;
         });

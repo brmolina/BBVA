@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Classification__c</fullName>
+    <description>Main category to which the case belongs (e.g. Monetary Claim, Consultation).</description>
+    <label>Classification</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Consulta</fullName>
+                <default>true</default>
+                <label>Consulta</label>
+            </value>
+            <value>
+                <fullName>Incidencia</fullName>
+                <default>false</default>
+                <label>Incidencia</label>
+            </value>
+            <value>
+                <fullName>Feedback</fullName>
+                <default>false</default>
+                <label>Feedback</label>
+            </value>
+            <value>
+                <fullName>Atención</fullName>
+                <default>false</default>
+                <label>Atención</label>
+            </value>
+            <value>
+                <fullName>Activación GNC</fullName>
+                <default>false</default>
+                <label>Activación GNC</label>
+            </value>
+            <value>
+                <fullName>Caso descartado</fullName>
+                <default>false</default>
+                <label>Caso descartado</label>
+            </value>
+            <value>
+                <fullName>Query</fullName>
+                <default>false</default>
+                <label>Query</label>
+            </value>
+            <value>
+                <fullName>Incident</fullName>
+                <default>false</default>
+                <label>Incident</label>
+            </value>
+            <value>
+                <fullName>Discarded / Duplicated</fullName>
+                <default>false</default>
+                <label>Discarded / Duplicated</label>
+            </value>
+            <value>
+                <fullName>Monetary claim</fullName>
+                <default>false</default>
+                <label>Monetary claim</label>
+            </value>
+            <value>
+                <fullName>Non monetary claim</fullName>
+                <default>false</default>
+                <label>Non monetary claim</label>
+            </value>
+            <value>
+                <fullName>Queries</fullName>
+                <default>false</default>
+                <label>Queries</label>
+            </value>
+            <value>
+                <fullName>Caso duplicado</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Caso duplicado</label>
+            </value>
+            <value>
+                <fullName>Queja</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Queja</label>
+            </value>
+            <value>
+                <fullName>Reclamación</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Reclamación</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

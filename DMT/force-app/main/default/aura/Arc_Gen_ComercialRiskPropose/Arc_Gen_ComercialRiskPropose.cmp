@@ -1,0 +1,3 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_BackLogTable_Ctrl" >
+    <p>{!$Label.c.Arc_Gen_ComercialRiskPropose}</p>
+</aura:component>

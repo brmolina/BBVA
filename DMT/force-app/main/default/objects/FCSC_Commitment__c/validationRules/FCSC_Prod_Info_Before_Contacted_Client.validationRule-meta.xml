@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Prod_Info_Before_Contacted_Client</fullName>
+    <active>false</active>
+    <description>Valida quela información del Producto inicial se haya ingresado, antes de cambiar el estatus del Commitment a &quot;Proposal in Preparation&quot;</description>
+    <errorConditionFormula>AND(
+ISCHANGED(FCSC_Estatus_Contacto__c ),
+OR(
+  ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Proposal in Preparation&quot;),
+  ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Open Opportunity&quot;)
+),
+ISBLANK(FCSC_Product__c )
+)</errorConditionFormula>
+    <errorMessage>Product is Empty</errorMessage>
+</ValidationRule>

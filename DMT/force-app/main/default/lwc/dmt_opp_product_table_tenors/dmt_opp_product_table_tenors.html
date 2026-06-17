@@ -1,0 +1,44 @@
+<template>
+    <div class="slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <c-dmt_-table-header-section
+            titletable={label.DMT_Repayment_Schedule}
+            showcopypaste="true"
+            rowscopypaste={copyPasteRows}
+            tablecolumnscopypaste={copyPasteColumns}
+            context="Tenors"
+            isreadonlyuser={isReadOnly}
+            onsendrowsevent={handlePasteData}>
+        </c-dmt_-table-header-section>
+
+        <c-custom-data-table
+            style="max-height: 5vh; height: inherit; zoom: 95%;"
+            data={paginatedRows}
+            columns={columns}
+            key-field="Id"
+            max-row-selection="0"
+            hide-checkbox-column="true"
+            oncustomtextinputchanged={handleCellInput}
+            oncustomdateinputchanged={handleCellInput}
+            onrowaction={handleRowAction}
+            suppress-bottom-bar>
+        </c-custom-data-table>
+
+        <template lwc:if={showPagination}>
+            <div class="slds-p-top_small"></div>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-text-align_left slds-grid slds-grid_vertical-align-center">
+                    <p class="slds-p-top_xx-small">Showing {paginatedRows.length} of {totalRowsCount} items</p>
+                </div>
+                <div class="slds-col slds-grow slds-text-align_right slds-grid slds-grid_align-end">
+                    <lightning-button variant="base" icon-name="utility:chevronleft" onclick={handlePreviousPage} disabled={disablePrevious}></lightning-button>
+                    <span class="slds-m-horizontal_small">Page {currentPage} of {totalPages}</span>
+                    <lightning-button variant="base" icon-name="utility:chevronright" icon-position="right" onclick={handleNextPage} disabled={disableNext}></lightning-button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

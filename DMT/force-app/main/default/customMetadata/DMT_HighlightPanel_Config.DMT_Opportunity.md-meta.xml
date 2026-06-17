@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT Opportunity</label>
+    <protected>false</protected>
+    <values>
+        <field>Custom_Icon_URL__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Fields_Configuration__c</field>
+        <value xsi:type="xsd:string">[
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Client&quot;,
+&quot;fieldApiName&quot;: &quot;AccountId&quot;,
+&quot;isVisible&quot;: false
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Client/Prospect&quot;,
+&quot;fieldApiName&quot;: &quot;Account.Name&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;navigate&quot;,
+&quot;params&quot;: {
+&quot;recordId&quot;: &quot;{AccountId}&quot;,
+&quot;objectApiName&quot;: &quot;Account&quot;
+}
+}
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;OwnerID&quot;,
+&quot;fieldApiName&quot;: &quot;OwnerId&quot;,
+&quot;isVisible&quot;: false
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Opportunity Owner&quot;,
+&quot;fieldApiName&quot;: &quot;Owner.Name&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;navigate&quot;,
+&quot;params&quot;: {
+&quot;recordId&quot;: &quot;{OwnerId}&quot;,
+&quot;objectApiName&quot;: &quot;User&quot;
+}
+}
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Record Type Name&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_RecordTypeName__c&quot;
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Opportunity Id&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_Opp_Id__c&quot;
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Approval&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_Sanction__c&quot;,
+&quot;isVisible&quot;: false
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Approval&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_Sanction__r.Name&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;navigate&quot;,
+&quot;params&quot;: {
+&quot;recordId&quot;: &quot;{DMT_Sanction__c}&quot;,
+&quot;objectApiName&quot;: &quot;DMT_Line__c&quot;
+}
+}
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Parent Opportunity&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_Parent_Opportunity__c&quot;,
+&quot;isVisible&quot;: false
+},
+{
+&quot;type&quot;: &quot;text&quot;,
+&quot;label&quot;: &quot;Parent Opportunity&quot;,
+&quot;fieldApiName&quot;: &quot;DMT_Parent_Opportunity__r.Name&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;navigate&quot;,
+&quot;params&quot;: {
+&quot;recordId&quot;: &quot;{DMT_Parent_Opportunity__c}&quot;,
+&quot;objectApiName&quot;: &quot;Opportunity&quot;
+}
+}
+}
+
+]</value>
+    </values>
+    <values>
+        <field>Icon_Name__c</field>
+        <value xsi:type="xsd:string">opportunity</value>
+    </values>
+    <values>
+        <field>Icon_Size__c</field>
+        <value xsi:type="xsd:string">medium</value>
+    </values>
+    <values>
+        <field>Icon_Type__c</field>
+        <value xsi:type="xsd:string">standard</value>
+    </values>
+    <values>
+        <field>Menu_Actions_JSON__c</field>
+        <value xsi:type="xsd:string">[{
+&quot;label&quot;: &quot;Clone&quot;,
+&quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;file&quot;
+    },
+&quot;name&quot;: &quot;CloneOppAction&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.CloneOppAction&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;Delete&quot;,
+&quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;delete&quot;
+    },
+&quot;name&quot;: &quot;DMT_DeleteOpportunity&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.DMT_DeleteOpportunity&quot;
+},
+&quot;disabled&quot;: false
+}]</value>
+    </values>
+    <values>
+        <field>Metadata_Config__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Object_API_Name__c</field>
+        <value xsi:type="xsd:string">Opportunity</value>
+    </values>
+    <values>
+        <field>Primary_Actions_JSON__c</field>
+        <value xsi:type="xsd:string">[
+{
+&quot;label&quot;: &quot;Help&quot;,
+&quot;name&quot;: &quot;Help&quot;,
+&quot;iconConfig&quot;: {
+    &quot;type&quot;: &quot;utility&quot;,
+    &quot;name&quot;: &quot;question&quot;
+  },
+&quot;variant&quot;: &quot;brand&quot;,
+&quot;actionType&quot;: &quot;url&quot;,
+&quot;actionConfig&quot;: {
+&quot;url&quot;: &quot;https://notebooklm.google.com/notebook/d1c45063-ef3b-41e1-8244-5403ba1f5b1f&quot;,
+&quot;target&quot;: &quot;_blank&quot;
+}
+},
+{
+&quot;label&quot;: &quot;Chatter&quot;,
+&quot;name&quot;: &quot;ChatterOpp&quot;,
+&quot;variant&quot;: &quot;brand&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;iconConfig&quot;: {
+    &quot;type&quot;: &quot;utility&quot;,
+    &quot;name&quot;: &quot;chat&quot;
+  },
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.ChatterFeed&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;Deal Management&quot;,
+&quot;name&quot;: &quot;Deal_Management_Opp&quot;,
+&quot;variant&quot;: &quot;brand&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;iconConfig&quot;: {
+    &quot;type&quot;: &quot;utility&quot;,
+    &quot;name&quot;: &quot;layers&quot;
+  },
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.Deal_Management_Opp&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;View List&quot;,
+&quot;name&quot;: &quot;NBC_VIEW&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.NBC_VIEW&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;Visit&quot;,
+&quot;name&quot;: &quot;Plan_Visit_Call_From_Opportunity&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.Plan_Visit_Call_From_Opportunity&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;Commercial Offer&quot;,
+&quot;name&quot;: &quot;Commercial_Offer&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.Commercial_Offer&quot;
+},
+&quot;disabled&quot;: false
+},
+{
+&quot;label&quot;: &quot;Send to closed lost&quot;,
+&quot;name&quot;: &quot;DMT_Send_to_closed_lost&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.DMT_Send_to_closed_lost&quot;
+},
+&quot;disabled&quot;: false,
+&quot;visibilityCondition&quot;: {
+    &quot;fieldName&quot;: &quot;StageName&quot;,
+    &quot;operator&quot;: &quot;not equals&quot;,
+    &quot;value&quot;: &quot;Draft&quot;
+}
+}
+]</value>
+    </values>
+    <values>
+        <field>Record_Type_API_Name__c</field>
+        <value xsi:type="xsd:string">DMT_Opportunity</value>
+    </values>
+    <values>
+        <field>Static_Resource_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Static_Resource_Path__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

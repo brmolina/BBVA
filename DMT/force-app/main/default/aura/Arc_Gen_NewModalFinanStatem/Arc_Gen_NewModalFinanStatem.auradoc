@@ -1,0 +1,12 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Shows a table with the financial statements headers of the analyzed client.</b></h5>
+        <p>The shown headers are aproved by the financialStatements ASO service.</p>
+        <p>The minimum number of selected rows is one</p>
+        <p>The maximum number of selected rows is three</p>
+        <p>Once selected, you can update the Balance tables by pushing the "Add Statements button"</p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ModalFinanStatem" ref="c:Arc_Gen_ModalFinanStatem" label="Financial Statements Modal">
+        <p>This is an example</p>
+    </aura:example>
+</aura:documentation>

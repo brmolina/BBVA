@@ -13,6 +13,7 @@
 *             Class creation.
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.EmptyStatementBlock, PMD.AvoidDeeplyNestedIfStmts,PMD.ExcessiveParameterList,PMD.CyclomaticComplexity,PMD.CognitiveComplexity')
 public with sharing class Arc_Gen_ValidatePS {
     /**
     * @description String "OK" value.
@@ -30,10 +31,10 @@ public with sharing class Arc_Gen_ValidatePS {
     * @description String "Success" value.
     */
     public static final String VALUE_ERROR = 'Error';
-    /**
+        /**
     * @description String "Success" value.
     */
-    public static final String VALUE_REFRESH_PS = 'RefreshPS'; 
+    public static final String VALUE_REFRESH_PS = 'RefreshPS';
     /**
     * @Description: subsidiary type
     */
@@ -51,7 +52,7 @@ public with sharing class Arc_Gen_ValidatePS {
     */
     static final string VALUE_BOTH = 'both';
     /**
-    * @Description: '"identifier":' literal 
+    * @Description: '"identifier":' literal
     */
     public static final String ID_VAR = '"identifier":';
     /**
@@ -86,7 +87,10 @@ public with sharing class Arc_Gen_ValidatePS {
     * Constructor
     **/
     @TestVisible
-    private Arc_Gen_ValidatePS() {}
+    private Arc_Gen_ValidatePS() {
+        System.debug(LoggingLevel.INFO, 'Arc_Gen_ValidatePS');
+    }
+
     /**
     * @Class: MessageResponse
     * @Description: Container that contains the message for the Lightning component as a response
@@ -121,6 +125,7 @@ public with sharing class Arc_Gen_ValidatePS {
     * @param String ahaId
     * @return MessageResponse
     **/
+    @SuppressWarnings('PMD.CognitiveComplexity,PMD.AvoidDeeplyNestedIfStmts')
     @AuraEnabled
     public static MessageResponse callParentSubsidiary(String ahaId, Boolean isTest) {
         final MessageResponse msgResp = new MessageResponse();
@@ -132,29 +137,41 @@ public with sharing class Arc_Gen_ValidatePS {
             final Map<String,String> params = new Map<String,String>{ 'participantId' => customerNumber};
             final arce__AHA_Extension__c ahaExt = (arce__AHA_Extension__c) getSObjectInfo('arce__AHA_Extension__c', accHasAnalysis.arce__AHA_Extension__c, null);
             final Boolean isRaipCorp = isRaipCorpBool(isTest);
-            arce.Arc_Gen_getIASOResponse.ServiceResponse sResponse = new arce.Arc_Gen_getIASOResponse.serviceResponse();
-            if (accWrapper.participantType == CLIENT && ahaExt.arce__PS_Successfully_Retrieved__c && isRaipCorp) {
-                sResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME, JSON.serialize(params));
-                if (sResponse.serviceCode == VALUE_200) {
-                    final Map<String,Object> data = (Map<String,Object>) sResponse.serviceResponse;
+            String participantType = accWrapper.participantType;
+            if(accHasAnalysis.arce__RAR_rating_tool_id__c.contains('RTC')) {
+                participantType = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) ahaId});
+            }
+            if (participantType == CLIENT && ahaExt.arce__PS_Successfully_Retrieved__c && isRaipCorp) {
+                Map<String,Object> data = new Map<String,Object>();
+                if (isTest) {
+                    final iaso__GBL_integration_service__mdt integServ = arce.Arc_Gen_getIASOResponse.getIntegrationServiceConfigFromServiceName(SERVICE_NAME);
+                    data = (Map<String,Object>) JSON.deserializeUntyped(integServ.iaso__Mock_LTA__c);
+                    msgResp.status = VALUE_SUCCESS;
+                } else {
+                    final arce.Arc_Gen_getIASOResponse.ServiceResponse sResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME, JSON.serialize(params));
+                    if (sResponse.serviceCode == VALUE_200) {
+                        data = (Map<String,Object>) sResponse.serviceResponse;
+                    } else if (String.isNotBlank(sResponse.serviceMessage)) {
+                        msgResp.status = VALUE_ERROR;
+                        msgResp.message = sResponse.serviceCode + ': ' + sResponse.serviceMessage;
+                    }
+                }
+                if (!data.isEmpty() && msgResp.status == VALUE_SUCCESS) {
                     final ServRespWrapper respWrap = (ServRespWrapper) JSON.deserialize(JSON.serialize(data.get('data')).replaceAll(QUAL_VARS_SERV, QUAL_VARS_VAR).replaceAll(ID_SERV, ID_VAR).replaceAll(REL_PS_SERV, REL_PS_VAR), ServRespWrapper.class);
                     if (accHasAnalysis.arce__RAR_rating_tool_id__c == RTC_EXPG) {
                         validateEXPG(respWrap, ahaId, msgResp);
                     } else {
                         serviceDataValidations(respWrap, ahaId, msgResp, ahaExt);
                     }
-                } else if (String.isNotBlank(sResponse.serviceMessage)) {
-                    msgResp.status = VALUE_ERROR;
-                    msgResp.message = sResponse.serviceCode + ': ' + sResponse.serviceMessage;
                 }
             }
-            } catch (Exception ex) {
+        } catch (Exception ex) {
             processExceptionError(msgResp, ex);
         }
         return msgResp;
     }
 
-        /**
+    /**
     * @description serviceDataValidations, validates the response from the service and sets the message response.
     * @author aleksandar.dinkov.contractor@bbva.com | 06-11-2023
     * @param ServRespWrapper respWrap
@@ -162,13 +179,16 @@ public with sharing class Arc_Gen_ValidatePS {
     * @param MessageResponse msgResp
     * @param arce__AHA_Extension__c ahaExt
     **/
-    @SuppressWarnings('sf:ConfusingTernary')
+    @SuppressWarnings('PMD.ExcessiveParameterList, sf:ConfusingTernary')
     private static void serviceDataValidations(ServRespWrapper respWrap, String ahaId, MessageResponse msgResp, arce__AHA_Extension__c ahaExt) {
         if (!respWrap.relations.isEmpty()) {
             final arce__Overlay__c actualOverlay = arce.Arc_Gen_Overlays_Utils.getOverlayMapByAha(new Set<Id>{ahaId}).get(ahaId)[0];
             final Map<String,List<String>> structure = (Map<String,List<String>>) JSON.deserialize(actualOverlay.arce__Arc_Gen_ParentGroups__c, Map<String,List<String>>.class);
             final Boolean equalAlpha = structure.containsKey(respWrap.relations[0].matrix.identifier);
-            if (!equalAlpha) {
+            if (respWrap.relations[0].originApplication != '03') {
+                msgResp.status = VALUE_ERROR;
+                msgResp.message = System.Label.Arc_Gen_PS_Invalid_Origin;
+            } else if (!equalAlpha) {
                 msgResp.status = VALUE_ERROR;
                 msgResp.message = System.Label.Arc_Gen_Different_PS_Alpha;
             } else if (validatePsRelation(ahaExt, respWrap)) {
@@ -177,6 +197,9 @@ public with sharing class Arc_Gen_ValidatePS {
             } else if (actualOverlay.arce__Arc_Gen_PS_Relationship_Id__c != respWrap.relations[0].identifier) {
                 msgResp.status = VALUE_REFRESH_PS;
                 msgResp.message = System.Label.Arc_Gen_Different_PS_Id;
+            } else if (actualOverlay.arce__expired_matrix__c == arce.Arc_Gen_Constants.ONE_S) {
+                msgResp.status = VALUE_ERROR;
+                msgResp.message = System.Label.Arc_Gen_DataQuality_Parent_Rating_Expired;
             } else if (validatePsExpiration(respWrap)) {
                 msgResp.status = VALUE_ERROR;
                 msgResp.message = System.Label.Arc_Gen_Expired_PS_Relation;
@@ -206,7 +229,6 @@ public with sharing class Arc_Gen_ValidatePS {
             }
         }
     }
-
     /**
     * @description processExceptionError, sets the message response in case of an exception error and logs the error message and stack trace.
     * @author aleksandar.dinkov.contractor@bbva.com | 27-03-2025
@@ -258,7 +280,7 @@ public with sharing class Arc_Gen_ValidatePS {
         }
         return returnValue;
     }
-     /**
+    /**
     * @description validatePsExpiration, returns true if actual ARCE should be bloqued based on actual criteria.
     * @author aleksandar.dinkov.contractor@bbva.com | 18-03-2025
     * @param ServRespWrapper respWrap
@@ -289,7 +311,7 @@ public with sharing class Arc_Gen_ValidatePS {
         return Database.query(String.escapeSingleQuotes(queryString));
     }
 
-     /**
+        /**
     * --------------------------------------------------------------------------------------
     * @Description get Boolean RaipCorp
     * --------------------------------------------------------------------------------------
@@ -470,5 +492,9 @@ public with sharing class Arc_Gen_ValidatePS {
         * @Description: List<QualitativeVariables> qualiVars
         */
         public List<QualitativeVariables> qualiVars;
+        /**
+        * @Description: String originApplication
+        */
+        public String originApplication;
     }
 }

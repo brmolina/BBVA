@@ -1,0 +1,11 @@
+<aura:component >
+    <h1>PRO</h1>
+    <iframe src="https://cibdesktop.es.igrupobbva/KXWB/kxwb_mult_web_web_01/solrNumResults?type=clientes&amp;query=descripcionGrupo%3A*repsol*%2BAND%2BindicadorCabecera%3AN"/>
+    <input type="button" onclick="{!c.testCallPro}"/>
+    <h1>DES</h1>
+    <iframe src="https://de-wbamdesktop.es.igrupobbva/KXWB/kxwb_mult_web_servicios_01/services/opportunities/11aa"/>
+    <input type="button" onclick="{!c.testCallDes}"/>
+    <h1>PREPRO</h1>
+    <iframe src="https://au-wbamdesktop.es.igrupobbva/KXWB/kxwb_mult_web_servicios_01/services/opportunities/11aa"/>
+    <input type="button" onclick="{!c.testCallPrePro}"/>
+</aura:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CIB_DES_DataMigration__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>En las cargas masivas por ejemplo de objetos Opportunities y Visits, este campo sirve para activar/desactivar el trigger que lanza insert en los objetos respectivos &quot;DES_Denorm...&quot; para que no de error limite de Queries de Salesforce</description>
+    <label>CIB DES DataMigration</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

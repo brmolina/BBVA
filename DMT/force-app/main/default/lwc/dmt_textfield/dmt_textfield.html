@@ -1,0 +1,57 @@
+<template>
+    <div class="slds-is-relative">
+        <!-- Campo de texto normal usando lightning-input -->
+        <template if:false={isRichText}>
+            <template if:false={isTextarea}>
+                <lightning-input
+                name={fieldName}
+                label={label}
+                type={inputType}
+                value={value}
+                placeholder={placeholder}
+                required={required}
+                disabled={disabled}
+                max-length={computedMaxLength}
+                variant={variant}
+                oninput={handleInput}
+                onchange={handleChange}
+                data-field-type={fieldType}
+                data-field-name={fieldName}
+            ></lightning-input>
+            </template>
+                <!-- Para textarea, necesitamos atributo adicional -->
+                <template if:true={isTextarea}>
+                    <lightning-textarea
+                        name={fieldName}
+                        label={label}
+                        value={value}
+                        class="textAreaBody"
+                        placeholder={placeholder}
+                        required={required}
+                        disabled={disabled}
+                        max-length={computedMaxLength}
+                        rows={rows}
+                        variant={variant}
+                        oninput={handleInput}
+                        onchange={handleChange}
+                    ></lightning-textarea>
+                </template>
+        </template>
+
+        <!-- Rich Text usando componente nativo -->
+        <template if:true={isRichText}>
+            <lightning-input-rich-text
+                name={fieldName}
+                label={label}
+                value={value}
+                placeholder={placeholder}
+                disabled={disabled}
+                variant={variant}
+                onchange={handleChange}
+                onblur={handleBlur}
+                data-field-type={fieldType}
+                data-field-name={fieldName}
+            ></lightning-input-rich-text>
+        </template>
+    </div>
+</template>

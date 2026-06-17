@@ -1,0 +1,27 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasSObjectName" access="global" controller="PRC_ProfitabilityLifeTimeChart_Ctrl">
+	<aura:attribute name="recordId" type="String" access="public" />
+
+	<ltng:require scripts="{! join(',',
+							$Resource.Chart)}" afterScriptsLoaded="{!c.doInit}"/>
+
+	<aura:attribute name="noData" type="Boolean" default="false"/>
+    <!-- aura:handler name="init" value="{!this}" action="{!c.doInit}" / -->
+
+
+    <div class="{! if($Browser.formFactor == 'DESKTOP', 'slds-box customDiv','slds-box mobileCustomDiv')}">
+        <h1>Profitability Life-time</h1>
+        <br/><br/>
+        <aura:if isTrue="{!v.noData}">
+            <div class="slds-p-horizontal_small slds-size_1-of-1 slds-m-top_medium">
+                <p class="customP">{!$Label.c.DES_Chart_No_Data}</p>
+			</div>
+        <aura:set attribute="else">
+                    <div id="chartjs-tooltip"></div>
+                    <canvas aura:id="chartPRC" height="110"></canvas>
+        </aura:set>
+        </aura:if>
+    </div>
+
+
+
+</aura:component>

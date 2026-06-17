@@ -1,0 +1,122 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller= "DES_AP_LocalAnalysis_cnt" 
+                access="global" >
+    
+    <aura:attribute name="localAnalysisId" type="String"/>
+    <aura:attribute name="country" type="String"/>
+    <aura:attribute name="isTeamMember" type="Boolean"/>
+    <aura:attribute name="sectionList" type="Object"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <h2 class="slds-text-heading_medium slds-hyphenate">{!v.country}</h2>
+    <aura:if isTrue="{!v.isTeamMember}">
+        <lightning:recordEditForm recordId="{!v.localAnalysisId}" objectApiName="DES_Local_Analysis__c">
+            <div class="slds-grid slds-wrap">
+                <lightning:outputField fieldName="AA_gf_booking_operation_cntry_id__c" />
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_lcl_strg_covrg_prdt_tm_type__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_comment_local_strategy_desc__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="subsegment_type__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_operation_strategic_desc__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_presence_group_local_name__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_employees_co_number__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_total_revenues_ytd_amount__c" value="{!v.sectionList.gf_total_revenues_ytd_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="total_asset_amount__c" value="{!v.sectionList.total_asset_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="tot_liabilities_equity_amount__c" value="{!v.sectionList.tot_liabilities_equity_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="net_profit_amount__c" value="{!v.sectionList.net_profit_amount__c}" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_tl_cmt_grp_lcl_loc_amount__c" value="{!v.sectionList.gf_tl_cmt_grp_lcl_loc_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_total_outstd_grp_lcl_amount__c" value="{!v.sectionList.gf_total_outstd_grp_lcl_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_tl_drc_lcl_unfund_gp_amount__c" value="{!v.sectionList.gf_tl_drc_lcl_unfund_gp_amount__c}"/>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="prof_post_desc__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_matrix_sp_local_sbsid_name__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:inputField fieldName="gf_lvl_mstr_agree_gm_prdt_name__c" />
+                </div>
+            </div>
+            <br></br>
+            <lightning:button class="slds-m-top_small, slds-align_absolute-center" variant="brand" type="submit" name="update" label="Save" />
+        </lightning:recordEditForm>
+        <aura:set attribute="else">
+            <lightning:recordViewForm recordId="{!v.localAnalysisId}" objectApiName="DES_Local_Analysis__c">
+                <div class="slds-grid slds-wrap">
+                    <lightning:outputField fieldName="AA_gf_booking_operation_cntry_id__c" />
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_lcl_strg_covrg_prdt_tm_type__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_comment_local_strategy_desc__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="subsegment_type__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_operation_strategic_desc__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_presence_group_local_name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_employees_co_number__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_total_revenues_ytd_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="total_asset_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="tot_liabilities_equity_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="net_profit_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_tl_cmt_grp_lcl_loc_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_total_outstd_grp_lcl_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_tl_drc_lcl_unfund_gp_amount__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="prof_post_desc__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_matrix_sp_local_sbsid_name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="gf_lvl_mstr_agree_gm_prdt_name__c" />
+                    </div>
+                </div>
+            </lightning:recordViewForm>
+        </aura:set>
+    </aura:if> 
+</aura:component>

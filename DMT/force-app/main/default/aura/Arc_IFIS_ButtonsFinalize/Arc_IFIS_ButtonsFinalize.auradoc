@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Finalize button component</b></h5>
+        <p><code>arce:Arc_IFIS_ButtonsFinalize</code></p>
+    </aura:description>
+</aura:documentation>

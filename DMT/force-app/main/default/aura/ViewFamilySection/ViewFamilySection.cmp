@@ -1,0 +1,125 @@
+<aura:component controller="CurrentUserInfoCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+    access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="familyChecked" type="String" description="Familia de productos a mostrar" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:attribute name="filial" type="Boolean" default="false" />
+    <aura:attribute name="userInfo" type="user" />
+    <aura:attribute name="onload" type="Boolean" default="false" />
+    <aura:attribute name="legal" type="Boolean" default="false" />
+    <lightning:navigation aura:id="nav" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+    <ltng:require scripts="" afterScriptsLoaded="{!c.onRender}" />
+
+    <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}" layoutType="{!v.layout}" fields="Id, Name"
+        mode="VIEW" targetRecord="{!v.record}" targetFields="{!v.simpleRecord}" targetError="{!v.error}" />
+
+
+    <aura:if isTrue="{!v.onload}">
+        <div class="zIndexMax slds-page-header slds-is-fixed height77  ">
+            <lightning:layout>
+                <lightning:layoutItem class="slds-media__figure">
+                    <lightning:icon iconName="standard:account" />
+                </lightning:layoutItem>
+                <lightning:layoutItem class="slds-media__body">
+                    <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: {!v.familyChecked} details</h1>
+                    <lightning:breadcrumbs>
+                        <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                            label="Return to global information" onclick="{! c.onClickButton}"
+                            title="Go back to the account" />
+                    </lightning:breadcrumbs>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+        <div id="headerSpace" class="slds-page-header height77"></div>
+
+        <lightning:tabset selectedTabId="two" variant="scoped">
+            <aura:if isTrue="{!v.legal}">
+                <lightning:tab class="customTabs " label="BBVA Business" id="one">
+                    <div class="slds-align_absolute-center contenedor">
+                        <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+                            <div class="wrapperComponents">
+                                <aura:if isTrue="{!v.familyChecked eq 'GM'}">
+                                    <aura:if isTrue="{!v.userInfo.Profile.Name eq 'Desktop Integration'}">
+                                        <c:GeneralInformation recordId="{!v.recordId}" />
+                                    </aura:if>
+                                </aura:if>
+                                <c:RevenuesByRegionAndProducts familyParam="{!v.familyChecked}"
+                                    recordId="{!v.recordId}" />
+                                <aura:if isTrue="{!v.familyChecked == 'GM'}">
+                                    <div class="contenedor">
+                                        <c:DES_FranchiseAccordion recordId="{!v.recordId}" />
+                                    </div>
+                                    <div class="contenedor">
+                                        <c:GDT_DWP_franchiseAcc recordId="{!v.recordId}" />
+                                    </div>
+									<c:RiskAvailabilityWrapper recordId="{!v.recordId}" familyChecked="{!v.familyChecked}"/>
+                                    <div class="slds-m-top_medium">
+                                        <c:LegalAgreementsList recordId="{!v.recordId}" />
+                                    </div>
+                                </aura:if>
+                                <aura:if isTrue="{!and(v.familyChecked eq 'IBF', v.filial eq false)}">
+                                    <c:WrapperLoans recordId="{!v.recordId}" />
+                                    <c:RCFExpiration recordId="{!v.recordId}" familyParam="{!v.familyChecked}" />
+                                    <aura:if isTrue="{!v.userInfo.Profile.Name eq 'Desktop Integration'}">
+                                        <c:RCFEvolution recordId="{!v.recordId}" familyParam="{!v.familyChecked}" />
+                                    </aura:if>
+                                </aura:if>
+                            </div>
+                        </ui:scrollerWrapper>
+                    </div>
+                </lightning:tab>
+            </aura:if>
+            <lightning:tab class="customTabs" label="Commercial Activity" id="two">
+
+                <div class="slds-modal__content mainWrap customDiv">
+                    <!-- <ui:scrollerWrapper class="srollWrap"> -->
+                    <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?' sWrapTestDesktop ':' sWrapTest '}">
+                        <div class="customDiv2">
+
+                            <div class="slds-align_absolute-center">
+                                <div class="wrapperComponents ">
+                                    <c:RevenuesWrapper familyChecked="{!v.familyChecked}" recordId="{!v.recordId}" />
+                                </div>
+                            </div>
+                            <div class="slds-align_absolute-center contenedor">
+                                <div class="wrapperComponents">
+                                    <c:PotRevenuesProductsPerRegion familyParam="{!v.familyChecked}"
+                                        recordId="{!v.recordId}" />
+                                </div>
+                            </div>
+                            <c:OpportunitiesInProgressByFamily familyParam="{!v.familyChecked}" recordId="{!v.recordId}"
+                                filial="{!v.filial}" />
+                            <c:NextVisitsByFamily familyParam="{!v.familyChecked}" recordId="{!v.recordId}" />
+                        </div>
+                    </ui:scrollerWrapper>
+                </div>
+
+
+            </lightning:tab>
+            <aura:if isTrue="{!v.familyChecked eq 'GM'}">
+                <lightning:tab class="customTabs " label="RISK" id="three">
+                    <div class="contenedor">
+                        <div class="wrapperRisk">
+                            <div class="slds-align_center">
+                                <c:RiskInformation recordId="{!v.recordId}" />
+                            </div>
+                        </div>
+                    </div>
+                </lightning:tab>
+            </aura:if>
+            <lightning:tab class="customTabs" label="BBVA Potential" id="four">
+                <c:AlertsRelatedList familyParam="{!v.familyChecked}" recordId="{!v.recordId}" />
+                <br />
+                <c:Campaign_Initiative_RelatedList familyParam="{!v.familyChecked}" recordId="{!v.recordId}" />
+            </lightning:tab>
+        </lightning:tabset>
+    </aura:if>
+</aura:component>

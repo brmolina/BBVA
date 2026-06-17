@@ -13,6 +13,7 @@
 * 04-09-2023      Class creation.
 * -----------------------------------------------------------------------------------------------
 **/
+@SuppressWarnings('PMD.CognitiveComplexity,PMD.CyclomaticComplexity,sf:OnlyOneReturn')
 public with sharing class Arc_IFIS_ButtonsFinalize_Service {
     /** @description Service message class**/
     static final arce.Arc_Gen_CustomServiceMessages SERVICE_MESSAGES = new arce.Arc_Gen_CustomServiceMessages();
@@ -32,6 +33,8 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
     static final String ERROR_TITLE = 'errorTitle';
     /** @description Message of the service error message string.**/
     static final String ERROR_MESSAGE = 'errorMessage';
+    /** @description Callable class name.**/
+    static final String CALLABLE_CLASS = Test.isRunningTest() ? 'Arc_Gen_CallableFromCore_Mock' : 'arce.Arc_IFIS_CallableFromCore';
 
     /**
     * -----------------------------------------------------------------------------------------------
@@ -187,71 +190,9 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
 
             // Process the response
             response = processRatingResponse(serviceResp, analyzedClient.ahaObj);
-
-            // Set traceability if save was successful
-            if (response.saveStatus == RESPONSE_TRUE) {
-                setTraceability(validationWrap, helperWrap, analysis);
-            }
         } catch (CalloutException e) {
             response.saveStatus = RESPONSE_FALSE;
             response.serviceMessage = e.getMessage();
-        }
-
-        return response;
-    }
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Handle success service response.
-    * -----------------------------------------------------------------------------------------------
-    * @autor    marcos.gimeno.next@bbva.com
-    * @date     01-08-2023
-    * @param    valDataWrap    Wrapper with validation parameters
-    * @param    saveStatus            Service status response
-    * @param    saveMessage           Save message response
-    * @return   Wrapper with success response
-    * @example  arce.Arc_IFIS_Buttons_Wrp.ValidateResponse e = handleValidationSuccess(valDataWrap, saveStatus, saveMessage)
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @SuppressWarnings('sf:UnusedLocalVariable, sf:DUDataflowAnomalyAnalysis')
-    public static arce.Arc_IFIS_Buttons_Wrp.ValidateResponse handleValidationSuccess(
-        Arc_IFIS_Buttons_Wrp.ValidationData valDataWrap,
-        Boolean saveStatus,
-        String saveMessage,
-        arce__Analysis__c analysis
-    ) {
-        arce.Arc_IFIS_Buttons_Wrp.ValidateResponse response;
-
-        arce.Arc_Gen_GenericUtilities.SaveResult saveRes = updateData(
-            valDataWrap.ratingId,
-            valDataWrap.description,
-            analysis.Id
-        );
-        if (saveRes.status == RESPONSE_FALSE) {
-            response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(null, false, System.Label.arce.Arc_IFIS_Error_Update);
-        } else {
-            if (arce.Arc_IFIS_Buttons_Helper.isRating(analysis.arce__rating_prerating_type__c)) {
-                List<arce__Rating_Copy__c> ratingCopies = arce.Arc_IFIS_RatingCopy_Data.getRecords(
-                    new List<String>{ valDataWrap.ahaId }
-                );
-
-                if (!ratingCopies.isEmpty()) {
-                    ratingCopies = arce.Arc_IFIS_RatingCopy_Data.removeDeletedRecords(ratingCopies);
-
-                    final Integer syncLimit = Integer.valueOf(
-                        arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('IFIS_SyncCloneLimit')[0].arce__Value1__c
-                    );
-
-                    if (ratingCopies.size() <= syncLimit) {
-                        // Synchronous operation
-                        arce.Arc_IFIS_CloneRating.cloneRatingProcess(valDataWrap.ahaId, ratingCopies);
-                    } else {
-                        // Asynchronous operation
-                        Id jobID = System.enqueueJob(new arce.Arc_IFIS_CloneRating(valDataWrap.ahaId, ratingCopies));
-                    }
-                }
-            }
-            response = arce.Arc_IFIS_Buttons_Helper.createResponseObj(null, saveStatus, saveMessage);
         }
 
         return response;
@@ -309,7 +250,7 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
     * @example  Strin e = getSubEventType(ahaObj)
     * -----------------------------------------------------------------------------------------------
     **/
-    private static String getSubEventType(arce__Account_has_Analysis__c ahaObj) {
+    public static String getSubEventType(arce__Account_has_Analysis__c ahaObj) {
         return arce.Arc_IFIS_Buttons_Helper.isRating(ahaObj.arce__Analysis__r.arce__rating_prerating_type__c) ||
             String.isBlank(ahaObj.arce__Analysis__r.arce__rating_prerating_type__c)
             ? arce.Arc_Gen_RatingGlobal_Constants.RATINGVAL
@@ -569,11 +510,11 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
     * @param    validationWrap    Validation wrapper
     * @param    helperWrap        Rating helper wrapper
     * @param    analysis          arce__Analysis__c record
-    * @return   void
-    * @example  setTraceability(validationWrap, helperWrap, analysis)
+    * @return   Prepared traceability comments string
+    * @example  String comments = buildTraceComments(validationWrap, helperWrap, analysis)
     * -----------------------------------------------------------------------------------------------
     **/
-    private static void setTraceability(
+    private static String buildTraceComments(
         arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper validationWrap,
         arce.Arc_Gen_RatingGlobal_helper.HelperParameters helperWrap,
         arce__Analysis__c analysis
@@ -593,8 +534,7 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
             ? ifComite
             : helperWrap.userInfo?.userBasicInfo.name;
 
-        String traceComments = setTraceComments(userName, strAmbit, validationWrap);
-        arce.Arc_IFIS_Traceability.saveStatusEvent(analysis.Id, 'Validated', traceComments.abbreviate(255));
+        return setTraceComments(userName, strAmbit, validationWrap);
     }
 
     /**
@@ -715,16 +655,217 @@ public with sharing class Arc_IFIS_ButtonsFinalize_Service {
             );
             toUpdate.add(ratingToUpd);
         }
-        if (String.isNotBlank(analysisId)) {
-            final arce__Analysis__c analysisToUpd = new arce__Analysis__c(
-                Id = analysisId,
-                arce__end_date__c = System.today(),
-                arce__Stage__c = arce.Arc_Gen_Constants.STAGE_FINALIZED,
-                arce__wf_status_id__c = arce.Arc_Gen_Constants.RAIP_STATUS_FINALIZED
-            );
-            toUpdate.add(analysisToUpd);
-        }
-
         return arce.Arc_Gen_GenericUtilities.updateRecords(toUpdate);
+    }
+
+    /**
+    * Validates rating by calling validation service
+    * @param valData Validation data wrapper
+    * @return Response object with validation result
+    **/
+    public static arce.Arc_IFIS_Buttons_Wrp.ValidateResponse validateRating(Arc_IFIS_Buttons_Wrp.ValidationData valData) {
+        try {
+            final arce__Analysis__c analysis = arce.Arc_Gen_ArceAnalysis_Data.gerArce(valData.ahaId);
+            final arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper validationWrap = new arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper(
+                valData.ahaId,
+                valData.validatedById,
+                valData.ratingId,
+                valData.ambit,
+                valData.description
+            );
+
+            final arce.Arc_Gen_ServiceAndSaveResponse serviceResponse = setupValidateRatingByUser(
+                validationWrap,
+                analysis
+            );
+
+            if (!serviceResponse.serviceCode.contains('20')) {
+                return handleValidationFailure(serviceResponse.serviceMessage);
+            }
+
+            final arce.Arc_Gen_GenericUtilities.SaveResult saveResult = updateData(
+                valData.ratingId,
+                valData.description,
+                analysis.Id
+            );
+
+            if (saveResult.status == RESPONSE_FALSE) {
+                return arce.Arc_IFIS_Buttons_Helper.createResponseObj(null, false, System.Label.arce.Arc_IFIS_Error_Update);
+            }
+
+            return arce.Arc_IFIS_Buttons_Helper.createResponseObj(
+                null,
+                true,
+                System.Label.arce.Arc_IFIS_BtnValidate_Success
+            );
+        } catch (Exception e) {
+            return arce.Arc_IFIS_Buttons_Helper.createResponseObj(
+                null,
+                false,
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+        }
+    }
+
+     /**
+    * Persists rating with ParticipantRelations service
+    * @param ahaId Account Has Analysis record ID
+    * @return Response object with persistence result
+    **/
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse persistRatingParticipants(String ahaId) {
+        try {
+            final List<arce__Account_has_Analysis__c> ahas = arce.Arc_IFIS_Srv_ParticipantRelation.getAccountHasAnalysis(
+                ahaId
+            );
+
+            if (ahas.isEmpty()) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(
+                    null,
+                    false,
+                    System.Label.arce.Arc_IFIS_Wizard_Acc_Not_Found
+                );
+            }
+
+            final arce.Arc_Gen_Account_Wrapper accountWrapper = arce.Arc_IFIS_Srv_ParticipantRelation.getAccountWrapper(
+                ahas
+            );
+
+            if (accountWrapper == null) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(
+                    null,
+                    false,
+                    System.Label.arce.Arc_IFIS_Wizard_Acc_Not_Found
+                );
+            }
+
+            if (!(Test.isRunningTest() || Boolean.valueOf(arce__Arce_Config__mdt.getInstance('IFIS_EnableParticipantRelation').arce__Value1__c))) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, 'ParticipantRelation service not enabled');
+            }
+
+            final arce.Arc_Gen_ServiceAndSaveResponse serviceResponse = arce.Arc_IFIS_Srv_ParticipantRelation.callService(
+                ahas,
+                accountWrapper,
+                'IN_PROGRESS'
+            );
+
+            if (!serviceResponse.serviceCode.contains('20')) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(
+                    null,
+                    false,
+                    System.Label.arce.Arc_IFIS_Error_ParticipantRelation + ': ' + serviceResponse.serviceMessage
+                );
+            }
+
+            return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, 'ParticipantRelation persisted successfully');
+        } catch (Exception e) {
+            return Arc_IFIS_Buttons_Helper.createResponseObj(
+                null,
+                false,
+                System.Label.arce.Arc_IFIS_Error_ParticipantRelation + ': ' + e.getMessage()
+            );
+        }
+    }
+
+    /**
+    * Executes rating cloning process (synchronous or asynchronous).
+    * @param valData Validation data wrapper
+    * @return Response object with cloning result
+    **/
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse cloneRating(Arc_IFIS_Buttons_Wrp.ValidationData valData) {
+        try {
+
+            final List<arce__Rating_Copy__c> ratingCopies = arce.Arc_IFIS_RatingCopy_Data.getRecords(
+                new List<String>{ valData.ahaId }
+            );
+
+            if (ratingCopies.isEmpty()) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, null);
+            }
+
+            final List<arce__Rating_Copy__c> cleanedCopies = arce.Arc_IFIS_RatingCopy_Data.removeDeletedRecords(
+                ratingCopies
+            );
+
+            if (cleanedCopies.isEmpty()) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, null);
+            }
+
+            final arce__Analysis__c analysis = arce.Arc_Gen_ArceAnalysis_Data.gerArce(valData.ahaId);
+            final Callable callableFromCore = (Callable) Type.forName(CALLABLE_CLASS).newInstance();
+            final String cloneErrorMessage = (String) callableFromCore.call('cloneRecords', new Map<String, Object>{
+                'ratingCopies' => cleanedCopies,
+                'ahaId' => valData.ahaId,
+                'analysisId' => analysis.Id,
+                'traceComments' => '',
+                'closeOnSuccess' => false
+            });
+
+            if (String.isNotBlank(cloneErrorMessage)) {
+                return Arc_IFIS_Buttons_Helper.createResponseObj(null, false, cloneErrorMessage);
+            }
+
+            return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, null);
+        } catch (Exception e) {
+
+            return Arc_IFIS_Buttons_Helper.createResponseObj(
+                null,
+                false,
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+            }
+    }
+
+    /**
+    * Builds traceability records, closes the source analysis, and sends finalization notifications.
+    * @param valData Validation data wrapper
+    * @return Response object with finalization result
+    **/
+    public static Arc_IFIS_Buttons_Wrp.ValidateResponse finalizeRating(Arc_IFIS_Buttons_Wrp.ValidationData valData) {
+        try {
+            final arce__Analysis__c analysis = arce.Arc_Gen_ArceAnalysis_Data.gerArce(valData.ahaId);
+
+            final List<arce.Arc_Gen_Account_Has_Analysis_Wrapper> analyzedClients = arce.Arc_Gen_AccHasAnalysis_Data.getAccountHasAnalysisAndCustomer(
+                new List<String>{ valData.ahaId }
+            );
+
+            if (!analyzedClients.isEmpty()) {
+                final arce.Arc_Gen_Account_Has_Analysis_Wrapper analyzedClient = analyzedClients[0];
+                final String subevent = getSubEventType(analyzedClient.ahaObj);
+                final arce.Arc_Gen_RatingGlobal_helper.HelperParameters helperWrap = new arce.Arc_Gen_RatingGlobal_helper.HelperParameters(
+                    analyzedClient.ahaObj,
+                    valData.ratingId,
+                    valData.validatedById,
+                    subevent
+                );
+                helperWrap.setBankId(analyzedClient.accWrapperObj.bankId);
+
+                final arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper validationWrap = new arce.Arc_Gen_RatingGlobal_helper.ValidationWrapper(
+                    valData.ahaId,
+                    valData.validatedById,
+                    valData.ratingId,
+                    valData.ambit,
+                    valData.description
+                );
+                final String traceComments = buildTraceComments(validationWrap, helperWrap, analysis);
+
+                if (String.isNotBlank(traceComments)) {
+                    arce.Arc_IFIS_Traceability.saveStatusEvent(analysis.Id, 'Validated', traceComments.abbreviate(255));
+                }
+            }
+
+            final Callable callableFromCore = (Callable) Type.forName(CALLABLE_CLASS).newInstance();
+            callableFromCore.call('closeSourceAnalysis', new Map<String, Object>{ 'analysisId' => analysis.Id });
+            callableFromCore.call('sendNotifications', new Map<String, Object>{
+                'analysisId' => analysis.Id,
+                'message' => System.Label.Arc_IFIS_Notification_Finalize
+            });
+            return Arc_IFIS_Buttons_Helper.createResponseObj(null, true, System.Label.arce.Arc_IFIS_BtnValidate_Success);
+        } catch (Exception e) {
+            return Arc_IFIS_Buttons_Helper.createResponseObj(
+                null,
+                false,
+                System.Label.arce.Arc_IFIS_ApexCallError + ': ' + e.getMessage()
+            );
+        }
     }
 }

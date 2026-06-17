@@ -1,0 +1,26 @@
+.THIS .srollWrap {
+height:100%;
+width:100%;
+}
+
+.THIS.customDiv {
+	padding:15px;
+	text-align: center;
+	border:1px #CDCDCD solid;
+	border-radius:5px;
+}
+
+.THIS.mobileCustomDivWrapper {
+	height: 90%;
+}
+
+.THIS .mobileCustomDiv {
+	height: 110%;
+}
+
+.THIS .mobileCustomDivNoData {
+	padding:15px;
+	text-align: center;
+	border:1px #CDCDCD solid;
+	border-radius:5px;
+}

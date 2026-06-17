@@ -1,0 +1,158 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:hasSObjectName,force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="NONC_EditFormNonClient_ctlr">
+
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="clientName" type="String" default=""/>
+    <aura:attribute name="isOnAccount" type="Boolean" default="false"/>
+    <aura:attribute name="canSave" type="Boolean" default="false"/>
+
+    <aura:attribute name="fieldValue" type="String" default=""/>
+    <aura:attribute name="labelFieldValidation" type="String" default="Label"/>
+    <aura:attribute name="fieldValidation" type="String" default=""/>
+    <aura:attribute name="showFieldValidation" type="Boolean" default="false"/>
+
+    <aura:attribute name="isOnDesktop" type="String" default="{!$Browser.formFactor}"/>
+    <aura:attribute name="isAdditionalRT" type="Boolean" default="false"/>
+    <aura:attribute name="getDataFirstScreen" type="String" default=""/>
+
+    <aura:attribute name="recordTypeId" type="String" default=""/>
+    <aura:attribute name="similarNames" type="List" default=""/>
+    <aura:attribute name="checkCreated" type="Boolean" default="false"/>
+    <aura:attribute name="makeMatrix" type="Boolean" default="false"/>
+    <aura:attribute name="showMakeMatrixCheckbox" type="Boolean" default="false"/>
+
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String" default=""/>
+    <aura:attribute name="helpText" type="String" default="{!$Label.c.Help_Text_Non_Client_Form}"/>
+    <aura:attribute name="headerText" type="String" default="default Header" />
+    <aura:attribute name="columns" type="List"/>
+
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="customIdsResponse" type="sObject" default="{}"/>
+    <aura:attribute name="lookUpFieldAPIName" type="String" default=""/>
+    <aura:attribute name="lookUpFieldLabel" type="String" default=""/>
+    <aura:attribute name="lookUpQueryWhere" type="String" default=""/>
+    <aura:attribute name="disable" type="String" default=""/>
+
+    <aura:registerEvent name="cmpEvent" type="c:NONC_ceEvent"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+          }
+          .cuf-scroller-inside {
+            padding: 0 0rem !important;
+          }
+          .cuf-scroller-content{
+            background: white;
+          }
+          .slds-p-around--medium {
+            padding: 0rem !important;
+          }
+          .slds-modal__content {
+            overflow-y: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+          }
+      </aura:html>
+
+    <div class="{!$Browser.formFactor == 'DESKTOP'?'edit-form ':'edit-form mobile'}" style="height: 600px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="{!$Browser.formFactor == 'DESKTOP'?'slds-modal__container':'slds-modal__container responsive_modal'}">
+
+                <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" size="large" variant="bare" alternativeText="Close" onclick="{! c.closeModal }"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.headerText}</h2>
+                    </header>
+
+                    <aura:set attribute="else">
+                        <!-- Mobile Header -->
+                        <header class="slds-modal__header modal-header-phone">
+                        <aura:if isTrue="{!!v.checkCreated}">
+                            <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Back}" title="Back" onclick="{! c.backModal }" />
+                        </aura:if>
+                            <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.headerText}</h3>
+                        <aura:if isTrue="{!!v.checkCreated}">
+                            <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Save}" title="Save" onclick="{! c.handleSave }" disabled="{!v.canSave}"/>
+                            <aura:set attribute="else">
+                                <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Close}" title="Save" onclick="{! c.closeModal }" />
+                            </aura:set>
+                        </aura:if>
+
+                        </header>
+                    </aura:set>
+                </aura:if>
+
+                <!-- Main Body of Modal -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>{!v.helpText}</p><br/>
+
+                        <aura:if isTrue="{!v.lookUpFieldAPIName != ''}">
+                            <div class="slds-form-element_stacked slds-form-element">
+                                <c:NONC_customLookup objectAPIName="account" IconName="standard:account" label="{!v.lookUpFieldLabel}" selectedRecord="{!v.selectedLookUpRecord}" fieldAPIName="{!v.lookUpFieldAPIName}" queryWhere="{!v.lookUpQueryWhere}"/>
+                            </div>
+                        </aura:if>
+
+                        <aura:if isTrue="{!v.isAdditionalRT}">
+                            <div class="slds-m-bottom_medium slds-size--1-of-1">
+                                <lightning:input type="checkbox" label="¿Hacer matriz?" checked="{!v.makeMatrix}"/>
+                            </div>
+                        </aura:if>
+
+                        <!-- lightning:recordForm -->
+                        <lightning:recordEditForm recordTypeId="{!v.recordTypeId}" aura:id="recordEditForm"   objectApiName="Account" onsubmit="{!c.handleOnSubmitForm}"  onsuccess="{!c.handleSuccess}">
+                                <lightning:messages />
+                                <div class="slds-grid slds-wrap">
+                                <aura:iteration items="{!v.columns}" var="item">
+                                    <aura:if isTrue="{!and(or(item.fieldAPIName == 'RecordTypeId',item.fieldAPIName == 'Name'),item.isValidationField==false)}">
+                                            <lightning:inputField fieldName="{!item.fieldAPIName}" value="{!item.fieldValue}" class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2"  disabled="true"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{!or(item.fieldType != 'REFERENCE', v.isOnDesktop == 'DESKTOP')}">
+                                        <aura:if isTrue="{!and(and(item.fieldAPIName != 'RecordTypeId',item.fieldAPIName != 'Name'),item.isValidationField==false)}">
+                                            <aura:if isTrue="{!item.disable}">
+                                                <lightning:inputField fieldName="{!item.fieldAPIName}"  value="{!item.fieldValue}" required="{!OR(item.isDBRequired, item.isRequired)}" class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2" disabled="true"/>
+
+                                                <aura:set attribute="else">
+                                                <lightning:inputField fieldName="{!item.fieldAPIName}"  value="{!item.fieldValue}" required="{!OR(item.isDBRequired, item.isRequired)}" class="slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2" disabled="false"/>
+
+                                                </aura:set>
+                                            </aura:if>
+                                            <!--lightning:inputField fieldName="{!item.fieldAPIName}"  value="{!item.fieldValue}" class="slds-col slds-size_1-of-2" disabled="{!item.fieldValue == '' ?'false':'true'}"/-->
+                                        </aura:if>
+                                    </aura:if>
+                                    <aura:if isTrue="{!item.isValidationField==true}">
+                                            <lightning:inputField fieldName="{!item.fieldAPIName}" value="{!v.fieldValue}" disabled="true"  class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2"/>
+                                    </aura:if>
+                                </aura:iteration>
+
+                                <button type="submit" class="rigth-position" id="btnEnviarFrm" hidden="hidden" ></button>
+
+                              </div>
+                            <br/>
+                        </lightning:recordEditForm>
+                        <br/><br/>
+
+
+                </div>
+
+
+                <!-- Footer of Modal -->
+                <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                    <footer class="slds-modal__footer">
+                        <aura:if isTrue="{!!v.checkCreated}">
+                            <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Back}" title="Back" onclick="{! c.backModal }" />
+                            <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Save}" title="Save" onclick="{! c.handleSave }" disabled="{!v.canSave}"/>
+                        <aura:set attribute="else">
+                            <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Close}" title="Save" onclick="{! c.closeModal }" />
+                        </aura:set>
+                        </aura:if>
+                    </footer>
+                </aura:if>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

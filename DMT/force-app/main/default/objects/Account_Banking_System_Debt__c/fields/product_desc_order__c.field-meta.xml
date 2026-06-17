@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>product_desc_order__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(UPPER( product_group_classification_id__c ),&apos;DIRECTA&apos;,CASE(UPPER( product_desc__c ),&apos;PRÉSTAMO&apos;,1,&apos;COMEX&apos;,2,&apos;LEASING&apos;,3,&apos;DESCUENTO DE LETRAS&apos;,4,&apos;FACTORING&apos;,5,&apos;OTROS&apos;,6,0),&apos;INDIRECTA&apos;,CASE(UPPER( product_desc__c ),&apos;FIANZAS&apos;,7,&apos;CARTA CRÉDITO&apos;,8,&apos;OTROS&apos;,9,0),&apos;GARANTÍAS&apos;,CASE(UPPER(product_desc__c),&apos;HIPOTECA&apos;,10,&apos;PRENDA&apos;,11,&apos;OTROS&apos;,12,0),0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Product order</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

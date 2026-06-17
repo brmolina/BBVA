@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_CES_Attributes_chk__c</fullName>
+    <formula>AND(NOT(ISBLANK(gf_user_work_country_desc__c)), NOT(ISBLANK(gf_user_work_segment_desc__c)), NOT(ISBLANK(gf_user_work_product_desc__c)), NOT(ISBLANK(gf_user_auth_level_name__c)))</formula>
+    <label>All CES Attributes</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

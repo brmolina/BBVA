@@ -1,0 +1,133 @@
+.THIS .content{
+    border:1px #CDCDCD solid;
+    border-radius:5px;
+    margin:5px;
+    padding:20px 10px 10px 10px;
+}
+.THIS h1{
+    font-weight:bold;
+    font-size:1.3em;
+}
+.THIS .pCenter {
+    height:200px;
+    text-align:center;
+    padding-top:100px;
+}
+.THIS .customBox {
+    padding:30px 30px 50px 30px;
+}
+.THIS .maxDimensions {
+    height:100%; width:100%;
+}
+
+.THIS.customDiv1{
+	padding:30px 30px 50px 30px;
+}
+
+.THIS .customP {
+	height:200px;
+	text-align:center;
+	padding-top:100px;
+}
+
+.THIS .customCanvas {
+	width:300;
+}
+
+.THIS .customDiv2 {
+	width:100%;
+	margin-top:10px;
+}
+
+.THIS .customA {
+	float:left;
+}
+
+.THIS .customSpan {
+	margin-right:10px;
+}
+
+.THIS .customSpan2 {
+	float:right;
+}
+
+.THIS.mobileCustomDiv {
+	padding:30px 30px 50px 30px;
+	height:100%;
+	width:100%
+}
+
+/* paises */
+.THIS .select-country {
+	padding-left: 20px;
+	height: 400px !important;
+	overflow-x: auto !important;
+}
+
+.THIS #wr_lista a{
+	font-size: 1em !important;
+	padding: .5rem .5rem .5rem .5rem;
+}
+
+.THIS #wr_lista .slds-nav-vertical__item {
+    width: 70% !important;
+}
+
+/*.THIS.customDiv {
+	height:50%;
+	width:80%;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	border:1px;
+	border-color:grey;
+	border-style: solid;
+}*/
+.THIS .slds-icon_container_circle {
+	margin-top: 3px;
+	width: 30px;
+	height: 30px;
+	padding: 5px;
+}
+
+.THIS .slds-icon_container_circle .slds-icon {
+	width: 20px;
+	height: 20px;
+}
+
+/**************************************************** TABLE **********************************************/
+.THIS .slds-button_icon-bare {
+    display: none;
+}
+
+/* SCROLL */
+.THIS.sWrapTest {
+    height:100vh !important;
+    width:100vw !important;
+    padding-bottom: 250px !important;
+}
+
+.THIS .sWrapTestDesktop {
+    height:100%;
+    width:100%;
+}
+
+.THIS.outerScroller {
+    border-radius: 11px;
+}
+
+.THIS.innerScroller {
+    border-radius: 10px;
+}
+.THIS.indexClass {
+    height: 77px;
+    z-index: 9999999;
+}
+.THIS.headerClass {
+    height:77px;
+}
+
+.THIS .scrollWrap {
+    height:100%;
+    width:100%;
+}

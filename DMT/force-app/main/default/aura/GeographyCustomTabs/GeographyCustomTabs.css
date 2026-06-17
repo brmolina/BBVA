@@ -1,0 +1,18 @@
+.THIS li.sizeFont{
+	font-size: 12pt;
+}
+
+.THIS .boldtext {
+ font-weight: bold;
+}
+
+.THIS .customStyle {
+	border-bottom:3px solid #E4E4E4;
+	border-left:3px solid #E4E4E4;
+	border-right:3px solid #E4E4E4;
+	border-top:3px solid #E4E4E4;
+}
+.THIS .wrapperComponents{
+  width:80%;
+  margin-bottom:60px;
+}

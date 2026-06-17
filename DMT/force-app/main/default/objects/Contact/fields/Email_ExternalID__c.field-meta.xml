@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Email_ExternalID__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>Email para ser utilizado como External_ID. Será único y obligatorio, y su valor se llevará por workflow al email estandar.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>true</externalId>
+    <label>Email 1</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Email</type>
+    <unique>true</unique>
+</CustomField>

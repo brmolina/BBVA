@@ -1,0 +1,27 @@
+.THIS .borderTop{
+  border-top: 1px solid #dddbda!important;
+}
+
+.THIS .borderBotom {
+  border-bottom: 1px solid #dddbda!important;
+}
+
+.THIS .inputitem{
+  display: inline-block;
+  width: 50%;
+  vertical-align: middle;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.THIS .inputitemPicklist {
+  display: inline-block;
+  width: 50%;
+  /*vertical-align: middle;*/
+  margin-bottom: -6px;
+  padding-top: 2px;
+  /*margin-left: -4px;*/
+  padding-right: -4px;
+}

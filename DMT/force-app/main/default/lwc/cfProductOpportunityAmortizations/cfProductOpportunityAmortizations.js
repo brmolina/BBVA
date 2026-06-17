@@ -38,9 +38,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6QHYA0"
+                  " card-0koKE000000L7oFYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pUPY2A2");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ442AG");
                 
                 
               }
@@ -61,6 +61,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`select`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
+        this.pubsubEvent[1] = {
+          [interpolateWithRegex(`saveOpportunityItemInfo`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[5],5)
+        };
+        this.pubsubChannel1 = interpolateWithRegex(`productOpportunityDetail`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
+
             this.customEventName0 = interpolateWithRegex(`tableTenorschange`,this._allMergeFields,this._regexPattern,"noparse");
             this.customEvent[0] = this.handleEventAction.bind(this, data.events[1],1);
 
@@ -79,16 +85,25 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName2,this.customEvent[2]);
 
           
+            this.customEventName3 = interpolateWithRegex(`textfieldchange`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[3] = this.handleEventAction.bind(this, data.events[4],4);
+
+            this.template.addEventListener(this.customEventName3,this.customEvent[3]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
             this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
 
             this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
+
+            this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
 
               }
             

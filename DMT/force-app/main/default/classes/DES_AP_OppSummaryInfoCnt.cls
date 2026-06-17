@@ -39,7 +39,7 @@ public with sharing class DES_AP_OppSummaryInfoCnt {
     public static final String STM = ' M ';
     /* Declarando variable */
     public static final String STPER = ' % ';
-	
+  
     @auraEnabled
     /*Queries for different scopes of opportunities described on the Lightning component*/
     public static String getRelatedOpportunities(String gaId, String qType, String sumType, String configType) {
@@ -54,7 +54,7 @@ public with sharing class DES_AP_OppSummaryInfoCnt {
         lastYear4MDate = todayDate.addMonths(-4);
         lastYear4MDate = lastYear4MDate.addYears(-1);
         
-        final List<dwp_acmh__Denorm_Account_Opportunity__c> relatedOpps = gtRelatedOpps(accId, qType, todayDate, todayLastYear, last4MDate, lastYear4MDate);
+        final List<AMH_Denorm_Account_Opportunity__c> relatedOpps = gtRelatedOpps(accId, qType, todayDate, todayLastYear, last4MDate, lastYear4MDate);
         
         Decimal revenueYear = 0;
         Decimal revenueLast = 0;
@@ -70,71 +70,71 @@ public with sharing class DES_AP_OppSummaryInfoCnt {
                      + numWonYear + '' + numWonLast + '' + numXBYear + '' + numXBLast);
         
         final String defaultCurrency = UserInfo.getDefaultCurrency();
-        for(dwp_acmh__Denorm_Account_Opportunity__c dOpp : relatedOpps) {
+        for(AMH_Denorm_Account_Opportunity__c dOpp : relatedOpps) {
             if(qType == WONLY || qType == LOSTLY || qType == OPENLY) {
-                if(dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c != null && dOpp.dwp_acmh__OpportunityId__r.CloseDate.year() == system.Today().year()) {
-                    revenueYear = revenueYear + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                if(dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c != null && dOpp.AMH_OpportunityId__r.CloseDate.year() == system.Today().year()) {
+                    revenueYear = revenueYear + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
                     numYear = numYear + 1;
                 } else {
-                    revenueLast = revenueLast + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    revenueLast = revenueLast + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
                     numLast = numLast + 1;
                 }
             }
             if(qType == WONL4M || qType == LOSTL4M) {
-                if(dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c != null && dOpp.dwp_acmh__OpportunityId__r.CloseDate >= last4MDate) {
-                    revenueYear = revenueYear + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                if(dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c != null && dOpp.AMH_OpportunityId__r.CloseDate >= last4MDate) {
+                    revenueYear = revenueYear + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
                     numYear = numYear + 1;
                 } else {
-                    revenueLast = revenueLast + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    revenueLast = revenueLast + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
                     numLast = numLast + 1;
                 }
             }
             if(qType == CREATEDLY) {
-                if(dOpp.dwp_acmh__OpportunityId__r.CreatedDate.year() == system.Today().year()) {
+                if(dOpp.AMH_OpportunityId__r.CreatedDate.year() == system.Today().year()) {
                     numYear = numYear + 1;
-                    revenueYear = revenueYear + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
-                    if(dOpp.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won) {
+                    revenueYear = revenueYear + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    if(dOpp.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won) {
                         numWonYear = numWonYear + 1;
-                        if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                        if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                             numXBYear = numXBYear + 1;
                         }
-                    } else if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                    } else if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                         numXBYear = numXBYear + 1;
                     }
                 } else {
                     numLast = numLast + 1;
-                    revenueLast = revenueLast + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
-                    if(dOpp.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won) {
+                    revenueLast = revenueLast + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    if(dOpp.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won) {
                         numWonLast = numWonLast + 1;
-                        if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                        if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                             numXBLast = numXBLast + 1;
                         }
-                    } else if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                    } else if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                         numXBLast = numXBLast + 1;
                     }
                 }
             }
             if(qType == CREATEDL4M) {
-                if(dOpp.dwp_acmh__OpportunityId__r.CreatedDate >= last4MDate) {
+                if(dOpp.AMH_OpportunityId__r.CreatedDate >= last4MDate) {
                     numYear = numYear + 1;
-                    revenueYear = revenueYear + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
-                    if(dOpp.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won) {
+                    revenueYear = revenueYear + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    if(dOpp.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won) {
                         numWonYear = numWonYear + 1;
-                        if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                        if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                             numXBYear = numXBYear + 1;
                         }
-                    } else if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                    } else if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                         numXBYear = numXBYear + 1;
                     }
                 } else {
                     numLast = numLast + 1;
-                    revenueLast = revenueLast + dOpp.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
-                    if(dOpp.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won) {
+                    revenueLast = revenueLast + dOpp.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c;
+                    if(dOpp.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won) {
                         numWonLast = numWonLast + 1;
-                        if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                        if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                             numXBLast = numXBLast + 1;
                         }
-                    } else if(dOpp.dwp_acmh__OpportunityId__r.DES_Cross_border__c == true) {
+                    } else if(dOpp.AMH_OpportunityId__r.DES_Cross_border__c == true) {
                         numXBLast = numXBLast + 1;
                     }
                 }
@@ -292,12 +292,12 @@ public with sharing class DES_AP_OppSummaryInfoCnt {
     }
     
     /*
-	* @author Global Desktop
-	* @description Obtiene la lista de oportunidades
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtRelatedOpps(String accId, String qType, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
-        List<dwp_acmh__Denorm_Account_Opportunity__c> relatedOpps;
-        relatedOpps = new List<dwp_acmh__Denorm_Account_Opportunity__c>();
+  * @author Global Desktop
+  * @description Obtiene la lista de oportunidades
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtRelatedOpps(String accId, String qType, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
+        List<AMH_Denorm_Account_Opportunity__c> relatedOpps;
+        relatedOpps = new List<AMH_Denorm_Account_Opportunity__c>();
         if(qType == WONLY) {
             relatedOpps = gtWONLYOpp(accId);
         } else if(qType == LOSTLY) {
@@ -317,90 +317,90 @@ public with sharing class DES_AP_OppSummaryInfoCnt {
     }
     
     /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = WONLY
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtWONLYOpp(String accId) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                           convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
-                           FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                           AND dwp_acmh__OpportunityId__r.StageName = :Label.DES_Closed_Won
-                           AND (dwp_acmh__OpportunityId__r.CloseDate = THIS_YEAR OR dwp_acmh__OpportunityId__r.CloseDate = LAST_YEAR)];
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = WONLY
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtWONLYOpp(String accId) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                           convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
+                           FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                           AND AMH_OpportunityId__r.StageName = :Label.DES_Closed_Won
+                           AND (AMH_OpportunityId__r.CloseDate = THIS_YEAR OR AMH_OpportunityId__r.CloseDate = LAST_YEAR)];
     }
     
     /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = LOSTLY
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtLOSTLYOpp(String accId) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                           convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
-                           FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                           AND dwp_acmh__OpportunityId__r.StageName = :Label.DES_Closed_Lose
-                           AND (dwp_acmh__OpportunityId__r.CloseDate = THIS_YEAR OR dwp_acmh__OpportunityId__r.CloseDate = LAST_YEAR)];
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = LOSTLY
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtLOSTLYOpp(String accId) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                           convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
+                           FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                           AND AMH_OpportunityId__r.StageName = :Label.DES_Closed_Lose
+                           AND (AMH_OpportunityId__r.CloseDate = THIS_YEAR OR AMH_OpportunityId__r.CloseDate = LAST_YEAR)];
     }
     
     /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = OPENLY
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtOPENLYOpp(String accId) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
-                FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                AND dwp_acmh__OpportunityId__r.StageName != :Label.DES_Closed_Won
-                AND dwp_acmh__OpportunityId__r.StageName != :Label.DES_Closed_Lose
-                AND (dwp_acmh__OpportunityId__r.CreatedDate = THIS_YEAR OR dwp_acmh__OpportunityId__r.CreatedDate = LAST_YEAR)];	
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = OPENLY
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtOPENLYOpp(String accId) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
+                FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                AND AMH_OpportunityId__r.StageName != :Label.DES_Closed_Won
+                AND AMH_OpportunityId__r.StageName != :Label.DES_Closed_Lose
+                AND (AMH_OpportunityId__r.CreatedDate = THIS_YEAR OR AMH_OpportunityId__r.CreatedDate = LAST_YEAR)];  
     } 
     
    /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades qType = WONL4M
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtWONL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
-                FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                AND ((dwp_acmh__OpportunityId__r.CloseDate >= :lastYear4MDate AND dwp_acmh__OpportunityId__r.CloseDate <= :todayLastYear) 
-                     OR (dwp_acmh__OpportunityId__r.CloseDate >= :last4MDate AND dwp_acmh__OpportunityId__r.CloseDate <= :todayDate))
-                AND dwp_acmh__OpportunityId__r.StageName = :Label.DES_Closed_Won];
+  * @author Global Desktop
+  * @description Recupera las oportunidades qType = WONL4M
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtWONL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
+                FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                AND ((AMH_OpportunityId__r.CloseDate >= :lastYear4MDate AND AMH_OpportunityId__r.CloseDate <= :todayLastYear) 
+                     OR (AMH_OpportunityId__r.CloseDate >= :last4MDate AND AMH_OpportunityId__r.CloseDate <= :todayDate))
+                AND AMH_OpportunityId__r.StageName = :Label.DES_Closed_Won];
     } 
 
     /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = LOSTL4M
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtLOSTL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate ) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
-                FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                AND ((dwp_acmh__OpportunityId__r.CloseDate >= :lastYear4MDate AND dwp_acmh__OpportunityId__r.CloseDate <= :todayLastYear) 
-                     OR (dwp_acmh__OpportunityId__r.CloseDate >= :last4MDate AND dwp_acmh__OpportunityId__r.CloseDate <= :todayDate))
-                AND dwp_acmh__OpportunityId__r.StageName = :Label.DES_Closed_Lose];
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = LOSTL4M
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtLOSTL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate ) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c)
+                FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                AND ((AMH_OpportunityId__r.CloseDate >= :lastYear4MDate AND AMH_OpportunityId__r.CloseDate <= :todayLastYear) 
+                     OR (AMH_OpportunityId__r.CloseDate >= :last4MDate AND AMH_OpportunityId__r.CloseDate <= :todayDate))
+                AND AMH_OpportunityId__r.StageName = :Label.DES_Closed_Lose];
     } 
         
    /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = CREATEDLY
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtCREATEDLYOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                           convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c), dwp_acmh__OpportunityId__r.DES_Cross_border__c,
-                           dwp_acmh__OpportunityId__r.StageName, dwp_acmh__OpportunityId__r.CreatedDate 
-                           FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                           AND ((dwp_acmh__OpportunityId__r.CreatedDate = LAST_YEAR AND dwp_acmh__OpportunityId__r.CreatedDate <= :todayLastYear) 
-                                OR (dwp_acmh__OpportunityId__r.CreatedDate = THIS_YEAR AND dwp_acmh__OpportunityId__r.CreatedDate <= :todayDate))];    
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = CREATEDLY
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtCREATEDLYOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                           convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c), AMH_OpportunityId__r.DES_Cross_border__c,
+                           AMH_OpportunityId__r.StageName, AMH_OpportunityId__r.CreatedDate 
+                           FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                           AND ((AMH_OpportunityId__r.CreatedDate = LAST_YEAR AND AMH_OpportunityId__r.CreatedDate <= :todayLastYear) 
+                                OR (AMH_OpportunityId__r.CreatedDate = THIS_YEAR AND AMH_OpportunityId__r.CreatedDate <= :todayDate))];    
         } 
    /*
-	* @author Global Desktop
-	* @description Recupera las oportunidades si qType = CREATEDL4M
-	*/
-    public static List<dwp_acmh__Denorm_Account_Opportunity__c> gtCREATEDL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
-        return [SELECT Name, dwp_acmh__OpportunityId__c, dwp_acmh__OpportunityId__r.Name, dwp_acmh__OpportunityId__r.CloseDate,
-                convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c), dwp_acmh__OpportunityId__r.DES_Cross_border__c,
-                dwp_acmh__OpportunityId__r.StageName, dwp_acmh__OpportunityId__r.CreatedDate 
-                FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-                AND ((dwp_acmh__OpportunityId__r.CreatedDate >= :lastYear4MDate AND dwp_acmh__OpportunityId__r.CreatedDate <= :todayLastYear) 
-                     OR (dwp_acmh__OpportunityId__r.CreatedDate >= :last4MDate AND dwp_acmh__OpportunityId__r.CreatedDate <= :todayDate))];    
+  * @author Global Desktop
+  * @description Recupera las oportunidades si qType = CREATEDL4M
+  */
+    public static List<AMH_Denorm_Account_Opportunity__c> gtCREATEDL4MOpp(String accId, Date todayDate, Date todayLastYear, Date last4MDate, Date lastYear4MDate) {
+        return [SELECT Name, AMH_OpportunityId__c, AMH_OpportunityId__r.Name, AMH_OpportunityId__r.CloseDate,
+                convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c), AMH_OpportunityId__r.DES_Cross_border__c,
+                AMH_OpportunityId__r.StageName, AMH_OpportunityId__r.CreatedDate 
+                FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                AND ((AMH_OpportunityId__r.CreatedDate >= :lastYear4MDate AND AMH_OpportunityId__r.CreatedDate <= :todayLastYear) 
+                     OR (AMH_OpportunityId__r.CreatedDate >= :last4MDate AND AMH_OpportunityId__r.CreatedDate <= :todayDate))];    
     }    
 }

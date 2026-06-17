@@ -1,5 +1,5 @@
 @IsTest
-public class DMT_EcaCustomersTest {
+public with sharing class DMT_EcaCustomersTest {
 
     // ----------------------------------------------------
     // TestSetup: settings mínimos

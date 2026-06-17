@@ -1,0 +1,31 @@
+.error-minute{
+	border: 1px solid red;
+	border-radius: 5px;
+	background-color: rgb(255, 216, 216);
+	text-align:center;
+	color: rgb(255,0,0);
+	font-size: 17px;
+	font-family: 'Arial';
+	padding:10px;
+	width:90%;
+}
+.got-minute{
+	color: rgb(102,102,102);
+	font-size: 17px;
+	font-family: 'Arial';
+	padding:10px;
+	width:80%;
+}
+.textHeader-minute{
+	padding:10px;
+}
+.textHeader-not-minute{
+	padding:10px;
+}
+.body-minute{
+	padding:20px 30px;
+	border: 1px solid #00529B;
+	border-radius:5px;
+	width:60%;
+	margin:5% 0 0 18%;
+}

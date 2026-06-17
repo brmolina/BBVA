@@ -1,0 +1,41 @@
+/*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/
+.slds-form-element {
+    width: 100%;
+}
+
+.lookup-search-input {
+    min-height: 2.75rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-size: 1rem;
+}
+
+.slds-pill-container {
+    margin-bottom: 0.5rem;
+}
+
+.lookup-dropdown {
+    margin-top: 0.25rem;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.lookup-spinner,
+.lookup-message {
+    padding: 1rem;
+    text-align: center;
+}
+
+.slds-listbox {
+    max-height: 16rem;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .lookup-search-input {
+        min-height: 3rem;
+        font-size: 1.125rem;
+    }
+}

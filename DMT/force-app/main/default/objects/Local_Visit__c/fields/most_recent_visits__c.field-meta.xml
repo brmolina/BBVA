@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>most_recent_visits__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(visit_status_type__c,&apos;Finalized&apos;),TEXT(DATEVALUE(visit_start_date__c))&amp;&apos; (&apos;&amp;TEXT(visit_status_type__c)&amp;&apos;)&apos;,IF(visit_end_date__c&lt;NOW(),&apos;Overdue&apos;,&apos; &apos;&amp;TEXT(DATEVALUE(visit_start_date__c))))</formula>
+    <label>Most recent visits</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

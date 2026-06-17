@@ -3,6 +3,10 @@
     <label>DMT_Approver_VE_TreasurySettlement</label>
     <protected>false</protected>
     <values>
+        <field>DMT_Client_Type__c</field>
+        <value xsi:type="xsd:string">Customer</value>
+    </values>
+    <values>
         <field>DMT_Operation_Type__c</field>
         <value xsi:type="xsd:string">TreasurySettlement</value>
     </values>

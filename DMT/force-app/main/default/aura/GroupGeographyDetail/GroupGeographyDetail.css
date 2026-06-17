@@ -1,0 +1,57 @@
+/* Default values - info:
+    overflow: auto;
+    flex: 1 1 auto;
+	    flex-grow: 1;
+	    flex-shrink: 1;
+	    flex-basis: auto;*/
+
+/* Con lista de marcadores: */
+.THIS .slds-coordinates{
+	/*display: inline-block !important;
+		comentado por sustitución de coordenadas del framework de google por uno custom
+	*/
+}
+/* Sin lista de marcadores y otros attributos */
+/*.THIS .slds-coordinates{
+display: flex;
+flex-wrap: wrap;
+max-height: 41.25rem;
+max-width: 20rem;
+}*/
+
+/* Sin scrollbar */
+.THIS .slds-map{
+	overflow: hidden;
+}
+
+/*.THIS .TBanker{
+	font-size: 1.2rem !important;
+	color: green;
+	font-style: italic;
+}
+.THIS #wrDescription{
+	background-color: yellow;
+	color: green !important;
+	border-color: red !important;
+}
+
+.THIS .gm-style-iw{
+	width: 30%;
+	background-color: red;
+}*/
+
+/*
+gm-style-iw
+gmnoprint
+*/
+
+
+.THIS .srollWrap {
+	height:100%;
+	width:100%;
+}
+
+.THIS.outerScroller {
+    /* fix innerScroller not scrollable */
+    border-radius: 1px;
+}

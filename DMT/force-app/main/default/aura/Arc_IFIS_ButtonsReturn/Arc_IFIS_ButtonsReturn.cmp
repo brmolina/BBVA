@@ -1,0 +1,73 @@
+<aura:component extends="arce:Arc_IFIS_Aura_Utils" controller="Arc_IFIS_ButtonsReturn_Ctrl" access="global">
+    <aura:attribute name="ahaId" type="String" default="" description="Indicates the id of the current record" access="global" />
+    <aura:attribute name="delegationWrapper" type="Object" description="Delegation wrapper" access="global" />
+    <aura:attribute name="modalHeader" type="String" default="" description="Indicates the title of the modal" access="global" />
+    <aura:attribute name="showModal" type="String" default="true" description="Controls the modal visibility" access="global" />
+    <aura:attribute name="isLoading" type="boolean" default="false" description="Indicates if the spinner is active" access="global" />
+    <aura:attribute name="disabledButtons" type="Boolean" description="Variable visibility action buttons" default="false"/>
+    <aura:attribute name="listAmbits" type="List" default="[]" description="List of available ambits"/>
+    <aura:attribute name="userId" type="String" description="User id Record"/>
+    <aura:attribute name="isReason" type="boolean" default="false" description="Indicates whether a return reason has been defined" access="global" />
+
+    <aura:registerEvent name="Buttons_evt" type="arce:Arc_IFIS_ButtonsEvent"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+
+                <lightning:buttonIcon iconName="utility:close" onclick="{!c.handleClose}" alternativeText="{!$Label.arce.Arc_IFIS_Cancel_Close}"
+                    variant="bare-inverse" class="slds-modal__close" />
+
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!v.modalHeader}</h1>
+                </div>
+
+                <div class="slds-modal__content slds-var-p-horizontal_medium slds-var-p-vertical_large" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.isLoading}">
+
+                        <div class="slds-p-around_x-large">
+                            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                                <span class="slds-assistive-text">{!$Label.arce.Arc_IFIS_Loading}</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                        <aura:set attribute="else">
+                            <div class="slds-grid slds-grid_vertical">
+                                <div class="slds-p-around--x-small  slds-col" id="modal-content-id-2">
+                                    <lightning:textarea
+                                        name="reasonInput"
+                                        aura:id="reasonInput"
+                                        required="true"
+                                        onchange="{!c.handleChange}"
+                                        label="{!$Label.arce.Arc_IFIS_BtnReturn_Reason}"
+                                        maxlength="200"
+                                        messageWhenValueMissing="{!$Label.arce.Arc_IFIS_BtnReturn_Reason_NotEmpty}"/>
+                                </div>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+
+                <div class="slds-modal__footer">
+                    <lightning:button
+                        variant="neutral"
+                        disabled="{!v.disabledButtons}"
+                        label="{!$Label.arce.Arc_IFIS_Cancel}"
+                        title="{!$Label.arce.Arc_IFIS_Cancel}"
+                        onclick="{!c.handleClose}" />
+                    <lightning:button
+                        variant="brand"
+                        disabled="{!v.disabledButtons || !(v.isReason)}"
+                        label="{!$Label.arce.Arc_IFIS_BtnReturn}"
+                        title="{!$Label.arce.Arc_IFIS_BtnReturn}"
+                        onclick="{!c.handleSave}" />
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+</aura:component>

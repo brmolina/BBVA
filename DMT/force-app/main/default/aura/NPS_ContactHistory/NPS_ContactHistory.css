@@ -1,0 +1,37 @@
+.THIS h2.slds-accordion__summary-heading > button {
+    display: flex;
+    align-items: center;
+    background: var(--lwc-colorBackground,rgb(243, 242, 242));
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: currentColor;
+    font-size: inherit;
+    padding: 0 var(--lwc-spacingXSmall,0.5rem);
+
+    position: relative;
+    background-clip: border-box;
+    border: var(--lwc-borderWidthThin,1px) solid transparent;
+    border-radius: var(--lwc-buttonBorderRadius,.25rem);
+    line-height: var(--lwc-lineHeightButton,1.875rem);
+    text-decoration: none;
+
+    -webkit-appearance: none;
+    white-space: normal;
+    
+    user-select: none;
+}
+
+.THIS .slds-accordion__section {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.THIS.slds-accordion__section {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}

@@ -196,4 +196,32 @@ public with sharing class CSTK_Utils {
         }
         return picklistValues;
     }
+
+    /**
+    * @description Sends emails
+    * @param messagesList : list of SingleEmailMessages
+    */
+    public static void sendEmails(List<Messaging.SingleEmailMessage> messagesList) {
+        final List<cstk.Exception_Wrapper> excWrapList = new List<cstk.Exception_Wrapper>();
+        if (Limits.getEmailInvocations() < Limits.getLimitEmailInvocations()) {
+            Messaging.SendEmailResult[] results = Messaging.sendEmail(messagesList, false);
+            for (Messaging.SendEmailResult result : results) {
+                if (result.isSuccess()) {
+                    System.debug('The email was sent successfully.');
+                } else {
+                    for (Messaging.SendEmailError error : result.getErrors()) {
+                        excWrapList.add(new cstk.Exception_Wrapper(null, 'CSTK_Utils', 'sendEmails', 'toolkit', null, error.getMessage() ));
+                        System.debug('The email failed to send: ' + error.getMessage());
+                    }
+                }
+            }
+        } else {
+            final String errorMessage = 'Limit of emails per transaction reached. Number of unsent emails: ' + messagesList.size();
+            excWrapList.add(new cstk.Exception_Wrapper(null, 'CSTK_Utils', 'sendEmails', 'toolkit', null, errorMessage ));
+            System.debug(errorMessage);
+        }
+        if(!excWrapList.isEmpty()){
+            cstk.Utils.logException(excWrapList);
+        }
+    }
 }

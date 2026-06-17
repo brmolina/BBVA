@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Pending_to_approval</fullName>
+    <active>true</active>
+    <errorConditionFormula>TEXT(StageName)!=&apos;Proposal&apos; &amp;&amp;Template_pending_approval_type__c &amp;&amp;
+ISBLANK(TEXT(NBC_Decision_Taken_type__c)) &amp;&amp;
+$Profile.Name != $Label.DES_Profile_BBVA_Desktop_SP &amp;&amp; $Profile.Name != &quot;System Administrator&quot; &amp;&amp;
+(ISCHANGED( DES_Booking_Geography__c ) || ISCHANGED(CurrencyIsoCode) || ISCHANGED(sustainable_finance_ind_type__c))</errorConditionFormula>
+    <errorMessage>Cannot edit an opportunity when a template has been approved or is waiting for an approval.</errorMessage>
+</ValidationRule>

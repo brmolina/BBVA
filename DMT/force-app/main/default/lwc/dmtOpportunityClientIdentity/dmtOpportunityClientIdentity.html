@@ -1,0 +1,32 @@
+<template>
+    <article class="slds-card ">
+      <div class="slds-card__body slds-card__body_inner">
+        <div class="slds-media slds-media_center slds-m-bottom_x-small">
+          <div class="slds-media__figure">
+            <lightning-icon icon-name="action:new_account" size="medium"></lightning-icon>
+          </div>
+
+          <div class="slds-media__body">
+            <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+              <div class="slds-col slds-size_1-of-1">
+                <h2 class="slds-text-heading_small slds-truncate" title={accountName}>
+                  <a href={computeAccountUrl} class="slds-text-link_reset" target="_blank" rel="noopener noreferrer">
+                    <span class="slds-text-link">{accountName}</span>
+                  </a>
+                </h2>
+              </div>
+
+              <!-- Values only -->
+              <div class="slds-col slds-size_1-of-1 slds-text-body_regular slds-text-color_weak">
+                <div class="slds-truncate" title={tooltip}>
+                  {valuesString}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+    <div class="slds-border_bottom slds-m-top_small slds-m-bottom_x-small"></div>
+</template>

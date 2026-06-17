@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Mapped_Values__c</fullName>
+    <description>Json of the map that defines the old and new values</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Json of the map that defines the old and new values</inlineHelpText>
+    <label>Mapped_Values</label>
+    <length>10000</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

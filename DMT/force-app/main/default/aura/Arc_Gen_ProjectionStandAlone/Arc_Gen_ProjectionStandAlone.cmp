@@ -1,0 +1,135 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-28-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+    controller="Arc_Gen_ProjectionController" access="global">
+    <aura:attribute name="accHasAnalysisId" type="String" default="{!v.recordId}" description="RecordId from aha" />
+    <aura:attribute name="columns" type="List" description="Columns to show in tables" />
+    <aura:attribute name="gridData" type="Object" description="Data displayed in tables" />
+    <aura:attribute name="msgTable" type="String" default="null" />
+    <aura:attribute name="msgError" type="String" default="null" />
+    <aura:attribute name="gridExpandedRows" type="List"
+        default="['Rating (simulation scenario)', 'BASE CASE  metrics Summary']"
+        description="Collapsible sections in table" />
+    <aura:attribute name="checkBox" type="Boolean" default="true" description="Boolean to set hidecheckColumns true" />
+    <aura:attribute name="spinner" type="Boolean" default="true" />
+    <aura:attribute name="calculatingRating" type="String" default="false" />
+    <aura:attribute name="activeSections" type="List" default="['A','B']" />
+    <aura:attribute name="projectionData" type="List" description="Projection record Data" />
+    <aura:attribute name="dataBaseCase" type="Map[]" default="[{'0':'SIMULATION (Base case scenario)'}]"
+        description="Rows default" />
+    <aura:attribute name="dataDownCase" type="Map[]" default="[{'0':'Down Scenario'}]" description="Rows default" />
+    <aura:attribute name="dataUpCase" type="Map[]" default="[{'0':'Up Scenario'}]" description="Rows default" />
+    <aura:attribute name="dataScenario" type="List" description="Simulation data stored to show in table" />
+    <aura:attribute name="scenarioNotCalculated" type="String" />
+    <aura:attribute name="projectionPerspective" type="String" />
+    <aura:attribute name="proposalFolderId" type="String"/>
+    <aura:attribute name="userCanEdit" type="Boolean" access="global"/>
+    <aura:attribute name="disableAttribute" type="Boolean" access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.initEng}" description="Init variable" />
+    <div>
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="{!v.calculatingRating == 'true' ? 'spinsR' :'spins'}" size="large" variant="brand"
+                alternativeText="Loading" />
+        </aura:if>
+        <div class="{!v.msgTable == 'si' ? '':'slds-hide'}">
+            <section role="log" class="slds-chat">
+                <ul class="slds-chat-list">
+                    <li class="slds-chat-listitem slds-chat-listitem_event">
+                        <div class="slds-chat-event" role="alert">
+                            <div class="slds-chat-event__rule"></div>
+                            <div class="slds-chat-event__body">
+                                <span class="slds-icon_container slds-chat-icon">
+                                    <lightning:icon iconName="utility:list" variant="Warning" />
+                                </span>
+                            </div>
+                            <div class="slds-chat-event__rule"></div>
+                            <div
+                                class="{!v.scenarioNotCalculated != null ? 'slds-chat-event__agent-message ':'slds-hide'}">
+                                Scenario not edited during the process:
+                                {!v.scenarioNotCalculated}</div>
+                            <div
+                                class="{!v.scenarioNotCalculated == null ? 'slds-chat-event__agent-message ':'slds-hide'}">
+                                No projection data calculated</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        <div class="{! and (v.msgError != 'null', v.msgError != 'NoError') ? '':'slds-hide'}">
+            <section role="log" class="slds-chat">
+                <ul class="slds-chat-list">
+                    <li class="slds-chat-listitem slds-chat-listitem_event">
+                        <div class="slds-chat-event" role="error">
+                            <div class="slds-chat-event__rule"></div>
+                            <div class="slds-chat-event__body">
+                                <span class="slds-icon_container slds-chat-icon">
+                                    <lightning:icon iconName="utility:error" variant="Error" />
+                                </span>
+                            </div>
+                            <div class="slds-chat-event__rule"></div>
+                            <div class="slds-chat-event__agent-message">Error: An error has ocurred, please try again
+                                later: {!v.msgError}</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        <div class="{!v.msgError == 'NoError' ? '':'slds-hide'}">
+            <section role="log" class="slds-chat">
+                <ul class="slds-chat-list">
+                    <li class="slds-chat-listitem slds-chat-listitem_event">
+                        <div class="slds-chat-event" role="success">
+                            <div class="slds-chat-event__rule"></div>
+                            <div class="slds-chat-event__body">
+                                <span class="slds-icon_container slds-chat-icon">
+                                    <lightning:icon iconName="utility:success" variant="Success" />
+                                </span>
+                            </div>
+                            <div class="slds-chat-event__rule"></div>
+                            <div class="slds-chat-event__agent-message">Success: Simulation calculated successfully</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        <div class="{!v.msgTable == 'no' ? 'slds-grid':'slds-hide'}">
+            <div class="slds-col--bump-left">
+                <aura:if isTrue="{!v.proposalFolderId == undefined}">
+                <lightning:button variant="brand" label="Print Projections" title="" onclick="{!c.printTable}" iconName="utility:print" />
+            </aura:if>
+            </div>
+        </div>
+        <div class="slds-col slds-size_1-of-4 slds-p-around_x-small">
+            <div class="slds-form-element slds-form-element_readonly perspective-parent">
+                <span class="slds-form-element__label perspective-label">PERSPECTIVE</span>
+                  <div class="slds-form-element__static perspective-value">{!v.projectionPerspective}</div>
+            </div>
+        </div>
+        <div class="{!v.msgTable == 'no' ? '':'slds-hide'}">
+            <lightning:accordion allowMultipleSectionsOpen="true"
+                activeSectionName="{! v.activeSections }">
+                <lightning:accordionSection name="A" label="SIMULATION (Base case scenario)">
+
+                    <aura:set attribute="body">
+                        <div class="slds-m-bottom_x-large ">
+                            <lightning:treeGrid columns="{!v.columns}" data="{!v.gridData}" keyField="0"
+                                hideCheckboxColumn="{!v.checkBox}" />
+                        </div>
+                    </aura:set>
+                </lightning:accordionSection>
+                <lightning:accordionSection name="B" label="SIMULATION (Up/Down Scenarios)">
+                    <div class="slds-m-bottom_x-large ">
+                        <lightning:datatable columns="{!v.columns}" data="{!v.dataScenario}" keyField="0" hideCheckboxColumn="{!v.checkBox}"/>
+                    </div>
+                </lightning:accordionSection>
+            </lightning:accordion>
+        </div>
+    </div>
+</aura:component>

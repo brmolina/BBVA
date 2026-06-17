@@ -1,0 +1,14 @@
+<aura:component implements="lightning:availableForFlowActions,force:hasRecordId" access="global" >
+	<aura:attribute name="owner" type="String" access="global" />
+    <aura:attribute name="status" type="String" access="global" />
+    <aura:attribute name="name" type="String" access="global" />
+    <!-- <aura:attribute name="codOpportunity" type="String" access="global" />  -->
+    <aura:attribute name="codVisit" type="String" access="global" />
+    <aura:attribute name="codForm" type="String" access="global" />
+    <aura:attribute name="needDescription" type="String" access="global" default=" "/>
+    <aura:attribute name="q1" type="String" access="global" />
+    <aura:attribute name="q2" type="String" access="global" />
+    <aura:attribute name="operation" type="String" access="global" />
+     <aura:attribute name="error" type="String" access="global" />    
+	<aura:attribute name="endpoint" type="String" access="global" />    
+</aura:component>

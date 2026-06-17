@@ -1,0 +1,55 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="DES_IpOppController" access="global">
+
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="topics" type="List" default="[]" />
+    <aura:attribute name="sizeTopics" type="Integer" default="0" />
+    <aura:attribute name="isVisible" type="boolean" default="true"/>
+    <aura:attribute name="currentUser" type="String" access="global" />
+    <aura:attribute name="endpoint" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+
+    <aura:renderIf isTrue="{!v.isVisible}">
+        <article class="slds-card">
+          <div class="slds-grid slds-page-header forceRelatedListCardHeader">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+              <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                  <lightning:icon size="small" iconName="standard:topic" alternativeText="Visit Topics" title="Visit Topics"/>
+                  <span class="slds-assistive-text">Visit Topics</span>
+                </span>
+              </div>
+              <div class="slds-media__body">
+                <p class="slds-card__header-title">
+                  <a class="slds-card__header-link slds-truncate" title="Visit Topics">
+                    <span>Visit Topics ({!v.sizeTopics})</span>
+                  </a>
+                </p>
+              </div>
+            </header>
+          </div>
+          <div class="slds-card__body slds-card__body_inner">
+            <aura:iteration items="{!v.topics}" var="topic">
+              <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                <div class="slds-media__body">
+                  <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                    <p class="slds-tile__title slds-truncate" title="{!topic.DES_User__r.Name}">
+                      <a href="#" onclick="{!c.navigateToRecord}" id="{!topic.dwp_kitv__visit_id__c}">{!topic.dwp_kitv__visit_id__r.Name}</a>
+                    </p>
+                  </div>
+                  <div class="slds-tile__detail">
+                    <dl class="slds-list_horizontal slds-wrap">
+                      <dt class="slds-item_label slds-text-color_weak slds-truncate">Most recent visit:</dt>
+                      <dd class="slds-item_detail slds-truncate">{!topic.dwp_kitv__most_recent_visits__c}</dd>
+                    </dl>
+                  </div>
+                </div>
+              </article>
+            </aura:iteration>
+          </div>
+        </article>
+    </aura:renderIf>
+
+</aura:component>

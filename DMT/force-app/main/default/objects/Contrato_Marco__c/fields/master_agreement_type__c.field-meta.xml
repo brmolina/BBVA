@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>master_agreement_type__c</fullName>
+    <label>Contract Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CDEA USA</fullName>
+                <default>false</default>
+                <label>CDEA USA</label>
+            </value>
+            <value>
+                <fullName>CMOF</fullName>
+                <default>false</default>
+                <label>CMOF</label>
+            </value>
+            <value>
+                <fullName>CMOF reducido</fullName>
+                <default>false</default>
+                <label>CMOF reducido</label>
+            </value>
+            <value>
+                <fullName>DRV derivatives</fullName>
+                <default>false</default>
+                <label>DRV derivatives</label>
+            </value>
+            <value>
+                <fullName>DRV repos</fullName>
+                <default>false</default>
+                <label>DRV repos</label>
+            </value>
+            <value>
+                <fullName>EMA</fullName>
+                <default>false</default>
+                <label>EMA</label>
+            </value>
+            <value>
+                <fullName>FBF</fullName>
+                <default>false</default>
+                <label>FBF</label>
+            </value>
+            <value>
+                <fullName>FBF Pensions Livrees</fullName>
+                <default>false</default>
+                <label>FBF Pensions Livrees</label>
+            </value>
+            <value>
+                <fullName>FBF PL</fullName>
+                <default>false</default>
+                <label>FBF PL</label>
+            </value>
+            <value>
+                <fullName>GMRA</fullName>
+                <default>false</default>
+                <label>GMRA</label>
+            </value>
+            <value>
+                <fullName>GMRA Triparty</fullName>
+                <default>false</default>
+                <label>GMRA Triparty</label>
+            </value>
+            <value>
+                <fullName>GMSLA</fullName>
+                <default>false</default>
+                <label>GMSLA</label>
+            </value>
+            <value>
+                <fullName>ISDA</fullName>
+                <default>false</default>
+                <label>ISDA</label>
+            </value>
+            <value>
+                <fullName>MRA</fullName>
+                <default>false</default>
+                <label>MRA</label>
+            </value>
+            <value>
+                <fullName>NAFMII</fullName>
+                <default>false</default>
+                <label>NAFMII</label>
+            </value>
+            <value>
+                <fullName>CLS</fullName>
+                <default>false</default>
+                <label>CLS</label>
+            </value>
+            <value>
+                <fullName>CDEAEUROP</fullName>
+                <default>false</default>
+                <label>CDEA Europa</label>
+            </value>
+            <value>
+                <fullName>DRV securities lending</fullName>
+                <default>false</default>
+                <label>DRV securities lending</label>
+            </value>
+            <value>
+                <fullName>CDEA Europa</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CDEA Europa-delete</label>
+            </value>
+            <value>
+                <fullName>CDEAUSA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CDEAUSA</label>
+            </value>
+            <value>
+                <fullName>CMOF09</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CMOF09</label>
+            </value>
+            <value>
+                <fullName>CMOF13</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CMOF13</label>
+            </value>
+            <value>
+                <fullName>CMOF97</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CMOF97</label>
+            </value>
+            <value>
+                <fullName>CMOFREDU</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CMOFREDU</label>
+            </value>
+            <value>
+                <fullName>CSA VM</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>CSA VM</label>
+            </value>
+            <value>
+                <fullName>DRV</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>DRV</label>
+            </value>
+            <value>
+                <fullName>EMA01PV</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EMA01PV</label>
+            </value>
+            <value>
+                <fullName>EMA01REPO</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EMA01REPO</label>
+            </value>
+            <value>
+                <fullName>EMA04PV</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EMA04PV</label>
+            </value>
+            <value>
+                <fullName>EMA04REPO</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EMA04REPO</label>
+            </value>
+            <value>
+                <fullName>GMRA00</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMRA00</label>
+            </value>
+            <value>
+                <fullName>GMRA11</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMRA11</label>
+            </value>
+            <value>
+                <fullName>GMRABEF</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMRABEF</label>
+            </value>
+            <value>
+                <fullName>GMSLA00</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMSLA00</label>
+            </value>
+            <value>
+                <fullName>GMSLA10</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMSLA10</label>
+            </value>
+            <value>
+                <fullName>GMSLABEF</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GMSLABEF</label>
+            </value>
+            <value>
+                <fullName>ISDA02ENG</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISDA02ENG</label>
+            </value>
+            <value>
+                <fullName>ISDA02NY</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISDA02NY</label>
+            </value>
+            <value>
+                <fullName>ISDA87</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISDA87</label>
+            </value>
+            <value>
+                <fullName>ISDA92ENG</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISDA92ENG</label>
+            </value>
+            <value>
+                <fullName>ISDA92NY</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISDA92NY</label>
+            </value>
+            <value>
+                <fullName>Rahmenvertrag für</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Rahmenvertrag für</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

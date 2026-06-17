@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_trans_rar_amount__c</fullName>
+    <formula>( (gf_nominal_interest_amount__c + oppy_upfront_fee_amount__c + gf_accrual_fees_amount__c - gf_loan_fund_cost_amount__c - gf_opern_expenditures_amount__c - gf_expected_loss_amount__c) * (1 - gf_taxes_amount__c) ) /  economic_capital_amount__c</formula>
+    <label>RAR with Funding (%)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

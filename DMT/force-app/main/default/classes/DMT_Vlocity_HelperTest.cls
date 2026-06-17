@@ -1,5 +1,5 @@
 @isTest
-private class DMT_Vlocity_HelperTest {
+private without sharing class DMT_Vlocity_HelperTest {
 
 @isTest
     static void testIsNotEmpty() {

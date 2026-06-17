@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Opp creation info</label>
+    <protected>false</protected>
+    <values>
+        <field>Url__c</field>
+        <value xsi:type="xsd:string">https://docs.google.com/presentation/d/1IhI1zcrePz_MpUE5jK7oNB0baK7MiMizSo61d8VtN6I/edit?usp=sharing</value>
+    </values>
+</CustomMetadata>

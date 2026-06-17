@@ -1,0 +1,8 @@
+<design:component>
+	<design:attribute name="PopUpMessage" label="Message"
+      required="true" />
+	<design:attribute name="titlePopUp" label="Title"
+      required="true" />
+    <design:attribute name="onlyOnce" label="Show message only once" default="false"/>
+    <design:attribute name="cookieLifetime" label="Cookie lifetime in minutes (Only applies if true)"/>
+</design:component>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_Log_CTI__c</fullName>
+    <description>Rellenar con un CodUsuario BBVA o con un conjunto de CodUsuarios separados por coma. Si lo que se quiere es tomar las trazas de todos los usuarios se puede rellenar con el literal ALL.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Rellenar con un CodUsuario BBVA o con un conjunto de CodUsuarios separados por coma. Si lo que se quiere es tomar las trazas de todos los usuarios se puede rellenar con el literal ALL.</inlineHelpText>
+    <label>User Log CTI</label>
+    <length>10</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

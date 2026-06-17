@@ -178,12 +178,57 @@ public class Arc_GBL_Workflow_Helper {
     return wrapper;
   }
 
+  /**
+  *-------------------------------------------------------------------------------
+  * @description fetchUsersByAmbitValidate : Arc_Gen_Delegation_Wrapper
+  *--------------------------------------------------------------------------------
+  * @date   27/04/2021
+  * @author ARCE Corporate
+  * @param    String : selectedAmbit
+  * @return   Arc_Gen_Delegation_Wrapper
+  * @example  Arc_Gen_Workflow_Helper.fetchUsersByAmbitValidate(Arc_Gen_Delegation_Wrapper wrapper);
+  */
+  public static Arc_Gen_Delegation_Wrapper fetchUsersByAmbitValidate(String selectedAmbit, Id recordId) {
+    final Arc_Gen_Delegation_Wrapper wrapper = new Arc_Gen_Delegation_Wrapper();
+    try {
+      wrapper.lstUsers = getUsersAmbitValidate(selectedAmbit, recordId);
+      wrapper.codStatus = SERVICE_MESSAGES.CODE_200;
+    } catch (Exception e) {
+      wrapper.codStatus = SERVICE_MESSAGES.CODE_500;
+      wrapper.msgInfo = 'Error Propose RAIP Action : ' + e.getMessage();
+    }
+    return wrapper;
+  }
+
+  /*
+  * @author Global Desktop
+  */
+  private static List<Map<String, String>> getUsersAmbitValidate(String selectedAmbit, Id recordId) {
+    final String ambitString = getStringAmbit(selectedAmbit);
+    final List<User> lstUsers = Arc_GBL_User_Locator.getUserByAmbit(ambitString, recordId);
+
+    final List<Map<String, String>> listAmbitUser = new List<Map<String, String>>();
+    
+    Id currentUserId = UserInfo.getUserId();
+
+    for(User usr : lstUsers) {
+        if(usr.Id != currentUserId) {
+            listAmbitUser.add(new Map<String,String>{
+                'label' => usr.Name,
+                'value' => usr.Id
+            });
+        }
+    }
+    return listAmbitUser;
+}
+
   /*
   * @author Global Desktop
   */
   private static List<Map<String, String>> getUsersAmbit(String selectedAmbit) {
     final String ambitString = getStringAmbit(selectedAmbit);
-    final List<User> lstUsers = Arc_GBL_User_Locator.getUserByAmbit(ambitString);
+    Id recordId;
+    final List<User> lstUsers = Arc_GBL_User_Locator.getUserByAmbit(ambitString, recordId);
 
     final List<Map<String, String>> listAmbitUser = new List<Map<String, String>>();
     for(User usr : lstUsers) {

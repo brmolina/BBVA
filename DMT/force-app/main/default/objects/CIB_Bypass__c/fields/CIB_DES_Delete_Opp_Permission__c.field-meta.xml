@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CIB_DES_Delete_Opp_Permission__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Se utiliza en el trigger de Opportunity: Bypass para poder eliminar Opportunities usuarios que sean distintos de Admin.</description>
+    <inlineHelpText>Se utiliza en el trigger de Opportunity: Bypass para poder eliminar Opportunities usuarios que sean distintos de Admin.</inlineHelpText>
+    <label>CIB DES Delete Opp Permission</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

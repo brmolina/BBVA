@@ -1,0 +1,53 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,lightning:availableForFlowScreens" access="global" controller="Visit_form_ctrl_des">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="accId" type="String" access="global" default="" description="value of Id of Account"/>
+    <aura:attribute name="leadId" type="String" access="global" default="" description="value of Id of Lead"/>
+    <aura:attribute name="today" type="Date" default="" access="global" description="value of today"/>
+    <aura:attribute name="visitName" type="String" access="global" description="value of Name visit field"/>
+    <aura:attribute name="startdate" type="dateTime" access="global" description="value of startdate field"/>
+    <aura:attribute name="durationval" type="String" access="global" description="value of duration field"/>
+    <aura:attribute name="typeval" type="String" access="global" description="value of type visit field"/>
+    <aura:attribute name="purposetypeval" type="String" access="global" description="value of purpose visit field"/>
+    <aura:attribute name="countryval" type="String" access="global" description="value of country field"/>
+    <aura:attribute name="disclosureval" type="String" access="global" description="value of information disclosure field"/>
+    <aura:attribute name="locationval" type="String" access="global" description="value of location field"/>
+    <aura:attribute name="topicval" type="String" access="global" description="value of topic field"/>
+    <aura:attribute name="objInfo" type="dwp_kitv__Visit__c" default="{sobjectType : 'dwp_kitv__Visit__c'}"  access="global" description="value of object"/>
+    <aura:attribute name="runOnce" type="boolean" default="true" access="global" description="value of startdate field"/>
+    <aura:attribute name="showDisclosure" type="boolean" default="true" access="global" description="value of showdisclosure field"/>
+    <aura:attribute name="recordId" type="String" default="" access="global" description="value of record Id"/>
+    <aura:attribute name="rtName" type="String" default="" access="global" description="name of Record type of Opportunity"/>
+
+
+    <aura:if isTrue="{!v.showDisclosure}">
+        <ui:inputSelect aura:id="disclosure" class="field" label="Information disclosure" value="{!v.disclosureval}"/>
+        <aura:set attribute="else">
+            <div style="height: 30px">
+
+            </div>
+        </aura:set>
+
+    </aura:if>
+
+    <ui:inputText aura:id="visitname" required="true" value="{!v.visitName}" label="Visit Name"/>
+
+    <ui:inputDateTime aura:id="today" required="true" class="field" value="{!v.startdate}"  label="Start Date" displayDatePicker="true"/>
+
+    <ui:inputSelect aura:id="duration" value="{!v.durationval}" required="true" label="Duration"/>
+
+    <ui:inputText aura:id="location" label="Location" value="{!v.locationval}"/>
+
+    <ui:inputSelect aura:id="type" class="field" required="true" label="Visit type" value="{!v.typeval}"/>
+
+    <ui:inputSelect aura:id="purposetype" class="field" required="true" label="Visit purpose" value="{!v.purposetypeval}"/>
+
+    <ui:inputText aura:id="topic" required="true" value="{!v.topicval}" label="Topic description"/>
+    <br/>
+
+    <div aura:id="actionButtonBar" class="slds-clearfix slds-modal__footer slds-p-top_medium">
+        <div class="slds-float_right">
+            <lightning:button aura:id="NEXT" label="Next" variant="brand" onclick="{!c.saveForm}" />
+        </div>
+    </div>
+</aura:component>

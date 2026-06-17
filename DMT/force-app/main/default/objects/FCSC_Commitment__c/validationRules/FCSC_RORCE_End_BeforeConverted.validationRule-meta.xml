@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_RORCE_End_BeforeConverted</fullName>
+    <active>false</active>
+    <description>Valida que se haya ingresado el valor del campo &quot;RORC End Commitment&quot;, antes de asignar el Status de Open Opportunity</description>
+    <errorConditionFormula>AND(
+  ISCHANGED(FCSC_Estatus_Contacto__c ),
+  OR(
+     ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Lost&quot;),
+     ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Won&quot;)
+  ),
+  ISBLANK(FCSC_RORC_Fin_Compromiso__c)
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_RORC_Fin_Compromiso__c</errorDisplayField>
+    <errorMessage>RORC End Commitment is empty</errorMessage>
+</ValidationRule>

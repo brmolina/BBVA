@@ -20,7 +20,7 @@
 *
 * ------------------------------------------------------------------------------------------------
 */
-public class DMT_BarChartStatic {
+public with sharing class DMT_BarChartStatic {
 
     public class DataWrapper {
         public String legend;

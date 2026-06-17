@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_My_Opportunity_Teams</fullName>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>DES_Potencial_Revenues__c</columns>
+    <columns>CORE.USERS.FULL_NAME</columns>
+    <columns>DES_Booking_Geography__c</columns>
+    <filterScope>SalesTeam</filterScope>
+    <label>Opportunities I participate in</label>
+    <language>en_US</language>
+    <sharedTo>
+        <roleAndSubordinatesInternal>Desktop_Management</roleAndSubordinatesInternal>
+    </sharedTo>
+</ListView>

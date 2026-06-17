@@ -69,19 +69,11 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName0,this.customEvent[0]);
 
           
-            this.customEventName1 = interpolateWithRegex(`changedValuesAxis`,this._allMergeFields,this._regexPattern,"noparse");
-            this.customEvent[1] = this.handleEventAction.bind(this, data.events[1],1);
-
-            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
-
-          
               }
 
               unregisterEvents(){
                 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
-
-            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
 
               }
             

@@ -1,0 +1,17 @@
+.THIS .slds-modal__container {
+  max-width: 80rem !important;
+  width: 80% !important;
+}
+
+.THIS.c-container {
+  border-style: none solid dotted dashed;
+  margin: 10px 0 20px 0;
+}
+
+.THIS .custom-box {
+  float: right;
+}
+
+.THIS .x-large {
+  height: 50px;
+}

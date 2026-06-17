@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Error_Secondary_Team</fullName>
+    <active>false</active>
+    <errorConditionFormula>AND( TEXT(Status__c) != &apos;New&apos;,  TEXT(Onboarding_Type__c) != &apos;New User&apos;, TEXT(Onboarding_Type__c) != &apos;Platform Addition&apos;,  Secondary_Sales__c == null, OR( TEXT(Status__c) != &apos;Review&apos;, TEXT(Status__c) != &apos;Validate&apos;))</errorConditionFormula>
+    <errorMessage>It is necessary to have a secondary team assigned.</errorMessage>
+</ValidationRule>

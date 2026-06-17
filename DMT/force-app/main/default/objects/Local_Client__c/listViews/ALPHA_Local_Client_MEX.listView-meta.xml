@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ALPHA_Local_Client_MEX</fullName>
+    <columns>NAME</columns>
+    <columns>unique_id__c</columns>
+    <columns>Alpha_code__c</columns>
+    <columns>taxpayer_id__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Alpha_code__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <filters>
+        <field>taxpayer_id__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <filters>
+        <field>Alpha_code__c</field>
+        <operation>startsWith</operation>
+        <value>MX</value>
+    </filters>
+    <label>ALPHA (Local Client MEX)</label>
+</ListView>

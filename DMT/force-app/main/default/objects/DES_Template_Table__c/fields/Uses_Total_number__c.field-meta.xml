@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Uses_Total_number__c</fullName>
+    <externalId>false</externalId>
+    <formula>Uses_num_1_number__c +
+Uses_num_2_number__c +
+Uses_num_3_number__c +
+Uses_num_4_number__c +
+Uses_num_5_number__c +
+Uses_num_6_number__c +
+Uses_num_7_number__c +
+Uses_num_8_number__c +
+Uses_num_9_number__c +
+Uses_num_10_number__c +
+Uses_num_11_number__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Uses Total</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,3 @@
+<design:component>
+  <design:attribute name="showSubHeading" label="Show SubHeading" description="Checkbox to set whether GBL_CardDetails_CMP should be displayed or not" />
+</design:component>

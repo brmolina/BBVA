@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enable_CCT_Group__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Campo temporal para identificar clientes IFI (Instituciones Financieras)  y Corpo que tienen acceso habilitado al botón CCT (Client Cognitive Twin). 
+Cuando está marcado (true), el cliente puede visualizar y utilizar la funcionalidad de CCT a través del botón aichatrobot2. 
+Este es un control temporal hasta que se implemente una solución definitiva para la gestión de permisos de CCT.</description>
+    <label>Enable CCT for Group</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

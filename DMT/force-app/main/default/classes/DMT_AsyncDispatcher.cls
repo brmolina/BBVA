@@ -1,4 +1,4 @@
-public class DMT_AsyncDispatcher {
+public with sharing class DMT_AsyncDispatcher {
 
     public static void dispatch(DMT_AsyncPayload payload) {
         if (payload instanceof DMT_SnapshotPayload) {
@@ -7,8 +7,78 @@ public class DMT_AsyncDispatcher {
             handleLogException((DMT_LogExceptionPayload) payload);
         } else if (payload instanceof DMT_LogApplicationPayload) {
             handleApplicationLogRecords((DMT_LogApplicationPayload) payload);
+        } else if (payload instanceof DMT_PassportPayload) {
+            DMT_Passport_Handler.handlePassportIntegration((DMT_PassportPayload) payload);
+        } else if (payload instanceof DES_ProspectStructurePayload) {
+            DES_ProspectStructureBuilder.handleProspectIntegration((DES_ProspectStructurePayload) payload);
+        } else if (payload instanceof DMT_IntegrationRetryPayload) {
+            DMT_IntegrationRetryPayload p = (DMT_IntegrationRetryPayload) payload;
+            // Instantiates the processor and runs it synchronously within the current async thread
+            DMT_IntegrationEventProcessor processor = new DMT_IntegrationEventProcessor(p.objectApi, p.operation, p.version, p.seed, p.failedIds, p.attempt);
+            processor.executeProcessor();
+        } else if (payload instanceof DMT_ConsumptionReassignPayload) {
+            handleConsumptionReassign((DMT_ConsumptionReassignPayload) payload);
+        } else if (payload instanceof DMT_OppXSellPayload) {
+            DMT_Opportunity_Utils.handleOppXSellGeneration((DMT_OppXSellPayload) payload);
+        } else if (payload instanceof DMT_DynamicMapperPayload) {
+            DMT_PAWIF_IntegrationHandler.handleClosingIntegration((DMT_DynamicMapperPayload) payload);
         } else {
             throw new IllegalArgumentException('Unsupported payload type');
+        }
+    }
+
+    public static void handleLogExceptions(List<DMT_AsyncPayload> payloads) {
+        if (payloads == null || payloads.isEmpty()) {
+            return;
+        }
+
+        // 1. Create a new list of the target type
+        List<DMT_LogExceptionPayload> errorPayloads = new List<DMT_LogExceptionPayload>();
+
+        // 2. Loop and cast each item individually
+        for (DMT_AsyncPayload p : payloads) {
+            if (p instanceof DMT_LogExceptionPayload) {
+                errorPayloads.add((DMT_LogExceptionPayload)p);
+            }
+        }
+        try {
+            if (System.isQueueable() || System.isBatch() || System.isScheduled() || System.isFuture()) {
+                List<DES_Exceptions__b> excList = new List<DES_Exceptions__b>();
+                for(DMT_LogExceptionPayload pl : errorPayloads) {
+                // CIRCUIT BREAKER: If this is an error about an error, just debug it and stop.
+                if (pl.className == 'DMT_LogExceptionQueueable') {
+                    System.debug(LoggingLevel.ERROR, ' [DMT] TERMINAL ERROR: Failed to log an existing error. Stopping to prevent infinite loop. Original Message: ' + pl.message);
+                        continue;
+                    }
+
+                    DES_Exceptions__b exc = new DES_Exceptions__b();
+                    exc.Project__c = pl.projectCode;
+                    exc.Class_Name__c = pl.className;
+                    exc.Object__c = pl.objectName;
+                    exc.Message__c = pl.message;
+                    exc.StackTrace__c = pl.stackTrace;
+                    exc.MethodName__c = pl.methodName;
+                    exc.LineNumber__c = pl.lineNumber;
+                    exc.Type__c = pl.typeName;
+                    exc.Timestamp__c = DateTime.now();
+                    exc.Reported_By__c = UserInfo.getUserId();
+                    excList.add(exc);
+                }
+
+                if (!excList.isEmpty()) {
+                    if (!Test.isRunningTest()) {
+                    Database.insertImmediate(excList);
+                    } else {
+                        System.debug('Test context: skipping insertImmediate to avoid Uncommitted Work error');
+                    }
+                }
+            } else {
+                System.enqueueJob(new DMT_LogExceptionQueueable(errorPayloads));
+            }
+        } catch (Exception e) {
+            // THE DEAD END: If logging fails, we just print to console.
+            // Do NOT let this exception bubble up to the Batch/Queueable.
+            System.debug(LoggingLevel.ERROR, ' [DMT] CRITICAL FAILURE: Could not write to Big Object: ' + e.getMessage());
         }
     }
 
@@ -19,7 +89,31 @@ public class DMT_AsyncDispatcher {
     }
 
     private static void handleLogException(DMT_LogExceptionPayload pl) {
-        System.enqueueJob(new DMT_LogExceptionQueueable(pl.message, pl.stackTrace, pl.lineNumber, pl.typeName, pl.className, pl.methodName, pl.projectCode, pl.objectName));
+        if (System.isQueueable() || System.isBatch() || System.isScheduled() || System.isFuture()) {
+            DES_Exceptions__b exc = new DES_Exceptions__b();
+            exc.Project__c = pl.projectCode;
+            exc.Class_Name__c = pl.className;
+            exc.Object__c = pl.objectName;
+            exc.Message__c = pl.message;
+            exc.StackTrace__c = pl.stackTrace;
+            exc.MethodName__c = pl.methodName;
+            exc.LineNumber__c = pl.lineNumber;
+            exc.Type__c = pl.typeName;
+            exc.Timestamp__c = DateTime.now();
+            exc.Reported_By__c = UserInfo.getUserId();
+
+            if (!Test.isRunningTest()) {
+                Database.insertImmediate(new List<DES_Exceptions__b>{exc});
+            } else {
+                System.debug('Test context: skipping insertImmediate to avoid Uncommitted Work error');
+            }
+
+        } else {
+            System.enqueueJob(new DMT_LogExceptionQueueable(
+                pl.message, pl.stackTrace, pl.lineNumber, pl.typeName,
+                pl.className, pl.methodName, pl.projectCode, pl.objectName
+            ));
+        }
     }
 
     private static void handleApplicationLogRecords(DMT_LogApplicationPayload payload) {
@@ -46,5 +140,57 @@ public class DMT_AsyncDispatcher {
         String s = Datetime.now().getTime().format();
         Blob hash = Crypto.generateDigest('MD5', Blob.valueOf(s));
         return EncodingUtil.convertToHex(hash);
+    }
+
+    public static void handleConsumptionReassign(DMT_ConsumptionReassignPayload p) {
+        try {
+            // 1. Build the inner business payload directly from the input map
+            Map<String, Object> payload = new Map<String, Object>();
+            
+            Map<String, Object> clientMap = new Map<String, Object>();
+            clientMap.put('groupId', (String) p.inputMap.get('groupId'));
+            payload.put('client', clientMap);
+            
+            if (p.inputMap.containsKey('opportunityId')) {
+                payload.put('opportunityId', (String) p.inputMap.get('opportunityId'));
+            }
+
+            // 2. Build the outer integration framework request wrapper
+            Map<String, Object> request = new Map<String, Object>();
+            request.put('jsonInput', JSON.serialize(payload));
+            
+            // 3. INJECT THE USER ID MANUALLY
+            if (String.isNotBlank(p.corporateUserId)) {
+                request.put('userId', p.corporateUserId);
+            } else {
+                request.put('userId', 'SystemAsync'); 
+            }
+
+            String requestStr = JSON.serialize(request);
+            String serviceName = 'DMT_consumptionsReassign';
+
+            System.debug('>>> Orchestrator: Executing Second Callout: ' + requestStr);
+
+            // 4. Invoke IASO directly
+            HttpResponse response;
+            if (Test.isRunningTest()) {
+                response = new HttpResponse();
+                response.setStatusCode(204);
+            } else {
+                response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
+            }
+
+            // 5. Evaluate response
+            if (response != null && response.getStatusCode() == 204) {
+                System.debug('>>> SUCCESS: Orchestrated Second Callout completed (204 No Content).');
+            } else {
+                System.debug('>>> ERROR: Orchestrated Second Callout HTTP ' + (response != null ? response.getStatusCode() : 0));
+                System.debug('>>> ERROR Body: ' + (response != null ? response.getBody() : 'null'));
+                
+                // Optional: You could enqueue a LogExceptionPayload here if it fails
+            }
+        } catch (Exception e) {
+            System.debug('>>> Orchestrated Second Callout Exception: ' + e.getMessage() + ' | Stack: ' + e.getStackTraceString());
+        }
     }
 }

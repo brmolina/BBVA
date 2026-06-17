@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="mensaje" label="mensaje" />
+	<design:attribute name="operation" label="operation" />
+</design:component>

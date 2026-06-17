@@ -7,20 +7,26 @@
             <template lwc:if={info}>
                 <div class={containerWithData}>
                     <template if:true={showTable}>
-                        <c-custom-data-table class={tableWithData}
-                            key={customTableKey}
-                            data={info}
-                            columns={customColumns}
-                            key-field="Id"
-                            hide-checkbox-column={hideCheckbox}
-                            onrowaction={handleRowAction}
-                            column-widths-mode={columnWidthsMode}
-                            sorted-by={sortBy}
-                            sorted-direction={sortDirection}
-                            onsort={handleSort}
-                            suppress-bottom-bar
-                            max-column-width="900">
-                        </c-custom-data-table>
+                    <lightning-datatable class={tableWithData}
+                        key={tableKey}
+                        onscroll={getscrolled}
+                        data={info}
+                        columns={colString}
+                        key-field="Id"
+                        onrowselection={handleRowSelection}
+                        max-row-selection={maxRowSelection}
+                        hide-checkbox-column={hideCheckbox}
+                        selected-rows={defaultselectedRows}
+                        oncellchange={saveHandleAction}
+                        onrowaction={handleRowAction}
+                        column-widths-mode={columnWidthsMode}
+                        sorted-by={sortBy}
+                        sorted-direction={sortDirection}
+                        onsort={handleSort}
+                        suppress-bottom-bar
+                        max-column-width="900"
+                    >
+                    </lightning-datatable>
                     </template>
                     <template lwc:if={isEmptyTable}>
                         <div class="empty-state">
@@ -158,4 +164,31 @@
             </template>
         </div>
     </template> 
+    <template lwc:if={showEditTable}>
+        <div class='slds-scrollable scrollable-container container' style={containerStyle} onscroll={handleScroll} >
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </template>
+            <lightning-datatable
+                data={info}
+                class="hideFirstColTable"
+                style={dataTableStyle}
+                columns={colString}
+                key-field="Id"
+                onrowselection={handleRowSelection}
+                max-row-selection={maxRowSelection}
+                hide-checkbox-column={hideCheckbox}
+                selected-rows={defaultselectedRows}
+                oncellchange={saveHandleAction}
+                draft-values={draftValuesTable}
+                onrowaction={handleRowAction}
+                column-widths-mode="auto"
+                sorted-by={sortBy}
+                sorted-direction={sortDirection}
+                onsort={handleSort}
+                max-column-width="500"
+                suppress-bottom-bar>
+            </lightning-datatable>
+        </div>
+    </template>
 </template>

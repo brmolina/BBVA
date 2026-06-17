@@ -1,4 +1,4 @@
-public without sharing class DMT_CreateObjetcsTaxonomyflow 
+public with sharing class DMT_CreateObjetcsTaxonomyflow 
 {
     public class Request {
         @InvocableVariable(required=true)

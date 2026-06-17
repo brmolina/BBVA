@@ -1,0 +1,140 @@
+<aura:component access="global" controller="arce_SB_ClientInfoOverview_ctrl" implements="force:appHostable,force:lightningQuickAction,force:hasRecordId">
+    <aura:attribute name="acctList" type="Object" />
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'FIC code', 'value': 'FIC code'},
+    {'label': 'Representative client name', 'value': 'Representative client name'}
+    ]" />
+    <aura:attribute name="mycolumns" type="List" />
+    <aura:attribute name="data" type="List" />
+    <aura:attribute name="filter" type="String" />
+    <aura:attribute name="filterField" type="String" />
+    <aura:attribute name="styleHier" type="String" default="height: 150px" />
+    <aura:attribute name="channel" type="String" default="mhmgNodeClicked" />
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="notifications" type="List" />
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+    <aura:attribute name="showHierarchy" type="Boolean" default="false" />
+    <aura:attribute name="enableMode" type="Boolean" default="false" />
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="changePage" type="integer" default="0"/>
+    <aura:attribute name="pagenumber" type="integer" default="15"/>
+    <aura:attribute name="waiting" type="Boolean" default="true" />
+
+    <aura:attribute name="aha" type="Object" />
+    
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 100%; max-width: 100rem; } .modal-body{ height : 100px !important; max-height: 100px !important; } .customFooter{ display: inline !important; } .cuf-content { padding: 0 0rem !important;
+        } .slds-p-around--medium { padding: 0rem !important; } .slds-modal__content{ overflow-y:hidden !important; height:unset !important; max-height:unset !important; }
+    </aura:html>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <aura:if isTrue="{!v.waiting}">
+                    <lightning:spinner variant="brand" />
+                </aura:if>
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Group Detail</h1>
+                <div class="c-container slds-m-horizontal_none slds-box slds-p-around_none">
+                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-small">
+                        <lightning:layoutItem flexibility="auto" alignmentBump="left">
+                            <lightning:combobox name="filterBy" aura:id="fildName" value="All" placeholder="Select Field" class="custom-box" options="{! v.options }" onchange="{! c.handleChange }" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" size="3">
+                            <lightning:input type="search" aura:id="filterName" placeholder="Search..." onchange="{!c.handlefilter}" value="{!v.filter}" />
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+            </div>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Fit Code">Fic Code</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Client name">Representative client name</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Country of resident">Country of resident</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Type">Type</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="Shadow Banking">Shadow Banking</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="MoreInfoSB">Shadow Banking Edit</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="SCRA">SCRA</div>
+                        </th>
+                        <th class="" scope="col">
+                            <div class="slds-truncate" title="MoreInfoSCRA">SCRA Edit</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.acctList}" var="status" indexVar="indexStatus">
+                        <tr class="slds-hint-parent">
+                            <td>
+                                <div class="slds-truncate">
+                                    <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.aha.DES_Local_Client__r.Cib_Client__r.DES_ID_Fiscal__c}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.aha.DES_Local_Client__r.Cib_Client__r.Name}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.aha.DES_Local_Client__r.g_residence_country_id__c}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="{!status.type}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <input type="checkbox" disabled="true" name="options" id="checkbox-unique-id-81" value="checkbox-unique-id-81" checked="{!status.SB}" />
+                                </div>
+                            </td>
+                            <td>
+                                <button onclick="{!c.handleMostrarInfo}" data-row-index="{!indexStatus}" class="slds-button slds-button_neutral" iconName="utility:edit"> +
+                                </button>
+                            </td>
+                            <td>
+                                <div class="slds-truncate">
+                                    <input type="checkbox" disabled="true" name="options" id="checkbox-unique-id-81" value="checkbox-unique-id-81" checked="{!status.scra}" />
+                                </div>
+                            </td>
+                            <td>
+                                <aura:if isTrue="{!status.isSCRA}">
+                                    <button onclick="{!c.handleMostrarInfoSCRA}" data-row-index="{!indexStatus}" class="slds-button slds-button_neutral" iconName="utility:edit"> +
+                                    </button>
+                                    <aura:set attribute="else">
+                                        <button onclick="{!c.handleMostrarInfoSCRA}" disabled="true" data-row-index="{!indexStatus}" class="slds-button slds-button_neutral" iconName="utility:edit"> +
+                                        </button>
+                                    </aura:set>
+                                </aura:if>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_brand slds-float_left" onclick="{!c.handleOnCancel}" aria-label="Close">Close</button>
+            </div>
+            {!v.body}
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

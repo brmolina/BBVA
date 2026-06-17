@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__GBL_Inclusion_Validation_Allow</fullName>
+    <active>true</active>
+    <description>Evaluates if the profile is allow to make the inclusion operation.</description>
+    <errorConditionFormula>IF(AND(NOT($Setup.cond__GBL_Permission_Create_Inclusion__c.cond__GBL_Active__c),CONTAINS(RecordType.DeveloperName, &apos;GBL_Campaign_Inclusion&apos;)), true, false)</errorConditionFormula>
+    <errorMessage>This user is not allow to create a Campaign Inclusion.</errorMessage>
+</ValidationRule>

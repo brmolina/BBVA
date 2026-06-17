@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>participant_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Group</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <errorMessage>Client must be a Group.</errorMessage>
+        <filterItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Prospect Group, Prospect Subsidiary, ARCE Local Group, Shared management Group, Group, SubGroup, SupraGroup, Commercial Client</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.DES_Structure_Type__c</field>
+            <operation>equals</operation>
+            <value>Supragroup, Group, Subgroup, Shared Management Group</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Clients (Group)</relationshipLabel>
+    <relationshipName>Subsidiary_Prospects</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

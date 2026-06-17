@@ -1,63 +1,49 @@
 <template>
-        <div class="slds-modal__header">
-            <!-- STEP 1 -->
-            <template if:true={isStepOne}>
-                <div>
-                <c-custom-data-table
-                    key-field="lineId"
-                    style="position:relative;z-index: 2"
-                    data={lines}
-                    columns={columnsStep1}
-                    max-row-selection="1"
-                    selected-rows={selectedRowIds}
-                    onrowselection={handleRowSelection}
-                    suppress-bottom-bar>
+    <div class="slds-modal__header">
+        <!-- STEP 1 -->
+        <template if:true={isStepOne}>
+            <div class="slds-m-bottom_small slds-size_1-of-3">
+                <lightning-input type="search" onchange={handleSearch}>
+                </lightning-input>
+            </div>
+            <div>
+                <c-custom-data-table key-field="lineId" style="position:relative;z-index: 2" data={filteredLines}
+                    columns={columnsStep1} max-row-selection="1" selected-rows={selectedRowIds}
+                    onrowselection={handleRowSelection} suppress-bottom-bar>
                 </c-custom-data-table>
-                </div>
-               
-                <div class="slds-m-top_small slds-text-align_center slds-modal__footer">
-                    <lightning-button class="slds-m-right_small" label="Cancel" onclick={handleSave}></lightning-button>
-                    <lightning-button label="Next" onclick={goToNextStep}></lightning-button>
-                </div>
-            </template>
+            </div>
 
-            <!-- STEP 2 -->
-            <template if:true={isStepTwo}>
-                <div>
-                    <c-custom-data-table
-                        key-field="lineId"
-                        style="position:relative;z-index: 2"
-                        data={productOPP}
-                        columns={columnsStep2}
-                        onpicklistchanged={picklistChanged}
-                        oncellchange={handleCellChange}
-                        draft-values={draftValues}
-                        hide-checkbox-column="true"
-                        suppress-bottom-bar>
-                    </c-custom-data-table>
-                </div> 
-                <div class="slds-m-top_small slds-text-align_center slds-modal__footer">
-                    <lightning-button class="slds-m-right_small" label="Cancel" onclick={handleSave}></lightning-button>
-                    <lightning-button label="Previous" onclick={goToPreviousStep}></lightning-button>
-                    <template if:true={canSave}>
-                        <lightning-button 
-                            label="Save" 
-                            variant="brand" 
-                            onclick={handleSave}
-                            class="slds-m-left_small">
-                        </lightning-button>
-                    </template>
-                </div>
-            </template>
+            <div class="slds-m-top_small slds-text-align_center slds-modal__footer">
+                <lightning-button class="slds-m-right_small" label="Cancel" onclick={handleCancel}></lightning-button>
+                <lightning-button label="Next" onclick={goToNextStep}></lightning-button>
+            </div>
+        </template>
 
-            <template if:true={error}>
-                <p class="slds-text-color_error">Error al cargar datos: {error}</p>
-            </template>
-            <template if:true={isSaving}>
-                <lightning-spinner class="slds-is-relative"
-                    alternative-text="Loading" size="medium"
-                    style="position: absolute; inset: 0;">
-                </lightning-spinner>
-            </template>
-        </div>
+        <!-- STEP 2 -->
+        <template if:true={isStepTwo}>
+            <div>
+                <c-custom-data-table key-field="lineId" style="position:relative;z-index: 2" data={productOPP}
+                    columns={columnsStep2} onpicklistchanged={picklistChanged} oncellchange={handleCellChange}
+                    draft-values={draftValues} hide-checkbox-column="true" suppress-bottom-bar>
+                </c-custom-data-table>
+            </div>
+            <div class="slds-m-top_small slds-text-align_center slds-modal__footer">
+                <lightning-button class="slds-m-right_small" label="Cancel" onclick={handleCancel}></lightning-button>
+                <lightning-button label="Previous" onclick={goToPreviousStep}></lightning-button>
+                <template if:true={canSave}>
+                    <lightning-button label="Save" variant="brand" onclick={handleSave} class="slds-m-left_small">
+                    </lightning-button>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <p class="slds-text-color_error">Error al cargar datos: {error}</p>
+        </template>
+        <template if:true={isSaving}>
+            <lightning-spinner class="slds-is-relative" alternative-text="Loading" size="medium"
+                style="position: absolute; inset: 0;">
+            </lightning-spinner>
+        </template>
+    </div>
 </template>

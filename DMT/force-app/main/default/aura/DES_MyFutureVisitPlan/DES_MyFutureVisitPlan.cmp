@@ -1,0 +1,53 @@
+<aura:component controller="DES_MyPastAndFutureVisit" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global">
+
+
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+	<aura:attribute name="userISOCode" type="String"/>
+    <aura:attribute name="familyProduct" type="String"/>
+    <aura:attribute name="gmRolVery" type="Boolean"  default="false" />
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="numberRow" type="String"/>
+    <aura:attribute name="reportData" type="Object" description="Holds reporting API JSON structure"/>
+    <aura:attribute name="sortDirection" type="String"/>
+    <aura:attribute name="roleHierarchy" type="Boolean" default="true" access="public" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <div class="slds-page-header">
+		<div class="slds-media">
+			<div class="slds-col slds-size_3-of-5">
+                    <lightning:icon iconName="standard:report" alternativeText="Report"/>
+                    &nbsp;&nbsp;&nbsp;<strong>My last 12 months and future visits ({!v.myData.length})</strong>
+
+			</div>
+            <div class="slds-col slds-size_2-of-5">
+                    <div class="slds-float_right">
+                        <a onclick="{!c.navigateToMyComponent}" target="_blank" class="slds-button slds-button_neutral">Open</a>
+                        <lightning:button label="Refresh" title="Refresh Report" onclick="{!c.getReport}"/>
+                    </div>
+             </div>
+		</div>
+	</div>
+
+    <aura:if isTrue="{! empty(v.myData)}">
+        <div class="tableNoData" style="padding:15px; text-align: center; border:1px #CDCDCD solid; border-radius:5px;">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+            <lightning:datatable data="{!v.myData}"
+                                 columns="{!v.myColumns}"
+                                 keyField="id"
+                                onsort="{!c.updateColumnSorting}"
+                                sortedBy="{!v.sortedBy}"
+                                sortedDirection="{!v.sortDirection}"
+                                 hideCheckboxColumn="true"/>
+             <aura:if isTrue="{!v.numberRow}">
+            <p style="text-align:center; padding:10px 0px; border-bottom:1px solid #E4E4E4;border-left:1px solid #E4E4E4;border-right:1px solid #E4E4E4; border-radius:10px;">
+                 <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+
+</aura:component>

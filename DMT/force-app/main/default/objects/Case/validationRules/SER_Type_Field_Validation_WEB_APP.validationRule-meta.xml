@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Type_Field_Validation_WEB_APP</fullName>
+    <active>false</active>
+    <description>Element field can&apos;t be &quot;App Movilidad&quot; if  Web / App field has &quot;Web&quot; value</description>
+    <errorConditionFormula>AND(
+  !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+  $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+  ISPICKVAL(SER_Web_App__c , &quot;Web&quot;),
+  CONTAINS(TEXT(SER_Type_EST__c ),&quot;App Movilidad&quot;)
+)</errorConditionFormula>
+    <errorDisplayField>SER_Type_EST__c</errorDisplayField>
+    <errorMessage>Element field can&apos;t be &quot;App Movilidad&quot; if  Web / App field has &quot;Web&quot; value</errorMessage>
+</ValidationRule>

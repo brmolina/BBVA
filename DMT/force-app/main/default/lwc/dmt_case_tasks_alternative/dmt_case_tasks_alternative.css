@@ -1,0 +1,234 @@
+.main-container {
+    background-color: #ffffff;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+    margin: 0;
+}
+
+
+.action-control {
+    margin: 0;
+    white-space: nowrap;
+    display: flex;
+    align-items: flex-end;
+}
+
+
+.header-input {
+    flex: 0 0 11rem;
+    min-width: 11rem;
+    max-width: 11rem;
+    display: flex;
+    align-items: flex-end;
+}
+
+.header-input > * {
+    width: 100%;
+}
+
+.header-filters-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap; /* Permite que salte de línea si el zoom es extremo */
+    background-color: #ffffff;
+    border-bottom: 1px solid #d8dde6;
+}
+
+.header-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+    /* Eliminados los márgenes y paddings manuales */
+}
+
+.header-inputs {
+    flex: 1 1 auto;
+    min-width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.header-input-search {
+    flex: 1 1 10rem;
+    min-width: 8rem;  /* Se puede hacer muy pequeño en 13" */
+    max-width: 12rem;
+    /* Eliminados los position: relative */
+    /* El empujoncito hacia abajo solo para el buscador */
+    position: relative;
+    top: 2.3px; /* Si ves que necesita bajar más, súbelo a 3px o 4px */
+}
+
+.header-input-date {
+    flex: 1 1 15rem;
+    min-width: 14rem; /* Lo justo para que quepa "09-Jun-2026" y el icono */
+    max-width: 16rem;
+    /* Eliminados los position: relative */
+}
+
+.header-input-filter {
+    flex: 1 1 10rem;
+    min-width: 9rem; /* Lo justo para los textos truncados de la picklist */
+    max-width: 12rem;
+    /* Eliminados los márgenes y paddings manuales */
+}
+
+.header-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: auto;
+}
+
+.header-icon-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem;
+}
+
+.page-header-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+.content-box {
+    background-color: #ffffff;
+    padding: 0 1rem 0.25rem 1rem;
+}
+
+.no-data {
+    color: #706e6b;
+    padding: 2rem;
+}
+
+.tab-panel {
+    padding: 0;
+}
+
+.tab-hide {
+    display: none;
+}
+
+.tab-show {
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-tabs {
+    padding: 0;
+}
+
+.floating-filter-panel {
+    /* Lo hace flotar por encima del resto del contenido */
+    position: absolute;
+    top: 100%; /* Se coloca justo debajo del contenedor principal */
+    right: 0; /* Se alinea a la derecha (debajo del botón de Hide Filters) */
+    z-index: 9999; /* Asegura que esté por encima de la cabecera de la tabla */
+
+    /* Estilos visuales de "ventana emergente" */
+    background-color: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15); /* Sombra para dar profundidad */
+
+    /* Tamaño y espaciado */
+    width: 100%;
+    max-width: 1000px; /* Evita que ocupe toda la pantalla en monitores gigantes */
+    padding: 1rem;
+    margin-top: 0.5rem; /* Separación mínima con los botones de arriba */
+}
+
+@media (max-width: 1200px) { /* Subimos el breakpoint para adaptarse a los nuevos anchos */
+    .header-filters-row {
+        align-items: flex-end;
+    }
+
+    .header-actions {
+        margin-left: auto;
+    }
+
+    .header-inputs {
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+
+    .header-input {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+        align-items: flex-end;
+    }
+
+    .header-input-search {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+    }
+
+    .header-input-date {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .header-filters-row {
+        align-items: flex-end;
+        gap: 0.5rem;
+    }
+
+    .header-actions {
+        flex: 0 0 auto;
+    }
+
+    .header-inputs {
+        flex: 1 1 auto;
+        gap: 0.5rem;
+    }
+
+    .header-input {
+        flex: 0 0 auto;
+    }
+
+    .header-input-search {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+    }
+
+    .header-input-date {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+    }
+
+    .header-input-filter {
+        flex: 0 0 12rem;
+        min-width: 12rem;
+        max-width: 12rem;
+    }
+}

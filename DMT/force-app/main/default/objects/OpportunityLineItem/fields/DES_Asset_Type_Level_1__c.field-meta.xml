@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Asset_Type_Level_1__c</fullName>
+    <label>OLD Asset Type Level 1</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Energy</fullName>
+                <default>false</default>
+                <label>Energy</label>
+            </value>
+            <value>
+                <fullName>Infrastructure</fullName>
+                <default>false</default>
+                <label>Infrastructure</label>
+            </value>
+            <value>
+                <fullName>Acquisition Finance</fullName>
+                <default>false</default>
+                <label>Acquisition Finance</label>
+            </value>
+            <value>
+                <fullName>Asset Finance</fullName>
+                <default>false</default>
+                <label>Asset Finance</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

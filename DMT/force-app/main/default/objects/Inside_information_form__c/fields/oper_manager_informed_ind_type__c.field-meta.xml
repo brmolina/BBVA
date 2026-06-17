@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>oper_manager_informed_ind_type__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>De conformidad al procedimiento interno de Control de la Información Privilegiada se presume que los superiores jerárquicos directos del
+Responsable del Área comunicadora de la operación, hasta el rango de Director General, se encuentran informados de la misma.
+En caso de NO haber sido informados por el Área a la fecha de esta comunicación, marcar con una X el recuadro adjunto:</description>
+    <label>Jefes jerárquicos no informados</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

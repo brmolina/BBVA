@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Legal_Entity_Type__c</fullName>
+    <label>Legal Entity Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Bank</fullName>
+                <default>false</default>
+                <label>Bank</label>
+            </value>
+            <value>
+                <fullName>Broker Dealer</fullName>
+                <default>false</default>
+                <label>Broker Dealer</label>
+            </value>
+            <value>
+                <fullName>Central Bank</fullName>
+                <default>false</default>
+                <label>Central Bank</label>
+            </value>
+            <value>
+                <fullName>Foreign Embassy/Consulate</fullName>
+                <default>false</default>
+                <label>Foreign Embassy/Consulate</label>
+            </value>
+            <value>
+                <fullName>Foundation</fullName>
+                <default>false</default>
+                <label>Foundation</label>
+            </value>
+            <value>
+                <fullName>Government Offices</fullName>
+                <default>false</default>
+                <label>Government Offices</label>
+            </value>
+            <value>
+                <fullName>Hedge Fund</fullName>
+                <default>false</default>
+                <label>Hedge Fund</label>
+            </value>
+            <value>
+                <fullName>Individual</fullName>
+                <default>false</default>
+                <label>Individual</label>
+            </value>
+            <value>
+                <fullName>Insurance Company</fullName>
+                <default>false</default>
+                <label>Insurance Company</label>
+            </value>
+            <value>
+                <fullName>Investment Manager</fullName>
+                <default>false</default>
+                <label>Investment Manager</label>
+            </value>
+            <value>
+                <fullName>Non-Profit Organizations/Charities</fullName>
+                <default>false</default>
+                <label>Non-Profit Organizations/Charities</label>
+            </value>
+            <value>
+                <fullName>Pension Scheme</fullName>
+                <default>false</default>
+                <label>Pension Scheme</label>
+            </value>
+            <value>
+                <fullName>Personal Investment and Holding Companies</fullName>
+                <default>false</default>
+                <label>Personal Investment and Holding Companies</label>
+            </value>
+            <value>
+                <fullName>Private Company</fullName>
+                <default>false</default>
+                <label>Private Company</label>
+            </value>
+            <value>
+                <fullName>Public Company</fullName>
+                <default>false</default>
+                <label>Public Company</label>
+            </value>
+            <value>
+                <fullName>Public Sector Body</fullName>
+                <default>false</default>
+                <label>Public Sector Body</label>
+            </value>
+            <value>
+                <fullName>Regulated FI</fullName>
+                <default>false</default>
+                <label>Regulated FI</label>
+            </value>
+            <value>
+                <fullName>Special Purpose Vehicle or Entity</fullName>
+                <default>false</default>
+                <label>Special Purpose Vehicle or Entity</label>
+            </value>
+            <value>
+                <fullName>State Owned Enterprise</fullName>
+                <default>false</default>
+                <label>State Owned Enterprise</label>
+            </value>
+            <value>
+                <fullName>Subsidiary of Public Company</fullName>
+                <default>false</default>
+                <label>Subsidiary of Public Company</label>
+            </value>
+            <value>
+                <fullName>Supra-national and Development Organisations</fullName>
+                <default>false</default>
+                <label>Supra-national and Development Organisations</label>
+            </value>
+            <value>
+                <fullName>Trust Company</fullName>
+                <default>false</default>
+                <label>Trust Company</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

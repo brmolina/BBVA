@@ -1,0 +1,19 @@
+.THIS .kpidetails {
+    min-height: 400px;
+}
+
+.THIS .slds-modal__container {
+    margin: 0 auto;
+    width: 90%;
+    max-width: 90%;
+    min-width: 90%;
+    width:90%;
+}
+
+.THIS .title_contract {
+    font-weight: 600;
+}
+
+.THIS .float-left {
+    float: left;
+  }

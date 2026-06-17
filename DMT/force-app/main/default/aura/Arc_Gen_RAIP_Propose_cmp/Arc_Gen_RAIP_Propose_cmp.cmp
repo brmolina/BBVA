@@ -1,0 +1,138 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 01-15-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller="Arc_Gen_RAIP_Propose_controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="delegationWrapper"      type="Object"                    description="Delegation wrapper"                                    access="global"/>
+    <aura:attribute name="deleAmbitWrapper"        type="Object"                    description="Delegation wrapper"                                    access="global"/>
+    <aura:attribute name="deleLevelWrapper"        type="Object"                    description="Delegation wrapper"                                    access="global"/>
+    <aura:attribute name="deleUserWrapper"        type="Object"                    description="Delegation wrapper"                                    access="global"/>
+    <aura:attribute name="show"                   type="Boolean" default="false"    description="Indicates to show or to hide the modal"                access="global"/>
+    <aura:attribute name="modalStep"              type="String"  default="1"       description="1/2/3: Indicates the step of the modal"                access="global"/>
+    <aura:attribute name="selectedOption"         type="String"  default=""        description="Value ambit selected"                                  access="global"/>
+    <aura:attribute name="selectedRegion"         type="String"  default=""        description="Value region selected"                                 access="global"/>
+    <aura:attribute name="selectedLevel"          type="String"  default=""        description="Value level selected"                                  access="global"/>
+    <aura:attribute name="selectedOptionUser"     type="String"  default=""        description="Value user selected"                                   access="global"/>
+    <aura:attribute name="showErrorSection"       type="Boolean" default="false"   description="Indicates if the error section will be shown"          access="global"/>
+    <aura:attribute name="errorMessage"           type="String"  default=""        description="Message to show to the user if the process fails"      access="global"/>
+    <aura:attribute name="spinnerStatus"          type="Boolean" default="true"    description="Spinner load variable"                                 access="global"/>
+    <aura:attribute name="isRatingCalculated"     type="Boolean"                   description="Indicates if there is a calculated rating in the RAIP" access="global"/>
+    <aura:attribute name="showPsRefresh"          type="Boolean" default="false"   description="Enables showPsRefresh button"                          access="global"/>
+    <aura:attribute name="showRefreshWL"          type="Boolean" default="false"   description="Enables showRefreshWL button"                          access="global"/>
+    <aura:attribute name="bypassWL"               type="Boolean" default="false"   description="Bypass WatchList check"                                access="global"/>
+    <aura:attribute name="isCorporates"           type="Boolean" default="false"   description="Value that indicates if actual org/scratch is corpo"   access="global"/>
+    <aura:attribute name="isButtonDisabled"       type="Boolean" default="false"   description="Boolean that disable next button"                      access="global"/>
+    <aura:attribute name="showRefreshGCP"         type="Boolean" default="false"   description="Enables showRefreshGCP button"                         access="global"/>
+    <aura:attribute name="isIRPRTC"               type="Boolean"                   description="Indicates if is a RTC RAIP"                            access="global"/>
+    <aura:attribute name="isARP"                  type="Boolean"                   description="Indicates if is a ARP"                                 access="global"/>
+    <aura:attribute name="is2012P1"               type="Boolean"                   description="Indicates if is a 2012P1 rating"                       access="global"/>
+    <aura:attribute name="showAmbitSelection"     type="Boolean" default="true"    description="Indicates if is Parent Subsidiary checking is OK"      access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:if isTrue="{!v.show}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.cancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close"/>
+                    <h4 class="title slds-text-heading--medium" >{!$Label.c.Arc_Gen_BtnPropose}</h4>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+                    <aura:if isTrue="{!v.showErrorSection == false}">
+                        <aura:if isTrue="{!v.modalStep == '1'}">
+                            <div class="error_main_div">
+                                <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                                    <div class="slds-size_1-of-1">
+                                        <aura:if isTrue="{!v.spinnerStatus}">
+                                            <div class="slds-grid_align-center spinner_grid_div">
+                                                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                                                    <span class="slds-assistive-text">{!$Label.c.Lc_arce_Loading}</span>
+                                                    <div class="slds-spinner__dot-a"></div>
+                                                    <div class="slds-spinner__dot-b"></div>
+                                                </div>
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <h4>{!$Label.c.Lc_Arc_RAIP_EnterAmbit}</h4>
+                                                <div class="slds-p-top_medium">
+                                                    <lightning:combobox name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_geoToPropose}" required="true" options="{!v.delegationWrapper.lstRegion}" onchange="{!c.handleChangeRegion}" />
+                                                </div>
+                                                <div class="slds-p-top_medium">
+                                                    <lightning:combobox aura:id="comboLevel" name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_levelToPropose}" required="true" options="{!v.deleLevelWrapper.lstLevel}" onchange="{!c.handleChangeLevel}" />
+                                                </div>
+                                                <div class="slds-p-top_medium">
+                                                    <lightning:combobox aura:id="comboAmbit" name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_AmbitToPropose}" required="true" options="{!v.deleAmbitWrapper.lstAmbits}" onchange="{!c.handleChange}" />
+                                                </div>
+                                                <div class="slds-p-top_medium">
+                                                    <lightning:combobox aura:id="comboUser" name="selectAmbit" label="{!$Label.c.Lc_Arc_RAIP_UserToPropose}" required="true" options="{!v.deleUserWrapper.lstUsers}" onchange="{!c.handleChangeUser}"/>
+                                                </div>
+                                                <br/><br/><br/>
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.modalStep == '2'}">
+                            <arce:Arc_Gen_ChatMessages_cmp title="Success" assistiveText="Success" variant="Success" message="{!$Label.c.Lc_Arc_RAIP_ProposeSuccessMsg}" />
+                        </aura:if>
+
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.errorMessage != ''}">
+                                <div class="linebreak">
+                                    <arce:Arc_Gen_ChatMessages_cmp title="Error" assistiveText="Error" variant="Error" message="{!v.errorMessage}" />
+                                </div>
+                            </aura:if>
+                            <!-- Show "Refresh Parent-Subsidiary Cuestionare" button if its a corporates org/sratch -->
+                            <aura:if isTrue="{!v.isCorporates}">
+                                <aura:if isTrue="{!v.showPsRefresh}">
+                                    <div class="slds-align_absolute-center show_refresh_ps">
+                                        <lightning:button disabled="false" variant="neutral" label="Refresh Parent-Subsidiary Cuestionare" title="Refresh Parent-Subsidiary Cuestionare" onclick="{!c.refreshPS}" />
+                                    </div>
+                                </aura:if>
+                                <aura:if isTrue="{!v.showRefreshGCP}">
+                                    <div class="slds-align_absolute-center" style="margin-top:15px;">
+                                        <lightning:button disabled="false" variant="neutral" label="Refresh Parent Rating data" title="Refresh Parent Rating data" onclick="{!c.refreshGCP}" />
+                                    </div>
+                                </aura:if>
+                                <aura:if isTrue="{!v.showRefreshWL}">
+                                    <div class="slds-align_absolute-center show_refresh_wl">
+                                        <lightning:button disabled="false" variant="neutral" label="Refresh WatchList level" title="Refresh WatchList level" onclick="{!c.refreshWL}" />
+                                    </div>
+                                </aura:if>
+                            </aura:if>
+                        </aura:set>
+
+                    </aura:if>
+                </div>
+                <div class="slds-modal__footer slds-modal__footer_directional">
+                    <div class="slds-clearfix">
+                        <div class="slds-grid slds-wrap">
+                            <aura:if isTrue="{!v.modalStep == '1'}">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-float_left">
+                                        <lightning:button disabled="false" variant="neutral" label="{!$Label.dwp_dv.CancelLabel}" title="{!$Label.dwp_dv.CancelLabel}" onclick="{!c.cancel}" />
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="slds-float_right">
+                                        <lightning:button disabled="{!v.selectedOptionUser == '' ? true : false}" variant="brand" label="{!$Label.c.Arc_Gen_Next}" title="{!$Label.c.Arc_Gen_Next}" onclick="{!c.toPropose}"/>
+                                    </div>
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!v.modalStep == '2'}">
+                                <div class="slds-col slds-size_1-of-1 slds-float_right">
+                                    <lightning:button variant="brand" label="{!$Label.c.Lc_arce_finish}" title="{!$Label.c.Lc_arce_finish}" onclick="{!c.finish}" />
+                                </div>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"/>
+    </aura:if>
+</aura:component>

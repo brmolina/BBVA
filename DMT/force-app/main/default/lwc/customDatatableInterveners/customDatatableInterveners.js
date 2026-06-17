@@ -191,7 +191,7 @@ export default class CustomDatatableProduct extends LightningElement {
             , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
         }},
         {
-            type:  'button',
+            type:  'button-icon',
             initialWidth: 90,hideDefaultActions:true,
             cellAttributes: { alignment: 'center' },
             typeAttributes: 
@@ -207,7 +207,7 @@ export default class CustomDatatableProduct extends LightningElement {
           }
           ,
         {
-            type:  'button',
+            type:  'button-icon',
             initialWidth: 90,hideDefaultActions:true,
             cellAttributes: { alignment: 'center' },
             typeAttributes: 

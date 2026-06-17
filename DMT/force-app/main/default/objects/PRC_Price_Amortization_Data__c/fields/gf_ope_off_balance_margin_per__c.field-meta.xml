@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_ope_off_balance_margin_per__c</fullName>
+    <description>Value of the off-balance amount, expressed in basic points.</description>
+    <externalId>false</externalId>
+    <label>Margin OffB (B.P.)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,23 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+                controller="NPS_ContactHistoryController" access="global">
+  <aura:attribute name="recordId" type="Id" access="global"/>
+  <aura:attribute name="data" type="Object"/>
+  <aura:attribute name="columns" type="List"/>
+  <aura:attribute name="activeSections" type="List" default="['A']" />
+  <!-- handlers-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <lightning:accordion
+    allowMultipleSectionsOpen="true"
+    activeSectionName="{!v.activeSections}"
+  >
+    <lightning:accordionSection name="A" label="NPS History">
+      <lightning:datatable
+        data="{!v.data}"
+        columns="{!v.columns}"
+        keyField="id"
+        hideCheckboxColumn="true"
+      />
+    </lightning:accordionSection>
+  </lightning:accordion>
+</aura:component>

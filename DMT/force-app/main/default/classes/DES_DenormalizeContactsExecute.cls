@@ -121,12 +121,12 @@ global with sharing class DES_DenormalizeContactsExecute implements Database.Bat
         }
         
         //Retrieve the parents for the account passed
-        Final List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT Id, dwp_acmh__Parent_Account__c FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Child_Account__c = :accId];
+        Final List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT Id, AMH_Parent_Account__c FROM AMH_GBL_Account_Relationship__c WHERE AMH_Child_Account__c = :accId];
         system.debug('listAccRel:' + listAccRel);
         
         //iterate to recursively add the opportunity to each parent in the hierarchy
-        for (dwp_acmh__GBL_Account_Relationship__c accRel : listAccRel) {
-        recursiveFxn(accRel.dwp_acmh__Parent_Account__c, accInicial);
+        for (AMH_GBL_Account_Relationship__c accRel : listAccRel) {
+        recursiveFxn(accRel.AMH_Parent_Account__c, accInicial);
         }
   }  
   

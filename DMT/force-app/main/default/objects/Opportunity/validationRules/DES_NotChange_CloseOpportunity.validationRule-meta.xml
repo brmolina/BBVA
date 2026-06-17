@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_NotChange_CloseOpportunity</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+                AND(
+					NOT(DMT_RecordTypeName__c == &quot;DMT Opportunity&quot;),
+                    NOT( $Setup.CIB_Bypass__c.CIB_DES_DataMigration__c ),
+                    NOT( $Profile.Name = &quot;System Administrator&quot;),
+                    NOT( $Permission.Champions_Locales),
+                    NOT(AND($Profile.Name = &quot;BBVA Desktop Compliance&quot;,ISCHANGED(OwnerId)))
+                ),
+                NOT(ISCHANGED(disclosure_info_type__c)),
+                OR(
+					NOT(ISCHANGED(AccountId)),
+					AND(
+						ISCHANGED(AccountId),
+                        Account.gf_cust_orig_was_prospect_ind_type__c = false
+					)
+				),
+				OR(
+                    TEXT(StageName) == $Label.DES_Closed_Won,
+                    TEXT(StageName) == $Label.DES_Closed_Lose
+                ),
+                NOT(ISCHANGED(StageName))
+                )</errorConditionFormula>
+    <errorMessage>You cannot modify a closed opportunity.</errorMessage>
+</ValidationRule>

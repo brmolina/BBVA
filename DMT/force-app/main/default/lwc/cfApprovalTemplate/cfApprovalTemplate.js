@@ -27,6 +27,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         dmt_cl_NotAsk_Text:"Do Not Ask",
         dmt_cl_SendNextApprover_Text:"Send to next approver",
         dmt_cl_returnRequester_Text:"Return to requester",
+        dmt_cl_CloseTaskButton_Text:"Close Task",
         dmt_cl_NoPendingTask_Text:"NO PENDING TASK"
         };
               pubsubEvent = [];
@@ -45,9 +46,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L3aGYAS"
+                  " card-0koKE000000L96MYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003Qjo02AC");
+                this.loadCustomStylesheetAttachement("00PKE000001voSu2AI");
                 
                 
               }
@@ -68,11 +69,43 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName0,this.customEvent[0]);
 
           
+            this.customEventName1 = interpolateWithRegex(`finishCaseConditionCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[1] = this.handleEventAction.bind(this, data.events[1],1);
+
+            this.template.addEventListener(this.customEventName1,this.customEvent[1]);
+
+          
+            this.customEventName2 = interpolateWithRegex(`approvalValidationCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[2] = this.handleEventAction.bind(this, data.events[2],2);
+
+            this.template.addEventListener(this.customEventName2,this.customEvent[2]);
+
+          
+            this.customEventName3 = interpolateWithRegex(`returnToProposalCard`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[3] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName3,this.customEvent[3]);
+
+          
+            this.customEventName4 = interpolateWithRegex(`textfieldchange`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[4] = this.handleEventAction.bind(this, data.events[4],4);
+
+            this.template.addEventListener(this.customEventName4,this.customEvent[4]);
+
+          
               }
 
               unregisterEvents(){
                 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
+
+            this.template.removeEventListener(this.customEventName1,this.customEvent[1]);
+
+            this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
+
+            this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
+
+            this.template.removeEventListener(this.customEventName4,this.customEvent[4]);
 
               }
             

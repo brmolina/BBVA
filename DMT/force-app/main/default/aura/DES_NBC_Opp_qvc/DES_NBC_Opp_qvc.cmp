@@ -1,0 +1,10 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+        controller="DES_NBC_QVC_Controller" access="global">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="inputJson" type="Object" access="global" Description="" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:refreshVotes" action="{!c.refreshVotes}" />
+   	<aura:if isTrue="{!v.inputJson != null}">
+       <qvcd:GBL_Carousel_CMP inputJsonMode="true" inputJson="{!v.inputJson}" allowCardClick="true" slidesToShow="4" refreshOnRefreshView="true" />
+    </aura:if>
+</aura:component>

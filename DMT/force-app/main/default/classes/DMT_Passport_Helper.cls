@@ -1,9 +1,13 @@
 public with sharing class DMT_Passport_Helper {
 
     private static Map<String, Object> mapGroupsCache = new Map<String, Object>();
-    private static String accountRecordCode = '';
+    private static String recordCode = '';
     private static String mitigantClientCode = null;
     FINAL PRIVATE STATIC STRING APPROVERTYPE = 'Risk';
+    private static final Map<String, String> RATE_TYPE_MAPPING = new Map<String, String>{
+        'Fijo' => 'FIXED',
+        'Variable' => 'FLOATING'
+    };
 
     // Método principal para establecer el payload
     public static String setPayloadPassport(String recordId, String clientsGroup) {
@@ -26,7 +30,7 @@ public with sharing class DMT_Passport_Helper {
     private static String handleLinePayload(String recordId, String clientsGroup) {
         DMT_Line__c dmtLine = DMT_Passport_Selector.getLine(recordId);
 
-        if (dmtLine.RecordType.DeveloperName == 'OtherProducts') {
+        if (dmtLine.RecordType.DeveloperName == 'OtherProducts' || dmtLine.RecordType.DeveloperName == 'Sanction') {
             return buildOtherProductsPayload(dmtLine, clientsGroup, recordId);
         } else {
             return buildStandardLinePayload(dmtLine, clientsGroup, recordId);
@@ -40,7 +44,10 @@ public with sharing class DMT_Passport_Helper {
 
         body.line = buildLineForOtherProducts(dmtLine);
         body.products = buildProductsForOtherProducts(dmtLine);
+        if ( dmtLine.RecordType.DeveloperName != 'Sanction') {
         body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
+        body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
+        }
         body.optionalFeatures = calculateOptionalFeatures(dmtLine);
 
         payloadMap.body = JSON.serialize(body);
@@ -55,6 +62,7 @@ public with sharing class DMT_Passport_Helper {
         body.client.products = new List<DMT_Passport_Wrapper.Product> { buildStandardProducts(dmtLine) };
         body.client.indRenovada = dmtLine.DMT_Parent_Line__r.Line_Id__c != null;
         body.client.parentConsums = parentConsumsStandard(dmtLine);
+
         if(clientsGroup != ''){
             body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
             body.optionalFeatures = calculateOptionalFeatures(dmtLine);
@@ -86,6 +94,7 @@ public with sharing class DMT_Passport_Helper {
         DMT_Wrapper_Passport_Abs.RequestBody body = new DMT_Wrapper_Passport_Abs.RequestBody();
         body.client = buildClientDetails(dmtLine);
         body.analysts = buildAnalystDetails(dmtLine);
+        body.templateType = dmtLine.DMT_line_template_type__c;
         return JSON.serialize(body);
     }
 
@@ -109,7 +118,7 @@ public with sharing class DMT_Passport_Helper {
         }
 
         if(mapGroupsCache.isEmpty()){
-            mapGroupsCache = DMT_HPG_Utils.getGroupFromClient(dmtLine.Client__c);
+            mapGroupsCache = DMT_HPG_Utils.getGroupFromClientAccount(dmtLine.Client__c);
         }
         if (mapGroupsCache.containsKey('groupCode')) {
             client.groupId = (String) mapGroupsCache.get('groupCode');
@@ -130,18 +139,18 @@ public with sharing class DMT_Passport_Helper {
     // Construcción de los detalles del analista
     private static DMT_PassportOpportunity_Wrapper.Analyst buildOppAnalystDetails(Opportunity opp) {
         DMT_PassportOpportunity_Wrapper.Analyst analyst = new DMT_PassportOpportunity_Wrapper.Analyst();
-        analyst.approverBankerId = opp.DMT_ApproverGlobalBanker__r.DMT_External_Id__c;
-        analyst.businessUnitRiskAnalyst = opp.DMT_Booking_Unit_Risk_Analyst__r.DMT_External_Id__c;
-        analyst.fpRiskAnalyst = opp.DMT_Approver__r.DMT_External_Id__c;
+        analyst.approverBankerId = opp.DMT_ApproverGlobalBanker__r.DMT_Approver_Code__c;
+        analyst.businessUnitRiskAnalyst = opp.DMT_Booking_Unit_Risk_Analyst__r.DMT_Approver_Code__c;
+        analyst.fpRiskAnalyst = opp.DMT_Approver__r.DMT_Approver_Code__c;
         return analyst;
     }
 
     // Construcción de los detalles del analista
     private static DMT_Wrapper_Passport_Abs.Analyst buildAnalystDetails(DMT_Line__c dmtLine) {
         DMT_Wrapper_Passport_Abs.Analyst analyst = new DMT_Wrapper_Passport_Abs.Analyst();
-        analyst.approverBankerId = dmtLine.DMT_ApproverGlobalBanker__r.DMT_External_Id__c;
-        analyst.businessUnitRiskAnalyst = dmtLine.DMT_Booking_Unit_Risk_Analyst__r.DMT_External_Id__c;
-        analyst.fpRiskAnalyst = dmtLine.DMT_Approver__r.DMT_External_Id__c;
+        analyst.approverBankerId = dmtLine.DMT_ApproverGlobalBanker__r.DMT_Approver_Code__c;
+        analyst.businessUnitRiskAnalyst = dmtLine.DMT_Booking_Unit_Risk_Analyst__r.DMT_Approver_Code__c;
+        analyst.fpRiskAnalyst = dmtLine.DMT_Approver__r.DMT_Approver_Code__c;
         return analyst;
     }
 
@@ -229,6 +238,8 @@ public with sharing class DMT_Passport_Helper {
 
         line.amount = dmtLine.Amount__c;
         line.lastLevelId = dmtLine.DMT_LastLevelId__c;
+        line.minRaroEcWoFgPerct = dmtLine.gf_min_raroec_wo_fcg_per__c;
+        line.minRorWocFcgPerc = dmtLine.gf_min_rorc_wo_fcg_per__c;
 
         return line;
     }
@@ -259,7 +270,7 @@ public with sharing class DMT_Passport_Helper {
             parentConsums = new List<DMT_Wrapper_Passport_Abs.ParentConsum>();
 
             DMT_Wrapper_Passport_Abs.ParentConsum dvp = new DMT_Wrapper_Passport_Abs.ParentConsum();
-            dvp.productParent = 'DVP';
+            dvp.productParent = '01';
             dvp.parentId = dmtLine.DMT_Parent_Line__r.Line_Id__c;
             dvp.amountParent = dmtLine.DMT_Parent_Line__r.DvP_Amount__c;
             dvp.currencyParentId = dmtLine.DMT_Parent_Line__r.CurrencyIsoCode;
@@ -267,7 +278,7 @@ public with sharing class DMT_Passport_Helper {
             parentConsums.add(dvp);
 
             DMT_Wrapper_Passport_Abs.ParentConsum fd = new DMT_Wrapper_Passport_Abs.ParentConsum();
-            fd.productParent = 'FD';
+            fd.productParent = '02';
             fd.parentId = dmtLine.DMT_Parent_Line__r.Line_Id__c;
             fd.amountParent = dmtLine.DMT_Parent_Line__r.FD_Amount__c;
             fd.currencyParentId = dmtLine.DMT_Parent_Line__r.CurrencyIsoCode;
@@ -279,7 +290,7 @@ public with sharing class DMT_Passport_Helper {
             }
 
             DMT_Wrapper_Passport_Abs.ParentConsum der = new DMT_Wrapper_Passport_Abs.ParentConsum();
-            der.productParent = 'Derivatives';
+            der.productParent = '03';
             der.parentId = dmtLine.DMT_Parent_Line__r.Line_Id__c;
             der.amountParent = dmtLine.DMT_Parent_Line__r.DMT_DerivativesAmount__c;
             der.currencyParentId = dmtLine.DMT_Parent_Line__r.CurrencyIsoCode;
@@ -292,30 +303,71 @@ public with sharing class DMT_Passport_Helper {
 
     // Building payload for Opportunity
     private static String handleOpportunityPayload(String recordId, String clientsGroup) {
+        System.debug('log::handleOpportunityPayload');
         Account acc = DMT_Passport_Selector.getAccountWithRelatedListsFromOppId(recordId);
-        String recordCode = '';
-        if(String.isNotBlank(acc.DES_Group_Code__c)){
-            recordCode = acc.DES_Group_Code__c;
-        } else {
-            recordCode = acc.Local_Clients__r[0].Alpha_code__c;
-        }
-
-        if(!acc.Local_Clients__r.isEmpty()){
-            mitigantClientCode = acc.Local_Clients__r[0].Alpha_code__c;
-        }
-
-        if(String.isBlank(accountRecordCode)){
-            accountRecordCode = recordCode;
-        }
         Opportunity oppty = acc.Opportunities[0];
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+
+        Id rtIdDmtOpportunity = Schema.SObjectType.Opportunity
+            .getRecordTypeInfosByDeveloperName()
+            .get('DMT_Opportunity')
+            .getRecordTypeId();
+
         DMT_Opportunity_Client__c oppClient;
-        if (oppty.DMT_MDE_Opportunities_Clients__r != null && !oppty.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
+        Account validationAccount = acc; // default → single holder
+        Boolean isProspectSubsidiary = validationAccount.RecordType != null && validationAccount.RecordTypeId == prospectSubsidiaryRtId;
+
+        if (oppty.DMT_MDE_Opportunities_Clients__r != null &&
+            !oppty.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
+
+        // MULTIHOLDER
+            if (oppty.Custom_Associations__r != null &&
+                !oppty.Custom_Associations__r.isEmpty()) {
+
+                String mainHolderCustomerId =
+                    oppty.Custom_Associations__r[0].g_customer_id__c;
+
+                for (DMT_Opportunity_Client__c clientRec :
+                    oppty.DMT_MDE_Opportunities_Clients__r) {
+
+                    if (clientRec.Alpha_Code_Client__c == mainHolderCustomerId) {
+                        oppClient = clientRec;
+                        break;
+                    }
+                }
+
+            // Account main holder
+                Account mainHolderAccount =
+                DMT_Passport_Selector.getAccountFromCustomerId(mainHolderCustomerId);
+
+                if (mainHolderAccount != null) {
+                    validationAccount = mainHolderAccount;
+                }
+
+            } else {
+                // Caso SINGLE HOLDER
             oppClient = oppty.DMT_MDE_Opportunities_Clients__r[0];
+            }
         }
 
-        // Load group data once, reuse everywhere
-        if(mapGroupsCache.isEmpty()){
-            mapGroupsCache = DMT_HPG_Utils.getGroupFromClientAccount(accountRecordCode);
+        if (oppClient != null && String.isNotBlank(oppClient.Alpha_Code_Client__c)) {
+            mitigantClientCode = oppClient.Alpha_Code_Client__c;
+        } else if (isProspectSubsidiary) {
+            mitigantClientCode = validationAccount.g_customer_id__c;
+        } else {
+            mitigantClientCode = validationAccount.Local_Clients__r[0].Alpha_code__c;
+        }
+
+    if (String.isNotBlank(oppClient.Alpha_Code_Client__c)) {
+        recordCode = oppClient.Alpha_Code_Client__c;
+    } else if (isProspectSubsidiary) {
+        recordCode = validationAccount.g_customer_id__c;
+    } else {
+        recordCode = validationAccount.Local_Clients__r[0].Alpha_code__c;
+    }
+
+    if (mapGroupsCache.isEmpty()) {
+        mapGroupsCache = DMT_HPG_Utils.getGroupFromClientAccount(acc.Id);
         }
 
         DMT_PassportOpportunity_Wrapper.Request payloadMap = new DMT_PassportOpportunity_Wrapper.Request();
@@ -323,20 +375,21 @@ public with sharing class DMT_Passport_Helper {
         payloadMap.version = String.valueOf(oppty.DMT_NUM_Version__c);
         payloadMap.auditDate = Datetime.now();
         payloadMap.entific = oppty.Entific__c;
-        payloadMap.booking = oppty.Entific__c;
+        payloadMap.booking = oppty.DMT_branch_id_c__c;
         payloadMap.entity = oppty.DMT_Entity__c;
         payloadMap.lineDesc = oppty.Name;
         payloadMap.user = userId(oppty.OwnerId);
-        payloadMap.status = oppty.StageName.toUpperCase();
+        payloadMap.status = oppty.StageName;
         payloadMap.initDate = oppty.DMT_DATE_Initial_Date__c;
         payloadMap.endDate = oppty.DMT_DATE_Maturity_Date__c;
-        payloadMap.currencyId = payloadMap.currencyId = String.isNotBlank(oppty.DMT_Currency__c) ? oppty.DMT_Currency__c.toUpperCase() : oppty.CurrencyIsoCode;
+        payloadMap.currencyId = oppty.DMT_CurrencyText__c;
 
         DMT_PassportOpportunity_Wrapper.RequestBody body = new DMT_PassportOpportunity_Wrapper.RequestBody();
-        body.client = buildOpportunityClientDetails(oppty, oppClient);
+        body.client = buildOpportunityClientDetails(oppty,validationAccount, oppClient);
         body.opportunity = buildOpportunityDetails(oppty,oppClient);
         body.products= buildOpportunityProducts(oppty);
         body.analysts = buildOppAnalystDetails(oppty);
+        body.templateType = oppty.RecordTypeId == rtIdDmtOpportunity ? 'TO' : null;
         for(DMT_PassportOpportunity_Wrapper.Product prdct : body.products){
             if(prdct.geographyBranch !=null){
                 payloadMap.geographyBranch = prdct.geographyBranch;
@@ -344,53 +397,39 @@ public with sharing class DMT_Passport_Helper {
             }
         }
         if(oppty.DMT_Sanction__c != null){
-         body.opportunity.opportunitySanctions = buildOpportunitySanctions(oppty);
+            body.opportunity.opportunitySanctions = buildOpportunitySanctions(oppty);
+            System.debug('log::opportunitySanctions => ' + JSON.serialize(body.opportunity.opportunitySanctions));
         }
-        body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenConsOpp(oppty, clientsGroup) };
+        body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenConsOpp(oppty,validationAccount, oppClient, clientsGroup) };
 
         body.optionalFeatures = calculateOptionalFeaturesOpp(oppty);
+        body.documentsloads = buildDocumentLoads(oppty.CoreDocsTaxonomyValues__c);
 
-
-        payloadMap.body = JSON.serialize(body);
-        System.debug('ABS PAYLOAD -- '+JSON.serialize(payloadMap) );
-
+        payloadMap.body = JSON.serialize(body,true);
         return JSON.serialize(payloadMap);
-
-        // --- BEGIN: FORCE NULL FIELDS IN BODY JSON ---
-
-        // Convert wrapper into a Map because JSON.serialize() includes nulls for Maps
-        /* Map<String, Object> bodyMap = new Map<String, Object>{
-            'client'           => body.client,
-            'opportunity'      => body.opportunity,
-            'products'         => body.products,
-            'features'         => body.features,
-            'optionalFeatures' => body.optionalFeatures
-        };
-
-        // Serialize with nulls included
-        String bodyJsonString = JSON.serialize(bodyMap, true);
-
-        // Integration expects "body" as a string (escaped JSON)
-        payloadMap.body = bodyJsonString;
-
-        // --- END ---
-
-        System.debug('ABS PAYLOAD -- ' + JSON.serialize(payloadMap, true));
-
-        // Return final payload containing body as a JSON string
-        return JSON.serialize(payloadMap, true); */
-
     }
 
 
     // Construcción de los detalles del cliente para oportunidades
-    private static DMT_Wrapper_Passport_Abs.Client buildOpportunityClientDetails(Opportunity oppty, DMT_Opportunity_Client__c oppClient) {
+    private static DMT_Wrapper_Passport_Abs.Client buildOpportunityClientDetails(Opportunity oppty,Account acc, DMT_Opportunity_Client__c oppClient) {
         DMT_Wrapper_Passport_Abs.Client client = new DMT_Wrapper_Passport_Abs.Client();
-        client.customerId = oppty.Account.g_customer_id__c; // testing 'ES01TESTNEOCLIE'
-        client.customerName = oppty.Account.Name;
-        client.clientType = 'CORP';//oppty.Account.DES_Client_Type__c;
+        client.customerId = recordCode;
+        client.customerName = acc.Name;
+        client.clientType = 'CORP';//acc.DES_Client_Type__c;
         client.shortRating = oppClient.External_Rating__c;
-
+        client.sectorTypeId = oppClient.DMT_Sector__c;
+        client.subsectorTypeId = oppClient.DMT_Subsector__c;
+        client.activityTypeId = oppClient.DMT_Activity__c;
+        client.thresholdType = oppty.DMT_Threshold_Type__c;
+        client.scoring = oppClient.DMT_Scoring__c;
+        client.industry = oppClient.DMT_Industry__c;
+        client.camn = oppClient.DMT_CAMN__c;
+        client.leveragedlending = oppClient.DMT_Leveraged_Lending__c;
+        client.moodysExternalRating = oppClient.DMT_External_Rating_Moodys__c;
+        client.spExternalRating = oppClient.DMT_External_Rating_SP__c;
+        client.fitchExternalRating = oppClient.DMT_External_Rating_Fitch__c;
+        client.sectorHead = oppClient.DMT_Sector_Head__c;
+        
         if (mapGroupsCache.containsKey('groupCode')) {
             client.groupId = (String) mapGroupsCache.get('groupCode');
         }
@@ -409,7 +448,7 @@ public with sharing class DMT_Passport_Helper {
 
     private static DMT_PassportOpportunity_Wrapper.Opportunity buildOpportunityDetails(Opportunity oppty,DMT_Opportunity_Client__c oppClient) {
 
-        List<DMT_X_Sell__c> xSells = oppty.X_sell__r;
+
 
         DMT_PassportOpportunity_Wrapper.Opportunity opp = new DMT_PassportOpportunity_Wrapper.Opportunity();
         opp.counterpart =oppClient.Counterpart__c;
@@ -417,29 +456,65 @@ public with sharing class DMT_Passport_Helper {
         opp.europeanBank=oppClient.European_Bank_Check__c;
         opp.clientRating=oppClient.g_upd_lmscl_internal_ratg_type__c;
         opp.externalClientRating=oppClient.External_Rating__c;
+        opp.clientBDI = oppClient.DMT_Client_Net_Incomes__c;
+        opp.clientRWA = oppClient.DMT_Client_RWA__c;
         opp.scra=oppClient.SCRA__c;
         opp.currencyId = oppty.DMT_CurrencyText__c;
-        opp.clientSector = oppClient.DMT_Sector__c != null ? oppClient.DMT_Sector__c.left(5) : null;opp.clientSector = oppClient.DMT_Sector__c;
-        opp.thresholdGroupType=oppty.DMT_Threshold_Type__c;
+        opp.underwriting = oppty.underwriting_agreement_type__c;
+        opp.opportunityAmount = oppty.DMT_CUR_Notional_Amount__c;
+        opp.opportunityAmountEUR = DMT_Currency.convert(oppty.DMT_CUR_Notional_Amount__c, oppty.DMT_CurrencyText__c, 'EUR') != null? DMT_Currency.convert(oppty.DMT_CUR_Notional_Amount__c, oppty.DMT_CurrencyText__c, 'EUR').setScale(2) : null;
+        opp.businessApprovedDate = oppty.DMT_Bussiness_Approved_Date__c;
+        opp.tenor = oppty.DMT_Tenor__c;
+        opp.productArea = oppty.DMT_Product_Area__c;
+        opp.capitalAction = oppty.DMT_Capital_Action__c;
+        opp.contingentCommitments = oppty.DMT_ContingentCommitments__c;
+        opp.confidential = oppty.DMT_Confidential__c;
+        opp.opportunityAmountDealTotal = oppty.DMT_Opportunity_amount__c;
+        opp.xsellCostToIncome = oppClient.DMT_Xsell_Cost_to_Income__c;
+    
         if(oppClient.Group_Sales_Check__c==true){
             opp.groupSales = 1;
         }else{
-            opp.groupSales=0;
+            opp.groupSales = 0;
         }
 
-        opp.xsells = new List<DMT_PassportOpportunity_Wrapper.Xsells>();
-
-        for(DMT_X_Sell__c xsell : xSells){
-            DMT_PassportOpportunity_Wrapper.Xsells xs = new DMT_PassportOpportunity_Wrapper.Xsells();
-            xs.year = xsell.g_year__c !=null ? Integer.valueOf(xsell.g_year__c.year()) : null;
-            xs.amount = xsell.g_notional_amount__c;
-            xs.currencyId = xsell.DMT_Currency__c;
-
-            opp.xsells.add(xs);
-        }
-
+        opp.xsells = buildBusinessPlanXsells(oppClient);
+        system.debug('funciona correctamente ->' +  opp.opportunityAmountEUR);
+        system.debug('funciona correctamente ->' +  opp.opportunityAmount);
         return opp;
 
+    }
+
+    private static List<DMT_PassportOpportunity_Wrapper.Xsells> buildBusinessPlanXsells(DMT_Opportunity_Client__c oppClient) {
+        List<DMT_PassportOpportunity_Wrapper.Xsells> xsells = new List<DMT_PassportOpportunity_Wrapper.Xsells>();
+
+        if (oppClient == null) {
+            return xsells;
+        }
+
+        Integer currentYear = Date.today().year();
+        String currencyId = oppClient.DMT_Currency__c;
+
+        addBusinessPlanXsellIfValid(xsells, currentYear - 2, oppClient.Past2_FY_Child_X_Sell_amount__c, currencyId);
+        addBusinessPlanXsellIfValid(xsells, currentYear - 1, oppClient.Past_FY_Child_X_Sell_amount__c, currencyId);
+        addBusinessPlanXsellIfValid(xsells, currentYear, oppClient.Current_FY_Child_X_Sell_amount__c, currencyId);
+        addBusinessPlanXsellIfValid(xsells, currentYear + 1, oppClient.Next_FY_Child_X_Sell_amount__c, currencyId);
+
+        return xsells;
+    }
+
+    private static void addBusinessPlanXsellIfValid(List<DMT_PassportOpportunity_Wrapper.Xsells> xsells, Integer year, Decimal amount, String currencyId) {
+        if (amount != null && amount != 0 && String.isNotBlank(currencyId)) {
+            xsells.add(buildBusinessPlanXsell(year, amount, currencyId));
+        }
+    }
+
+    private static DMT_PassportOpportunity_Wrapper.Xsells buildBusinessPlanXsell(Integer year, Decimal amount, String currencyId) {
+        DMT_PassportOpportunity_Wrapper.Xsells xs = new DMT_PassportOpportunity_Wrapper.Xsells();
+        xs.year = year;
+        xs.amount = amount;
+        xs.currencyId = currencyId;
+        return xs;
     }
 
     private static List<DMT_PassportOpportunity_Wrapper.Product> buildOpportunityProducts(Opportunity oppty) {
@@ -447,13 +522,62 @@ public with sharing class DMT_Passport_Helper {
         Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap = buildMitigantsMap(oppLineItems);
         Map<String, String> tax895Map = buildTaxonomyMap(mitigantsMap);
         Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap = buildAmortizationMap(oppLineItems);
+        Map<String, String> groupCountryRiskMap = buildGroupCountryRiskMap(oppLineItems);
 
         List<DMT_PassportOpportunity_Wrapper.Product> products = new List<DMT_PassportOpportunity_Wrapper.Product>();
         for (OpportunityLineItem opplitem : oppLineItems) {
-            products.add(buildProduct(opplitem, mitigantsMap, tax895Map, amortizationPayMap));
+            products.add(buildProduct(opplitem, mitigantsMap, tax895Map, amortizationPayMap, groupCountryRiskMap, oppty));
         }
 
         return products;
+    }
+
+    private static Map<String, String> buildGroupCountryRiskMap(List<OpportunityLineItem> oppLineItems) {
+        Map<String, String> groupCountryRiskMap = new Map<String, String>();
+        Set<String> countryRiskValues = new Set<String>();
+
+        for (OpportunityLineItem opplitem : oppLineItems) {
+            if (String.isNotBlank(opplitem.gf_country_risk__c)) {
+                countryRiskValues.add(opplitem.gf_country_risk__c);
+            }
+        }
+
+        if (countryRiskValues.isEmpty()) {
+            return groupCountryRiskMap;
+        }
+
+        List<DMT_Taxonomy_Relationship__c> relationships = DMT_Passport_Selector.getCountryRiskRelationships(countryRiskValues);
+        Map<String, String> finalValueByInitialValue = new Map<String, String>();
+        Set<String> finalCatalogValues = new Set<String>();
+
+        for (DMT_Taxonomy_Relationship__c relation : relationships) {
+            if (String.isNotBlank(relation.DMT_Value_Catalog_Initial__c) && String.isNotBlank(relation.DMT_Value_Catalog_Final__c)) {
+                if (!finalValueByInitialValue.containsKey(relation.DMT_Value_Catalog_Initial__c)) {
+                    finalValueByInitialValue.put(relation.DMT_Value_Catalog_Initial__c, relation.DMT_Value_Catalog_Final__c);
+                }
+                finalCatalogValues.add(relation.DMT_Value_Catalog_Final__c);
+            }
+        }
+
+        if (finalCatalogValues.isEmpty()) {
+            return groupCountryRiskMap;
+        }
+
+        List<DMT_Taxonomy_Values__c> taxonomyValues = DMT_Passport_Selector.getTaxonomyValuesByCatalogAndValues('I076', finalCatalogValues);
+        Map<String, String> nameByValue = new Map<String, String>();
+
+        for (DMT_Taxonomy_Values__c taxonomyValue : taxonomyValues) {
+            if (String.isNotBlank(taxonomyValue.DMT_Value__c) && String.isNotBlank(taxonomyValue.DMT_Name_EN__c)) {
+                nameByValue.put(taxonomyValue.DMT_Value__c, taxonomyValue.DMT_Name_EN__c);
+            }
+        }
+
+        for (String countryRiskValue : finalValueByInitialValue.keySet()) {
+            String finalCatalogValue = finalValueByInitialValue.get(countryRiskValue);
+            groupCountryRiskMap.put(countryRiskValue, nameByValue.get(finalCatalogValue));
+        }
+
+        return groupCountryRiskMap;
     }
 
     private static Map<Id, List<DMT_Opportunity_Mitigant__c>> buildMitigantsMap(List<OpportunityLineItem> oppLineItems) {
@@ -518,26 +642,32 @@ public with sharing class DMT_Passport_Helper {
         return amortizationPayMap;
     }
 
-    private static DMT_PassportOpportunity_Wrapper.Product buildProduct(OpportunityLineItem opplitem, Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap, Map<String, String> tax895Map, Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap) {
+    private static DMT_PassportOpportunity_Wrapper.Product buildProduct(OpportunityLineItem opplitem, Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap, Map<String, String> tax895Map, Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap, Map<String, String> groupCountryRiskMap, Opportunity oppty) {
         DMT_PassportOpportunity_Wrapper.Product product = new DMT_PassportOpportunity_Wrapper.Product();
+        product.name = opplitem.DMT_TXT_ProductNameOLI__c;
         product.geographyBranch = opplitem.g_branch_id__c;
         product.initDate = opplitem.gf_initial_date__c;
         product.endDate = opplitem.gf_maturity_date__c;
         product.currencyId = opplitem.g_currency_id__c;
-        product.productId = opplitem.Id;
+        product.productId = opplitem.gf_group_priority_opportunity_id__c;
+        product.useOfProceeds = opplitem.loan_purpose_desc__c;
+        product.TXTComentarios = opplitem.DMT_TXT_Comentarios__c;
         product.lastLevelId = opplitem.DMT_Risk_Type__c;
-        product.businessArea = 'IB&F';
+        product.businessArea = oppty.DMT_Product_Area__c;
         product.prco = opplitem.ProductCode;
         product.intermediateDate = opplitem.gf_intermediate_date__c;
         product.countryRisk = opplitem.gf_country_risk__c;
+        product.groupCountryRisk = groupCountryRiskMap.get(opplitem.gf_country_risk__c);
         product.crr2 = String.valueOf(opplitem.gf_crr2_essential_public_services__c);
         product.countryRating = opplitem.gf_country_rating__c;
+        product.tenorAmount = opplitem.DMT_Deal_Amount_Tenors__c;
 
         product.funding = buildFunding(opplitem);
         product.mitigants = buildMitigants(opplitem.Id, mitigantsMap, tax895Map);
         product.amortization = buildAmortization(opplitem, amortizationPayMap.get(opplitem.Id));
+        product.liquidityFee = opplitem.DMT_Liquidity_Fee__c;
+        product.dealAmount = opplitem.DMT_Deal_amount__c;
 
-        System.debug(LoggingLevel.INFO, 'PRODUCTO OPP-- ' + JSON.serialize(product));
         return product;
     }
 
@@ -549,6 +679,12 @@ public with sharing class DMT_Passport_Helper {
         funding.fbFunding = opplitem.gf_funding_cost_fb__c;
         funding.greenBond = opplitem.gf_green_bonus__c;
         funding.socialBond = opplitem.gf_social_bond__c;
+        funding.sustainableDeal = opplitem.DMT_sustainable_deal_assessment__c;
+        funding.sustainableDealSubcategory = opplitem.DMT_Sustainable_Deal_Subtype__c;
+        funding.sustainableDealLabel = opplitem.DMT_sustainable_deal_value__c;
+        funding.sustainableDelegatedFilter = opplitem.DMT_Sustainability_deal_value_criteria__c;
+        funding.sustainabilityPercentage = opplitem.DMT_PER_Sustainability_Percentage__c;
+        funding.sustainabilityBonus = opplitem.DMT_Sustainability_bonus_eligible__c;
         return funding;
     }
 
@@ -561,18 +697,19 @@ public with sharing class DMT_Passport_Helper {
                 mitigant.europeanBank = mt.European_Bank_Check__c;
                 mitigant.mitigantId = mt.Id;
                 mitigant.mitigantType = tax895Map.get(mt.Mitigant_Type__c);
-                mitigant.mitigantCounterpart = mt.Counterpart__c;
+                mitigant.mitigantCounterpart = String.isBlank(mt.Counterpart__c) ? 'Corporates' : mt.Counterpart__c;
                 mitigant.mitigantRating = mt.Internal_Rating__c;
                 mitigant.ratingExternal = mt.External_Rating__c;
                 mitigant.mitigantScra = mt.SCRA__c;
                 mitigant.mitigantLiquidationPeriod = mt.Liquidation_Period__c;
                 mitigant.mitigantEndDate = mt.End_Date__c;
-                mitigant.mitigantCurrency = mt.CurrencyIsoCode;
+                mitigant.mitigantCurrency = mt.DMT_Currency__c;
                 mitigant.commercialRisk = mt.Commercial_Percentage__c;
                 mitigant.politicalRisk = mt.Political_Percentage__c;
-                mitigant.eca = mt.Garantor_European_ECA__c;
+                //mitigant.eca = mt.Garantor_European_ECA__c; //CIBGLOBALD-3497
                 mitigant.mitigantCountry = mt.DMT_Country_Guarantor__c;
                 mitigant.customerId = mitigantClientCode; //CIBGLOBALD-2027
+                mitigant.scoring = mt.DMT_Scoring__c;
                 if (mapGroupsCache.containsKey('groupCode')) {
                     mitigant.groupId = (String) mapGroupsCache.get('groupCode'); //CIBGLOBALD-2027
                 }
@@ -594,7 +731,16 @@ public with sharing class DMT_Passport_Helper {
         amortization.paymentFrequency = opplitem.gf_payment_frequency__c;
         amortization.feesPeriodic = opplitem.gf_accrual_fees_bp__c != null ? opplitem.gf_accrual_fees_bp__c : 0;
         //periodic
+        amortization.rateType = RATE_TYPE_MAPPING.containsKey(opplitem.DMT_RateType__c) ? RATE_TYPE_MAPPING.get(opplitem.DMT_RateType__c) : opplitem.DMT_RateType__c;
         amortization.payments = new List<DMT_PassportOpportunity_Wrapper.AmortizationPayments>();
+        amortization.newmoney = opplitem.DMT_NewMoney_BBVA__c;
+        amortization.oldmoney = opplitem.DMT_OldMoney_BBVA__c;
+        amortization.finaltake = opplitem.syndicated_loan_drawn_amount__c;
+        amortization.pricinggridOrstepUp = opplitem.DMT_PricingGrid_OR_StepUps__c;
+        amortization.extensionDurationFees = opplitem.DMT_Extension_Duration_Fees__c;
+        amortization.expectedDrawn = opplitem.DMT_Expected_Drawn__c;
+        amortization.bullet = opplitem.DMT_bullet_amortization_indicator__c;
+        amortization.balloon = opplitem.DMT_balloon_amortization_indicator__c;
 
         if (amortizationPayments != null) {
             for (DMT_Opportunity_Tenor__c amortizationPayment : amortizationPayments) {
@@ -627,12 +773,18 @@ public with sharing class DMT_Passport_Helper {
                     DMT_PassportOpportunity_Wrapper.ProductsLine pl = new DMT_PassportOpportunity_Wrapper.ProductsLine();
                     pl.productApproval = oli.DMT_Associated_Line_Product__r.gf_group_priority_line_id__c;
                     pl.productOpportunity = oli.gf_group_priority_opportunity_id__c;
+                    pl.productId = oli.Id;
                     productsLineList.add(pl);
                 }
             }
         }
 
         oppSanctions.productsLine = productsLineList;
+        oppSanctions.businessApprovedDateStartDate = oppty.DMT_Sanction__r.DMT_Bussiness_Approved_Date__c;
+        oppSanctions.businessApprovedDateEndDate = oppty.DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c;
+        oppSanctions.riskStartDate = oppty.DMT_Sanction__r.Start_Date__c;
+        oppSanctions.riskEndDate = oppty.DMT_Sanction__r.End_Date__c;
+        oppSanctions.newApproval = (oppty.DMT_Sanction__r.DMT_Opportunity__c == oppty.Id);
 
         return new List<DMT_PassportOpportunity_Wrapper.OpportunitySanctions>{ oppSanctions };
     }
@@ -640,7 +792,7 @@ public with sharing class DMT_Passport_Helper {
     // Métodos auxiliares
     private static String userId(String recordId) {
         if (recordId != null && objectNameById(recordId) == User.getSObjectType().getDescribe().getName()) {
-            User u = [SELECT Id, FederationIdentifier FROM User WHERE Id = :recordId WITH SECURITY_ENFORCED];
+            User u = [SELECT Id, FederationIdentifier FROM User WHERE Id = :recordId WITH USER_MODE];
             return u.FederationIdentifier.left(8);
         }
         return null;
@@ -662,8 +814,12 @@ public with sharing class DMT_Passport_Helper {
         featureBody.validations = DMT_LineFeatureGenCons_Calc.checkValidations(recordId, clientsGroup);
 
         for (DMT_Wrapper_Passport_Abs.FeatureGenConsiderations validation : featureBody.validations) {
-            if (validation.state != DMT_Constants.FEATURE_GC_STATE_GREEN) {
+            if (validation.state == DMT_Constants.FEATURE_GC_STATE_YELLOW) {
+                featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_YELLOW;
+            }
+            else if (validation.state == DMT_Constants.FEATURE_GC_STATE_RED) {
                 featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_RED;
+                break;
             }
         }
 
@@ -672,18 +828,17 @@ public with sharing class DMT_Passport_Helper {
 
     public static List<DMT_Wrapper_Passport_Abs.OptionalFeatures> calculateOptionalFeatures(DMT_Line__c dmtLine) {
         List<DMT_Selected_Features__c> selectedFeatures = DMT_Passport_Selector.getSelectedFeatures(dmtLine.Id);
-        List<DMT_Wrapper_Passport_Abs.OptionalFeatures> optionalFeaturesList = new List<DMT_Wrapper_Passport_Abs.OptionalFeatures>();
 
+        List<DMT_Wrapper_Passport_Abs.OptionalFeatures> optionalFeaturesList = new List<DMT_Wrapper_Passport_Abs.OptionalFeatures>();
         for (DMT_Selected_Features__c feature : selectedFeatures) {
             DMT_Wrapper_Passport_Abs.OptionalFeatures optionalFeature = new DMT_Wrapper_Passport_Abs.OptionalFeatures();
             optionalFeature.id = feature.Feature__r.gf_code_value_id__c;
             optionalFeaturesList.add(optionalFeature);
         }
-
         return optionalFeaturesList;
     }
 
-    public static DMT_Wrapper_Passport_Abs.Feature calculateFeatureGenConsOpp(Opportunity opp, String clientsGroup) {
+    public static DMT_Wrapper_Passport_Abs.Feature calculateFeatureGenConsOpp(Opportunity opp,Account validationAccount,DMT_Opportunity_Client__c oppClient, String clientsGroup) {
         DMT_Wrapper_Passport_Abs.Feature featureBody = new DMT_Wrapper_Passport_Abs.Feature();
         featureBody.id = '200';
         featureBody.name = DMT_Constants.FEATURE_GC_NAME;
@@ -692,29 +847,26 @@ public with sharing class DMT_Passport_Helper {
         featureBody.motorDesc = DMT_Constants.FEATURE_GC_MOTORDESC;
         featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_GREEN;
         //featureBody.validations = new List<DMT_Wrapper_Passport_Abs.FeatureGenConsiderations>();
-        featureBody.validations = DMT_OppFeatureGenCons_Calc.checkValidations(opp, clientsGroup);
+        featureBody.validations = DMT_OppFeatureGenCons_Calc.checkValidations(opp, validationAccount,oppClient, clientsGroup);
 
          for (DMT_Wrapper_Passport_Abs.FeatureGenConsiderations validation : featureBody.validations) {
             if (validation.state != DMT_Constants.FEATURE_GC_STATE_GREEN) {
-                featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_RED;
+                featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_YELLOW;
             }
         }
-
 
         return featureBody;
     }
 
     public static List<DMT_Wrapper_Passport_Abs.OptionalFeatures> calculateOptionalFeaturesOpp(Opportunity oppty) {
         List<DMT_Selected_Features__c> selectedFeatures = DMT_Passport_Selector.getSelectedFeaturesOPP(oppty.Id);
-        System.debug('DMT_Passport_Helper calculateOptionalFeaturesOpp selectedFeatures: ' + selectedFeatures);
-        List<DMT_Wrapper_Passport_Abs.OptionalFeatures> optionalFeaturesList = new List<DMT_Wrapper_Passport_Abs.OptionalFeatures>();
 
+        List<DMT_Wrapper_Passport_Abs.OptionalFeatures> optionalFeaturesList = new List<DMT_Wrapper_Passport_Abs.OptionalFeatures>();
         for (DMT_Selected_Features__c feature : selectedFeatures) {
             DMT_Wrapper_Passport_Abs.OptionalFeatures optionalFeature = new DMT_Wrapper_Passport_Abs.OptionalFeatures();
             optionalFeature.id = feature.Feature__r.gf_code_value_id__c;
             optionalFeaturesList.add(optionalFeature);
         }
-        System.debug('DMT_Passport_Helper calculateOptionalFeaturesOpp optionalFeaturesList: ' + optionalFeaturesList);
         return optionalFeaturesList;
     }
 
@@ -726,6 +878,7 @@ public with sharing class DMT_Passport_Helper {
         //DMT_Passport_Selector.getRecordTypeId('Approval','Case');
         newCase.OwnerId = aproverId;
         newCase.Status = 'Pending';
+        //CIBGLOBALD-1453 create case Opportunidad
         if(line != null){
             newCase.DMT_Line__c = line.Id;
             newCase.AccountId = line.Client__c;
@@ -745,7 +898,6 @@ public with sharing class DMT_Passport_Helper {
         insert newCase;
 
         return newCase;
-
     }
 
     public static Task  createTask(Id caseId,Id aproverId, DMT_Task_Type__c taskType) {
@@ -768,7 +920,6 @@ public with sharing class DMT_Passport_Helper {
 
     public static void callPassportService(Passport__c passport,Map<String, Object> requestMap, Map<String, Object> outMap ,String objectName) {
 
-        System.debug('ABS REQUEST - '+ JSON.serialize(requestMap));
         HttpResponse response;
         String serviceName;
 
@@ -778,13 +929,13 @@ public with sharing class DMT_Passport_Helper {
         } else if(objectName == DMT_Line__c.getSObjectType().getDescribe().getName()){
             serviceName='DMTO_EvaluationLine';
         }
-        response = DMT_HPG_Utils.callService_DMT(serviceName, requestMap);
+        response = DMT_HPG_Utils.callService(serviceName, requestMap);
 
         if( (response.getStatusCode() == 200 || response.getStatusCode() == 201) ) {
             if(objectName == Opportunity.getSObjectType().getDescribe().getName() ){
                 Opportunity oppToUpdate = new Opportunity();
                 oppToUpdate.Id = passport.Opportunity__c;
-                oppToUpdate.DMT_Requested_Passport__c = hasProfitabilityResultsFromJson(response.getBody());
+                oppToUpdate.DMT_Requested_Passport__c = true;
 
                 update oppToUpdate;
             }
@@ -793,20 +944,143 @@ public with sharing class DMT_Passport_Helper {
 
                 bodyResponse = bodyResponse.replaceAll('@date', Datetime.now().format('yyyy-MM-dd HH:mm:ss'));
 
+                outMap.put('payload', bodyResponse);
+                // 2. Return the state of the flag
+                outMap.put('isObsolete', false);
+
                 passport.DMT_Is_Obsoleted_Passport_Save__c = false;
                 passport.DMT_Passport_Save__c = bodyResponse;
-                System.debug('callPassport body response: ' + bodyResponse);
 
                 update passport;
-                System.debug('fuera');
                 //callPassportClosedWon(passport.DMT_Line__c);
 
+                // New logic for non-mandatory proposal/passport features
+                cancelNonMandatoryProposalWorkflows(passport, bodyResponse, objectName);
         } else {
+            outMap.put('payload', null);
+            outMap.put('isObsolete', true);
             outMap.put('result', false);
             outMap.put('message', Label.OpportunityServiceError);
         }
     }
 
+    /**
+     * @description
+        * Cancela el workflow (Tasks + Cases) de features de tipo proposal (passport) cuando la Opportunity está en estado 'Ready to close'
+        * y la feature llega congelada desde Passport (indicatorId = 'Y').
+     *
+     * Lógica:
+     * - Solo se aplica para el passport de Opportunity
+        * - Se identifican las features en las que passportSanction = 'passport' e indicatorId = 'Y'
+     * - Para esas features se buscan Cases activos (Status != 'Finished') y Tasks activas asociadas a ellos. Primero se cancelan las Tasks (Status = 'Cancelled') y después se finalizan los Cases (Status = 'Finished')
+     */
+    public static void cancelNonMandatoryProposalWorkflows(Passport__c passport, String bodyResponse, String objectName) {
+
+        try {
+            // Solo se ejecuta si es Opportunity
+            if (objectName != Opportunity.getSObjectType().getDescribe().getName()) {
+                return;
+            }
+
+            // Se valida que hay Passport y Opportunity 
+            if (passport == null || passport.Opportunity__c == null) {
+                return;
+            }
+
+            // Se obtiene el estado actual de la Opportunity
+            Opportunity opp = [SELECT Id, StageName FROM Opportunity WHERE Id = :passport.Opportunity__c LIMIT 1];
+
+            // La lógica solo aplica cuando el estado es 'Ready to close'
+            Boolean isReadyToClose = opp.StageName == 'Ready to close';
+
+            if (!isReadyToClose) {
+                return;
+            }
+
+            // Se valida que el JSON exista
+            if (String.isBlank(bodyResponse)) {
+                return;
+            }
+
+            // Se parsea la respuesta del servicio
+            Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(bodyResponse);
+            if (root == null || !root.containsKey('data')) {
+                return;
+            }
+
+            Map<String, Object> dataMap = (Map<String, Object>) root.get('data');
+            if (dataMap == null || !dataMap.containsKey('features')) {
+                return;
+            }
+
+            List<Object> rawFeatures = (List<Object>) dataMap.get('features');
+            if (rawFeatures == null || rawFeatures.isEmpty()) {
+                return;
+            }
+
+            Set<String> frozenProposalFeatureIds = new Set<String>();
+
+            for (Object featureObj : rawFeatures) {
+                if (!(featureObj instanceof Map<String, Object>)) {
+                    continue;
+                }
+
+                Map<String, Object> featureMap = (Map<String, Object>) featureObj;
+
+                String sanction = (String) featureMap.get('passportSanction');
+                sanction = sanction != null ? sanction.trim().toLowerCase() : null;
+                Object featureIdObj = featureMap.get('id');
+
+                String indicatorId = (String) featureMap.get('indicatorId');
+                indicatorId = indicatorId != null ? indicatorId.trim().toUpperCase() : null;
+                Boolean isFrozenFeature = indicatorId == 'Y';
+
+                // Solo interesan las features congeladas de passport o approval
+                Boolean isCancellableSanction = sanction == 'passport' || sanction == 'approval';
+                if (featureIdObj != null && isCancellableSanction && isFrozenFeature) {
+                    frozenProposalFeatureIds.add(String.valueOf(featureIdObj));
+                }
+            }
+
+            // Se valida que existan features de tipo proposal congeladas
+            if (frozenProposalFeatureIds.isEmpty()) {
+                return;
+            }
+
+            // Se obtienen Cases activos de esas features
+            List<Case> activeCases = DMT_Passport_Selector.getActiveProposalCasesByOpportunityAndFeatureIds(passport.Opportunity__c, frozenProposalFeatureIds);
+
+            if (activeCases.isEmpty()) {
+                return;
+            }
+
+            Set<Id> caseIds = new Set<Id>();
+            for (Case activeCase : activeCases) {
+                caseIds.add(activeCase.Id);
+            }
+
+            // Se obtienen Tasks activas de esos Cases
+            List<Task> activeTasks = DMT_Passport_Selector.getActiveTasksByCaseIds(caseIds);
+
+            // Se cancelan Tasks
+            if (!activeTasks.isEmpty()) {
+                for (Task activeTask : activeTasks) {
+                    activeTask.Status = 'Cancelled';
+                }
+                update activeTasks;
+            }
+
+            // Se finalizan Cases
+            for (Case activeCase : activeCases) {
+                activeCase.Status = 'Finished';
+            }
+            update activeCases;
+
+        } catch (Exception e) {
+            System.debug('Error: ' + e.getMessage());
+            DES_Exception_Utils.logException(e,'DMT_Passport_Helper', 'cancelNonMandatoryProposalWorkflows', 'DMT', '');
+        }
+    }
 
     public static String setPayloadMin(String recordId) {
         DMT_Line__c dmtLine = DMT_Passport_Selector.getLine(recordId);
@@ -871,7 +1145,6 @@ public with sharing class DMT_Passport_Helper {
             products.add(productDeri);
 
             payload.products = products;
-            system.debug('json'+ payload);
         }else{
 
         List<DMT_PasppportMin_Wrapper.Product> products = new List<DMT_PasppportMin_Wrapper.Product>();
@@ -918,7 +1191,6 @@ public with sharing class DMT_Passport_Helper {
         }
 
         payload.products = products;
-        system.debug('json'+ payload);
         }
         return JSON.serialize(payload);
     }
@@ -926,8 +1198,7 @@ public with sharing class DMT_Passport_Helper {
     public static void callConsumptionLimitService(Map<String, Object> requestMap, Map<String, Object> outMap) {
         HttpResponse response;
         String serviceName='DMT_PUT_OpportunityConsumptionLimit';
-        response = DMT_HPG_Utils.callService_DMT(serviceName, requestMap);
-        system.debug('response '+ response.getStatusCode());
+        response = DMT_HPG_Utils.callService(serviceName, requestMap);
         if( !(response.getStatusCode() == 200 || response.getStatusCode() == 201) ) {
             outMap.put('result', false);
             outMap.put('message', Label.OpportunityServiceError);
@@ -1008,54 +1279,47 @@ public with sharing class DMT_Passport_Helper {
         }
         return null;
     }
-
-    /* public static Boolean hasProfitabilityResults(String oppId) {
-        Passport__c passport = DMT_Passport_Selector.passportByIdOpportunity(oppId);
-        if (passport == null){
-             return false;
-        }
-
-        String jsonStr = passport.DMT_Passport_Save__c;
-        DMT_PassportLineWrapper wrapperedPassport =  DMT_PassportLineWrapper.parseLinePassport(jsonStr);
-        if (wrapperedPassport == null || wrapperedPassport.data == null || wrapperedPassport.data.features == null) {
-            return false;
-        }
-
-        for (DMT_PassportLineWrapper.Feature f : wrapperedPassport.data.features) {
-            if (f.profitability != null &&
-                f.profitability.results != null &&
-                !f.profitability.results.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    } */
     
-    public static Boolean hasProfitabilityResults(String oppId) {
-        Passport__c passport = DMT_Passport_Selector.passportByIdOpportunity(oppId);
-        if (passport == null) {
-            return false;
-        }
-        return hasProfitabilityResultsFromJson(passport.DMT_Passport_Save__c);
-    }
-
-    public static Boolean hasProfitabilityResultsFromJson(String jsonStr) {
-        if (String.isBlank(jsonStr)) {
-            return false;
-        }
-        DMT_PassportLineWrapper wrapperedPassport = DMT_PassportLineWrapper.parseLinePassport(jsonStr);
-        return hasProfitabilityResultsFromWrapper(wrapperedPassport);
-    }
-   
-    private static Boolean hasProfitabilityResultsFromWrapper(DMT_PassportLineWrapper wrapperedPassport) {
-        if (wrapperedPassport == null || wrapperedPassport.data == null || wrapperedPassport.data.features == null) {
-            return false;
-        }
-        for (DMT_PassportLineWrapper.Feature f : wrapperedPassport.data.features) {
-            if (f.profitability != null && f.profitability.results != null && !f.profitability.results.isEmpty()) {
-                return true;
+    // --- Helper method to parse CoreDocs Taxonomies ---
+    public static List<DMT_Wrapper_Passport_Abs.DocumentLoad> buildDocumentLoads(String taxonomyValues) {
+        List<DMT_Wrapper_Passport_Abs.DocumentLoad> docs = new List<DMT_Wrapper_Passport_Abs.DocumentLoad>();
+        if (String.isNotBlank(taxonomyValues)) {
+            for (String val : taxonomyValues.split(',')) {
+                if (String.isNotBlank(val)) {
+                    DMT_Wrapper_Passport_Abs.DocumentLoad doc = new DMT_Wrapper_Passport_Abs.DocumentLoad();
+                    doc.itemType = val.trim();
+                    docs.add(doc);
+                }
             }
         }
-        return false;
+        return docs.isEmpty() ? null : docs;
+    }
+
+    public static Map<String, Object> resolveMainHolderAccountId(Id oppId) {
+        Map<String, Object> result = new Map<String, Object>();
+        Id accountId;
+        String clientType;
+
+        Custom_Association_Opportunity__c assoc = DMT_Passport_Selector.getMainHolderAssociation(oppId);
+        if (assoc != null && String.isNotBlank(assoc.g_customer_id__c)) {
+            Account mainHolder = DMT_Passport_Selector.getAccountFromCustomerId(assoc.g_customer_id__c);
+            if (mainHolder != null) {
+                accountId = mainHolder.Id;
+                clientType = mainHolder.DES_Client_Type__c;
+            } else {
+                accountId = assoc.Opportunity__r.AccountId;
+            }
+        } else {
+            accountId = DMT_Passport_Selector.getOpportunityAccountId(oppId);
+        }
+
+        if (clientType == null && accountId != null) {
+            Account acc = DMT_Passport_Selector.getAccountById(accountId);
+            clientType = acc != null ? acc.DES_Client_Type__c : null;
+        }
+
+        result.put('AccountId', accountId);
+        result.put('ClientType', clientType);
+        return result;
     }
 }

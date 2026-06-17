@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Counterpart__c</fullName>
+    <label>Counterpart</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CORP</fullName>
+                <default>false</default>
+                <label>Corporates and non Banking Financial Institutions</label>
+            </value>
+            <value>
+                <fullName>SOV</fullName>
+                <default>false</default>
+                <label>Sovereing</label>
+            </value>
+            <value>
+                <fullName>Fin Inst-B</fullName>
+                <default>false</default>
+                <label>Financial-Bank Institutions</label>
+            </value>
+            <value>
+                <fullName>Fin Inst-I</fullName>
+                <default>false</default>
+                <label>Financial-Insurance Institutions</label>
+            </value>
+            <value>
+                <fullName>PRO</fullName>
+                <default>false</default>
+                <label>Prospect_1</label>
+            </value>
+            <value>
+                <fullName>Banking Institutions</fullName>
+                <default>false</default>
+                <label>Banking Institutions</label>
+            </value>
+            <value>
+                <fullName>Project Finance</fullName>
+                <default>false</default>
+                <label>PF</label>
+            </value>
+            <value>
+                <fullName>CLEAR</fullName>
+                <default>false</default>
+                <label>Clearinghouses</label>
+            </value>
+            <value>
+                <fullName>FI</fullName>
+                <default>false</default>
+                <label>Financial Institutions - Banks</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

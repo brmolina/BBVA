@@ -26,9 +26,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         dmt_cl_ButtonCurrentOpp_Text:"Current opportunities",
         dmt_cl_SelectOpportunity_Text:"Select Opportunity Type:",
         dmt_cl_NoOppsMessage:"There aren't opportunities for this client.",
-        dmt_cl_ProfObsoletePassportMessage_Text:"Opportunity template values have been modified. Please recalculate passport for:",
         dmt_cl_SelectOpportunityProfitability_Text:"Select an opportunity",
-        dmt_cl_SelectproductProfitability_Text:"Select a product"
+        dmt_cl_SelectproductProfitability_Text:"Select a product",
+        dmt_cl_ProfObsoletePassportMessage_Text:"Opportunity template values have been modified. Please recalculate the passport for the use profitability test for the Opportunity:"
         };
               pubsubEvent = [];
               customEvent = [];
@@ -46,9 +46,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L3TRYA0"
+                  " card-0koKN0000008WuUYAU"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003QhPH2A0");
+                this.loadCustomStylesheetAttachement("00PKN0000046r1K2AQ");
                 
                 
               }

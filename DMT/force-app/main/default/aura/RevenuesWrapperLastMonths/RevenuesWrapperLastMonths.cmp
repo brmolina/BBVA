@@ -1,0 +1,41 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+    access="global">
+
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="familyChecked" type="String" description="Familia de productos a mostrar" />
+    <aura:attribute name="countryParam" type="String" description="Country de client a filtrar" />
+    <aura:attribute name="data" type="Object" />
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:attribute name="showViewDetails" type="Boolean" default="true" />
+    <aura:attribute name="monthsToDisplay" type="String" default="6"/>
+    <lightning:navigation aura:id="nav" />
+
+
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-p-around_xx-small slds-align_absolute-center">
+            <!-- slds-p-right_small -->
+            <div class="mainWrapper ">
+                <c:RevenuesLastMonths familyParam="GTB" recordId="{! v.recordId}" monthsToDisplay="{! v.monthsToDisplay}"
+                    showViewDetails="{! v.showViewDetails}" />
+            </div>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-p-around_xx-small  slds-align_absolute-center ">
+            <div class="mainWrapper ">
+                 <c:RevenuesLastMonths familyParam="GM" recordId="{! v.recordId}" monthsToDisplay="{! v.monthsToDisplay}" showViewDetails="{! v.showViewDetails}" />
+            </div>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" flexibility="auto"
+            class="slds-text-body_regular slds-p-around_xx-small slds-align_absolute-center">
+            <div class="mainWrapper ">
+                <c:RevenuesLastMonths familyParam="IBF" recordId="{! v.recordId}" monthsToDisplay="{! v.monthsToDisplay}" showViewDetails="{! v.showViewDetails}" />
+            </div>
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

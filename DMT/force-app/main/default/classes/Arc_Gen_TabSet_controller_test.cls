@@ -52,6 +52,11 @@ public class Arc_Gen_TabSet_controller_test {
     * @example Arc_Gen_TabSet_controller_test.setup()
     * --------------------------------------------------------------------------------------
     **/
+    /** String for result */
+    final private static String RESULT1 = 'The result is not empty';
+    /** String for result2 */
+    final private static String RESULT2 = 'The test to void contructor was successfull';
+
     @testSetup static void setup() {
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{'G000001'});
@@ -154,7 +159,7 @@ public class Arc_Gen_TabSet_controller_test {
         final arce__Account_has_Analysis__c accHasAnls = [SELECT Id FROM arce__Account_has_Analysis__c LIMIT 1];
         Test.startTest();
         final String tabWrapper = Arc_Gen_TabSet_controller.getTabsJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(tabWrapper), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(tabWrapper), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -172,7 +177,7 @@ public class Arc_Gen_TabSet_controller_test {
         final Account acc = [SELECT Id FROM Account LIMIT 1];
         Test.startTest();
         final String tabWrapper2 = Arc_Gen_TabSet_controller.getTabsJson(acc.id);
-        system.assertEquals(String.isEmpty(tabWrapper2), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(tabWrapper2), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -199,7 +204,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -228,7 +233,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -257,7 +262,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -286,7 +291,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -315,7 +320,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -344,7 +349,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -373,7 +378,7 @@ public class Arc_Gen_TabSet_controller_test {
 
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper result = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(String.isEmpty(result.gblDescriptionResponse), false, 'The result is not empty');
+        Assert.areEqual(String.isEmpty(result.gblDesResponse), false, RESULT1);
         Test.stopTest();
     }
     /**
@@ -391,7 +396,7 @@ public class Arc_Gen_TabSet_controller_test {
         Test.startTest();
         final arce.Arc_Gen_GenericUtilities.ConversionWrapper wrapper = new arce.Arc_Gen_GenericUtilities.ConversionWrapper();
         final Map<String, Object> result = arce.Arc_Gen_GenericUtilities.convertUnits(wrapper);
-        system.assertEquals(result.get('status'), 'Error', 'there was a problem in the call to the conversor');
+        Assert.areEqual(result.get('status'), 'Error', 'there was a problem in the call to the conversor');
         Test.stopTest();
     }
     /**
@@ -412,7 +417,7 @@ public class Arc_Gen_TabSet_controller_test {
         update accHasAnls;
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper res = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(res.changeStatus, true, 'Operation success');
+        Assert.areEqual(res.changeStatus, true, 'Operation success');
         Test.stopTest();
     }
     /**
@@ -433,7 +438,7 @@ public class Arc_Gen_TabSet_controller_test {
         update accHasAnls;
         Test.startTest();
         final Arc_Gen_TabSet_controller.TabsWrapper res = Arc_Gen_TabSet_controller.callTemplateAnalysisJson(accHasAnls.Id);
-        system.assertEquals(res.changeStatus, true, 'Operation success');
+        Assert.areEqual(res.changeStatus, true, 'Operation success');
         Test.stopTest();
     }
     /**
@@ -450,7 +455,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorController() {
         Test.startTest();
         final Arc_Gen_TabSet_controller controller = new Arc_Gen_TabSet_controller();
-        system.assertEquals(controller, controller, 'The test to void contructor was successfull');
+        Assert.areEqual(controller, controller, RESULT2);
         Test.stopTest();
     }
     /**
@@ -467,7 +472,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorService() {
         Test.startTest();
         final Arc_Gen_TabSet_service service = new Arc_Gen_TabSet_service();
-        system.assertEquals(service, service, 'The test to void contructor was successfull');
+        Assert.areEqual(service, service, RESULT2);
         Test.stopTest();
     }
     /**
@@ -484,7 +489,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorHelper() {
         Test.startTest();
         final Arc_Gen_TabsetService_Helper help = new Arc_Gen_TabsetService_Helper();
-        system.assertEquals(help, help, 'The test to void contructor was successfull');
+        Assert.areEqual(help, help, RESULT2);
         Test.stopTest();
     }
     /**
@@ -501,7 +506,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorData() {
         Test.startTest();
         final arce.Arc_Gen_ArceAnalysis_Data data = new arce.Arc_Gen_ArceAnalysis_Data();
-        system.assertEquals(data, data, 'The test to void contructor was successfull');
+        Assert.areEqual(data, data, RESULT2);
         Test.stopTest();
     }
     /**
@@ -518,7 +523,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorData2() {
         Test.startTest();
         final arce.Arc_Gen_AccHasAnalysis_Data data = new arce.Arc_Gen_AccHasAnalysis_Data();
-        system.assertEquals(data, data, 'The test to void contructor was successfull');
+        Assert.areEqual(data, data, RESULT2);
         Test.stopTest();
     }
     /**
@@ -535,7 +540,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorSector() {
         Test.startTest();
         final Arc_Gen_Sector_Data data = new Arc_Gen_Sector_Data();
-        system.assertEquals(data, data, 'The test to the void contructor was successfull');
+        Assert.areEqual(data, data, 'The test to the void contructor was successfull');
         Test.stopTest();
     }
     /**
@@ -553,7 +558,7 @@ public class Arc_Gen_TabSet_controller_test {
         final arce__Account_has_Analysis__c accHasAnls = [SELECT Id,arce__Analysis__c,arce__Analysis__r.arce__Stage__c,arce__group_asset_header_type__c,arce__capital_provision_per__c,arce__participant_srty_age_number__c,arce__customer_qualitative_type__c FROM arce__Account_has_Analysis__c WHERE arce__group_asset_header_type__c = '1' LIMIT 1];
         Test.startTest();
         final Map<String, Object> response =(Map<String, Object>)JSON.deserializeUntyped(Arc_Gen_TabSet_controller.updateGroupFields(accHasAnls));
-        system.assertEquals('true', response.get('status'), 'The operation has a true status');
+        Assert.areEqual('true', response.get('status'), 'The operation has a true status');
         Test.stopTest();
     }
     /**
@@ -576,7 +581,7 @@ public class Arc_Gen_TabSet_controller_test {
         } catch(AuraHandledException ex) {
             response = ex.getMessage();
         }
-        system.assertEquals(System.Label.Arc_Gen_empty_table, response, 'Operation Error');
+        Assert.areEqual(System.Label.Arc_Gen_empty_table, response, 'Operation Error');
         Test.stopTest();
     }
     /**
@@ -594,7 +599,7 @@ public class Arc_Gen_TabSet_controller_test {
         final arce__Account_has_Analysis__c accHasAnls = [SELECT Id,arce__Analysis__c,arce__group_asset_header_type__c,arce__capital_provision_per__c,arce__participant_srty_age_number__c,arce__customer_qualitative_type__c FROM arce__Account_has_Analysis__c WHERE arce__group_asset_header_type__c = '1' LIMIT 1];
         Test.startTest();
         final arce__Account_has_Analysis__c response = Arc_Gen_TabSet_controller.getAccHasAnalysis(accHasAnls.Id);
-        system.assertEquals(response.Id, accHasAnls.Id, 'It gets the data of the account has analysis');
+        Assert.areEqual(response.Id, accHasAnls.Id, 'It gets the data of the account has analysis');
         Test.stopTest();
     }
     /**
@@ -617,7 +622,7 @@ public class Arc_Gen_TabSet_controller_test {
         } catch(AuraHandledException ex) {
             response = ex.getMessage();
         }
-        system.assertEquals(System.Label.Arc_Gen_empty_table, response, 'Operation Error');
+        Assert.areEqual(System.Label.Arc_Gen_empty_table, response, 'Operation Error');
         Test.stopTest();
     }
     /**
@@ -634,7 +639,7 @@ public class Arc_Gen_TabSet_controller_test {
     @isTest static void testContructorGroupFields() {
         Test.startTest();
         final Arc_Gen_SetAutomatedFileds_Service data = new Arc_Gen_SetAutomatedFileds_Service();
-        system.assertEquals(data, data, 'The test to the void contructor was successfull');
+        Assert.areEqual(data, data, 'The test to the void contructor was successfull');
         Test.stopTest();
     }
     /**
@@ -642,6 +647,7 @@ public class Arc_Gen_TabSet_controller_test {
     * @Description private Test Method to modify arce__limits_typology__c fields
     * --------------------------------------------------------------------------------------
     **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     private static void modifyTypologyOrder (arce__limits_typology__c arceFinState,String typeLevelType, Double typologyOrder,Boolean typoActive){
         arceFinState.arce__risk_typology_level_type__c = typeLevelType;
         arceFinState.arce__Typology_Order__c = typologyOrder;

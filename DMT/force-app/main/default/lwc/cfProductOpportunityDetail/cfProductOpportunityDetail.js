@@ -22,8 +22,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_purpose_title:"Client Use"
-        };
+              
               pubsubEvent = [];
               customEvent = [];
               
@@ -34,15 +33,14 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 data.Session = {} //reinitialize on reload
                 
                 
-                this.customLabels = this.Label;
-                      
+                
                 this.setDefinition(data);
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6OaYAK"
+                  " card-0koKE000000L8PnYAK"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pTra2AE");
+                this.loadCustomStylesheetAttachement("00PKE000001unJT2AY");
                 
                 
               }
@@ -63,10 +61,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel0 = interpolateWithRegex(`productOpportunityDetail`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);
 
+            this.customEventName0 = interpolateWithRegex(`textfieldchange`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[0] = this.handleEventAction.bind(this, data.events[1],1);
+
+            this.template.addEventListener(this.customEventName0,this.customEvent[0]);
+
+          
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
+
+            this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 
               }
             

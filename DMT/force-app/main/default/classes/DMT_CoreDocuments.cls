@@ -151,11 +151,11 @@ public with sharing class DMT_CoreDocuments {
     /**
      *  @Description: Class OriginInfo
     */
-    //public class OriginInfo {
-    //   @AuraEnabled
-    //    public String documentCode {get;set;}
-    //
-    //    @AuraEnabled
-    //    public String loc {get;set;}
-    //}
+    public class OriginInfo {
+       @AuraEnabled
+        public String documentCode {get;set;}
+    
+        @AuraEnabled
+        public String loc {get;set;}
+    }
 }

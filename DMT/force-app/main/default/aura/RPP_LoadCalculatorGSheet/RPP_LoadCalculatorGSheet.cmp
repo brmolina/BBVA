@@ -1,0 +1,33 @@
+<aura:component implements="flexipage:availableForAllPageTypes" controller="RPP_LoadCalculatorGSheet_Ctrl" access="global">
+    <aura:attribute name="waiting" type="Boolean" default="false"/>
+    <aura:attribute name="hasPermission" type="Boolean" default="true"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.waiting}">
+        <lightning:spinner variant="brand" />
+    </aura:if>
+    <aura:if isTrue="{!v.hasPermission}">
+        <div class="slds-m-around_x-large">
+            <div class="slds-text-heading_medium">
+                {!$Label.c.RPP_HOW_TO_LOAD_GOOGLE_SHEET}   
+            </div>
+            <br></br>
+            <div>
+                <aura:unescapedHtml value="{!$Label.c.RPP_HOW_TO_LOAD_GOOGLE_SHEET_INSTRUCTIONS}"/>
+            </div>
+            <br></br>
+            <div class="slds-m-around-large">
+                <lightning:button class="slds-button slds-button_brand" label="{!$Label.c.RPP_Load_GSheet}" onclick="{!c.loadGSheet}"/>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small">
+                    <lightning:icon iconName="utility:error" size="xx-small" variant="inverse"/>
+                </span>
+                <h2>{!$Label.c.RPP_This_User_Can_Not_Load_Google_Sheets}</h2>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

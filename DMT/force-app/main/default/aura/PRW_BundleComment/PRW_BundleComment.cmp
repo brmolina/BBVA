@@ -1,0 +1,49 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global">
+  <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+
+  <aura:attribute name="waiting"  type="Boolean" default="false"/>
+  <aura:attribute name="cifsOrigin" type="List"/>
+  <aura:attribute name="commentTittle" type="String" default=""/>
+  <aura:attribute name="bundle" type="Object" default="[]"/>
+  <aura:attribute name="masterData" type="Object" default="[]"/>
+  <aura:attribute name="isPreview" type="Boolean"/>
+  <aura:attribute name="isAvailable" type="Boolean"/>
+
+
+
+  <aura:set attribute="title" value="{!v.commentTittle}" />
+  <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <div class="slds-m-top_medium">
+      <aura:if isTrue="{!v.isAvailable}">
+        <aura:if isTrue="{!v.isPreview}">
+          <aura:iteration items="{!v.cifsOrigin}" var="indexNumberFila">
+            <p>{!indexNumberFila}</p><br/>
+          </aura:iteration>
+          <aura:set attribute="else">
+          
+            <aura:iteration items="{!v.bundle.cifNames}" var="indexNumberFila">
+              <p>{!indexNumberFila}</p><br/>
+            </aura:iteration>
+          </aura:set>
+        </aura:if>
+        <aura:set attribute="else">
+          <div class="slds-m-top_small">
+            {!$Label.c.PRW_BundleNotAvailable}
+          </div>
+        </aura:set>
+      </aura:if>
+    </div>
+  </div>
+  <footer class="slds-modal__footer">
+    <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+  </footer>
+  {!v.body}
+</aura:component>

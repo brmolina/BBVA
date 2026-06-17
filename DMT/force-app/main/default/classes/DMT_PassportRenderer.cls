@@ -7,9 +7,13 @@ public with sharing class DMT_PassportRenderer implements DMT_ViewRenderer {
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
         Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_DefaultPassportRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultPassportRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultPassportRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_DefaultPassportRenderer());
+
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

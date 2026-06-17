@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Clon_de__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Cuando se inserta/actualiza un miembro a una cuenta, estos miembros bajan a todas las cuentas hijas. Este campo se rellena y s vincula al BBVA Client Team que se insertó.</description>
+    <label>Clon de</label>
+    <referenceTo>DES_BBVA_Management_team__c</referenceTo>
+    <relationshipLabel>BBVA Client team</relationshipLabel>
+    <relationshipName>BBVA_Client_team</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

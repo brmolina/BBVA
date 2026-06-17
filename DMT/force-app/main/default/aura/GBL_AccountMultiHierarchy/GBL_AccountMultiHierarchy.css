@@ -1,0 +1,43 @@
+.THIS .slds-card {
+  box-shadow: none;
+}
+
+.THIS .slds-page-header {
+  background: #fff;
+}
+
+.THIS .slds-scrollable--y {
+  max-height: 200px;
+}
+
+.THIS .slds-tree_container {
+  max-width: 100%;
+}
+
+.THIS .myCombo-header {
+  max-width: 25%;
+}
+
+.THIS .node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.THIS .node text {
+  font: 11px verdana, sans-serif;
+}
+
+.THIS .link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.THIS .body {
+  overflow: hidden;
+}
+
+.THIS .slds-badge {
+  color: #000;
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_SingularCon__c</fullName>
+    <label>Singular Consumption</label>
+    <summarizedField>DMT_Risk_Line_Term__c.DMT_Max_Date__c</summarizedField>
+    <summaryFilterItems>
+        <field>DMT_Risk_Line_Term__c.DMT_Singular__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryForeignKey>DMT_Risk_Line_Term__c.DMT_Line__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

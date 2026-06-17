@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Converted_Currency__c</fullName>
+    <formula>IF(solution_classification_desc__c  =  $Label.DES_Working_Capital,
+    IF(
+        TEXT(Opportunity.CurrencyIsoCode)!=&apos;USD&apos; &amp;&amp; TEXT(Opportunity.CurrencyIsoCode)!=&apos;EUR&apos; ,
+        (syndicated_loan_drawn_amount__c / CURRENCYRATE(TEXT(Opportunity.CurrencyIsoCode)))* IF(CURRENCYRATE(&apos;USD&apos;)&gt;1,CURRENCYRATE(&apos;USD&apos;),1),
+        syndicated_loan_drawn_amount__c
+    ),
+    IF(
+        TEXT(Opportunity.CurrencyIsoCode)!=&apos;USD&apos; &amp;&amp; TEXT(Opportunity.CurrencyIsoCode)!=&apos;EUR&apos; ,
+        (bbva_prtcp_tranche_amount__c / CURRENCYRATE(TEXT(Opportunity.CurrencyIsoCode)))* IF(CURRENCYRATE(&apos;USD&apos;)&gt;1,CURRENCYRATE(&apos;USD&apos;),1),
+        bbva_prtcp_tranche_amount__c
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Converted Currency</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Currency</type>
+</CustomField>

@@ -29,7 +29,7 @@ public with sharing class DMT_TaxonomyMultipleProducts {
 
     // Modificación para añadir compatibilidad con Opportunity
     @AuraEnabled(cacheable=true)
-    public static List<Product2> getProductsDMT(Id recordId) {
+    public static List<Product2> getProductsDMT(Id recordId, String contextCode) {
         // Detectar el tipo de objeto a partir del prefijo del Id
         String prefix = String.valueOf(recordId).substring(0, 3);
         Schema.SObjectType sObjectType = null;
@@ -48,23 +48,33 @@ public with sharing class DMT_TaxonomyMultipleProducts {
                 // Ignorar tipos sin prefijo
             }
         }
-         
+
         if (sObjectType == Opportunity.SObjectType) {
             List<Opportunity> opp = DMT_Passport_Selector.getOpportunity(recordId);
+            String contextFilter = String.isBlank(contextCode) ? '%OPP%' : '%' + contextCode + '%';
             //String template = opp.DMT_line_template_type__c;
-            return [
+            System.debug('El contexto: ' + contextFilter);
+            List<Product2> products = [
                 SELECT Id, Name, ProductCode, Family, DMT_Product_family__c, DMT_Product_Subfamily__c,
                     DMT_Product_category__c, DMT_Product_Subcategory__c, DMT_Global_Product_Id__c,
                     DMT_Classification_Level__c, DMT_CatalogTaxonomy__c, DMT_Taxonomy_Value__c,
                     DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c,
                     DMT_Taxonomy_Value__r.gf_catalog_atrb_val3_name__c,
+                    DMT_Taxonomy_Value__r.gf_catalog_atrb_val7_name__c,
                     DMT_Product_Template__c, Parent_Product__c
                 FROM Product2
                 WHERE Family = 'DMT Lines'
-                    AND IsActive = true AND DMT_Entific__c =: opp[0].Entific__c AND DMT_Product_Template__c INCLUDES ('OP') 
+                    AND IsActive = true
+                    AND DMT_Entific__c =: opp[0].Entific__c
+                    AND DMT_Product_Template__c INCLUDES ('OP','TO','OL')
+                    //AND DMT_Taxonomy_Value__r.gf_catalog_atrb_val7_name__c LIKE :contextFilter
                 ORDER BY Name
             ];
-        
+            for (Product2 p : products) {
+                p.HelpText = 'OP_CONTEXT';
+            }
+            return products;
+
         } else if (sObjectType == DMT_Line__c.SObjectType) {
             DMT_Line__c line = DMT_Passport_Selector.getLine(recordId);
             String template = line.DMT_line_template_type__c;
@@ -139,13 +149,13 @@ public with sharing class DMT_TaxonomyMultipleProducts {
 
       @AuraEnabled
     public static void saveSelectedClients(List<Object> selectedClients, Id groupAccount, String groupCode, String lineId, Id recordId, String booking, String mainHolderCustomerId, String priorityId) {
-        
+
         String extId = lineId + '_' + priorityId;
         if (selectedClients == null || selectedClients.isEmpty()) {
             Custom_Association__c caToDelete = DMT_Passport_Selector.getCustomAssoById(extId);
             delete caToDelete;
         }else {
-            
+
         // --- Crear el registro padre: Custom_Association__c ---
         Custom_Association__c association = new Custom_Association__c();
         association.Group__c = groupAccount;
@@ -187,10 +197,10 @@ public with sharing class DMT_TaxonomyMultipleProducts {
             insert clientRecords;
         }
         }
-        
+
     }
 
-    @InvocableMethod(label='Update Risk Line Terms' 
+    @InvocableMethod(label='Update Risk Line Terms'
                      description='Updates dmt_end_term__c based on days difference between today and dmt_max_date__c')
     public static void updateRiskLineTerms(List<List<dmt_risk_line_term__c>> risks) {
         List<Integer> PREDEFINED_TERMS = new List<Integer>{0,2,3,4,7,10,15,20,30,45,60,90,120,150,180,270,365,548,730,1095,1460,1825,2190,2555,2920,3285,3650,4015,4380,4745,5110,5475,5840,6205,6570,6935,7300,7665,8030,9125,9855,10950,11680,12775,13505,14600,15330,16425};
@@ -209,7 +219,7 @@ public with sharing class DMT_TaxonomyMultipleProducts {
             List <dmt_risk_line_term__c> listClone = new List <dmt_risk_line_term__c>();
             Date today = Date.today();
             List<dmt_risk_line_term__c> recordsToUpdate = new List<dmt_risk_line_term__c>();
-            
+
             // 2. Procesar cada registro
             for (dmt_risk_line_term__c record : records) {
                 try {
@@ -218,22 +228,22 @@ public with sharing class DMT_TaxonomyMultipleProducts {
                     String closestTerm = null;
                     if( record.dmt_max_date__c != null) {
                         Integer daysDifference = today.daysBetween(record.dmt_max_date__c);
-                    
+
                         // Si la fecha es en el pasado, usar 0
                         if (daysDifference < 0) {
                             daysDifference = 0;
                         }
-                        
+
                         // Encontrar el término más cercano por arriba
-                        
-                        
+
+
                         for (Integer term : PREDEFINED_TERMS) {
                             if (term >= daysDifference) {
                                 closestTerm = String.valueOf(term);
                                 break;
                             }
                         }
-                        
+
                         // Si no encontramos (todos son menores), usar el último
                         if (closestTerm == null) {
                             closestTerm = String.valueOf(PREDEFINED_TERMS[PREDEFINED_TERMS.size() - 1]);
@@ -246,13 +256,13 @@ public with sharing class DMT_TaxonomyMultipleProducts {
                         if(recordClone.DMT_Risk_Type__c == DMT_Constants.RSK_SINGULAR || recordClone.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY || recordClone.DMT_Risk_Type__c == DMT_Constants.RSK_DEPOS) {
                             riskToDelete.add(record);
                         }
-                        
+
                         closestTerm = recordClone.DMT_End_Term__c;
                         recordClone.dmt_end_term__c = closestTerm;
                         listClone.add(recordClone);
                     }
 
-                    
+
                 } catch (Exception e) {
                     System.debug('Error procesando registro ' + record.Id + ': ' + e.getMessage());
                     // Continuar con el siguiente registro

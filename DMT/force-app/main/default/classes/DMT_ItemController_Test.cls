@@ -1,10 +1,18 @@
 @isTest
-public class DMT_ItemController_Test {
+public with sharing class DMT_ItemController_Test {
+
+    @TestSetup
+    static void makeData(){
+        CIB_Bypass__c settings = CIB_Bypass__c.getOrgDefaults();
+        settings.ExtensionsAllowed__c = 'png|jpeg|jpg|gif|svg|pdf|docx|xlsx|pptx|doc|xls|ppt|html|json';
+        settings.skipFileExtensions__c = false;
+        upsert settings;
+    }
 
     @isTest
     static void testUploadFile() {
         // Crear datos simulados para el archivo
-        String fileName = 'TestFile.txt';
+        String fileName = 'TestFile.json';
         String base64Data = EncodingUtil.base64Encode(Blob.valueOf('This is a test file content'));
         Map<String, Object> fileData = new Map<String, Object>{
             'fileName' => fileName,

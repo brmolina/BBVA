@@ -3,8 +3,8 @@
   * @Description        : Service Class for newAnalysis
   * @Author             : lUISARTURO.PARRA.CONTACTOR@bbva.com
   * @Group              : ARCE
-  * @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
-  * @Last Modified On   : 08-09-2024
+  * @Last Modified By   : amunguia.contractor@bbva.com
+  * @Last Modified On   : 03-04-2022
   * @Modification Log   :
   *==============================================================================
   * Ver         Date                     Author                 Modification
@@ -57,20 +57,24 @@
   * 1.38   24/01/2022           saimassimilianno.jordana.contractor@bbva.com    typeSelected parameter added to work with new SP2Analysis button.
 
   **/
-@SuppressWarnings('sf:TooManyMethods, PMD.ExcessivePublicCount, PMD.ExcessiveParameterList')
+@SuppressWarnings('sf:TooManyMethods,PMD.ExcessivePublicCount,PMD.ExcessiveParameterList,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ApexCRUDViolation')
 public without sharing class Arc_Gen_NewAnalysis_Service {
     /**
     * @Description Subprocess type.
     */
     private static final String ARCTYPESEL = 'typeSelected';
     /**
-    * @Description: Aha Group Header of the analysis
-    */
-    private static arce__Account_has_Analysis__c ahaGroupHeader {get; set;}
-    /**
     * @Description "isCorp" literal.
     */
     private static final String ISCORP_LIT = 'isCorp';
+    /**
+    * @Description: String with the word TOTAL
+    */
+    static final String TOTAL_S = 'TOTAL';
+    /**
+    * @Description: Aha Group Header of the analysis
+    */
+    private static arce__Account_has_Analysis__c ahaGroupHeader {get; set;}
     /**
     * ----------------------------------------------------------------------------------------------------
     * @Description Void Constructor to avoid warning in sonar qube
@@ -81,6 +85,7 @@ public without sharing class Arc_Gen_NewAnalysis_Service {
     * ----------------------------------------------------------------------------------------------------
     **/
     @TestVisible
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     private Arc_Gen_NewAnalysis_Service() {
 
     }
@@ -200,10 +205,6 @@ public without sharing class Arc_Gen_NewAnalysis_Service {
         */
         public Boolean isCorp { get; set; }
     }
-    /**
-    * @Description: String with the word TOTAL
-    */
-    static final String TOTAL_S = 'TOTAL';
     /**
     *--------------------------------------------------------------------------------
     * @Description method that gets previous arce
@@ -368,7 +369,6 @@ public without sharing class Arc_Gen_NewAnalysis_Service {
         } else {
             newArceAnalysis = createArceAnalysis(actualClient, params.analisysRecordTypeId, params.checkOrphan, params.analysisSubType, params.typeSelected);
         }
-
 
         BuildAhaWrapper buildAhaWrapper = new BuildAhaWrapper(newArceAnalysis[0], actualClient);
         buildAhaWrapper.emptyFFSS = params.emptyFFSS;
@@ -625,13 +625,14 @@ public without sharing class Arc_Gen_NewAnalysis_Service {
     private static List<arce__Overlay__c> createOverlays(List<arce__Account_has_Analysis__c> accHas2CreateLts) {
         // Check if overlays enabled.
         final List<arce__Arce_Config__mdt> configs = arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('EnableOverlays');
-        Boolean overlaysEnabled = configs.isEmpty() ? false : Boolean.valueOf(configs[0].arce__Value1__c);
-
-        final List<arce__Overlay__c> overlayObjs = new List<arce__Overlay__c>();
+        final Boolean overlaysEnabled = configs.isEmpty() ? false : Boolean.valueOf(configs[0].arce__Value1__c);
+        List<arce__Overlay__c> overlayObjs = new List<arce__Overlay__c>();
         if (overlaysEnabled) {
+            final List<Id> ahaIds = new List<Id>();
             for (arce__Account_has_Analysis__c aha : accHas2CreateLts) {
-                overlayObjs.add(arce.Arc_Gen_Overlays_Utils.createOverlay(aha.Id));
+                ahaIds.add(aha.Id);
             }
+            overlayObjs = arce.Arc_Gen_Overlays_Utils.createOverlays(ahaIds);
         }
         return overlayObjs;
     }

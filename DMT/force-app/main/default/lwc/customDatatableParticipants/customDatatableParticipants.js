@@ -3,13 +3,12 @@ import { FlowNavigationNextEvent} from 'lightning/flowSupport';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { loadStyle } from 'lightning/platformResourceLoader';
 import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
-import { NavigationMixin } from 'lightning/navigation';
 
 const DUPLICATE_ERROR_TITTLE = 'Duplicate value';
 const DUPLICATE_ERROR_MESSAGE = 'The selected user already exists in the list.';
 
 
-export default class CustomDatatableProduct extends NavigationMixin(LightningElement) {
+export default class CustomDatatableProduct extends LightningElement {
 
     tableData;
     isLoading = false;
@@ -64,6 +63,7 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
       this.pickListOrder = value;
       this.setColumns();
     }
+
     @api
     get isOpp() {
       return this._isOpp;
@@ -126,7 +126,6 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
       this.tryProcess();
 
     }
-
     closeModal(){
       this.isModalOpen = false;
       this.isLoading = false;
@@ -191,10 +190,19 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
     }
 
     lastSavedData = [];
+
+    get participantUserFilter() {
+      return {
+        criteria: [{
+          fieldPath: 'IsActive',
+          operator: 'eq',
+          value: true
+        }]
+      };
+    }
+
     setColumns(){
     let readOnlyAccessCurrentUser = !(this.hasFullAccess(this.currentUserInfo?.DMT_User_Role__c) && this.currentUserInfo?.userHasEditAccess) && !this.currentUserInfo?.hasGodAccess;
-
-
         if(this.isOpp != true){
           this.columns = [
             { label: 'PARTICIPANT', fieldName: 'userName', type:'recordpicker',hideDefaultActions:true , typeAttributes: { fieldName: 'userName',
@@ -205,6 +213,7 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
             },displayInfo : {
                 primaryField: 'Name'
             },
+            filter: this.participantUserFilter,
             value: { fieldName: 'userId' }, context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'AccessLevel' }}},
             { label: 'ACCESS LEVEL', fieldName: 'AccessLevel', type:'picklist',hideDefaultActions:true, typeAttributes: {
                 placeholder: 'Select...', options: this.accessLevel,isDisabled : readOnlyAccessCurrentUser, fieldName: 'AccessLevel' // list of all picklist options
@@ -221,12 +230,13 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
             , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
               }},
             {
-                type:  'button',
+                type:  'button-icon',
                 initialWidth: 90,hideDefaultActions:true,
                 cellAttributes: { alignment: 'center' },
                 typeAttributes:
                 {
                   iconName: 'utility:delete',
+                  variant: "bare",
                   label: ' ',
                   name: 'deleteRecord',
                   title: '',
@@ -236,28 +246,8 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
                 }
               }
               ,
-            /*
-            {
-                type:  'button',
-                initialWidth: 90,hideDefaultActions:true,
-                cellAttributes: { alignment: 'center' },
-                typeAttributes:
-                {
-                  iconName: 'utility:add',
-                  label: '    ',
-                  name: 'addRecord',
-                  title: '        ',
-                  disabled: readOnlyAccessCurrentUser,
-                  iconPosition: 'center',
-                  value: 'test'
-                }
-              }
-            */
           ];
         }else{
-
-
-
        this.columns = [
         { label: 'PARTICIPANT', fieldName: 'userName', type:'recordpicker',hideDefaultActions:true , typeAttributes: { fieldName: 'userName',
         disabled: readOnlyAccessCurrentUser || {fieldName: 'userDisabled'},
@@ -267,6 +257,7 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
          },displayInfo : {
             primaryField: 'Name'
          },
+        filter: this.participantUserFilter,
         value: { fieldName: 'userId' }, context: { fieldName: 'Id' }, readonlyAttr : { fieldName: 'AccessLevel' }}},
 
         { label: 'ACCESS LEVEL', fieldName: 'AccessLevel', type:'picklist',hideDefaultActions:true, typeAttributes: {
@@ -284,27 +275,13 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
             , readonlyAttr : { fieldName: 'userDisabled' }// make readonly access level if Access Level is all
             , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
         }},
-        /*
-        { label: 'PHONE', fieldName: 'Phone', type:'text',hideDefaultActions:true,  initialWidth: 90, typeAttributes: {
-          isDisabled : readOnlyAccessCurrentUser, fieldName: 'Phone'
-            , value: { fieldName: 'Phone' }
-            , context: { fieldName: 'Id' }
-            , readonlyAttr : { fieldName: 'userDisabled' }
-            , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
-        }},
-        { label: 'EMAIL', fieldName: 'Email', type:'text',hideDefaultActions:true,  initialWidth: 220, typeAttributes: {
-          isDisabled : readOnlyAccessCurrentUser, fieldName: 'Email'
-            , value: { fieldName: 'Email' }
-            , context: { fieldName: 'Id' }
-            , readonlyAttr : { fieldName: 'userDisabled' }
-            , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
-        }},*/
         {
-            type:  'button',
+            type:  'button-icon',
             initialWidth: 70,hideDefaultActions:true,
             cellAttributes: { alignment: 'center' },
             typeAttributes:
             {
+              variant: "bare",
               iconName: 'utility:delete',
               label: ' ',
               name: 'deleteRecord',
@@ -315,9 +292,6 @@ export default class CustomDatatableProduct extends NavigationMixin(LightningEle
             }
           }
     ];
-
-
-
     }
 
 
@@ -640,56 +614,7 @@ comboboxChange(event) {
             break;
         }
       }
-      /*
-      handleUserChange(event) {
-        this.user = event.detail.value;
-      }
-
-      handleTeamRoleChange(event) {
-        this.teamRole = event.detail.value;
-      }
-
-      handleCoverageTypeChange(event) {
-        this.coverageType = event.detail.value;
-      }
-
-      handleScopeChange(event) {
-        this.scope = event.detail.value;
-      }
-
-      handlePsProductFamilyChange(event) {
-        this.psProductFamily = event.detail.value;
-      }
-
-      handlePsProductChange(event) {
-        this.psProduct = event.detail.value;
-      }
-
-      handleUserChange(event) {
-        this.user = event.detail.value;
-      }
-
-      handleAccessLevelChange(event) {
-        this.accessLevelValue = event.detail.value;
-      }
-
-      handleSaveTeamMember(event) {
-
-        const payload = {
-          "user":this.user,
-          "teamRole":this.teamRoleValue,
-          "coverageType":this.coverageType,
-          "psProductFamily":this.psProductFamily,
-          "scope":this.scope,
-          "psProduct":this.psProduct,
-          "accessLevel":this.accessLevelValue
-        }
-        if(payload != null && this.user != null  && this.teamRole != null && this.accessLevelValue != null){
-          this.dispatchEvent(new CustomEvent('addTeamOppMember',  {detail: { payload: payload }, bubbles: true, composed: true }));
-          this.closeModal();
-        }
-      }
-      */
+     
       passFlow(){
         const navigateNextEvent = new FlowNavigationNextEvent();
         this.dispatchEvent(navigateNextEvent);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>X01_CLAIM_SUPPORT_MONE_CLAIMS_PENDING</fullName>
+    <booleanFilter>1 AND 2 AND 3</booleanFilter>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>SER_Email_received__c</columns>
+    <columns>SER_SLA_Service__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>SER_Priority_Flag__c</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>SER_Classification__c</columns>
+    <columns>SER_Type_GM__c</columns>
+    <columns>SER_Case_age_days__c</columns>
+    <columns>CASES.LAST_UPDATE_DATE_ONLY</columns>
+    <columns>SER_Asset__c</columns>
+    <columns>SER_Settlement_Date__c</columns>
+    <columns>SER_Amount_finally_assumed_EUR__c</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Case.SER_GM_User</value>
+    </filters>
+    <filters>
+        <field>SER_Outbound_Mailbox__c</field>
+        <operation>equals</operation>
+        <value>Email Claim Support &amp; Investigations</value>
+    </filters>
+    <filters>
+        <field>SER_Incident_with_economic_impact__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>01 CLAIM SUPPORT - MONE. CLAIMS PENDING</label>
+</ListView>

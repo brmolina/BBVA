@@ -1,0 +1,28 @@
+.THIS sekr-seeker_cmp.seeker_cmp {
+  text-align: left;
+  max-width: 40rem;
+}
+
+.THIS .separator {
+  height: 10px;
+}
+
+.THIS .slds-modal__container {
+  width: 100%;
+}
+
+.THIS .slds-l-around--x-large {
+  padding: unset !important;
+}
+
+.THIS .slds-m-around--x-large {
+  margin: unset !important;
+  height: 50px !important;
+  padding: unset !important;
+  max-width: unset;
+}
+
+.THIS .custom-button {
+  background-color: #f3f2f2;
+  height: 50px !important;
+}

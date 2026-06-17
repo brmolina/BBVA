@@ -1,0 +1,35 @@
+<template>
+    <lightning-card title={cardTitle} icon-name={iconName}>
+        <div class="slds-p-around_medium">
+
+            <template if:true={helpText}>
+                <p class="slds-text-body_small slds-m-bottom_small">{helpText}</p>
+            </template>
+
+            <template if:true={showPicker}>
+                <lightning-record-picker
+                    label={placeholder}
+                    variant="label-hidden"
+                    placeholder={placeholder}
+                    object-api-name="User"
+                    filter={userFilter}
+                    onchange={handlePickerChange}>
+                </lightning-record-picker>
+            </template>
+
+            <template if:true={hasSelections}>
+                <div class="slds-m-top_small pills-wrap">
+                    <template for:each={selectedUsers} for:item="u">
+                        <lightning-pill
+                            key={u.id}
+                            label={u.name}
+                            name={u.id}
+                            onremove={handleRemove}>
+                        </lightning-pill>
+                    </template>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

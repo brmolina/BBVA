@@ -10,10 +10,16 @@
             </div>
         </template> 
         <template lwc:elseif={showProfitabilityChart}>
-            <c-dmt_profitability_chart profitability={profitability} opportunity-id={opportunityId}></c-dmt_profitability_chart> 
+            <c-dmt_profitability_chart profitability={profitability} opportunity-id={opportunityId}></c-dmt_profitability_chart>
         </template>
         <template lwc:elseif={graphicModal}>
-            <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight}></c-dmt_subfeature_chart>
+            <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight} show-condition-desc={showConditionDesc}></c-dmt_subfeature_chart>
+            <template lwc:if={hasAssociatedLine}>
+                <div class="slds-m-top_medium" style="text-align: center;">
+                    <span class="slds-m-right_x-small">Link to Risk Approval:</span>
+                    <lightning-formatted-url value={associatedLineUrl} label={associatedLineLabel} target="_blank"></lightning-formatted-url>
+                </div>
+            </template>
         </template>
         <template lwc:elseif={errorModal}> 
             <div class="slds-grid slds-align-middle slds-m-bottom_medium">
@@ -42,10 +48,15 @@
                     </div>
                 </div>
             </template>
-
         </template>
     </lightning-modal-body>
     <lightning-modal-footer>
+        <template lwc:if={noShowInfoMessage}>
+            <div class="slds-m-bottom_small" style="text-align: center; font-weight: bold;">
+                <c-dmt_helpericon icon-name="utility:warning" icon-size="small" icon-variant="warning"></c-dmt_helpericon>
+                <span class="slds-m-left_x-small">{noShowInfoMessage}</span>
+            </div>
+        </template>
         <lightning-button label="Close" onclick={handleOkay}></lightning-button>
     </lightning-modal-footer>
 </template>

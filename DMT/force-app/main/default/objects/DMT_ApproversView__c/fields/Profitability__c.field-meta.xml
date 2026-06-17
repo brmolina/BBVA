@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Profitability__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used as a reference to render Profitability Test view.</description>
+    <label>Profitability</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,7 @@
+<design:component >
+	<design:attribute name="reportDevAttribute" label="Report Developer Name" description="Use the Developer Name of the
+                                                                                           report that you want to 
+                                                                                           display. Make sure the user 
+                                                                                           has access to it"/>
+    <design:attribute name="maxHeight" label="Max height" description="Max height in px (ie. 600px)"/>
+</design:component>

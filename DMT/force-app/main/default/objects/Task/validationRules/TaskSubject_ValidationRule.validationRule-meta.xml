@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TaskSubject_ValidationRule</fullName>
+    <active>true</active>
+    <description>Para que no se cree una tarea el proceso de conversión de un Lead se necesita que el campo &quot;Subject&quot; no sea obligatorio. Esta regla de validación sirve para que cuando se crea una Task normal no se puedan crear con &quot;Subject&quot; vacío</description>
+    <errorConditionFormula>IF (   ISBLANK(Subject) , true, false )</errorConditionFormula>
+    <errorDisplayField>Subject</errorDisplayField>
+    <errorMessage>&apos;Subject&apos; field is required</errorMessage>
+</ValidationRule>

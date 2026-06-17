@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ActivityDateCloned__c</fullName>
+    <description>actualiza el valor del campo DueDateCloned__c con el mismo valor del campo estándar ActivityDate. La razón es que el campo estándard no se puede usar en apex en SOQL con la función CALENDAR_YEAR(ActivityDate)</description>
+    <formula>ActivityDate</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Due Date Cloned</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

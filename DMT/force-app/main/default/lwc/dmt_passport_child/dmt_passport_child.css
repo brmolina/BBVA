@@ -267,3 +267,22 @@ tr:hover td.isSelected:hover {
     width: 100%;
     margin-bottom: 0.5rem;
 }
+
+.passport-no-stack-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+    scrollbar-width: thin;
+}
+
+@media screen and (max-width: 1230px) {
+    .passport-no-stack-wrapper {
+        overflow-x: auto;
+        overflow-y: visible;
+    }
+}
+
+.passport-no-stack-table th,
+.passport-no-stack-table td {
+    white-space: nowrap;
+}

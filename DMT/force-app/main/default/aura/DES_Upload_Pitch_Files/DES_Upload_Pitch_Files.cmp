@@ -1,0 +1,15 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens"
+    access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="files" type="ContentDocument[]" access="global"/>
+    <aura:attribute name="nullcontrol" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="multiple" type="Boolean" default="true" access="global"/>
+    <aura:attribute name="Spinner" type="boolean" default="false" access="global"/>
+    <aura:attribute name="RecordId" type="String" default="" access="global"/>
+    <div class="slds">
+        <div class="slds-grid slds-align_absolute-center ">
+            <lightning:fileUpload name="fileUploader" multiple="true" accept=".pdf, .xls, .ppt" recordId="{!v.RecordId}"
+                onuploadfinished="{!c.handleUploadFinished}" />
+        </div>
+    </div>
+</aura:component>

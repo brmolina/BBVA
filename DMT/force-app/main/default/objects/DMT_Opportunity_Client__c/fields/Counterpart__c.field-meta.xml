@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Counterpart__c</fullName>
+    <label>Counterpart</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Corporates</fullName>
+                <default>false</default>
+                <label>Corporates</label>
+            </value>
+            <value>
+                <fullName>Financial Institutions</fullName>
+                <default>false</default>
+                <label>Financial Institutions</label>
+            </value>
+            <value>
+                <fullName>Fin Inst-B</fullName>
+                <default>false</default>
+                <label>Financial-Bank Institutions</label>
+            </value>
+            <value>
+                <fullName>Fin Inst-I</fullName>
+                <default>false</default>
+                <label>Financial-Insurance Institutions</label>
+            </value>
+            <value>
+                <fullName>Promotor</fullName>
+                <default>false</default>
+                <label>Promotor</label>
+            </value>
+            <value>
+                <fullName>Pub Inst</fullName>
+                <default>false</default>
+                <label>Public Institutions</label>
+            </value>
+            <value>
+                <fullName>SME</fullName>
+                <default>false</default>
+                <label>Small and medium-sized enterprises</label>
+            </value>
+            <value>
+                <fullName>Small Ent</fullName>
+                <default>false</default>
+                <label>Small enterprises</label>
+            </value>
+            <value>
+                <fullName>Sov</fullName>
+                <default>false</default>
+                <label>Sobereing</label>
+            </value>
+            <value>
+                <fullName>XXXX</fullName>
+                <default>false</default>
+                <label>XXXX</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

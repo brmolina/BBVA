@@ -1,0 +1,257 @@
+<template>
+    <lightning-quick-action-panel header={headerCurrentPage}>
+
+        <!-- OVERLAY GLOBAL: solo spinner mientras hay cargas -->
+        <template if:true={isBusy}>
+            <div class="slds-is-relative" style="min-height: 180px;">
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- CONTENIDO: solo se muestra cuando no estamos ocupados -->
+        <template if:false={isBusy}>
+
+            <!-- Paso 1: Gestoras -->
+            <template if:true={isGestorasStep}>
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_small">
+                    <div class="slds-col">
+                        <lightning-button label="New Asset Manager" variant="brand" onclick={goToCreateGestora}></lightning-button>
+                    </div>
+
+                    <div class="slds-col slds-grow slds-m-left_small">
+                        <lightning-input
+                            type="search"
+                            variant="label-hidden"
+                            aria-label="Search Asset Managers"
+                            placeholder="Search"
+                            onchange={handleGestoraSearch}>
+                        </lightning-input>
+                    </div>
+                </div>
+
+                <!-- Mostramos tabla/empty state solo cuando ya cargó al menos una vez -->
+                <template if:true={hasLoadedGestoras}>
+                    <template if:true={gestoras.length}>
+                        <div class="full-bleed slds-m-top_small">
+                            <!--lightning-datatable
+                                key-field="Id"
+                                data={displayedGestoras}
+                                columns={gestoraColumns}
+                                onrowselection={handleGestorasSelection}
+                                selected-rows={selectedGestoraIdsArray}>
+                                
+                            </lightning-datatable-->
+                            <c-clamped-datatable
+                                    key-field="Id"
+                                    data={displayedGestoras}
+                                    columns={gestoraColumns}
+                                    onrowselection={handleGestorasSelection}
+                                    selected-rows={selectedGestoraIdsArray}>
+                                </c-clamped-datatable>
+                        </div>
+
+                        <template if:true={gestorasLength}>
+                            <div class="slds-m-top_small slds-align_absolute-center">
+                                <lightning-button-icon
+                                    icon-name="utility:chevronleft"
+                                    alternative-text="Previous page"
+                                    onclick={handleGestoraPrevPage}
+                                    disabled={isPreviousDisabledGestora}>
+                                </lightning-button-icon>
+
+                                <span class="slds-m-horizontal_small">
+                                    Page {currentGestoraPage} of {totalGestoraPages}
+                                </span>
+
+                                <lightning-button-icon
+                                    icon-name="utility:chevronright"
+                                    alternative-text="Next page"
+                                    onclick={handleGestoraNextPage}
+                                    disabled={isNextDisabledGestora}>
+                                </lightning-button-icon>
+                            </div>
+                        </template>
+
+                        <div slot="footer">
+                            <lightning-button variant="neutral" label="Cancel" onclick={cerrarAction}></lightning-button>
+                            <lightning-button class="slds-m-left_small" variant="brand" label="Next" onclick={goToFondos}></lightning-button>
+                        </div>
+                    </template>
+
+                    <template if:false={gestoras.length}>
+                        <p class="slds-text-color_weak slds-align_absolute-center slds-m-vertical_medium">
+                            There are no associated Asset Manager.
+                        </p>
+                        <div slot="footer">
+                            <lightning-button class="slds-m-medium" variant="neutral" label="Cancel" onclick={cerrarAction}></lightning-button>
+                        </div>
+                    </template>
+                </template>
+            </template>
+
+            <!-- Paso 2: Fondos -->
+            <template if:true={isFondosStep}>
+                <template if:true={hasLoadedFondos}>
+                    <template if:true={fondos.length}>
+
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_small">
+                            <div class="slds-col">
+                                <lightning-button label="New Fund" variant="brand" onclick={goToCreateFondo}></lightning-button>
+                            </div>
+
+                            <div class="slds-col slds-grow slds-m-left_small">
+                                <lightning-input
+                                    type="search"
+                                    variant="label-hidden"
+                                    aria-label="Search Funds"
+                                    placeholder="Search"
+                                    onchange={handleFondoSearch}>
+                                </lightning-input>
+                            </div>
+                        </div>
+
+                        <div class="full-bleed slds-m-top_small">
+                            <c-clamped-datatable
+                                key-field="Id"
+                                data={displayedFondos}
+                                columns={fondoColumns}
+                                onrowselection={handleFondoSelection}
+                                selected-rows={selectedFondoIdsArray}>
+                            </c-clamped-datatable>
+                        </div>
+
+                        <template if:true={fondosLength}>
+                            <div class="slds-m-top_small slds-align_absolute-center">
+                                <lightning-button-icon
+                                    icon-name="utility:chevronleft"
+                                    alternative-text="Previous page"
+                                    onclick={handleFondoPrevPage}
+                                    disabled={isPreviousDisabledFondo}>
+                                </lightning-button-icon>
+
+                                <span class="slds-m-horizontal_small">
+                                    Page {currentFondoPage} of {totalFondoPages}
+                                </span>
+
+                                <lightning-button-icon
+                                    icon-name="utility:chevronright"
+                                    alternative-text="Next page"
+                                    onclick={handleFondoNextPage}
+                                    disabled={isNextDisabledFondo}>
+                                </lightning-button-icon>
+                            </div>
+                        </template>
+
+                        <div slot="footer">
+                            <lightning-button variant="neutral" label="Previous" onclick={goToGestoras}></lightning-button>
+                            <lightning-button class="slds-m-left_small" variant="brand" label="Save" onclick={finalizar}></lightning-button>
+                        </div>
+                    </template>
+
+                    <!--template if:false={fondos.length}>
+                        <p class="slds-text-color_weak slds-align_absolute-center slds-m-vertical_medium">
+                            There are no available funds to associate to the contract.
+                        </p>
+                        <div slot="footer">
+                            <lightning-button variant="neutral" label="Previous" onclick={goToGestoras}></lightning-button>
+                            <lightning-button class="slds-m-left_small" variant="brand" label="Close" onclick={cerrarAction}></lightning-button>
+                        </div>
+                    </template-->
+                    
+                    <template if:false={fondos.length}>
+                        <div class="slds-grid slds-grid_align-center slds-grid_vertical-align-center slds-p-vertical_xx-large" style="min-height: 260px;">
+                            <div class="slds-text-align_center slds-p-horizontal_medium">
+                                <img 
+                                    src={emptyFundsImage} 
+                                    alt="Empty state illustration"
+                                    class="slds-m-bottom_medium"
+                                    style="max-width: 220px; opacity: 0.9;"
+                                />
+
+                                <h2 class="slds-text-heading_medium slds-m-bottom_x-small">Your list is empty</h2>
+                                <p class="slds-text-color_weak slds-m-bottom_medium">
+                                    There are no available funds to associate to the contract.
+                                </p>
+
+                                <lightning-button
+                                    label="New fund"
+                                    variant="neutral"
+                                    icon-name="utility:add"
+                                    onclick={goToCreateFondo}>
+                                </lightning-button>
+                            </div>
+                        </div>
+
+                        <div slot="footer">
+                            <lightning-button variant="neutral" label="Previous" onclick={goToGestoras}></lightning-button>
+                            <lightning-button class="slds-m-left_small" variant="brand" label="Close" onclick={cerrarAction}></lightning-button>
+                        </div>
+                    </template>
+
+
+
+                </template>
+            </template>
+
+            <!-- Paso 3: Crear Gestora -->
+            <template if:true={isCreateGestoraStep}>
+                <div class="slds-m-around_medium">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" medium-device-size="6" padding="horizontal-small">
+                            <lightning-input label="Asset Manager Name" value={newGestoraName} onchange={handleNameChange} required></lightning-input>
+                            <lightning-input label="LEI" value={newGestoraLei} onchange={handleLeiChange} class="slds-m-top_small"></lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item size="12" medium-device-size="6" padding="horizontal-small">
+                            <lightning-input label="STAR Code" value={newGestoraStar} onchange={handleStarChange}></lightning-input>
+                            <lightning-input label="Client Code" value={newGestoraCodigoCliente} onchange={handleCodigoClienteChange} class="slds-m-top_small"></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <div slot="footer">
+                    <lightning-button variant="neutral" label="Return" onclick={goToGestoras}></lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="brand" label="Save" onclick={crearGestora}></lightning-button>
+                </div>
+            </template>
+
+            <!-- Paso 4: Crear Fondo -->
+            <template if:true={isCreateFondoStep}>
+                <div class="slds-m-around_medium">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12" medium-device-size="6" padding="horizontal-small">
+                            <lightning-input label="Fund Name" value={newFondoName} onchange={handleFondoNameChange} required></lightning-input>
+
+                            <template if:true={isSingleGestoraSelected}>
+                                <lightning-input class="slds-m-top_small"
+                                                 label="Asset Manager"
+                                                 value={singleSelectedGestoraName}
+                                                 disabled>
+                                </lightning-input>
+                            </template>
+                            <template if:false={isSingleGestoraSelected}>
+                                <lightning-combobox class="slds-m-top_small"
+                                                    label="Asset Manager"
+                                                    placeholder="Select an Asset Manager..."
+                                                    options={selectedGestoraOptions}
+                                                    value={newFondoParentId}
+                                                    onchange={handleFondoGestoraChange}
+                                                    required>
+                                </lightning-combobox>
+                            </template>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item size="12" medium-device-size="6" padding="horizontal-small">
+                            <lightning-input label="Client Code" value={newFondoCodigo} onchange={handleFondoCodigoChange}></lightning-input>
+                            <lightning-input label="LEI" value={newFondoLei} onchange={handleFondoLeiChange} class="slds-m-top_small"></lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <div slot="footer">
+                    <lightning-button variant="neutral" label="Return" onclick={goToFondos}></lightning-button>
+                    <lightning-button class="slds-m-left_small" variant="brand" label="Save" onclick={crearFondo}></lightning-button>
+                </div>
+            </template>
+
+        </template>
+    </lightning-quick-action-panel>
+</template>

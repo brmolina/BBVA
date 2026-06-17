@@ -1,0 +1,10 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Modal that show the resul of the test leveraged logic.</b></h5>
+        <p>The modal shows a unique message of success/error</p>
+        <p><code>c:Arc_Gen_TestLeverage_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_TestLeverage_cmp" ref="c:Arc_Gen_TestLeverage_cmp" label="Test Leveraged">
+        <p>Component that call the leveraged test logic and show a success/error message</p>
+    </aura:example>
+</aura:documentation>

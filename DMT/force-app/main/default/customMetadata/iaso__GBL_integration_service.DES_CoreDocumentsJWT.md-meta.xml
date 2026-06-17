@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DES_CoreDocumentsJWT</label>
+    <protected>false</protected>
+    <values>
+        <field>iaso__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocumentsGrantingTicket</value>
+    </values>
+    <values>
+        <field>iaso__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocuments_Portunus</value>
+    </values>
+    <values>
+        <field>iaso__Description__c</field>
+        <value xsi:type="xsd:string">Get Core Documents JWT from Portunus</value>
+    </values>
+    <values>
+        <field>iaso__Headers_Class__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocumentsJWT</value>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json;charset=UTF-8&quot;, &quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>iaso__Http_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>iaso__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Json_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{   &quot;accessToken&quot;:&quot;eyJhbGciOiJSUzI1NiIsImtpZCI6IkNOPUV0aGVyIFIzIEVTIElzc3VpbmcgQ0EgV29yayxPVT1TZWN1cml0eSBBcmNoaXRlY3R1cmUgQ3J5cHRvZ3JhcGh5LE89QkJWQSxDPUVTOjoxNzE4NjIxOTAwMzMyNzA0Mzc4IiwidHlwIjoiSldUIiwieC1yaG8tdHJhY2VpZCI6ImY4ZGRiZDJjNzI0MDlkNTQ3ZjA2Y2EyZDhmZDY3ZDcyIiwieDV1IjoiaHR0cHM6Ly9wb3J0dW51cy1odWItZ2wuc2VjYWFzLndvcmsuZXMuZXRoZXIuaWdydXBvYmJ2YS92MS9jZXJ0L3NpZ25lciJ9.eyJhdWQiOlsiMzAwMDAwMjYiXSwiYmNzQWNMb2dpbiI6IiIsImJjc0FwcERhdGEiOiIiLCJiY3NVc2VySWQiOiJVU0xIUEcwMSIsImVjc01ldGEiOnsidHNlYyI6eyJzZWN1cml0eUxldmVsIjpbIjUiXSwiYWFwIjoiMzAwMDAwMjYiLCJ0dGwiOiIxNzYzMDMzODYxNDMxIn0sImdlb2dyYXBoeSI6ImdsIn0sImV4cCI6MTc2MzAzMzg2MSwiaWF0IjoxNzYzMDMwMzgyLCJpc3MiOiJTRUNhYVMiLCJqdGkiOiI5OGI0Mjg3Yi1lMjcwLTQ0ODgtYjk5My0xNDU5NDY3MDI5NGEiLCJuYmYiOjE3NjMwMzAzODIsInN1YiI6IlVTTEhQRzAxIn0.UN-eTAKaOiIoOJti7VtwBUSnejePu6l7Kp8KoyiwplvJTYVZMmp65VKM--S49lCsYWC3I5t6n-5VNMxModvJDApoUlhlLTaPqJmSN_PNA_WLy83nRkffEB52il8hHCyOTHL4o-ly9GiG1UHwByfMlf-1WxjX5Vh0S4ArE5J9QrpJ0mRuqJSAk4Zx_9iekPYe7yFUW3xCsP6ZgUr-CAVhLKL73812UwfqbI2ClRnWKF2KRD153NVFx09PwgLY7N8G1xtG0VWAcfIhA7tKLPDmBhJRdd2-L4ojrIMe6Lu02WV7m0-6LXXa9fv4_NpCXdaBAbMJsHA6XG_JpypR4IWrSw&quot;,
+&quot;expiresAt&quot;:1763033861
+}</value>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>iaso__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">tsec</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>iaso__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

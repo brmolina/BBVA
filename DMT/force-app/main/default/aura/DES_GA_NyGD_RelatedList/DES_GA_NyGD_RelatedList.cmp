@@ -1,0 +1,82 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" 
+                controller="DES_GA_RelatedNnGDController" access="global">
+                
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="apId" type="String"/>
+    <aura:attribute name="titleList" type="String"/>
+    <aura:attribute name="tableSize" type="String" default="5"/>
+    <aura:attribute name="obj" type="String" default="bupl__BP_Need__c" access="global"
+      description="Choose the Object to show: 'Needs' or 'Growth Drivers'" />
+
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+	
+	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+    <div class="slds-page-header customHeader">
+		<div class="slds-media slds-media_center slds-has-flexi-truncate">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-custom-custom32" title="Needs or Drivers">
+					<lightning:icon iconName="custom:custom32" size="medium"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">{!v.titleList}</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Needs or Drivers">{!v.titleList} ({!v.data[0].recNumber})</h1>
+			</div>
+		</div>
+	</div>
+    
+     <aura:if isTrue="{!empty(v.data)}">
+        <div class="tableNoData">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+    	<lightning:datatable data="{!v.data}" 
+                                     columns="{!v.columns}" 
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/> 
+                    <p class="customP">
+                <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+        </aura:set>
+    </aura:if>   
+    
+    
+    <aura:set attribute="else">
+    <div class="mobileCustomDiv"> 
+    <div class="slds-page-header mobileCustomHeader slds-has-flexi-truncate">
+		<div class="slds-media">
+			<div class="slds-media__figure">
+				<span class="slds-icon_container slds-icon-custom-custom32" title="Needs or Drivers">
+					<lightning:icon iconName="custom:custom32" size="medium"/>
+				</span>
+			</div>
+			<div class="slds-media__body">
+                <p class="slds-text-body_small slds-line-height_reset">{!v.titleList}</p>
+                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Needs or Drivers">{!v.titleList} ({!v.data[0].recNumber})</h1>
+			</div>
+		</div>
+	</div>
+    
+     <aura:if isTrue="{!empty(v.data)}">
+        <div class="tableNoData mobileCustomDiv2">
+    		{!$Label.c.DES_Chart_No_Data}
+    	</div>
+        <aura:set attribute="else">
+    	<lightning:datatable data="{!v.data}" 
+                                     columns="{!v.columns}" 
+                                     keyField="id"
+                                     hideCheckboxColumn="true"/> 
+                    <p class="mobileCustomP">
+                <a href="" onclick="{!c.navigateToMyComponent}">View All</a>
+            </p>
+        </aura:set>
+    </aura:if>
+    </div>
+    
+    </aura:set>
+   	</aura:if>   
+
+    
+</aura:component>

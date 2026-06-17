@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Relationship_Type__c</fullName>
+    <label>Relationship</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Relationship Manager</fullName>
+                <default>false</default>
+                <label>Relationship Manager</label>
+            </value>
+            <value>
+                <fullName>Sales Person</fullName>
+                <default>false</default>
+                <label>Sales Person</label>
+            </value>
+            <value>
+                <fullName>Banker</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Banker</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

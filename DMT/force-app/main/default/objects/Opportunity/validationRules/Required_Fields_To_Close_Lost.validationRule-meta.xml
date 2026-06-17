@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Fields_To_Close_Lost</fullName>
+    <active>true</active>
+    <description>Para perder una oportunidad, los campos Reasons Lost y Description reason for lost deal tienen que estar rellenos</description>
+    <errorConditionFormula>AND (!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+    OR (AND(
+	OR(RecordType.DeveloperName=&apos;Business_Opportunity&apos;,RecordType.DeveloperName=&apos;Draft_Opportunity&apos;,RecordType.DeveloperName=&apos;Confidential_Opportunity&apos; ),
+
+	AND(
+		ISPICKVAL(StageName,&apos;Closed Lost&apos;),
+		OR(
+			ISBLANK(TEXT(DES_Reasons_Lost__c)),
+			ISBLANK(DES_Description_reason_for_lost_deal__c)
+		)
+	)))
+)</errorConditionFormula>
+    <errorMessage>If you lost the deal, you must complete the key fields Reasons Lost, Description reason.</errorMessage>
+</ValidationRule>

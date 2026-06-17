@@ -1,0 +1,35 @@
+<aura:component controller="GDT_StudiesSubsidiaryCtrl"
+                implements="flexipage:availableForRecordHome,force:hasRecordId"
+                access="global">
+
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="localClientId" type="Id"/>
+    <aura:attribute name="isLoading" type="Boolean" default="true"/>
+    <aura:attribute name="errorMessage" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading..." size="medium"/>
+    </aura:if>
+
+    <aura:if isTrue="{!NOT(empty(v.errorMessage))}">
+        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <h2>{!v.errorMessage}</h2>
+        </div>
+    </aura:if>
+
+    <!-- Solo renderiza el componente cuando ya tienes el localClientId -->
+    <aura:if isTrue="{!AND(empty(v.errorMessage), NOT(empty(v.localClientId)), NOT(v.isLoading))}">
+        <arce:Arc_Gen_StudiesSP2 recordId="{!v.localClientId}"/>
+    </aura:if>
+
+    <!-- Caso: no hay Local Client relacionado -->
+    <aura:if isTrue="{!AND(empty(v.errorMessage), empty(v.localClientId), NOT(v.isLoading))}">
+        <div class="slds-text-color_weak slds-p-around_small">
+            No Data.
+        </div>
+    </aura:if>
+
+</aura:component>

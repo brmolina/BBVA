@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Questionnaire_Notification__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used to trigger the notification email for responding to the regulatory questionnaire for large exposures.</description>
+    <label>Questionnaire Notification</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

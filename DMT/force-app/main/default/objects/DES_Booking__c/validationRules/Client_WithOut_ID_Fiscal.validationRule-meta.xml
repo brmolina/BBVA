@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_WithOut_ID_Fiscal</fullName>
+    <active>true</active>
+    <errorConditionFormula>DES_Client__r.RecordTypeId = &quot;0124H000000kIh7&quot; &amp;&amp; ISBLANK(DES_Client__r.DES_ID_Fiscal__c)</errorConditionFormula>
+    <errorDisplayField>DES_Client__c</errorDisplayField>
+    <errorMessage>You need to fill the Id Fiscal to this client</errorMessage>
+</ValidationRule>

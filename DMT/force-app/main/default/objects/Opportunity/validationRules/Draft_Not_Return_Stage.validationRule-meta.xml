@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Draft_Not_Return_Stage</fullName>
+    <active>true</active>
+    <description>Esta validación controla que una vez que la oportunidad deja de ser &quot;Draft Opp&quot;, no puede volver al estado &quot;Draft Opp&quot;</description>
+    <errorConditionFormula>AND( ISCHANGED(
+StageName),
+ISPICKVAL(StageName, &apos;Draft Opp&apos;),
+NOT(ISPICKVAL(PRIORVALUE
+(StageName),
+&apos;Draft Opp&apos;))
+)</errorConditionFormula>
+    <errorMessage>An Opportunity in an advanced stage cannot go back to Draft.</errorMessage>
+</ValidationRule>

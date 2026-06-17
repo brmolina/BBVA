@@ -1,0 +1,44 @@
+<!--
+  @Component Name     : Arc_Gen_ToogleRatingPrerating.cmp
+  @Description        : Contains a toogle input to change rating to prerating and vice versa
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : alberto.martinez.carrero.next@bbva.com
+  @Last Modified On   : 31-08-2023
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0                                ARCE TEAM     		        Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:appHostable" controller="Arc_Gen_ToogleRatingPrerating_Ctrl" access="global" >
+    <aura:attribute name="view" type="boolean" default="false" description="control field to handle visibility"/>
+    <aura:attribute name="ahaId" type="String" description="recordId from the customer"/>
+    <aura:attribute name="isRating" type="Boolean" default="true"/>
+    <aura:attribute name="isPreRating" type="Boolean" default="false"/>
+    <aura:attribute name="updating" type="Boolean" default="false"/>
+    <aura:attribute name="showToogle" type="Boolean" default="true"/>
+    <aura:attribute name="modelsShowToogle" type="String" default="" description="String containing the models to which the toogle will be displayed"/>
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getItemEvent}"/>
+
+    <aura:if isTrue="{!v.view}">
+        <div class="slds-card slds-p-around_x-small">
+            <aura:if isTrue="{!v.showToogle}">
+                <aura:if isTrue="{!v.updating}">
+                    <div class="slds-align_absolute-center">
+                        <lightning:spinner alternativeText="Loading..." />
+                    </div>
+                </aura:if>
+                <lightning:layout>
+                    <lightning:layoutItem size='10'></lightning:layoutItem>
+                    <lightning:layoutItem size='1'>
+                        <lightning:input class="slds-m-top_medium slds-m-bottom_medium" messageToggleActive="prueba" type="toggle" label="Rating" name="Rating" checked="{!v.isRating}" onchange="{!c.handleToggleChange}"/>
+                    </lightning:layoutItem >
+                    <lightning:layoutItem size='1'>
+                        <lightning:input class="slds-m-top_medium slds-m-bottom_medium" messageToggleActive="prueba2" type="toggle" label="PreRating" name="PreRating" checked="{!v.isPreRating}" onchange="{!c.handleToggleChange}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

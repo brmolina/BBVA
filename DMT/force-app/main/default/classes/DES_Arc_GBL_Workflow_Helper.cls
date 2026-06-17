@@ -238,7 +238,7 @@ public with sharing class DES_Arc_GBL_Workflow_Helper {
       SELECT Id, Name
       FROM User
       WHERE gf_user_operation_ambit_name__c = :ambitString
-      AND IsActive = true
+      AND IsActive = true 
       ORDER BY Name ASC
     ]);
 

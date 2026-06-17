@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Fields_From_Draft</fullName>
+    <active>true</active>
+    <description>Desde el estado Draft, los campos Cliente, Opportunity Name, Need&apos;s Description, BBVA Countries Participants, Close Date, Currency tienen que estar rellenos</description>
+    <errorConditionFormula>AND(
+opportunity_expiration_ind_type__c = false,
+NOT( $Setup.CIB_Bypass__c.CIB_DES_DataMigration__c ),
+OR(
+    RecordType.DeveloperName=&apos;Business_Opportunity&apos;,
+    RecordType.DeveloperName=&apos;Draft_Opportunity&apos;,
+    RecordType.DeveloperName=&apos;Confidential_Opportunity&apos;),
+OR(
+    ISPICKVAL(StageName,&apos;Proposal&apos;),
+    ISPICKVAL(StageName,&apos;Approval&apos;),
+    ISPICKVAL(StageName,&apos;Ready to close&apos;),
+    ISPICKVAL(StageName,&apos;Closed Won&apos;),
+    ISPICKVAL(StageName,&apos;Closed Lost&apos;)),
+IF(
+    ISBLANK(DES_Prospect__c),
+    OR(
+    ISBLANK(AccountId),
+    ISBLANK(Name),
+    ISBLANK(DES_Description_rich__c),
+    ISBLANK(DES_Countries__c),
+    ISBLANK(CloseDate),
+    ISBLANK(TEXT(CurrencyIsoCode))
+    ),
+    OR(
+    ISBLANK(Name),
+    ISBLANK(DES_Description_rich__c),
+    ISBLANK(DES_Countries__c),
+    ISBLANK(CloseDate),
+    ISBLANK(TEXT(CurrencyIsoCode)))
+)
+)</errorConditionFormula>
+    <errorMessage>Please check the fields that are not completed:
+Client name, Opportunity Name, Need&apos;s Description, BBVA Countries Participants, Estimated Closing Date and Currency.
+It is necessary to fill them in order to advance the stage.</errorMessage>
+</ValidationRule>

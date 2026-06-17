@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClassName_Validation__c</fullName>
+    <description>Contains the name of the class that implements the interface &apos;NonClient_interface_prospect&apos; and contains the methods for controlling duplicates and validating the creation of the non-client.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains the name of the class that implements the interface &apos;NonClient_interface_prospect&apos; and contains the methods for controlling duplicates and validating the creation of the non-client.</inlineHelpText>
+    <label>Custom validation Class Name</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

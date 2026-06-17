@@ -1,0 +1,5 @@
+<aura:component controller="ComponentNBC_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName" access="GLOBAL">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordTypeId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+</aura:component>

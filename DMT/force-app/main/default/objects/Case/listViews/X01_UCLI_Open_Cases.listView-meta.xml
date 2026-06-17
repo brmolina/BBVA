@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>X01_UCLI_Open_Cases</fullName>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>SER_SLA_Service__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>PARENT.CASE_NUMBER</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>OWNER_NAME</columns>
+    <columns>CASES.LAST_UPDATE_DATE_ONLY</columns>
+    <columns>SER_Close__c</columns>
+    <columns>SER_Discarded__c</columns>
+    <columns>SER_Duplicated__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Case.SER_GM_User</value>
+    </filters>
+    <filters>
+        <field>SER_Outbound_Mailbox__c</field>
+        <operation>equals</operation>
+        <value>Email Treasury investigations</value>
+    </filters>
+    <filters>
+        <field>OWNER_NAME</field>
+        <operation>notEqual</operation>
+        <value>INFORMES</value>
+    </filters>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>notEqual</operation>
+        <value>Closed</value>
+    </filters>
+    <label>01 UCLI Open Cases</label>
+    <sharedTo>
+        <group>SER_GM_UCLI</group>
+    </sharedTo>
+</ListView>

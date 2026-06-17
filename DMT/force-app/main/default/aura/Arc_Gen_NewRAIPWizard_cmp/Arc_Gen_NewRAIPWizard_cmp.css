@@ -1,0 +1,15 @@
+.THIS .container-alert {
+  margin: 10px 10px 10px 0;
+  background-color: rgb(254, 147, 57);
+  border-color: rgb(236, 235, 234);
+  padding: 10px;
+}
+
+.THIS .container-alert lightning-icon {
+  padding-right: 10px;
+}
+
+.THIS .container-alert div {
+  display: inline-block;
+  vertical-align: top;
+}

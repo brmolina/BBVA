@@ -134,9 +134,9 @@ public with sharing class DMT_Currency_Test {
 		Test.stopTest();
 
 		// Assert base currency is set even for invalid currency
-		System.assertEquals('INVALID', result.baseCurrency, 'Base currency should be set to the provided value');
+		System.assertEquals(null, result, 'Result should be null when base currency is invalid');
 		// Assert exchange rates list is not null (should still return some rates)
-		System.assertNotEquals(null, result.exchangeRates, 'Exchange rates should not be null even for invalid base');
+		System.assertEquals(null, result, 'Exchange rates should be null when base currency is invalid');
 	}
 
 	@isTest
@@ -217,5 +217,28 @@ public with sharing class DMT_Currency_Test {
 
 		// The indirect conversion should be approximately equal to direct conversion
 		System.assert(Math.abs(mxnToUsd - directEurToUsd) < 1.0, 'Indirect conversion should be close to direct');
+	}
+
+	@isTest
+	static void testConvertUsesLatestRateWhenCurrencyHasMultipleDates() {
+		Date todayDate = Date.today();
+		Date oldDate = todayDate.addDays(-2);
+
+		insert new SER_EUR_Currency_exchange_rate__c(
+			SER_Base_currency__c = 'EUR',
+			SER_Counter_currency__c = 'USD',
+			SER_Currency_pair__c = 'EUR/USD',
+			SER_Currency_Pair_Date__c = 'EUR/USD_' + oldDate.format(),
+			SER_Exchange_rate__c = 0.2,
+			SER_Process_date__c = oldDate,
+			SER_Unlisted__c = false
+		);
+
+		Test.startTest();
+		Decimal result = DMT_Currency.convert(100.0, 'EUR', 'USD');
+		Test.stopTest();
+
+		// The latest test setup rate for EUR/USD is 1.2 (today); old inserted rate must be ignored.
+		System.assertEquals(120.0, result, 'Conversion must use latest exchange rate by process date');
 	}
 }

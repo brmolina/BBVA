@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="table" label="Table" description="Name of the table to refresh" />
+    <design:attribute name="visible" label="Visible" description="Enable/Disable button" />
+</design:component>

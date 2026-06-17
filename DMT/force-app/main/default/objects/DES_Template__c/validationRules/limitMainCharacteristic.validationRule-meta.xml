@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>limitMainCharacteristic</fullName>
+    <active>false</active>
+    <errorConditionFormula>LEN(Main_characteristics_desc__c) &gt; 617 &amp;&amp; (RecordType.Name = $Label.DES_Template_ECA || RecordType.Name = $Label.DES_Template_CSL)</errorConditionFormula>
+    <errorDisplayField>Main_characteristics_desc__c</errorDisplayField>
+    <errorMessage>(max 617 characters)</errorMessage>
+</ValidationRule>

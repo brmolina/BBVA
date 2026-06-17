@@ -1,0 +1,69 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 10-31-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    controller="Arc_Gen_RAIP_FinalizePrerating_Btn_Ctrl"
+    access="global" >
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" description="Standard id of the current record" access="global"/>
+    <aura:attribute name="loading" type="Boolean" default="false" description="Determines whether the spinner is displayed." />
+    <aura:attribute name="errorMessage" type="String" default="" description="Error message from Apex code." />
+    <aura:attribute name="show" type="Boolean" default="false" description="Indicates to show or to hide the modal" access="global"/>
+    <aura:attribute name="finType" type="String" default="" description="Financial Type selected in Limit Advisor section" access="global"/>
+    <aura:attribute name="financialStatementId" type="String" default="" description="Financial Statement Id" access="global"/>
+    <aura:attribute name="wkfType" type="String" default="" description="Workflow type selected for this rating" access="global"/>
+    <aura:attribute name="ahaObj" type="Object" access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.fetchIdFromUrl}" />
+
+    <aura:if isTrue="{!v.show}">
+    <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <header class="slds-modal__header">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{!c.handleCancel}"
+                                      alternativeText="close"
+                                      variant="bare-inverse"
+                                      disabled="{!v.loading}"
+                                      class="slds-modal__close"/>
+                <div class="slds-modal__title slds-hyphenate">{!$Label.c.Arc_Gen_FinalizePreratingDialogTitle}</div>
+            </header>
+
+            <div class="slds-modal__content slds-is-relative">
+
+                <aura:if isTrue="{!v.errorMessage != ''}">
+                    <div class="slds-box slds-box_small slds-theme_error">
+                        {!v.errorMessage}
+                    </div>
+                </aura:if>
+
+                <div class="slds-p-vertical_x-large slds-p-horizontal_medium">
+
+                    <aura:if isTrue="{!!v.loading}">
+                        <p class="slds-align_absolute-center">{!$Label.c.Arc_Gen_FinalizePreratingConfirmation}</p>
+                    </aura:if>
+
+                    <aura:if isTrue="{!v.loading}">
+                        <div class="slds-p-vertical_large">
+                            <lightning:spinner alternativeText="Loading..." />
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+
+            <aura:if isTrue="{!!v.loading}">
+                <div class="slds-modal__footer slds-modal__footer_directional">
+                    <lightning:button label="{!$Label.c.Arc_Gen_FinalizePreratingCancel}" onclick="{!c.handleCancel}"></lightning:button>
+                    <lightning:button variant="brand" label="{!$Label.c.Arc_Gen_FinalizePreratingConfirm}" onclick="{!c.handleConfirm}"></lightning:button>
+                </div>
+            </aura:if>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

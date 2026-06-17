@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_financing_type_name__c</fullName>
+    <label>Financing Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>PROJECT_FINANCE_SOLID</fullName>
+                <default>false</default>
+                <label>Project Finance solid</label>
+            </value>
+            <value>
+                <fullName>PROJECT_FINANCE_GOOD</fullName>
+                <default>false</default>
+                <label>Project Finance good</label>
+            </value>
+            <value>
+                <fullName>PROJECT_FINANCE_SATISFACTORY</fullName>
+                <default>false</default>
+                <label>Project Finance satisfactory</label>
+            </value>
+            <value>
+                <fullName>PROJECT_FINANCE_WEAK</fullName>
+                <default>false</default>
+                <label>Project Finance weak</label>
+            </value>
+            <value>
+                <fullName>SOLID_PROJECT_FINANCE_WITH_PREFERENT_WEIGHING</fullName>
+                <default>false</default>
+                <label>Project Finance solid-preferent weighing</label>
+            </value>
+            <value>
+                <fullName>GOOD_PROJECT_FINANCE_WITH_PREFERENT_WEIGHING</fullName>
+                <default>false</default>
+                <label>Project Finance good-preferent weighing</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

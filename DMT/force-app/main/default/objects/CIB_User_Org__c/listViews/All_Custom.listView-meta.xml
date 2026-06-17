@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Custom</fullName>
+    <columns>SETUP_OWNER_NAME</columns>
+    <columns>SETUP_TYPE</columns>
+    <columns>OBJECT_ID</columns>
+    <columns>NAME</columns>
+    <columns>CIB_Is_Admin__c</columns>
+    <columns>CIB_Is_Desktop__c</columns>
+    <columns>CIB_Is_Sales__c</columns>
+    <columns>CIB_Is_Service__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>UPDATEDBY_USER.ALIAS</columns>
+    <columns>UPDATEDBY_USER</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Custom</label>
+    <language>en_US</language>
+</ListView>

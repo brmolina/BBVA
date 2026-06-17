@@ -1,0 +1,21 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_AutoRetailBehaviorTable_cmp</p>
+        <p><b>DESCRIPTION: </b>Component to show the Auto Retail Behavior table</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>tableType = String : Indicates the status of the products of the table: 1 -> New, 2 -> Semi-New</li>
+                <li>year1 = String : Input year 1</li>
+                <li>year2 = String : Input year 2</li>
+                <li>insert = String : Boolean value to enable/disable insert</li>
+                <li>edit = String : Boolean value to enable/disable edit</li>
+                <li>delete = String : Boolean value to enable/disable delete</li>
+                <li>data = String : Contains information to build the rows of the table</li>
+                <li>columns = String : Contains information to build the columns of the table</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_AutoRetailBehaviorTable_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_AutoRetailBehaviorTable_cmp" ref="c:Arc_Gen_AutoRetailBehaviorTable_cmp" label="Auto Retail Behavior table">
+    </aura:example>
+</aura:documentation>

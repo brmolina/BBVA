@@ -1,0 +1,4 @@
+.THIS .report-container{
+    overflow: scroll;
+    height: var(--maxHeight);
+}

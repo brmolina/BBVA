@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>disclosure_info_type__c</fullName>
+    <inlineHelpText>•Not applicable: public for all GDT users •Confidential information: Only BBVA participants, BBVA Client Coverage team and their managers can access this information •Inside information: Only BBVA participants in the visit can access this information</inlineHelpText>
+    <label>Information disclosure</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not applicable</fullName>
+                <default>false</default>
+                <label>Not applicable</label>
+            </value>
+            <value>
+                <fullName>Confidential information</fullName>
+                <default>false</default>
+                <label>Confidential information</label>
+            </value>
+            <value>
+                <fullName>Inside information</fullName>
+                <default>false</default>
+                <label>Inside information (IP/MNPI)</label>
+            </value>
+            <value>
+                <fullName>Privileged information</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Privileged information</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

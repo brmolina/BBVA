@@ -63,7 +63,7 @@ public with sharing class PRW_TableVolumeCtrl {
   public static List<cuco__profitability_sheet_participant__c> gtParticipants(String idCuaderno) {
     try {
       final List<cuco__profitability_sheet_participant__c> lstProfSheet = new List<cuco__profitability_sheet_participant__c>([
-        SELECT cuco__participant_id__r.SER_CClient__c
+        SELECT cuco__participant_id__r.g_customer_id__c
         FROM cuco__profitability_sheet_participant__c
         WHERE cuco__gf_profitability_sheet_id__r.cuco__gf_profitability_sheet_id__c = :idCuaderno
         AND cuco__gf_profitability_sheet_id__r.cuco__gf_prftbly_sheet_end_date__c > TODAY

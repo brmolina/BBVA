@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Approvers341_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>Financial Institutions - Colombia</label>
+    <queue>DMT_Approvers341</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

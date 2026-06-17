@@ -3,7 +3,7 @@
         <div class="slds-m-around_medium">
             
             <c-dmt_-table-header-section
-                titletable='BANKING POOL STRUCTURE'
+                titletable='Banking Pool Structure'
                 showcopypaste='false'
                 context="derivatives"
             ></c-dmt_-table-header-section>
@@ -65,15 +65,17 @@
 
                                                     <div class="slds-col slds-size_1-of-3">
                                                         <template lwc:if={cell.isEditable}>
-                                                            <lightning-button-icon 
-                                                                icon-name="utility:edit"
-                                                                class="edit-icon no-border"
-                                                                alternative-text="Edit"
-                                                                data-id={row.Id}
-                                                                data-field={cell.field}
-                                                                onclick={handleEditCell}
-                                                                variant="bare">
-                                                            </lightning-button-icon>
+                                                            <template lwc:if={isEditPencilEnabled}>
+                                                                <lightning-button-icon 
+                                                                    icon-name="utility:edit"
+                                                                    class="edit-icon no-border"
+                                                                    alternative-text="Edit"
+                                                                    data-id={row.Id}
+                                                                    data-field={cell.field}
+                                                                    onclick={handleEditCell}
+                                                                    variant="bare">
+                                                                </lightning-button-icon>
+                                                            </template>
                                                         </template>
                                                     </div>
 

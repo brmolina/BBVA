@@ -1,37 +1,50 @@
-public class DMT_AsyncBatchJob implements Database.Batchable<DMT_AsyncPayload>, Database.AllowsCallouts, Database.Stateful {
-
+public with sharing class DMT_AsyncBatchJob implements Database.Batchable<DMT_AsyncPayload>, Database.AllowsCallouts, Database.Stateful {
     private List<DMT_AsyncPayload> payloads;
-    private List<DMT_LogExceptionPayload> exceptionsCollected = new List<DMT_LogExceptionPayload>();
+    private List<DMT_LogExceptionPayload> errorsCaughtInBatch = new List<DMT_LogExceptionPayload>();
 
     public DMT_AsyncBatchJob(List<DMT_AsyncPayload> payloads) {
         this.payloads = payloads;
     }
 
-    public Iterable<DMT_AsyncPayload> start(Database.BatchableContext bc) {
-        return payloads;
-    }
+    public Iterable<DMT_AsyncPayload> start(Database.BatchableContext bc) { return payloads; }
 
     public void execute(Database.BatchableContext bc, List<DMT_AsyncPayload> scope) {
-        for (DMT_AsyncPayload payload : scope) {
-            try {
-                DMT_AsyncDispatcher.dispatch(payload);
-            } catch (Exception e) {
-                System.debug('Error processing payload: ' + e.getMessage() + ' line number ' + e.getLineNumber());
-                // Collect instead of enqueue
-                exceptionsCollected.add(new DMT_LogExceptionPayload(
-                    e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
-                    'DMT_AsyncBatchJob', 'execute', 'DMT', 'BatchPayload'
-                ));
+        List<DMT_LogExceptionPayload> existingLogsToPublish = new List<DMT_LogExceptionPayload>();
+
+        for (DMT_AsyncPayload p : scope) {
+            if (p instanceof DMT_LogExceptionPayload) {
+                // If it's already a log, add to list for bulk handling
+                existingLogsToPublish.add((DMT_LogExceptionPayload)p);
+            } else {
+                // Functional Payload (Snapshot/Passport)
+                try {
+                    DMT_AsyncDispatcher.dispatch(p);
+                } catch (Exception e) {
+                    System.debug(LoggingLevel.ERROR, 'Error processing payload: ' + e.getMessage());
+                    // Catch and store for the finish method
+                    errorsCaughtInBatch.add(new DMT_LogExceptionPayload(
+                        e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                        'DMT_AsyncBatchJob', 'execute', 'DMT', 'BatchExecution'
+                    ));
+                }
             }
         }
+
+        // Dispatch pre-existing logs found in this scope chunk
+        if (!existingLogsToPublish.isEmpty()) {
+            DMT_AsyncDispatcher.handleLogExceptions(existingLogsToPublish);
+        }
+        
+        // Flush any new tasks (like retries) generated during this batch chunk
+        DMT_AsyncOrchestrator.flush();
     }
 
     public void finish(Database.BatchableContext bc) {
-        System.debug('DMT_AsyncBatchJob finished processing ' + payloads.size() + ' payloads.');
+        // Log all exceptions that occurred DURING the processing of functional payloads // we will watch this, if this causes chaining issues, we will combine the two lists of exception logs and dispatch them here directly
+        System.debug(LoggingLevel.INFO,'DMT_AsyncBatchJob finished processing ' + payloads.size() + ' payloads with ' + errorsCaughtInBatch.size() + ' exceptions.');
 
-        // Enqueue single queueable with all collected exceptions
-        if (!exceptionsCollected.isEmpty()) {
-            System.enqueueJob(new DMT_LogExceptionQueueable(exceptionsCollected));
+        if (!errorsCaughtInBatch.isEmpty()) {
+            System.enqueueJob(new DMT_LogExceptionQueueable(errorsCaughtInBatch));
         }
     }
 }

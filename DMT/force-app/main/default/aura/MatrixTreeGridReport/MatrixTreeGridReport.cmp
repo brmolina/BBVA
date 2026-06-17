@@ -1,0 +1,54 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="MatrixTreeGridReportCnt" access="global">
+
+
+    <aura:attribute name="recordId" type="String"  description="Referencia al registro"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="mode" type="String" default=""/>
+    <aura:attribute name="mapAtrributes" type="Map" default="{}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="gridColumns" type="List" access="private" />
+    <aura:attribute name="gridData" type="Object" access="private" />
+    <aura:attribute name="gridExpandedRows" type="List" access="private" />
+
+    <aura:attribute name="queryInput" type="String" access="public" />
+    <aura:attribute name="title" type="String" access="public" />
+    <aura:attribute name="groupByLabelPrimary" type="String" access="public" />
+    <aura:attribute name="groupByFieldPrimary" type="String" access="public" />
+    <aura:attribute name="groupByLabelSecondary" type="String" access="public" />
+    <aura:attribute name="groupByFieldSecondary" type="String" access="public" />
+    <aura:attribute name="labelTotalColumn" type="String" access="public" />
+
+    <aura:attribute name="fieldRowPrimary" type="String" access="public" />
+    <aura:attribute name="fieldRowChild" type="String" access="public" />
+    <aura:attribute name="fieldDecimalValues" type="String" access="public" />
+    <aura:attribute name="localCurrency" type="String" access="public" />
+
+    <center style="margin-top:20px; padding-top:10px; font-weight:700;">
+    	<h1>{!v.title}</h1>
+    </center>
+    
+    <lightning:layout multipleRows="false" class="slds-p-top_small slds-p-horizontal_medium slds-m-bottom_x-small">
+        <lightning:layoutItem size="6" class="slds-align_absolute-left slds-text-align_left">
+            <span>Currency:<strong>&nbsp;{!v.localCurrency}</strong></span>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="6" class="slds-align_absolute-right slds-text-align_right radiusbutton">
+            {!v.body}
+        </lightning:layoutItem>
+    </lightning:layout>
+    
+    <div>
+        <lightning:treeGrid
+            columns="{! v.gridColumns }"
+            data="{! v.gridData }"
+            expandedRows="{! v.gridExpandedRows }"
+            keyField="name"
+            aura:id="matrixTreeGridReport"
+            hideCheckboxColumn="true"
+            minColumnWidth="140"
+
+        />
+    </div>
+
+</aura:component>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_Ready_to_Close</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    OR(
+        AND(TEXT(PRIORVALUE(StageName)) != $Label.DES_Ready_to_close, TEXT(StageName) = $Label.DES_Ready_to_close),
+        AND(TEXT(PRIORVALUE(StageName)) != $Label.DES_Closed_Won, TEXT(StageName) = $Label.DES_Closed_Won)),
+    ISBLANK(Account.DES_ID_Fiscal__c ),
+    ISBLANK(Account.g_customer_id__c),
+    OR(
+        Account.RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;,
+        Account.RecordType.DeveloperName = &quot;Prospect_Group&quot;
+    )
+)</errorConditionFormula>
+    <errorMessage>It&apos;s not possible to advance to Ready to Close/Closed Won an opportunity without completing the &quot;ID Fiscal&quot; or &quot;Client Code&quot; field of a Prospect.</errorMessage>
+</ValidationRule>

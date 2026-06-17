@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>commercial_strategy__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(UPPER(commercial_strategy_class_name__c),&apos;BÁSICO&apos;,IMAGE(&apos;/resource/White_Circle_Icon&apos;,&quot;&quot;,20,20) + &apos; &apos; + commercial_strategy_class_name__c,&apos;POTENCIAL&apos;,IMAGE(&apos;/resource/Grey_Circle_Icon&apos;,&quot;&quot;,20,20) + &apos; &apos; + commercial_strategy_class_name__c,&apos;TRANSACCIONAL&apos;,IMAGE(&apos;/resource/Light_Blue_Circle_Icon&apos;,&quot;&quot;,20,20) + &apos; &apos; + commercial_strategy_class_name__c,&apos;ESTRELLA&apos;,IMAGE(&apos;/resource/Blue_Circle_Icon&apos;,&quot;&quot;,20,20) + &apos; &apos; + commercial_strategy_class_name__c,&apos;&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Commercial strategy</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

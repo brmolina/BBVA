@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Remedy_Department__c</fullName>
+    <description>Departamento que se asigna el ticket Remedy inicialmente</description>
+    <label>Remedy Department</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ANS Banca de Empresas</fullName>
+                <default>false</default>
+                <label>ANS Banca de Empresas</label>
+            </value>
+            <value>
+                <fullName>ANS SSTT</fullName>
+                <default>false</default>
+                <label>ANS SSTT</label>
+            </value>
+            <value>
+                <fullName>Soporte APP Net Cash</fullName>
+                <default>false</default>
+                <label>Soporte APP Net Cash</label>
+            </value>
+            <value>
+                <fullName>Soporte GNC</fullName>
+                <default>false</default>
+                <label>Soporte GNC</label>
+            </value>
+            <value>
+                <fullName>Mantener equipo resolutor</fullName>
+                <default>false</default>
+                <label>Mantener equipo resolutor</label>
+            </value>
+            <value>
+                <fullName>HORIZON ENTERPRISE</fullName>
+                <default>false</default>
+                <label>HORIZON ENTERPRISE</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

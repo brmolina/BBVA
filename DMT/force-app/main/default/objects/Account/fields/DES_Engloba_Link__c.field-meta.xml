@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Engloba_Link__c</fullName>
+    <externalId>false</externalId>
+    <formula>&apos;https://reportes.es.igrupobbva/MSTR_WBAM/MicroStrategyCIB/servlet/mstrWeb?Project=ENDG&amp;Port=0&amp;evt=2048001&amp;src=mstrWeb.2048001&amp;documentID=D35F724249EB4C616D9AD7B50DBD43F2&amp;visMode=0&amp;currentViewMedia=2&amp;promptAnswerMode=2&amp;elementsPromptAnswers=81D025BF42DD60224F2B4EA1032D02AC;81D025BF42DD60224F2B4EA1032D02AC:&apos;
++ LEFT(DES_Revenue_Update_Engloba__c,4)
++&apos;%3A&apos;
++ LEFT(RIGHT(DES_Revenue_Update_Engloba__c,4),2)
++ &apos;,944E907E4AFABA9D5DB658AB348E8699;944E907E4AFABA9D5DB658AB348E8699:&apos;+DES_Group_Code__c+&apos;,64138E4E4BC430CD278C5C9E8C80DF1A;64138E4E4BC430CD278C5C9E8C80DF1A:&apos;+TEXT(CurrencyIsoCode)</formula>
+    <label>Engloba Link</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

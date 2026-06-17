@@ -1,0 +1,66 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="DPMX_CommentsComponent_ctrl">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="solicitorName" type="String" />
+    <aura:attribute name="solicitorComment" type="String" />
+    <aura:attribute name="solicitorDate" type="String" />
+    <aura:attribute name="status" type="String" />
+    <aura:attribute name="authorizatorName" type="String" />
+    <aura:attribute name="authorizatorComment" type="String" />
+    <aura:attribute name="authorizatorrDate" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-box">
+        <div class="slds-m-bottom_medium">
+            <p>Comentarios</p> 
+        </div>
+        <div class="slds-grid slds-gutters slds-m-bottom_medium">
+            <div class="slds-col slds-size_1-of-5">
+                <div class="slds-media__figure">
+                    <div class="slds-icon_container slds-icon-standard" title="USER">
+                        <lightning:icon iconName="utility:user" size="xxx-small" />
+                        <div class="slds-assistive-text">USER</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_4-of-5">
+                <div class="slds-grid slds-grid_vertical">
+                    <div class="slds-col">
+                        <p>{!v.solicitorName}</p>
+                    </div>
+                    <div class="slds-col">
+                        <p>{!v.solicitorComment}</p>
+                    </div>
+                    <div class="slds-col">
+                        <p>{!v.solicitorDate}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.status != 'Pendiente'}">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-5">
+                    <div class="slds-media__figure">
+                        <div class="slds-icon_container slds-icon-standard" title="USER">
+                            <lightning:icon iconName="utility:user" size="xxx-small" />
+                            <div class="slds-assistive-text">USER</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_4-of-5">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-col">
+                            <p>{!v.authorizatorName}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p>{!v.authorizatorComment}</p>
+                        </div>
+                        <div class="slds-col">
+                            <p>{!v.authorizatorrDate}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

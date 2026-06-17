@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Close_case_Validation_GNC</fullName>
+    <active>true</active>
+    <description>To close a case must have the following fields completed: Case Origin, Client, Classification, Country, Element, Module, Description and Solution.</description>
+    <errorConditionFormula>AND(
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+!$Setup.CIB_User_Org__c.CIB_Is_Admin__c,
+$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ ISPICKVAL(SER_Business_Case_Type__c ,&quot;GNC&quot;),
+ SER_Discarded__c = FALSE,
+OR(
+ ISBLANK(TEXT( SER_Classification__c)),
+ ISBLANK(TEXT( Origin )),
+ ISBLANK(TEXT( SER_Country__c )),
+ ISBLANK(TEXT( SER_Type_GNC__c )),
+ ISBLANK(TEXT( SER_Subtype_GNC__c )),
+ ISBLANK( Description ),
+ ISBLANK( SER_Solution__c ),
+ ISBLANK( AccountId)),
+ OR(
+  ISPICKVAL(Status,&quot;Closed&quot;),
+  SER_Close__c = True
+)
+)</errorConditionFormula>
+    <errorMessage>To close a case must have the following fields completed: Case Origin, Client, Classification, Country, Element, Module, Description and Solution.</errorMessage>
+</ValidationRule>

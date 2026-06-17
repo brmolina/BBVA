@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event to get information of Flat table">
+  <aura:attribute name="dataValues" type="Object"/>
+  <aura:attribute name="isSpecialCond" type="Boolean"/>
+  <aura:attribute name="firstTime" type="Boolean"/>
+</aura:event>

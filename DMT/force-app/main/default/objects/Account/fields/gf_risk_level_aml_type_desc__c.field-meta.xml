@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_risk_level_aml_type_desc__c</fullName>
+    <description>Description of the Type of AML (Anti Money Laundering) risk level. This type is used to relate due diligence and control processes to a certain level of risk.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Description of the Type of AML (Anti Money Laundering) risk level. This type is used to relate due diligence and control processes to a certain level of risk.</inlineHelpText>
+    <label>Risk AML level Type</label>
+    <length>254</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

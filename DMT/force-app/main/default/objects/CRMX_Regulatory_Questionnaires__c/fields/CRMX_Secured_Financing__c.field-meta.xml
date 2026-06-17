@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Secured_Financing__c</fullName>
+    <defaultValue>&quot;;Not applicable&quot;</defaultValue>
+    <description>Answer to the question: Are the financings obtained from BBVA backed by real guarantees, or does your company act as a guarantor for these loans, representing 80% or more of its liquid assets?</description>
+    <label>Secured Financing</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>TRUE</fullName>
+                <default>false</default>
+                <label>TRUE</label>
+            </value>
+            <value>
+                <fullName>FALSE</fullName>
+                <default>false</default>
+                <label>FALSE</label>
+            </value>
+            <value>
+                <fullName>Not applicable</fullName>
+                <default>true</default>
+                <label>Not applicable</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

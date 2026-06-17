@@ -107,6 +107,7 @@ public without sharing class SER_CaseMethods_HELPER {
     ) {
     for (Case casoitem : listCases) {
       Double cex;
+      Double usd;
       boolean isValRecAccDatGM;
       isValRecAccDatGM = casoitem.SER_Accounting_date__c == null && mapMostRecentCEX.containsKey(casoitem.SER_Currency__c);
       boolean isValRecAccDatGTB;
@@ -115,6 +116,8 @@ public without sharing class SER_CaseMethods_HELPER {
       isInvalAccDateGM = isInvalidAccountingDateGM (casoitem, mapCEX) && casoitem.SER_Business_Case_Type__c == Label.SER_Business_Case_Type_GM;
       boolean isRecAccDatGTBEUR;
       isRecAccDatGTBEUR = casoitem.SER_Business_Case_Type__c == Label.SER_Business_Case_Type_GTB && casoitem.return_amount__c != null && casoitem.SER_Currency__c == Label.SER_Claim_Currency_EUR;
+      boolean isValRecGMEUR;
+      isValRecGMEUR = casoitem.SER_Business_Case_Type__c == Label.SER_Business_Case_Type_GM && casoitem.SER_Currency__c == Label.SER_Claim_Currency_EUR && mapMostRecentCEX.containsKey('USD');
       //If the currency is in the duplicated currencies set an error is given.
       if ( setDuplUnlistCurr.contains(casoitem.SER_Currency__c) ) {
         casoitem.AddError(label.SER_Duplicated_Currency);
@@ -122,23 +125,31 @@ public without sharing class SER_CaseMethods_HELPER {
       if ( isUnlistedCurrency(casoitem, mapUnlistedCurr) ) {       //There's a concrete  unlisted currency for that case
         system.debug('---->>>> isUnlistedCurrency ');
         cex = mapUnlistedCurr.get(casoitem.SER_Currency__c);
-        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex);
+        usd = mapUnlistedCurr.get('USD');
+        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex, usd);
       } else if ( isValueForCurrencyDateGM(casoitem, mapCEX) ) {       //There's a concrete value for that currency and date
         system.debug('---->>>> isValueForCurrencyDateGM ');
         cex = mapCEX.get(casoitem.SER_Currency__c).get(casoitem.SER_Accounting_date__c);
-        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex);
+        usd = mapCEX.get('USD').get(casoitem.SER_Accounting_date__c);
+        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex, usd);
       } else if ( isValRecAccDatGM ) {       //There's no accounting date --> we search for the most recent date for that currency, if it exist we set it.
         system.debug('---->>>> isValRecAccDatGM ');
         cex = mapCEX.get(casoitem.SER_Currency__c).get(mapMostRecentCEX.get(casoitem.SER_Currency__c));
-        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex);
+        usd = mapCEX.get('USD').get(mapMostRecentCEX.get('USD'));
+        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex, usd);
         /** Begin: validation for GTB currency -- (vv) */
       } else if ( isValRecAccDatGTB ) {       //There's no accounting date --> we search for the most recent date for that currency, if it exist we set it.
         system.debug('---->>>> isValRecAccDatGTB ');
         cex = mapCEX.get(casoitem.SER_Currency__c).get(mapMostRecentCEX.get(casoitem.SER_Currency__c));
-        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex);
+        usd = mapCEX.get('USD').get(mapMostRecentCEX.get('USD'));
+        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, cex, usd);
       } else if ( isRecAccDatGTBEUR ) {       //There's no accounting date --> we search for currency same EUR
         system.debug('---->>>> isRecAccDatGTBEUR ');
         casoitem.return_euro_amount__c = casoitem.return_amount__c;
+      } else if ( isValRecGMEUR ) {           //There's no accounting date --> Is GM and the currency is already in EUR
+        system.debug('---->>>> isValRecGMEUR ');
+        usd = mapCEX.get('USD').get(mapMostRecentCEX.get('USD'));
+        SER_CaseMethods_HELPER.assignCurrencyFields(casoitem, 1, usd);
         /** End: */
       } else if ( isInvalAccDateGM ) {
         //There's no record for the accounting date at all.
@@ -181,16 +192,23 @@ public without sharing class SER_CaseMethods_HELPER {
       04/07/2017              Juan Carlos Terrón      Initial Version
       03/18/2019              Victor Velandia         Validation BuSER_Amount_GTB_EUR__csiness for GM and GTB. and New field for GTB
   ----------------------------------------------------------------------------------------------------------*/
-  public static void assignCurrencyFields(Case caso, Double cex) {   //This method asigns currency fields for a Case with de currency exchange rate provided.
+  public static void assignCurrencyFields(Case caso, Double cex, Double usd) {   //This method asigns currency fields for a Case with de currency exchange rate provided.
     if( caso.SER_Business_Case_Type__c == Label.SER_Business_Case_Type_GM ) {
       if( caso.SER_Operational_risk__c != null ) {
         caso.SER_Operational_risk_EUR__c = caso.SER_Operational_risk__c/CEX;
+        caso.SER_Operational_risk_USD__c = caso.SER_Operational_risk_EUR__c*usd;
       }
       if( caso.SER_Amount_finally_assumed__c != null ) {
         caso.SER_Amount_finally_assumed_EUR__c = caso.SER_Amount_finally_assumed__c/CEX;
+        caso.SER_Amount_finally_assumed_USD__c = caso.SER_Amount_finally_assumed_EUR__c*usd;
       }
       if( caso.SER_Claim_partially_recovered__c != null ) {
         caso.SER_Amount_recovered_EUR__c = caso.SER_Claim_partially_recovered__c/CEX;
+        caso.SER_Amount_recovered_USD__c = caso.SER_Amount_recovered_EUR__c*usd;
+      }
+      if( caso.SER_Waiver__c != null ) {
+        caso.SER_Waiver_EUR__c = caso.SER_Waiver__c/CEX;
+        caso.SER_Waiver_USD__c = caso.SER_Waiver_EUR__c*usd;
       }
       /** Begin: validation for GTB currency -- (vv) */
     } else if ( caso.SER_Business_Case_Type__c == Label.SER_Business_Case_Type_GTB && caso.return_amount__c != null ) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>FBF Pensions Livrees</label>
+    <protected>false</protected>
+    <values>
+        <field>Line_Category__c</field>
+        <value xsi:type="xsd:string">SECURITY_LENDING</value>
+    </values>
+    <values>
+        <field>Master_Agreement_Type__c</field>
+        <value xsi:type="xsd:string">FBF Pensions Livrees</value>
+    </values>
+</CustomMetadata>

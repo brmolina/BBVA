@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Additional_field_duplicate_validation__c</fullName>
+    <description>Contains the api name of the additional field to be used for duplicate control. This field must be of type text</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Contains the api name of the additional field to be used for duplicate control. This field must be of type text</inlineHelpText>
+    <label>Additional field in duplicate validation</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

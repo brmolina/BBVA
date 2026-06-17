@@ -1,0 +1,63 @@
+<!--
+  @File Name          : Arc_Gen_RatingStudiesTabSet_cmp.cmp
+  @Description        : Component than contains a second dynamic form to rating studies
+  @Author             : eduardoefrain.hernandez.contractor@bbva.com
+  @Group              : ARCE Team
+  @Last Modified By   : eduardoefrain.hernandez.contractor@bbva.com
+  @Last Modified On   : 18/10/2019 12:43:59
+  @Changes   :
+  Ver       Date            Author      		                    Modification
+  ==============================================================================
+  1.0    18/10/2019   eduardoefrain.hernandez.contractor@bbva.com   Initial Version
+  1.1    22/06/2020   javier.soto.carrascosa@bbva.com               Fix editButton incorrect structure
+  1.2    27/07/2020   juanignacio.hita.contractor@bbva.com          Add FFSS rating studies table with manual constructor
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_RatingStudiesTabSet_controller" access="global" >
+    <aura:attribute name="hasRecordId"     type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:attribute name="idSelect"        type="String" default="NONE" description="recordId from the customer"/>
+    <aura:attribute name="configurationId" type="String" access="global" description="recordId from the customer"/>
+    <aura:attribute name="template"        type="String" access="global" description="recordId from the customer"/>
+    <aura:attribute name="tableId"         type="String" access="global" description="recordId from the customer"/>
+    <aura:attribute name="success"         type="String" access="global" description="If yes, the service and the save records process were successful"/>
+    <aura:attribute name="spinnerCmp"      type="Boolean" default="true" description="Indicates if the spinner is active"/>
+    <aura:attribute name="spinnerDyfr"     type="Boolean" default="false" description="Indicates if the spinner is active"/>
+    <aura:attribute name="view"            type="boolean" default="false" description="Indicates if the spinner is active"/>
+    <aura:attribute name="editButton"      type="String" access="global" default='{"style":"neutral","unactiveStyle":"hidden","active":false}' description="Edit button configuration" />
+    <aura:attribute name="jsonTable"       type="Object" access="global" description="Json string with the data table"/>
+    <aura:attribute name="ffssRatingId"    type="List" description="Id of financial statement valid for rating"/>
+    <aura:attribute name="objApiName"      type="String" default="arce__Financial_Statements__c" description="Object api name"/>
+    <aura:attribute name="tableType"       type="String" default="SIMPLE" description="Type of dynamic table"/>
+
+    <aura:handler name="formLoadedEvent" event="dyfr:FormLoaded_evt" action="{!c.handleDyfrLoaded}" />
+    <aura:handler name="userInteraction" event="dwp_dv:User_Interaction_evt" action="{!c.selectedRow}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!v.spinnerCmp}">
+        <div class="slds-align_absolute-center slds-p-top_x-medium">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            {!v.body}
+        </aura:set>
+    </aura:if>
+
+    <aura:if isTrue="{!v.spinnerDyfr}">
+        <div class="slds-align_absolute-center slds-p-top_x-large">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.view}">
+        <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="{!v.template}" selectionType="Static" editButton="{!v.editButton}"/>
+    </aura:if>
+
+</aura:component>

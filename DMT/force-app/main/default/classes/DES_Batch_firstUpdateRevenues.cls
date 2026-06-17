@@ -35,7 +35,7 @@ public without sharing class DES_Batch_firstUpdateRevenues implements Database.B
     public DES_Batch_firstUpdateRevenues() {
         System.debug(':::closeWon : ' + closeWon);
         System.debug(':::closeLost : ' + closeLost);
-        pQuery = 'SELECT Id, dwp_acmh__AccountId__c, dwp_acmh__OpportunityId__c, convertCurrency(dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c) FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__OpportunityId__r.StageName != :closeWon AND dwp_acmh__OpportunityId__r.StageName != :closeLost AND dwp_acmh__OpportunityId__r.StageName != :draftOpp ORDER BY dwp_acmh__AccountId__c'+(Test.isRunningTest()?' LIMIT 1':'');
+        pQuery = 'SELECT Id, AMH_AccountId__c, AMH_OpportunityId__c, convertCurrency(AMH_OpportunityId__r.DES_Expected_Revenues__c) FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_OpportunityId__r.StageName != :closeWon AND AMH_OpportunityId__r.StageName != :closeLost AND AMH_OpportunityId__r.StageName != :draftOpp ORDER BY AMH_AccountId__c'+(Test.isRunningTest()?' LIMIT 1':'');
     }
 
     /*
@@ -50,10 +50,10 @@ public without sharing class DES_Batch_firstUpdateRevenues implements Database.B
     * @author Global Desktop
     * @description Execute para recalcular campos de los clientes asociadas a las oportunidades
     */
-    public void execute(Database.BatchableContext bcd,List<dwp_acmh__Denorm_Account_Opportunity__c> scope) {
+    public void execute(Database.BatchableContext bcd,List<AMH_Denorm_Account_Opportunity__c> scope) {
         final set<Id> idRelatedAccounts = new set<Id>();
-        for(dwp_acmh__Denorm_Account_Opportunity__c adao : scope) {
-            idRelatedAccounts.add(adao.dwp_acmh__AccountId__c);
+        for(AMH_Denorm_Account_Opportunity__c adao : scope) {
+            idRelatedAccounts.add(adao.AMH_AccountId__c);
         }
         Map<Id,Account> accMap = new map<Id,Account>([SELECT id, customer_open_oppy_number__c,
                                                     customer_open_oppy_amount__c
@@ -71,10 +71,10 @@ public without sharing class DES_Batch_firstUpdateRevenues implements Database.B
     * @author Global Desktop
     * @description Auxiiliar para resetear las variables
     */
-    public static Map<Id,Account> inicializateVars(List<dwp_acmh__Denorm_Account_Opportunity__c> scope, Map<Id,Account> accMap) {
-        for(dwp_acmh__Denorm_Account_Opportunity__c idao : scope) {
-            accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c = 0;
-            accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c = 0;
+    public static Map<Id,Account> inicializateVars(List<AMH_Denorm_Account_Opportunity__c> scope, Map<Id,Account> accMap) {
+        for(AMH_Denorm_Account_Opportunity__c idao : scope) {
+            accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c = 0;
+            accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c = 0;
         }
         return accMap;
     }
@@ -83,14 +83,14 @@ public without sharing class DES_Batch_firstUpdateRevenues implements Database.B
     * @author Global Desktop
     * @description Auxiiliar para calcular las variables
     */
-    public static Map<Id,Account> calculateVars(List<dwp_acmh__Denorm_Account_Opportunity__c> scope, Map<Id,Account> accMap) {
-        for(dwp_acmh__Denorm_Account_Opportunity__c idao : scope) {
-            if(accMap.get(idao.dwp_acmh__AccountId__c) != null && accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c == null && accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c == null) {
-                accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c = 1;
-                accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c = idao.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c;
-            } else if(accMap.get(idao.dwp_acmh__AccountId__c) != null && accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c != null && accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c != null) {
-                accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c = accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_number__c +1;
-                accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c = accMap.get(idao.dwp_acmh__AccountId__c).customer_open_oppy_amount__c +idao.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c;
+    public static Map<Id,Account> calculateVars(List<AMH_Denorm_Account_Opportunity__c> scope, Map<Id,Account> accMap) {
+        for(AMH_Denorm_Account_Opportunity__c idao : scope) {
+            if(accMap.get(idao.AMH_AccountId__c) != null && accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c == null && accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c == null) {
+                accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c = 1;
+                accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c = idao.AMH_OpportunityId__r.DES_Expected_Revenues__c;
+            } else if(accMap.get(idao.AMH_AccountId__c) != null && accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c != null && accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c != null) {
+                accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c = accMap.get(idao.AMH_AccountId__c).customer_open_oppy_number__c +1;
+                accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c = accMap.get(idao.AMH_AccountId__c).customer_open_oppy_amount__c +idao.AMH_OpportunityId__r.DES_Expected_Revenues__c;
             }
         }
         return accMap;

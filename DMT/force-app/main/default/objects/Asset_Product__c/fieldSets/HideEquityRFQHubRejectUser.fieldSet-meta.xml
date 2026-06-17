@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FieldSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HideEquityRFQHubRejectUser</fullName>
+    <description>Fields only for Equity RFQHub</description>
+    <displayedFields>
+        <field>Client_Name_on_Platform__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>Alias__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <label>HideEquityRFQHubRejectUser</label>
+</FieldSet>

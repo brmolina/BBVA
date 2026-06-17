@@ -37,24 +37,24 @@ public with sharing class NewOppFormGroupsCnt {
             System.debug('rtGrupo----->'+rtGrupo);
             System.debug('rtGrupo2----->'+rtGrupo2);
 
-            List<dwp_acmh__GBL_Account_Relationship__c> lstCuentaRel;
-            lstCuentaRel = new List<dwp_acmh__GBL_Account_Relationship__c>();
+            List<AMH_GBL_Account_Relationship__c> lstCuentaRel;
+            lstCuentaRel = new List<AMH_GBL_Account_Relationship__c>();
 
             final List<Account> lstCuenta = [select id,recordtypeid,DES_Structure_Type__c from Account where id =:clientId];
             if(!lstCuenta.isEmpty() && lstCuenta[0].DES_Structure_Type__c==SUPRAGRUPO) {
-                lstCuentaRel=[select id,dwp_acmh__Child_Account__c from dwp_acmh__GBL_Account_Relationship__c where dwp_acmh__Parent_Account__c=:clientId and (dwp_acmh__Child_Account__r.recordtypeid=:rtGrupo or dwp_acmh__Child_Account__r.recordtypeid=:rtGrupo2)];
+                lstCuentaRel=[select id,AMH_Child_Account__c from AMH_GBL_Account_Relationship__c where AMH_Parent_Account__c=:clientId and (AMH_Child_Account__r.recordtypeid=:rtGrupo or AMH_Child_Account__r.recordtypeid=:rtGrupo2)];
 
                 if(!lstCuentaRel.isEmpty()) {
-                    for (dwp_acmh__GBL_Account_Relationship__c lstCuentas1 : lstCuentaRel) {
-                        valClient.add(lstCuentas1.dwp_acmh__Child_Account__c);
+                    for (AMH_GBL_Account_Relationship__c lstCuentas1 : lstCuentaRel) {
+                        valClient.add(lstCuentas1.AMH_Child_Account__c);
                     }
                 }
             } else if (!lstCuenta.isEmpty() && lstCuenta[0].DES_Structure_Type__c==SUBGRUPO) {
-                lstCuentaRel=[select id,dwp_acmh__Parent_Account__c from dwp_acmh__GBL_Account_Relationship__c where dwp_acmh__Child_Account__c =:clientId and (dwp_acmh__Parent_Account__r.recordtypeid=:rtGrupo or dwp_acmh__Parent_Account__r.recordtypeid=:rtGrupo2 )];
+                lstCuentaRel=[select id,AMH_Parent_Account__c from AMH_GBL_Account_Relationship__c where AMH_Child_Account__c =:clientId and (AMH_Parent_Account__r.recordtypeid=:rtGrupo or AMH_Parent_Account__r.recordtypeid=:rtGrupo2 )];
 
                 if(!lstCuentaRel.isEmpty()) {
-                    for (dwp_acmh__GBL_Account_Relationship__c lstCuentas2 : lstCuentaRel) {
-                        valClient.add(lstCuentas2.dwp_acmh__Child_Account__c);
+                    for (AMH_GBL_Account_Relationship__c lstCuentas2 : lstCuentaRel) {
+                        valClient.add(lstCuentas2.AMH_Child_Account__c);
                     }
                 }
             }
@@ -116,16 +116,16 @@ public with sharing class NewOppFormGroupsCnt {
                                                                             AND participant_child_id__r.DES_Country_Client__c = :countryDevName
                                                                             AND participant_child_id__r.gf_prtcpt_act_status_ind_type__c = true];
 
-			final List<String> orderList = new List<String>();
+      final List<String> orderList = new List<String>();
             for(DES_Subsidiary_Group_Relation__c gsm : relSubsidiaries) {
-				String union = gsm.participant_child_id__r.Name + '&&' + gsm.participant_child_id__c;
-	    		orderList.add(union);
-			}
-			orderList.sort();
-	    	final List<WrapperClass> listWrapper = new List<WrapperClass>();
-	    	for(String name : orderList) {
-				String[] campos= name.split('&&');
-	    		listWrapper.add(new WrapperClass(campos[0],campos[1]));
+        String union = gsm.participant_child_id__r.Name + '&&' + gsm.participant_child_id__c;
+          orderList.add(union);
+      }
+      orderList.sort();
+        final List<WrapperClass> listWrapper = new List<WrapperClass>();
+        for(String name : orderList) {
+        String[] campos= name.split('&&');
+          listWrapper.add(new WrapperClass(campos[0],campos[1]));
             }
 
             return JSON.serialize(listWrapper);
@@ -173,9 +173,9 @@ public with sharing class NewOppFormGroupsCnt {
         * @author Global Desktop
         * @description Construye la clase wrapper
         */
-    	public WrapperClass(String nameIn, String idMatrixIn) {
-    		this.matrixName = nameIn;
-    		this.idMatrix = idMatrixIn ;
+      public WrapperClass(String nameIn, String idMatrixIn) {
+        this.matrixName = nameIn;
+        this.idMatrix = idMatrixIn ;
         }
         /**
         * @author Global Desktop

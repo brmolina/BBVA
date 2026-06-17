@@ -1,0 +1,14 @@
+<aura:documentation>
+    <aura:description>
+        <h1><b>Component that updates the arce main subsidiary and stage</b></h1>
+        <p>currentStep-variable that saves the step number of the modals</p>
+        <p>arceId-saves id of arce__Analysis__c</p>
+        <p>stagevalue-saves the selected stage</p>
+        <p>customerDetailInfo-saves the information of the customers</p>
+        <p>stagevalue-shows the selected stage</p>
+        <p>listAmbits-get list of ambits</p>
+        <p>ambit-saves the selected ambit"</p>
+        <p>disableButtons-controls next and finish buttons enablement</p>
+        <p><code>c:Arce_Gen_ProposeInSanction</code></p>
+    </aura:description>
+</aura:documentation>

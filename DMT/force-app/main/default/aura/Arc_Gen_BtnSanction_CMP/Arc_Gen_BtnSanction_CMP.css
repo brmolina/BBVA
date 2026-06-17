@@ -1,0 +1,17 @@
+.THIS lightning-icon.some-success > lightning-primitive-icon > svg > use {
+  fill: green;
+}
+
+.THIS lightning-icon.some-warning > lightning-primitive-icon > svg > use {
+  fill: red;
+}
+
+.THIS .slds-notify {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+.THIS .slds-notify_container {
+  z-index: 0;
+}

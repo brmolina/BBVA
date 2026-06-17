@@ -12,6 +12,10 @@ export default class Dmt_passport_modal extends LightningModal  {
     @api showProfitabilityChart;
     @api profitability;
     @api opportunityId;
+    @api noShowInfoMessage;
+    @api showConditionDesc = false;
+    @api associatedLineUrl;
+    @api associatedLineLabel;
 
     handleOkay() {
         this.close('okay');
@@ -19,5 +23,9 @@ export default class Dmt_passport_modal extends LightningModal  {
 
     get featureNameTitle() {
         return this.featureName ? this.featureName : 'Capability';
+    }
+
+    get hasAssociatedLine() {
+        return !!(this.associatedLineUrl && this.associatedLineLabel);
     }
 }

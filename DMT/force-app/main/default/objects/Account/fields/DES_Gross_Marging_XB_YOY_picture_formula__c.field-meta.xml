@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Gross_Marging_XB_YOY_picture_formula__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+AND((DES_GROSS_MARGIN_XB_YOY__c * 100)&lt;0,(DES_GROSS_MARGIN_XB_YOY__c * 100)&gt;-1),
+&quot;-0&quot; &amp; SUBSTITUTE(SUBSTITUTE(TEXT(ROUND(( DES_GROSS_MARGIN_XB_YOY__c * 100),2)), &apos;.&apos;, &apos;,&apos;), &apos;-&apos;, &apos;&apos;) &amp; &quot;% &quot; &amp; IF( DES_GROSS_MARGIN_XB_YOY__c &gt; 0 , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccw&quot;, &quot;Green&quot;,20,20) , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccv&quot;, &quot;Red&quot;,20,20) ),
+IF(
+AND((DES_GROSS_MARGIN_XB_YOY__c * 100)&lt;1,(DES_GROSS_MARGIN_XB_YOY__c * 100)&gt;0),
+&quot;0&quot; &amp; SUBSTITUTE(TEXT(ROUND(( DES_GROSS_MARGIN_XB_YOY__c * 100),2)), &apos;.&apos;, &apos;,&apos;) &amp; &quot;% &quot; &amp; IF( DES_GROSS_MARGIN_XB_YOY__c &gt; 0 , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccw&quot;, &quot;Green&quot;,20,20) , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccv&quot;, &quot;Red&quot;,20,20) ),
+SUBSTITUTE(TEXT(ROUND(( DES_GROSS_MARGIN_XB_YOY__c * 100),2)), &apos;.&apos;, &apos;,&apos;) &amp; &quot;% &quot; &amp; IF( DES_GROSS_MARGIN_XB_YOY__c &gt; 0 , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccw&quot;, &quot;Green&quot;,20,20) , IMAGE(&quot;/servlet/servlet.FileDownload?file=01558000003jccv&quot;, &quot;Red&quot;,20,20) )
+)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>YOY</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

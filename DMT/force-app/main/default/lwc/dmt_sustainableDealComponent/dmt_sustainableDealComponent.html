@@ -1,0 +1,205 @@
+<template>
+        <div class="slds-grid slds-wrap">
+
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                <div class="slds-form-element slds-form-element__group">
+                    <template lwc:if={edit}>
+
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-grow">
+                                <lightning-combobox
+                                    name="assessment"
+                                    label="Sustainable Deal Assessment"
+                                    value={selectedAssessment}
+                                    options={assessmentOptions}
+                                    onchange={handleAssessmentChange}
+                                    required=true>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:else>
+
+                         <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                            <span class="slds-form-element__label">Sustainable Deal Assessment</span>
+                            <div class="slds-form-element__control">
+                                <div class="slds-form-element__static">{assessmentLabel}</div>
+                                <template lwc:if={showEditIcon}>
+                                    <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                        <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                        <span class="slds-assistive-text">Edit</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                    <div class="slds-form-element slds-form-element__group">
+                        <template lwc:if={edit}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-grow">
+                                    <lightning-combobox
+                                        name="subtype"
+                                        label="Sustainable Deal Subtype"
+                                        value={selectedSubtype}
+                                        options={subtypeOptions}
+                                        onchange={handleSubtypeChange}
+                                        disabled={isSubtypeDisabled}
+                                        placeholder={subtypePlaceholder}>
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Sustainable Deal Subcategory</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{subtypeLabel}</div>
+                                    <template lwc:if={showEditIcon}>
+                                        <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                            <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+<template lwc:if={showGreenFilter}>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                    <div class="slds-form-element slds-form-element__group">
+                        <template lwc:if={edit}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-grow">
+                                    <lightning-combobox
+                                        name="greenFilter"
+                                        label="Green Activity Filter"
+                                        value={selectedGreenFilter}
+                                        options={greenFilterOptions}
+                                        onchange={handleGreenFilterChange}
+                                        disabled={isGreenFilterDisabled}
+                                        placeholder={greenFilterPlaceholder}>
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Green Activity Filter</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{greenFilterLabel}</div>
+                                    <template lwc:if={showEditIcon}>
+                                        <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                            <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+</template>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                    <div class="slds-form-element slds-form-element__group">
+                        <template lwc:if={edit}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-grow">
+                                    <lightning-combobox
+                                        name="catalog"
+                                        label="Sustainable Deal Value"
+                                        value={selectedCatalogValue}
+                                        options={catalogOptions}
+                                        onchange={handleCatalogChange}
+                                        disabled={isCatalogDisabled}
+                                        placeholder={catalogPlaceholder}>
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Sustainable Deal Label</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{catalogLabel}</div>
+                                    <template lwc:if={showEditIcon}>
+                                        <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                            <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                    <div class="slds-form-element slds-form-element__group">
+                        <template lwc:if={edit}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-grow">
+                                    <lightning-input 
+                                        label="Sustainability Percentage (%)"
+                                        type="number"
+                                        value={selectedSustainabilityPercentage}
+                                        min="0"
+                                        step="0.01"
+                                        onchange={handleSustainabilityPercentageChange}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Sustainability Percentage (%)</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{selectedSustainabilityPercentage}</div>
+                                    <template lwc:if={showEditIcon}>
+                                        <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                            <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-p-around_small">
+                    <div class="slds-form-element slds-form-element__group">
+                        <template lwc:if={edit}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-grow">
+                                    <lightning-input
+                                        type="checkbox"
+                                        label="Sustainability bonus–eligible"
+                                        checked={selectedSustainabilityBonus}
+                                        onchange={handleSustainabilityBonusChange}
+                                        >
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-hint-parent">
+                                <span class="slds-form-element__label">Sustainability bonus–eligible</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{labelValueSustainabilityBonus}</div>
+                                    <template lwc:if={showEditIcon}>
+                                        <button class="slds-button slds-button_icon" title="Edit" onclick={handleEditClick}>
+                                            <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit"></lightning-icon>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
+        </div>
+</template>

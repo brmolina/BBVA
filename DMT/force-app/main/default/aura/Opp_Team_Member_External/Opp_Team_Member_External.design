@@ -1,0 +1,10 @@
+<design:component>
+	<design:attribute name="operation" label="operation" required="true"/>
+    <design:attribute name="owner" label="codOwner" />
+	<design:attribute name="codOpportunity" label="codOpportunity" />
+	<design:attribute name="codTeamMember" label="codTeamMember" />
+    <design:attribute name="opportunityMemberUser" label="opportunityMemberUser" />
+    <design:attribute name="endpoint" label="endpoint" />
+	<design:attribute name="error" label="error" />
+    <design:attribute name="isError" label="isError" />
+</design:component>

@@ -1,5 +1,4 @@
 import { LightningElement, track, api, wire } from 'lwc';
-import { labels } from './dMT_main_table_products_labels.js';
 import { getColumns, getVisibleColumns } from './dMT_main_table_products_columns.js';
 import fetchInitialData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchInitialData';
 import fetchData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
@@ -71,7 +70,6 @@ export default class dmt_main_table extends LightningElement {
     @api lineId;
     @api groupAccount;
     // Component properties
-    labels = labels;
     mainHolderSelectRows;
     @api mainHolderCustomer;
     filtergroupedData;
@@ -277,7 +275,7 @@ export default class dmt_main_table extends LightningElement {
             pageSize: pageSize,
             bubbles: false
         };
-        this.template.querySelector('c-hpg_fetcher').fireFetchMoreEvent(params);
+        this.template.querySelector('c-dmt_fetcher').fireFetchMoreEvent(params);
     }
 
 

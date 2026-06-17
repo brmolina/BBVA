@@ -30,7 +30,7 @@ public without sharing class DMT_CreateTeamMemberApprover {
                 }
             }
 
-            List<Case> caseRecords = [SELECT Id, DMT_Line__c, opportunity_id__c, OwnerId FROM Case WHERE OwnerId = :groupId WITH SECURITY_ENFORCED];
+            List<Case> caseRecords = [SELECT Id, DMT_Line__c, opportunity_id__c, OwnerId FROM Case WHERE OwnerId = :groupId WITH USER_MODE];
             List<DMT_TeamMember__c> newTeamMembers = new List<DMT_TeamMember__c>();
             List<DMT_TeamMember__c> teamMembersToDelete = new List<DMT_TeamMember__c>();
             Map<Id, Id> casesWithLines = new Map<Id, Id>();

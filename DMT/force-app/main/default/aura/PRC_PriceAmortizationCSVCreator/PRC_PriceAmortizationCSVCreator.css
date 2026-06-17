@@ -1,0 +1,62 @@
+.THIS .borderBotom {
+  border-bottom: 1px solid #dddbda!important;
+}
+
+
+.THIS .nopaddingButton {
+	padding: 3px 3px 3px 3px;
+}
+
+
+.THIS div.button-container{
+    text-align:center;
+}
+
+.THIS .icon-color {
+	color: #1b5297;
+}
+
+.THIS input.fileUpload{
+  visibility: hidden;
+}
+
+.THIS .borderBotom {
+  width: 50%;
+  border-bottom: 1px solid #dddbda!important;
+}
+
+.THIS .inputitem{
+  display: inline-flex;
+  width: 50%;
+  margin-bottom: -8px;
+  /* color: #a8b7c7; // #72706d;  // #c3d0de;   */ 
+}
+
+.THIS .outputitem{
+  /* color: black; */
+  font-size: large;
+}
+
+.THIS H1.text-large {
+  font-size: large!important;
+}
+
+.THIS div.overwrite-width {
+    /* width: 90%; */
+    max-width: none;
+    min-width: 40rem;
+}
+
+
+.THIS div.align-left {
+  text-align: left;
+}
+
+.THIS div.modalfooter-item {
+  display: inherit!important;
+}
+
+
+.THIS div.div-height-fit {
+  height: fit-content!important;
+}

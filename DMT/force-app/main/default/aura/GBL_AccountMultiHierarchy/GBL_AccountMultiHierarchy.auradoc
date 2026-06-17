@@ -1,0 +1,21 @@
+<aura:documentation>
+  <aura:description>
+    <p><code>AccountHierarchyMulti</code> component allows to show a custom object hierarchy in a graphical way.</p>
+    <p><b>Features:</b></p>
+        <ul>
+            <li>Custom Hierarchy Model for Accounts. Allowing multiparent hierarchy.</li>
+            <li>Graphical hierarchy display by using D3 v4 third party library.</li>
+            <li>Displays ascendants and descendants nodes of the current account selected</li>
+            <li>Displays related records associated to each node in the hierarchy when clicked</li>
+            <li>Allows nodes filtering based on different visions or account types</li>
+        </ul>
+    <p><b>Screenshoot</b></p>
+        <p>Pending</p>
+    <p><b>Installation</b></p>
+        <p>Pending</p>
+  </aura:description>
+
+  <aura:example name="basicExample" ref="basicExample" label="Label">
+    <p>Pending</p>
+  </aura:example>
+</aura:documentation>

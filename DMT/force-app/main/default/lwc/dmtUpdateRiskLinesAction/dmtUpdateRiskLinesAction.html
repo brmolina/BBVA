@@ -1,0 +1,29 @@
+<template>
+    <lightning-card title="Update Risk Lines and Warranties">
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Updating..." size="medium"></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <p class="slds-text-body_regular">
+                    Do you want to update the Risk Lines and Warranties associated with the selected line?
+                </p>
+            </template>
+        </div>
+
+        <div slot="footer" class="slds-grid slds-grid_align-end">
+            <lightning-button
+                label="Cancel"
+                onclick={handleCancel}
+                class="slds-m-right_x-small"
+                disabled={isLoading}
+            ></lightning-button>
+            <lightning-button
+                label="Update"
+                variant="brand"
+                onclick={handleUpdate}
+                disabled={isLoading}
+            ></lightning-button>
+        </div>
+    </lightning-card>
+</template>

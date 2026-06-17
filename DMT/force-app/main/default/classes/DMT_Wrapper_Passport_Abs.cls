@@ -1,7 +1,7 @@
 @JsonAccess(serializable='always' deserializable='always')
-public with sharing virtual class DMT_Wrapper_Passport_Abs 
+public with sharing virtual class DMT_Wrapper_Passport_Abs
 {
-    public virtual class Request 
+    public virtual class Request
     {
         @AuraEnabled
         public String opportunityId;
@@ -31,19 +31,30 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         public String body;
     }
 
-    public virtual class RequestBody 
+    // --- NEW: Inner class for CoreDocs Taxonomy payloads ---
+    public virtual class DocumentLoad 
+    {
+        @AuraEnabled
+        public String itemType;
+    }
+
+    public virtual class RequestBody
     {
         @AuraEnabled
         public Client client;
         @AuraEnabled
-        public Analyst analysts {get;set;}
+        public Analyst analysts;
         @AuraEnabled
         public List<Feature> features;
         @AuraEnabled
         public List<OptionalFeatures> optionalFeatures;
+        @AuraEnabled
+        public String templateType;
+        @AuraEnabled
+        public List<DocumentLoad> documentsloads; // Populated globally across all inherited wrappers
     }
 
-    public virtual class Client 
+    public virtual class Client
     {
         @AuraEnabled
         public String customerId;
@@ -96,12 +107,32 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         @AuraEnabled
         public String camnDesc;
         @AuraEnabled
+        public Boolean pureplayer;
+        @AuraEnabled
         public List<Aggregation> aggregations;
         @AuraEnabled
-        public Boolean extension {get;set;}
+        public Boolean extension;
+        @AuraEnabled
+        public String thresholdType;
+        @AuraEnabled
+        public String camn;
+        @AuraEnabled
+        public String industry;
+        @AuraEnabled
+        public String leveragedlending;
+        @AuraEnabled
+        public Decimal scoring;
+        @AuraEnabled
+        public String moodysExternalRating;
+        @AuraEnabled
+        public String spExternalRating;
+        @AuraEnabled
+        public String fitchExternalRating;
+        @AuraEnabled
+        public String sectorHead;
     }
 
-    public virtual class Aggregation 
+    public virtual class Aggregation
     {
         @AuraEnabled
         public String level;
@@ -109,7 +140,7 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         public String id;
     }
 
-    public virtual class Product 
+    public virtual class Product
     {
 
         @AuraEnabled
@@ -122,7 +153,7 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         public String currencyId;
     }
 
-    public virtual class Feature 
+    public virtual class Feature
     {
         @AuraEnabled
         public String id;
@@ -137,6 +168,8 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         @AuraEnabled
         public String stateName;
         @AuraEnabled
+        public String requiredAtStatus; // Dynamic Stage Blocker
+        @AuraEnabled
         public List<FeatureGenConsiderations> validations;
     }
 
@@ -146,7 +179,7 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         public String id;
     }
 
-    public virtual class FeatureGenConsiderations 
+    public virtual class FeatureGenConsiderations
     {
         @AuraEnabled
         public String state;

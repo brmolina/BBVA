@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_Purpose_desc__c</fullName>
+    <label>Product Purpose</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>GCP</fullName>
+                <default>false</default>
+                <label>GCP</label>
+            </value>
+            <value>
+                <fullName>Acquisition Finance</fullName>
+                <default>false</default>
+                <label>Acquisition Finance</label>
+            </value>
+            <value>
+                <fullName>Working Capital</fullName>
+                <default>false</default>
+                <label>Working Capital</label>
+            </value>
+            <value>
+                <fullName>Capex</fullName>
+                <default>false</default>
+                <label>Capex</label>
+            </value>
+            <value>
+                <fullName>Refinancing</fullName>
+                <default>false</default>
+                <label>Refinancing</label>
+            </value>
+            <value>
+                <fullName>Backup</fullName>
+                <default>false</default>
+                <label>Backup</label>
+            </value>
+            <value>
+                <fullName>Construction</fullName>
+                <default>false</default>
+                <label>Construction</label>
+            </value>
+            <value>
+                <fullName>PRODUCT PURPOSE EXAMPLE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>PRODUCT PURPOSE EXAMPLE</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

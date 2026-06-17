@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Logical_Delete__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Marked as True if the Contact has been logical delete, the Admin should review this contact and make the final delete.</description>
+    <label>Logical Delete</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

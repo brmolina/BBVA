@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Country__c</fullName>
+    <label>Country</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>GNC</fullName>
+                <default>false</default>
+                <label>GNC</label>
+            </value>
+            <value>
+                <fullName>BBVA FRANCES NET CASH ARGENTINA</fullName>
+                <default>false</default>
+                <label>BBVA FRANCES NET CASH ARGENTINA</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH CHILE</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH CHILE</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH COLOMBIA</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH COLOMBIA</label>
+            </value>
+            <value>
+                <fullName>BANCOMER NET CASH MEXICO</fullName>
+                <default>false</default>
+                <label>BANCOMER NET CASH MEXICO</label>
+            </value>
+            <value>
+                <fullName>CONTINENTAL NET CASH PERU</fullName>
+                <default>false</default>
+                <label>CONTINENTAL NET CASH PERU</label>
+            </value>
+            <value>
+                <fullName>PROVINCIAL NET CASH VENEZUELA</fullName>
+                <default>false</default>
+                <label>PROVINCIAL NET CASH VENEZUELA</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH BRUSELAS</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH BRUSELAS</label>
+            </value>
+            <value>
+                <fullName>BBVA NET C@SH ESPAÑA</fullName>
+                <default>false</default>
+                <label>BBVA NET C@SH ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH HONG KONG</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH HONG KONG</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH LONDRES</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH LONDRES</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH NUEVA YORK</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH NUEVA YORK</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PARIS</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PARIS</label>
+            </value>
+            <value>
+                <fullName>BBVA NET CASH PORTUGAL</fullName>
+                <default>false</default>
+                <label>BBVA NET CASH PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>Argentina</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Argentina</label>
+            </value>
+            <value>
+                <fullName>Bruselas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bruselas</label>
+            </value>
+            <value>
+                <fullName>Chile</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Chile</label>
+            </value>
+            <value>
+                <fullName>Colombia</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Colombia</label>
+            </value>
+            <value>
+                <fullName>España</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>España</label>
+            </value>
+            <value>
+                <fullName>Global</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Global</label>
+            </value>
+            <value>
+                <fullName>Hong Kong</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hong Kong</label>
+            </value>
+            <value>
+                <fullName>Londres</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Londres</label>
+            </value>
+            <value>
+                <fullName>México</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>México</label>
+            </value>
+            <value>
+                <fullName>Nueva York</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Nueva York</label>
+            </value>
+            <value>
+                <fullName>París</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>París</label>
+            </value>
+            <value>
+                <fullName>Perú</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Perú</label>
+            </value>
+            <value>
+                <fullName>Portugal</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Portugal</label>
+            </value>
+            <value>
+                <fullName>Turquia</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Turquia</label>
+            </value>
+            <value>
+                <fullName>Uruguay</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Uruguay</label>
+            </value>
+            <value>
+                <fullName>Venezuela</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Venezuela</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

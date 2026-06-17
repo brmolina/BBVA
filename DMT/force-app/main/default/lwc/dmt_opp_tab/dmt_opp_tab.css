@@ -1,0 +1,102 @@
+.idEditing {
+    pointer-events: none;
+}
+
+/* Keep tabs in a single row so the overflow logic can measure correctly */
+.slds-tabs_default__nav {
+    flex-wrap: nowrap;
+}
+
+.slds-tabs_default__item {
+    margin-right: 0.25rem;
+    max-width: 14.1rem;
+    flex-shrink: 0;
+}
+
+.slds-tabs_default__overflow-button {
+    flex-shrink: 0;
+}
+
+.slds-tabs_default__overflow-button .slds-dropdown-trigger {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+}
+
+.slds-tabs_default__overflow-button button {
+    text-transform: uppercase;
+    padding: 0 1rem;
+    line-height: 2.75rem;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.slds-tabs_default__link {
+    text-transform: uppercase;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+.slds-dropdown__item a {
+    text-transform: uppercase;
+}
+
+/* Prevent the overflow button from showing an underline on hover */
+.slds-tabs_default__overflow-button:hover:after {
+    background-color: transparent !important;
+}
+
+/* Flexbox layout for tab links: icon, label and badge are vertically centered */
+.tab-link-flex {
+    display: flex !important;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.tab-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Warning icon styles (used when the icon-with-sup pattern is enabled) */
+.tab-icon-warning {
+    --sds-c-icon-color-foreground-default: #ff9f1a;
+    flex-shrink: 0;
+}
+
+/* Container for warning icon + superscript count */
+.tab-icon-with-sup {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 16px;
+    height: 20px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Superscript count at top-right of the warning icon */
+.tab-count-sup {
+    position: absolute;
+    top: -1px;
+    right: -2px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #e65100;
+    line-height: 1;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.slds-modal__container {
+    max-width: 30rem;
+    min-width: 0;
+    width: 90%;
+}

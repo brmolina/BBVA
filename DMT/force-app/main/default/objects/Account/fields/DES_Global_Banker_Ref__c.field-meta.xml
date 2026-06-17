@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Global_Banker_Ref__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>GLOBAL BANKER</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>DES_BBVA_Management_team__c.DES_Member_Role__c</field>
+            <operation>equals</operation>
+            <value>Global Banker</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>DES_BBVA_Management_team__c</referenceTo>
+    <relationshipLabel>Clients</relationshipLabel>
+    <relationshipName>Clients</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

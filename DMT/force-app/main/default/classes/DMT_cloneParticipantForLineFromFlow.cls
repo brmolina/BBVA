@@ -1,4 +1,4 @@
-public without sharing class DMT_cloneParticipantForLineFromFlow {
+public with sharing class DMT_cloneParticipantForLineFromFlow {
 
     public class WrapperClone {
         @InvocableVariable
@@ -124,6 +124,7 @@ public without sharing class DMT_cloneParticipantForLineFromFlow {
                     newMember.Line__c = newLineId; 
                     newMember.AccessLevel__c = member.AccessLevel__c;
                     newMember.DMT_ApprovalEdit__c = member.DMT_ApprovalEdit__c;
+                    newMember.Team_Role__c = member.Team_Role__c;
                     newTeamMembers.add(newMember);
                 }
                 // Insertar todos los nuevos TeamMembers

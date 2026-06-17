@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Clone__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>If the field was clone for all currency</inlineHelpText>
+    <label>Is Clone</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

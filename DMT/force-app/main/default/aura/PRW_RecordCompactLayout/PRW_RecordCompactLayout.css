@@ -1,0 +1,20 @@
+.THIS .customCardClass > .slds-grid {
+    padding-top:0px;
+}
+
+.THIS .divNames {
+    height: 10rem !important;
+}
+
+.THIS .divNames1 {
+    height: 2.4rem !important;
+}
+
+.THIS .tableClass {
+    width: 50%;
+}
+
+.THIS .table-test thead th span {
+    background-color: #16325c;
+    color: white;
+}

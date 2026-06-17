@@ -1,4 +1,61 @@
 public with sharing class DMT_FormattingUtils {
+
+    // wrapper for new methods
+    public class DisplayField {
+        public String label { get; set; }
+        public String value { get; set; }
+        public Boolean boolValue {get; set; }
+        public String size { get; set; }
+
+        public DisplayField(String label, String value) {
+            this.label = label;
+            this.value = value;
+            this.size = 'HALF';
+        }
+
+        public DisplayField(String label, Boolean value) {
+            this.label = label;
+            this.boolValue = value;
+            this.size = 'HALF';
+        }
+
+        public DisplayField(String label, Boolean value, String size) {
+            this.label = label;
+            this.boolValue = value;
+            this.size = size;
+        }
+
+        public DisplayField(String label, String value, String size) {
+            this.label = label;
+            this.value = value;
+            this.size = size;
+        }
+    }
+
+
+    // Nuevo Wrapper exclusivo para Tablas de Datos Clásicas (Filas y Columnas)
+    public class DataTableWrapper {
+        public String title;
+        public List<String> headers;
+        public List<List<String>> rows;
+        public String width;  // NEW: Support for custom width
+
+        public DataTableWrapper(String title, List<String> headers) {
+            this.title = title;
+            this.headers = headers;
+            this.rows = new List<List<String>>();
+            this.width = '100%';  // Default to full width
+        }
+
+        public DataTableWrapper(String title, List<String> headers, String width) {
+            this.title = title;
+            this.headers = headers;
+            this.rows = new List<List<String>>();
+            this.width = width;
+        }
+    }
+
+
     public static String checkNull(Object value) {
         if (value == null || value == 'null') return ''; // If its null return empty string
 
@@ -52,6 +109,10 @@ public with sharing class DMT_FormattingUtils {
         if (String.isBlank(fechaText)) return ' ';
         try {
             Integer fecha = Integer.valueOf(fechaText);
+            // Excepción especial: 18 meses
+            if (fecha == 548) {
+                return '18M';
+            }
             if (fecha < 30) return fecha + 'D';
             else if (fecha < 365) return (fecha / 30) + 'M';
             else return (fecha / 365) + 'Y';
@@ -60,15 +121,24 @@ public with sharing class DMT_FormattingUtils {
         }
     }
 
-    public static String tableRow1column(String label, String value) {
+/*     public static String tableRow1column(String label, String value) {
         return  '<tr>'
-            + '<td colspan="2" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
+            + '<td colspan="1" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
             + '<div><strong>'+label+'</strong></div>'
             + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + value + '</div>'
             + '</td>'
             + '</tr>';
+    } */
+    public static String tableRow1column(String label, String value) {
+        /*---- START NEW PDF BUILDER----*/
+        return  '<tr>'
+            + '<td style="padding: 8px 10px 4px; vertical-align: top; border-top: none; border-left: none; border-right: none; border-bottom: 1px solid #ccc;">'
+            + '<div style="font-weight: bold; color: #333;">' + label + '</div>'
+            + '<div style="min-height: 20px;">' + (String.isNotBlank(value) ? value : '&nbsp;') + '</div>'
+            + '</td>'
+            + '</tr>';
+        /*---- END NEW PDF BUILDER----*/
     }
-
     public static String tableRow1columnWithHelper(String label, String helper, String value) {
         return  '<tr>'
             + '<td colspan="2" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
@@ -500,6 +570,39 @@ public with sharing class DMT_FormattingUtils {
         return formattedInt + ',' + decPart;
     }
 
+    public static String formatProfitabilityDecimal(Object rawValue, Integer scale) {
+        String formattedValue = formatDecimalEs(rawValue, scale);
+        if (String.isBlank(formattedValue)) {
+            return '';
+        }
+
+        Decimal value;
+        try {
+            value = (Decimal) rawValue;
+        } catch (Exception e) {
+            try {
+                value = Decimal.valueOf(String.valueOf(rawValue));
+            } catch (Exception ex) {
+                return '';
+            }
+        }
+
+        return removeGroupingSeparatorForSmallAmount(formattedValue, value);
+    }
+
+    private static String removeGroupingSeparatorForSmallAmount(String formattedValue, Decimal value) {
+        if (String.isBlank(formattedValue) || value == null) {
+            return formattedValue;
+        }
+
+        Decimal absValue = value < 0 ? value * -1 : value;
+        if (absValue >= 1000 && absValue < 10000) {
+            return formattedValue.replace('.', '');
+        }
+
+        return formattedValue;
+    }
+
     public static String formatPercent(Object val) {
         if (val == null || String.valueOf(val).trim() == '') return '0.00 %';
         Decimal d;
@@ -529,4 +632,155 @@ public with sharing class DMT_FormattingUtils {
         if (value == null) return 'No';
         return value ? 'Yes' : 'No';
     }
+
+
+    // new html generator
+
+public static String generateHtmlTable(List<DisplayField> fields) {
+        // 1. Filtrar los campos que vienen vacíos (If you still need this logic, you can add it here!)
+
+        // 2. Construir el HTML con 4 columnas base para soportar QUARTER (25%), HALF (50%) y FULL (100%)
+        String html = '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout: fixed;">'
+                        + '<colgroup>'
+                        + '<col style="width: 25%;"><col style="width: 25%;">'
+/*                         + '<col style="width: 25%;"><col style="width: 25%;">' */
+                        + '</colgroup>';
+
+        Integer currentRowWidth = 0; // Tracks the width of the current row (max 4)
+
+        // 3. Recorrer la lista dinámicamente
+        for (DisplayField field : fields) {
+            Integer fieldWidth = getFieldColspan(field.size);
+
+            // If we are at the start of a new row
+            if (currentRowWidth == 0) {
+                html += '<tr>';
+            } 
+            // If adding this field exceeds the current row capacity, pad the remaining space and start a new row
+            else if (currentRowWidth + fieldWidth > 4) {
+                Integer remainingSpace = 4 - currentRowWidth;
+                html += '<td colspan="' + remainingSpace + '" style="border:none;"></td></tr><tr>';
+                currentRowWidth = 0; // Reset for the new row
+            }
+
+            // Render the cell with the calculated colspan
+            html += renderHtmlCell(field, fieldWidth);
+            currentRowWidth += fieldWidth;
+
+            // If the row is perfectly full, close it
+            if (currentRowWidth == 4) {
+                html += '</tr>';
+                currentRowWidth = 0;
+            }
+        }
+
+        // 4. If the loop ends but the last row isn't full, pad it so the table structure doesn't break
+        if (currentRowWidth > 0 && currentRowWidth < 4) {
+            Integer remainingSpace = 4 - currentRowWidth;
+            html += '<td colspan="' + remainingSpace + '" style="border:none;"></td></tr>';
+        }
+
+        html += '</table>';
+        return html;
+    }
+
+    // Helper method to translate text sizes into HTML colspans
+    private static Integer getFieldColspan(String size) {
+        if (size == 'FULL') return 4;
+        if (size == 'QUARTER') return 1;
+        return 2; // Defaults to 'HALF'
+    }
+
+    // Método auxiliar actualizado para recibir el DisplayField completo y el colspan
+    private static String renderHtmlCell(DisplayField field, Integer colspan) {
+        String label = field.label;
+        Object value = (field.boolValue == null) ? (Object)field.value : (Object)field.boolValue;
+
+        // Decide the border style based on whether it's a real field or a blank spacer
+        String borderStyle = String.isNotBlank(label) ? 'border-bottom: 1px solid #ccc; padding-bottom: 4px;' : '';
+
+        // Determine how to display the value based on its object type
+        String displayValue = '';
+
+        if (value instanceof Boolean) {
+            // It's a checkbox
+            Boolean isChecked = (Boolean) value;
+            displayValue = '<input type="checkbox" disabled="disabled" ' + (isChecked ? 'checked="checked"' : '') + ' />';
+        } else {
+            // It's a standard text/number/date value (handle null gracefully)
+            displayValue = value != null ? String.valueOf(value) : '';
+        }
+
+        // Build and return the standardized HTML with the dynamic colspan
+        return '<td colspan="' + colspan + '" style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
+             + '<div><strong>' + (label != null ? label : '') + '</strong></div>'
+             + '<div style="min-height: 25px; ' + borderStyle + '">' + displayValue + '</div>'
+             + '</td>';
+    }
+
+    // Generic HTML Table Renderer
+    public static String renderHtmlDataTable(DataTableWrapper tableData) {
+        if (tableData.rows.isEmpty()) return ''; // No renderiza si está vacía
+
+        String html = '<table class="style-table" style="width:' + tableData.width + '; border-collapse: collapse; table-layout: fixed; margin-bottom: 15px;">';
+        html += '<tr><td colspan="' + tableData.headers.size() + '" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px; word-wrap: break-word;"><strong>' + tableData.title + '</strong></td></tr>';
+
+        html += '<tr>';
+        for (String header : tableData.headers) {
+            html += '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-wrap: break-word;"><strong>' + header + '</strong></td>';
+        }
+        html += '</tr>';
+
+        for (List<String> row : tableData.rows) {
+            html += '<tr>';
+            for (String cell : row) {
+                html += '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-wrap: break-word;">' + cell + '</td>';
+            }
+            html += '</tr>';
+        }
+        html += '</table>';
+        return html;
+    }
+
+    // Utility method to get the standard field label dynamically
+    public static String getFieldLabel(String objectApiName, String fieldApiName) {
+        try {
+            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectApiName);
+            if (sObjectType != null) {
+                Schema.DescribeSObjectResult describeResult = sObjectType.getDescribe();
+                Schema.SObjectField field = describeResult.fields.getMap().get(fieldApiName);
+                if (field != null) {
+                    return field.getDescribe().getLabel();
+                }
+            }
+        } catch (Exception e) {
+            System.debug('Error retrieving field label: ' + e.getMessage());
+        }
+        return fieldApiName; // Fallback to API name if not found
+    }
+
+    public static String formatWithoutDecimals(Object rawValue) {
+        if (rawValue == null || String.isBlank(String.valueOf(rawValue))) return '';
+        try {
+            Decimal val = Decimal.valueOf(String.valueOf(rawValue));
+            // Strip decimals and apply the standard thousands separator
+            val = val.setScale(0, RoundingMode.HALF_UP);
+            return val.format();
+        } catch (Exception e) {
+            System.debug('Error formatting value: ' + e.getMessage());
+            return '';
+        }
+    }
+
+    public static String formatToTwoDecimals(Object rawValue) {
+        if (rawValue == null || String.isBlank(String.valueOf(rawValue))) return '';
+        try {
+            Decimal val = Decimal.valueOf(String.valueOf(rawValue));
+            // Cap at 2 decimals, then strip unnecessary trailing zeros (e.g., .00)
+            return val.setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().format();
+        } catch (Exception e) {
+            return String.valueOf(rawValue);
+        }
+    }
+
 }

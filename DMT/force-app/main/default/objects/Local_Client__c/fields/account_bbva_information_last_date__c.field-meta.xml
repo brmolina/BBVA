@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>account_bbva_information_last_date__c</fullName>
+    <label>Account BBVA Information Last Date</label>
+    <summarizedField>Account_BBVA_Information__c.year_month_day_date__c</summarizedField>
+    <summaryForeignKey>Account_BBVA_Information__c.Local_Client_id__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

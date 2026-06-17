@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Close_IP_opportunity</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+RecordType.DeveloperName = &apos;Privileged_Opportunity&apos;,
+OR(
+ISPICKVAL( StageName , &apos;Closed Won&apos;),
+ISPICKVAL( StageName , &apos;Closed Lost&apos;)
+),
+ISPICKVAL( PRIORVALUE(StageName) , &apos;Ready to Close&apos;),
+NOT(oppy_modification_name__c)
+)</errorConditionFormula>
+    <errorMessage>Please note that this Opportunity has Inside Information and it must be closed from the appropriate button at the top of the page. A request will be sent to Compliance in order to change Information disclosure field to Confidential when possible.</errorMessage>
+</ValidationRule>

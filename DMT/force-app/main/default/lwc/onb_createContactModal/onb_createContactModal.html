@@ -1,0 +1,46 @@
+<template>
+    <lightning-modal-header
+        label = {header}>
+    </lightning-modal-header>
+
+    <lightning-modal-body class="slds-p-top_none slds-m-top_none">
+            <div class="slds-grid slds-gutters">
+            <!-- left -->
+            <div class="slds-col slds-size_1-of-2">
+                <c-onb_onboarding-form
+                    data-id="form-left"
+                    object-api-name="Contact"
+                    title={title}
+                    icon-name="standard:contact"
+                    field-names={contactFormFieldsLeft}
+                    field-rules={reglasValidacion}
+                    handle-save-on-wrapper="true"
+                    onvaluechange={handleValueChange}>
+                </c-onb_onboarding-form>
+            </div>
+            <!-- right -->
+            <div class="slds-col slds-size_1-of-2">
+                <c-onb_onboarding-form
+                    data-id="form-right"
+                    object-api-name="Contact"
+                    field-names={contactFormFieldsRight}
+                    field-custom-labels={customLabels}
+                    field-rules={reglasValidacion}
+                    handle-save-on-wrapper="true"
+                    onvaluechange={handleValueChange}>
+                </c-onb_onboarding-form>
+            </div>
+        </div>
+    </lightning-modal-body>
+
+    <template lwc:if={showFooter}>
+        <lightning-modal-footer>
+            <lightning-button class="slds-m-top_medium slds-text-align_right slds-p-top_small"
+                label="Create new contact"
+                variant="brand"
+                icon-name="utility:save"
+                onclick={handleCreateContact}>
+            </lightning-button>
+        </lightning-modal-footer>
+    </template>
+</template>

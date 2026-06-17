@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>desktop_validate_edit_mode</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+				NOT($Profile.Name = &quot;System Administrator&quot;),
+				NOT($Permission.Champions_Locales), 
+				NOT(ISCHANGED(SER_Survey_Sent_Date__c)),
+				NOT(ISCHANGED(OwnerId)),  
+
+				AND(
+								AND(
+												$RecordType.Name = &quot;Desktop Contact&quot;,
+												editable_field_type__c != true
+								),
+								NOT(ISNEW())
+				),
+				NOT(ISCHANGED(editable_field_type__c)),
+				Account.gf_cust_orig_was_prospect_ind_type__c = false,
+    $Setup.CIB_Bypass__c.CIB_skip_NPS_validationrule__c = false,
+                AND(
+                    NOT(ISCHANGED(last_send_nps_user_id__c)),
+                    NOT(ISCHANGED(survey_nps_contact_type__c))
+                ),
+                NOT(ISCHANGED(DES_NPS_Contact_Changed__c))
+)</errorConditionFormula>
+    <errorMessage>This contact must be modified using &quot;edit&quot; button</errorMessage>
+</ValidationRule>

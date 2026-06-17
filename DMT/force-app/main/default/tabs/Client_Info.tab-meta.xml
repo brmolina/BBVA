@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <auraComponent>arce_ClientInfo</auraComponent>
+    <description>Tab for show CIB client with arce ifis for make SB or SCRA</description>
+    <label>Client Info</label>
+    <motif>Custom83: Pencil</motif>
+</CustomTab>

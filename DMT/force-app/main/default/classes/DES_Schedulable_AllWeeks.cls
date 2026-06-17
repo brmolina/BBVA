@@ -13,7 +13,7 @@ global class DES_Schedulable_AllWeeks implements Schedulable{
             
             //Denormalize de Opportunities
             /*system.debug('>>>>> Inicio Batch GBL_DenormalizeOpportunities ');
-            dwp_acmh.GBL_DenormalizeOpportunitiesUtils oppUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils();
+            GBL_DenormalizeOpportunitiesUtils oppUtil = new GBL_DenormalizeOpportunitiesUtils();
             oppUtil.restore();*/  
             
             

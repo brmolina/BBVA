@@ -1,0 +1,234 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-30-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component
+    implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId"
+    controller="Arc_Gen_NewAnalysis_Controller"
+    access="global">
+    <!-- Attributes -->
+    <aura:attribute name="showCloseButton" type="Boolean" default="false" description="Whether to show a custom close button or not (must be true when this component is not used via a quick action)" />
+    <aura:attribute name="actualClientId" type="String" access="public" default="" description="Id of the global client or local client" />
+    <aura:attribute name="firstaccountforfilldata" type="arce.Arc_Gen_Account_Wrapper" />
+    <aura:attribute name="continue" type="Boolean" access="public" default="false" description="Whether this dialog is used to resume an existing analysis or not" />
+    <aura:attribute name="arceTypeToContinue" type="String" access="public" default="" description="Type of the ARCE to resume (raip or analysis)." />
+    <aura:attribute name="existingArceId" type="String" default="" description="Salesforce ID of the ARCE to resume" />
+    <aura:attribute name="existingArceIdToModification" access="public" type="String" default="" description="Salesforce ID of the valid ARCE to modification" />
+    <aura:attribute name="redirect" type="Boolean" access="public" default="false" description="Redirect for arce revoked" />
+
+    <aura:attribute name="availableArceTypes" type="Object" description="" />
+    <aura:attribute name="selectedArceType" type="String" description="Type of ARCE selected based on the responses to the form" />
+    <aura:attribute name="formDataMap" type="Map" default="{}" description="Map with the form information along with the rating system and the model selected by the logic" />
+    <aura:attribute name="modelOptions" type="Map" description="Map with available models." />
+    <aura:attribute name="shouldShowGsRaip" type="Boolean" description="" />
+
+    <aura:attribute name="NewAnalysis" type="boolean" default="false" description="Checkbox to control the flow to execute" />
+    <aura:attribute name="ModAnalysis" type="boolean" default="false" description="Checkbox to control the flow to execute" />
+    <aura:attribute name="RenoAnalysis" type="boolean" default="false" description="Checkbox to control the flow to execute" />
+
+    <aura:attribute name="loading" type="Boolean" default="true" description="Indcates that a process is running" />
+    <aura:attribute name="currentStep" type="String" default="" description="indicates the current step" />
+    <aura:attribute name="nextDisabled" type="Boolean" default="true" description="if true, the button next is disabled" />
+    <aura:attribute name="backHidden" type="Boolean" default="true" description="if true, the button back is hidden" />
+    <aura:attribute name="nextHidden" type="Boolean" default="false" description="if true, the button next is hidden" />
+
+    <aura:attribute name="idofarceexecutor" type="String" access="global" description="" />
+    <aura:attribute name="listparticipant" type="map" access="global" description="" />
+    <aura:attribute name="economicparticipant" type="map" access="global" description="" />
+    <aura:attribute name="groupId" type="String" default="" access="global" description="Standard Id of the group client of the analysis" />
+    <aura:attribute name="clientNumber" type="String" access="global" description="Account Number of the client" />
+    <aura:attribute name="clientOrGroup" type="string" default="" description="Contains 'Group' or 'Customer'" />
+    <aura:attribute name="errorMessage" type="String" description="error message of the process" />
+    <aura:attribute name="warningMessage" type="String" description="warning message of the process" />
+    <aura:attribute name="accountInfo" type="Map" default="{}" description="Contains account info (isOrphan, orphanNumber, accounts, groupId)." />
+    <aura:attribute name="isHolding" type="Map" default="{}" description="IsHolding map indicates whether the participant is a matrix or not" />
+    <aura:attribute name="subtitleText" type="String" description="Text to show as subtitle" />
+    <aura:attribute name="isProspect" type="Boolean" default="false" description="indicates if the arce is not scope" />
+    <aura:attribute name="arceNotInScope" type="Boolean" default="false" description="indicates if the arce is not scope" />
+    <aura:attribute name="outOfScopeText" type="String" default="" description="reason if the arce is not in scope" />
+    <aura:attribute name="eeffCheck" type="Boolean" access="global" default="true" />
+    <aura:attribute name="showProgress" type="Boolean" default="true" description="indicates if the process is visible" />
+    <aura:attribute name="currentProgressStep" type="String" default="" description="text of the current progress step" />
+    <aura:attribute name="progressSteps" type="List" description="list of progress steps of the modal" />
+    <aura:attribute name="previousArce" type="Map" description="Previous arce wrapper object serialized" />
+
+    <aura:attribute name="profilingRating" type="String" default="" description="Indicates the allowed flows" />
+    <aura:attribute name="profilingMssg" type="List" description="Indicates which flows are allowed" />
+    <aura:attribute name="ifisAnalysis" type="Aura.Component[]" description="Component attribute for dynamic instance of IFIS wizard" />
+    <aura:attribute name="RTC2021Analysis" type="Aura.Component[]" description="Component attribute for dynamic instance of 2021RTC wizard" />
+
+    <aura:attribute name="selectedClient" type="String" default="" description="Id of the client selected" />
+    <aura:attribute name="isGDT" type="Boolean" default="true" description="Indicates if the component on a GDT environment" />
+
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="init action" />
+
+    <!-- Register events -->
+    <aura:registerEvent name="closeModalEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+
+    <!-- Other -->
+    <lightning:navigation aura:id="navService" />
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-modal__container{
+        width:50rem !important;
+        max-width:60rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .economicp::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '.'}' ; }
+        .listp::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '..'}' ; }
+        .spins::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '...'}' ; }
+        .spinarce::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '.'}' ; }
+        .spinupdate::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '.'}' ; }
+        .persistance::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '..'}' ; }
+        .sector::after{content: '{!$Label.c.Arc_Gen_SpinnerMessage + '...'}' ; }
+    </aura:html>
+
+    <!-- Modal Header -->
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading_medium">{!$Label.c.Arc_Gen_ArceWizardTitle}</h4>
+        <p class="slds-text-body_small">{!v.subtitleText}</p>
+        <aura:if isTrue="{!v.showCloseButton}">
+            <lightning:buttonIcon
+                iconName="utility:close"
+                size="large"
+                alternativeText="close"
+                variant="bare-inverse"
+                onclick="{!c.closeModalCustom}"
+                class="slds-modal__close" />
+        </aura:if>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="slds-modal__content" style="overflow: initial" aura:id="modalbody" id="modalbody">
+        <aura:if isTrue="{!!v.loading}">
+            <!-- Warning message. -->
+            <aura:if isTrue="{!v.warningMessage}">
+                <div class="slds-box slds-theme_warning">
+                    <p>{!v.warningMessage}</p>
+                </div>
+            </aura:if>
+            <!-- Error message. -->
+            <aura:if isTrue="{!v.errorMessage}">
+                <div class="slds-box slds-theme_error">
+                    <p>{!v.errorMessage}</p>
+                </div>
+            </aura:if>
+
+            <!-- Selection of Rating System and Model. -->
+        <aura:if isTrue="{!v.currentStep == 'ratingSystemSelection'}">
+                <c:Arc_Gen_RatingSystem_CMP
+                    aura:id="rating-system"
+                    recordId="{!v.recordId}"
+                    modelOptions="{!v.modelOptions}"
+                    formDataMap="{!v.formDataMap}"
+                    selectedClient="{!v.selectedClient}"
+                    isGDT="{!v.isGDT}"
+                    wizardEvent="{!c.handleEventWizard}"
+                    isProspect ="{!v.isProspect}" />
+            </aura:if>
+
+            <!-- RTC Corporates flow. -->
+            <aura:if isTrue="{!v.currentStep == 'sp2Analysis'}">
+                    {!v.RTC2021Analysis}
+            </aura:if>
+
+            <!-- RTC IFIS flow. -->
+            <aura:if isTrue="{!v.currentStep == 'ifisAnalysis'}">
+                <div aura:id="ifis-analysis">
+                    {!v.ifisAnalysis}
+                </div>
+            </aura:if>
+
+            <!-- Redirect to ARCE screen. -->
+            <aura:if isTrue="{!v.currentStep == 'redirectToArce'}">
+                <div class="slds-illustration slds-illustration_small slds-var-m-top_medium slds-var-m-bottom_x-large">
+                    <div class="slds-text-longform">
+                        <h3 class="slds-text-heading_medium">{!$Label.c.Arc_Gen_ArceContinue}</h3>
+
+                        <aura:if isTrue="{!v.arceNotInScope}">
+                            <!-- Client not in scope. -->
+                            <p class="slds-text-body_regular slds-text-color_error">{!v.outOfScopeText}</p>
+
+                            <!-- Client in scope. -->
+                            <aura:set attribute="else">
+                                <p class="slds-text-body_regular">{!$Label.c.Lc_arce_NewARCE_WaitRedirect}</p>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- Redirect to ARCE renovation.  -->
+            <aura:if isTrue="{!v.currentStep == 'renovationMessage'}">
+                <div class="slds-illustration slds-illustration_small slds-var-m-top_medium slds-var-m-bottom_x-large">
+                    <div class="slds-text-longform">
+                        <h3 class="slds-text-heading_medium">{!$Label.c.Arc_Gen_RenovationModalMess}</h3>
+                        <p class="slds-text-body_regular">{!$Label.c.Lc_arce_NewARCE_WaitRedirect}</p>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- Loading state. -->
+            <aura:set attribute="else">
+                <div class="slds-is-relative slds-var-p-vertical_x-large spinner-container">
+                    <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="slds-modal__footer slds-modal__footer_directional">
+        <div class="slds-clearfix">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-8">
+                    <aura:if isTrue="{!!v.backHidden}">
+                        <lightning:button
+                            class="slds-float_left"
+                            label="{!$Label.c.Lc_arce_back}"
+                            title="{!$Label.c.Lc_arce_back}"
+                            disabled="{!v.loading}"
+                            onclick="{! c.moveBack }" />
+                    </aura:if>
+                </div>
+                <div class="slds-col slds-size_6-of-8 slds-align_absolute-center">
+                    <aura:if isTrue="{!v.showProgress}">
+                        <lightning:progressIndicator
+                            currentStep="{!v.currentProgressStep}"
+                            type="base"
+                            hasError="{!v.errorMessage}"
+                            variant="base">
+                            <aura:iteration items="{!v.progressSteps}" var="step">
+                                <lightning:progressStep label="{!step.label}" value="{!step.value}" />
+                            </aura:iteration>
+                        </lightning:progressIndicator>
+                    </aura:if>
+                </div>
+                <div class="slds-col slds-size_1-of-8">
+                    <div class="slds-float_right">
+                        <aura:if isTrue="{!!v.nextHidden}">
+                            <lightning:button
+                                variant="brand"
+                                label="{!$Label.c.Arc_Gen_Next}"
+                                title="{!$Label.c.Arc_Gen_Next}"
+                                disabled="{!or(v.nextDisabled,v.loading)}"
+                                onclick="{!c.moveNext}" />
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>      
+</aura:component>

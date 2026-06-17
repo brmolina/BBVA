@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Geographical_Footprint_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Banker’s insight on client’s presence and our geographical matching. Description of our capabilities in the countries where we are present  and weight of the countries where we lack of presence in client’s revenues/sales/EBITDA. (max 598 characters)</inlineHelpText>
+    <label>Geographical Footprint</label>
+    <length>598</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

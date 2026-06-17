@@ -7,7 +7,7 @@ public with sharing class DMT_TreasuryApprovalProcessDataRenderer implements DMT
             DMT_Line__c line = data.line;
             String html = '<div>'
                 + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">APPROVAL PROCESS DATA</h2>'
-                + '<table class="style-table style-border" style="width:100%; border-collapse: separate; border-spacing: 10px 0; table-layout: fixed; margin-left: -10px; margin-right: -10px;">'
+                + '<table class="style-table" style="width:100%; border-collapse: separate; border-spacing: 10px 0; table-layout: fixed; margin-left: -10px; margin-right: -10px;">'
                 + '<colgroup>'
                     + '<col style="width: 50%;">'
                     + '<col style="width: 50%;">'
@@ -15,7 +15,7 @@ public with sharing class DMT_TreasuryApprovalProcessDataRenderer implements DMT
                 + '<tr>'
                     + '<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
                     + '<div><strong>Transaction:</strong></div>'
-                    + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + DMT_FormattingUtils.checkNull(line.DMT_Booking_Unit_Risk_Analyst__r?.Name) + '</div>'
+                    + '<div style="min-height: 25px;width:100%; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + DMT_FormattingUtils.checkNull(line.DMT_Booking_Unit_Risk_Analyst__r?.Name) + '</div>'
                     + '</td>'
                     + '<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
                     + '<div><strong>Global Banker:</strong></div>'

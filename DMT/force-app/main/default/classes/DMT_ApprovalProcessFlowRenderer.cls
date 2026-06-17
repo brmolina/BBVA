@@ -6,9 +6,11 @@ public with sharing class DMT_ApprovalProcessFlowRenderer implements DMT_ViewRen
         Map<String, Schema.RecordTypeInfo> rtInfosOpportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
         Id dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
         recordTypeRenderers.put(treasuryId, new DMT_DefaultApprovalProcessFlowRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultApprovalProcessFlowRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_SanctionOppApprovalProcessRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultApprovalProcessFlowRenderer());
     }
 

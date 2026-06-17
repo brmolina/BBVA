@@ -1,0 +1,37 @@
+<aura:component implements="lightning:hasPageReference,force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="NONC_GooglePlacesPredictive_ctrl">
+    <aura:registerEvent name="cmpEventGoogle" type="c:NONC_googlePlacesEvent"/>
+
+    <aura:attribute name="location" type="string" default=""/>
+    <aura:attribute name="latitude" type="string" default=""/>
+    <aura:attribute name="longitude" type="string" default=""/>
+    <aura:attribute name="mapUrl" type="string" default=""/>
+    <aura:attribute name="customClassMap" type="string" default=""/>
+    <aura:attribute name="addressType" type="string" default=""/>
+    <aura:attribute name="inputLabel" type="string" default=""/>
+
+    <!-- map attributes -->
+    <aura:attribute name="showGoogleMap" type="Boolean" default="false"/>
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="zoomLevel" type="Integer"/>
+
+    <aura:attribute name="predictions" type="List" default="[]"/>
+
+    <lightning:input label="{!v.inputLabel}" name="{!v.inputLabel}" aura:id="location" value="{!v.location}" onchange="{!c.getCities}" autocomplete="off"/>
+    <aura:if isTrue="{!v.predictions.length > 0}">
+        <ul class="city_predictions">
+            <aura:iteration items="{!v.predictions}" var="prediction">
+                <li class="slds-listbox__item">
+                    <a onclick="{!c.getCityDetails}" data-placeid="{!prediction.place_id}">{!prediction.description}</a>
+                </li>
+            </aura:iteration>
+        </ul>
+    </aura:if>
+
+    <!-- the map component -->
+    <aura:if isTrue="{!and(v.showGoogleMap, v.mapMarkers.length > 0)}">
+        <lightning:map
+            mapMarkers="{! v.mapMarkers }"
+            zoomLevel="{!v.zoomLevel}"
+            class="{!v.customClassMap}"/>
+    </aura:if>
+</aura:component>

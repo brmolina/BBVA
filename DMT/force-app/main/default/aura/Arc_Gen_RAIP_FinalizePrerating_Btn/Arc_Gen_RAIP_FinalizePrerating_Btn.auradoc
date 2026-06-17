@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_RAIP_FinalizePrerating_Btn</p>
+        <p><b>DESCRIPTION: </b>Modal to finalize a RAIP of prerating type</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>hasRecordId = String : Standard id of the current record</li>
+                <li>loading = String : Determines whether the spinner is displayed.</li>
+                <li>errorMessage = String : Error message from Apex code</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_RAIP_FinalizePrerating_Btn</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_RAIP_FinalizePrerating_Btn" ref="c:Arc_Gen_RAIP_FinalizePrerating_Btn" label="Finalize prerating">
+    </aura:example>
+</aura:documentation>

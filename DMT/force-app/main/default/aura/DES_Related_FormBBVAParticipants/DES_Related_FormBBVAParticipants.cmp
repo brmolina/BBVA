@@ -1,0 +1,91 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="DES_IpFormContactController" access="global">
+	<aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="members" type="List" default="[]" />
+    <aura:attribute name="sizeMembers" type="Integer" default="0" />
+    <aura:attribute name="isVisible" type="boolean" default="true"/>
+    <aura:attribute name="isInEvntTracker" type="boolean" default="true"/>
+    <aura:attribute name="currentUser" type="String" access="global" />
+	<aura:attribute name="isClosed" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+	<aura:attribute name="isOpen" type="Boolean" default="false"/>
+
+    <lightning:quickActionAPI aura:id="quickActionAPI" />
+
+    <ltng:require scripts="{!join(',', $Resource.DES_jQuery, $Resource.DES_cometd, $Resource.DES_jquery_cometd, $Resource.DES_json2, $Resource.ipUtils)}"
+                   afterScriptsLoaded="{!c.jsLoaded}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue="{!v.isOpen}">
+      <div class="divHeight">
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                  <header class="slds-modal__header slds-modal__header_empty">
+                      <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" onclick="{!c.closeFlowModal}"/>
+                  </header>
+                  <div class="slds-modal__content slds-p-around_medium">
+                      <lightning:flow aura:id="New_BBVA_Participan_Compliance_form" onstatuschange="{!c.closeModalOnFinish}" />
+                  </div>
+              </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+  	</aura:if>
+    <!-- <aura:renderIf isTrue="{!v.isVisible}"> -->
+        <article class="slds-card">
+            <div class="slds-grid slds-page-header forceRelatedListCardHeader">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure slds-icon-standard-account">
+                            <lightning:icon size="small" iconName="standard:contact" alternativeText="BBVA Insiders" title="BBVA Insiders"/>
+                        </div>
+                        <div class="slds-media__body slds-truncate">
+                            <p class="slds-card__header-link slds-truncate">
+                            <a href="javascript:void(0);" class="slds-text-link_reset">
+                                <span class="slds-text-heading_small text-bold">BBVA Insiders ({!v.sizeMembers})</span>
+                            </a>
+                            <aura:if isTrue="{!v.Spinner}">
+                                <lightning:spinner alternativeText="Loading" />
+                            </aura:if>
+                            </p>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!!v.isClosed}">
+                        <div class="slds-no-flex">
+                            <lightning:button variant="neutral" label="New" onclick="{! c.runNewBBVAParticipantFlow }" />
+                        </div>
+                    </aura:if>
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <aura:iteration items="{!v.members}" var="member">
+                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                        <div class="slds-media__body">
+                            <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                <p class="slds-tile__title slds-truncate" title="{!member.Compliance_form_contact__c.person_name__c}">
+                                    <a href="#" onclick="{!c.navigateRecord}" id="{!member.Id}">{!member.person_name__c}</a>
+                                </p>
+                                <aura:if isTrue="{!!v.isClosed}">
+                                    <lightning:buttonMenu aura:id="menu" onselect="{! c.deleteRecord }" alternativeText="View More" iconSize="x-small" class="slds-dropdown_actions">
+                                        <lightning:menuItem value="{!member.Id}" label="Delete" />
+                                    </lightning:buttonMenu>
+                                </aura:if>
+                            </div>
+                            <div class="slds-tile__detail">
+                                <dl class="slds-list_horizontal slds-wrap">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Area:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{!member.employee_department_name__c}</dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Date and time when this inside information was identified">Date and time when this inside information was identified:</dt>
+                                    <dd class="slds-item_detail slds-truncate"><ui:outputDateTime value="{!member.operation_user_assign_date__c}" /></dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Function:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{!member.role_name__c}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </article>
+                </aura:iteration>
+            </div>
+        </article>
+    <!-- </aura:renderIf> -->
+</aura:component>

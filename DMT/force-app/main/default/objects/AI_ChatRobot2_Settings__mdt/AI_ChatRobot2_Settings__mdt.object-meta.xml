@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>AI_ChatRobot2_Settings</label>
+    <pluralLabel>AI_ChatRobot2_Settings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

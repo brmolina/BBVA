@@ -1,0 +1,28 @@
+<aura:component
+    implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName"
+    access="global"
+>
+    <aura:attribute name="recordId" type="Id" />
+
+    <div class="slds-grid slds-wrap slds-size_1-of-1 opp-layout-grid">
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12 slds-large-size_8-of-12 slds-p-right_small opp-layout-main">
+            <c:dmt_opp_custom_page useExternalSidebar="true" />
+        </div>
+
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-left_small opp-layout-sidebar">
+            <lightning:tabset selectedTabId="passportTab" variant="scoped">
+                <lightning:tab id="passportTab" label="Passport">
+                    <c:cfDMT_Small_Passport_Opportunity_v2 recordId="{!v.recordId}" />
+                </lightning:tab>
+
+                <lightning:tab id="chatterTab" label="Chatter">
+                    <div class="slds-card">
+                        <div class="slds-card__body slds-card__body_inner">
+                            <forceChatter:feed type="Record" subjectId="{!v.recordId}" />
+                        </div>
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+        </div>
+    </div>
+</aura:component>

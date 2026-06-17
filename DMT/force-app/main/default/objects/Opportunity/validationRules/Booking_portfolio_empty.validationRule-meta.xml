@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Booking_portfolio_empty</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+TEXT( StageName ) =  $Label.DES_Approvals,
+TEXT(DES_Booking_Geography__c) = &apos;NY&apos;,
+ISBLANK( TEXT(gf_opportunity_nbc_name__c)),
+NOT( $Profile.Name = &apos;System Administrator&apos;)
+)</errorConditionFormula>
+    <errorMessage>Sorry, you must complete Booking portfolio if the Booking geography of the opportunity is NY.</errorMessage>
+</ValidationRule>

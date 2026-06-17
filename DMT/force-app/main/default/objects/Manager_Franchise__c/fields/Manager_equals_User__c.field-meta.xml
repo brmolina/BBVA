@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manager_equals_User__c</fullName>
+    <description>Evaluate to TRUE if the Manalger is equals to User Logged</description>
+    <formula>OR(UPPER(Name) = UPPER($User.LastName) + &quot;, &quot; + UPPER($User.FirstName),
+UPPER(Account_Manager_Code__c) = UPPER($User.ID_User__c) )</formula>
+    <label>Manager equals User Logged</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

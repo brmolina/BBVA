@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oportunidades_NBC_CONSUMER_RETAIL</fullName>
+    <booleanFilter>1 AND 2 AND 3 AND 4 AND (5 OR 6)</booleanFilter>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>OPPORTUNITY.AMOUNT</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Committee_id__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Template_approved_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>NBC_Decision_Taken_type__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Household durables,Medical equipment,Medical supplies,Tobacco,Textiles,apparel and luxury goods,Pharmatheutical products,Hospitals,Other healthcare services,Residential personal care</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Veterinary activities,Non-residential personal care,Household products,Personal care products,Processed foods,Manufacture of alcoholic beverages</value>
+    </filters>
+    <label>Oportunidades NBC - CONSUMER &amp; RETAIL</label>
+</ListView>

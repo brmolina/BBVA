@@ -1,0 +1,5 @@
+<design:component>
+    <design:attribute name="Creator" label="Creator Report" description="Show Creators Report"/>
+    <design:attribute name="Participants" label="Participants Report" description="Show Participants Report"/>
+    <design:attribute name="Banker" label="Banker Report" description="Show Banker Report"/>
+</design:component>

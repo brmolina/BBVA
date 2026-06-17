@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Block_Close_if_Prospect</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    ISPICKVAL(StageName, &quot;Closed Won&quot;),
+    Account.gf_cust_orig_prospect_ind_type__c = TRUE
+)</errorConditionFormula>
+    <errorMessage>&quot;Error: You cannot close an Opportunity if the associated client is a &apos;Prospect&apos;. Closing an Opportunity implies that the contract is signed and the client must be &apos;Onboarded&apos; (or &apos;Active&apos;).&quot;</errorMessage>
+</ValidationRule>

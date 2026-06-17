@@ -15,7 +15,7 @@
 */
 @isTest
 public with sharing class Arc_Gen_ValidatePS_Test {
-     /**
+    /**
     * @description String "Response message: " literal
     */
     public static final String RESP_MSG_LIT = 'Response message: ';
@@ -29,6 +29,7 @@ public with sharing class Arc_Gen_ValidatePS_Test {
     **/
     @TestSetup
     static void setup() {
+        Arc_UtilitysDataTest_tst.enableBypass();
         final Account parentAcc = new Account(
             Name = 'parent',
             AccountNumber = 'CIANHNcRT-IUyJra0SA-xY'
@@ -44,7 +45,8 @@ public with sharing class Arc_Gen_ValidatePS_Test {
 
         final arce__AHA_Extension__c ahaExt = new arce__AHA_Extension__c(
             arce__PS_Successfully_Retrieved__c = true,
-            arce__filial_Core__c = false
+            arce__filial_Core__c = false,
+            arce__group_corporative__c = false
         );
         insert ahaExt;
 
@@ -77,6 +79,7 @@ public with sharing class Arc_Gen_ValidatePS_Test {
         );
         insert overlay;
     }
+
     /**
     * --------------------------------------------------------------------------------------
     * @description callParentSubsidiaryTest
@@ -110,12 +113,13 @@ public with sharing class Arc_Gen_ValidatePS_Test {
         Test.startTest();
         ovrl.arce__Arc_Gen_PS_Relationship_Id__c ='454';
         update ovrl;
+        aha.arce__RAR_rating_tool_id__c = '2021RTC_EXPG';
+        update aha;
         final Arc_Gen_ValidatePS.MessageResponse response = Arc_Gen_ValidatePS.callParentSubsidiary(aha.Id, true);
         System.debug(RESP_MSG_LIT + response.message);
         System.assertEquals('RefreshPS', response.status, RESP_MSG_LIT + response.message);
         Test.stopTest();
     }
-
 
     /**
     * --------------------------------------------------------------------------------------

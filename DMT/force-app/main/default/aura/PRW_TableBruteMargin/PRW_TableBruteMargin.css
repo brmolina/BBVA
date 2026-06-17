@@ -1,0 +1,24 @@
+.THIS .table-test thead th span {
+    background-color: #16325c;
+    color: white;
+  }
+  
+  .THIS.classTableCmp {
+    padding-top:1% !important;
+    padding-bottom:1% !important;
+  }
+
+  .THIS .slds-table .slds-row-number:after {
+    content: counter(none) !important ;
+    display: none !important ;
+  }
+
+ 
+.THIS .slds-box{
+  background-color: rgb(247, 247, 247);
+  border-color: rgb(216, 216, 216);
+} 
+
+.THIS .slds-m-around_xx-small{
+  background-color: rgb(247, 247, 247);
+}

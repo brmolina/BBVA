@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Datamart_Link__c</fullName>
+    <externalId>false</externalId>
+    <formula>&apos;https://reportes.es.igrupobbva/MSTR_WBAM/MicroStrategyCIB/servlet/mstrWeb?Server=LPMST501&amp;Project=ENDV&amp;Port=0&amp;evt=2048001&amp;src=mstrWeb.2048001&amp;documentID=AB1412F211E696B7000000802F970E4F&amp;visMode=0&amp;mstrid=b&amp;promptAnswerMode=2&amp;elementsPromptAnswers=6D95D9F44EFEC83C01EB2E9DC22AADBE;6D95D9F44EFEC83C01EB2E9DC22AADBE:&apos;
++ LEFT(DES_RAR_EVA_RORC_Update_Engloba__c,6)
++&apos;&amp;elementsPromptAnswers=8808A3F74499CFCC60F411AD8CC18B69;8808A3F74499CFCC60F411AD8CC18B69:&apos;+DES_Group_Code__c</formula>
+    <label>Datamart Link</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

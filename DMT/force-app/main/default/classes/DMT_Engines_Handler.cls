@@ -5,7 +5,7 @@ Fecha: 2024-02-27
 
 // Clase para manejar los motores HPG
 @JsonAccess(serializable='always' deserializable='always')
-global without  sharing class DMT_Engines_Handler implements Callable {
+global with  sharing class DMT_Engines_Handler implements Callable {
     // Método para invocar un método específico
     public Object call(String methodName, Map<String, Object> args) {
         // Debug para indicar que se está dentro del método call

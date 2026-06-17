@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Revenue_Update__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(LEFT(RIGHT(DES_Revenue_Update_Engloba__c,4),2),
+&apos;01&apos;, &apos;Jan&apos;,
+&apos;02&apos;, &apos;Feb&apos;,
+&apos;03&apos;, &apos;Mar&apos;,
+&apos;04&apos;, &apos;Apr&apos;,
+&apos;05&apos;, &apos;May&apos;,
+&apos;06&apos;, &apos;Jun&apos;,
+&apos;07&apos;, &apos;Jul&apos;,
+&apos;08&apos;, &apos;Aug&apos;,
+&apos;09&apos;, &apos;Sept&apos;,
+&apos;10&apos;, &apos;Oct&apos;,
+&apos;11&apos;, &apos;Nov&apos;,
+&apos;12&apos;,&apos;Dec&apos;,
+&apos;&apos;)
+&amp; &apos; &apos; &amp; LEFT(DES_Revenue_Update_Engloba__c,4)</formula>
+    <label>Revenue Update</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

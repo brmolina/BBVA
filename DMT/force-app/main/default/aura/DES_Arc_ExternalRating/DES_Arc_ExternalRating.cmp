@@ -1,0 +1,26 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-24-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller = "Des_Arc_ExternalRating_Controller" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+	<aura:attribute name="recordId" type="String" />
+    <aura:attribute name="idSelect" type="String" />
+    <aura:attribute name="editB" type="String"/>
+    <aura:attribute name="isValidated" type="Boolean" default="false" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+    	<lightning:accordionSection name="A" label="External Rating" class="slds-page-header slds-p-top_none slds-p-bottom_none slds-p-left_none">
+                <aura:if isTrue = "{!v.isValidated}">
+                    <aura:if isTrue = "{!not(empty(v.idSelect))}">
+                        <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="DES-SP2-EXTRTG"  editButton="{!v.editB}" msgConfirmCancel="true"/>
+                        <aura:set attribute="else">
+                            <div class="slds-align_absolute-center" style="height:5rem">No data exported.</div>
+                    	</aura:set>
+                    </aura:if>
+                </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

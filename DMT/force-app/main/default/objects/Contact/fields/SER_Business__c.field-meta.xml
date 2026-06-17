@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Business__c</fullName>
+    <label>Business</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>GM</fullName>
+                <default>false</default>
+                <label>GM</label>
+            </value>
+            <value>
+                <fullName>SSTT</fullName>
+                <default>false</default>
+                <label>SSTT</label>
+            </value>
+            <value>
+                <fullName>SSTT and GM</fullName>
+                <default>false</default>
+                <label>SSTT and GM</label>
+            </value>
+            <value>
+                <fullName>GNC</fullName>
+                <default>false</default>
+                <label>GNC</label>
+            </value>
+            <value>
+                <fullName>EGS</fullName>
+                <default>false</default>
+                <label>EGS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

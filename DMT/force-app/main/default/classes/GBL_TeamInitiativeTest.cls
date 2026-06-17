@@ -69,8 +69,8 @@ public class GBL_TeamInitiativeTest {
     camp3.cond__priority_campaign_type__c = 'Medium';
     camp3.description = 'des';
     camp3.Name = 'camp2';
-    camp3.tier_desc__c = 'CIB-Platinum';
-    camp3.segment_desc__c = 'Corporate';
+    camp3.tier_desc__c = '00000020';
+    camp3.segment_desc__c = '00005';
     camp3.country_name__c = 'ESPAÑA';
     final Id recType = Schema.SObjectType.Campaign.getRecordTypeInfosByName().get('Initiative').getRecordTypeId();
     camp3.RecordTypeId = recType;

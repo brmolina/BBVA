@@ -1,0 +1,34 @@
+.THIS .content{
+    border:1px #CDCDCD solid;
+    border-radius:5px;
+    margin:5px;
+    padding:20px 10px 10px 10px;
+}
+.THIS h1{
+    font-weight:bold;
+    font-size:1.3em;
+}
+
+.THIS .sectiontitle {
+  color: #03234d;
+}
+
+.THIS .weight700 {
+  font-weight: 700;
+  color: #5c5c5c;
+}
+
+.THIS .radiusbutton {
+  --slds-c-button-radius-border: 25px;
+}
+
+.THIS .boxsection {
+  border-radius: 0.75rem;
+  border: 2px solid #e5e5e5;
+  background-color:#FFF;
+}
+
+.THIS .badgenodata {
+  --slds-c-badge-color-background: #f3f3f3;
+  --slds-c-badge-radius-border: 4px;
+}

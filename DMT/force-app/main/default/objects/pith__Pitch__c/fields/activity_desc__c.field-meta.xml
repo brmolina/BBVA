@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>activity_desc__c</fullName>
+    <label>Activity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>HBB</fullName>
+                <default>false</default>
+                <label>Accommodation, holiday resorts and cruises</label>
+            </value>
+            <value>
+                <fullName>LBB</fullName>
+                <default>false</default>
+                <label>Advertising</label>
+            </value>
+            <value>
+                <fullName>BFA</fullName>
+                <default>false</default>
+                <label>Aerospace</label>
+            </value>
+            <value>
+                <fullName>BGA</fullName>
+                <default>false</default>
+                <label>Agricultural and forestry machinery</label>
+            </value>
+            <value>
+                <fullName>FGA</fullName>
+                <default>false</default>
+                <label>Agriculture</label>
+            </value>
+            <value>
+                <fullName>IDB</fullName>
+                <default>false</default>
+                <label>Agrochemicals</label>
+            </value>
+            <value>
+                <fullName>MBA</fullName>
+                <default>false</default>
+                <label>Airport services</label>
+            </value>
+            <value>
+                <fullName>IGC</fullName>
+                <default>false</default>
+                <label>Aluminium production</label>
+            </value>
+            <value>
+                <fullName>EBA</fullName>
+                <default>false</default>
+                <label>Asset Managers</label>
+            </value>
+            <value>
+                <fullName>LBE</fullName>
+                <default>false</default>
+                <label>Audiovisual Production</label>
+            </value>
+            <value>
+                <fullName>AEA</fullName>
+                <default>false</default>
+                <label>Auto dealers</label>
+            </value>
+            <value>
+                <fullName>AAA</fullName>
+                <default>false</default>
+                <label>Auto manufacturers</label>
+            </value>
+            <value>
+                <fullName>AAB</fullName>
+                <default>false</default>
+                <label>Auto parts suppliers</label>
+            </value>
+            <value>
+                <fullName>EFA</fullName>
+                <default>false</default>
+                <label>Auxiliary activities related to financial services</label>
+            </value>
+            <value>
+                <fullName>IDC</fullName>
+                <default>false</default>
+                <label>Base chemicals</label>
+            </value>
+            <value>
+                <fullName>IFB</fullName>
+                <default>false</default>
+                <label>Base metals</label>
+            </value>
+            <value>
+                <fullName>DCE</fullName>
+                <default>false</default>
+                <label>Bio and low-emission fuels.</label>
+            </value>
+            <value>
+                <fullName>LCD</fullName>
+                <default>false</default>
+                <label>Cable telecommunications services</label>
+            </value>
+            <value>
+                <fullName>FGB</fullName>
+                <default>false</default>
+                <label>Cattle Raising</label>
+            </value>
+            <value>
+                <fullName>CBC</fullName>
+                <default>false</default>
+                <label>Cement-based products and materials</label>
+            </value>
+            <value>
+                <fullName>GAA</fullName>
+                <default>false</default>
+                <label>Central bank</label>
+            </value>
+            <value>
+                <fullName>GAD</fullName>
+                <default>false</default>
+                <label>Central government</label>
+            </value>
+            <value>
+                <fullName>GAG</fullName>
+                <default>false</default>
+                <label>Central-government state-owned enterprises (DO NOT USE)</label>
+            </value>
+            <value>
+                <fullName>BHD</fullName>
+                <default>false</default>
+                <label>Clean Energies Equipment</label>
+            </value>
+            <value>
+                <fullName>EDA</fullName>
+                <default>false</default>
+                <label>Clearing houses</label>
+            </value>
+            <value>
+                <fullName>IFA</fullName>
+                <default>false</default>
+                <label>Coal Mining</label>
+            </value>
+            <value>
+                <fullName>BEB</fullName>
+                <default>false</default>
+                <label>Commercial services</label>
+            </value>
+            <value>
+                <fullName>LAB</fullName>
+                <default>false</default>
+                <label>Communications equipment</label>
+            </value>
+            <value>
+                <fullName>LAD</fullName>
+                <default>false</default>
+                <label>Computer &amp; peripherals</label>
+            </value>
+            <value>
+                <fullName>JDA</fullName>
+                <default>false</default>
+                <label>Construction and real estate development</label>
+            </value>
+            <value>
+                <fullName>BGC</fullName>
+                <default>false</default>
+                <label>Construction machinery</label>
+            </value>
+            <value>
+                <fullName>OAA</fullName>
+                <default>false</default>
+                <label>Credit institutions (banks, savings banks and credit unions)</label>
+            </value>
+            <value>
+                <fullName>LFC</fullName>
+                <default>false</default>
+                <label>Datacenters</label>
+            </value>
+            <value>
+                <fullName>BFB</fullName>
+                <default>false</default>
+                <label>Defense</label>
+            </value>
+            <value>
+                <fullName>JBF</fullName>
+                <default>false</default>
+                <label>Diversified CRE</label>
+            </value>
+            <value>
+                <fullName>EEA</fullName>
+                <default>false</default>
+                <label>Diversified financial services (brokers, factoring, leasing, etc.)</label>
+            </value>
+            <value>
+                <fullName>HCA</fullName>
+                <default>false</default>
+                <label>Education</label>
+            </value>
+            <value>
+                <fullName>NCA</fullName>
+                <default>false</default>
+                <label>Electric Power Supply</label>
+            </value>
+            <value>
+                <fullName>NCF</fullName>
+                <default>false</default>
+                <label>Electric Power T&amp;D</label>
+            </value>
+            <value>
+                <fullName>LAC</fullName>
+                <default>false</default>
+                <label>Electronic equipment &amp; instruments</label>
+            </value>
+            <value>
+                <fullName>LFB</fullName>
+                <default>false</default>
+                <label>Fibre</label>
+            </value>
+            <value>
+                <fullName>FGC</fullName>
+                <default>false</default>
+                <label>Fishing</label>
+            </value>
+            <value>
+                <fullName>KAA</fullName>
+                <default>false</default>
+                <label>Food &amp; staples retail</label>
+            </value>
+            <value>
+                <fullName>ICA</fullName>
+                <default>false</default>
+                <label>Forestry</label>
+            </value>
+            <value>
+                <fullName>IGB</fullName>
+                <default>false</default>
+                <label>Forming&amp;finishing of steel</label>
+            </value>
+            <value>
+                <fullName>MCB</fullName>
+                <default>false</default>
+                <label>Freight Air transportation</label>
+            </value>
+            <value>
+                <fullName>MEB</fullName>
+                <default>false</default>
+                <label>Freight Maritime transportation</label>
+            </value>
+            <value>
+                <fullName>MFC</fullName>
+                <default>false</default>
+                <label>Freight Rail transportation</label>
+            </value>
+            <value>
+                <fullName>MFF</fullName>
+                <default>false</default>
+                <label>Freight Road transportation</label>
+            </value>
+            <value>
+                <fullName>HBC</fullName>
+                <default>false</default>
+                <label>Gaming, Entertainment and Amusement Parks</label>
+            </value>
+            <value>
+                <fullName>NCB</fullName>
+                <default>false</default>
+                <label>Gas Supply</label>
+            </value>
+            <value>
+                <fullName>NCG</fullName>
+                <default>false</default>
+                <label>Gas T&amp;D</label>
+            </value>
+            <value>
+                <fullName>IEC</fullName>
+                <default>false</default>
+                <label>Glass packaging</label>
+            </value>
+            <value>
+                <fullName>BGD</fullName>
+                <default>false</default>
+                <label>Heavy transport equipment (exc trucks and planes) (exc trucks and planes)</label>
+            </value>
+            <value>
+                <fullName>ECC</fullName>
+                <default>false</default>
+                <label>Hedge funds</label>
+            </value>
+            <value>
+                <fullName>EGB</fullName>
+                <default>false</default>
+                <label>Holding companies</label>
+            </value>
+            <value>
+                <fullName>FBB</fullName>
+                <default>false</default>
+                <label>Hospitals</label>
+            </value>
+            <value>
+                <fullName>JBD</fullName>
+                <default>false</default>
+                <label>Hotel/Hospital CRE</label>
+            </value>
+            <value>
+                <fullName>ABA</fullName>
+                <default>false</default>
+                <label>Household durables</label>
+            </value>
+            <value>
+                <fullName>FCA</fullName>
+                <default>false</default>
+                <label>Household products</label>
+            </value>
+            <value>
+                <fullName>ZZZ</fullName>
+                <default>false</default>
+                <label>Individuals: Private banking &amp; relevant individuals</label>
+            </value>
+            <value>
+                <fullName>JBE</fullName>
+                <default>false</default>
+                <label>Industrial CRE</label>
+            </value>
+            <value>
+                <fullName>BEA</fullName>
+                <default>false</default>
+                <label>Industrial Engineering</label>
+            </value>
+            <value>
+                <fullName>IDE</fullName>
+                <default>false</default>
+                <label>Industrial Gases</label>
+            </value>
+            <value>
+                <fullName>BGB</fullName>
+                <default>false</default>
+                <label>Industrial machinery and others</label>
+            </value>
+            <value>
+                <fullName>LDA</fullName>
+                <default>false</default>
+                <label>Information technology services</label>
+            </value>
+            <value>
+                <fullName>CAB</fullName>
+                <default>false</default>
+                <label>Infrastructure construction - Civil engineering</label>
+            </value>
+            <value>
+                <fullName>EAA</fullName>
+                <default>false</default>
+                <label>Insurance Companies</label>
+            </value>
+            <value>
+                <fullName>DBA</fullName>
+                <default>false</default>
+                <label>Integrated Oil &amp; Gas</label>
+            </value>
+            <value>
+                <fullName>LCG</fullName>
+                <default>false</default>
+                <label>Integrated Telecommunication services</label>
+            </value>
+            <value>
+                <fullName>NHA</fullName>
+                <default>false</default>
+                <label>Integrated Utility</label>
+            </value>
+            <value>
+                <fullName>LEA</fullName>
+                <default>false</default>
+                <label>Internet Service Operators</label>
+            </value>
+            <value>
+                <fullName>MFD</fullName>
+                <default>false</default>
+                <label>Interurban Passenger Rail transportation</label>
+            </value>
+            <value>
+                <fullName>MFG</fullName>
+                <default>false</default>
+                <label>Interurban Passenger Road transportation</label>
+            </value>
+            <value>
+                <fullName>IGA</fullName>
+                <default>false</default>
+                <label>Iron&amp;steel making</label>
+            </value>
+            <value>
+                <fullName>GAH</fullName>
+                <default>false</default>
+                <label>Labor unions, political parties, private non-profit institutions, other</label>
+            </value>
+            <value>
+                <fullName>GAF</fullName>
+                <default>false</default>
+                <label>Local governments</label>
+            </value>
+            <value>
+                <fullName>MAC</fullName>
+                <default>false</default>
+                <label>Logistic services</label>
+            </value>
+            <value>
+                <fullName>FFB</fullName>
+                <default>false</default>
+                <label>Manufacture of alcoholic beverages</label>
+            </value>
+            <value>
+                <fullName>BHB</fullName>
+                <default>false</default>
+                <label>Manufacture of Energy Efficient Equipment</label>
+            </value>
+            <value>
+                <fullName>FFC</fullName>
+                <default>false</default>
+                <label>Manufacture of non-alcoholic beverages</label>
+            </value>
+            <value>
+                <fullName>BBA</fullName>
+                <default>false</default>
+                <label>Medical equipment</label>
+            </value>
+            <value>
+                <fullName>BDA</fullName>
+                <default>false</default>
+                <label>Medical supplies</label>
+            </value>
+            <value>
+                <fullName>IED</fullName>
+                <default>false</default>
+                <label>Metal packaging</label>
+            </value>
+            <value>
+                <fullName>DBC</fullName>
+                <default>false</default>
+                <label>Midstream</label>
+            </value>
+            <value>
+                <fullName>AFB</fullName>
+                <default>false</default>
+                <label>Motos and micro mobility</label>
+            </value>
+            <value>
+                <fullName>OBA</fullName>
+                <default>false</default>
+                <label>Multilateral banks</label>
+            </value>
+            <value>
+                <fullName>GAI</fullName>
+                <default>false</default>
+                <label>Multilateral non-financial bodies</label>
+            </value>
+            <value>
+                <fullName>KBC</fullName>
+                <default>false</default>
+                <label>Multiline Retail</label>
+            </value>
+            <value>
+                <fullName>ECA</fullName>
+                <default>false</default>
+                <label>Mutual funds</label>
+            </value>
+            <value>
+                <fullName>CAC</fullName>
+                <default>false</default>
+                <label>Non Residential Building</label>
+            </value>
+            <value>
+                <fullName>CCA</fullName>
+                <default>false</default>
+                <label>Non-Residential Building Construction and Maintenance Projects</label>
+            </value>
+            <value>
+                <fullName>FBF</fullName>
+                <default>false</default>
+                <label>Non-residential personal care</label>
+            </value>
+            <value>
+                <fullName>XXX</fullName>
+                <default>false</default>
+                <label>Not defined</label>
+            </value>
+            <value>
+                <fullName>NFB</fullName>
+                <default>false</default>
+                <label>Nuclear and hydro power generation</label>
+            </value>
+            <value>
+                <fullName>JBB</fullName>
+                <default>false</default>
+                <label>Office CRE</label>
+            </value>
+            <value>
+                <fullName>DAA</fullName>
+                <default>false</default>
+                <label>Oilfield services</label>
+            </value>
+            <value>
+                <fullName>KBD</fullName>
+                <default>false</default>
+                <label>Online Retail</label>
+            </value>
+            <value>
+                <fullName>CAE</fullName>
+                <default>false</default>
+                <label>Other construction activities</label>
+            </value>
+            <value>
+                <fullName>HDA</fullName>
+                <default>false</default>
+                <label>Other consumer services</label>
+            </value>
+            <value>
+                <fullName>X_X</fullName>
+                <default>false</default>
+                <label>Other Corporates</label>
+            </value>
+            <value>
+                <fullName>BHC</fullName>
+                <default>false</default>
+                <label>Other electrical components</label>
+            </value>
+            <value>
+                <fullName>EGA</fullName>
+                <default>false</default>
+                <label>Other Financial Services</label>
+            </value>
+            <value>
+                <fullName>ECD</fullName>
+                <default>false</default>
+                <label>Other funds/investment companies (SICAVs, etc.)</label>
+            </value>
+            <value>
+                <fullName>FBC</fullName>
+                <default>false</default>
+                <label>Other healthcare services</label>
+            </value>
+            <value>
+                <fullName>GAJ</fullName>
+                <default>false</default>
+                <label>Other Institutions</label>
+            </value>
+            <value>
+                <fullName>NFC</fullName>
+                <default>false</default>
+                <label>Other low carbon power generation</label>
+            </value>
+            <value>
+                <fullName>EIA</fullName>
+                <default>false</default>
+                <label>Other Market infrastructures</label>
+            </value>
+            <value>
+                <fullName>IGD</fullName>
+                <default>false</default>
+                <label>Other metals</label>
+            </value>
+            <value>
+                <fullName>LCA</fullName>
+                <default>false</default>
+                <label>Other telecommunications</label>
+            </value>
+            <value>
+                <fullName>MBD</fullName>
+                <default>false</default>
+                <label>Other transportation Operators</label>
+            </value>
+            <value>
+                <fullName>ICC</fullName>
+                <default>false</default>
+                <label>Paper</label>
+            </value>
+            <value>
+                <fullName>IEA</fullName>
+                <default>false</default>
+                <label>Paper packaging</label>
+            </value>
+            <value>
+                <fullName>MCA</fullName>
+                <default>false</default>
+                <label>Passenger Air transportation</label>
+            </value>
+            <value>
+                <fullName>MEA</fullName>
+                <default>false</default>
+                <label>Passenger Maritime transportation</label>
+            </value>
+            <value>
+                <fullName>ECB</fullName>
+                <default>false</default>
+                <label>Pension funds</label>
+            </value>
+            <value>
+                <fullName>FCB</fullName>
+                <default>false</default>
+                <label>Personal care products</label>
+            </value>
+            <value>
+                <fullName>DCB</fullName>
+                <default>false</default>
+                <label>Petrol stations</label>
+            </value>
+            <value>
+                <fullName>FBA</fullName>
+                <default>false</default>
+                <label>Pharmatheutical products</label>
+            </value>
+            <value>
+                <fullName>IEB</fullName>
+                <default>false</default>
+                <label>Plastic packaging</label>
+            </value>
+            <value>
+                <fullName>MBB</fullName>
+                <default>false</default>
+                <label>Port services</label>
+            </value>
+            <value>
+                <fullName>BHA</fullName>
+                <default>false</default>
+                <label>Power generation equipment</label>
+            </value>
+            <value>
+                <fullName>IFC</fullName>
+                <default>false</default>
+                <label>Precious and other metals</label>
+            </value>
+            <value>
+                <fullName>ECE</fullName>
+                <default>false</default>
+                <label>Private equity funds</label>
+            </value>
+            <value>
+                <fullName>FFA</fullName>
+                <default>false</default>
+                <label>Processed foods</label>
+            </value>
+            <value>
+                <fullName>CBD</fullName>
+                <default>false</default>
+                <label>Products and materials based on glass, ceramics and refractories</label>
+            </value>
+            <value>
+                <fullName>BEC</fullName>
+                <default>false</default>
+                <label>Professional services</label>
+            </value>
+            <value>
+                <fullName>GAB</fullName>
+                <default>false</default>
+                <label>Public development banks similar to sovereign</label>
+            </value>
+            <value>
+                <fullName>LBD</fullName>
+                <default>false</default>
+                <label>Publishing</label>
+            </value>
+            <value>
+                <fullName>DCD</fullName>
+                <default>false</default>
+                <label>Purchase and sale of petroleum and petroleum products</label>
+            </value>
+            <value>
+                <fullName>LBC</fullName>
+                <default>false</default>
+                <label>Radio and television broadcasting</label>
+            </value>
+            <value>
+                <fullName>MBC</fullName>
+                <default>false</default>
+                <label>Rail services</label>
+            </value>
+            <value>
+                <fullName>DCA</fullName>
+                <default>false</default>
+                <label>Refineries</label>
+            </value>
+            <value>
+                <fullName>GAE</fullName>
+                <default>false</default>
+                <label>Regional governments</label>
+            </value>
+            <value>
+                <fullName>MCC</fullName>
+                <default>false</default>
+                <label>Renting and leasing of air transport equipment</label>
+            </value>
+            <value>
+                <fullName>CAD</fullName>
+                <default>false</default>
+                <label>Residential Building</label>
+            </value>
+            <value>
+                <fullName>JBG</fullName>
+                <default>false</default>
+                <label>Residential CRE</label>
+            </value>
+            <value>
+                <fullName>FBD</fullName>
+                <default>false</default>
+                <label>Residential personal care</label>
+            </value>
+            <value>
+                <fullName>HBD</fullName>
+                <default>false</default>
+                <label>Restaurants and Food services</label>
+            </value>
+            <value>
+                <fullName>CBE</fullName>
+                <default>false</default>
+                <label>Rest of construction materials and products</label>
+            </value>
+            <value>
+                <fullName>JBC</fullName>
+                <default>false</default>
+                <label>Retail CRE</label>
+            </value>
+            <value>
+                <fullName>MBE</fullName>
+                <default>false</default>
+                <label>Road Infrastructure Operators</label>
+            </value>
+            <value>
+                <fullName>LCE</fullName>
+                <default>false</default>
+                <label>Satellite telecommunication services</label>
+            </value>
+            <value>
+                <fullName>LAE</fullName>
+                <default>false</default>
+                <label>Semiconductor and Other Electronic Component Manufacturing</label>
+            </value>
+            <value>
+                <fullName>LEB</fullName>
+                <default>false</default>
+                <label>Software</label>
+            </value>
+            <value>
+                <fullName>GAC</fullName>
+                <default>false</default>
+                <label>Sovereign wealth funds assimilated by sovereign risk</label>
+            </value>
+            <value>
+                <fullName>KBB</fullName>
+                <default>false</default>
+                <label>Specialized Stores</label>
+            </value>
+            <value>
+                <fullName>IDD</fullName>
+                <default>false</default>
+                <label>Specialty chemicals</label>
+            </value>
+            <value>
+                <fullName>IFD</fullName>
+                <default>false</default>
+                <label>Support activities for mining</label>
+            </value>
+            <value>
+                <fullName>JCA</fullName>
+                <default>false</default>
+                <label>Support activities to real estate</label>
+            </value>
+            <value>
+                <fullName>FAD</fullName>
+                <default>false</default>
+                <label>Textiles, apparel and luxury goods</label>
+            </value>
+            <value>
+                <fullName>FAC</fullName>
+                <default>false</default>
+                <label>Tobacco</label>
+            </value>
+            <value>
+                <fullName>LFA</fullName>
+                <default>false</default>
+                <label>Towers</label>
+            </value>
+            <value>
+                <fullName>NDA</fullName>
+                <default>false</default>
+                <label>Traditional/Multitech Electric Power Generation</label>
+            </value>
+            <value>
+                <fullName>HBA</fullName>
+                <default>false</default>
+                <label>Travel agencies and tour operators</label>
+            </value>
+            <value>
+                <fullName>AFA</fullName>
+                <default>false</default>
+                <label>Trucks &amp; Coaches</label>
+            </value>
+            <value>
+                <fullName>AEB</fullName>
+                <default>false</default>
+                <label>Trucks &amp; Coaches dealers</label>
+            </value>
+            <value>
+                <fullName>DBB</fullName>
+                <default>false</default>
+                <label>Upstream</label>
+            </value>
+            <value>
+                <fullName>MFE</fullName>
+                <default>false</default>
+                <label>Urban and suburban passenger transportation</label>
+            </value>
+            <value>
+                <fullName>FBE</fullName>
+                <default>false</default>
+                <label>Veterinary activities</label>
+            </value>
+            <value>
+                <fullName>NBA</fullName>
+                <default>false</default>
+                <label>Waste Collection and Management</label>
+            </value>
+            <value>
+                <fullName>NAB</fullName>
+                <default>false</default>
+                <label>Water, Sewage and Other Systems</label>
+            </value>
+            <value>
+                <fullName>IFE</fullName>
+                <default>false</default>
+                <label>Wholesale of mining Products</label>
+            </value>
+            <value>
+                <fullName>NFA</fullName>
+                <default>false</default>
+                <label>Wind and solar power generation</label>
+            </value>
+            <value>
+                <fullName>LCC</fullName>
+                <default>false</default>
+                <label>Wireless telecommunication services</label>
+            </value>
+            <value>
+                <fullName>ICB</fullName>
+                <default>false</default>
+                <label>Wood products</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_ValidateRatingRAIP_cmp</p>
+        <p><b>DESCRIPTION: </b>Component to validate a rating in a RAIP.</p>
+        <p>This component is a modal executed by the dynamic buttons and calls the Arc_Gen_ValidateRating_cmp component</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>recordId = String {!v.recordId} : Standard id of the current record</li>
+                <li>show = String : Indicates to show or to hide the modal</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_ValidateRatingRAIP_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ValidateRatingRAIP_cmp" ref="c:Arc_Gen_ValidateRatingRAIP_cmp" label="Validate raip Rating">
+    </aura:example>
+</aura:documentation>

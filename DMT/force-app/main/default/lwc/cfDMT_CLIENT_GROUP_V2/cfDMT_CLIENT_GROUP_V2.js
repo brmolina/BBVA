@@ -44,9 +44,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6MoYAK"
+                  " card-0koKE000000L7ltYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pIib2AE");
+                this.loadCustomStylesheetAttachement("00PKE000001ZPkN2AW");
                 
                 
               }
@@ -77,11 +77,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         this.pubsubChannel1 = interpolateWithRegex(`Set`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
 
+        this.pubsubEvent[2] = {
+          [interpolateWithRegex(`xsellEditMode`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[6],6)
+        };
+        this.pubsubChannel2 = interpolateWithRegex(`DMT_CLIENT_GROUP_V2`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel2,this.pubsubEvent[2]);
+
               }
 
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
 pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
+pubsub.unregister(this.pubsubChannel2,this.pubsubEvent[2]);
 
               }
             

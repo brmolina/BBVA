@@ -1,0 +1,15 @@
+<aura:component description="PrivatizeOpportunity" implements="lightning:availableForFlowScreens" access="global" controller="DES_IP_groupMemberVisit">
+    <aura:attribute name="userId" type="String" />
+    <aura:attribute name="visitId" type="String" />
+    <aura:attribute name="formId" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="spinnerHolder">
+
+
+        <lightning:spinner alternativeText="Loading" size="large" variant="brand"/>
+
+    </div>
+
+</aura:component>

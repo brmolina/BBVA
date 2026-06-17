@@ -1,0 +1,45 @@
+.custom-icon {
+    border-radius: var(--lwc-borderRadiusMedium, 0.25rem);
+    object-fit: contain;
+}
+
+.slds-icon_medium.custom-icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+.slds-button__icon_left {
+    width: 1rem;
+    height: 1rem;
+}
+
+.slds-icon_x-small.slds-m-right_x-small {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.slds-text-link {
+    color: var(--lwc-colorTextLink, #006dcc);
+    text-decoration: none;
+}
+
+.slds-text-link:hover {
+    text-decoration: underline;
+}
+.fieldComponentcustom {
+    font-size:  0.875rem;
+    vertical-align: middle;
+    max-width: 100%;
+}
+a {
+    color: var(--lwc-brandTextLink, rgba(4, 105, 193, 1));
+    text-decoration: none;
+    transition: color .1s linear;
+}
+a:hover {
+    text-decoration: underline;
+}
+.confidential-tag {
+    color: red;
+    font-weight: bold;
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subtype__c</fullName>
+    <label>Subtype</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ACCESO</fullName>
+                <default>false</default>
+                <label>ACCESO</label>
+            </value>
+            <value>
+                <fullName>ACCION BBVA</fullName>
+                <default>false</default>
+                <label>ACCION BBVA</label>
+            </value>
+            <value>
+                <fullName>ACTIVACION</fullName>
+                <default>false</default>
+                <label>ACTIVACION</label>
+            </value>
+            <value>
+                <fullName>ACTIVACIÓN</fullName>
+                <default>false</default>
+                <label>ACTIVACIÓN</label>
+            </value>
+            <value>
+                <fullName>ACTIVADO CON TOKEN FISICO</fullName>
+                <default>false</default>
+                <label>ACTIVADO CON TOKEN FISICO</label>
+            </value>
+            <value>
+                <fullName>ACTIVADO CON TOKEN MOVIL</fullName>
+                <default>false</default>
+                <label>ACTIVADO CON TOKEN MOVIL</label>
+            </value>
+            <value>
+                <fullName>ACUSE DE RECIBO TOKENS</fullName>
+                <default>false</default>
+                <label>ACUSE DE RECIBO TOKENS</label>
+            </value>
+            <value>
+                <fullName>ADEUDOS DIRECTOS SEPA</fullName>
+                <default>false</default>
+                <label>ADEUDOS DIRECTOS SEPA</label>
+            </value>
+            <value>
+                <fullName>ADEUDOS FINANCIADOS</fullName>
+                <default>false</default>
+                <label>ADEUDOS FINANCIADOS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Matching_Platform__c</fullName>
+    <description>Recruitment platform</description>
+    <label>Matching Platform</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Calypso Matching</fullName>
+                <default>false</default>
+                <label>Calypso Matching</label>
+            </value>
+            <value>
+                <fullName>CTM</fullName>
+                <default>false</default>
+                <label>CTM</label>
+            </value>
+            <value>
+                <fullName>DTCC</fullName>
+                <default>false</default>
+                <label>DTCC</label>
+            </value>
+            <value>
+                <fullName>Euclid</fullName>
+                <default>false</default>
+                <label>Euclid</label>
+            </value>
+            <value>
+                <fullName>FXAll</fullName>
+                <default>false</default>
+                <label>FXAll</label>
+            </value>
+            <value>
+                <fullName>ICElink</fullName>
+                <default>false</default>
+                <label>ICElink</label>
+            </value>
+            <value>
+                <fullName>MarkitWire</fullName>
+                <default>false</default>
+                <label>MarkitWire</label>
+            </value>
+            <value>
+                <fullName>Misys</fullName>
+                <default>false</default>
+                <label>Misys</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

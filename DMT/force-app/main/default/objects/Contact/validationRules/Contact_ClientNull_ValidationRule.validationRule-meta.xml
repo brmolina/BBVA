@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contact_ClientNull_ValidationRule</fullName>
+    <active>false</active>
+    <description>Para evitar que un administrador pueda cargar contactos privados (sin estar asignados a un cliente) en cargas de Dataloader</description>
+    <errorConditionFormula>AND(!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,ISBLANK(AccountId))</errorConditionFormula>
+    <errorDisplayField>AccountId</errorDisplayField>
+    <errorMessage>Client Account cannot be null.</errorMessage>
+</ValidationRule>

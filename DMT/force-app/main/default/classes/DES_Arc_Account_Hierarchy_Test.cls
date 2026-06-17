@@ -1,14 +1,14 @@
 /*------------------------------------------------------------------
 *Author:        Hector Vasquez
-*Project:      	ARCE - BBVA Bancomer
+*Project:        ARCE - BBVA Bancomer
 *Description:   Test class for DES_Arc_Account_Hierarchy
 *_______________________________________________________________________________________
-*Versión    Date           	Author                              Description
+*Versión    Date             Author                              Description
 *1.0        14/09/2020      ARCE's TEAM                         Created.
 -----------------------------------------------------------------------------------------*/
 @isTest
 global with sharing class DES_Arc_Account_Hierarchy_Test {
-	
+  
     /**
         * @Description: String with value "accNumber"
     */
@@ -39,10 +39,10 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         testAcc1.DES_Country_Client__c = 'ES';
         insert testAcc1;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation.dwp_acmh__Parent_Account__c = testAcc1.Id;
-        testRelation.dwp_acmh__Child_Account__c = lclAcc.Cib_Client__c;
-        testRelation.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation = new AMH_GBL_Account_Relationship__c();
+        testRelation.AMH_Parent_Account__c = testAcc1.Id;
+        testRelation.AMH_Child_Account__c = lclAcc.Cib_Client__c;
+        testRelation.AMH_Vision__c = 'Riesgos';
         testRelation.DES_Main_Parent__c = 'S';
         insert testRelation;
         
@@ -52,14 +52,14 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         lstAccountSearch[0].account_client__c = 'S'; 
         update lstAccountSearch;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation2 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation2.dwp_acmh__Parent_Account__c = testAcc1.Id;
-        testRelation2.dwp_acmh__Child_Account__c = lclAcc2.Cib_Client__c;
-        testRelation2.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation2 = new AMH_GBL_Account_Relationship__c();
+        testRelation2.AMH_Parent_Account__c = testAcc1.Id;
+        testRelation2.AMH_Child_Account__c = lclAcc2.Cib_Client__c;
+        testRelation2.AMH_Vision__c = 'Riesgos';
         testRelation2.DES_Main_Parent__c = 'S';
         insert testRelation2;
 
-		Local_Client__c lclAcc3 = TestFactory.createLocalClient();        
+    Local_Client__c lclAcc3 = TestFactory.createLocalClient();        
         final List<Account> lstAccountSearch2 = [SELECT Id, Name, account_client__c FROM Account WHERE Id =: lclAcc3.Cib_Client__c LIMIT 1];
 
         Account testAccSimple = new Account();
@@ -81,17 +81,17 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         testAccGroup.DES_Country_Client__c = 'ES';
         insert testAccGroup;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation3 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation3.dwp_acmh__Parent_Account__c = testAccSimple.Id;
-        testRelation3.dwp_acmh__Child_Account__c = lclAcc3.Cib_Client__c;
-        testRelation3.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation3 = new AMH_GBL_Account_Relationship__c();
+        testRelation3.AMH_Parent_Account__c = testAccSimple.Id;
+        testRelation3.AMH_Child_Account__c = lclAcc3.Cib_Client__c;
+        testRelation3.AMH_Vision__c = 'Riesgos';
         testRelation3.DES_Main_Parent__c = 'S';
         insert testRelation3;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation4 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation4.dwp_acmh__Parent_Account__c = testAccDoble2.Id;
-        testRelation4.dwp_acmh__Child_Account__c = lclAcc3.Cib_Client__c;
-        testRelation4.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation4 = new AMH_GBL_Account_Relationship__c();
+        testRelation4.AMH_Parent_Account__c = testAccDoble2.Id;
+        testRelation4.AMH_Child_Account__c = lclAcc3.Cib_Client__c;
+        testRelation4.AMH_Vision__c = 'Riesgos';
         testRelation4.DES_Main_Parent__c = 'S';
         insert testRelation4;
         
@@ -112,39 +112,39 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         lstAccountSearch5[0].DES_Entity_Hierarchy__c = 'S';
         update lstAccountSearch5;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation5 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation5.dwp_acmh__Parent_Account__c = testAccDoble2.Id;
-        testRelation5.dwp_acmh__Child_Account__c = lclAcc4.Cib_Client__c;
-        testRelation5.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation5 = new AMH_GBL_Account_Relationship__c();
+        testRelation5.AMH_Parent_Account__c = testAccDoble2.Id;
+        testRelation5.AMH_Child_Account__c = lclAcc4.Cib_Client__c;
+        testRelation5.AMH_Vision__c = 'Riesgos';
         testRelation5.DES_Main_Parent__c = 'S';
         insert testRelation5;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation6 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation6.dwp_acmh__Parent_Account__c = testAccDoble2.Id;
-        testRelation6.dwp_acmh__Child_Account__c = lclAcc5.Cib_Client__c;
-        testRelation6.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation6 = new AMH_GBL_Account_Relationship__c();
+        testRelation6.AMH_Parent_Account__c = testAccDoble2.Id;
+        testRelation6.AMH_Child_Account__c = lclAcc5.Cib_Client__c;
+        testRelation6.AMH_Vision__c = 'Riesgos';
         testRelation6.DES_Main_Parent__c = 'S';
         insert testRelation6;
         
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation7 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation7.dwp_acmh__Parent_Account__c = testAccGroup.Id;
-        testRelation7.dwp_acmh__Child_Account__c = lclAcc6.Cib_Client__c;
-        testRelation7.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation7 = new AMH_GBL_Account_Relationship__c();
+        testRelation7.AMH_Parent_Account__c = testAccGroup.Id;
+        testRelation7.AMH_Child_Account__c = lclAcc6.Cib_Client__c;
+        testRelation7.AMH_Vision__c = 'Riesgos';
         testRelation7.DES_Main_Parent__c = 'S';
         insert testRelation7;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation8 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation8.dwp_acmh__Parent_Account__c = testAccGroup.Id;
-        testRelation8.dwp_acmh__Child_Account__c = lclAcc5.Cib_Client__c;
-        testRelation8.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation8 = new AMH_GBL_Account_Relationship__c();
+        testRelation8.AMH_Parent_Account__c = testAccGroup.Id;
+        testRelation8.AMH_Child_Account__c = lclAcc5.Cib_Client__c;
+        testRelation8.AMH_Vision__c = 'Riesgos';
         testRelation8.DES_Main_Parent__c = 'S';
         insert testRelation8;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation9 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation9.dwp_acmh__Parent_Account__c = lstAccountSearch4[0].Id;
-        testRelation9.dwp_acmh__Child_Account__c = lclAcc6.Cib_Client__c;
-        testRelation9.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation9 = new AMH_GBL_Account_Relationship__c();
+        testRelation9.AMH_Parent_Account__c = lstAccountSearch4[0].Id;
+        testRelation9.AMH_Child_Account__c = lclAcc6.Cib_Client__c;
+        testRelation9.AMH_Vision__c = 'Riesgos';
         testRelation9.DES_Main_Parent__c = 'S';
         insert testRelation9;
         
@@ -174,30 +174,30 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         Test.startTest(); 
         List<Local_Client__c> testAcctsP = [SELECT Id, Alpha_code__c FROM Local_Client__c];
         final List<Account> lstAccount = [SELECT Id, Name,  account_group__c FROM Account WHERE Name = 'grupo padre' LIMIT 1];
-        List<dwp_acmh__GBL_Account_Relationship__c> LstAccountS = [SELECT Id, dwp_acmh__Parent_Account__c, dwp_acmh__Child_Account__c, dwp_acmh__Vision__c, dwp_acmh__Child_Account__r.account_client__c
-                                                                          FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Parent_Account__c =: lstAccount[0].Id AND dwp_acmh__Child_Account__r.account_client__c = 'N'];
-        List<Local_Client__c> testAccts = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS[0].dwp_acmh__Child_Account__c];
-        final List<Account> lstAccount2 = [SELECT Id, Name,  account_client__c FROM Account WHERE Id =: LstAccountS[0].dwp_acmh__Child_Account__c LIMIT 1];
+        List<AMH_GBL_Account_Relationship__c> LstAccountS = [SELECT Id, AMH_Parent_Account__c, AMH_Child_Account__c, AMH_Vision__c, AMH_Child_Account__r.account_client__c
+                                                                          FROM AMH_GBL_Account_Relationship__c WHERE AMH_Vision__c = 'Riesgos' AND AMH_Parent_Account__c =: lstAccount[0].Id AND AMH_Child_Account__r.account_client__c = 'N'];
+        List<Local_Client__c> testAccts = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS[0].AMH_Child_Account__c];
+        final List<Account> lstAccount2 = [SELECT Id, Name,  account_client__c FROM Account WHERE Id =: LstAccountS[0].AMH_Child_Account__c LIMIT 1];
         System.debug('lstAccount2 ' + lstAccount2);
         final Map<String, List<String>> maptest1 = DES_Arc_Account_Hierarchy.riskHeader(testAccts[0].Alpha_code__c);
         final Map<String, List<String>> maptest4 = DES_Arc_Account_Hierarchy.headerFinder(testAccts[0].Alpha_code__c);
         System.debug('Lista test ' + testAcctsP);
         
         final List<Account> lstAccount3 = [SELECT Id, Name,  account_group__c FROM Account WHERE Name = 'grupo padre doble 1' LIMIT 1];
-        List<dwp_acmh__GBL_Account_Relationship__c> LstAccountS2 = [SELECT Id, dwp_acmh__Parent_Account__c, dwp_acmh__Child_Account__c, dwp_acmh__Vision__c, dwp_acmh__Child_Account__r.account_client__c
-                                                                          FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Parent_Account__c =: lstAccount3[0].Id AND dwp_acmh__Child_Account__r.account_client__c = 'N'];
+        List<AMH_GBL_Account_Relationship__c> LstAccountS2 = [SELECT Id, AMH_Parent_Account__c, AMH_Child_Account__c, AMH_Vision__c, AMH_Child_Account__r.account_client__c
+                                                                          FROM AMH_GBL_Account_Relationship__c WHERE AMH_Vision__c = 'Riesgos' AND AMH_Parent_Account__c =: lstAccount3[0].Id AND AMH_Child_Account__r.account_client__c = 'N'];
 
-        List<Local_Client__c> testAccts2 = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS2[0].dwp_acmh__Child_Account__c];
+        List<Local_Client__c> testAccts2 = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS2[0].AMH_Child_Account__c];
         final Map<String, List<String>> maptest2 = DES_Arc_Account_Hierarchy.riskHeader(testAccts2[0].Alpha_code__c);
         final Map<String, List<String>> maptest5 = DES_Arc_Account_Hierarchy.headerFinder(testAccts2[0].Alpha_code__c);
         
         List<Local_Client__c> testAccts3 = [SELECT Id, Alpha_code__c, Cib_Client__r.account_client__c FROM Local_Client__c WHERE Cib_Client__r.account_client__c = 'S' LIMIT 1];
         final Map<String, List<String>> maptest3 = DES_Arc_Account_Hierarchy.riskHeader(testAccts3[0].Alpha_code__c);
         final List<Account> lstAccount1A = [SELECT Id, Name,  account_group__c FROM Account WHERE Name = 'grupo padre 1A' LIMIT 1];
-        List<dwp_acmh__GBL_Account_Relationship__c> LstAccountSon = [SELECT Id, dwp_acmh__Parent_Account__c, dwp_acmh__Child_Account__c, dwp_acmh__Vision__c, dwp_acmh__Child_Account__r.account_client__c
-                                                                          FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Parent_Account__c =: lstAccount1A[0].Id];
-        List<Local_Client__c> testLclcc = [SELECT Id, Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c =: LstAccountSon[0].dwp_acmh__Child_Account__c];
-        Map<String, List<String>> mappingRiskHeader2 = DES_Arc_Account_Hierarchy.alphaCodeHierarchy(LstAccountSon[0].dwp_acmh__Child_Account__c);
+        List<AMH_GBL_Account_Relationship__c> LstAccountSon = [SELECT Id, AMH_Parent_Account__c, AMH_Child_Account__c, AMH_Vision__c, AMH_Child_Account__r.account_client__c
+                                                                          FROM AMH_GBL_Account_Relationship__c WHERE AMH_Parent_Account__c =: lstAccount1A[0].Id];
+        List<Local_Client__c> testLclcc = [SELECT Id, Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c =: LstAccountSon[0].AMH_Child_Account__c];
+        Map<String, List<String>> mappingRiskHeader2 = DES_Arc_Account_Hierarchy.alphaCodeHierarchy(LstAccountSon[0].AMH_Child_Account__c);
         final Map<String, List<String>> maptest6 = DES_Arc_Account_Hierarchy.headerFinder(testLclcc[0].Alpha_code__c);
         Set <String> lcClientAlphaCode = new Set<String>();
         for(Account lcClients :  [SELECT Id, Name,  account_client__c FROM Account]){
@@ -221,13 +221,13 @@ global with sharing class DES_Arc_Account_Hierarchy_Test {
         Test.startTest(); 
         Map<String, List<String>> mappingRiskHeader = new Map<String, List<String>>();
         final List<Account> lstAccount1 = [SELECT Id, Name,  account_group__c FROM Account WHERE Name = 'grupo padre 1A' LIMIT 1];
-        List<dwp_acmh__GBL_Account_Relationship__c> LstAccountS2 = [SELECT Id, dwp_acmh__Parent_Account__c, dwp_acmh__Child_Account__c, dwp_acmh__Vision__c, dwp_acmh__Child_Account__r.account_client__c
-                                                                          FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Parent_Account__c =: lstAccount1[0].Id AND dwp_acmh__Child_Account__r.account_client__c = 'S'];
+        List<AMH_GBL_Account_Relationship__c> LstAccountS2 = [SELECT Id, AMH_Parent_Account__c, AMH_Child_Account__c, AMH_Vision__c, AMH_Child_Account__r.account_client__c
+                                                                          FROM AMH_GBL_Account_Relationship__c WHERE AMH_Vision__c = 'Riesgos' AND AMH_Parent_Account__c =: lstAccount1[0].Id AND AMH_Child_Account__r.account_client__c = 'S'];
 
-        List<Local_Client__c> testAccts2 = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS2[0].dwp_acmh__Child_Account__c];
+        List<Local_Client__c> testAccts2 = [SELECT Id, Alpha_code__c, Cib_Client__c, Cib_Client__r.account_client__c FROM Local_Client__c wHERE Cib_Client__c =: LstAccountS2[0].AMH_Child_Account__c];
         
-        final List<dwp_acmh__GBL_Account_Relationship__c> upHierarchy = [SELECT Id, dwp_acmh__Parent_Account__c, dwp_acmh__Child_Account__c, dwp_acmh__Vision__c,DES_Main_Parent__c, dwp_acmh__Parent_Account__r.account_group__c 
-                                                                        FROM dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND dwp_acmh__Child_Account__c =: LstAccountS2[0].dwp_acmh__Child_Account__c AND DES_Main_Parent__c = 'S' LIMIT 1];
+        final List<AMH_GBL_Account_Relationship__c> upHierarchy = [SELECT Id, AMH_Parent_Account__c, AMH_Child_Account__c, AMH_Vision__c,DES_Main_Parent__c, AMH_Parent_Account__r.account_group__c 
+                                                                        FROM AMH_GBL_Account_Relationship__c WHERE AMH_Vision__c = 'Riesgos' AND AMH_Child_Account__c =: LstAccountS2[0].AMH_Child_Account__c AND DES_Main_Parent__c = 'S' LIMIT 1];
         mappingRiskHeader = DES_Arc_Account_Hierarchy.subgroupParent(upHierarchy, testAccts2[0].Alpha_code__c);
         final List<arce__Analysis__c > lstAnalysis = [SELECT Id FROM arce__Analysis__c LIMIT 1];
         DES_Arc_Account_Hierarchy.childHierarchy(lstAnalysis[0].Id);

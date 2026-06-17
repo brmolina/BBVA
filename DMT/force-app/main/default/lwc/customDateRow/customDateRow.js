@@ -6,6 +6,7 @@ export default class CustomDateRow extends LightningElement {
     @api fieldname;
     @api context;
     @api maxdate;
+    @api mindate;
     @api lockDate;
 
     get isDisabled() {
@@ -14,9 +15,6 @@ export default class CustomDateRow extends LightningElement {
     
     handleDateChange(event) {
         this.dateValue = event.target.value;
-        console.log("Selected Date:", this.dateValue);
-        console.log("maxdate:", this.maxdate);
-
         this.dispatchEvent(new CustomEvent('customdateinputchanged', {
             composed: true,
             bubbles: true,

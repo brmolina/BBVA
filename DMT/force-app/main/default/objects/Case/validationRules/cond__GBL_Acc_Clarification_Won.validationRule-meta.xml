@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__GBL_Acc_Clarification_Won</fullName>
+    <active>true</active>
+    <description>Validates if Account clarification is already won.</description>
+    <errorConditionFormula>AND(ISPICKVAL(cond__GBL_Account_Campaign__r.cond__Campaign_status_approval_type__c,&apos;Closed&apos;),ISPICKVAL(cond__GBL_Account_Campaign__r.cond__sub_status_type__c,&apos;Won&apos;),CONTAINS(RecordType.DeveloperName, &apos;GBL_Account_Campaign_Clarification&apos;))</errorConditionFormula>
+    <errorMessage>The Accoun Clarification is already approved.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,20 @@
+<aura:component access="global" implements="force:lightningQuickAction,force:hasRecordId,force:hasSObjectName">
+    <aura:attribute name="urlWithParams" type="String" default=""/>
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <div>
+
+        <div class="spinnerHolder">
+            <div id="spinner" class="slds-spinner_container slds-is-relative">
+                <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+
+        <iframe src="{!v.urlWithParams}" width="100%" height="100%" frameBorder="0"/>
+
+    </div>
+
+</aura:component>

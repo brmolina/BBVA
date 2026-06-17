@@ -1,0 +1,461 @@
+<template>
+    <div class="slds-grid slds-wrap">
+        <template for:each={displayFields} for:item="field" for:index="index">
+            <template if:false={field.isHidden}>
+                <div key={field.id} class={field.classField}>
+
+                    <!-- ===== ESPACIO EN BLANCO ===== -->
+                    <template if:true={field.isBlank}>
+                    </template>
+
+                    <template if:false={field.isBlank}>
+
+                        <!-- =========================================================== -->
+                        <!-- ===================== MODO READ =========================== -->
+                        <!-- =========================================================== -->
+                        <template if:false={isEditMode}>
+                            <div class={field.classInner}>
+                                <div class="slds-grid slds-grid_vertical-align-center" style="align-items: end;">
+                                    <div class="slds-col slds-size_11-of-12">
+                                        <div class="slds-form-element__label slds-grid">
+                                            <div style="padding-top: var(--lwc-spacingXxSmall, 0.25rem); min-width: 0;">
+                                                <div  class="truncate-label-text">
+                                                    <span if:true={field.isRequired} class="slds-required">*</span><span>{field.label}</span>
+                                                </div>
+                                            </div>
+                                            <template if:true={field.helpText}>
+                                                <lightning-helptext content={field.helpText} class="slds-p-left_xx-small"></lightning-helptext>
+                                            </template>
+                                            <template if:true={field.isOverridden}>
+                                                <lightning-helptext
+                                                    icon-name="utility:warning"
+                                                    icon-variant="warning"
+                                                    content={field.overrideTooltip}
+                                                    class="slds-p-left_xx-small">
+                                                </lightning-helptext>
+                                            </template>
+                                        </div>
+                                        <div class={field.controlClass}>
+                                            <span class="slds-form-element__static slds-grow" style="font-size: 0.78rem !important">
+
+                                                <template if:true={field.isCurrency}>
+                                                    <lightning-formatted-number value={field.value} format-style="currency" currency-code={field.currencyCode}></lightning-formatted-number>
+                                                </template>
+
+                                                <template if:true={field.isNumber}>
+                                                    <lightning-formatted-number value={field.value}></lightning-formatted-number>
+                                                </template>
+
+                                                <template if:true={field.isNumberWithCurrency}>
+                                                    <lightning-formatted-number value={field.value}></lightning-formatted-number>
+                                                    <span class="slds-p-left_xx-small">{field.currencyCode}</span>
+                                                </template>
+
+                                                <template if:true={field.isDate}>
+                                                    <lightning-formatted-date-time value={field.value}></lightning-formatted-date-time>
+                                                </template>
+
+                                                <template if:true={field.isDatetime}>
+                                                    <lightning-formatted-date-time value={field.value} year="numeric" month="numeric" day="numeric" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                                </template>
+
+                                                <template if:true={field.isEmail}>
+                                                    <lightning-formatted-email value={field.value}></lightning-formatted-email>
+                                                </template>
+
+                                                <template if:true={field.isPhone}>
+                                                    <lightning-formatted-phone value={field.value}></lightning-formatted-phone>
+                                                </template>
+
+                                                <template if:true={field.isUrl}>
+                                                    <lightning-formatted-url value={field.value} target="_blank"></lightning-formatted-url>
+                                                </template>
+
+                                                <template if:true={field.isCheckbox}>
+                                                    <span class="slds-checkbox">
+                                                        <label class="slds-checkbox__label">
+                                                            <input type="checkbox" name="options" checked={field.value} disabled />
+                                                            <span class="slds-checkbox_faux"></span>
+                                                        </label>
+                                                    </span>
+                                                </template>
+
+                                                <template if:true={field.isText}>
+                                                    <lightning-formatted-text value={field.value}></lightning-formatted-text>
+                                                </template>
+
+                                                <template if:true={field.isTextarea}>
+                                                    <div class="textarea-wrap" data-textarea-wrap={field.id}>
+                                                        <span class={field.textareaTextClass} data-textarea-text={field.id}>{field.value}</span>
+                                                        <template if:true={field.isTruncatable}>
+                                                            <span class={field.textareaToggleClass} data-id={field.id} onclick={handleToggleMore}>{field.toggleLabel}</span>
+                                                        </template>
+                                                    </div>
+                                                </template>
+
+                                                <template if:true={field.isPicklist}>
+                                                    <lightning-formatted-text value={field.picklistLabel}></lightning-formatted-text>
+                                                </template>
+
+                                                <!-- ===== RECORD PICKER — READ ===== -->
+                                                <template if:true={field.isRecordPicker}>
+                                                    <lightning-formatted-text value={field.recordPickerLabel}></lightning-formatted-text>
+                                                </template>
+
+                                                <!-- ===== CUSTOM LOOKUP — READ ===== -->
+                                                <template if:true={field.isCustomLookup}>
+                                                    <lightning-formatted-text value={field.customLookupLabel}></lightning-formatted-text>
+                                                </template>
+
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botones de acción a la derecha (revert + edit) — solo visibles si no es readOnly -->
+                                    <template if:false={field.isReadOnly}>
+                                        <div class="slds-grid slds-grid_vertical slds-col slds-size_1-of-12 slds-grid_align-end slds-p-right_xx-small slds-p-bottom_xx-small" style="align-items: end;">
+                                            <div class="slds-col">
+                                                <template if:true={field.isOverridden}>
+                                                    <button class="slds-button slds-button_icon" title="Revertir al valor original" data-id={field.id} onclick={handleRevert}>
+                                                        <lightning-icon icon-name="utility:undo" size="xx-small" alternative-text="Revert" title="Revert"></lightning-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="slds-col">
+                                                <button class="slds-button slds-button_icon" title="Edit" data-index={index} onclick={handleEdit}>
+                                                    <lightning-icon icon-name="utility:edit" size="xx-small" alternative-text="Edit" title="Edit"></lightning-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- =========================================================== -->
+                        <!-- ===================== MODO EDIT =========================== -->
+                        <!-- =========================================================== -->
+                        <template if:true={isEditMode}>
+                            <div class={field.classEditHighlight}>
+                                <div class="slds-form-element">
+
+                                    <!-- LABEL + helptext + warning (compartido por todos los tipos excepto blank) -->
+                                    <div class="slds-form-element__label slds-grid">
+                                        <div style="padding-top: var(--lwc-spacingXxSmall, 0.25rem);">
+                                            <span if:true={field.isRequired} class="slds-required">*</span><span>{field.label}</span>
+                                        </div>
+                                        <template if:true={field.helpText}>
+                                            <lightning-helptext content={field.helpText} class="slds-p-left_xx-small"></lightning-helptext>
+                                        </template>
+                                        <template if:true={field.isOverridden}>
+                                            <lightning-helptext
+                                                icon-name="utility:warning"
+                                                icon-variant="warning"
+                                                content={field.overrideTooltip}
+                                                class="slds-p-left_xx-small">
+                                            </lightning-helptext>
+                                        </template>
+                                    </div>
+
+                                    <!-- CONTROL: input + revert al lado (cuando aplica) -->
+                                    <div class="slds-grid slds-grid_vertical-align-end">
+                                        <div class="slds-grow">
+
+                                            <!-- TEXT -->
+                                            <template if:true={field.isText}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="text"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        max-length={field.maxLength}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- TEXTAREA -->
+                                            <template if:true={field.isTextarea}>
+                                                <div class="slds-form-element__control">
+                                                    <textarea
+                                                        class="slds-textarea"
+                                                        required={field.isRequired}
+                                                        maxlength={field.maxLength}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>{field.value}</textarea>
+                                                </div>
+                                            </template>
+
+                                            <!-- NUMBER -->
+                                            <template if:true={field.isNumber}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="number"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        step={field.step}
+                                                        min={field.min}
+                                                        max={field.max}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- NUMBER WITH CURRENCY -->
+                                            <template if:true={field.isNumberWithCurrency}>
+                                                <div class="slds-form-element__control slds-grid lightning-wrapper">
+                                                    <lightning-input
+                                                        class="slds-grow"
+                                                        type="number"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        step={field.step}
+                                                        min={field.min}
+                                                        max={field.max}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                    <span class="slds-form-element__addon">{field.currencyCode}</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- CURRENCY -->
+                                            <template if:true={field.isCurrency}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="number"
+                                                        formatter="currency"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        step={field.step}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- DATE -->
+                                            <template if:true={field.isDate}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="date"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        max={field.maxDate}
+                                                        min={field.minDate}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- DATETIME -->
+                                            <template if:true={field.isDatetime}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="datetime"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- EMAIL -->
+                                            <template if:true={field.isEmail}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="email"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- PHONE -->
+                                            <template if:true={field.isPhone}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="tel"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- URL -->
+                                            <template if:true={field.isUrl}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-input
+                                                        type="url"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- CHECKBOX -->
+                                            <template if:true={field.isCheckbox}>
+                                                <div class="slds-form-element__control lightning-wrapper checkbox-wrapper">
+                                                    <lightning-input
+                                                        type="checkbox"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        checked={field.value}
+                                                        disabled={field.isReadOnly}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        oninput={handleFieldInput}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </template>
+
+                                            <!-- PICKLIST -->
+                                            <template if:true={field.isPicklist}>
+                                                <div class="slds-form-element__control lightning-wrapper">
+                                                    <lightning-combobox
+                                                        dropdown-alignment="auto"
+                                                        variant="label-hidden"
+                                                        label={field.label}
+                                                        value={field.value}
+                                                        options={field.options}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        onchange={handleFieldChange}>
+                                                    </lightning-combobox>
+                                                </div>
+                                            </template>
+
+                                            <!-- ===== RECORD PICKER — EDIT ===== -->
+                                            <template if:true={field.isRecordPicker}>
+                                                <div class="slds-form-element__control lightning-wrapper record-picker-wrapper">
+                                                    <lightning-record-picker
+                                                        label={field.label}
+                                                        variant="label-hidden"
+                                                        object-api-name={field.objectApiName}
+                                                        value={field.recordPickerValue}
+                                                        filter={field.filter}
+                                                        display-info={field.recordPickerDisplayInfo}
+                                                        matching-info={field.recordPickerMatchingInfo}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        placeholder={field.placeholder}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        onchange={handleRecordPickerChange}>
+                                                    </lightning-record-picker>
+                                                </div>
+                                            </template>
+
+                                            <!-- ===== CUSTOM LOOKUP — EDIT ===== -->
+                                            <template if:true={field.isCustomLookup}>
+                                                <div class="slds-form-element__control lightning-wrapper record-picker-wrapper">
+                                                    <c-dmt_custom_lookup
+                                                        value={field.value}
+                                                        object-api-name={field.objectApiName}
+                                                        search-fields={field.searchFields}
+                                                        return-fields={field.returnFields}
+                                                        filters={field.filters}
+                                                        primary-field={field.primaryField}
+                                                        secondary-fields={field.secondaryFields}
+                                                        record-limit={field.recordLimit}
+                                                        icon-name={field.iconName}
+                                                        placeholder={field.placeholder}
+                                                        required={field.isRequired}
+                                                        disabled={field.isReadOnly}
+                                                        data-id={field.id}
+                                                        data-type={field.type}
+                                                        onchange={handleCustomLookupChange}>
+                                                    </c-dmt_custom_lookup>
+                                                </div>
+                                            </template>
+
+                                        </div>
+
+                                        <!-- Botón revert (visible para CUALQUIER tipo cuando isOverridden y no es readOnly) -->
+                                        <template if:true={field.isOverridden}>
+                                                <div class="slds-p-left_x-small slds-p-bottom_xx-small">
+                                                    <button class="slds-button slds-button_icon" title="Revertir al valor original" data-id={field.id} onclick={handleRevert}>
+                                                        <lightning-icon icon-name="utility:undo" size="xx-small" alternative-text="Revert"></lightning-icon>
+                                                    </button>
+                                                </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                    </template>
+                </div>
+            </template>
+        </template>
+    </div>
+</template>

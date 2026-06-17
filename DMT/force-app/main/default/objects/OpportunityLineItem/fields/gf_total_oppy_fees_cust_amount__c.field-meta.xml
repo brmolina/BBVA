@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_total_oppy_fees_cust_amount__c</fullName>
+    <formula>((opening_fee_per__c/10000)*bbva_prtcp_tranche_amount__c)+((operation_underwriting_per__c/10000)*bbva_prtcp_tranche_amount__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Gross Fees (amount)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Currency</type>
+</CustomField>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ApprovalProcessDataEdit</fullName>
+    <active>true</active>
+    <description>Avoid edit approval process data fields when status differ from Draft or Proposal</description>
+    <errorConditionFormula>(ISCHANGED(DMT_Operation__c)  ||   ISCHANGED( DMT_Nominal__c ) ||
+	ISCHANGED( DMT_RAROEC_RORC_Proposal__c) ||  
+	ISCHANGED( DMT_Franchise_L12M__c ) ||  
+	ISCHANGED( DMT_Client_Use__c ) ||  
+	ISCHANGED( DMT_ApproverGlobalBanker__c ) ||    
+  	ISCHANGED( DMT_Booking_Unit_Risk_Analyst__c) ||  
+	ISCHANGED( DMT_Approver__c ))  &amp;&amp;  
+	((ISPICKVAL(Status__c, &quot;Ready to close&quot;)  ||
+		ISPICKVAL(Status__c, &quot;Closed&quot;)||
+		 ISPICKVAL(Status__c, &quot;Approval&quot;)) &amp;&amp;
+				!DMT_Allow_Approval_Edit__c  )</errorConditionFormula>
+    <errorMessage>Approval process data change is not allowed for the current state.</errorMessage>
+</ValidationRule>

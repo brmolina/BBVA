@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rol_Member__c</fullName>
+    <description>Este campo permite seleccionar los roles específicos que pueden ser desempeñados por los Cover Team Members en las cuentas filiales. Los roles seleccionados aquí representan las funciones que cada filial acepta y reconoce formalmente dentro de su estructura. Este campo ayuda a estandarizar y validar los roles asignados a los miembros del equipo, asegurando que cumplan con los criterios aceptados por cada cuenta filial.</description>
+    <inlineHelpText>Seleccione los roles permitidos para los CTM. Estos roles serán utilizados para validar que las asignaciones cumplen con las funciones aprobadas en la filial.</inlineHelpText>
+    <label>Rol Member</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>BBVA_Team_member_role</valueSetName>
+    </valueSet>
+    <visibleLines>5</visibleLines>
+</CustomField>

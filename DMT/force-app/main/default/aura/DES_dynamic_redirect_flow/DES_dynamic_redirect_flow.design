@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="object" label="object" required="true"/>
+    <design:attribute name="recordId" label="recordId" required="true"/>
+</design:component>

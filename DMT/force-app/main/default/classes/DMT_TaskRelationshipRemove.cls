@@ -1,4 +1,4 @@
-global class DMT_TaskRelationshipRemove implements Database.Batchable<SObject>, Database.Stateful {
+global with sharing class DMT_TaskRelationshipRemove implements Database.Batchable<SObject>, Database.Stateful {
 
     // Start method to define the scope of the batch
     global Database.QueryLocator start(Database.BatchableContext BC) {

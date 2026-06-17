@@ -1,0 +1,87 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 03-26-2024
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component>
+    <!-- Public attributes. -->
+    <aura:attribute name="availableArceTypes" type="List" access="public" />
+
+    <!-- Private attributes. -->
+    <aura:attribute name="isArceTypeEnabled" type="Map" />
+
+    <!-- Event handlers. -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Emitted events. -->
+    <aura:registerEvent name="arceTypeChangeEvent" type="arce:Arc_Gen_WizardEvent_evt" />
+
+    <!-- Component body. -->
+    <fieldset class="slds-form-element options-container">
+        <legend class="slds-form-element__legend slds-form-element__label">{!$Label.c.Lc_arce_NewARCE_SelectOperation}</legend>
+        <div class="slds-form-element__control options-container__options">
+
+          <aura:if isTrue="{!v.isArceTypeEnabled.AnalysisCorp}">
+            <div class="slds-visual-picker slds-visual-picker_medium">
+              <input type="radio" id="analysis-option" value="sp2Analysis" name="arce-type"
+                      onchange="{!c.changeArceSelection}" />
+              <label for="analysis-option">
+                <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                  <span>
+                    <lightning:icon iconName="utility:retail_execution" alternativeText="Analysis" size="large" />
+                  </span>
+                </span>
+                <span class="slds-visual-picker__body">
+                  <span class="slds-text-heading_small">{!$Label.c.Arc_Gen_RTC_Title}</span>
+                  <span class="slds-text-title">{!$Label.c.Arc_Gen_RTC_desc}</span>
+                </span>
+                <span class="slds-icon_container slds-visual-picker__text-check">
+                  <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                </span>
+              </label>
+            </div>
+            <aura:set attribute="else">
+              <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="analysis-option" value="analysis" name="arce-type" disabled="{!!v.isArceTypeEnabled.Analysis}"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="analysis-option">
+                  <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                      <lightning:icon iconName="utility:retail_execution" alternativeText="Analysis" size="large" />
+                    </span>
+                  </span>
+                  <span class="slds-visual-picker__body">
+                    <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewARCE_AnalysisType}</span>
+                    <span class="slds-text-title">{!$Label.c.Lc_arce_NewARCE_AnalysisDesc}</span>
+                  </span>
+                  <span class="slds-icon_container slds-visual-picker__text-check">
+                    <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                  </span>
+                </label>
+              </div>
+            </aura:set>
+          </aura:if>
+
+            <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="raip-option" value="raip" name="arce-type" disabled="{!!v.isArceTypeEnabled.RAIP}"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="raip-option">
+                  <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                      <lightning:icon iconName="utility:rating" alternativeText="RAIP" size="large" />
+                    </span>
+                  </span>
+                  <span class="slds-visual-picker__body">
+                    <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewARCE_RAIPType}</span>
+                    <span class="slds-text-title">{!$Label.c.Lc_arce_NewARCE_RAIPDesc}</span>
+                  </span>
+                  <span class="slds-icon_container slds-visual-picker__text-check">
+                    <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                  </span>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+</aura:component>

@@ -1,0 +1,15 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="String" access="global" />
+    <aura:attribute name="ahaId" type="String" access="global" />
+    <aura:attribute name="proposalFolderId" type="String" access="global" />
+    <aura:attribute name="isJsonLoad" type="Boolean" default="false" />
+    <aura:attribute name="jsonInput" type="String"/>
+    <aura:attribute name="uniqueName" type="String" default="EEFF" />
+    <aura:attribute name="buttonsMode" type="String" access="global" />
+    <aura:attribute name="userCanEdit" type="Boolean" access="global"/>
+
+    <aura:registerEvent name="appEvent_R" type="cmpw:GBL_ComponentWrapperRefresh_Evt"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.initEng}" description="Init variable" />
+    {!v.body}
+</aura:component>

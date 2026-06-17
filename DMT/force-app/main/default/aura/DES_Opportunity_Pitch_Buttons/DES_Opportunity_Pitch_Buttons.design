@@ -1,0 +1,4 @@
+<design:component>
+        <design:attribute name='AddOpportunity' label='Add Opportunity' />
+        <design:attribute name='NewOpportunity' label='New Opportunity' />
+</design:component>

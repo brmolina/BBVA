@@ -1,0 +1,20 @@
+<template>
+    <template lwc:if={showPreview}>
+        <section class="snapshot-worker-debug">
+            <div class="snapshot-worker-debug__header">
+                <div>
+                    <strong>Snapshot worker preview</strong>
+                    <div class="snapshot-worker-debug__subtitle">{previewTitle}</div>
+                </div>
+                <span>{statusMessage}</span>
+            </div>
+
+            <div class="snapshot-worker-html" lwc:dom="manual"></div>
+        </section>
+    </template>
+
+    <div class="worker-chart-host" aria-hidden="true">
+        <c-dmt_subfeature_chart></c-dmt_subfeature_chart>
+        <c-dmt_profitability_chart profitability={profitability}></c-dmt_profitability_chart>
+    </div>
+</template>

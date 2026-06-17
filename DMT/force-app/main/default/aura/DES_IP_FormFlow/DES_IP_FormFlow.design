@@ -1,0 +1,13 @@
+<design:component>
+   	<design:attribute name="owner" label="codOwner" />
+	<design:attribute name="codForm" label="codForm" />
+    <design:attribute name="name" label="Opp Name" />
+    <design:attribute name="codOpportunity" label="codOpportunity" />
+    <design:attribute name="q1" label="q1" />
+    <design:attribute name="q2" label="q2" />
+    <design:attribute name="operation" label="operation" required="true"/>
+ 	<design:attribute name="error" label="error" />
+    <design:attribute name="endpoint" label="endpoint" />
+    <design:attribute name="needDescription" label="needDescription" />
+
+</design:component>

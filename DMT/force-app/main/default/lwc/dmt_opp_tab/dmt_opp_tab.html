@@ -1,0 +1,111 @@
+<template>
+    <div class="slds-tabs_default">
+
+        <ul class="slds-tabs_default__nav" role="tablist">
+            <template for:each={tabsConfig} for:item="tab">
+                <li key={tab.id} class={tab.itemClass} title={tab.label} role="presentation" data-tab-item>
+                    <a class="slds-tabs_default__link tab-link-flex"
+                        href="#"
+                        role="tab"
+                        tabindex={tab.tabIndex}
+                        aria-selected={tab.ariaSelected}
+                        data-controls={tab.id}>
+                        <span class="tab-label">{tab.label}</span>
+                    </a>
+                </li>
+            </template>
+
+            <!-- Overflow "More" button — hidden until tabs exceed nav width -->
+            <li class="slds-tabs_default__item slds-tabs_default__overflow-button slds-hide" role="presentation">
+                <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                    <button class="slds-button" aria-haspopup="true" role="tab">
+                        More
+                        <lightning-icon icon-name="utility:down" size="xx-small"></lightning-icon>
+                    </button>
+                    <div class="slds-dropdown slds-dropdown_right">
+                        <ul class="slds-dropdown__list" role="menu"></ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <template if:true={showPendingChangesModal}>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_xxx-small">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{labels.modalUnsavedChangesTitle}</h1>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>{labels.modalUnsavedChangesBody}</p>
+                    </div>
+                    <div class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_destructive" onclick={handleExitWithoutSaving}>{labels.btnExitWithoutSaving}</button>
+                        <button class="slds-button slds-button_brand" onclick={handleCloseModal}>{labels.btnKeepEditing}</button>
+                    </div>
+                </div>
+            </section>
+        </template>
+
+        <!-- Tab panels: each panel maps to a tab via data-panel-id -->
+
+        <div data-panel-id="opportunityInfo" class="slds-tabs_default__content slds-show" role="tabpanel">
+            <template if:true={visiblePanels.opportunityInfo}>
+                <c-cf-D-M-T_-opportunity_-info_-tab record-id={recordId}></c-cf-D-M-T_-opportunity_-info_-tab>
+                <c-dmt_document_manager_for_core_document></c-dmt_document_manager_for_core_document>
+            </template>
+        </div>
+
+        <div data-panel-id="client" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.client}>
+                <c-cf-D-M-T_-opportunity_-client_v3 record-id={recordId}></c-cf-D-M-T_-opportunity_-client_v3>
+            </template>
+        </div>
+        <div data-panel-id="clientV2" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.clientV2}>
+                <c-dmt_opp_client record-id={recordId} stage-record={stageRecord} can-edit={canEdit}></c-dmt_opp_client>
+            </template>
+        </div>
+        <div data-panel-id="products" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.products}>
+                <c-dmt_opp_products record-id={recordId} stage-record={stageRecord} can-edit={canEdit}></c-dmt_opp_products>
+            </template>
+        </div>
+
+        <div data-panel-id="approvalProcessData" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.approvalProcessData}>
+                <c-dmt_-opp-approvers-info-form record-id={recordId}></c-dmt_-opp-approvers-info-form>
+                <c-cf-D-M-T_-R-I-S-K-A-P-P-R-O-V-A-L-O-P-P record-id={recordId}></c-cf-D-M-T_-R-I-S-K-A-P-P-R-O-V-A-L-O-P-P>
+                <div style="min-height: 200em;">
+                    <c-cf-D-M-T_-C-L-I-E-N-T_-G-R-O-U-P_-V2_-O-P-P-O-R-T-U-N-I-T-Y record-id={recordId}></c-cf-D-M-T_-C-L-I-E-N-T_-G-R-O-U-P_-V2_-O-P-P-O-R-T-U-N-I-T-Y>
+                </div>
+                <c-dmt_features_selected record-id={recordId}></c-dmt_features_selected>
+            </template>
+        </div>
+
+        <div data-panel-id="commercialProcessData" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.commercialProcessData}>
+                <c-cf-D-M-T_-Opportunity_-Tab_-Commercial record-id={recordId}></c-cf-D-M-T_-Opportunity_-Tab_-Commercial>
+            </template>
+        </div>
+
+        <div data-panel-id="underwriting" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.underwriting}>
+                <c-dmt_underwriting-Form record-id={recordId}></c-dmt_underwriting-Form>
+            </template>
+        </div>
+
+        <div data-panel-id="participants" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.participants}>
+                <c-cf-Interveners-Line-Template record-id={recordId}></c-cf-Interveners-Line-Template>
+            </template>
+        </div>
+
+        <div data-panel-id="versions" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.versions}>
+                <c-dmt_line-versions record-id={recordId}></c-dmt_line-versions>
+            </template>
+        </div>
+
+    </div>
+</template>

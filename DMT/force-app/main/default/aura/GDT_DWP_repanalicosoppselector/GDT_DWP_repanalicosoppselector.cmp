@@ -1,0 +1,32 @@
+<aura:component controller= "GDT_DWP_repanaliticosselectorOpp"  implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+	<aura:attribute name="AccountRecord" type="Account" />
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+	<aura:attribute name="condition1" type="boolean" />
+	<aura:attribute name="condition2" type="boolean" />
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+	
+        <h2>
+            <b>Analytic Reports</b>
+        </h2>
+    </aura:attribute>
+     <lightning:card title="{! v.headerTitle }" iconName="standard:account" >
+         <div>
+             <aura:if isTrue="{!v.condition1}">
+                 <a href="javascript:void(0)" onclick="{!c.handleClick}">   
+                    <p class="slds-align_absolute-center">Dynamic Pricing - Cash Management</p>  
+                 </a>
+                 </aura:if>
+         </div>
+          <div>
+             <aura:if isTrue="{!v.condition2}">
+                 <a href="javascript:void(0)" onclick="{!c.handleClick2}" >   
+                    <p class="slds-align_absolute-center">Dynamic Pricing - Working Capital</p>  
+                 </a>
+                 </aura:if>
+         </div>
+                 
+      </lightning:card>
+
+ 
+       
+</aura:component>

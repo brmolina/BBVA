@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_customer_status_type__c</fullName>
+    <description>In Spain, the field gf_customer_status_type can have the following values:
+
+0: The customer has at least one active contract with the entity.
+1: The customer has no active contracts with the entity.
+2: The customer has contracts that are all canceled, with at least one of them canceled within the last 18 months.
+3: The customer has contracts that are all canceled, and all of them were canceled more than 18 months ago.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>In Spain, the field gf_customer_status_type can have the following values:
+
+0: The customer has at least one active contract with the entity.
+1: The customer has no active contracts with the entity.
+2: The customer has contracts that are all canceled, with at least one of them canceled within the last 18 months.
+3: The customer has contracts that are all canceled, and all of them were canceled more than 18 months ago.</inlineHelpText>
+    <label>Customer Status</label>
+    <length>10</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

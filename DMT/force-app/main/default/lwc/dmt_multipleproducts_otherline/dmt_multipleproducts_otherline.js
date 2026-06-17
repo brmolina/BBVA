@@ -10,6 +10,7 @@ export default class ProductSelector extends LightningElement {
     isFilteredByParent = false;
 
     _searchProduct = '';
+    _contextCode = '';
 
     @api
     get lineId() {
@@ -31,7 +32,15 @@ export default class ProductSelector extends LightningElement {
         this.filterProducts();
     }
 
-    @wire(getProduct2, { recordId: '$recordId' })
+    @api
+    get contextCode() {
+        return this._contextCode;
+    }
+    set contextCode(value) {
+        this._contextCode = value;
+    }
+
+    @wire(getProduct2, { recordId: '$recordId', contextCode: '$_contextCode' })
     wiredAllProducts({ error, data }) {
         if (data) {
             this.allproducts = data.map(prod => ({
@@ -55,6 +64,7 @@ export default class ProductSelector extends LightningElement {
                 children: [],
                 displayName: `${prod.Name}`,
                 taxValue: `${prod.ProductCode}`,
+                disabled: prod.HelpText == 'OP_CONTEXT' && !prod.DMT_Product_Template__c.split(';').includes('TO') ? true : false,
                 expanded: false
             }));
             this.buildHierarchyFromProducts();
@@ -182,7 +192,7 @@ export default class ProductSelector extends LightningElement {
             //this.products = [updated];
             this.isFilteredByParent = true;
         }
-        
+
         this.updateTreeNode(this.products, updated, 'expanded');
         this.updateTreeNode(this.products, updated, 'selected');
         this.updateOtherProduct(this.products, updated, 'expanded');
@@ -398,7 +408,7 @@ export default class ProductSelector extends LightningElement {
             bubbles: true,
             composed: true
         }));
-       
-        
+
+
     }
 }

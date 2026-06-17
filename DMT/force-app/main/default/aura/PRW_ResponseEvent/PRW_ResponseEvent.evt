@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event to pass response of service to table">
+  <aura:attribute name="productList" type="Object"/>
+  <aura:attribute name="isSpecialCond" type="Boolean"/>
+  <aura:attribute name="conditionWrp" type="String"/>
+  <aura:attribute name="catalog" type="String"/>
+</aura:event>

@@ -1,0 +1,13 @@
+<template>
+    <template if:true={isNotQuickAction}>
+        <lightning-button
+        label={label}
+        title={computedTitle}
+        variant={variant}
+        icon-name={iconName}
+        icon-position={iconPosition}
+        onclick={handleClick}
+        disabled={computedDisabled}>
+        </lightning-button>
+    </template>
+</template>

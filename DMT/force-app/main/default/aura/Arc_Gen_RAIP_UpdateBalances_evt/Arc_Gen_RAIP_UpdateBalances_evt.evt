@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event template">
+    <aura:attribute name="updatedRatios" type="String" access="public" description="Indicates if the balance tables are updated"/>
+</aura:event>

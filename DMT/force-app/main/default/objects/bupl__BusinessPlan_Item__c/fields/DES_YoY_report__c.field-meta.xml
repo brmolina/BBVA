@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_YoY_report__c</fullName>
+    <formula>IF
+(bupl__total_revenues_py_amount__c &lt;&gt; 0,(
+IF(bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.bupl__participant_id__r.DES_Revenue_Update_Engloba_Month__c&lt;&gt;0,
+(bupl__gf_total_revenues_ytd_amount__c-bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.bupl__participant_id__r.DES_Revenue_Update_Engloba_Month__c*bupl__total_revenues_py_amount__c/12)/(bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.bupl__participant_id__r.DES_Revenue_Update_Engloba_Month__c*bupl__total_revenues_py_amount__c/12),
+(bupl__gf_total_revenues_ytd_amount__c-(MONTH(TODAY())*bupl__total_revenues_py_amount__c/12)/(MONTH(TODAY())*bupl__total_revenues_py_amount__c/12)))),
+0)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>% YoY</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

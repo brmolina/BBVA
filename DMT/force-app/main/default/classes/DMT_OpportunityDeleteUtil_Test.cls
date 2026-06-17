@@ -4,7 +4,7 @@ public with sharing class DMT_OpportunityDeleteUtil_Test {
     @TestSetup
     static void loadTestData() {
         TriggerBypass.setBypass();
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity(); 
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
         DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         Product2 product2 = DMT_Test_DataFactory.generateProduct2();
         PricebookEntry pricebookEntry = DMT_Test_DataFactory.generatePricebookEntry(product2);
@@ -14,10 +14,10 @@ public with sharing class DMT_OpportunityDeleteUtil_Test {
         opportunityLineItem.UnitPrice = 200;
         update opportunityLineItem;
 
-        DMT_Opportunity_Tenor__c tenor = DMT_Test_DataFactory.generateOpportunityTenor(opportunityLineItem);
-        DMT_Opportunity_Mitigant__c mitigant = DMT_Test_DataFactory.generateOpportunityMitigant(opportunityLineItem);
-        DMT_X_Sell__c xSell = DMT_Test_DataFactory.generatexSell(opp);
-        DMT_Opportunity_Client__c oppClient = DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
+        DMT_Test_DataFactory.generateOpportunityTenor(opportunityLineItem);
+        DMT_Test_DataFactory.generateOpportunityMitigant(opportunityLineItem);
+        DMT_Test_DataFactory.generatexSell(opp);
+        DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         DMT_TeamMember__c participant = new DMT_TeamMember__c(Opportunity__c = opp.Id, User__c = UserInfo.getUserId(), AccessLevel__c = 'Read');
         insert participant;
     }

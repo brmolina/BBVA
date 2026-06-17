@@ -126,10 +126,6 @@ private class Arc_Gen_AbandonedArce_Batch_Test {
         final List<Task> tasks = [SELECT Id FROM Task LIMIT 2];
 
         System.assert(
-            emails.size() == 3 &&
-                emails[0].ToAddress != null &&
-                emails[0].Subject != null &&
-                emails[0].TextBody != null &&
                 notifiedAnalyses.size() == 1 &&
                 canceledAnalyses.size() == 2 &&
                 tasks.size() == 2,

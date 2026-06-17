@@ -1,0 +1,77 @@
+<!--**
+  * @File Name          : Arc_Gen_ProposeInPreparation_cmp
+  * @Description        : Propose in preparation component
+  * @Author             : luisarturo.parra.contractor@bbva.com
+  * @Group              : ARCE
+  * @Last Modified By   : juanignacio.hita.contractor@bbva.com
+  * @Last Modified On   : 03/09/2021
+  * @Modification Log   :
+  *=======================================================================================================================
+  * Ver                  Date                         Author                         Modification
+  *=======================================================================================================================
+  * 1.0               21/11/2019            luisarturo.parra.contractor@bbva.com        Initial version
+  * 1.1               21/01/2020            juanignacio.hita.contractor@bbva.com        REFACTORIZACION
+  * 1.2               12/06/2020            joseluis.garcia4.contractor@bbva.com        Disable buttons while saving.
+  * 1.3               13/07/2020            joseluis.garcia4.contractor@bbva.com        Refactor promises on initialization.
+  * 1.4               18/08/2020            joseluis.garcia4.contractor@bbva.com        Fix promise refactoring.
+  * 1.5               15/07/2021            juanignacio.hita.contractor@bbva.com        Add persistArceAction promise in save action
+  * 1.6               03/09/2021            juanignacio.hita.contractor@bbva.com        Adds custom label rating error message
+  **-->
+<aura:component controller="Arc_Gen_ProposeInPreparation_controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+
+  <aura:attribute name="show" type="Boolean" description="Variable visibility show or hide modal" default="true"/>
+  <aura:attribute name="ambit" type="String" description="Value ambit selected"/>
+  <aura:attribute name="currentStep" type="String" default="1" description="Variable that saves the step number of the modals"/>
+  <aura:attribute name="spinnerStatus" type="Boolean" default="true" description="Spinner load variable"/>
+  <aura:attribute name="delegationWrapper" type="Object" description="Delegation wrapper"/>
+  <aura:attribute name="listAmbits" type="List" default="[]" description="List of available ambits"/>
+  <aura:attribute name="cancelDisabled" type="Boolean" default="false" description="Whether 'Cancel' button is disabled" />
+  <aura:attribute name="saveDisabled" type="Boolean" default="true" description="Whether 'Save' button is disabled" />
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+  <aura:if isTrue="{!v.show}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <lightning:buttonIcon iconName="utility:close"
+                                onclick="{!c.cancelAction}"
+                                alternativeText="close"
+                                variant="bare-inverse"
+                                class="slds-modal__close"/>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.Arc_Gen_BtnPropose}</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" >
+          <div class="{!v.currentStep == '1' ? 'slds-show' : 'slds-hide'}" >
+            <div style="margin-top:1em;">
+              <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+                <div class="slds-size_1-of-1">
+                  <div class=" slds-box_x-small slds-text-align_center slds-m-around_x-small">
+                    <aura:if isTrue="{!v.spinnerStatus}">
+                      <div class="slds-align_absolute-center" style="margin-top:15px;">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                          <span class="slds-assistive-text">Loading</span>
+                          <div class="slds-spinner__dot-a"></div>
+                          <div class="slds-spinner__dot-b"></div>
+                        </div>
+                      </div>
+                      <aura:set attribute="else">
+                        <lightning:combobox name="selectAmbit" label="{!$Label.c.Arc_Gen_ScopeSanction}" required="true" options="{!v.listAmbits}" onchange="{!c.setAmbitValue}"/>
+                      </aura:set>
+                    </aura:if>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="{!$Label.dwp_dv.CancelLabel}"     title="{!$Label.dwp_dv.CancelLabel}"     onclick="{!c.cancelAction}" disabled="{!v.cancelDisabled}" />
+          <lightning:button variant="brand"   label="{!$Label.qvcd.Button_Modal_Save}" title="{!$Label.qvcd.Button_Modal_Save}" onclick="{!c.btnSaveAction}" disabled="{!v.saveDisabled}" />
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+
+</aura:component>

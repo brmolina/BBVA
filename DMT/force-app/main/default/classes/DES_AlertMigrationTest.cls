@@ -28,7 +28,7 @@ public with sharing class DES_AlertMigrationTest {
     insert user1;
 
     final Account acc = utils.createClient();
-    acc.SER_CClient__c = 'test1';
+    acc.g_customer_id__c = 'test1';
     acc.Name = 'test1';
     acc.DES_Tier__c = '00000020'; //CIB-Platinum
     insert acc;

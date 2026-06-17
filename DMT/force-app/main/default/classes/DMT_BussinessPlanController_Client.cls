@@ -77,7 +77,7 @@ public with sharing class DMT_BussinessPlanController_Client {
                         gf_kpi_trans_fees_nxy_amount__c
                     FROM Account 
                     WHERE Id =: recordId
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     ];
     }
 }

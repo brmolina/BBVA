@@ -1,0 +1,116 @@
+<!--
+  @description       : 
+  @author            : Javier Setién Rivas - [javier_setien@epamneoris.com]
+  @group             : 
+  @last modified on  : 20-03-2026
+  @last modified by  : Javier Setién Rivas - [javier_setien@epamneoris.com] 
+  Modifications Log
+  Ver   Date         Author                                                 Modification
+  1.0   20-03-2026   Javier Setién Rivas - [javier_setien@epamneoris.com]   Initial Version
+-->
+<template>
+    <div class={containerClass} data-id={message.id}>
+        <!-- Mensaje al iniciar el chat -->
+        <template if:true={isWelcome}>
+            <div class="welcome-text">
+                <div class="text" lwc:dom="manual"></div>
+            </div>
+        </template>
+
+        <!-- Mensaje del usuario -->
+        <template if:true={isUser}>
+            <div class="bubble user">
+                <div class="text" lwc:dom="manual"></div>
+            </div>
+        </template>
+
+        <template if:false={isUser}>
+            <template if:false={isWelcome}>
+                <div class="ai-plain full">
+                    <div class={aiTextWrapperClass}>
+                        <template if:true={isTimeout}>
+                            <span class="timeout-icon" aria-hidden="true">!</span>
+                        </template>
+                        <div class={messageTextClass} lwc:dom="manual"></div>
+                    </div>
+                    
+                    <!-- Cuando es de tipo Hover - muestra tooltip -->
+                    <template if:true={hasSources}>
+                        <div class="sources-container">
+                            <template for:each={sources} for:item="source">
+                                <span key={source.id} class="source-pill">
+                                    <svg class="source-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="source-number">{source.index}</span>
+                                    <div class="source-tooltip" lwc:dom="manual" data-source-id={source.id}></div>
+                                </span>
+                            </template>
+                        </div>
+                    </template>
+                    
+                    <!-- Secciones de explicabilidad - Cada una con su propio toggle -->
+                    <template if:true={hasExplicability}>
+                        <div class="explicability-wrapper">
+                            <template for:each={explicabilitySections} for:item="section">
+                                <div key={section.id} class="explicability-section">
+                                    <button 
+                                        class={section.toggleClass}
+                                        data-section-id={section.id}
+                                        onclick={handleSectionToggle}
+                                        aria-expanded={section.isExpanded}
+                                        type="button"
+                                    >
+                                        <svg class="explicability-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <span class="explicability-label">{section.toggleLabel}</span>
+                                    </button>
+                                    <div class={section.contentClass}>
+                                        <div class="explicability-text" data-section-id={section.id} lwc:dom="manual"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template if:true={showActions}>
+                    <div class="actions">
+                        <button class="feedback-btn" onclick={handleCopy} title={label.aiChatRobot2_Copy}>
+                            <span class="copy-icon-svg" lwc:dom="manual"></span>
+                        </button>
+                        <button class={likeButtonClass} onclick={handleLike} title={label.aiChatRobot2_Feedback_Like}>
+                            <span class="like-icon-svg" lwc:dom="manual"></span>
+                        </button>
+                        <button class={dislikeButtonClass} onclick={handleDislike} title={label.aiChatRobot2_Feedback_Dislike}>
+                            <span class="dislike-icon-svg" lwc:dom="manual"></span>
+                        </button>
+                        <!--<button class="feedback-btn" onclick={handleVolume} title="Read aloud">
+                            <span class="volume-icon-svg" lwc:dom="manual"></span>
+                        </button>
+                        <button class="feedback-btn" onclick={handleEdit} title="Edit">
+                            <span class="pencil-plus-icon-svg" lwc:dom="manual"></span>
+                        </button>
+                        <button class="feedback-btn" onclick={handleDownload} title="Download">
+                            <span class="download-icon-svg" lwc:dom="manual"></span>
+                        </button>-->
+                    </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+
+        <!-- Feedback Modal -->
+        <c-ai-chat-robot2-feedback-modal
+            is-open={showFeedbackModal}
+            message-id={message.id}
+            conversation-id={conversationId}
+            user-id={userId}
+            user-country={userCountry}
+            user-segment={userSegment}
+            feedback-state={feedbackState}
+            onclose={handleModalClose}
+            onfeedbacksent={handleFeedbackSent}>
+        </c-ai-chat-robot2-feedback-modal>
+    </div>
+</template>

@@ -6,16 +6,16 @@
                 options={options}
                 value={_internalValue}
                 placeholder="Select"
+                disabled={noRatingOptions}
                 onchange={handleChange}>
             </lightning-combobox>
         </template>
         <template if:false={isRating}>
             <lightning-input
-                key={refreshPlaceholderFlag}
                 label={label}
-                type="number"
+                type="text"
+                inputmode="decimal"
                 value={_internalValue}
-                step={step}
                 placeholder={computedPlaceholder}
                 onchange={handleChange}>
             </lightning-input>

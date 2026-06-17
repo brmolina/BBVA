@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Fields_Opportunity_accepted</fullName>
+    <active>true</active>
+    <description>Para pasar al estado Opportunity accepted se necesita cumplimentar:  Deal Id Sytem y Deal Id</description>
+    <errorConditionFormula>AND(
+ISPICKVAL( StageName ,&apos;Opportunity Accepted&apos;),
+OR(
+   ISBLANK(DES_Deal_Id__c),
+   ISBLANK(DES_Deal_Id_System__c)
+)
+)</errorConditionFormula>
+    <errorMessage>Hold on! To move this Opportunity into the Accepted Stage, you must complete the Deal Id and Deal Id System fields first.</errorMessage>
+</ValidationRule>

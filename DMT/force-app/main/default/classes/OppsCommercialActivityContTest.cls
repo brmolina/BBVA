@@ -4,10 +4,10 @@
 */
 @isTest
 public class OppsCommercialActivityContTest {
-	/*
-	* @author Global Desktop
-	* @description Testeo de la clase OppsCommercialActivityCont
-	*/
+  /*
+  * @author Global Desktop
+  * @description Testeo de la clase OppsCommercialActivityCont
+  */
     @isTest
     public static void oppsCommercialActivityController() {
         final DES_UtilTestClass utilTestClass = new DES_UtilTestClass();
@@ -24,10 +24,10 @@ public class OppsCommercialActivityContTest {
         opp1.DES_Description_reason_for_lost_deal__c = 'test';
         opp1.opportunity_correct_ind_type__c = true;
         insert opp1;
-        final dwp_acmh__Denorm_Account_Opportunity__c oppDenorm = new dwp_acmh__Denorm_Account_Opportunity__c ();
+        final AMH_Denorm_Account_Opportunity__c oppDenorm = new AMH_Denorm_Account_Opportunity__c ();
         oppDenorm.DES_Opportunity_Stage_Rollup__c = Label.DES_Closed_Lose;
-        oppDenorm.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm.dwp_acmh__OpportunityId__c = opp1.Id;
+        oppDenorm.AMH_AccountId__c = acc1.Id;
+        oppDenorm.AMH_OpportunityId__c = opp1.Id;
         insert oppDenorm;
 
         Test.StartTest();

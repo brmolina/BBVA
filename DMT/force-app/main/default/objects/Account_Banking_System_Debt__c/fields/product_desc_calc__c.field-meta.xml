@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>product_desc_calc__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(UPPER( product_desc__c ),&apos;DESCUENTO DE LETRAS&apos;,&apos;Dto. Letras&apos;,&apos;CARTA CRÉDITO&apos;,&apos;C. Crédito&apos;,product_desc__c )</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Product Calculated</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

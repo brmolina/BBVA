@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>pre_gross_margin_next_12m_per__c</fullName>
+    <description>Gross margin for next 12 months, it includes costs of funding</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Gross margin, it includes cost of funding</inlineHelpText>
+    <label>Gross Margin Next 12 Months (bps)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,7 +1,7 @@
 /*
 * Class that overwrite the validations of prospect
 */
-global with sharing class ProspectHandler implements nonc.NonClient_interface_prospect {    //NOSONAR
+global with sharing class ProspectHandler implements NONC_NonClient_interface_prospect {    //NOSONAR
 
   /*
   * Method to check merge_insert when the createdby user is Integrator or Admin and exists a prospect with same fiscal Id.

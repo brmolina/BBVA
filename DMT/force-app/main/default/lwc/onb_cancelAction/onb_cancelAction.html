@@ -1,0 +1,12 @@
+<template>
+    <lightning-quick-action-panel header="Cancel">
+        <div class="slds-p-around_medium">
+            <lightning-input label="Notes" value={notes} onchange={handleNotes}></lightning-input>
+        </div>
+
+        <div slot="footer" class="slds-grid slds-grid_align-end">
+            <lightning-button variant="neutral" label="Close" onclick={handleClose}></lightning-button>
+            <lightning-button class="slds-m-left_small" variant="brand" label="Cancel" onclick={handleCancelProcess}></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

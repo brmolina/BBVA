@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Compliance_TEAM_Argentina_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>Compliance TEAM Argentina</label>
+    <queue>Compliance_TEAM_Argentina</queue>
+    <sharedTo>
+        <role>Compliance_TEAM_Argentina</role>
+        <role>Compliance_TEAM_Europe</role>
+    </sharedTo>
+</ListView>

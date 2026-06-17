@@ -4,9 +4,11 @@
 .slds-button__icon_left, .slds-button__icon--left{
     margin-right: 0;
 }
- .slds-dropdown-trigger_click,  .slds-dropdown-trigger--click {
-    display: block;
-    height: inherit;
+.combobox-dropdown .slds-dropdown-trigger_click .slds-dropdown, .slds-dropdown-trigger--click .slds-dropdown {
+    min-height: 4rem !important;
+    height: auto !important;
+    max-height: 10.2rem !important;
+    z-index: 999999999999999999 !important;
 }
 .slds-form-element__control{
     position: relative;

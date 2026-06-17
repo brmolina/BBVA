@@ -1,0 +1,17 @@
+<template>
+    <lightning-modal-header>
+        <div class="slds-text-heading_medium slds-p-bottom_small">
+            {header}
+        </div>
+    </lightning-modal-header>
+
+    <lightning-modal-body>
+        Aquí deberíamos tener el LWC con el contenido del body
+    </lightning-modal-body>
+
+    <template lwc:if={showFooter}>
+        <lightning-modal-footer>
+            Botones del Footer
+        </lightning-modal-footer>
+    </template>
+</template>

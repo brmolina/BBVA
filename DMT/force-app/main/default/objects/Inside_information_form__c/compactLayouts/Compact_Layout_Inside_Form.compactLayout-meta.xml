@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Compact_Layout_Inside_Form</fullName>
+    <fields>operation_privileged_name__c</fields>
+    <fields>opportunity_id__c</fields>
+    <fields>status_type__c</fields>
+    <label>Compact Layout Inside Form</label>
+</CompactLayout>

@@ -1,0 +1,48 @@
+.THIS .cuf-content {
+    padding: 0 0rem !important;
+}
+.THIS .slds-modal__container {
+    width: 90vw;
+    /*height: auto;*/
+    max-width: 1200px;
+    /*max-height: 80vh;*/
+}
+.THIS .slds-p-around--medium {
+    padding: 0rem !important;
+}
+.THIS .slds-modal__content {
+    height:inherit !important;
+    max-height:inherit !important;
+}
+.THIS .slds-modal__footer {
+    border-top: 1px solid rgb(221, 219, 218) !important;
+    position:fixed;
+}
+.THIS .slds-modal__header {
+    border-bottom: 1px solid rgb(221, 219, 218) !important;
+}
+.THIS .slds-rich-text-area__content {
+    min-height:50px;
+    max-height:50px;
+    padding:5px;
+}
+.THIS .slds-rich-text-area__content:focus {
+    max-height:250px;
+}
+.THIS .indeterminated .slds-checkbox_faux {
+    background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%3E%3Crect%20fill%3D%22%23295293%22%20height%3D%222%22%20width%3D%228%22%20x%3D%223%22%20y%3D%226%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.THIS tmpb-template-builder-content {
+    height: 80% !important;
+}
+.THIS .slds-grid.slds-grid--vertical-stretch.slds-wrap.slds-gutters.modal_template_fix {
+    height: inherit!important;
+    max-height: inherit!important;
+    margin-top: -100px !important;
+}
+.THIS .slds-grid.slds-wrap.slds-gutters--x-small.slds-grid--vertical-stretch.modal_template_fix {
+    height: inherit!important;
+    max-height: inherit!important;
+    margin-top: -100px !important;
+}

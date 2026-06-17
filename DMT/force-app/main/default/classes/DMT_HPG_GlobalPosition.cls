@@ -14,7 +14,7 @@ public with sharing class DMT_HPG_GlobalPosition {
     */
     public static Wrapper getGlobalPosition(Map<String, Object> request) {
         Wrapper res = new Wrapper();
-        final HttpResponse response = DMT_HPG_Utils.callService_DMT('DMT_HPG_GlobalPosition', request);
+        final HttpResponse response = DMT_HPG_Utils.callService('DMT_HPG_GlobalPosition', request);
         switch on response.getStatusCode() {
             when 200, 201 {
                 final Object obj = System.JSON.deserialize(response.getBody(), Wrapper.class);
@@ -340,6 +340,48 @@ public with sharing class DMT_HPG_GlobalPosition {
         /* @Description: operationMitigantDesc */
         @AuraEnabled
         public String operationMitigantDesc {get;set;}
+
+        /* @Description: moodysLtRatingFcType */
+        @AuraEnabled
+        public String moodysLtRatingFcType {get;set;}
+
+        /* @Description: fitchLtRatingFcType */
+        @AuraEnabled
+        public String fitchLtRatingFcType {get;set;}
+
+        /* @Description: spLtRatingFcType */
+        @AuraEnabled
+        public String spLtRatingFcType {get;set;}
+
+        /* @Description: spStRatingLcType */
+        @AuraEnabled
+        public String spStRatingLcType {get;set;}
+
+        /* @Description: spStRatingFcType */
+        @AuraEnabled
+        public String spStRatingFcType {get;set;}
+
+        /* @Description: fitchLtRatingLcType */
+        @AuraEnabled
+        public String fitchLtRatingLcType {get;set;}
+
+        /* @Description: moodysLtRatingLcType */
+        @AuraEnabled
+        public String moodysLtRatingLcType {get;set;}
+
+        /* @Description: spLtRatingLcType */
+        @AuraEnabled
+        public String spLtRatingLcType {get;set;}
+
+        @AuraEnabled
+        public Double totalRatingScoreNumber {get;set;}
+
+        @AuraEnabled
+        public String g_sp_lt_rating_fc_type {get;set;}
+        
+        /* @Description: contextEntific */
+        @AuraEnabled
+        public String contextEntific {get;set;}
 
         /* @Description: activityMinimumLevelCode */
         @AuraEnabled

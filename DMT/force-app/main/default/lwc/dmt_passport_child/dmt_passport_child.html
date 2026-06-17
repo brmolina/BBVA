@@ -15,7 +15,7 @@
                     <table aria-describedby="passportTable" class="slds-table slds-table--bordered slds-box custom-table full-width-table passport-no-stack-table" style="table-layout:auto;" role="treegrid">
                         <thead>
                             <tr>
-                                <template for:each={columnsWithClass} for:item="col">
+                                <template for:each={_columnsWithClass} for:item="col">
                                     <th class={col.class} key={col.fieldName} scope="col">
                                         <div class="slds-truncate" title={col.label}><lightning-formatted-rich-text value={col.label}></lightning-formatted-rich-text></div>
                                     </th>
@@ -66,11 +66,11 @@
                                                             <template lwc:if={feature.hasSFtask}>
                                                                 <c-dmt_traffic_light status={feature.workflowColor} data-id={feature.idProccess} style="display: inline-block;" simplelight="false" lightsize="25px"></c-dmt_traffic_light>
                                                                 <template lwc:if={feature.isNotFinishedTask}>
-                                                                     <template lwc:if={feature.isApprover}>
+                                                                     <template lwc:if={feature.isApproverOrGod}>
                                                                          <lightning-button variant="base" label="View" style="vertical-align:top;"  title="View" onclick={handleNavigationToTask} class="slds-m-left_x-small" data-id={feature.sfCurrentTask.taskId}></lightning-button>
                                                                      </template>
                                                                      <template lwc:else>
-                                                                        <span style="font-weight:bold; vertical-align:top;padding-right:0" class="slds-form-element__label slds-m-left_xx-small">Requested</span> 
+                                                                        <span style="font-weight:bold; vertical-align:top;padding-right:0" class="slds-form-element__label slds-m-left_x-small">Requested</span>
                                                                      </template>
                                                                 </template>
                                                             </template>
@@ -88,8 +88,6 @@
                                                                              <template lwc:if={feature.request}>
                                                                                 <lightning-button variant="base" label="Request" title="Request" onclick={handleOpenCaseModalClick} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>
                                                                              </template>
-                                                                            <!--TODO: Logica approval process, solo request en el workflow de negocio orden 1, si existe -->
-                                        
                                                                             <!--<lightning-button variant="base" label="Request" title="Request" onclick={startCase} class="slds-m-left_x-small" data-feature={feature.idProccess}></lightning-button>-->
                                                                         </template>
                                                                         

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Meeting</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>New Meeting</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>{!requireScript(&quot;/soap/ajax/32.0/connection.js&quot;)}
+sforce.connection.sessionId = &apos;{!$Api.Session_ID}&apos;;
+var user =sforce.connection.getUserInfo();
+
+var username = user.userName
+var result = sforce.connection.query(
+&quot;SELECT ID,Asset_Class__c from User WHERE User.username=&apos;&quot; + username + &quot;&apos;&quot;);
+debugger;
+var asset =result.getArray(&quot;records&quot;)[0].Asset_Class__c;
+var accountId = &apos;{!Account.Id}&apos;;
+if(asset != null){
+var a = asset.split(&apos;;&apos;);
+if(a.length==1){
+window.parent.location.assign(&apos;/00U/e?what_id=&apos;+accountId+&apos;&amp;retURL=%2F&apos;+accountId +&apos;&amp;00Nj0000002R5W3=&apos;+a[0] );
+}else{
+window.parent.location.assign(&apos;/00U/e?what_id=&apos;+accountId+&apos;&amp;retURL=%2F&apos;+accountId );
+}
+}
+else{
+window.parent.location.assign(&apos;/00U/e?what_id=&apos;+accountId+&apos;&amp;retURL=%2F&apos;+accountId );
+}</url>
+</WebLink>

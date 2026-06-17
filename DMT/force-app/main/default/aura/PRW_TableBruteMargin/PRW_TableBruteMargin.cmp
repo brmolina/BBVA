@@ -1,0 +1,147 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_TableBruteMarginCtrl">
+  <aura:attribute name="loaded" type="Boolean" default="false" />
+  <aura:attribute name="columns" type="List" />
+  <aura:attribute name="errors" type="Object" default="[]"/>
+  <aura:attribute name="data" type="Object" default="[]"/>
+  <aura:attribute name="dataCM" type="Object" default="[]"/>
+  <aura:attribute name="dataWC" type="Object" default="[]"/>
+  <aura:attribute name="dataTF" type="Object" default="[]"/>
+  <aura:attribute name="lAccountId" type="String" />
+  <aura:attribute name="profSheet" type="Object" />
+  <aura:attribute name="profSheetSFId" type="String" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="profSheetEnd" type="Date" />
+  <aura:attribute name="maximumDate" type="Date" />
+  <aura:attribute name="profSheetStart" type="Date" />
+  <aura:attribute name="activeSections" type="List" />
+  <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+  <aura:attribute name="totalCM" type="Double" />
+  <aura:attribute name="totalWC" type="Double" />
+  <aura:attribute name="totalTF" type="Double" />
+  <aura:attribute name="totalCMYoY" type="Double" />
+  <aura:attribute name="totalWCYoY" type="Double" />
+  <aura:attribute name="totalTFYoY" type="Double" />
+
+
+  <aura:if isTrue="{!v.loaded}">
+    <p style="margin: 10px;display:flex">
+      {!$Label.c.PRW_MaximumDate} 
+      <div style="margin-left:5px">
+        {!v.maximumDate}
+      </div>
+    </p>
+    <div class="slds-grid slds-gutters slds-m-bottom_medium">
+      <div class="slds-col">
+        <div class="slds-box">
+            <p class="slds-align_absolute-center title">
+                CASH MANAGEMENT
+            </p>
+            <p class="slds-align_absolute-center">
+              {!v.totalCM}
+            </p>
+             <p class="slds-align_absolute-center">
+              {!v.totalCMYoY} YoY%
+            </p> 
+        </div>
+      </div>
+      <div class="slds-col">
+        <div class="slds-box">
+            <p class="slds-align_absolute-center title">
+                WORKING CAPITAL
+            </p>
+            <p class="slds-align_absolute-center">
+              {!v.totalWC}
+            </p>
+             <p class="slds-align_absolute-center">
+              {!v.totalWCYoY} YoY%
+            </p> 
+            
+      </div>
+    </div>
+        <div class="slds-col">
+          <div class="slds-box">
+            <p class="slds-align_absolute-center title">
+                TRADE FINANCE
+            </p>
+            <p class="slds-align_absolute-center">
+              {!v.totalTF}
+            </p>
+             <p class="slds-align_absolute-center">
+              {!v.totalTFYoY} YoY%
+            </p> 
+      </div>
+    </div>
+    </div>
+
+  
+    <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="{!v.activeSections}">  
+
+      <lightning:accordionSection class="classAccordion" name="MARGIN1" label="CASH MANAGEMENT">  
+        <aura:if isTrue="{!empty(v.dataCM)}">
+          <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+                {!$Label.c.PRW_NoInfoMargin}
+          </div>
+          <aura:set attribute="else">
+            <div id="tableDataVolume" class="classTableCmp">
+              <lightning:datatable
+                class="table-test"
+                data="{!v.dataCM}"
+                columns="{!v.columns}"
+                keyField="id"
+                hideCheckboxColumn="true"
+                errors="{!v.errors}"
+                suppressBottomBar="true"
+              />
+            </div>
+          </aura:set>
+        </aura:if>
+      </lightning:accordionSection>
+
+      <lightning:accordionSection class="classAccordion1" name="MARGIN2" label="WORKING CAPITAL">
+      <aura:if isTrue="{!empty(v.dataWC)}">
+        <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+          {!$Label.c.PRW_NoInfoMargin}
+        </div>
+          <aura:set attribute="else">
+            <div id="tableDataVolume" class="classTableCmp">
+              <lightning:datatable
+                class="table-test"
+                showRowNumberColumn="false"
+                data="{!v.dataWC}"
+                columns="{!v.columns}"
+                keyField="id"
+                hideCheckboxColumn="true"
+                errors="{!v.errors}"
+                suppressBottomBar="true"
+              />
+            </div> 
+          </aura:set>
+        </aura:if>
+      </lightning:accordionSection>
+
+      <lightning:accordionSection class="classAccordion2" name="MARGIN3" label="TRADE FINANCE"> 
+        <aura:if isTrue="{!empty(v.dataTF)}">
+          <div class="slds-box slds-box_x-small slds-m-top_medium slds-align_absolute-center">
+              {!$Label.c.PRW_NoInfoMargin}
+          </div>
+          <aura:set attribute="else">
+          
+            <div id="tableDataVolume" class="classTableCmp">
+              <lightning:datatable
+                class="table-test"
+                showRowNumberColumn="false"
+                data="{!v.dataTF}"
+                columns="{!v.columns}"
+                keyField="id"
+                hideCheckboxColumn="true"
+                errors="{!v.errors}"
+                suppressBottomBar="true"
+              />
+            </div>
+          </aura:set>
+        </aura:if>
+      </lightning:accordionSection>
+
+    </lightning:accordion>
+  </aura:if>
+</aura:component>

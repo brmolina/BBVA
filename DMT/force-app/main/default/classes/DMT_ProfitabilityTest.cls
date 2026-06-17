@@ -78,8 +78,8 @@ public with sharing class DMT_ProfitabilityTest {
             'nominalFbNew' => 95000,
             'spreadAmountNew' => 150,
             'spreadFbNew' => 120,
-            'feesNew' => 500,
-            'feesPeriodicNew' => 50
+            'nonaccrualfeeNew' => 500,
+            'accrualfeeNew' => 50
         };
 
         Map<String, Object> input = new Map<String, Object>{
@@ -141,8 +141,8 @@ public with sharing class DMT_ProfitabilityTest {
             'nominalFbNew' => 95000,
             'spreadAmountNew' => 150,
             'spreadFbNew' => 120,
-            'feesNew' => 500,
-            'feesPeriodicNew' => 50
+            'nonaccrualfeeNew' => 500,
+            'accrualfeeNew' => 50
         };
 
         Map<String, Object> input = new Map<String, Object>{
@@ -201,5 +201,33 @@ public with sharing class DMT_ProfitabilityTest {
         System.assert(!result.DMT_Is_Obsoleted_Passport_Save__c,'Error, expected non obsolerted passport');
         Test.stopTest();
         
+    }    
+
+    @IsTest
+    static void testCallOrderCatalogs_ordersByOrden() {
+
+        List<Map<String, Object>> items = new List<Map<String, Object>>{
+            new Map<String, Object>{ 'label' => 'C', 'value' => 'C', 'orden' => 3 },
+            new Map<String, Object>{ 'label' => 'A', 'value' => 'A', 'orden' => 1 },
+            new Map<String, Object>{ 'label' => 'NR', 'value' => 'NR', 'orden' => 2 }
+        };
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_Helper.callOrderCatalogs(items);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Debe devolver un mapa');
+        List<Object> out = (List<Object>) result.get('data');
+        System.assertEquals(3, out.size(), 'Debe devolver los 3 elementos');
+
+        Map<String, Object> first  = (Map<String, Object>) out[0];
+        Map<String, Object> second = (Map<String, Object>) out[1];
+        Map<String, Object> third  = (Map<String, Object>) out[2];
+
+        System.assertEquals(1, (Integer) first.get('orden'), 'Primero debe ser orden=1');
+        System.assertEquals(2, (Integer) second.get('orden'), 'Segundo debe ser orden=2');
+        System.assertEquals(3, (Integer) third.get('orden'), 'Tercero debe ser orden=3');
     }
+    
+
 }

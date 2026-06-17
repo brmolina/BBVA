@@ -130,6 +130,13 @@ public with sharing class TemplateVF_Controller {
    */
   private String profileName;
 
+  /**
+   *
+   *
+   * Tri scores per sector
+   */
+  public List<Map<String, String>> triSectors { get; set; }
+
 
 
 
@@ -170,7 +177,11 @@ public with sharing class TemplateVF_Controller {
     DES_Template__c template = new DES_Template__c();
     template = (DES_Template__c)stdController.getRecord();
     Id templId;
-    getToolkitSector(template); //NOSONAR
+    final cstk__toolkit_settings__mdt bypassNbc = cstk.Utils.getGeneralConfiguration();
+    if (bypassNbc != null && !bypassNbc.cstk__bypass_nbc__c) {
+      getToolkitSector(template); //NOSONAR
+    }
+    
     templId = template.Id;
     parentTempl = new DES_Template__c();
     templ = new DES_Template_Table__c();
@@ -229,7 +240,8 @@ public with sharing class TemplateVF_Controller {
                      ,gf_bldgs_env_carbon_ind_type__c, gf_bldgs_carbon_env_impc_desc__c, gf_bldgs_env_ncarbon_ind_type__c, gf_bldgs_ncarbon_env_impc_desc__c, gf_neutral_env_impc_ind_type__c
                      , gf_old_interest_rate_tr1_desc__c, gf_old_interest_rate_tr2_desc__c, gf_old_interest_rate_tr3_desc__c, gf_old_interest_rate_tr4_desc__c, gf_new_interest_rate_tr1_desc__c, gf_new_interest_rate_tr2_desc__c, gf_new_interest_rate_tr3_desc__c, gf_new_interest_rate_tr4_desc__c, gf_xb_cust_ope_revenue_ly_per__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_xb_cust_ope_revenue_nxy_per__c, gf_end_user_ind_type__c
                      , gf_xb_cust_ope_revenue_2ya_per__c, gf_kpi_trans_fees_ly_amount__c, gf_kpi_trans_fees_cyr_amount__c, gf_kpi_trans_fees_nxy_amount__c, gf_kpi_trans_fees_2ya_amount__c,gf_risk_ases_user_cmnt_desc__c, gf_prohibited_actvy_ind_type__c,gf_corp_transaction_ind_type__c , gf_high_risk_country_ind_type__c, gf_public_law_corp_ind_type__c, cstk_tri_engagement_plan__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_group_alignment_degree__c, cstk_sector_alignment_degree__c, cstk_emissions_intensity__c, cstk_emissions_intensity_units__c, cstk_sector_affected__c, cstk_positioning__c, cstk_g_thermal_coal_exps_ind_type__c, cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_sust_indicators_comments__c
-                     ,Next2_FY_Corp_Synd_Lending_amount__c,Next2_FY_Structured_Finance_amount__c,Next2_FY_Str_Trade_Finance_amount__c,Next2_FY_Rates_amount__c, Next2_FY_GTF_amount__c,Next2_FY_Working_Capital_amount__c,Next2_FY_Total_Non_X_Sell_amount__c,Next2_FY_ECM_M_A_amount__c,Next2_FY_DCM_amount__c,Next2_FY_Credit_Equity_amount__c,Next2_FY_FX_CCS_amount__c,Next2_FY_Cash_Management_amount__c,Next2_FY_Client_Resources_amount__c,Next2_FY_Securities_Services_amount__c,Next2_FY_Total_X_Sell_amount__c,Next2_FY_Total_Revenues_amount__c,gf_xb_cust_ope_revenue_nxy2_per__c,gf_kpi_trans_fees_nxy2_amount__c
+                     ,Next2_FY_Corp_Synd_Lending_amount__c,Next2_FY_Structured_Finance_amount__c,Next2_FY_Str_Trade_Finance_amount__c,Next2_FY_Rates_amount__c, Next2_FY_GTF_amount__c,Next2_FY_Working_Capital_amount__c,Next2_FY_Total_Non_X_Sell_amount__c,Next2_FY_ECM_M_A_amount__c,Next2_FY_DCM_amount__c,Next2_FY_Credit_Equity_amount__c,Next2_FY_FX_CCS_amount__c,Next2_FY_Cash_Management_amount__c,Next2_FY_Client_Resources_amount__c,Next2_FY_Securities_Services_amount__c,Next2_FY_Total_X_Sell_amount__c,Next2_FY_Total_Revenues_amount__c,gf_xb_cust_ope_revenue_nxy2_per__c,gf_kpi_trans_fees_nxy2_amount__c,
+                     Equator_Principles_Scope__c, Equator_Principles_Category__c, Infrastructure_supporting_factor__c, Environmental_and_Social_Framework__c, cstk_gf_cust_esg_profile_aspects_improve__c, cstk_portfolio_alignment_engagement_link__c, cstk_tri_auto__c, cstk_tri_autoparts__c, cstk_tri_cement__c, cstk_tri_energy__c, cstk_tri_generic__c, cstk_tri_steel__c, cstk_tri_utilities__c
                      FROM DES_Template__c where id = :templId];
 
       templ = [SELECT id, gf_old_interest_rate_tr1_desc__c, gf_old_interest_rate_tr2_desc__c, gf_old_interest_rate_tr3_desc__c, gf_old_interest_rate_tr4_desc__c, gf_new_interest_rate_tr1_desc__c, gf_new_interest_rate_tr2_desc__c, gf_high_risk_country_ind_type__c, gf_corp_transaction_ind_type__c, gf_new_interest_rate_tr3_desc__c, gf_prohibited_actvy_ind_type__c, gf_public_law_corp_ind_type__c, gf_new_interest_rate_tr4_desc__c, gf_xb_cust_ope_revenue_ly_per__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_xb_cust_ope_revenue_nxy_per__c, gf_xb_cust_ope_revenue_2ya_per__c, gf_kpi_trans_fees_ly_amount__c, gf_kpi_trans_fees_cyr_amount__c, gf_kpi_trans_fees_nxy_amount__c, gf_kpi_trans_fees_2ya_amount__c, gf_ead_tranche_1_amount__c,gf_ead_tranche_2_amount__c,gf_ead_tranche_3_amount__c,gf_ead_tranche_4_amount__c,gf_esg_score_close_ope_name__c,Past2_FY_Str_Trade_Finance_amount__c,Past_FY_Str_Trade_Finance_amount__c,Current_FY_Str_Trade_Finance_amount__c,Next_FY_Str_Trade_Finance_amount__c, gf_co_list_tcfd_ind_type__c	,Sustainable_Deal_type__c, gf_bldgs_env_carbon_ind_type__c, gf_bldgs_carbon_env_impc_desc__c, gf_bldgs_env_ncarbon_ind_type__c, gf_bldgs_ncarbon_env_impc_desc__c, gf_neutral_env_impc_ind_type__c, gf_green_proj_sustnbl_ind_type__c, gf_env_sustnbl_activity_name__c, gf_env_sustnbl_agency_ind_type__c, gf_green_bond_project_ind_type__c, gf_ngreen_rduc_carbon_ind_type__c,
@@ -240,7 +252,8 @@ public with sharing class TemplateVF_Controller {
       Old_Commitment_Fee2_desc__c, New_Commitment_Fee2_desc__c, Old_Commitment_Fee3_desc__c, New_Commitment_Fee3_desc__c, Old_Commitment_Fee4_desc__c, New_Commitment_Fee4_desc__c, Old_Utilisation_Fee1_desc__c, New_Utilisation_Fee1_desc__c, Old_Utilisation_Fee2_desc__c, New_Utilisation_Fee2_desc__c, Old_Utilisation_Fee3_desc__c, New_Utilisation_Fee3_desc__c, Old_Utilisation_Fee4_desc__c, New_Utilisation_Fee4_desc__c, Old_Extension_Duration_Fee1_desc__c, New_Extension_Duration_Fee1_desc__c, Old_Extension_Duration_Fee2_desc__c, New_Extension_Duration_Fee2_desc__c, Old_Extension_Duration_Fee3_desc__c, New_Extension_Duration_Fee3_desc__c, Old_Extension_Duration_Fee4_desc__c, New_Extension_Duration_Fee4_desc__c, Other_Fees_desc__c, Old_Other_Fees1_desc__c, New_Other_Fees1_desc__c, Old_Other_Fees2_desc__c, New_Other_Fees2_desc__c, Old_Other_Fees3_desc__c, New_Other_Fees3_desc__c, Old_Other_Fees4_desc__c, New_Other_Fees4_desc__c, Old_Expected_Drawn1_desc__c, New_Expected_Drawn1_desc__c, Old_Expected_Drawn2_desc__c, New_Expected_Drawn2_desc__c, Old_Expected_Drawn3_desc__c, New_Expected_Drawn3_desc__c, Old_Expected_Drawn4_desc__c, New_Expected_Drawn4_desc__c, Old_All_in_Drawn1_desc__c, New_All_in_Drawn1_desc__c, Old_All_in_Drawn2_desc__c, New_All_in_Drawn2_desc__c, Old_All_in_Drawn3_desc__c, New_All_in_Drawn3_desc__c, Old_All_in_Drawn4_desc__c, New_All_in_Drawn4_desc__c, Old_All_in_Undrawn1_desc__c,
       New_All_in_Undrawn1_desc__c, Old_All_in_Undrawn2_desc__c, New_All_in_Undrawn2_desc__c, Old_All_in_Undrawn3_desc__c, New_All_in_Undrawn3_desc__c, Old_All_in_Undrawn4_desc__c, New_All_in_Undrawn4_desc__c, Past2_FY_Corp_Synd_Lending_amount__c, Past_FY_Corp_Synd_Lending_amount__c, Current_FY_Corp_Synd_Lending_amount__c, Next_FY_Corp_Synd_Lending_amount__c, Past2_FY_Structured_Finance_amount__c, Past_FY_Structured_Finance_amount__c, Current_FY_Structured_Finance_amount__c, Next_FY_Structured_Finance_amount__c, Past2_FY_Rates_amount__c, Past_FY_Rates_amount__c, Current_FY_Rates_amount__c, Next_FY_Rates_amount__c, Past2_FY_GTF_amount__c, Past_FY_GTF_amount__c, Current_FY_GTF_amount__c, Next_FY_GTF_amount__c, Past2_FY_Working_Capital_amount__c, Past_FY_Working_Capital_amount__c, Current_FY_Working_Capital_amount__c, Next_FY_Working_Capital_amount__c, Past2_FY_Total_Non_X_Sell_amount__c, Past_FY_Total_Non_X_Sell_amount__c, Current_FY_Total_Non_X_Sell_amount__c, Next_FY_Total_Non_X_Sell_amount__c, Past2_FY_ECM_M_A_Amount__c, Past_FY_ECM_M_A_Amount__c, Current_FY_ECM_M_A_Amount__c, Next_FY_ECM_M_A_amount__c, Past2_FY_DCM_amount__c, Past_FY_DCM_amount__c, Current_FY_DCM_amount__c, Next_FY_DCM_amount__c, Past2_FY_Credit_Equity_amount__c, Past_FY_Credit_Equity_amount__c, Current_FY_Credit_Equity_amount__c, Next_FY_Credit_Equity_amount__c, Past2_FY_FX_CCS_amount__c, Past_FY_FX_CCS_amount__c,
       Current_FY_FX_CCS_amount__c, Next_FY_FX_CCS_amount__c, Past2_FY_Cash_Management_amount__c, Past_FY_Cash_Management_amount__c, Current_FY_Cash_Management_amount__c, Next_FY_Cash_Management_amount__c, Past2_FY_Client_Resources_amount__c, Past_FY_Client_Resources_amount__c, Current_FY_Client_Resources_amount__c, Next_FY_Client_Resources_amount__c, Past2_FY_Securities_Services_amount__c, Past_FY_Securities_Services_amount__c, Current_FY_Securities_Services_amount__c, Next_FY_Securities_Services_amount__c, Past2_FY_Total_X_Sell_amount__c, Past_FY_Total_X_Sell_amount__c, Current_FY_Total_X_Sell_amount__c, Next_FY_Total_X_Sell_amount__c, Past2_FY_Total_Revenues_amount__c, Past_FY_Total_Revenues_amount__c, Current_FY_Total_Revenues_amount__c, Next_FY_Total_Revenues_amount__c, Debt_Funds_Text_1_desc__c, Debt_Funds_Num_1_number__c, Uses_text_desc__c, Uses_num_1_number__c, Debt_Funds_Text_2_desc__c, Debt_Funds_Num_2_number__c, Uses_text_2_desc__c, Uses_num_2_number__c, Debt_Funds_text_3_desc__c, Debt_Funds_Num_3_number__c, Uses_text_3_desc__c, Uses_num_3_number__c, Debt_Funds_text_4_desc__c, Debt_Funds_Num_4_number__c, Uses_text_4_desc__c, Uses_num_4_number__c, Debt_Funds_Text_5_desc__c, Debt_Funds_Num_5_number__c, Uses_text_5_desc__c, Uses_num_5_number__c, Debt_Funds_Total_number__c, Uses_text_6_desc__c, Uses_num_6_number__c, Uses_text_7_desc__c, Uses_num_7_number__c,
-      Equity_Funds_text_1_desc__c, Equity_Funds_num_1_number__c, Uses_text_8_desc__c, Uses_num_8_number__c, Equity_Funds_text_2_desc__c, Equity_Funds_num_2_number__c, Uses_text_9_desc__c, Uses_num_9_number__c, Equity_Funds_text_3_desc__c, Equity_Funds_num_3_number__c, Uses_text_10_desc__c, Uses_num_10_number__c, Equity_Funds_text_4_desc__c, Equity_Funds_num_4_number__c, Uses_text_11_desc__c, Uses_num_11_number__c, Equity_Funds_Total_number__c, Uses_Total_number__c, Parent_Template__c, cstk_tri_engagement_plan__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_group_alignment_degree__c, cstk_sector_alignment_degree__c, cstk_emissions_intensity__c, cstk_emissions_intensity_units__c, cstk_sector_affected__c, cstk_positioning__c, cstk_g_thermal_coal_exps_ind_type__c, cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_sust_indicators_comments__c ,Next2_FY_Corp_Synd_Lending_amount__c,Next2_FY_Structured_Finance_amount__c,Next2_FY_Str_Trade_Finance_amount__c,Next2_FY_Rates_amount__c, Next2_FY_GTF_amount__c,Next2_FY_Working_Capital_amount__c,Next2_FY_Total_Non_X_Sell_amount__c,Next2_FY_ECM_M_A_amount__c,Next2_FY_DCM_amount__c,Next2_FY_Credit_Equity_amount__c,Next2_FY_FX_CCS_amount__c,Next2_FY_Cash_Management_amount__c,Next2_FY_Client_Resources_amount__c,Next2_FY_Securities_Services_amount__c,Next2_FY_Total_X_Sell_amount__c,Next2_FY_Total_Revenues_amount__c,gf_xb_cust_ope_revenue_nxy2_per__c,gf_kpi_trans_fees_nxy2_amount__c
+      Equity_Funds_text_1_desc__c, Equity_Funds_num_1_number__c, Uses_text_8_desc__c, Uses_num_8_number__c, Equity_Funds_text_2_desc__c, Equity_Funds_num_2_number__c, Uses_text_9_desc__c, Uses_num_9_number__c, Equity_Funds_text_3_desc__c, Equity_Funds_num_3_number__c, Uses_text_10_desc__c, Uses_num_10_number__c, Equity_Funds_text_4_desc__c, Equity_Funds_num_4_number__c, Uses_text_11_desc__c, Uses_num_11_number__c, Equity_Funds_Total_number__c, Uses_Total_number__c, Parent_Template__c, cstk_tri_engagement_plan__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_group_alignment_degree__c, cstk_sector_alignment_degree__c, cstk_emissions_intensity__c, cstk_emissions_intensity_units__c, cstk_sector_affected__c, cstk_positioning__c, cstk_g_thermal_coal_exps_ind_type__c, cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_sust_indicators_comments__c ,Next2_FY_Corp_Synd_Lending_amount__c,Next2_FY_Structured_Finance_amount__c,Next2_FY_Str_Trade_Finance_amount__c,Next2_FY_Rates_amount__c, Next2_FY_GTF_amount__c,Next2_FY_Working_Capital_amount__c,Next2_FY_Total_Non_X_Sell_amount__c,Next2_FY_ECM_M_A_amount__c,Next2_FY_DCM_amount__c,Next2_FY_Credit_Equity_amount__c,Next2_FY_FX_CCS_amount__c,Next2_FY_Cash_Management_amount__c,Next2_FY_Client_Resources_amount__c,Next2_FY_Securities_Services_amount__c,Next2_FY_Total_X_Sell_amount__c,Next2_FY_Total_Revenues_amount__c,gf_xb_cust_ope_revenue_nxy2_per__c,gf_kpi_trans_fees_nxy2_amount__c,
+      Equator_Principles_Scope__c, Equator_Principles_Category__c, Infrastructure_supporting_factor__c, Environmental_and_Social_Framework__c, cstk_gf_cust_esg_profile_aspects_improve__c, cstk_portfolio_alignment_engagement_link__c, cstk_tri_auto__c, cstk_tri_autoparts__c, cstk_tri_cement__c, cstk_tri_energy__c, cstk_tri_generic__c, cstk_tri_steel__c, cstk_tri_utilities__c
       FROM DES_Template_Table__c WHERE Parent_Template__c = :templId];
 
       templ.need_Update__c =  true;
@@ -298,6 +311,57 @@ public with sharing class TemplateVF_Controller {
     system.debug('>>>>> parentTempl.Booking_type__c : ' + parentTempl.Booking_type__c);
     system.debug('>>>>> booking : ' + booking);
     system.debug('>>>>> isCompass : ' + isCompass);
+ 
+    triSectors = new List<Map<String, String>>();
+
+    if (parentTempl.cstk_tri_auto__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Auto',
+            'valor' => String.valueOf(parentTempl.cstk_tri_auto__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_autoparts__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Autoparts',
+            'valor' => String.valueOf(parentTempl.cstk_tri_autoparts__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_cement__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Cement',
+            'valor' => String.valueOf(parentTempl.cstk_tri_cement__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_energy__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Energy',
+            'valor' => String.valueOf(parentTempl.cstk_tri_energy__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_generic__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Generic',
+            'valor' => String.valueOf(parentTempl.cstk_tri_generic__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_steel__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Steel',
+            'valor' => String.valueOf(parentTempl.cstk_tri_steel__c)
+        });
+    }
+    
+    if (parentTempl.cstk_tri_utilities__c != null) {
+        triSectors.add(new Map<String, String>{
+            'label' => 'Tri Utilities',
+            'valor' => String.valueOf(parentTempl.cstk_tri_utilities__c)
+        });
+    }
   }
 
   /* Guarda template Table*/
@@ -389,45 +453,18 @@ public with sharing class TemplateVF_Controller {
 
   /* Guarda Toolkit Sector*/
   public void getToolkitSector(DES_Template__c template) {
-    system.debug('>>>>> templ : ' + template);
     final DES_Template__c templateaux = [SELECT Id, opportunity_id__r.AccountId, opportunity_id__r.Account.DES_Main_Parent__c FROM DES_Template__c WHERE Id = :template.Id LIMIT 1];
-    if (templateaux != null && templateaux.opportunity_id__r.Account.DES_Main_Parent__c != null) {
-      final String accountParent = templateaux.opportunity_id__r.Account.DES_Main_Parent__c;
-      final List<cstk__Toolkit__c> toolkits = [SELECT Id, cstk__account_id__r.DES_Group_Code__c, cstk__account_id__r.DES_Activity__c, cstk__account_id__r.DES_AGGR_Sector__c FROM cstk__Toolkit__c WHERE cstk__account_id__c = :accountParent LIMIT 1];
+
+    if (templateaux != null && templateaux.opportunity_id__r.AccountId != null) {
+      String accountParent;
+      if (templateaux.opportunity_id__r.Account.DES_Main_Parent__c != null) {
+        accountParent = templateaux.opportunity_id__r.Account.DES_Main_Parent__c;
+      } else if(templateaux.opportunity_id__r.AccountId != null) {
+        accountParent = templateaux.opportunity_id__r.AccountId;
+      }
+      final List<cstk__Toolkit__c> toolkits = [SELECT Id, cstk__account_id__r.DES_Group_Code__c, cstk__account_id__r.DES_Activity__c, cstk__account_id__r.DES_AGGR_Sector__c FROM cstk__Toolkit__c WHERE cstk__account_id__c = :accountParent];
       if (!toolkits.isEmpty()) {
-        final Map<String, Object> res = new Map<String, Object>(); //NOSONAR
-        final String toolkitId = toolkits[0].Id; //NOSONAR
-        final String groupCode = toolkits[0].cstk__account_id__r.DES_Group_Code__c;
-        final List<arce__Account_has_Analysis__c> listaHasAcc = [SELECT id, name, DES_Local_Client__c, arce__WF_Stage_WF_Status__c, arce__Analysis__r.arce__wf_status_id__c, arce__Analysis__r.arce__Stage__c, IsDeleted, CreatedDate, DES_Local_Client__r.Cib_Client__r.Name, DES_Local_Client__r.Cib_Client__r.DES_Main_Parent__r.DES_Group_Code__c
-                                                                FROM arce__Account_has_Analysis__c
-                                                                WHERE  arce__Analysis__r.arce__wf_status_id__c = '13' AND arce__Analysis__r.arce__Stage__c = '3' AND arce__ffss_for_rating_id__r.arce__ffss_submitted_type__c in ('1','2') AND DES_Local_Client__r.Cib_Client__r.business_group_header_type__c = true AND DES_Local_Client__r.Cib_Client__r.DES_Main_Parent__r.DES_Group_Code__c = :groupCode AND arce__Analysis__r.arce__rating_prerating_type__c = 'Rating'
-                                                                ORDER BY arce__ffss_for_rating_id__r.arce__ffss_submitted_type__c ASC, CreatedDate DESC];    
-        final cstk__toolkit_settings__mdt config = cstk.Utils.getGeneralConfiguration();
-        final String sectorValues = config.cstk__toolkit_sector__c;
-        final CSTK_Client.SectorWrapper allSectValues = (CSTK_Client.SectorWrapper)System.JSON.deserialize(sectorValues, CSTK_Client.SectorWrapper.class);
-        String sectorPicklistLabel = Util_PickList.getLabelFromAPI('Account', 'DES_AGGR_Sector__c').get(toolkits[0].cstk__account_id__r.DES_AGGR_Sector__c);
-        String activityPicklistLabel = Util_PickList.getLabelFromAPI('Account', 'DES_Activity__c').get(toolkits[0].cstk__account_id__r.DES_Activity__c);
-
-        if (!listaHasAcc.isEmpty()) {
-
-          final List<AggregateResult> actSplitList = [SELECT toLabel(arce__sector_id__c), toLabel(arce__Subsector_id_2012__c), toLabel(arce__gf_company_economic_actvy_id_2012__c), SUM(arce__gf_subindustry_weight_per__c) sum_perc_activity
-                                                      FROM arce__Activity_Split__c 
-                                                      WHERE arce__Account_has_Analysis__c = :listaHasAcc[0].id
-                                                      GROUP BY arce__sector_id__c, arce__Subsector_id_2012__c, arce__gf_company_economic_actvy_id_2012__c
-                                                      ORDER BY SUM(arce__gf_subindustry_weight_per__c) DESC];
-          final List<AggregateResult> listaGeos = [SELECT toLabel(arce__sector_id__c), toLabel(arce__Subsector_id__c), toLabel(arce__gf_company_economic_actvy_id__c), SUM(arce__gf_subindustry_weight_per__c) FROM arce__Activity_Split_2012__c WHERE arce__Account_has_Analysis__c =:listaHasAcc[0].id GROUP BY arce__sector_id__c, arce__Subsector_id__c, arce__gf_company_economic_actvy_id__c ORDER BY SUM(arce__gf_subindustry_weight_per__c) DESC];
-
-          if (!actSplitList.isEmpty() && !String.isEmpty(String.valueOf(actSplitList[0].get('arce__sector_id__c')))){
-            res.put('sector', CSTK_Utils.mapArceSector(String.valueOf(actSplitList[0].get('arce__sector_id__c')), String.valueOf(actSplitList[0].get('arce__Subsector_id_2012__c')), String.valueOf(actSplitList[0].get('arce__gf_company_economic_actvy_id_2012__c')), allSectValues.arceValues));
-          } else if (!listaGeos.isEmpty()) {
-            res.put('sector', CSTK_Utils.mapArceSector(String.valueOf(listaGeos[0].get('arce__sector_id__c')), String.valueOf(listaGeos[0].get('arce__Subsector_id__c')), String.valueOf(listaGeos[0].get('arce__gf_company_economic_actvy_id__c')), allSectValues.arceValues));
-          } else {
-            // KSAG-- Tiene sentido pasar el valor de  la label en este punto? o debería de ser el API? lo mismo en la otra linea
-            res.put('sector', CSTK_Utils.mapClientSector(sectorPicklistLabel, activityPicklistLabel, allSectValues.clientValues));
-          }
-        } else {
-          res.put('sector', CSTK_Utils.mapClientSector(sectorPicklistLabel, activityPicklistLabel, allSectValues.clientValues));
-        }
+        Map<String, Object> res = new CSTK_Client().getClientInfo(toolkits[0].Id);
         sectorToolkit = String.valueOf(res.get('sector')); //NOSONAR
         system.debug('>>>>> sector toolkit : ' + sectorToolkit);
       }

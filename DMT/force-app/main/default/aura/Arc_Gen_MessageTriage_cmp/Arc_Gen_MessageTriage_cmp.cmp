@@ -1,0 +1,12 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="Arc_Gen_Triage_service">
+    <!-- EMP API component -->
+    <aura:attribute name="channel" type="String" default="/event/arceMessage__e"/>
+    <lightning:empApi aura:id="empApi" />
+
+    <!-- Calls the onInit controller function on component initalization -->
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>
+
+    <!-- Holds the streaming event subscription -->
+    <aura:attribute name="subscription" type="Map" />
+    {!v.body}
+</aura:component>

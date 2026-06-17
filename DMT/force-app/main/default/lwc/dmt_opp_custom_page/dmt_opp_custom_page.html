@@ -1,0 +1,72 @@
+<template>
+    <template lwc:if={isLoading}>
+<div class="slds-spinner_overly">
+  <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand ">
+    <span class="slds-assistive-text ">Loading</span>
+    <div class="slds-spinner__dot-a "></div>
+    <div class="slds-spinner__dot-b "></div>
+  </div>
+</div>
+    </template>
+    <template lwc:else>
+         
+    <template lwc:if={isViewDisabled}>
+         <c-dmt_no_access_message></c-dmt_no_access_message>
+    </template>
+
+    <template lwc:else>
+        <template lwc:if={showConfidentialModal}>
+            <div class="confidential-backdrop"></div>
+            <div class="confidential-modal-wrapper">
+                <div class="confidential-modal">
+
+                    <button class="confidential-close-btn" onclick={handleCloseConfidentialModal}>
+                        &#x2715;
+                    </button>
+
+                    <div class="confidential-modal-header">
+                        <h2>Warning: Confidential Information</h2>
+                    </div>
+
+                    <div class="confidential-modal-body">
+                        <p>You acknowledge and agree that the information contained in Global Desktop is confidential.</p>
+                        <p>You undertake to keep any confidential information confidential.</p>
+                        <p>Breach of the above undertaking shall result in internal disciplinary sanctions, civil and criminal offences.</p>
+                    </div>
+
+                    <div class="confidential-modal-footer">
+                        <button class="confidential-ok-btn" onclick={handleCloseConfidentialModal}>OK</button>
+                    </div>
+
+                </div>
+            </div>
+        </template>
+
+        <div class="slds-m-bottom_medium">
+            <c-dmt_highlight_panel object-api-name="Opportunity" status={prevOppStatus} record-id={recordId} is-confidential={isConfidential}>
+            </c-dmt_highlight_panel>
+        </div>
+
+        <c-dmt_custom_path_opp onreloadeditmode={handleReloadEditMode} is-editing={isEditing}></c-dmt_custom_path_opp>
+
+        <!-- ========== MAIN LAYOUT: Tabs (8/12) + Sidebar (4/12) ========== -->
+        <div class="slds-grid slds-wrap slds-size_1-of-1">
+
+           
+
+            <!-- ===== LEFT COLUMN: Tab navigation and tab content panels ===== -->
+                        <div class="slds-col slds-size_8-of-12 slds-tabs_card">
+                <c-dmt_opp_tab record-id={recordId} oneditmodetab={handleEditMode} stage-record={prevOppStatus} permission-user-record={permissionUserRecord} onreloadeditmode={handleReloadEditMode} is-editing={isEditing}></c-dmt_opp_tab>
+
+            </div>
+
+            <!-- ===== RIGHT COLUMN: Sidebar with passport component ===== -->
+                        <div class="slds-col slds-size_4-of-12 slds-p-left_small ">
+              <c-cf-D-M-T_-small_-passport_-opportunity_v2 record-id={recordId}></c-cf-D-M-T_-small_-passport_-opportunity_v2>
+
+            </div>
+        </div>
+    </template>   
+    </template>
+
+</template>

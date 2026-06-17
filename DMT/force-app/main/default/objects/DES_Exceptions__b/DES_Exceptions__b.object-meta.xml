@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Error logs exceptions</description>
+    <label>Exception</label>
+    <pluralLabel>Exception</pluralLabel>
+</CustomObject>

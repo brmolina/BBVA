@@ -1,0 +1,29 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId" controller="DPMX_VerifyRates_ctrl" access="global">
+
+    <!--Atributos de padre-->
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 50%; max-width: 50rem; }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">ADVERTENCIA</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <div class="slds-form-element__control">
+                        Una vez se modifique una de las tasas no se podra volver a reiniciar.
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Aceptar" onclick="{!c.handleClose}" />
+            </div>
+        </div>
+
+    </section>
+</aura:component>

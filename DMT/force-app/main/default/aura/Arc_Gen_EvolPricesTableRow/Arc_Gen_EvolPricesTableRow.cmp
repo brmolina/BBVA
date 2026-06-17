@@ -1,0 +1,65 @@
+<aura:component
+  implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global">
+  <aura:attribute name="accHasId" type="String" description="id of the account has analysis" access="global" />
+  <aura:attribute name="prodname" type="String" description="product name" access="global" />
+  <aura:attribute name="prodId0" type="String" description="id of the product 0" access="global" />
+  <aura:attribute name="prodId1" type="String" description="id of the product 1" access="global" />
+  <aura:attribute name="prodId2" type="String" description="id of the product 2" access="global" />
+  <aura:attribute name="val0" type="Double" description="value of the product 0" access="global" />
+  <aura:attribute name="val1" type="Double" description="value of the product 1" access="global" />
+  <aura:attribute name="val2" type="Double" description="value of the product 2" access="global" />
+  <aura:attribute name="deleteId" type="String" description="number of the row to delete" access="global" />
+  <aura:attribute name="clickAction" type="String" description="name of the action" access="global" />
+  <div aura:id="divId" class="row">
+    <div class="slds-grid slds-grid_align-spread">
+      <div class="slds-col">
+        <lightning:input
+          aura:id="product"
+          name=""
+          value="{!v.prodname}"
+          required="true"
+        />
+      </div>
+      <div class="slds-col">
+        <lightning:input
+          aura:id="year0"
+          type="number"
+          name="{!v.prodId0}"
+          value="{!v.val0}"
+          step='0.01'
+          required="true"
+        />
+      </div>
+      <div class="slds-col">
+        <lightning:input
+          aura:id="year1"
+          type="number"
+          name="{!v.prodId1}"
+          value="{!v.val1}"
+          step='0.01'
+          required="true"
+        />
+      </div>
+      <div class="slds-col">
+        <lightning:input
+          aura:id="year2"
+          type="number"
+          name="{!v.prodId2}"
+          value="{!v.val2}"
+          step='0.01'
+          required="true"
+        />
+      </div>
+      <lightning:buttonIcon
+        aura:id="btnDelete"
+        iconName="utility:delete"
+        variant="bare"
+        onclick="{!v.clickAction}"
+        value="{!v.deleteId}"
+        tooltip="{!$Label.c.Arc_Gen_Action_Delete}"
+        alternativeText="{!$Label.c.Arc_Gen_Action_Delete}"
+      />
+    </div>
+  </div>
+</aura:component>

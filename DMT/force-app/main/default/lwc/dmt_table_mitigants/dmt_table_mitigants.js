@@ -1,9 +1,11 @@
 import { LightningElement,api,wire  } from 'lwc';
+import { deleteRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
-import EXTERNAL_RATING from "@salesforce/schema/DMT_Opportunity_Mitigant__c.External_Rating__c";
 import CURRENCYISOCODE_FIELD from "@salesforce/schema/DMT_Opportunity_Mitigant__c.CurrencyIsoCode";
 import getCurrencyValues from '@salesforce/apex/DMT_MitigantsController.getCurrencyValues';
 import TITLETABLE from '@salesforce/label/c.dmt_cl_Collateral_Guarantees_Text';
+import callOrderCatalogs from '@salesforce/apex/DMT_Profitability_Helper.callOrderCatalogs';
 
 const DEFAULT_RT = "012000000000000AAA";
 const COLUMN_WIDTHS = {
@@ -20,7 +22,6 @@ const COLUMN_WIDTHS = {
     editButton: 60,
     addButton: 60
 };
-
 const MITIGANS_COLUMN_WIDTHS = {
     EndDate: 140,
     CurrencyIsoCode: 90,
@@ -36,8 +37,7 @@ const MITIGANS_COLUMN_WIDTHS = {
     addButton: 60
 };
 
-export default class Dmt_table_mitigants extends LightningElement { 
-  externalRatingOptions;
+export default class Dmt_table_mitigants extends LightningElement {
   CurrencyIsoCode;
   validValues = ['O2', 'O4', 'O6', 'P2', 'P31' , 'P32'];
   validValuesLabelPersonal = ['Others > Guarantee in favour of Public Administration', 'Others > ECA Guarantor (Exporte Credit agency)', 'Others > Shared maintenance clause', 
@@ -53,7 +53,6 @@ export default class Dmt_table_mitigants extends LightningElement {
     this.termoptionsData = value;
   }
   get termoptions(){
-    console.log('ABS '+ JSON.stringify(this.termoptionsData));
     return this.termoptionsData
   }
   internalRatingsData = [];
@@ -63,15 +62,16 @@ export default class Dmt_table_mitigants extends LightningElement {
   }
   set internalRatings(value) {
       this.internalRatingsData = value;
+      callOrderCatalogs({ items: value })
+          .then(outMap => {
+              const sorted = outMap?.data || [];
+              this.internalRatingsData = [...sorted];
+          })
+          .catch(err => console.error(err));
   }
   get internalRatingOptions() {
-      if (!Array.isArray(this.internalRatingsData)) {
-          return [];
-      }
-      return this.internalRatingsData
-          .slice().sort((a, b) => a.label.localeCompare(b.label)).map(item => ({label: item.label, value: item.value}));
+    return this.internalRatingsData || [];
   }
-
    countryOptionsData = [];
   @api
   get countryOptions() {
@@ -88,19 +88,24 @@ export default class Dmt_table_mitigants extends LightningElement {
           .slice().sort((a, b) => a.label.localeCompare(b.label)).map(item => ({label: item.label, value: item.value}));
   }
 
-
-
-
-  @wire(getPicklistValues, { recordTypeId: DEFAULT_RT, fieldApiName: EXTERNAL_RATING })
-  picklistResults({ error, data }) {
-    if (data) {
-      this.externalRatingOptions = data.values;
-      this.error = null;
-    } else if (error) {
-      this.error = error;
-      this.ratings = null;
-    }
+  externalRatingsData = [];
+  @api
+  get externalRatings() {
+      return this.externalRatingsData;
   }
+  set externalRatings(value) {
+      this.externalRatingsData = value;
+      callOrderCatalogs({ items: value })
+          .then(outMap => {
+              const sorted = outMap?.data || [];
+              this.externalRatingsData = [...sorted];
+          })
+          .catch(err => console.error(err));
+  }
+  get externalRatingOptions() {
+    return this.externalRatingsData || [];
+  }
+
   @wire(getCurrencyValues)
   wiredCurrencies({ error, data }) {
       if (data) {
@@ -117,40 +122,8 @@ export default class Dmt_table_mitigants extends LightningElement {
 
   columns = [
         {
-          fieldName: 'End_Date__c',
-          label: 'DATE',
-          type: this.editModeTableMitigans ? 'customdateRow' : 'date',
-          editable:false,
-          initialWidth : MITIGANS_COLUMN_WIDTHS.EndDate,
-          hideDefaultActions:true,
-          cellAttributes:{style: 'text-align: center;'},
-          typeAttributes: {            
-              aviableItem: {fieldName: 'aviableItem'},
-              dateValue: { fieldName: 'End_Date__c' },
-              fieldName: 'End_Date__c',
-              value: { fieldName: 'End_Date__c' },
-              context: { fieldName: 'Id' }
-          }
-        },
-        {
-            fieldName:"CurrencyIsoCode",
-            label:"CURRENCY",
-            type: this.editModeTableMitigans ? "picklist": "text",
-            editable:false,
-            initialWidth : MITIGANS_COLUMN_WIDTHS.CurrencyIsoCode,
-            hideDefaultActions:true,
-            cellAttributes: { alignment: 'center' },
-            typeAttributes: {
-                placeholder: 'Select..',
-                options: this.CurrencyIsoCode,
-                fieldName: 'CurrencyIsoCode',
-                value: { fieldName: 'CurrencyIsoCode' }, 
-                context: { fieldName: 'Id' }
-            }
-        },
-        {
             fieldName:"Mitigant_Type__c",
-            label:"MITIGANT TYPE",
+            label:"Collateral Type",
             type: this.editModeTableMitigans ? "picklist": "text",
             editable:false,
             hideDefaultActions:true,
@@ -165,24 +138,8 @@ export default class Dmt_table_mitigants extends LightningElement {
             }
         },
         {
-            fieldName:"DMT_Country_Guarantor__c",
-            label:"COUNTRY GUARANTOR",
-            type: this.editModeTableMitigans ? "picklist": "text",
-            editable:false,
-            hideDefaultActions:true,
-            initialWidth : MITIGANS_COLUMN_WIDTHS.Country_Guarantor__c,
-            cellAttributes: { alignment: 'center' },
-            typeAttributes: {
-                placeholder: 'Select..',
-                options: this.countryOptionsVal,
-                fieldName: 'DMT_Country_Guarantor__c',
-                value: { fieldName: 'DMT_Country_Guarantor__c' }, 
-                context: { fieldName: 'Id' }
-            }
-        },
-        {
             fieldName:"Commercial_Percentage__c",
-            label:"COMMERCIAL RISK (%)",
+            label:"Commercial Risk (%)",
             type: this.editModeTableMitigans ? "custominputRow": 'percent-fixed',
             editable:false,
             initialWidth: MITIGANS_COLUMN_WIDTHS.Commercial_Percentage__c,
@@ -199,7 +156,7 @@ export default class Dmt_table_mitigants extends LightningElement {
         },
         {
             fieldName:"Political_Percentage__c",
-            label:"POLITICAL RISK (%)",
+            label:"Political Risk (%)",
             type: this.editModeTableMitigans ? "custominputRow": 'percent-fixed',
             initialWidth: MITIGANS_COLUMN_WIDTHS.Political_Percentage__c,
             editable:false,
@@ -215,8 +172,24 @@ export default class Dmt_table_mitigants extends LightningElement {
             }
         },
         {
+          fieldName: 'End_Date__c',
+          label: 'End Date',
+          type: this.editModeTableMitigans ? 'customdateRow' : 'date',
+          editable:false,
+          initialWidth : MITIGANS_COLUMN_WIDTHS.EndDate,
+          hideDefaultActions:true,
+          cellAttributes:{style: 'text-align: center;'},
+          typeAttributes: {            
+              aviableItem: {fieldName: 'aviableItem'},
+              dateValue: { fieldName: 'End_Date__c' },
+              fieldName: 'End_Date__c',
+              value: { fieldName: 'End_Date__c' },
+              context: { fieldName: 'Id' }
+            }
+        },
+        {
             fieldName: "Internal_Rating__c",
-            label: "INTERNAL RATING",
+            label: "Internal Rating",
             type: this.editModeTableMitigans ? "picklist" : "text",
             initialWidth: MITIGANS_COLUMN_WIDTHS.Internal_Rating__c,
             editable: false,
@@ -234,7 +207,7 @@ export default class Dmt_table_mitigants extends LightningElement {
         },
         {
             fieldName:"External_Rating__c",
-            label:"EXTERNAL RATING",
+            label:"External Rating",
             initialWidth: MITIGANS_COLUMN_WIDTHS.External_Rating__c,
             type: this.editModeTableMitigans ? "picklist": 'text',
             editable:false,
@@ -246,14 +219,46 @@ export default class Dmt_table_mitigants extends LightningElement {
                 context: { fieldName: 'Id' },
                 fieldName: 'External_Rating__c',
                 options: this.externalRatingOptions
+              }
+        },
+        {
+            fieldName:"CurrencyIsoCode",
+            label:"Currency",
+            type: this.editModeTableMitigans ? "picklist": "text",
+            editable:false,
+            initialWidth : MITIGANS_COLUMN_WIDTHS.CurrencyIsoCode,
+            hideDefaultActions:true,
+            cellAttributes: { alignment: 'center' },
+            typeAttributes: {
+                placeholder: 'Select..',
+                options: this.CurrencyIsoCode,
+                fieldName: 'CurrencyIsoCode',
+                value: { fieldName: 'CurrencyIsoCode' }, 
+                context: { fieldName: 'Id' }
+            }
+        },
+        {
+            fieldName:"DMT_Country_Guarantor__c",
+            label:"Country Collateral",
+            type: this.editModeTableMitigans ? "picklist": "text",
+            editable:false,
+            hideDefaultActions:true,
+            initialWidth : MITIGANS_COLUMN_WIDTHS.Country_Guarantor__c,
+            cellAttributes: { alignment: 'center' },
+            typeAttributes: {
+                placeholder: 'Select..',
+                options: this.countryOptionsVal,
+                fieldName: 'DMT_Country_Guarantor__c',
+                value: { fieldName: 'DMT_Country_Guarantor__c' }, 
+                context: { fieldName: 'Id' }
             }
         },
         {
             fieldName:"Liquidation_Period__c",
-            label:"LIQUIDATION PERIOD",
+            label:"Liquidation Period",
             initialWidth: MITIGANS_COLUMN_WIDTHS.Liquidation_Period__c,
             type:this.editModeTableMitigans ? "picklist": 'text',
-            editable:false,
+            editable: false,
             hideDefaultActions:true,
             cellAttributes:{ alignment: 'center' },
             typeAttributes:{
@@ -261,9 +266,9 @@ export default class Dmt_table_mitigants extends LightningElement {
                 options: this.liquidPeriodOptions,
                 value: { fieldName: 'Liquidation_Period__c' }, 
                 context: { fieldName: 'Id' },
-                aviableItem: {fieldName: true},
+                isDisabled: {fieldName: 'isLiquidationEditable'},
                 inputValue: { fieldName: 'Liquidation_Period__c' },
-                fieldName: 'Liquidation_Period__c',
+                fieldName: 'Liquidation_Period__c'
             }
         },
         {
@@ -332,7 +337,6 @@ export default class Dmt_table_mitigants extends LightningElement {
     }
 
     set table(value) {
-      console.log('this.tableData: 1 ' + JSON.stringify(this.tableData))
       let normalizedData;
       this.termoptionsData = this.termoptionsData.filter(
           option => this.validValuesLabelReal.includes(option.label)
@@ -359,34 +363,43 @@ export default class Dmt_table_mitigants extends LightningElement {
         console.error('Error al procesar table:', e);
         normalizedData = [];
       }
-      normalizedData = normalizedData.filter(
-          option => this.validValuesLabelReal.includes(option.Mitigant_Type__c) || option.Mitigant_Type__c === ''
-        );
-      if (normalizedData.length > 0) {        
+        normalizedData = normalizedData.filter(
+          option => this.validValuesLabelReal.includes(option.Mitigant_Type__c) || option.Mitigant_Type__c === ''); 
+
+       if (normalizedData.length > 0) {        
         const newArray = normalizedData.map((item, index) => {
           const newItem = { ...item };
+            const currencyValue = newItem.CurrencyIsoCode || newItem.DMT_Currency__c || '';
+            newItem.CurrencyIsoCode = currencyValue;
+            newItem.DMT_Currency__c = currencyValue;
           if (index === normalizedData.length - 1) {
             newItem.buttonDisabled = this.oppState == 'Draft'|| this.oppState == 'Ready to close' ? false : true;
             newItem.editDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true;
             newItem.pickDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close' ? false : true;
             newItem.deleteDisabled = (this.oppState == 'Draft' || this.oppState == 'Ready to close') && normalizedData.length > 0 ? false : true;
           }
+          newItem.buttonDisabled = this.oppState == 'Draft'|| this.oppState == 'Ready to close' ? newItem.buttonDisabled : true;
+          newItem.editDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close' ? newItem.editDisabled : true;
+          newItem.pickDisabled = this.oppState == 'Draft' || this.oppState == 'Ready to close' ? newItem.pickDisabled : true;
+          newItem.deleteDisabled = (this.oppState == 'Draft' || this.oppState == 'Ready to close') ? newItem.deleteDisabled : true;
+                console.log('Normalized Data set to tableData:', JSON.stringify(this.tableData));
+
           return newItem;
         });    
         this.tableData = newArray;
+              console.log('Normalized Data set to tableData:', JSON.stringify(this.tableData));
+
         
       } else {
         this.tableData = [
           {
               "deleteDisabled":  true,
               "pickDisabled":  this.oppState === 'Draft' || this.oppState == 'Ready to close' ? false : true,
+              "editDisabled":  this.oppState === 'Draft' || this.oppState == 'Ready to close' ? false : true,
               "initRead": "true",
               "buttonDisabled":  this.oppState === 'Draft' || this.oppState == 'Ready to close' ? false : true,
               "tabletype": "Derivatives",
-              "Mitigant_Type__c" : "",
-              "Political_Percentage__c" : "",
-              "Commercial_Percentage__c" :"",
-              "Id" : "0",
+              "isLiquidationEditable": false,
               "updateKeyId" :""
           }
       ];
@@ -400,9 +413,22 @@ export default class Dmt_table_mitigants extends LightningElement {
                 : true;
 
         this.setEditColumns()
+        const valuesValid = ['Real > Cash','Real > Gold Bullion','Real > Debt securities',
+                        'Real > Debt securities issued by central governments or central Banks','Real > Index equities and Index convertible bonds','Real > Securitisation']
+                              console.log('Normalized Data set to tableData:', JSON.stringify(this.tableData));
+
+        this.tableData = this.tableData.map(row => {
+            return {
+                ...row,
+                External_Rating__c: !row.External_Rating__c ? 'NR' : row.External_Rating__c,
+                Commercial_Percentage__c: !row.Commercial_Percentage__c ? '0' : row.Commercial_Percentage__c,
+                Political_Percentage__c: !row.Political_Percentage__c ? '0' : row.Political_Percentage__c,
+                readOnlyField: valuesValid.includes(dataRecieved.value) ? false : true         
+            };
+        });
+        
         
       }
-      console.log('this.tableData: ' + JSON.stringify(this.tableData))
     }
     
     @api
@@ -451,50 +477,72 @@ export default class Dmt_table_mitigants extends LightningElement {
                 this.dispatchEvent(new CustomEvent('editModeTableMitigan',  { bubbles:true, composed:true,detail:{ editmodetable:this.editModeTableMitigans}} ));     
 
                 break;
-            case 'deleteRecord':
-               if(typeof this.idListToDeleteMitigans == 'string'){
-                  this.idListToDeleteMitigans = []
-                }
-                if (!Array.isArray(this.idListToDeleteMitigans)) {
-                    this.idListToDeleteMitigans = [];
-                }
-                
-                const newList = [...(this.idListToDeleteMitigans || [])];
-                newList.push(row.Id);
-                this.idListToDeleteMitigans = newList;
-                //const tableType = this.tableData[0]['tabletype'];
-                let copyData = this.tableData.filter(function(item) {
-                    return item.Id !== row.Id
-                })
+                case 'deleteRecord': {
+                  const removeFromTable = () => {
+                      let copyData = (this.tableData || []).filter(item => item.Id !== row.Id);
+                      if (copyData.length === 0) {
+                          copyData = [{
+                              deleteDisabled: true,
+                              pickDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                              initRead: 'true',
+                              buttonDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                              editDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                              tabletype: 'Derivatives',
+                              Mitigant_Type__c: '',
+                              Political_Percentage__c: '',
+                              Commercial_Percentage__c: '',
+                              Id: '0',
+                              updateKeyId: ''
+                          }];
+                      }
+      
+                      if (copyData.length > 0) {
+                          const lastRow = copyData[copyData.length - 1];
+                          lastRow.buttonDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                          lastRow.editDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                          lastRow.pickDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                          lastRow.deleteDisabled = (this.oppState === 'Draft' || this.oppState === 'Ready to close') && copyData.length > 0 ? false : true;
+      
+                          copyData[0].buttonDisabled = true;
+                      }
+      
+                      this.tableData = copyData;
+      
+                      this.dispatchEvent(new CustomEvent('tableMitigantChange', {
+                          bubbles: true,
+                          composed: true,
+                          detail: { data: copyData }
+                      }));
+                  };
+      
+                  const hasRealId = this.isSalesforceId ? this.isSalesforceId(row.Id) : (typeof row.Id === 'string' && row.Id !== '0' && row.Id.length >= 15);
+                  // Si no hay Id real (registro nuevo), solo quitar de la UI
+                  if (!hasRealId) {
+                      removeFromTable();
+                      break;
+                  }
+                  // Borrar en servidor y luego quitar de UI
+                  deleteRecord(row.Id)
+                      .then(() => {
+                          this.dispatchEvent(new ShowToastEvent({
+                              title: '‘Record deleted',
+                              message: 'The Collateral Guarantees was successfully deleted.',
+                              variant: 'success'
+                          }));
+                          removeFromTable();
+                          this.dispatchEvent(new CustomEvent('reloadparent', { bubbles: true, composed: true }));
 
-                let sendcopyData = this.copiarLista(copyData);
-
-                if(sendcopyData[0]){
-                  sendcopyData[sendcopyData.length-1]['buttonDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['pickDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['deleteDisabled'] = false;
-                  sendcopyData[0]['buttonDisabled'] = true;
-                  
-                }
-                
-                if(sendcopyData.length == 0){
-                  
-                  const newItem = new Object();;
-                  newItem.buttonDisabled = false;
-                  newItem.pickDisabled = false;
-                  newItem.Id = "0";
-                  newItem.opportunity =  this.opportunityvalue;                                        
-                  sendcopyData.push(newItem);
-                          }
-                
-                
-                this.dispatchEvent(new CustomEvent('tableMitigantChange',  { bubbles:true, composed:true,detail:{data:sendcopyData,idListToDeleteMitigans:this.idListToDeleteMitigans}} ));
-                this.setEditColumns()
-                this.isEditMode = true;
-                this.dispatchEvent(new CustomEvent('editModeTableMitigan',  { bubbles:true, composed:true,detail:{ editmodetable:this.editModeTableMitigans}} ));     
-                
-
-                break;
+                      })
+                      .catch(error => {
+                          this.dispatchEvent(new ShowToastEvent({
+                              title: 'Error deleting',
+                              message: (error && error.body && error.body.message) ? error.body.message : 'It was not possible to delete the record.',
+                              variant: 'error'
+                          }));
+                      });
+      
+                  break;
+              }
             case 'addRecord':
               this.tableData.map(elemento => {
                   elemento.DMT_Opportunity_Product__c = this.oppProduct;
@@ -510,16 +558,18 @@ export default class Dmt_table_mitigants extends LightningElement {
                   "Mitigant_Type__c": '',
                   "CurrencyIsoCode": '',
                   "Id": tablelenght.toString(),
-                  "Commercial_Percentage__c": '',
-                  "Political_Percentage__c":'',
+                  "Commercial_Percentage__c": '0',
+                  "Political_Percentage__c":'0',
                   "DMT_Country_Guarantor__c":'',
                   "opportunity":this.opportunityvalue,
                   "deleteDisabled": false,
                   'buttonDisabled':true,
                   'editDisabled':false,
                   'CurrencyIsoCode':this.currencyvalue, 
-                  "External_Rating__c": '',
+                  'DMT_Currency__c': this.currencyvalue,
+                  "External_Rating__c": 'NR',
                   "Liquidation_Period__c": '',
+                  "isLiquidationEditable": true,
                   "DMT_Opportunity_Product__c": this.oppProduct,
                   "Internal_Rating__c": '',
                   "updateKeyId" :""
@@ -536,15 +586,17 @@ export default class Dmt_table_mitigants extends LightningElement {
                   "DMT_Country_Guarantor__c":'',
                   "CurrencyIsoCode": '',
                   "Id": tablelenght.toString(),
-                  "Commercial_Percentage__c": '',
-                  "Political_Percentage__c":'',
+                  "Commercial_Percentage__c": '0',
+                  "Political_Percentage__c":'0', 
                   "opportunity":this.opportunityvalue,
                   "deleteDisabled": false,
                   'buttonDisabled':true,
                   'editDisabled':false,
                   'CurrencyIsoCode':this.currencyvalue,
-                  "External_Rating__c": '',
+                  'DMT_Currency__c': this.currencyvalue,
+                  "External_Rating__c": 'NR',
                   "Liquidation_Period__c": '',
+                  "isLiquidationEditable": true,
                   "DMT_Opportunity_Product__c": this.oppProduct,
                   "Internal_Rating__c": '',
                   "updateKeyId" :""
@@ -578,10 +630,19 @@ export default class Dmt_table_mitigants extends LightningElement {
       let updatedItem;
       if( dataRecieved.fieldname === 'Mitigant_Type__c'){
           updatedItem = { Id: dataRecieved.context, Mitigant_Type__c: dataRecieved.value };
+          const valuesValid = ['Real > Cash','Real > Gold Bullion','Real > Debt securities',
+                        'Real > Debt securities issued by central governments or central Banks','Real > Index equities and Index convertible bonds','Real > Securitisation']
+          if(valuesValid.includes(dataRecieved.value)){
+              updatedItem = { Id: dataRecieved.context,Mitigant_Type__c: dataRecieved.value , isLiquidationEditable: false };
+          }else{
+              updatedItem = { Id: dataRecieved.context,Mitigant_Type__c: dataRecieved.value , isLiquidationEditable: true };
+
+          }
       }else if( dataRecieved.fieldname === 'Liquidation_Period__c'){
           updatedItem = { Id: dataRecieved.context, Liquidation_Period__c: dataRecieved.value };
+          
       }else if( dataRecieved.fieldname === 'CurrencyIsoCode'){
-          updatedItem = { Id: dataRecieved.context, CurrencyIsoCode: dataRecieved.value };
+          updatedItem = { Id: dataRecieved.context, CurrencyIsoCode: dataRecieved.value, DMT_Currency__c: dataRecieved.value };
       }else if (dataRecieved.fieldname === 'DMT_Country_Guarantor__c') {
             updatedItem = { Id: dataRecieved.context, DMT_Country_Guarantor__c: dataRecieved.value };
       }else if (dataRecieved.fieldname === 'Internal_Rating__c') {
@@ -613,7 +674,6 @@ export default class Dmt_table_mitigants extends LightningElement {
       }
 
       this.tableData = copyData;
-      console.log('updateDatA: ' + JSON.stringify(this.tableData))
       this.dispatchEvent(new CustomEvent('tableMitigantChange', {
         bubbles: true,
         composed: true,
@@ -692,75 +752,32 @@ export default class Dmt_table_mitigants extends LightningElement {
       this.dispatchEvent(new CustomEvent('tableMitigantChange',  { bubbles:true, composed:true,detail:  {data:guidanceData, tabletype:guidanceData[0]['tabletype']}} ));
     }
   }
+
   setEditColumns() {
+    // Creamos copias seguras para ordenar sin tocar el Proxy original
+    const sortedTerms = [...(this.termoptionsData || [])].sort((a, b) => a.label.localeCompare(b.label));
+    const sortedCurrencies = [...(this.CurrencyIsoCode || [])].sort((a, b) => a.label.localeCompare(b.label));
+    const sortedCountries = [...(this.countryOptionsVal || [])].sort((a, b) => a.label.localeCompare(b.label));
+
     this.columns = [
-      {
-        fieldName: 'End_Date__c',
-        label: 'DATE',
-        type: 'customdateRow',
-        editable:false,
-        initialWidth : COLUMN_WIDTHS.EndDate,
-        hideDefaultActions:true,
-        cellAttributes:{style: 'text-align: center;'},
-        typeAttributes: {
-            aviableItem: {fieldName: 'aviableItem'},
-            dateValue: { fieldName: 'End_Date__c' },
-            fieldName: 'End_Date__c',
-            value: { fieldName: 'End_Date__c' },
-            context: { fieldName: 'Id' }
-        }
-      },
-        {
-            fieldName:"CurrencyIsoCode",
-            label:"CURRENCY",
-            type: this.editModeTableMitigans ? "picklist": "text",
-            editable:this.editModeTableMitigans,
-            initialWidth : COLUMN_WIDTHS.CurrencyIsoCode,
-            hideDefaultActions:true,
-            cellAttributes: { alignment: 'center' },
-            typeAttributes: {
-                placeholder: 'Select..',
-                options: this.CurrencyIsoCode,
-                fieldName: 'CurrencyIsoCode',
-                value: { fieldName: 'CurrencyIsoCode' }, 
-                context: { fieldName: 'Id' }
-            }
-        },
         {
             fieldName:"Mitigant_Type__c",
-            label:"MITIGANT TYPE",
-            type:  "picklist",
+            label:"Collateral Type",
+            type:  "searchcombobox",
             editable:false,
             initialWidth : COLUMN_WIDTHS.Mitigant_Type__c,
             hideDefaultActions:true,
             cellAttributes: { alignment: 'center' },
             typeAttributes: {
-                placeholder: 'Select..',
-                options: this.termoptionsData,
+                pickListOrdered: sortedTerms, // Usamos la copia ordenada
                 fieldName: 'Mitigant_Type__c',
-                value: { fieldName: 'Mitigant_Type__c' }, 
-                context: { fieldName: 'Id' }
-            }
-        },
-        {
-            fieldName:"DMT_Country_Guarantor__c",
-            label:"COUNTRY GUARANTOR",
-            type: this.editModeTableMitigans ? "picklist": "text",
-            editable:false,
-            hideDefaultActions:true,
-            initialWidth : MITIGANS_COLUMN_WIDTHS.Country_Guarantor__c,
-            cellAttributes: { alignment: 'center' },
-            typeAttributes: {
-                placeholder: 'Select..',
-                options: this.countryOptionsVal,
-                fieldName: 'DMT_Country_Guarantor__c',
-                value: { fieldName: 'DMT_Country_Guarantor__c' }, 
+                selectedSearchlabel: { fieldName: 'Mitigant_Type__c' }, 
                 context: { fieldName: 'Id' }
             }
         },
         {
             fieldName:"Commercial_Percentage__c",
-            label:"COMMERCIAL RISK (%)",
+            label:"Commercial Risk (%)",
             type: "custominputRow",
             editable:false,
             initialWidth: COLUMN_WIDTHS.Commercial_Percentage__c,
@@ -777,7 +794,7 @@ export default class Dmt_table_mitigants extends LightningElement {
         },
         {
             fieldName:"Political_Percentage__c",
-            label:"POLITICAL RISK (%)",
+            label:"Political Risk (%)",
             type:  "custominputRow",
             editable:false,
             initialWidth: COLUMN_WIDTHS.Political_Percentage__c,
@@ -793,8 +810,24 @@ export default class Dmt_table_mitigants extends LightningElement {
             }
         },
         {
+          fieldName: 'End_Date__c',
+          label: 'End Date',
+          type: 'customdateRow',
+          editable:false,
+          initialWidth : COLUMN_WIDTHS.EndDate,
+          hideDefaultActions:true,
+          cellAttributes:{style: 'text-align: center;'},
+          typeAttributes: {
+              aviableItem: {fieldName: 'aviableItem'},
+              dateValue: { fieldName: 'End_Date__c' },
+              fieldName: 'End_Date__c',
+              value: { fieldName: 'End_Date__c' },
+              context: { fieldName: 'Id' }
+            }
+        },
+        {
             fieldName: "Internal_Rating__c",
-            label: "INTERNAL RATING",
+            label: "Internal Rating",
             type: "picklist",
             editable: false,
             initialWidth: COLUMN_WIDTHS.Internal_Rating__c,
@@ -810,7 +843,7 @@ export default class Dmt_table_mitigants extends LightningElement {
         },
         {
             fieldName:"External_Rating__c",
-            label:"EXTERNAL RATING",
+            label:"External Rating",
             type:  "picklist",
             editable:false,
             initialWidth: COLUMN_WIDTHS.External_Rating__c,
@@ -825,10 +858,40 @@ export default class Dmt_table_mitigants extends LightningElement {
             }
         },
         {
-            fieldName:"Liquidation_Period__c",
-            label:"LIQUIDATION PERIOD",
-            type: "picklist",
+            fieldName:"CurrencyIsoCode",
+            label:"Currency",
+            type: this.editModeTableMitigans ? "searchcombobox": "text",
+            editable:this.editModeTableMitigans,
+            initialWidth : COLUMN_WIDTHS.CurrencyIsoCode,
+            hideDefaultActions:true,
+            cellAttributes: { alignment: 'center' },
+            typeAttributes: {
+                pickListOrdered: sortedCurrencies, // Usamos la copia ordenada
+                fieldName: 'CurrencyIsoCode',
+                selectedSearchlabel: { fieldName: 'CurrencyIsoCode' }, 
+                context: { fieldName: 'Id' }
+            }
+        },
+        {
+            fieldName:"DMT_Country_Guarantor__c",
+            label:"Country Collateral",
+            type: this.editModeTableMitigans ? "searchcombobox": "text",
             editable:false,
+            hideDefaultActions:true,
+            initialWidth : MITIGANS_COLUMN_WIDTHS.Country_Guarantor__c,
+            cellAttributes: { alignment: 'center' },
+            typeAttributes: {
+                pickListOrdered: sortedCountries, // Usamos la copia ordenada
+                fieldName: 'DMT_Country_Guarantor__c',
+                selectedSearchlabel: { fieldName: 'DMT_Country_Guarantor__c' }, 
+                context: { fieldName: 'Id' }
+            }
+        },
+        {
+            fieldName:"Liquidation_Period__c",
+            label:"Liquidation Period",
+            type: "picklist",
+            editable: false,
             initialWidth: COLUMN_WIDTHS.Liquidation_Period__c,
             hideDefaultActions:true,
             cellAttributes: { alignment: 'center' },
@@ -837,9 +900,9 @@ export default class Dmt_table_mitigants extends LightningElement {
                 options: this.liquidPeriodOptions,
                 value: { fieldName: 'Liquidation_Period__c' }, 
                 context: { fieldName: 'Id' },
-                aviableItem: {fieldName: true},
+                isDisabled: {fieldName: 'isLiquidationEditable'},
                 inputValue: { fieldName: 'Liquidation_Period__c' },
-                fieldName: 'Liquidation_Period__c',
+                fieldName: 'Liquidation_Period__c'
             }
         },
         {
@@ -888,10 +951,14 @@ export default class Dmt_table_mitigants extends LightningElement {
             }
         }
     ];
-}
+  }
+
+
   textInputChanged(event) {
       event.stopPropagation();
+      
       let dataRecieved = event.detail.data;
+
       let updatedItem;
       updatedItem = { Id: dataRecieved.context};
       updatedItem[dataRecieved.fieldname]= dataRecieved.value;

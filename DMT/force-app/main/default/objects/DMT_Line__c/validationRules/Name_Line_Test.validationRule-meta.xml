@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Name_Line_Test</fullName>
+    <active>true</active>
+    <errorConditionFormula>Name == &apos;Line&apos;</errorConditionFormula>
+    <errorMessage>Incorrect Name (test)</errorMessage>
+</ValidationRule>

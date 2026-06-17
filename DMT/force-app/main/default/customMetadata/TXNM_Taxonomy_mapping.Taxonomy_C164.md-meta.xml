@@ -8,10 +8,6 @@
     {
         &quot;targetObject&quot;: &quot;Account&quot;,
         &quot;targetField&quot;: &quot;Subsector__c&quot;
-    },
-    {
-        &quot;targetObject&quot;: &quot;Account&quot;,
-        &quot;targetField&quot;: &quot;gf_holding_risk_sector_id_c&quot;
     }
 ]</value>
     </values>

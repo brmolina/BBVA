@@ -1,0 +1,86 @@
+    .Title {
+        font-size: 11pt;
+        width: 30;
+        color: dark-gray;
+        font-weight: bold;
+    }
+    select,
+    textarea, input[type="text"] {
+        width: 100%;
+    }
+    .allDocument{
+      color: black;
+    }
+    .checkDisabled {
+      pointer-events: none;
+    }
+    .custom-margin-left {
+      margin-left: .5rem !important;
+    }
+    .slds-form-element__label {
+      font-size: 0.75rem;
+    }
+    .bPageBlock.brandSecondaryBrd.bDetailBlock.secondaryPalette {
+      margin-bottom: 0rem;
+      border: 0px solid rgb(221, 219, 218);
+      border-radius: 0rem;
+      background: rgb(255, 255, 255);
+      -webkit-box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.10);
+      box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.10);
+      background-clip: padding-box;
+      padding: 0rem;
+      margin-left: -1rem;
+    }
+    .labelCol.vfLabelColTextWrap.last  {
+      width: 1% !important;
+    }
+    .subSection > *{
+        margin-left:3%;
+    }
+    .subSection > select,
+    .subSection > textarea, .subSection > input[type="text"] {
+        width: 90%;
+    }
+
+    .slds-p-around_medium,
+    .sld-p-left-_medium,
+    .bPageBlock,
+    .pbBody {
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      padding-right: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    body {
+      padding: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .triNbc .pbOuter,
+    .triNbc .bPageBlock {
+      background: #ffffff !important;
+      background-image: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin-top: 15px !important;
+      padding: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .triNbc .pbSubheader,
+    .triNbc .pbSubheader .pbSubheaderTitle {
+      background-color: #f3f3f3 !important;
+      color: black !important;
+    } 
+
+    .triNbc .bPageBlock th.vfLabelColTextWrap,
+    .triNbc .bPageBlock td.dataCol {
+      white-space: nowrap !important;
+      border-width: 1px;
+      border-color: rgb(5, 5, 5);
+      text-align: left !important;
+    }

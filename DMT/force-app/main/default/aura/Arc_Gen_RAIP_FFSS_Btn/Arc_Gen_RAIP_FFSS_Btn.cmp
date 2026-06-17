@@ -1,0 +1,64 @@
+<!--
+  @Component Name     : Arc_Gen_RAIP_FFSS_Btn.cmp
+  @Description        : Button that allows to select a different FFSS for a RAIP.
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 07-08-2024
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0                                ARCE TEAM     		        Initial Version
+  1.1    06/05/2020      joseluis.garcia4.contractor@bbva.com   Uses new component "Arc_Gen_NewRAIPWizard_cmp" instead of old one.
+  1.2    08/05/2020      joseluis.garcia4.contractor@bbva.com   Emits new event "e.c:Arc_Gen_ReloadTabset_evt".
+-->
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller="Arc_Gen_RatingAsIndepProcess_controller" access="global" >
+    <aura:attribute name="hasRecordId"      type="String"  default ="{!v.recordId}" description="Standard id of the current record"                       access ="global"/>
+    <aura:attribute name="accHasAnalysisId" type="String"  default =""              description="Standard Id of the arce__Account_has_Analysis__c"        access ="global"/>
+    <aura:attribute name="analysisId"       type="String"  default =""              description="Standard Id of the arce__Analysis__c"                    access ="global"/>
+    <aura:attribute name="customerId"       type="String"  default =""              description="Standard Id of the Account"                              access ="global"/>
+    <aura:attribute name="showTable"        type="Boolean" default ="false"         description="Indicates if show or not the financial statements table" access ="global"/>
+    <aura:attribute name="show"             type="Boolean" default ="true"          description="show or hide modal"                                      access ="global"/>
+
+    <aura:attribute name="nextDisabled"     type="Boolean" default ="true"          description="enable or disable next button"                           access ="global"/>
+    <aura:attribute name="loading"          type="Boolean" default ="false"         description="whether the spinner is shown"                            access ="global"/>
+
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getItemEvent}" description="dynamic form id handler"/>
+    <aura:handler name="wizardEvent" event="arce:Arc_Gen_WizardEvent_evt" action="{!c.handleWizardEvent}" /> 
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:if isTrue="{!v.show}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.Cancel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h4 class="title slds-text-heading--medium" >{!$Label.c.Arc_Gen_EEFF}</h4>
+                </header>
+                <div class="slds-modal__content modal-content">
+                    <div class="{!v.loading ? 'slds-hide' : ''}">
+                        <aura:if isTrue="{!v.showTable}">
+                            <c:Arc_Gen_NewRAIPWizard_cmp aura:id="raip-wizard" accHasAnalysisId="{!v.accHasAnalysisId}" analysisId="{!v.analysisId}" customerId="{!v.customerId}" changeFfssMode="true"/>
+                        </aura:if>
+                    </div>
+
+                    <aura:if isTrue="{!v.loading}">
+                        <div class="slds-is-relative spinner-container">
+                            <lightning:spinner alternativeText="Loading..."></lightning:spinner>
+                        </div>
+                    </aura:if>
+                </div>
+                <aura:if isTrue="{!and(v.showTable, !v.loading)}">
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" disabled="{!v.nextDisabled}" onclick="{!c.handleNext}">{!$Label.c.Arc_Gen_Next}</lightning:button>
+                    </footer>
+                </aura:if>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

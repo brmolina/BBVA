@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account_Plans_Validation</fullName>
+    <columns>acpl__gf_account_planning_desc__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>case_close_date__c</columns>
+    <columns>CASES.PRIORITY</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>notEqual</operation>
+        <value>Request Approved,Request Sent For Review</value>
+    </filters>
+    <label>Account Plan Validation</label>
+    <sharedTo>
+        <roleAndSubordinatesInternal>Desktop_Management</roleAndSubordinatesInternal>
+    </sharedTo>
+</ListView>

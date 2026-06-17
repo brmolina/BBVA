@@ -1,0 +1,8 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that show the qvcd. </b></h5>
+        <p>readRecords - Show/hide button to add records</p>
+        <p>tableConfName - Configuration name declared in the metadata</p>
+        <p><code>c:Arc_Gen_QVCD</code></p>
+    </aura:description>
+</aura:documentation>

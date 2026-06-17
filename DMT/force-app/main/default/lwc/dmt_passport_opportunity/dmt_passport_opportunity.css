@@ -267,3 +267,7 @@ tr:hover td.isSelected:hover {
     width: 100%;
     margin-bottom: 0.5rem;
 }
+
+.realignElements > *{
+    vertical-align: middle;
+}

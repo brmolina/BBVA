@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>compliance_form_send_date__c</fullName>
+    <description>Fecha en la que el formulario es enviado a cumplimiento.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Notification Date</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

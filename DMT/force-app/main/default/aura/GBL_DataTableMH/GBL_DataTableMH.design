@@ -1,0 +1,8 @@
+<design:component label="Related List - MultiHierarchy">
+  <design:attribute name="objectLabel" label="Label" description="Label to display in the Related List"/>
+  <design:attribute name="useStandard" label="Use Account Standard Hierarchy" description="The component will use standard Salesforce Account Hierarchy to represent relationships."/>
+  <design:attribute name="accountTypeField" label="Account Type Field:" description="When using Salesforce standard hierarchy, please specify the field name where the account type is specified (example: Group, Subsidiary, etc.)"/>
+  <sfdc:objects>
+    <sfdc:object>Account</sfdc:object>
+</sfdc:objects>
+</design:component>

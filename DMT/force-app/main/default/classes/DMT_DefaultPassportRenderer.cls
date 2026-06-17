@@ -17,12 +17,18 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
             String table = '';
             if (!otherFeatures.isEmpty()) {
                 table += '<div>'
-                    + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">PASSPORT</h2>'
+                    + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Passport</h2>'
                     + '<table class="style-table" style="width:100%; border-collapse: collapse;">'
-                    + '<tr>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>FEATURE</strong></td>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>CAPABILITY</strong></td>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>WORKFLOW</strong></td>'
+/*                     + '<tr>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Feature</strong></td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Feature</strong></td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Workflow</strong></td>'
+                    + '</tr>'; */
+                    // Sustituimos las variables por el color hexadecimal equivalente (#f3f3f3) para evitar problemas de renderizado en PDF
+                    +'<tr>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Feature</td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Capability</td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Workflow</td>'
                     + '</tr>';
                 Integer i = 0;
                 for (Map<String, Object> feature : otherFeatures) {
@@ -44,12 +50,18 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
                 table += '<div>'
                     + '<table class="style-table" style="width:100%; border-collapse: collapse;">'
                     + '<tr>'
-                    + '<td colspan="3" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>APPROVAL PROCESS</strong></td>'
+                    + '<td colspan="3" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px;"><strong>Approval Process</strong></td>'
                     + '</tr>'
-                    + '<tr>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>FEATURE</strong></td>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>CAPABILITY</strong></td>'
-                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>WORKFLOW</strong></td>'
+/*                     + '<tr>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Feature</strong></td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Capability</strong></td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: var(--slds-g-color-neutral-base-1, var(--lwc-colorBackground,rgb(243, 243, 243))); font-weight: bold"><strong>Workflow</strong></td>'
+                    + '</tr>'; */
+                    // Sustituimos las variables por el color hexadecimal equivalente (#f3f3f3) para evitar problemas de renderizado en PDF
+                    +'<tr>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Feature</td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Capability</td>'
+                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #f3f3f3; font-weight: bold;">Workflow</td>'
                     + '</tr>';
                 Integer i = 0;
                 for (Map<String, Object> feature : approvalFeatures) {
@@ -102,7 +114,7 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
             contentListPassport.add(pageBreak);
     
             // Title
-            contentListPassport.add(DMT_Create_Pdf_Controller.createTitle('PASSPORT'));
+            contentListPassport.add(DMT_Create_Pdf_Controller.createTitle('Passport'));
     
             // Split features
             List<Map<String, Object>> approvalFeatures = new List<Map<String, Object>>();
@@ -119,7 +131,7 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
             // Table for other features
             if (!otherFeatures.isEmpty()) {
                 List<List<String>> headers = new List<List<String>>();
-                List<String> listHeaders = new List<String>{'FEATURE', 'CAPABILITY', 'WORKFLOW'};
+                List<String> listHeaders = new List<String>{'Feature', 'Capability', 'Workflow'};
                 headers.add(listHeaders);
                 Map<String, Object> tablePassport = new Map<String, Object>();
                 List<Object> body = new List<Object>();
@@ -134,11 +146,11 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
                     String stateName = DMT_FormattingUtils.checkNull(feature?.get('stateName'));
                     row.add(name);
     
-                    // CAPABILITY column
+                    // Capability column
                     Object capability = DMT_FormattingUtils.createTrafficLightJson(stateName, '');
                     row.add(capability);
     
-                    // WORKFLOW column
+                    // Workflow column
                     Object workflow = '';
                     if (!colorWF.contains('NOPINTAR') && !DMT_FormattingUtils.createTrafficLightJson(colorWF, '').isEmpty()) {
                         workflow = DMT_FormattingUtils.createTrafficLightJson(colorWF, '');
@@ -175,11 +187,11 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
                 //CREATE TITLE SECTION
                 contentListPassport.add(pageBreak);
                 List<Object> titleSection = new List<Object>();
-                titleSection = DMT_Create_Pdf_Controller.createTitleSection('APPROVAL PROCESS');
+                titleSection = DMT_Create_Pdf_Controller.createTitleSection('Approval Process');
                 contentListPassport.add(titleSection[0]);
                 contentListPassport.add(titleSection[1]);
     
-                List<String> listHeaders = new List<String>{'FEATURE', 'CAPABILITY', 'WORKFLOW'};
+                List<String> listHeaders = new List<String>{'Feature', 'Capability', 'Workflow'};
                 headers.add(listHeaders);
                 Map<String, Object> tablePassport = new Map<String, Object>();
                 List<Object> body = new List<Object>();
@@ -216,11 +228,11 @@ public with sharing class DMT_DefaultPassportRenderer implements DMT_ViewRendere
             }
     
             passportComponent.put('content', contentListPassport);
-            passportComponent.put('name', 'PASSPORT');
+            passportComponent.put('name', 'Passport');
             return passportComponent;
         } catch (Exception e){
             System.debug('Error in DMT_DefaultPassportRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultPassportRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_DefaultPassportRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

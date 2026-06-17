@@ -1,0 +1,7 @@
+<aura:component controller="DynamicRedirect_Ctrl" implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global">
+	<aura:attribute name="nameTopic" type="String" default="" access="global" description="Name push topic"/>
+    <aura:attribute name="relatedApiName" type="String" default="" access="global" description="Field Api Name related record ID"/>
+    <aura:attribute name="objMap" type="Object" default="" access="global" />
+    <ltng:require scripts="/resource/jquery,/resource/cometd,/resource/jquery_cometd,/resource/json2" 
+                   afterScriptsLoaded="{!c.jsLoaded}"/>
+</aura:component>

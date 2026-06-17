@@ -1,5 +1,6 @@
 <template>
     <template lwc:if={aviableItem}>
+        <div class="input-with-suffix">
         <lightning-input
             type="text"
             label="Input Text"
@@ -7,13 +8,18 @@
             name="textInput"
             value={inputValue}
             onfocus={handleFocus}
+            oninput={handleInput}
             onblur={handleBlur}
+            onkeyup={handleKeyUp}
             id={fieldname}
             disabled="true"
         >
         </lightning-input>
+            <template lwc:if={suffix}><span class="input-suffix">{suffix}</span></template>
+        </div>
     </template>
     <template lwc:else>
+        <div class="input-with-suffix">
         <lightning-input
             type="text"
             label="Input Text"
@@ -21,10 +27,13 @@
             name="textInput"
             value={inputValue}
             onfocus={handleFocus}
+            oninput={handleInput}
             onblur={handleBlur}
+            onkeyup={handleKeyUp}
             id={fieldname}
-            
         >
         </lightning-input>
+            <template lwc:if={suffix}><span class="input-suffix">{suffix}</span></template>
+        </div>
     </template>
 </template>

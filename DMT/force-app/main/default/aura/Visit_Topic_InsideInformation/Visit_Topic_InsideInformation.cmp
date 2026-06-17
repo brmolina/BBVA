@@ -1,0 +1,107 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="DES_IpVisitController" access="global">
+
+  <aura:attribute name="recordId" type="Id" />
+  <aura:attribute name="topics" type="List" default="[]" />
+  <aura:attribute name="sizeTopics" type="Integer" default="0" />
+  <aura:attribute name="isVisible" type="boolean" default="false"/>
+  <aura:attribute name="Spinner" type="Boolean" default="false"/>
+  <aura:attribute name="isOpen" type="Boolean" default="false"/>
+  <aura:attribute name="currentUser" type="String" access="global" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+  <aura:attribute name="isClosed" type="boolean" default="false"/>
+  <aura:attribute name="endpoint" type="String"/>
+
+  <ltng:require scripts="{!$Resource.ipUtils}"/>
+
+  <aura:if isTrue="{!v.isOpen}">
+      <div class="height-640">
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                  <header class="slds-modal__header slds-modal__header_empty">
+                      <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" onclick="{!c.closeFlowModal}"/>
+                  </header>
+                  <div class="slds-modal__content slds-p-around_medium">
+                      <lightning:flow aura:id="New_Visit_Topic" onstatuschange="{!c.closeModalOnFinish}" />
+                  </div>
+              </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+  </aura:if>
+  <aura:renderIf isTrue="{!v.isVisible}">
+    <article class="slds-card">
+      <div class="slds-card__header slds-grid">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+
+            <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning:icon size="small" iconName="standard:topic" alternativeText="Visit Topics" title="Visit Topics"/>
+                </div>
+                <div class="slds-media__body slds-truncate">
+                  <p class="slds-card__header-link slds-truncate">
+                    <a href="javascript:void(0);" class="slds-text-link_reset">
+                      <span class="slds-text-heading_small text-bold">Visit Topics ({!v.sizeTopics})</span>
+                    </a>
+                    <aura:if isTrue="{!v.Spinner}">
+                        <lightning:spinner alternativeText="Loading" />
+                    </aura:if>
+                  </p>
+                </div>
+              </div>
+              <aura:if isTrue="{!!v.isClosed}">
+              		<div class="slds-no-flex">
+                		<lightning:button variant="neutral" label="New" onclick="{! c.runNewTopicFlow }" />
+              		</div>
+              </aura:if>
+        </header>
+      </div>
+      <aura:if isTrue="{!v.sizeTopics > 0}">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th>DONE</th>
+              <th>OPPORTUNITY</th>
+              <th>DESCRIPTION</th>
+              <th width="5%"></th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <aura:iteration items="{!v.topics}" var="topic">
+              <tr class="slds-hint-parent">
+                  <td>
+                      <aura:if isTrue="{!topic.dwp_kitv__visit_done_type__c == true}">
+                        <lightning:input type="checkbox" disabled="true" name="doneChecked" checked="true" class="custom-checkBox"/>
+                        <aura:set attribute="else">
+                          <lightning:input type="checkbox" disabled="true" name="doneUnchecked" checked="false" class="custom-checkBox"/>
+                        </aura:set>
+                      </aura:if>
+                  </td>
+                  <td>
+                      <p class="slds-tile__title slds-truncate" title="{!topic.dwp_kitv__opportunity_id__r.Name}">
+                          <a href="#" onclick="{!c.navigateRecord}" id="{!topic.dwp_kitv__opportunity_id__c}">{!topic.dwp_kitv__opportunity_id__r.Name}</a>
+                      </p>
+
+                  </td>
+                  <td>
+                    {!topic.dwp_kitv__topic_desc__c}
+                  </td>
+                  <td>
+                    <aura:if isTrue="{!!v.isClosed}">  
+                        <lightning:buttonMenu aura:id="menu" onselect="{! c.option }" alternativeText="View More" iconSize="x-small" class="slds-dropdown_actions">
+                          <lightning:menuItem value="{!'Edit_' + topic.Id + '_' + topic.dwp_kitv__topic_desc__c + '_' + topic.dwp_kitv__opportunity_id__r.Name}" label="Edit" />
+                          <lightning:menuItem value="{!'Delete_' + topic.Id}" label="Delete" />
+                        </lightning:buttonMenu>
+                    </aura:if>
+                  </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+        <br/>
+      </aura:if>
+    </article>
+  </aura:renderIf>
+</aura:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsVersionView__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This field is used as reference when generating new version in snapshot-evaluation-versions service. Must be unique per viewType (DMT_Type__c). When this field is set to true, automation must update all other records of the same DMT_Type__c to false. If query returns 0 rows with this flag, a full component list will be generated and stored as a version on snapshot-evaluation-versions.</description>
+    <label>Is Version View</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

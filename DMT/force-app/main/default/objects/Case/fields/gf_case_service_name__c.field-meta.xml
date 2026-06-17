@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_case_service_name__c</fullName>
+    <label>Service</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Adeudos</fullName>
+                <default>false</default>
+                <label>Adeudos</label>
+            </value>
+            <value>
+                <fullName>Alta de proveedores</fullName>
+                <default>false</default>
+                <label>Alta de proveedores</label>
+            </value>
+            <value>
+                <fullName>Anticipos</fullName>
+                <default>false</default>
+                <label>Anticipos</label>
+            </value>
+            <value>
+                <fullName>Carga de facturas</fullName>
+                <default>false</default>
+                <label>Carga de facturas</label>
+            </value>
+            <value>
+                <fullName>Confirming</fullName>
+                <default>false</default>
+                <label>Confirming</label>
+            </value>
+            <value>
+                <fullName>Factoring</fullName>
+                <default>false</default>
+                <label>Factoring</label>
+            </value>
+            <value>
+                <fullName>Impagados</fullName>
+                <default>false</default>
+                <label>Impagados</label>
+            </value>
+            <value>
+                <fullName>Movimientos de cuentas</fullName>
+                <default>false</default>
+                <label>Movimientos de cuentas</label>
+            </value>
+            <value>
+                <fullName>Movimientos de tarjetas(VCF)</fullName>
+                <default>false</default>
+                <label>Movimientos de tarjetas(VCF)</label>
+            </value>
+            <value>
+                <fullName>Nominas</fullName>
+                <default>false</default>
+                <label>Nominas</label>
+            </value>
+            <value>
+                <fullName>Pago Impuestos</fullName>
+                <default>false</default>
+                <label>Pago Impuestos</label>
+            </value>
+            <value>
+                <fullName>Pago Proveedores</fullName>
+                <default>false</default>
+                <label>Pago Proveedores</label>
+            </value>
+            <value>
+                <fullName>Pagos Internacionales</fullName>
+                <default>false</default>
+                <label>Pagos Internacionales</label>
+            </value>
+            <value>
+                <fullName>Pagos urgentes</fullName>
+                <default>false</default>
+                <label>Pagos urgentes</label>
+            </value>
+            <value>
+                <fullName>Transferencias</fullName>
+                <default>false</default>
+                <label>Transferencias</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <label>Otros</label>
+            </value>
+            <value>
+                <fullName>Solicitud de descuentos</fullName>
+                <default>false</default>
+                <label>Solicitud de descuentos</label>
+            </value>
+            <value>
+                <fullName>ISM</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ISM</label>
+            </value>
+            <value>
+                <fullName>MT940</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>MT940</label>
+            </value>
+            <value>
+                <fullName>PaP</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>PaP</label>
+            </value>
+            <value>
+                <fullName>Respuestas Locales de la ejecución de los Pagos</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Respuestas Locales de la ejecución de los Pagos</label>
+            </value>
+            <value>
+                <fullName>W2H</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>W2H</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

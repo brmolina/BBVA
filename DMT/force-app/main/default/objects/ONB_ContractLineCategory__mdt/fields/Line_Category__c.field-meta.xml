@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Line_Category__c</fullName>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Line Category</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>REPOS</fullName>
+                <default>true</default>
+                <label>REPOS</label>
+            </value>
+            <value>
+                <fullName>DERIVATIVES</fullName>
+                <default>false</default>
+                <label>DERIVATIVES</label>
+            </value>
+            <value>
+                <fullName>SECURITY_LENDING</fullName>
+                <default>false</default>
+                <label>SECURITY_LENDING</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

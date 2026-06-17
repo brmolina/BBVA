@@ -23,7 +23,7 @@ global with sharing class DMT_Opp_Currency_Conversion_Handler implements Callabl
                 result = DMT_Opp_Currency_Conversion_Utils.DMT_Array_Amount_Conversion(inputMap,outMap,options);
             //} else if (methodname == 'testTaxo') {
                 //result = DMT_Opp_Currency_Conversion_Utils.DMT_Test_Taxo(inputMap,outMap,options);
-            } else if (methodname == 'getMinAndMaxDates') {
+            } else if (methodName == 'getMinAndMaxDates') {
                 result = DMT_Opp_Currency_Conversion_Utils.getOpportunityProductsMinAndMaxDates(inputMap,outMap,options);
             } else {
                 throw new DTM_Currency_Exception('Metodo no definido');

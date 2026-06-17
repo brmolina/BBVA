@@ -1,0 +1,90 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"
+                controller="CompleteAlleSalesCmpCtrl" access="global">
+
+  <aura:attribute name="isModalOpen" type="boolean" default="true"/>
+  <aura:attribute name="managed" type="boolean" default="false"/>
+  <aura:attribute name="role" type="boolean" default="false"/>
+  <aura:attribute name="managedResult" type="String"/>
+  <aura:attribute name="receivedForms" type="boolean" default="false"/>
+  <aura:attribute name="disabled" type="boolean" default="false"/>
+  <aura:attribute name="formsIds" type="String"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+  <div class="slds-m-around_xx-large">
+
+    <!--Use aura:if tag to display/hide popup based on isModalOpen value--> 
+      <aura:if isTrue="{!v.managed}">
+          <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                  <header class="slds-modal__header">
+                      <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.eSalesCompleteAllHeader}</h2>
+                  </header>
+                  <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                      <p><b>{!$Label.c.bodyCompleteEsales}</b>
+                          <br/>
+                          	<ul class="slds-list_dotted">
+                                <aura:iteration items="{!v.managedResult}" var="item">
+                                    <li>{!item}</li>
+                                </aura:iteration>
+							</ul>
+                      </p>
+                  </div>
+                  <footer class="slds-modal__footer">
+                      <lightning:button variant="brand" 
+                                        label="Continue"
+                                        title="Continue"
+                                        onclick="{! c.closeComponent }"/>
+                  </footer>
+              </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+          <!--###### MODAL BOX Part END Here ######-->
+          <!--Use aura:if tag to display/hide popup based on isModalOpen value-->
+      </aura:if>
+    <aura:if isTrue="{!v.isModalOpen}">
+      <!-- Modal/Popup Box starts here-->
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- Modal/Popup Box Header Starts here-->
+          <header class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+                                  onclick="{! c.closeModel }"
+                                  alternativeText="close"
+                                  variant="bare-inverse"
+                                  class="slds-modal__close"/>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Complete Forms</h2>
+          </header>
+          <!--Modal/Popup Box Body Starts here-->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <aura:if isTrue="{!!v.role}">
+                        <p><b>{!$Label.c.roleErroreSales}</b></p>
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.receivedForms == true}">
+                            <p><b>Are you sure you want to complete the selected forms?</b></p>
+                    <aura:set attribute="else">
+                                <p><b>You must select at least one form to complete.</b></p>
+                    </aura:set>
+                    </aura:if>
+                </aura:set>
+                </aura:if>
+          </div>
+          <!--Modal/Popup Box Footer Starts here-->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral"
+                              label="Cancel"
+                              title="Cancel"
+                              onclick="{!c.closeModel}"/>
+            <aura:if isTrue="{!v.receivedForms == true}">
+              <lightning:button variant="brand"
+                              label="Complete"
+                              title="Complete"
+                              onclick="{!c.submitDetails}"
+                              disabled="{!v.disabled}"/>
+            </aura:if>
+
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+  </div>
+</aura:component>

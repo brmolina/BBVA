@@ -12,23 +12,23 @@ public class GBL_DenormalizeOppLocalTest {
   static void testSetup() {
     final DES_UtilTestClass tstClass = new DES_UtilTestClass();
     final Account acc = tstClass.createClient();
-    acc.SER_CClient__c = 'test1';
+    acc.g_customer_id__c = 'test1';
     acc.Name = 'test1';
     insert acc;
 
     final Account acc2 = tstClass.createClient();
-    acc2.SER_CClient__c = 'test2';
+    acc2.g_customer_id__c = 'test2';
     acc2.Name = 'test2';
     insert acc2;
 
-    final dwp_acmh__GBL_Account_Relationship__c relation = tstClass.createAccRelationship(acc, acc2);
+    final AMH_GBL_Account_Relationship__c relation = tstClass.createAccRelationship(acc, acc2);
     insert relation;
 
     final Id idProfile = [Select Id, Name from Profile Where Name = 'BBVA Desktop GCC Standard'].Id;
 
     final User user1 = tstClass.createUser(idProfile);
     insert user1;
-	  Test.startTest();
+    Test.startTest();
     final Opportunity opp = tstClass.createOpportunity(acc2);
     insert opp;
 
@@ -53,7 +53,7 @@ public class GBL_DenormalizeOppLocalTest {
     final Id idProfile = [Select Id, Name from Profile Where Name = 'BBVA Desktop GCC Standard'].Id;
     final User user1 = tstClass.createUser(idProfile);
     insert user1;
-	  Test.startTest();
+    Test.startTest();
       OpportunityLineItem oppLineItem = [SELECT Id from OpportunityLineItem LIMIT 1];
       oppLineItem = tstClass.updateOppLineItem(oppLineItem, user1);
       update oppLineItem;

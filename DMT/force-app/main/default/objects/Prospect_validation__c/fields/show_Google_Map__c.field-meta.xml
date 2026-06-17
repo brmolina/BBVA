@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>show_Google_Map__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Field to see the google map when we do a predictive search with google places.</description>
+    <inlineHelpText>Field to see the google map when we do a predictive search with google places. It will only take effect if we have the option of Address Predictive to true</inlineHelpText>
+    <label>Show Google Map</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

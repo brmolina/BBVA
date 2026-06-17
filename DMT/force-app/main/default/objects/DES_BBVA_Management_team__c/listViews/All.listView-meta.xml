@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>DES_BBVA_Internal_Code__c</columns>
+    <columns>DES_BBVA_User_Code__c</columns>
+    <columns>DES_Client__c</columns>
+    <columns>DES_First_Name__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>

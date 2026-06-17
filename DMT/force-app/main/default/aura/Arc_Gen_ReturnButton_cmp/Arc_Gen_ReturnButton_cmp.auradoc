@@ -1,0 +1,22 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_ReturnButton_cmp</p>
+        <p><b>DESCRIPTION: </b>A button to return arce to a previous ambit.</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>hasRecordId = String {!v.recordId} : Standard id of the current record</li>
+                <li>analysisId = String : Standard Id of the new parent analysis</li>
+                <li>selectedValue = String : Value selected for return</li>
+                <li>delegationWrapper = String : Delegation wrapper</li>
+                <li>listAmbits = String : List of available ambits</li>
+                <li>spinnerStatus = String : Spinner load variable</li>
+                <li>userId = String : User id Record</li>
+                <li>statusBtn = String : Variable visibility action buttons</li>
+                <li>show = String : Indicates to show or to hide the modal</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_ReturnButton_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ReturnButton_cmp" ref="c:Arc_Gen_ReturnButton_cmp" label="Return button">
+    </aura:example>
+</aura:documentation>

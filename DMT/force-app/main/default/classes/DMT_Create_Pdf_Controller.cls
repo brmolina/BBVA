@@ -1,5 +1,7 @@
 public with sharing class DMT_Create_Pdf_Controller {
 
+    public static List<StaticResource> imgCheckboxes;
+
     public static Map<String, Object> createListText(List<String> name, List<String> value, String column ){
         Map<String, Object> textData = new Map<String, Object>();
         List<Map<String, Object>> textListOne = new List<Map<String, Object>>();
@@ -211,6 +213,130 @@ public with sharing class DMT_Create_Pdf_Controller {
         table.put('body', body);
         table.put('head', head);
         table.put('type','table');
+        return table;
+    }
+
+    public static Map<String, Object> generatePdfList(List<DMT_FormattingUtils.DisplayField> fields) {
+        // 1. Fetch the Static Resources
+
+        if (imgCheckboxes == null) {
+            imgCheckboxes = [SELECT Name, Body FROM StaticResource WHERE Name IN ('Img_Checkbox_Checked', 'Img_Checkbox_Unchecked')];
+        }
+
+        List<StaticResource> srList = imgCheckboxes;
+
+        String base64Checked = '';
+        String base64Unchecked = '';
+
+        for(StaticResource sr : srList) {
+            if(sr.Name == 'Img_Checkbox_Checked') {
+                base64Checked = 'data:image/png;base64,' + EncodingUtil.base64Encode(sr.Body);
+            } else if(sr.Name == 'Img_Checkbox_Unchecked') {
+                base64Unchecked = 'data:image/png;base64,' + EncodingUtil.base64Encode(sr.Body);
+            }
+        }
+
+        // 2. Build rows instead of strict Left/Right lists
+        List<List<Map<String, Object>>> rows = new List<List<Map<String, Object>>>();
+        List<Map<String, Object>> currentRow = new List<Map<String, Object>>();
+        Integer currentRowWidth = 0;
+
+        // 3. Loop through fields dynamically
+        for (DMT_FormattingUtils.DisplayField field : fields) {
+            Integer fieldWidth = getFieldColspan(field.size);
+
+            // If adding this field exceeds 4 columns, close the current row and start a new one
+            if (currentRowWidth > 0 && currentRowWidth + fieldWidth > 4) {
+                // Pad the remaining space in the old row with empty maps
+                for (Integer p = 0; p < (4 - currentRowWidth); p++) {
+                    currentRow.add(new Map<String, Object>());
+                }
+                rows.add(currentRow);
+                currentRow = new List<Map<String, Object>>();
+                currentRowWidth = 0;
+            }
+
+            // Create the main cell item
+            Map<String, Object> item = new Map<String, Object>{
+                'name' => field.label,
+                'colSpan' => fieldWidth // Tell pdfmake how many columns to occupy
+            };
+
+            // Set the value (Image or Text)
+            if (field.boolValue != null) {
+                String selectedImage = field.boolValue ? base64Checked : base64Unchecked;
+                Map<String, Object> imageNode = new Map<String, Object>{
+                    'image' => selectedImage,
+                    'width' => 4,
+                    'height' => 4
+                };
+                item.put('value', imageNode);
+            } else {
+                item.put('value', field.value != null ? String.valueOf(field.value) : '');
+            }
+
+            // Add the item to the row
+            currentRow.add(item);
+            currentRowWidth += fieldWidth;
+
+            // CRITICAL PDFMAKE RULE: If colSpan > 1, we MUST add empty {} nodes for the spanned columns
+            for (Integer emptyCols = 1; emptyCols < fieldWidth; emptyCols++) {
+                currentRow.add(new Map<String, Object>());
+            }
+
+            // If the row is perfectly full (4/4), close it
+            if (currentRowWidth == 4) {
+                rows.add(currentRow);
+                currentRow = new List<Map<String, Object>>();
+                currentRowWidth = 0;
+            }
+        }
+
+        // 4. Pad the very last row if it ended up partially full
+        if (currentRowWidth > 0 && currentRowWidth < 4) {
+            for (Integer p = 0; p < (4 - currentRowWidth); p++) {
+                currentRow.add(new Map<String, Object>());
+            }
+            rows.add(currentRow);
+        }
+
+        // 5. Construct the final data map
+        Map<String, Object> textData = new Map<String, Object>{
+            'margin' => new Map<String, Object>{ 'bottom' => 5, 'top' => 0 },
+            'style' => new Map<String, Object>{ 'fontSize' => 10 },
+            'body' => rows,
+            // ATTENTION: I changed this from 'values2' so your frontend knows it's a new layout!
+            'type' => 'dynamicGrid' 
+        };
+
+        return textData;
+    }
+
+    // Reuse the same helper method for sizing
+    private static Integer getFieldColspan(String size) {
+        if (size == 'FULL') return 4;
+        if (size == 'QUARTER') return 1;
+        return 2; // HALF
+    }
+
+    // Overloaded method to support PDFMake cell styling objects
+    public static Map<String, Object> createTable(List<List<Object>> head, List<List<Object>> body) {
+        Map<String, Object> table = new Map<String, Object>();
+        Map<String, Object> stylesTable = new Map<String, Object>{'fontSize' => 8};
+        Map<String, Object> marginTable = new Map<String, Object>{'top' => 0, 'bottom' => 1};
+        Map<String, Object> lineWidthItem = new Map<String, Object>{'bottom' => 0.1};
+        
+        stylesTable.put('lineWidth', lineWidthItem);
+        
+        Map<String, Object> headStyles = new Map<String, Object>{'fontSize' => 8};
+        
+        table.put('headStyles', headStyles);
+        table.put('style', stylesTable);
+        table.put('margin', marginTable);
+        table.put('body', body);
+        table.put('head', head);
+        table.put('type', 'table');
+        
         return table;
     }
 }

@@ -28,7 +28,7 @@ public with sharing class SER_CaseMethods_HELPER_ParentCp_Tst {
     * description: STRLINKED
     * @author Victor Velandia
     */
-  private static final string STREQUITY     = 'Equity';
+  private static final string STREQUITY     = 'FX';
 
   /**
     * description: helperParentCpGM
@@ -41,7 +41,8 @@ public with sharing class SER_CaseMethods_HELPER_ParentCp_Tst {
     sernovaAcc                          = new Account();
     sernovaAcc.Name                     = Label.SER_SernovaAccountNAME;
     sernovaAcc.Client_STAR_ID__C        = Label.SER_SernovaAccountNAME;
-    sernovaAcc.SER_CClient__c           = Label.SER_SernovaAccountNAME;
+    sernovaAcc.g_customer_id__c         = Label.SER_SernovaAccountNAME;
+    sernovaAcc.SER_CClient__c         = Label.SER_SernovaAccountNAME;
     insert sernovaAcc;
 
     Account pruebaAcc;
@@ -52,7 +53,9 @@ public with sharing class SER_CaseMethods_HELPER_ParentCp_Tst {
     Case parentCase;
     parentCase                          = new Case();
     parentCase.AccountId                = pruebaAcc.Id;
+    parentCase.SER_Classification__c    = 'Monetary claim';
     parentCase.SER_Asset__c             = STREQUITY;
+    parentCase.SER_Pre_liquidacion__c	= true;
     parentCase.RecordTypeId             = [Select Id FROM RecordType WHERE DeveloperName = 'SER_GM_User'].Id;
     insert parentCase;
 
@@ -61,7 +64,9 @@ public with sharing class SER_CaseMethods_HELPER_ParentCp_Tst {
     childCase.SER_Business_Case_Type__c = SER_Constant.BUSINESS_GM;
     childCase.SER_Close__c              = false;
     childCase.SER_IsSernova__c          = true;
+    childCase.SER_Classification__c    = 'Monetary claim';
     childCase.SER_Asset__c              = STREQUITY;
+    childCase.SER_Pre_liquidacion__c	= true;
     childCase.ParentId                  = parentCase.Id;
     childCase.RecordTypeId              = [Select Id FROM RecordType WHERE DeveloperName = 'SER_GM_User'].Id;
     insert childCase;
@@ -84,7 +89,7 @@ public with sharing class SER_CaseMethods_HELPER_ParentCp_Tst {
     sernovaAcc                          = new Account();
     sernovaAcc.Name                     = Label.SER_SernovaAccountNAME;
     sernovaAcc.Client_STAR_ID__C        = Label.SER_SernovaAccountNAME;
-    sernovaAcc.SER_CClient__c           = Label.SER_SernovaAccountNAME;
+    sernovaAcc.g_customer_id__c           = Label.SER_SernovaAccountNAME;
     insert sernovaAcc;
 
     Account pruebaAcc;

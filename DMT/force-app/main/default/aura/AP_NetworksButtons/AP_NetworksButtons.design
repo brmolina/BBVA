@@ -1,0 +1,8 @@
+<design:component>
+       <design:attribute name="title" label="Card Title" />
+       <design:attribute name="description" label="Card description" />
+       <design:attribute name="url" label="Site URL" />
+       <design:attribute name="icon" label="Card Icon" />
+       <design:attribute name="iconVariant" label="Card Icon color" />
+       <design:attribute name="className" label="Name of the Class for the main Div" />
+</design:component>

@@ -64,6 +64,7 @@ public with sharing class Arc_Gen_Expandible_Table_Controller_test {
     **/
     @SuppressWarnings('sf:NcssMethodCount')
     @testSetup static void setup() {
+        arce.Arc_UtilitiesToTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{'G000001','C000001'});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get('G000001');
@@ -110,12 +111,18 @@ public with sharing class Arc_Gen_Expandible_Table_Controller_test {
         final Map<Id,Arc_Gen_Product_Wrapper> pWrap = Arc_Gen_Product_Locator.getProductsFromTypology('familyTest');
         final Arc_Gen_Product_Wrapper prodWrapper = pWrap.get(new List<Id>(pWrap.keySet())[0]);
 
+        final arce__AHA_Extension__c ahaExt = new arce__AHA_Extension__c(
+            arce__group_corporative__c = true
+        );
+        insert ahaExt;
         arce__Account_has_Analysis__c accHasAnalysis = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(sect.Id, analysis.Id, childAccount.accId, '	s-01');
         accHasAnalysis.arce__group_asset_header_type__c = '2';
+        accHasAnalysis.arce__AHA_Extension__c = ahaExt.Id;
         Insert accHasAnalysis;
 
         arce__Account_has_Analysis__c accHasAnalysis2 = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(sect.Id, analysis.Id, childAccount.accId, '	s-01');
         accHasAnalysis2.arce__group_asset_header_type__c = '2';
+        accHasAnalysis2.arce__AHA_Extension__c = ahaExt.Id;
         Insert accHasAnalysis2;
 
         arce__Account_has_Analysis__c accHasAnalysisGr = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(sect.Id, analysis.Id, groupAccount.accId, '1');

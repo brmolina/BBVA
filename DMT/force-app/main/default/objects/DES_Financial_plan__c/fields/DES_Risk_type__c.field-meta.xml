@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Risk_type__c</fullName>
+    <label>Risk type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>10000</fullName>
+                <default>false</default>
+                <label>Total L/T  Financial Risk</label>
+            </value>
+            <value>
+                <fullName>100000</fullName>
+                <default>false</default>
+                <label>Total Settlement risk</label>
+            </value>
+            <value>
+                <fullName>100100</fullName>
+                <default>false</default>
+                <label>Settlement Risk - FD</label>
+            </value>
+            <value>
+                <fullName>100200</fullName>
+                <default>false</default>
+                <label>Settlement Risk - DvP</label>
+            </value>
+            <value>
+                <fullName>10100</fullName>
+                <default>false</default>
+                <label>L/T Financial Risk - Unsecured</label>
+            </value>
+            <value>
+                <fullName>10200</fullName>
+                <default>false</default>
+                <label>L/T Financial Risk - Secured</label>
+            </value>
+            <value>
+                <fullName>110000</fullName>
+                <default>false</default>
+                <label>Overlimits, ACH</label>
+            </value>
+            <value>
+                <fullName>115000</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>120000</fullName>
+                <default>false</default>
+                <label>Equity</label>
+            </value>
+            <value>
+                <fullName>130000</fullName>
+                <default>false</default>
+                <label>Bond Underwriting</label>
+            </value>
+            <value>
+                <fullName>140000</fullName>
+                <default>false</default>
+                <label>Equity Underwriting</label>
+            </value>
+            <value>
+                <fullName>150000</fullName>
+                <default>false</default>
+                <label>Other Indirect Risks</label>
+            </value>
+            <value>
+                <fullName>160000</fullName>
+                <default>false</default>
+                <label>Direct Insurance Risk</label>
+            </value>
+            <value>
+                <fullName>161000</fullName>
+                <default>false</default>
+                <label>Indirect Insurance Risk</label>
+            </value>
+            <value>
+                <fullName>170000</fullName>
+                <default>false</default>
+                <label>ECA/Multilateral Covered Risk</label>
+            </value>
+            <value>
+                <fullName>180000</fullName>
+                <default>false</default>
+                <label>Loan Fronting</label>
+            </value>
+            <value>
+                <fullName>190000</fullName>
+                <default>false</default>
+                <label>Securitizations</label>
+            </value>
+            <value>
+                <fullName>20000</fullName>
+                <default>false</default>
+                <label>Total S/T  Financial  &amp; Commercial Risk</label>
+            </value>
+            <value>
+                <fullName>200000</fullName>
+                <default>false</default>
+                <label>Total Indirect Risk Limits</label>
+            </value>
+            <value>
+                <fullName>20100</fullName>
+                <default>false</default>
+                <label>Commercial Risk</label>
+            </value>
+            <value>
+                <fullName>20200</fullName>
+                <default>false</default>
+                <label>S/T Financial risk</label>
+            </value>
+            <value>
+                <fullName>220000</fullName>
+                <default>false</default>
+                <label>Non Recourse Factoring (no agency)</label>
+            </value>
+            <value>
+                <fullName>30000</fullName>
+                <default>false</default>
+                <label>Guaranty Risk</label>
+            </value>
+            <value>
+                <fullName>300000</fullName>
+                <default>false</default>
+                <label>Additional</label>
+            </value>
+            <value>
+                <fullName>40000</fullName>
+                <default>false</default>
+                <label>Treasury Risk</label>
+            </value>
+            <value>
+                <fullName>50000</fullName>
+                <default>false</default>
+                <label>Total Corporate Risk Limit</label>
+            </value>
+            <value>
+                <fullName>60000</fullName>
+                <default>false</default>
+                <label>Specialized Lending - Project Finance</label>
+            </value>
+            <value>
+                <fullName>61000</fullName>
+                <default>false</default>
+                <label>Specialized Lending - Commercial Real Estate (CRE)</label>
+            </value>
+            <value>
+                <fullName>70000</fullName>
+                <default>false</default>
+                <label>Total Banking Risk Limit</label>
+            </value>
+            <value>
+                <fullName>80100</fullName>
+                <default>false</default>
+                <label>Issuer risk</label>
+            </value>
+            <value>
+                <fullName>80200</fullName>
+                <default>false</default>
+                <label>Disintermediation Credit Risk</label>
+            </value>
+            <value>
+                <fullName>90000</fullName>
+                <default>false</default>
+                <label>Total Direct Risk Limit</label>
+            </value>
+            <value>
+                <fullName>92000</fullName>
+                <default>false</default>
+                <label>Agency Risk</label>
+            </value>
+            <value>
+                <fullName>XXXX01</fullName>
+                <default>false</default>
+                <label>Notional Repos</label>
+            </value>
+            <value>
+                <fullName>XXXX02</fullName>
+                <default>false</default>
+                <label>Notional Reverse Repos</label>
+            </value>
+            <value>
+                <fullName>XXXX03</fullName>
+                <default>false</default>
+                <label>Nostro Accounts</label>
+            </value>
+            <value>
+                <fullName>XXXX04</fullName>
+                <default>false</default>
+                <label>Vostro Accounts</label>
+            </value>
+            <value>
+                <fullName>XXXXXX</fullName>
+                <default>false</default>
+                <label>Unknown</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

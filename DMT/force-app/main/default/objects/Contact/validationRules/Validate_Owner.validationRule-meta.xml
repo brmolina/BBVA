@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validate_Owner</fullName>
+    <active>true</active>
+    <description>Validates owner of the Contact: The owner must be an internal (BBVA) user</description>
+    <errorConditionFormula>AND (
+  !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+  CONTAINS(RecordType.DeveloperName,
+  &apos;Desktop_Contact&apos;),
+  OR (CONTAINS(Owner.Username, &apos;.becas@&apos;),
+      CONTAINS(Owner.Username, &apos;.contractor@&apos;)),
+  NOT($Profile.Name = &quot;System Administrator&quot;)
+)</errorConditionFormula>
+    <errorMessage>The owner must be an internal user.</errorMessage>
+</ValidationRule>

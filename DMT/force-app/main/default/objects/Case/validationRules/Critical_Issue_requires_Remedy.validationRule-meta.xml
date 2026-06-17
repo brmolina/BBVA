@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Critical_Issue_requires_Remedy</fullName>
+    <active>true</active>
+    <description>A case can be flag as critical issue if the case has a Remedy ID assigned to the Case Number</description>
+    <errorConditionFormula>AND( !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ ISPICKVAL( SER_Business_Case_Type__c , &quot;GNC&quot;),
+ISBLANK( SER_RemedyId__c ),
+ Critical_Issue__c = TRUE)</errorConditionFormula>
+    <errorMessage>A Remedy ticket should be assigned to this case to send the notification</errorMessage>
+</ValidationRule>

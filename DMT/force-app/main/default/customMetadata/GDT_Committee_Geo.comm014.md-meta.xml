@@ -14,4 +14,8 @@
         <field>GDT_Geography__c</field>
         <value xsi:type="xsd:string">Brasil</value>
     </values>
+    <values>
+        <field>GDT_Taxo_Id__c</field>
+        <value xsi:nil="true"/>
+    </values>
 </CustomMetadata>

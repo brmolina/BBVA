@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>annex_desc__c</fullName>
+    <defaultValue>IF( $RecordType.DeveloperName = $Label.DES_Template_PF,
+				&apos;1. Transactional RaR and Derivative (pdf from Amiweb&amp; COPOR/CTA)*&apos;&amp; BR()&amp;
+				&apos;2. Screenshot of the Annual profitability &amp; EAD evolution graph (Amiweb)&apos;&amp; BR()&amp;
+    &apos;3. Product Opinion: Syndication/Portfolio Management, GM, DCM, ECM, Other (If required in NBC Governance)&apos;&amp; BR()&amp;
+    &apos;4. Credit Risk Opinion and Confirmation of the calification&amp;PD&amp;LGD*&apos;&amp; BR()&amp;
+    &apos;5.Project Finance Risk Memo*&apos;&amp; BR()&amp;
+    &apos;6. NPC approval (if required)&apos;&amp; BR()&amp;
+    &apos;7. Additional information of the structure of the deal  (opcional)&apos;,
+IF( $RecordType.DeveloperName = $Label.DES_Template_CSL || $RecordType.DeveloperName = $Label.DES_Template_CSL_Compass,
+				&apos;1. Business Plan Figures (pdf from Amiweb)*&apos;&amp; BR()&amp;
+    &apos;2. Transactional RaR and Expected Global Annex (pdf from Amiweb)*&apos;&amp; BR()&amp;
+    &apos;3. Screenshot of the Annual profitability &amp; EAD evolution graph (Amiweb)&apos;&amp; BR()&amp;
+    &apos;4. Product Opinion: Syndication, DCM, ECM, Other (If required in NBC Governance)&apos;&amp; BR()&amp;
+    &apos;5. Credit Risk Opinion and Confirmation of the rating*&apos;&amp; BR()&amp;
+    &apos;6. If prospect Client include a detailed description of its activity and wallet share in our main products&apos;&amp; BR()&amp;
+    &apos;7. NPC approval (if required)&apos;&amp; BR()&amp;
+    &apos;8. Syndicate Princing Tool&apos;,
+IF( $RecordType.DeveloperName = $Label.DES_Template_ECA,
+				&apos;1. Business Plan Figures (pdf from Amiweb)*&apos;&amp; BR()&amp;
+    &apos;2. Transactional RaR and Expected Global Annex (pdf from Amiweb)*&apos;&amp; BR()&amp;
+    &apos;3. Screenshot of the Annual profitability &amp; EAD evolution graph (Amiweb)&apos;&amp; BR()&amp;
+    &apos;4. Product Opinion: Syndication, DCM, ECM, Other (If required in NBC Governance)&apos;&amp; BR()&amp;
+    &apos;5. Credit Risk Opinion and Confirmation of the rating*&apos;&amp; BR()&amp;
+    &apos;6. If prospect Client include a detailed description of its activity and wallet share in our main products&apos;,
+&apos;&apos;)))</defaultValue>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Annex</label>
+    <length>800</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>8</visibleLines>
+</CustomField>

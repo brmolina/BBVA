@@ -49,9 +49,11 @@ public with sharing class DES_Arc_ProspectController {
       mockTest.setStatusCode(201);
       final HttpResponse response = ( Test.isRunningTest() ? mockTest : iaso.GBL_Integration_GenericService.invoke('createProspect',jsonInputMap) );
       System.debug('>>>>>>>>>>>> El WS codeResponse: ' + response.getStatusCode() + MENSAJEVAR + response.toString());
-      if (RESPONSE_OK_LIST.contains(response.getStatusCode()) && toUpdate) {
-        prospect.DES_Prospect_status__c = Label.Prospect_created;
-        update prospect;
+      if (RESPONSE_OK_LIST.contains(response.getStatusCode())) {
+        if (toUpdate) {
+          prospect.DES_Prospect_status__c = Label.Prospect_created;
+          update prospect;
+        }
       } else {
         throw new CalloutException('ERROR createProspect' + ' ' + response.getStatus() +  '\n' + response.getBody());
       }

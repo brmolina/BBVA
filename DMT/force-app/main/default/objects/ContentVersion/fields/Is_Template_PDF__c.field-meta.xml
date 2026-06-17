@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Template_PDF__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Campo que se marca solo cuando el archivo es el PDF del template</description>
+    <label>Is Template PDF</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,8 @@
+<design:component>
+    <design:attribute name="titleList" label="Title"
+      datasource="Top Open Opportunities,Top Won Opportunities,Top Lost Opportunities"
+      default="" />
+	<design:attribute name="qType" label="Query type"
+      datasource="CreatedLast4M,WonLast4M,LostLast4M,CreatedLastYear,WonLastYear,LostLastYear"
+      default="" />
+</design:component>

@@ -1,0 +1,37 @@
+<design:component label="DES RAR Information">
+  
+    <design:attribute name="TableHeading" label="Heading for the related table"
+      default="Example of Table Heading" />
+    <design:attribute name="fieldsToDisplay" label="Fields"
+      required="true" />
+  <design:attribute name="inNumberOfDecimals" label="Format Decimals"
+      datasource="Unformatted,0,1,2"
+      default="2" />
+  <design:attribute name="cssClassName" label="The class name to format the table"
+      datasource="Horizontal_Grey_Space,Horizontal_Grey_No_Space,Vertical_Clear,Vertical_Grey,Row,Vertical_fourColumns"
+      default="Horizontal_Grey_No_Space" />
+    <design:attribute name="noRecordscustomLabelAPIname" label="Custom Label for no records"
+      default="" />
+      <design:attribute name="tableMessage" label="Table Message"
+      default="" />
+    <design:attribute name="rowTitle" label="Row Title"
+      default="" />
+
+    <design:attribute name="TableHeading1" label="Heading for the related table"
+      default="Example of Table Heading" />
+    <design:attribute name="fieldsToDisplay1" label="Fields"
+      required="true" />
+  <design:attribute name="inNumberOfDecimals1" label="Format Decimals"
+      datasource="Unformatted,0,1,2"
+      default="2" />
+  <design:attribute name="cssClassName1" label="The class name to format the table"
+      datasource="Horizontal_Grey_Space,Horizontal_Grey_No_Space,Vertical_Clear,Vertical_Grey,Row,Vertical_fourColumns"
+      default="Horizontal_Grey_No_Space" />
+   <design:attribute name="noRecordscustomLabelAPIname1" label="Custom Label for no records"
+      default="" />
+      <design:attribute name="tableMessage1" label="Table Message"
+      default="" />
+   <design:attribute name="rowTitle1" label="Row Title"
+      default="" />
+    
+</design:component>

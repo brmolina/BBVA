@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Metadata to associate Taxonomy library codes to the corresponding objects and fields to which picklist values apply.</description>
+    <label>Taxonomy mapping</label>
+    <pluralLabel>Taxonomy mappings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

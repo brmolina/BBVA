@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SAL_LGT_Client</fullName>
+    <fields>Name</fields>
+    <fields>DES_Client_Type__c</fields>
+    <fields>MTD_Total_Franchise__c</fields>
+    <fields>YTD_Total_Franchise__c</fields>
+    <fields>Prior_Year_Franchise__c</fields>
+    <fields>SAL_PYTD_Franchise_Total__c</fields>
+    <fields>SAL_Client_STAR_ID_Solo__c</fields>
+    <fields>ParentId</fields>
+    <fields>SER_Abaco_ID__c</fields>
+    <fields>SER_Calypso_ID__c</fields>
+    <label>SAL_LGT_Client</label>
+</CompactLayout>

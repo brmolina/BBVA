@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asset_Class__c</fullName>
+    <defaultValue>IF(INCLUDES( $User.Asset_Class__c , &quot;FI&quot;), &quot;FI&quot;, NULL)  + &quot;; &quot; +
+IF(INCLUDES( $User.Asset_Class__c , &quot;FX&quot;), &quot;FX&quot;, NULL)  + &quot;; &quot; +
+IF(INCLUDES( $User.Asset_Class__c , &quot;EQ&quot;), &quot;Cash Equity&quot;, NULL)</defaultValue>
+    <inlineHelpText>Asset Class that will have access to the Opportunity</inlineHelpText>
+    <label>Asset Class</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>FI</fullName>
+                <default>true</default>
+                <label>FI</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>Cash Equity</fullName>
+                <default>false</default>
+                <label>Cash Equity</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

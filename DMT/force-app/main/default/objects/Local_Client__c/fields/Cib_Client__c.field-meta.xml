@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cib_Client__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Global Client</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Local Clients</relationshipLabel>
+    <relationshipName>Local_Clients</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

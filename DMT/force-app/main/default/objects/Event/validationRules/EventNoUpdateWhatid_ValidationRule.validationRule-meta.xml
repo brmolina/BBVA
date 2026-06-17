@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EventNoUpdateWhatid_ValidationRule</fullName>
+    <active>false</active>
+    <description>Esta regla de validación se crea para impedir que una tarea ya existente se el cambie el Whatid, ya que este cambio podría alterar la visibilidad de la tarea. La solución es eliminar la tarea y volver a crear otra con el Whatid correcto</description>
+    <errorConditionFormula>AND( ISCHANGED(WhatId) , 
+NOT(00N57000006LxMi))</errorConditionFormula>
+    <errorDisplayField>WhatId</errorDisplayField>
+    <errorMessage>&apos;Related to&apos; field can not be modified</errorMessage>
+</ValidationRule>

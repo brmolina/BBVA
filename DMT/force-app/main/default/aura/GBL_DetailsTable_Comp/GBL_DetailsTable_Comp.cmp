@@ -1,0 +1,101 @@
+<aura:component controller="dtde.GBL_DetailsTable_Ctrl"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+                access="global" >
+    
+    <aura:attribute name="fieldsToDisplay" type="String" access="public"
+       description="Which fields display, entering the API fields of the Object seperated by commas (field1,field2,field3)" />
+    <aura:attribute name="inNumberOfDecimals" type="String" access="public"
+       description="The maximum number of decimal is 2. 'Unformatted' shows value without format, but you can overwritte it entering '0', '1', or '2' values." />
+    <aura:attribute name="cssClassName" type="String" default="Vertical_Clear" access="public"
+       description="Choose a class name for the table: 'Horizontal_Grey_Space', 'Horizontal_Grey_No_Space', 'Vertical_Clear or Vertical_Grey'" />
+
+    <aura:attribute name="fieldsArray" type="Object" access="private" />
+    <aura:attribute name="complexObject" type="Object" access="private" />
+    <aura:attribute name="fieldLabels" type="String[]" access="private" />
+    <aura:attribute name="detailsComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="showComponent" type="Boolean" default="true" access="private" />
+    <aura:attribute name="Vertical_Clear" type="Boolean" default="0" access="private" />
+    <aura:attribute name="Horizontal_Grey_Space" type="Boolean" access="private" />
+    <aura:attribute name="Horizontal_Grey_No_Space" type="Boolean" access="private" />
+    <aura:attribute name="Vertical_Grey" type="Boolean" access="private" />
+    <aura:attribute name="fieldLabelSize" type="Integer" access="private" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.showComponent}">
+        <aura:if isTrue="{!v.Vertical_Clear}">
+            <div aura:id="changeIt" >
+                <table class="slds-card slds-table slds-resizable slds-table--col-bordered">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td border="1">
+                            <tr >
+                                 <div>
+                                  <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal slds-text-heading--medium"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                                </div>
+                            </tr>   
+                        </td>
+                    </aura:iteration>
+                </table>
+            </div>
+         </aura:if>
+
+        <aura:if isTrue="{!v.Horizontal_Grey_Space}">
+            <div aura:id="changeIt" >
+                <table class="slds-table slds-resizable ">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card horizontal" border="1">
+                            <div >
+                                <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                </b></div>
+                           </div>
+                        </td>
+                        <aura:renderIf isTrue="{!v.fieldLabelSize != x}">
+                            <td>
+                            </td>
+                        </aura:renderIf>
+                    </aura:iteration>
+                </table>
+            </div>
+         </aura:if>
+
+        <aura:if isTrue="{!v.Horizontal_Grey_No_Space}">
+            <div aura:id="changeIt" >
+                <table class="slds-card slds-table slds-resizable slds-table--col-bordered">
+                    <tr>
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card horizontal" border="1">
+                            <div>
+                                <div class=" horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                            </div>
+                        </td>
+                    </aura:iteration>
+                    </tr>
+                </table>
+            </div>
+         </aura:if>
+
+        <aura:if isTrue="{!v.Vertical_Grey}">
+            <div aura:id="changeIt" >
+                <table class="slds-table slds-resizable">
+                    <aura:iteration indexVar="x" items="{!v.fieldLabels}" var="fieldLabels">
+                        <td class="slds-card" >
+                            <tr>
+                                 <div>
+                                  <div class="horizontal slds-text-title--caps"><span class="slds-truncate">{!fieldLabels}</span></div>
+                                    <div class="horizontal"><b><c:GBL_DynamicTableField_Comp fieldIndex='{!x}' mapObject="{!v.complexObject}" detailsComponent="{!v.detailsComponent}" Field='{!v.fieldsArray}' numberOfDecimals="{!v.inNumberOfDecimals}"/>
+                                    </b></div>
+                                </div>
+                            </tr>   
+                        </td>
+                    </aura:iteration>
+                </table>
+            </div>
+        </aura:if>
+    </aura:if>
+    
+</aura:component>

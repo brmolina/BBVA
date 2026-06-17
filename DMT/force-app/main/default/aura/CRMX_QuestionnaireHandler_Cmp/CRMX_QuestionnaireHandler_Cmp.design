@@ -1,0 +1,6 @@
+<design:component>
+    <design:attribute name="recordId" label="Record ID" description="ID of the record in context." />
+    <design:attribute name="templateCuestionarios" label="Questionnaire Template" description="Name of the base questionnaire template." />
+    <design:attribute name="view" label="View Mode" description="If true, the form is read-only." />
+    <design:attribute name="editButton" label="Edit Button Configuration" description="JSON that defines the style and state of the edit button." />
+</design:component>

@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
  * @group             : 
- * @last modified on  : 05-27-2025
+ * @last modified on  : 04-28-2026
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 global with sharing class GDT_Proposal_Path_Controller {
@@ -113,13 +113,13 @@ global with sharing class GDT_Proposal_Path_Controller {
         List<ComboboxOption> options = new List<ComboboxOption>();
 
         for (GDT_Committee_Geo__mdt meta : [
-            SELECT id, GDT_Geography__c, GDT_Committee_Description__c, GDT_Committee__c 
+            SELECT id, GDT_Geography__c, GDT_Committee_Description__c, GDT_Committee__c, GDT_Taxo_Id__c 
 			FROM GDT_Committee_Geo__mdt 
 			WHERE GDT_Geography__c =: filterValue
         ]) {
             if (!uniqueValues.contains(meta.GDT_Committee__c)) { 
                 uniqueValues.add(meta.GDT_Committee__c);
-                options.add(new ComboboxOption(meta.GDT_Committee_Description__c, meta.GDT_Committee__c));
+                options.add(new ComboboxOption(meta.GDT_Committee_Description__c, meta.GDT_Taxo_Id__c));
             }
         }
         return options;
@@ -132,13 +132,13 @@ global with sharing class GDT_Proposal_Path_Controller {
         List<ComboboxOption> options = new List<ComboboxOption>();
 
         for (GDT_Committee_Geo__mdt meta : [
-            SELECT id, GDT_Geography__c, GDT_Committee_Description__c, GDT_Committee__c 
+            SELECT id, GDT_Geography__c, GDT_Committee_Description__c, GDT_Committee__c, GDT_Taxo_Id__c 
 			FROM GDT_Committee_Geo__mdt 
 			WHERE GDT_Committee__c =: filterValue
         ]) {
             if (!uniqueValues.contains(meta.GDT_Committee__c)) { 
                 uniqueValues.add(meta.GDT_Committee__c);
-                options.add(new ComboboxOption(meta.GDT_Committee_Description__c, meta.GDT_Committee__c));
+                options.add(new ComboboxOption(meta.GDT_Committee_Description__c, meta.GDT_Taxo_Id__c));
             }
         }
         System.debug('revisar last 2' + options);

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Desktop_lead_compact_layout</fullName>
+    <fields>Company</fields>
+    <fields>DES_Group__c</fields>
+    <fields>Name</fields>
+    <fields>DES_Title_Role__c</fields>
+    <fields>OwnerId</fields>
+    <label>Desktop lead compact layout</label>
+</CompactLayout>

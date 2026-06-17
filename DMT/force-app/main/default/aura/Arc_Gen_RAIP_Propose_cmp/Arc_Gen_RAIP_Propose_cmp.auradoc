@@ -1,0 +1,21 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_RAIP_Propose_cmp</p>
+        <p><b>DESCRIPTION: </b>Component modal that propose the calculated Rating to a superior ambit</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>delegationWrapper = String : Delegation wrapper</li>
+                <li>show = String : Indicates to show or to hide the modal</li>
+                <li>modalStep = String : 1/2/3: Indicates the step of the modal</li>
+                <li>selectedOption = String : Value ambit selected</li>
+                <li>showErrorSection = String : Indicates if the error section will be shown</li>
+                <li>errorMessage = String : Message to show to the user if the process fails</li>
+                <li>spinnerStatus = String" : Spinner load variable</li>
+                <li>isRatingCalculated = boolean : Indicates if there is a calculated rating in the RAIP</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_RAIP_Propose_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_RAIP_Propose_cmp" ref="c:Arc_Gen_RAIP_Propose_cmp" label="Rating Propose RAIP">
+    </aura:example>
+</aura:documentation>

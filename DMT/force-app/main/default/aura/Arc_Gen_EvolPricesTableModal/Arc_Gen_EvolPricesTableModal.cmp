@@ -1,0 +1,109 @@
+<aura:component
+  implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  controller="Arc_Gen_EvolPricesModal_Ctr"
+  access="global"
+>
+  <aura:attribute name="accHasId" type="String" description="id of the account has analysis" access="global" />
+  <aura:attribute name="year" type="Double" description="current year" access="global" />
+  <aura:attribute name="counter" type="Integer" default="0" description="counter to manage the rows of the table modal" access="global" />
+  <aura:attribute name="error" type="boolean" default="false" description="show/hide error message" access="global" />
+  <aura:attribute name="noRecords" type="boolean" description="show/hide table content" access="global" />
+  <aura:attribute name="disable" type="boolean" default="true" description="enable/disable the edit button" access="global" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:if isTrue="{!v.error}">
+    <div class="slds-box slds-theme_error">
+      <p>
+        {!$Label.c.Lc_arce_NewARCE_UnexpectedError}
+      </p>
+    </div>
+    <aura:set attribute="else">
+      <aura:if isTrue="{!v.noRecords}">
+        <div
+          class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info">
+          <h2>{!$Label.c.Arc_Gen_tableEmpty}</h2>
+        </div>
+        <aura:set attribute="else">
+          <div class="row">
+            <div class="slds-grid slds-grid_align-spread">
+              <div class="slds-col">
+                <lightning:input
+                  name="product"
+                  readonly="true"
+                  label=""
+                  value="{!$Label.c.Arc_Gen_ProductName}"
+                />
+              </div>
+              <div class="slds-col">
+                <lightning:input
+                  aura:id="yearInput"
+                  type="number"
+                  name="year"
+                  required="true"
+                  value="{! v.year }"
+                  label="{!$Label.c.Arc_Gen_MostRecentYear}"
+                  minlength="4"
+                  maxlength="4"
+                />
+              </div>
+              <div class="slds-col">
+                <lightning:input
+                  type="number"
+                  name="year-1"
+                  readonly="true"
+                  value="{! v.year le 0 ? '' : v.year -1 }"
+                  label="{!$Label.c.Arc_Gen_LastYear}"
+                  maxlength="4"
+                />
+              </div>
+              <div class="slds-col">
+                <lightning:input
+                  type="number"
+                  name="year-2"
+                  readonly="true"
+                  value="{! (v.year le 0 || v.year -2 le 0) ? '' : v.year -2 }"
+                  label="{!$Label.c.Arc_Gen_Previous2Years}"
+                  maxlength="4"
+                />
+              </div>
+              <div>
+                <lightning:buttonIcon
+                  aura:id="btnDelete"
+                  iconName="utility:delete"
+                  variant="bare"
+                  value="default"
+                  tooltip="{!$Label.c.Arc_Gen_Action_Delete}"
+                  alternativeText="{!$Label.c.Arc_Gen_Action_Delete}"
+                  iconClass="withe"
+                />
+              </div>
+            </div>
+          </div>
+          {!v.body}
+        </aura:set>
+      </aura:if>
+      <div class="slds-grid slds-grid_align-end buttonGrid">
+        <div class="slds-col--padded">
+          <span>
+            <lightning:buttonIcon
+              aura:id="addEntry"
+              iconName="utility:new"
+              alternativeText="{!$Label.c.Arc_Gen_Add_Record}"
+              size="large"
+              variant="bare"
+              onclick="{!c.addRow}"
+              tooltip="{!$Label.c.Arc_Gen_Add_Record}"
+            />
+          </span>
+        </div>
+      </div>
+      <footer class="slds-modal__footer">
+        <button
+          class="slds-button slds-button_brand"
+          disabled="{!v.disable}"
+          onclick="{!c.saveRecords}"
+          >{!$Label.c.Arc_Gen_Save}</button
+        >
+      </footer>
+    </aura:set>
+  </aura:if>
+</aura:component>

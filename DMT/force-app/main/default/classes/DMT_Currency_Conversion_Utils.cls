@@ -204,14 +204,23 @@ public with sharing class DMT_Currency_Conversion_Utils {
             if (objectName == 'DMT_Line__c') {
                 record = [SELECT CurrencyIsoCode FROM DMT_Line__c WHERE Id = :recordId LIMIT 1];
             } else if (objectName == 'Opportunity ') {
-                record = [SELECT CurrencyIsoCode FROM Opportunity WHERE Id = :recordId LIMIT 1];
+                record = [SELECT DMT_CurrencyText__c FROM Opportunity WHERE Id = :recordId LIMIT 1];
             } else {
                 throw new DTM_Currency_Exception('object not supported: ' + objectName);
             }
 
-            currencyIsoCode = record.get('CurrencyIsoCode') != null
+            if ( objectName     == 'Opportunity') {
+                currencyIsoCode = record.get('DMT_CurrencyText__c') != null
+                ? (String) record.get('DMT_CurrencyText__c')
+                : null;
+            } else {
+                currencyIsoCode = record.get('CurrencyIsoCode') != null
+                ? (String) record.get('CurrencyIsoCode')
+                : null;
+            }
+            /* currencyIsoCode = record.get('CurrencyIsoCode') != null
             ? (String) record.get('CurrencyIsoCode')
-            : null;
+            : null; */
 
         } else {
             currencyIsoCode = currencyISO;
@@ -224,7 +233,7 @@ public with sharing class DMT_Currency_Conversion_Utils {
 
         // Obtener factor de conversión
         List<DMT_Currency_Conversion__mdt> convList = [
-            SELECT Conversion_Factor__c
+            SELECT Conversion_Factor__c, Currency_Label__c
             FROM DMT_Currency_Conversion__mdt
             WHERE CurrencyIsoCode__c = :currencyIsoCode
             LIMIT 1
@@ -269,6 +278,12 @@ public with sharing class DMT_Currency_Conversion_Utils {
 
             outMap.put(fieldName, result);
         }
+
+        if(!String.isBlank(convList[0].Currency_Label__c)){
+            outMap.put('currencyLabel', convList[0].Currency_Label__c);
+        }else{
+            outMap.put('currencyLabel', '');
+        }  
 
     } catch (Exception e) {
         DES_Exceptions__b dmtEcx = DES_Exception_Utils.logExceptionWithoutInsert(
@@ -333,7 +348,7 @@ public with sharing class DMT_Currency_Conversion_Utils {
         }
 
         originalList = (List<Object>) inputMap.get('list');
-
+        String amountKey = inputMap.containsKey('amountKey') ? String.valueOf(inputMap.get('amountKey')) : 'amount';
         // Obtener el valor de 'action'
         String action = (inputMap.containsKey('action') && inputMap.get('action') instanceof String)
             ? (String) inputMap.get('action')
@@ -436,7 +451,7 @@ public with sharing class DMT_Currency_Conversion_Utils {
                 continue;
             }
 
-            Object amountRaw = item.get('amount');
+            Object amountRaw = item.get(amountKey);
             Decimal amount;
 
             try {
@@ -472,7 +487,7 @@ public with sharing class DMT_Currency_Conversion_Utils {
                 return outMap;
             }
 
-            item.put('amount', newAmount);
+            item.put(amountKey, newAmount);
             convertedList.add(item);
         }
 
@@ -712,6 +727,8 @@ public static Map<String, Object> DMT_Risk_Term_Conversion(Map<String, Object> i
             ? (String) inputMap.get('action')
             : null;
 
+        String amountKey = inputMap.containsKey('amountKey') ? String.valueOf(inputMap.get('amountKey')) : 'amount';
+
         if (String.isBlank(action)) {
             throw new DTM_Currency_Exception('No se definio el parametro action');
         }
@@ -818,7 +835,7 @@ public static Map<String, Object> DMT_Risk_Term_Conversion(Map<String, Object> i
                     continue;
                 }
 
-                Object amountRaw = item.get('amount');
+                Object amountRaw = item.get(amountKey);
                 Decimal amount;
                 try {
                     amount = Decimal.valueOf(String.valueOf(amountRaw));
@@ -837,7 +854,7 @@ public static Map<String, Object> DMT_Risk_Term_Conversion(Map<String, Object> i
                     continue;
                 }
 
-                item.put('amount', newAmount);
+                item.put(amountKey, newAmount);
                 updatedList.add(item);
             }
 
@@ -1149,11 +1166,7 @@ public static Map<String, Object> formatAmountScientificNotation (Map<String, Ob
      try {
         if(inputMap.get('arguments') != null){
             list<object> arguments = (List<Object>) inputMap.get('arguments');
-            System.debug('arguments: ' + arguments);
-            System.debug('arguments[0]: ' + arguments[0]);
             Decimal aux = Decimal.valueOf((String) arguments[0]);
-            System.debug('aux: ' + aux);
-            System.debug('aux.toPlainString(): ' + aux.toPlainString());
             String result = String.valueOf(aux.toPlainString());
             outMap.put('result', Decimal.valueOf(result));
         }

@@ -1,0 +1,82 @@
+.header {
+    text-align: right;
+    font-size: 12px;
+    color: #808080;
+    padding: 10px;
+}
+.header_title {
+    font-size: 13px;
+    color: #0066CC;
+}
+.warning {
+    text-align: center;
+    color: #A0522D;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    font-weight: bold;
+}
+.section {
+    clear: both;
+}
+.logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0px;
+    width: 100px;
+    height: auto;
+}
+.section-title {
+    margin: 0;
+    padding: 0;
+}
+.divider-blue {
+    background-color: #0066CC;
+    height: 2px;
+    margin: 5px 0 0 0;
+}
+.divider-lightblue {
+    background-color: #0099FF;
+    height: 1px;
+    margin: 0;
+}
+.info {
+    margin: 0;
+    padding: 0;
+    color: #0099FF;
+    font-family: Arial, sans-serif;
+    font-size: 12pt;
+}
+.info-center {
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 12pt;
+}
+.table-style {
+    width: 100%;
+    font-size: 14px;
+    border-spacing: 0;
+}
+hr {
+    border: 1px solid #ADD8E6;
+}
+h1 {
+    font-size: 14.0pt;
+    line-height: 115%;
+    font-family: Arial, sans-serif;
+    color: #0066CC;
+    font-weight: bold;
+}
+.questions {
+    font-family: Arial, sans-serif;
+    color: #365F91;
+    text-align: left;
+    padding-right: 100px;
+}
+.answers {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    padding-right: 0px;
+}

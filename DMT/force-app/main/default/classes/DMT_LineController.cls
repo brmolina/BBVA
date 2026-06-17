@@ -142,15 +142,15 @@ public with sharing class DMT_LineController {
         result.put('isAdmin', null);
         Boolean hasAccessOwner = false;
 
-        Boolean userPermissionRole = DMT_Utils.hasWriteAccess();
+        // Boolean userPermissionRole = DMT_Utils.hasWriteAccess();
 
-        // If the user is an admin, no need to query further
-        if(!userPermissionRole){
-            result.put('accessLevel_read', false);
-            return result;
-        }
+        // // If the user is an admin, no need to query further
+        // if(!userPermissionRole){
+        //     result.put('accessLevel_read', false);
+        //     return result;
+        // }
         // Get the current logged-in user
-        User currentUser = [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
+        User currentUser = [SELECT Profile.Name, DMT_User_Role__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
 
         // Check if the user is a System Administrator
         Boolean isAdmin = currentUser.Profile.Name == 'System Administrator';
@@ -178,7 +178,8 @@ public with sharing class DMT_LineController {
             WHERE Line__r.Id = :recordId AND User__c = :UserInfo.getUserId()
         ];
 
-        if (teamMembers.isEmpty()) {
+        String userRole = currentUser.DMT_User_Role__c == null ? '' : currentUser.DMT_User_Role__c;
+        if (teamMembers.isEmpty() && !userRole.contains('DMT_Read Only')) {
             result.put('accessLevel_read', false);
             return result;
         } else {
@@ -191,26 +192,63 @@ public with sharing class DMT_LineController {
     public static Map<String, Boolean> checkEditPermissionOpp(String oppId) {
         Map<String, Boolean> result = new Map<String, Boolean>();
         result.put(ACCESS_LEVEL_EDIT, false);
+        result.put('accessLevel_read', false);
         result.put(IS_ADMIN, false);
+        result.put('isGod', false);
+        result.put('isOwner', false);
+        result.put('isTeamMemberEmpty', false);
+        result.put('isTeamMemberRead', false);
+        result.put('isTeamMemberEdit', false);
+        result.put('isTeamMemberApprovalEdit', false);
 
+        Boolean userPermissionRole = DMT_Utils.hasWriteAccess();
+
+        // 1. Admin
         Boolean isAdmin = DMT_PermissionSelector.isCurrentUserAdmin();
         result.put(IS_ADMIN, isAdmin);
 
+        // 2. God permission (evaluated for all users, including admins)
+        Boolean isGod = FeatureManagement.checkPermission('DMT_Line_God');
+        result.put('isGod', isGod);
+
         if (isAdmin) {
-            result.put(ACCESS_LEVEL_EDIT, true);
+            result.put('accessLevel_read', true);
+        }
+
+        if (isGod) {
+            result.put('accessLevel_read', true);
+            result.put(ACCESS_LEVEL_EDIT, userPermissionRole);
             return result;
         }
 
+        // 3. Owner
         Opportunity opp = DMT_PermissionSelector.getOpportunityById(oppId);
-
-        if (opp.OwnerId == UserInfo.getUserId()) {
-            result.put(ACCESS_LEVEL_EDIT, true);
+        if (opp != null && opp.OwnerId == UserInfo.getUserId()) {
+            result.put(ACCESS_LEVEL_EDIT, userPermissionRole);
+            result.put('accessLevel_read', true);
+            result.put('isOwner', true);
             return result;
         }
 
-        List<DMT_TeamMember__c> teamMembers = DMT_PermissionSelector.getTeamMemberAccess(oppId);
-        if (!teamMembers.isEmpty()) {
-            result.put(ACCESS_LEVEL_EDIT, teamMembers[0].AccessLevel__c == 'Edit');
+        // 4. Team member
+        List<DMT_TeamMember__c> teamMembers = [
+            SELECT AccessLevel__c, DMT_ApprovalEdit__c
+            FROM DMT_TeamMember__c
+            WHERE Opportunity__c = :oppId AND User__c = :UserInfo.getUserId()
+            LIMIT 1
+        ];
+
+        if (teamMembers.isEmpty()) {
+            result.put('isTeamMemberEmpty', true);
+            return result;
+        }
+
+        result.put('accessLevel_read', true);
+        result.put('isTeamMemberRead', true);
+        if (teamMembers[0].AccessLevel__c == 'Edit' && userPermissionRole) {
+            result.put(ACCESS_LEVEL_EDIT, true);
+            result.put('isTeamMemberEdit', true);
+            result.put('isTeamMemberApprovalEdit', teamMembers[0].DMT_ApprovalEdit__c);
         }
 
         return result;

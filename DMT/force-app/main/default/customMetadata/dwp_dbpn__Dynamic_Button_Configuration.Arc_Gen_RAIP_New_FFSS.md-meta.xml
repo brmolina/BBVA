@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>dwp_dbpn__initial_component__c</field>
-        <value xsi:type="xsd:string">c:Arc_Gen_NewModalFinanStatem</value>
+        <value xsi:type="xsd:string">arce:Arc_Gen_2021RTC_FFSS</value>
     </values>
     <values>
         <field>dwp_dbpn__validation_apex_class_name__c</field>

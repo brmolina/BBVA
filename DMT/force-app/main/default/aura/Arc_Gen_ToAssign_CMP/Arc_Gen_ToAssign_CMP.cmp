@@ -1,0 +1,72 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_ToAssign_controller" access="global">
+    <aura:attribute name="ltsUsers" type="List" description="List with the users"/>
+    <aura:attribute name="isOpen" type="boolean" default="true" description="show/hide the modal"/>
+    <aura:attribute name="userSelected" type="String" default="" description="User selected in the modal"/>
+    <aura:attribute name="idUserSelected" type="String" default="" description="id of the user selected un the modal"/>
+    <aura:attribute name="spinner" type="Boolean" default="false" description="show/hide the spiner"/>
+    <aura:attribute name="isVisibleOptions" type="Boolean" default="false" description="show/hide verticalNavigation"/>
+    <aura:attribute name="isVisibleButton" type="Boolean" default="false" description="show/hide save button"/>
+    <aura:attribute name="validations" type="Map" default="{ spinner: 'no',
+                                                            response: 'no',
+                                                            message: 'si',
+                                                            icon: '...',
+                                                            style: 'no'}" />
+    <aura:if isTrue="{!v.isOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                            onclick="{! c.closeModel }"
+                                            alternativeText="{!$Label.qvcd.Button_Modal_Cancel}"
+                                            variant="bare-inverse"
+                                            class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.Arc_Gen_AssignTo}</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height: 150px;">
+                    <div class="slds-m-top_medium slds-m-bottom_medium">
+                        <aura:if isTrue="{!v.validations.spinner == 'si'}">
+                            <lightning:spinner alternativeText="Loading" size="medium"/>
+                        </aura:if>
+                        <aura:if isTrue="{!v.validations.response == 'si'}">
+                            <div class="slds-align_absolute-center">
+                                <span class="slds-badge slds-badge_lightest">
+                                    <span class="slds-badge__icon slds-badge__icon_left">
+                                        <span class="slds-icon_container slds-icon-utility-moneybag slds-current-color" title="Description of icon when needed">
+                                            <lightning:icon iconName="{!v.validations.icon}" class="{!v.validations.style}" size="x-small"/>
+                                        </span>
+                                    </span>{!v.validations.message}</span>
+                            </div>
+                        </aura:if>
+                        <lightning:input
+                                        aura:id="enter-search"
+                                        name="enter-search"
+                                        label="User to be reassigned"
+                                        isLoading="{! v.spinner }"
+                                        type="search"
+                                        value="{! v.userSelected }"
+                                        onchange="{! c.handleSearch }"
+                                        />
+                        <aura:if isTrue="{!v.isVisibleOptions}">
+                            <lightning:verticalNavigation shaded="true" class="shadow" onselect="{! c.itemSelected }">
+                                <lightning:verticalNavigationSection >
+                                    <aura:iteration items="{! v.ltsUsers }" var="usuario">
+                                        <lightning:verticalNavigationItemIcon label="{!usuario.nameUser + '  -  ' + usuario.perfilUser}" name="{!usuario.idUser + '_' + usuario.nameUser + '  -  ' + usuario.perfilUser}" iconName="standard:user"/>
+                                    </aura:iteration>
+                                </lightning:verticalNavigationSection>
+                            </lightning:verticalNavigation>
+                        </aura:if>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <aura:if isTrue="{!v.isVisibleButton}">
+                        <lightning:button variant="brand"
+                                            label="{!$Label.qvcd.Button_Modal_Save}"
+                                            title="{!$Label.qvcd.Button_Modal_Save}"
+                                            onclick="{! c.handleClick }"/>
+                    </aura:if>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,60 @@
+<aura:component
+    implements="lightning:actionOverride,lightning:hasPageReference,force:hasSObjectName,force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global" controller="NONC_SelectorPageNonClient_ctlr">
+
+    <aura:attribute name="isOnDesktop" type="String" default="{!$Browser.formFactor}" />
+    <aura:attribute name="showModal" type="boolean" default="false" />
+    <aura:attribute name="showError" type="boolean" default="false" />
+    <aura:attribute name="headerText" type="String" default="{!$Label.c.NClient_lbl_NewProspect}" />
+
+    <aura:attribute name="options" type="List" default="" />
+    <aura:attribute name="value" type="String" default="" />
+
+    <aura:attribute name="recordtypeName" type="String" default="" />
+    <aura:attribute name="isAdditional" type="Boolean" default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:NONC_ceEvent" action="{!c.handleComponentEvent}" />
+
+    <div class="check-similar-form" style="height: 600px;">
+        <aura:if isTrue="{!v.showModal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="{!$Browser.formFactor == 'DESKTOP'?'slds-modal__container':'slds-modal__container max-90'}">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" size="large"
+                            variant="bare" alternativeText="Close" onclick="{! c.closeModal }" />
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.headerText}</h2>
+                    </header>
+                    <!-- Main Body of Modal -->
+                    <div class="slds-modal__content slds-p-around_medium selectRT" id="modal-content-id-1">
+                        <aura:if isTrue="{!v.showError}">
+                            <ui:message title="" severity="error" closable="false">
+                                <lightning:icon iconName="action:close" alternativeText="Event" />
+                                {!$Label.c.NClient_lbl_NotExistsRT}
+                            </ui:message>
+                            <aura:set attribute="else">
+                                <legend class="form-element__legend slds-form-element__label">{!$Label.c.NClient_lbl_Select_a_record_type}
+                                </legend>
+                                <lightning:radioGroup aura:id="mygroup" name="radioButtonGroup"
+                                    label="{!$Label.c.NClient_lbl_Select_a_record_type}" options="{! v.options }" value="{! v.value }"
+                                    onchange="{! c.handleChange }" required="true" />
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <!-- Footer of Modal -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button label="{!$Label.c.NClient_lbl_Cancel}" title="Cancel" onclick="{! c.closeModal }"
+                            disabled="{!v.showError}" />
+                        <lightning:button variant="brand" label="{!$Label.c.NClient_lbl_Next}" title="Next" onclick="{! c.handleNext }"
+                            disabled="{!v.showError || v.value == ''}" />
+                    </footer>
+                </div>
+            </section>
+        </aura:if>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <div aura:id="createFormDuplicate"></div>
+
+</aura:component>

@@ -1,0 +1,28 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" controller="ViewChatterActionController">
+    <aura:attribute name="isExpanded" type="Boolean" default="true" />
+    <aura:attribute name="feedRecordId" type="Id" />
+    <aura:attribute name="opportunityFeedRecordId" type="Id" />
+    <aura:attribute name="displayRecordId" type="Id" />
+    <aura:attribute name="showOpportunityFeed" type="Boolean" default="false" />
+    <aura:attribute name="showLineFeed" type="Boolean" default="false" />
+    <aura:attribute name="widgetTitle" type="String" default="Live Chatter" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Floating Container -->
+    <div class="floating-widget">
+        <div class="widget-body">
+            <aura:if isTrue="{!not(empty(v.displayRecordId))}">
+                <div class="feed-container">
+                    <div class="chatter-header slds-grid slds-grid_vertical-align-center slds-m-bottom_medium">
+                        <lightning:icon icon-name="utility:chat" size="x-small" class="slds-m-right_small" />
+                        <h2 class="chatter-title">{!v.widgetTitle}</h2>
+                    </div>
+                    <forceChatter:publisher context="RECORD" recordId="{!v.displayRecordId}" />
+                    <forceChatter:feed type="Record" subjectId="{!v.displayRecordId}" feedDesign="DEFAULT" />
+                </div>
+            </aura:if>
+        </div>
+        
+    </div>
+</aura:component>

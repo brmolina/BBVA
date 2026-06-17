@@ -40,11 +40,9 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
             final String tierPicklistLabel = Util_PickList.getLabelFromApi('Account', 'DES_Tier__c').get(toolkits[0].cstk__account_id__r.DES_Tier__c);
             final String segmentationPicklistLabel = Util_PickList.getLabelFromApi('Account', 'DES_BBVA_Segmentation__c').get(toolkits[0].cstk__account_id__r.DES_BBVA_Segmentation__c);
             final String groupCode = toolkits[0].cstk__account_id__r.DES_Group_Code__c;
-            final String prospectId = toolkits[0].cstk__account_id__c;
-            List<CSTK_Client.ActivityListWrapper> actListWrap = new List<CSTK_Client.ActivityListWrapper>();
-            String ratingId;
             String sector;
 			String percent;
+            String ratingId;
 
             res.put('name', toolkits[0].Name);
             res.put('account', toolkits[0].cstk__account_id__r.Name);
@@ -55,12 +53,15 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
             res.put('groupCode', groupCode);
             res.put('htrActivity', activityPicklistLabel);
             res.put('tier', tierPicklistLabel);
+            res.put('isProspect', toolkits[0].cstk__has_parent_prospect__c);
 
             //---------------------------------- Manual Sector ----------------------------------//
             final cstk.Information_Sector_Manual_Selector selector = new cstk.Information_Sector_Manual_Selector(true);
             final List<cstk__Information_Sector_Manual__c> sectorManualList = selector.selectByToolkitIdAndYear(toolkits[0].Id, toolkits[0].cstk__year__c);
+            final cstk.GeneralData_Selector selectorGenData = new cstk.GeneralData_Selector(true);
+            final List<cstk__General_Data__c> genDataList = selectorGenData.selectByToolkitIdsAndYear(new set<Id>{toolkits[0].Id}, toolkits[0].cstk__year__c);
             
-            if (!sectorManualList.isEmpty()) {
+            if (!genDataList.isEmpty() && genDataList[0].cstk__is_manual_sectorization__c && !sectorManualList.isEmpty()) {
                 final List<CSTK_Client.ActivityListWrapper> actListWrapManual = new List<CSTK_Client.ActivityListWrapper>();
                 final List<String> listFieldsAllSectors = new List<String>{'cement','steel','auto','utilities','energy','autoparts','generic'};
                 final List<String> percentFieldsList = cstk.Utils.getAllPercentageFieldList('cstk__Information_Sector_Manual__c', 5, 2);
@@ -88,86 +89,22 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
 				CSTK_Client.ActivityListWrapper sectorPercSecManual = CSTK_Utils.getSectorValues(actListWrapManual);
                 sector = sectorPercSecManual.activity;
                 percent = sectorPercSecManual.percent;
+                res.put('sectorOrigin', 'Manual');
 
             } else {
             //---------------------------------- Arce/Holding Sector ----------------------------------//
-                final cstk__toolkit_settings__mdt config = cstk.Utils.getGeneralConfiguration();
-                final String sectorValues = config.cstk__toolkit_sector__c;
-                final SectorWrapper allSectValues = (SectorWrapper)System.JSON.deserialize(sectorValues, SectorWrapper.class);
-
-                // Callable Prospect Rating.
-                if (toolkits[0].cstk__has_parent_prospect__c) {
-                    final Map<String, Object> parameters = new Map<String, Object> {
-                        'statusId' => '13',
-                        'stage' => '3',
-                        'submittedType' => new List<String>{'1', '2'},
-                        'prospectId' => prospectId,
-                        'ratingToolId' => new List<String>{'2012P1IRP', '2021RTC_GEN'}
-                    };
-
-                    final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
-                    ratingId = (String) callable.call('getProspectArceRatingId', parameters);
-                
-                // Callable Client Rating.
-                } else {
-                    final Map<String, Object> parameters = new Map<String, Object> {
-                        'statusId' => '13',
-                        'stage' => '3',
-                        'submittedType' => new List<String>{'1', '2'},
-                        'groupCode' => groupCode,
-                        'ratingToolId' => new List<String>{'2012P1IRP', '2021RTC_GEN'}
-                    };
-
-                    final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
-                    ratingId = (String) callable.call('getClientArceRatingId', parameters);
-                }
-
-                if (!String.isBlank(ratingId)) {
-                    // Callable Sector Information. 
-                    final Map<String, Object> parameters = new Map<String, Object>{
-                        'ratingId' => ratingId
-                    };
-
-                    final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
-                    final List<Map<String, Object>> sectorInfo = (List<Map<String, Object>>) callable.call('getSectorization', parameters);
-                    System.debug('********************' + sectorInfo);
-                    
-
-                    // Calculate sector with arce information.
-                    if (!sectorInfo.isEmpty()) {
-
-                        for (Map<String, Object> act : sectorInfo) {
-                            String sectorId = (String) act.get('sector');
-                            String subsectorId = (String) act.get('subsector');
-                            String activityId = (String) act.get('economicActvy');
-                            String sumPercent = String.valueOf((Decimal) act.get('sumPercActivity'));
-
-                            CSTK_Client.ActivityListWrapper actPerc = new CSTK_Client.ActivityListWrapper();
-                            actPerc.activity = CSTK_Utils.mapArceSector(sectorId, subsectorId, activityId, allSectValues.arceValues);
-                            actPerc.percent = sumPercent;
-                            actListWrap.add(actPerc);
-                        }
-                    } 
-                }
-
-                //---------------------------------- Arce Sector ----------------------------------//
-                if (!actListWrap.isEmpty()) {
-                    CSTK_Client.ActivityListWrapper sectorPerc = CSTK_Utils.getSectorValues(actListWrap);
-                    sector = sectorPerc.activity;
-                    percent = sectorPerc.percent;
-
-                //---------------------------------- Holding Sector ----------------------------------//
-                } else {
-                    sector = CSTK_Utils.mapClientSector(sectorPicklistLabel, activityPicklistLabel, allSectValues.clientValues);
-                    percent = '100';
-                }
+                final Map<String, Object> mapSectorArceOrHolding = getSectorArceOrHolding(toolkits, sectorPicklistLabel, activityPicklistLabel);
+                System.debug('********************** mapSectorArceOrHolding   ====>>>>     '  + mapSectorArceOrHolding);
+                sector = (String) mapSectorArceOrHolding.get('sector');
+                percent = (String) mapSectorArceOrHolding.get('percent');
+                ratingId = (String) mapSectorArceOrHolding.get('ratingId');
+                res.put('sectorOrigin', (String) mapSectorArceOrHolding.get('sectorOrigin'));
             }
 
-            //---------------------------------- Add Generic for has_all_sector_info ----------------------------------//
+                    //---------------------------------- Add Generic for has_all_sector_info ----------------------------------//
             if (toolkits[0].cstk__has_all_sector_info__c != null && !toolkits[0].cstk__has_all_sector_info__c && !sector.contains('Generic')) {
                 res.put('sector', 'Generic;' + sector );
                 res.put('sectorPercent', '100;' + percent);
-            
             } else if (toolkits[0].cstk__has_all_sector_info__c != null && !toolkits[0].cstk__has_all_sector_info__c && sector.contains('Generic')) {
                 List<String> sectorList = sector.split(';');
                 List<String> sectorPercentList = new List<String>();
@@ -186,7 +123,6 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
                 }
                 res.put('sector', String.join(sectorList, ';'));
                 res.put('sectorPercent', String.join(sectorPercentList, ';'));
-
             } else {
                 res.put('sector', sector);
                 res.put('sectorPercent', percent);
@@ -206,6 +142,167 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
                     res.put('subsector', subSector);
                 }
             }
+        }
+
+        System.debug('********************** res.get(\'sector\')   ====>>>>     '  + res.get('sector'));
+
+        return res;
+    }
+
+    /**
+    * @description  returns Sectors from arce or Holding.
+    * @param toolkitId : Id of Toolkit record
+    * @return Map<String, Object> map with Sectors and origin sectors.
+    */
+    global Map<String, Object> getSectorArceOrHolding(Id toolkitId) {
+        final List<cstk__Toolkit__c> toolkits = [SELECT Id, Name, cstk__year__c, cstk__account_id__r.Name, cstk__account_id__r.DES_AGGR_Sector__c, cstk__account_id__r.DES_Tier__c, cstk__account_id__r.DES_Activity__c, cstk__account_id__r.DES_Group_Code__c, cstk__account_id__r.DES_Client_Type__c, cstk__account_id__r.DES_Country_of_Management__c, cstk__account_id__r.DES_BBVA_Segmentation__c, cstk__has_all_sector_info__c, cstk__has_parent_prospect__c FROM cstk__Toolkit__c WHERE Id =: toolkitId];
+        final String sectorPicklistLabel = Util_PickList.getLabelFromApi('Account', 'DES_AGGR_Sector__c').get(toolkits[0].cstk__account_id__r.DES_AGGR_Sector__c);
+        final String activityPicklistLabel = Util_PickList.getLabelFromApi('Account', 'DES_Activity__c').get(toolkits[0].cstk__account_id__r.DES_Activity__c);
+
+        return getSectorArceOrHolding(toolkits, sectorPicklistLabel, activityPicklistLabel);
+    }
+
+    /**
+    * @description Returns transitional banker names of group codes, separated by semicolon.
+    * @param groupsCodes : List of group codes to search bankers for.
+    * @return String with banker names separated by ';' (multiple groups) and ',' (multiple bankers per group).
+    */
+    global String getTransitionalBanker(List<String> groupsCodes) {
+        if (groupsCodes == null || groupsCodes.isEmpty()) {
+            return '';
+        }
+
+        final List<DES_BBVA_Management_team__c> infoDesBbvaManagement = [
+            SELECT Id, DES_Member_Role__c, DES_Client__r.DES_Group_Code__c, DES_Client__c, 
+                   DES_Client__r.Name, DES_User_Country__c, DES_User__c, DES_USER__r.Name, 
+                   DES_USER__r.EMPLOYEE_DEPARTMENT_DESC__c
+            FROM DES_BBVA_Management_team__c 
+            WHERE DES_Member_Role__c = 'Transaction Banker' 
+              AND DES_Client__r.DES_Group_Code__c IN :groupsCodes
+        ];
+
+        if (infoDesBbvaManagement.isEmpty()) {
+            return '';
+        }
+
+        final Map<String, List<DES_BBVA_Management_team__c>> mapGroupcodelistData = new Map<String, List<DES_BBVA_Management_team__c>>();
+        for (DES_BBVA_Management_team__c desBbvaMana : infoDesBbvaManagement) {
+            final String groupCode = desBbvaMana.DES_Client__r.DES_Group_Code__c;
+            if (!mapGroupcodelistData.containsKey(groupCode)) {
+                mapGroupcodelistData.put(groupCode, new List<DES_BBVA_Management_team__c>());
+            }
+            mapGroupcodelistData.get(groupCode).add(desBbvaMana);
+        }
+
+        final List<String> bankerParts = new List<String>();
+        for (String groupCode : groupsCodes) {
+            if (mapGroupcodelistData.containsKey(groupCode)) {
+                final List<DES_BBVA_Management_team__c> listData = mapGroupcodelistData.get(groupCode);
+                final List<String> bankerNames = new List<String>();
+
+                for (Integer i = 0; i < Math.min(2, listData.size()); i++) {
+                    if (listData[i].DES_USER__r != null && listData[i].DES_USER__r.Name != null) {
+                        bankerNames.add(listData[i].DES_USER__r.Name);
+                    }
+                }
+
+                if (!bankerNames.isEmpty()) {
+                    bankerParts.add(String.join(bankerNames, ', '));
+                }
+            }
+        }
+
+        return String.join(bankerParts, ';');
+    }
+
+    /**
+    * @description  returns Sectors from arce or Holding.
+    * @param toolkitRecord : List of Toolkit records
+    * @param sector : Sectors of sector manual
+    * @param percent : Percents sectors of sector manual
+    * @return Map<String, Object> map with Sectors and origin sectors.
+    */
+    private Map<String, Object> getSectorArceOrHolding(List<cstk__Toolkit__c> toolkitRecord, String sectorPicklistLabel, String activityPicklistLabel) {
+
+        final Map<String, Object> res = new Map<String, Object>();
+        final String groupCode = toolkitRecord[0].cstk__account_id__r.DES_Group_Code__c;
+        final String prospectId = toolkitRecord[0].cstk__account_id__c;
+        List<CSTK_Client.ActivityListWrapper> actListWrap = new List<CSTK_Client.ActivityListWrapper>();
+        String ratingId;
+
+        //---------------------------------- Arce/Holding Sector ----------------------------------//
+        final cstk__toolkit_settings__mdt config = cstk.Utils.getGeneralConfiguration();
+        final String sectorValues = config.cstk__toolkit_sector__c;
+        final SectorWrapper allSectValues = (SectorWrapper)System.JSON.deserialize(sectorValues, SectorWrapper.class);
+
+        // Callable Prospect Rating.
+        if (toolkitRecord[0].cstk__has_parent_prospect__c) {
+            final Map<String, Object> parameters = new Map<String, Object> {
+                'statusId' => '13',
+                'stage' => '3',
+                'submittedType' => new List<String>{'1', '2'},
+                'prospectId' => prospectId,
+                'ratingToolId' => new List<String>{'2012P1IRP', '2021RTC_GEN'}
+            };
+
+            final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
+            ratingId = (String) callable.call('getProspectArceRatingId', parameters);
+        
+        // Callable Client Rating.
+        } else {
+            final Map<String, Object> parameters = new Map<String, Object> {
+                'statusId' => '13',
+                'stage' => '3',
+                'submittedType' => new List<String>{'1', '2'},
+                'groupCode' => groupCode,
+                'ratingToolId' => new List<String>{'2012P1IRP', '2021RTC_GEN'}
+            };
+
+            final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
+            ratingId = (String) callable.call('getClientArceRatingId', parameters);
+        }
+
+        if (!String.isBlank(ratingId)) {
+            res.put('ratingId', ratingId);
+            // Callable Sector Information. 
+            final Map<String, Object> parameters = new Map<String, Object>{
+                'ratingId' => ratingId
+            };
+
+            final Callable callable = (Callable) Type.forName('Arc_ToolkitArceInterface').newInstance();
+            final List<Map<String, Object>> sectorInfo = (List<Map<String, Object>>) callable.call('getSectorization', parameters);
+            System.debug('********************' + sectorInfo);
+            
+
+            // Calculate sector with arce information.
+            if (!sectorInfo.isEmpty()) {
+
+                for (Map<String, Object> act : sectorInfo) {
+                    String sectorId = (String) act.get('sector');
+                    String subsectorId = (String) act.get('subsector');
+                    String activityId = (String) act.get('economicActvy');
+                    String sumPercent = String.valueOf((Decimal) act.get('sumPercActivity'));
+
+                    CSTK_Client.ActivityListWrapper actPerc = new CSTK_Client.ActivityListWrapper();
+                    actPerc.activity = CSTK_Utils.mapArceSector(sectorId, subsectorId, activityId, allSectValues.arceValues);
+                    actPerc.percent = sumPercent;
+                    actListWrap.add(actPerc);
+                }
+            } 
+        }
+
+        //---------------------------------- Arce Sector ----------------------------------//
+        if (!actListWrap.isEmpty()) {
+            CSTK_Client.ActivityListWrapper sectorPerc = CSTK_Utils.getSectorValues(actListWrap);
+            res.put('sector', sectorPerc.activity);
+            res.put('percent', sectorPerc.percent);
+            res.put('sectorOrigin', 'Arce');
+
+        //---------------------------------- Holding Sector ----------------------------------//
+        } else {
+            res.put('sector', CSTK_Utils.mapClientSector(sectorPicklistLabel, activityPicklistLabel, allSectValues.clientValues));
+            res.put('percent', '100');
+            res.put('sectorOrigin', 'Holding');
         }
 
         return res;
@@ -430,9 +527,9 @@ global with sharing class CSTK_Client implements cstk.Client_Itf, Callable {
     * @description returns picklist values filtered
     * @return List<sObject> of picklist values prefiltered
     */
-    global static List<SObject> getRecordsPicklist(String unprocessedQuery) {
-        String sQuery = replaceLabelFiltersWithApiValues(unprocessedQuery);
-        final List<AggregateResult> results = Database.query(sQuery); // NOSONAR
+    global static List<SObject> getRecordsPicklist(String unprocessedQuery, String filterKey) {
+        //String sQuery = replaceLabelFiltersWithApiValues(unprocessedQuery);
+        final List<AggregateResult> results = Database.query(unprocessedQuery); // NOSONAR
         final List<SObject> output = new List<SObject>();
 
         Map<String, String> sectorMap = Util_PickList.getLabelFromApi('Account', 'DES_AGGR_Sector__c');

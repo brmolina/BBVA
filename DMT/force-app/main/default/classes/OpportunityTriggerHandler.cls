@@ -1,7 +1,7 @@
 /*
 * @author       Accenture
 * @date         01/03/2016
-* @description  Manejador del trigger para el objeto Opportunity. No implementar logica aquí, para ello utilizar ActivitiesUtils
+* @description  Manejador del trigger para el objeto Opportunity. No implementar logica aquí, para ello utilizar ActivitiesUtils reupload
 * @Revision
 */
 /*
@@ -18,16 +18,16 @@ Version   Date            Author          Summary of changes
 0.7       2018/12/14      Accenture       Añadido mét0d0 "checkDeletePermission" con la lógica para evento before delete
 0.8       2018/12/17      VASS            Si se modifica el campo del NBC asociado, se copian t0d0s los ficheros que tenga el
                                           template asociado a la opp al nbc vinculado.
-0.9		  22/03/2019      Accenture		  Modificado el cálculo de cross border
-1.0		  03/09/2019      Accenture		  Renombrado de métodos onAfterInsert/onAfterUpdate por los nombres más descriptivos
+0.9      22/03/2019      Accenture      Modificado el cálculo de cross border
+1.0      03/09/2019      Accenture      Renombrado de métodos onAfterInsert/onAfterUpdate por los nombres más descriptivos
                                           denormOnAfterInsert/denormOnAfterUpdate respectivamente.
                                           Modificada la lógica de changeDraftToProp para que cambie el recordtype en las opp expiradas.
-1.1		  19/09/2019      Accenture		  Se saca del metodo denormOnAfterUpdate la llamada al método moveFilesToNBC para que sea independiente.
-1.2		  27/09/2019      Accenture		  Se elimina metodo innecesario "toggleScheduleNotification".
-1.3		  13/11/2019      Vass		      Se añade el met0d0 updateTemplate.
+1.1      19/09/2019      Accenture      Se saca del metodo denormOnAfterUpdate la llamada al método moveFilesToNBC para que sea independiente.
+1.2      27/09/2019      Accenture      Se elimina metodo innecesario "toggleScheduleNotification".
+1.3      13/11/2019      Vass          Se añade el met0d0 updateTemplate.
 1.4     20/11/2019      Vass          Se añade el met0d0 crearChatter.
 1.5     21/04/2020      Vass          Se añade condicional en setManualPermissions que verifica si la opp es de cliente Venezolano (MAXMIX4-3425) y solo comparte a TB y GB del Grupo.
-1.6		  17/05/2020      JSS		          Se añaden métodos con lógica para las oportunidades de la funcionalidad PRICING
+1.6      17/05/2020      JSS              Se añaden métodos con lógica para las oportunidades de la funcionalidad PRICING
 **********************************************************************************/
 public with sharing class OpportunityTriggerHandler {
     //LOGIC
@@ -44,11 +44,13 @@ public with sharing class OpportunityTriggerHandler {
     private static Id oppIdWithSimilar;//Id de la oportunidad modificada a Proposal manualmente y con oportunidades similares.
     /*Declarando variable*/
     final Desktop_Utils handlerDsktpUtls = Desktop_Utils.getInstance();
-    /*string para guardar el perfil del current user*/
-	  final static String PROFILENAME = [SELECT Name FROM Profile WHERE Id = :userInfo.getProfileId() LIMIT 1].Name;
 
     private OpportunityTriggerHandler() {
     }
+
+    private static String getProfileName() {
+    return TriggerCacheManager.getInstance().getCurrentUserProfileName();
+}
 
     //SINGLETON PATTERN
     private static OpportunityTriggerHandler instance;
@@ -132,7 +134,7 @@ public with sharing class OpportunityTriggerHandler {
 
         if (/*userSettings.CIB_Is_Desktop__c  &&*/ !bypassSettings.CIB_DES_DataMigration__c) {
             system.debug(Logginglevel.INFO,'>>>>>>> Desktop User. Inserting records to a DenormalizeOpportunities custom object...');
-            final dwp_acmh.GBL_DenormalizeOpportunitiesUtils doUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils(); //NOSONAR
+            final GBL_DenormalizeOpportunitiesUtils doUtil = new GBL_DenormalizeOpportunitiesUtils(); //NOSONAR
             for (Opportunity opp : newList) {
                 if (/*opp.AccountId != null  &&*/ opp.StageName != Label.DES_Draft) {
                     doUtil.denormalize(String.valueOf(opp.Id));
@@ -159,9 +161,9 @@ public with sharing class OpportunityTriggerHandler {
     }
 
     /**
-	 * @author Global Desktop
-	 */
-	private Set<Id> getDirectClientIds(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
+   * @author Global Desktop
+   */
+  private Set<Id> getDirectClientIds(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
       Set<Id> setIdDirectClient = new Set<Id>();
       Boolean noExcluido = true;
 
@@ -182,8 +184,8 @@ public with sharing class OpportunityTriggerHandler {
     }
 
     /**
-	 * @author Global Desktop
-	 */
+   * @author Global Desktop
+   */
     public void setManualPermissions(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
       //Set<Id> setIdOpp = new Set<Id>(); Unused local variable
       Set<Id> setIdDirectClient = new Set<Id>();
@@ -217,9 +219,9 @@ public with sharing class OpportunityTriggerHandler {
             system.debug('>>>>> mapClientsGroups.get(opp.AccountId) : ' + mapClientsGroups.get(opp.AccountId));
             system.debug('>>>>> Country Client: ' + opp.Account.DES_Country_Client__c);
             //Doy permisos para el equipo de la cuenta directa
-    
+
             if(opp.Account.DES_Country_Client__c != 'VE') {
-    
+
               if(mapAccAndMmbrs.get(opp.AccountId) != null) {
                 if(mapAccAndMmbrs.get(opp.AccountId).contains(';')) {
                   for(String userId : mapAccAndMmbrs.get(opp.AccountId).split(';')) {
@@ -229,7 +231,7 @@ public with sharing class OpportunityTriggerHandler {
                   lstMnlShrOpps.add(handlerDsktpUtls.newManualSharingOpportunity(opp.Id, mapAccAndMmbrs.get(opp.AccountId), 'Edit'));
                 }
               }
-    
+
               if(mapClientsGroups.get(opp.AccountId) != null
               && mapAccAndMmbrs.get(mapClientsGroups.get(opp.AccountId)) != null) {
                 if(mapAccAndMmbrs.get(mapClientsGroups.get(opp.AccountId)).contains(';')) {
@@ -241,7 +243,7 @@ public with sharing class OpportunityTriggerHandler {
                   lstMnlShrOpps.add(handlerDsktpUtls.newManualSharingOpportunity(opp.Id, mapAccAndMmbrs.get(mapClientsGroups.get(opp.AccountId)), 'Edit'));
                 }
               }
-    
+
             } else {
               System.debug('>>>>> Es oportunidad de Cliente venezolano');
               System.debug('>>>>> la validacion es ------> ' + mapAccAndMmbrsInfo.get(mapClientsGroups.get(opp.AccountId)));
@@ -265,16 +267,16 @@ public with sharing class OpportunityTriggerHandler {
       system.debug('>>>>> listSR buena : ' + listSR);
     }
     /**
-	 * Event handler before insert
-	 */
-	public void beforeInsert(List<Opportunity> triggerNew) {
-		completeRegion(triggerNew);
+   * Event handler before insert
+   */
+  public void beforeInsert(List<Opportunity> triggerNew) {
+    completeRegion(triggerNew);
     Map<Id, SObject> newMap = new Map<Id, SObject>();
     for(Opportunity opp : triggerNew){
       newMap.put(opp.Id, (SObject)opp);
     }
     Utilities.checkIsMexico(newMap);
-	}
+  }
   public void beforeUpdate(List<Opportunity> triggerNew) {
     completeRegion(triggerNew);
     Map<Id, SObject> newMap = new Map<Id, SObject>();
@@ -284,21 +286,18 @@ public with sharing class OpportunityTriggerHandler {
     Utilities.checkIsMexico(newMap);
   }
 
-  public void completeRegion(List<Opportunity> triggerNew) {
-    final list<Opp_Countries__mdt> regionCountry = [SELECT Label, DeveloperName, Opp_Region__c FROM Opp_Countries__mdt LIMIT 300];
-    final map<String, String> countryRegion = new map<String, String>();
+ public void completeRegion(List<Opportunity> triggerNew) {
+    // Usar caché en lugar de query
+    Map<String, String> countryRegion = TriggerCacheManager.getInstance().getCountryToRegionMap();
 
-    for(Opp_Countries__mdt i : regionCountry) {
-      countryRegion.put(i.DeveloperName, i.Opp_Region__c);
+    for (Opportunity o : triggerNew) {
+        String region = countryRegion.get(o.DES_Booking_Geography__c);
+        if (region != null) {
+            o.region_name__c = region;
+        }
     }
-    for(Opportunity o : triggerNew) {
-      system.debug('valor del mapa countryRegion: ' +countryRegion.get(o.DES_Booking_Geography__c));
-      final String region = countryRegion.get(o.DES_Booking_Geography__c);
-      if(region != null) {
-        o.region_name__c = region;
-      }
-    }
-  }
+}
+
 
    /*   Event handler denormOnAfterUpdate para lanzar la denormalización en caso de ser necesario tras una modificación de la Opportunidad  */
     public void denormOnAfterUpdate (final List<Opportunity> newList, final Map<Id,Opportunity> oldMap, final Map<Id,Opportunity> triggerNewMap) {
@@ -306,7 +305,7 @@ public with sharing class OpportunityTriggerHandler {
         system.debug(Logginglevel.INFO,'>>>>>>> Entrando trigger Opportunity (after update): ' + newList);
         if (/*userSettings.CIB_Is_Desktop__c &&*/ !bypassSettings.CIB_DES_DataMigration__c && !System.isBatch()) {
             system.debug(Logginglevel.INFO,'>>>>>>> Desktop User. Updating records to a DenormalizeOpportunities custom object...');
-//            final dwp_acmh.GBL_DenormalizeOpportunitiesUtils doUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils();
+//            final GBL_DenormalizeOpportunitiesUtils doUtil = new GBL_DenormalizeOpportunitiesUtils();
 
             final set<id> oppId = new set<id>();
             for (Opportunity opp : newList) {
@@ -329,19 +328,19 @@ public with sharing class OpportunityTriggerHandler {
         timesExecuted ++;
     }
     /**
-	* Aux future method to denorm
-	*/
+  * Aux future method to denorm
+  */
     @future
     private static void auxDenorm(Id oppId) {
-        final dwp_acmh.GBL_DenormalizeOpportunitiesUtils doUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils();
+        final GBL_DenormalizeOpportunitiesUtils doUtil = new GBL_DenormalizeOpportunitiesUtils();
         SER_TriggerHelper.set_MetodFired('OpportunityDenorm_restoreUpdate', true);
         doUtil.restore(String.valueOf(oppId));
     }
 
     /**
-	 * Función que rellena el recordtype de la opp
-	 */
-	 public static void setOppRecordType(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
+   * Función que rellena el recordtype de la opp
+   */
+   public static void setOppRecordType(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
         for(Opportunity opp : triggerNewMap.values()) {
             if(changeDraftToProp(opp, triggerOldMap.get(opp.Id))) {
                 system.debug(Logginglevel.INFO,'>>>>>>> setOppRecordType -> cambiando el recordtype de Draf a Business.');
@@ -365,8 +364,8 @@ public with sharing class OpportunityTriggerHandler {
             }
             system.debug('>>>>> listaOppsSimilares: ' + lstOppsSimilar);
             if(lstOppsSimilar != null && !lstOppsSimilar.isEmpty()) {
-            	String nmbrsOppsSimilar = '';
-            	Integer num = 0;
+              String nmbrsOppsSimilar = '';
+              Integer num = 0;
                 system.debug('>>>>> listaOppsSimilares : ' + lstOppsSimilar);
                 for(Opportunity oppSimilar : lstOppsSimilar) {
                     if(num < lstOppsSimilar.size()-1) {
@@ -490,128 +489,143 @@ public with sharing class OpportunityTriggerHandler {
         return listOpp;
     }
 
-	/*
-	* @author Global Desktop
-	* @Description Calcula el cross border de las oportunidades
-	*/
-    public void calculateCrossBorder(list<Opportunity> inputOppList, map<id,Opportunity> oldMapValues) { //NOSONAR
-        final set<Id> accountIds = new set<Id>();
-        final set<Id> oppIds = new set<Id>();
+    /*
+    * @author Global Desktop
+    * @Description Calcula el cross border de las oportunidades
+    */
+    public void calculateCrossBorder(List<Opportunity> inputOppList, Map<Id, Opportunity> oldMapValues) {
+      Set<Id> accountIds = new Set<Id>();
+      Set<Id> oppIds = new Set<Id>();
 
-        //recorro triggerNew y me quedo con un set de ids de las cuentas y las oportunidades
-        for(Opportunity opportunity : inputOppList) {
-          if(opportunity.AccountId != null) {
-            accountIds.add(opportunity.AccountId);
-            oppIds.add(opportunity.Id);
+      for (Opportunity opportunity : inputOppList) {
+          if (opportunity.AccountId != null) {
+              accountIds.add(opportunity.AccountId);
+              oppIds.add(opportunity.Id);
           }
-        }
-        
-        System.debug('accountIds:::: '+accountIds);
-		System.debug('oppIds:::: '+oppIds);
-        // recorro la matriz para quedarme con las parejas filial-grupo
-        final Map<Id,DES_Subsidiary_Group_Relation__c> matrixRelationMap = new Map<Id,DES_Subsidiary_Group_Relation__c>();
-
-        for(DES_Subsidiary_Group_Relation__c matrix : [SELECT participant_parent_id__c, participant_child_id__c
-        FROM DES_Subsidiary_Group_Relation__c
-        WHERE participant_child_id__c IN :accountIds and main_subsidiary_ind_type__c = true
-        ]) {
-        	// guardo el mapa de filial-grupo y el set de ids de los grupos para luego meterlos en la lista de cuentas total
-        	matrixRelationMap.put(matrix.participant_child_id__c, matrix);
-        	if(!accountIds.contains(matrix.participant_parent_id__c)) {
-        		accountIds.add(matrix.participant_parent_id__c);
-        	}
-        }
-        system.debug('matrixRelationMap: ' + matrixRelationMap);
-
-        // recorro las cuentas para quedarme con los campos de las cuentas de las oportunidades y de los grupos de la matriz
-        Map<Id,Account> totalAccountsMap;
-        totalAccountsMap = new Map<Id,Account>();
-        for(Account account : [SELECT Id, RecordType.DeveloperName, DES_Tier__c, DES_Country_of_Management__c,
-        DES_Country_Client__c, DES_Segment__c, DES_Entity_Hierarchy__c, DES_Client_Matrix__c, DES_Client_Matrix__r.DES_Country_Client__c
-        FROM Account WHERE Id IN :accountIds]) {
-        	totalAccountsMap.put(account.Id, account);
-        }
-        System.debug('totalAccountsMap: ' + totalAccountsMap);
-
-		    // recorro los opp product de las oportunidades de triggerNew
-        final list<OpportunityLineItem> oppProductList = new list<OpportunityLineItem>([SELECT id, OpportunityId, DES_Product_Family__c, solution_classification_desc__c, oppy_target_country_name__c //NOSONAR
-                                                                                    FROM OpportunityLineItem
-                                                                                    WHERE OpportunityId IN: oppIds]);
-        //Special Countries
-        final list<DES_XB_Country__mdt> countries = [SELECT id, DeveloperName, Label, DES_XB_Region__c FROM DES_XB_Country__mdt LIMIT 20000];
-        final set<String> setCountrySpecial = new set<String>();
-        final String specialCountry = 'Special Country'; //NOSONAR
-        for(DES_XB_Country__mdt i : countries) {
-          if(i.DES_XB_Region__c == specialCountry) {
-              setCountrySpecial.add(i.DeveloperName);
-          }
-        }
-
-        for(Opportunity opp : inputOppList) {
-            opp.DES_Cross_border__c = false;
-          if (opp.AccountId != null) {
-            //si la cuenta de la opp no está en el mapa de la matriz, la oportunidad no es de filial
-            if(matrixRelationMap.get(opp.AccountId) == null) {
-              //calculo geografía de origen
-              String geografiaOrigen;
-              geografiaOrigen = getGeografiaOrigen(totalAccountsMap.get(opp.AccountId), false, totalAccountsMap, opp);
-              system.debug('Valor de geografiaOrigen - Grupo: ' + geografiaOrigen );
-              //calculo la geografía de destino con la de origen para cada producto
-              getGeografiaDestinoGrupo(oppProductList, opp, geografiaOrigen, countries);
-
-            //si la cuenta de la opp está en el mapa de la matriz, la oportunidad es de una filial
-            } else {
-              //calculo la geografía de origen del grupo
-              String geografiaOrigen;
-              geografiaOrigen = getGeografiaOrigen(totalAccountsMap.get(matrixRelationMap.get(opp.AccountId).participant_child_id__c), true, totalAccountsMap, opp);
-              system.debug('Valor de geografiaOrigen - Filial: ' + geografiaOrigen );
-              String geografiaDestino;
-              geografiaDestino = getGeografiaDestino(totalAccountsMap, opp.AccountId);
-              system.debug('Valor de geografiaDestino  - Filial: ' + geografiaDestino );
-              if(setCountrySpecial.contains(geografiaDestino)) {
-                system.debug('special country');
-                opp.DES_Cross_border__c = false;
-              } else {
-                checkGOequalsGD(geografiaOrigen, geografiaDestino, opp, countries);
-              }
-            }
-          }
-        }
       }
 
-	/*
-	* @author Global Desktop
-	* @Description Calcula la geografia de origen para cross border
-	*/
+      if (accountIds.isEmpty()) {
+          return;
+      }
+
+      // Obtener relaciones matriz-filial
+      Map<Id, DES_Subsidiary_Group_Relation__c> matrixRelationMap = new Map<Id, DES_Subsidiary_Group_Relation__c>();
+      for (DES_Subsidiary_Group_Relation__c matrix : [
+          SELECT participant_parent_id__c, participant_child_id__c
+          FROM DES_Subsidiary_Group_Relation__c
+          WHERE participant_child_id__c IN :accountIds
+          AND main_subsidiary_ind_type__c = true
+      ]) {
+          matrixRelationMap.put(matrix.participant_child_id__c, matrix);
+          if (!accountIds.contains(matrix.participant_parent_id__c)) {
+              accountIds.add(matrix.participant_parent_id__c);
+          }
+      }
+
+      // Obtener cuentas
+      Map<Id, Account> totalAccountsMap = new Map<Id, Account>([
+          SELECT Id, RecordType.DeveloperName, DES_Tier__c, DES_Country_of_Management__c,
+                DES_Country_Client__c, DES_Segment__c, DES_Entity_Hierarchy__c,
+                DES_Client_Matrix__c, DES_Client_Matrix__r.DES_Country_Client__c
+          FROM Account
+          WHERE Id IN :accountIds
+      ]);
+
+      // Obtener productos de oportunidades
+      List<OpportunityLineItem> oppProductList = [
+          SELECT Id, OpportunityId, DES_Product_Family__c, solution_classification_desc__c, oppy_target_country_name__c
+          FROM OpportunityLineItem
+          WHERE OpportunityId IN :oppIds
+      ];
+
+      // USAR CACHÉ para países - AQUÍ ESTÁ LA OPTIMIZACIÓN PRINCIPAL
+      TriggerCacheManager cache = TriggerCacheManager.getInstance();
+      Set<String> setCountrySpecial = cache.getSpecialCountries();
+      Set<String> setCountryEuropa = cache.getEuropeCountries();
+      Set<String> setCountryAsia = cache.getAsiaCountries();
+
+      for (Opportunity opp : inputOppList) {
+          opp.DES_Cross_border__c = false;
+
+          if (opp.AccountId == null) {
+              continue;
+          }
+
+          if (matrixRelationMap.get(opp.AccountId) == null) {
+              // No es filial
+              String geografiaOrigen = getGeografiaOrigen(
+                  totalAccountsMap.get(opp.AccountId),
+                  false,
+                  totalAccountsMap,
+                  opp
+              );
+              getGeografiaDestinoGrupo(
+                  oppProductList,
+                  opp,
+                  geografiaOrigen,
+                  setCountryEuropa,
+                  setCountryAsia
+              );
+          } else {
+              // Es filial
+              String geografiaOrigen = getGeografiaOrigen(
+                  totalAccountsMap.get(matrixRelationMap.get(opp.AccountId).participant_child_id__c),
+                  true,
+                  totalAccountsMap,
+                  opp
+              );
+              String geografiaDestino = totalAccountsMap.get(opp.AccountId).DES_Country_Client__c;
+
+              if (setCountrySpecial.contains(geografiaDestino)) {
+                  opp.DES_Cross_border__c = false;
+              } else {
+                  checkGOequalsGD(
+                      geografiaOrigen,
+                      geografiaDestino,
+                      opp,
+                      setCountryEuropa,
+                      setCountryAsia
+                  );
+              }
+          }
+      }
+  }
+
+
+  /*
+  * @author Global Desktop
+  * @Description Calcula la geografia de origen para cross border
+  */
     private static String getGeografiaOrigen(Account accToEvaluate, boolean isSubsidiary, Map<Id,Account> totalAccountsMap, Opportunity opp) {
-        String geografiaOrigen;
+      if (accToEvaluate == null) {
+              return null;
+          }
 
-        // values: 00000020: CIB-Platinum, 00000021: CIB-Gold, 00000022: CIB-Silver, 00000024: BEeIG-GCB, 00000010: BEeIG - Others, 00000025 CIB-Geographic, 00000023: CIB-Bronze, 00000000: Not Defined
-        // values: 00005: Corporate, 00003: SME & Retail, 00001: Institutional Client, 00002: Public Sector, 00006: Financial Sponsors, 00004: Others
-        system.debug('Valor de accToEvaluate: ' +accToEvaluate);
-        if(accToEvaluate.DES_Tier__c == '00000020' || accToEvaluate.DES_Tier__c == '00000021' ||
-        accToEvaluate.DES_Tier__c == '00000022' || accToEvaluate.DES_Tier__c == '00000024') {
+          String geografiaOrigen = null;
+          String tier = accToEvaluate.DES_Tier__c;
+          String segment = accToEvaluate.DES_Segment__c;
 
-            if(accToEvaluate.DES_Segment__c == '00005' || accToEvaluate.DES_Segment__c == '00003') {
-                geografiaOrigen = accToEvaluate.DES_Country_of_Management__c;
-            } else if(accToEvaluate.DES_Segment__c == '00001' || accToEvaluate.DES_Segment__c == '00002'
-            || accToEvaluate.DES_Segment__c == '00006' || accToEvaluate.DES_Segment__c == '00004') {
-                geografiaOrigen = accToEvaluate.DES_Country_Client__c;
-            }
+          if (tier == '00000020' || tier == '00000021' || tier == '00000022' || tier == '00000024') {
+              if (segment == '00005' || segment == '00003') {
+                  geografiaOrigen = accToEvaluate.DES_Country_of_Management__c;
+              } else if (segment == '00001' || segment == '00002' || segment == '00006' || segment == '00004') {
+                  geografiaOrigen = accToEvaluate.DES_Country_Client__c;
+              }
+          } else if (tier == '00000010' || tier == '00000025' || tier == '00000023' || tier == '00000000') {
+              if (isSubsidiary) {
+                  Account oppAccount = totalAccountsMap.get(opp.AccountId);
+                  geografiaOrigen = oppAccount != null ? oppAccount.DES_Country_Client__c : null;
+              } else {
+                  Account oppAccount = totalAccountsMap.get(opp.AccountId);
+                  geografiaOrigen = (oppAccount != null && oppAccount.DES_Client_Matrix__r != null)
+                      ? oppAccount.DES_Client_Matrix__r.DES_Country_Client__c
+                      : null;
+              }
+          }
 
-        } else if((accToEvaluate.DES_Tier__c == '00000010' || accToEvaluate.DES_Tier__c == '00000025' ||
-        accToEvaluate.DES_Tier__c == '00000023' || accToEvaluate.DES_Tier__c == '00000000') && isSubsidiary) {
-            //SubsidiaryCountry
-            geografiaOrigen = totalAccountsMap.get(opp.AccountId).DES_Country_Client__c;
-            system.debug('isSubsidiary geografiaOrigen: ' + geografiaOrigen);
-        } else if((accToEvaluate.DES_Tier__c == '00000010' || accToEvaluate.DES_Tier__c == '00000025' ||
-        accToEvaluate.DES_Tier__c == '00000023' || accToEvaluate.DES_Tier__c == '00000000') && !isSubsidiary) {
-            //MatrizCountry
-            geografiaOrigen = totalAccountsMap.get(opp.AccountId).DES_Client_Matrix__r.DES_Country_Client__c;
-            system.debug('NO isSubsidiary geografiaOrigen: ' + geografiaOrigen);
-        }
-        return geografiaOrigen;
-    }
+          return geografiaOrigen;
+      }
+
 
 	/*
 	* @author Global Desktop
@@ -625,85 +639,70 @@ public with sharing class OpportunityTriggerHandler {
 	* @author Global Desktop
 	* @Description Calcula la geografia de destino para cross border de no filiales
 	*/
-    private static void getGeografiaDestinoGrupo(list<OpportunityLineItem> allProdutsList, Opportunity opp, String geografiaOrigen, List<DES_XB_Country__mdt> countries) {
-        final list<OpportunityLineItem> productOfOpp = new list<OpportunityLineItem>();
-        for(OpportunityLineItem oppProduct : allProdutsList) {
-            if(oppProduct.OpportunityId == opp.Id) {
+    private static void getGeografiaDestinoGrupo(list<OpportunityLineItem> allProductsList, Opportunity opp, String geografiaOrigen, Set<String> europeCountries,Set<String> asiaCountries) {
+        List<OpportunityLineItem> productOfOpp = new List<OpportunityLineItem>();
+        for (OpportunityLineItem oppProduct : allProductsList) {
+            if (oppProduct.OpportunityId == opp.Id) {
                 productOfOpp.add(oppProduct);
             }
         }
-        String geografiaDestino;
-        System.debug('productOfOpp: ' + productOfOpp);
 
-        //si la oportunidad no tiene productos, XB = false
         if (productOfOpp.isEmpty()) {
-        	System.debug('productOfOpp.isEmpty(): ' + productOfOpp.isEmpty());
-        	//countryToReturn = 'crossBorderFalse';
-          opp.DES_Cross_border__c = false;
-
-        //la oportunidad tiene productos
-        } else {
-          opp.DES_Cross_border__c = false;
-        	for(OpportunityLineItem oppItem : productOfOpp) {
-            if (opp.DES_Cross_border__c == false) {
-              if((oppItem.DES_Product_Family__c == 'GTB' && oppItem.solution_classification_desc__c  == 'Client Resources')|| oppItem.DES_Product_Family__c == 'IBF' ||
-	            oppItem.DES_Product_Family__c == 'GM' || oppItem.solution_classification_desc__c == 'Equity Capital Markets') {
-	                //countryToReturn = 'CountryOfOpportunity';
-                  geografiaDestino = opp.DES_Booking_Geography__c;
-                  checkGOequalsGD(geografiaOrigen, geografiaDestino, opp, countries);
-
-	            } else if(oppItem.solution_classification_desc__c == Label.DES_Product_Name_Mergers_Acquisitions) {
-	               //countryToReturn = oppItem.oppy_target_country_name__c;
-                 geografiaDestino = oppItem.oppy_target_country_name__c;
-                 checkGOequalsGD(geografiaOrigen, geografiaDestino, opp, countries);
-	            } else {
-	                //countryToReturn = 'crossBorderFalse';
-                  system.debug('always XB = no');
-                  opp.DES_Cross_border__c = false;
-	            }
-            //en cuanto XB = true paro para que no se pise con el siguente producto
-            } else {
-              System.debug('paso por el break');
-              break;
-            }
-	        }
+            opp.DES_Cross_border__c = false;
+            return;
         }
-       // return countryToReturn ;
+
+        opp.DES_Cross_border__c = false;
+
+        for (OpportunityLineItem oppItem : productOfOpp) {
+            if (opp.DES_Cross_border__c) {
+                break;
+            }
+
+            String family = oppItem.DES_Product_Family__c;
+            String classification = oppItem.solution_classification_desc__c;
+
+            if ((family == 'GTB' && classification == 'Client Resources') ||
+                family == 'IBF' ||
+                family == 'GM' ||
+                classification == 'Equity Capital Markets') {
+
+                checkGOequalsGD(
+                    geografiaOrigen,
+                    opp.DES_Booking_Geography__c,
+                    opp,
+                    europeCountries,
+                    asiaCountries
+                );
+            } else if (classification == Label.DES_Product_Name_Mergers_Acquisitions) {
+                checkGOequalsGD(
+                    geografiaOrigen,
+                    oppItem.oppy_target_country_name__c,
+                    opp,
+                    europeCountries,
+                    asiaCountries
+                );
+            } else {
+                opp.DES_Cross_border__c = false;
+            }
+        }
     }
 
     /*
     * @author Global Desktop
     * @Description Comprueba si la geografía de origen es igual a la de destino
     */
-    public static void checkGOequalsGD(String geografiaOrigen, String geografiaDestino, Opportunity opp, List<DES_XB_Country__mdt> countries) {
-      System.debug('geografiaOrigen: ' + geografiaOrigen);
-      System.debug('geografiaDestino: ' + geografiaDestino);
-      //Europa
-      final set<String> setCountryEuropa = new set<String>();
-      final String europeRegion = 'Europe'; //NOSONAR
-      for(DES_XB_Country__mdt i : countries) {
-        if(i.DES_XB_Region__c == europeRegion) {
-          setCountryEuropa.add(i.DeveloperName);
-        }
+    public static void checkGOequalsGD(String geografiaOrigen, String geografiaDestino, Opportunity opp, Set<String> europeCountries, Set<String> asiaCountries) {
+       if ((europeCountries.contains(geografiaOrigen) && europeCountries.contains(geografiaDestino)) ||
+            (asiaCountries.contains(geografiaOrigen) && asiaCountries.contains(geografiaDestino))) {
+            opp.DES_Cross_border__c = false;
+          } else if (geografiaOrigen == geografiaDestino) {
+              opp.DES_Cross_border__c = false;
+          } else {
+              opp.DES_Cross_border__c = true;
+          }
       }
-      //Asia
-      final set<String> setCountryAsia = new set<String>();
-      final String asiaRegion = 'Asia'; //NOSONAR
-      for(DES_XB_Country__mdt i : countries) {
-        if(i.DES_XB_Region__c == asiaRegion) {
-          setCountryAsia.add(i.DeveloperName);
-        }
-      }
-      if((setCountryEuropa.contains(geografiaOrigen) && setCountryEuropa.contains(geografiaDestino))
-                    || (setCountryAsia.contains(geografiaOrigen) && setCountryAsia.contains(geografiaDestino))) {
-        opp.DES_Cross_border__c = false;
-      } else if (geografiaOrigen == geografiaDestino) {
-        opp.DES_Cross_border__c = false;
-      } else {
-        opp.DES_Cross_border__c = true;
-      }
-      System.debug('opp.DES_Cross_border__c: ' + opp.DES_Cross_border__c);
-    }
+
 
     /*
     * @author Global Desktop
@@ -726,7 +725,7 @@ public with sharing class OpportunityTriggerHandler {
             system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_2 -> cambiando el recordtype a ' + Label.DES_RT_Inside_opp);
         } else if(opp.RecordTypeId == Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_ACC_SalesGM_Opportunity).getRecordTypeId() && opp.disclosure_info_type__c == Label.DES_OP_CONFIDENTIAL) {
           opp.recordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_ACC_SalesGM_Confidential_Opp).getRecordTypeId();
-       		system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_3 -> cambiando el recordtype a ' + Label.DES_RT_ACC_SalesGM_Confidential_Opp);
+           system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_3 -> cambiando el recordtype a ' + Label.DES_RT_ACC_SalesGM_Confidential_Opp);
         } else if(opp.StageName == Label.DES_OPP_stage_draft &&
           ((opp.RecordTypeId == Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_ACC_Confidential_Opportunity).getRecordTypeId() && opp.disclosure_info_type__c != Label.DES_OP_CONFIDENTIAL ) ||
           (opp.RecordTypeId == Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_opp).getRecordTypeId() && opp.disclosure_info_type__c != Label.DES_OP_Inside))) {
@@ -743,25 +742,25 @@ public with sharing class OpportunityTriggerHandler {
             system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_6 -> cambiando el recordtype a ' + Label.DES_RT_ACC_SalesGM_Opportunity);
         } else if(opp.RecordTypeId == Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_ACC_SalesGM_Opportunity).getRecordTypeId() && opp.disclosure_info_type__c == Label.DES_OP_Inside) {
             opp.recordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_GM_opp).getRecordTypeId();
-         		system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_7 -> cambiando el recordtype a ' + Label.DES_RT_Inside_GM_opp);
+             system.debug(Logginglevel.INFO,'>>>>>>> confidentialRecordType_7 -> cambiando el recordtype a ' + Label.DES_RT_Inside_GM_opp);
         }
       }
      }
 
     /*public static void showSimilarOppsFound(List<Opportunity> triggerNew, Map<Id, Opportunity> triggerOldMap) {
-     	//A ESTA FUNCION SE LE LLAMA DESDE EL AFTER, UNA VEZ SE HA MODIFICADO LA OPORTUNIDAD
+       //A ESTA FUNCION SE LE LLAMA DESDE EL AFTER, UNA VEZ SE HA MODIFICADO LA OPORTUNIDAD
         if(triggerNew.size() == 1) {
             system.debug('>>>>> triggerNew.get(0).Id : ' + triggerNew.get(0).Id);
             system.debug('>>>>> oppIdWithSimilar : ' + oppIdWithSimilar);
             //system.debug('>>>>> triggerNew.get(0).DES_SimilarOppsMessage__c : ' + triggerNew.get(0).DES_SimilarOppsMessage__c);
             //system.debug('>>>>> triggerOldMap.get(oppIdWithSimilar).DES_SimilarOppsMessage__c : '
-            //	+ triggerOldMap.get(oppIdWithSimilar).DES_SimilarOppsMessage__c);
+            //  + triggerOldMap.get(oppIdWithSimilar).DES_SimilarOppsMessage__c);
             if(triggerNew.get(0).Id == oppIdWithSimilar && !triggerNew.get(0).DES_Confirm_Duplicate_Message__c)
                 triggerNew.get(0).addError('You have Similar Opportunities');
         }
     }
 
-	public void onAfterDelete(final List<Opportunity> oldList) {
+  public void onAfterDelete(final List<Opportunity> oldList) {
         system.debug(Logginglevel.INFO,'>>>>>>> Entrando trigger Opportunity (after delete)');
         if (userSettings.CIB_Is_Desktop__c  && !bypassSettings.CIB_DES_DataMigration__c) {
             system.debug(Logginglevel.INFO,'>>>>>>> Desktop User. Deleting records of a DenormalizeOpportunities custom object...');
@@ -776,7 +775,7 @@ public with sharing class OpportunityTriggerHandler {
         timesExecuted ++;
     }
 
-	ComentadasCampañasAlertasParaSubidaPosterior
+  ComentadasCampañasAlertasParaSubidaPosterior
     public void closeAccountCampaign(Map<Id, Opportunity> triggerNewMap, Map<Id, Opportunity> triggerOldMap) {
 
       System.debug('entro en closeAccountCampaign');
@@ -853,15 +852,15 @@ public with sharing class OpportunityTriggerHandler {
 
     ComentadasCampañasAlertasParaSubidaPosterior    */
 
-	/******************************************************************************
-	*@author: GlobalDesktop
-	*@Method: needTemplate
-	*@Description: Show an error when users move to Approval if the opportunity does not have an approved template.
-	*@Params: list<Opportunity> trigger.new, map<id,Opportunity> oldmap - before update
-	*@Returns: void
-	*@Versions:
-		v1 - 23/01/2019 - Initial version
-	******************************************************************************/
+  /******************************************************************************
+  *@author: GlobalDesktop
+  *@Method: needTemplate
+  *@Description: Show an error when users move to Approval if the opportunity does not have an approved template.
+  *@Params: list<Opportunity> trigger.new, map<id,Opportunity> oldmap - before update
+  *@Returns: void
+  *@Versions:
+    v1 - 23/01/2019 - Initial version
+  ******************************************************************************/
     public void needTemplate(list<Opportunity> inputList, map<id, Opportunity> oldValuesList) {
 
         Set<id> oppIds;
@@ -887,29 +886,29 @@ public with sharing class OpportunityTriggerHandler {
     }
 
     private Opportunity needTemplateValidation( Map <ID, Opportunity> mOpps, Opportunity opp, OpportunityLineItem oppLine) {
-    	final Opportunity oppValidate = opp;
-    	if(isProductTemplate(oppLine) && (ComponentNBC_Controller.getTemplateId(oppLine.solution_classification_desc__c,ComponentNBC_Controller.mapCountryRegion.get(opp.DES_Booking_Geography__c), oppLine.Converted_Currency__c,
+      final Opportunity oppValidate = opp;
+      if(isProductTemplate(oppLine) && (ComponentNBC_Controller.getTemplateId(oppLine.solution_classification_desc__c,ComponentNBC_Controller.mapCountryRegion.get(opp.DES_Booking_Geography__c), oppLine.Converted_Currency__c,
                                                                                 oppLine.product_scope_type__c,opp.Substandard_Operation__c) != null //NOSONAR
       && (mOpps.get(opp.id).Templates__r.size() == 0 || !mOpps.get(opp.id).Templates__r[0].Template_approved_type__c))) { //NOSONAR
         system.debug(Logginglevel.INFO,'>>>>>>> Entrando needTemplate error' +  oppLine.solution_classification_desc__c);
         oppValidate.addError(LABEL.DES_Need_Template);
 
         }
-    	return oppvalidate;
+      return oppvalidate;
     }
 
     private Boolean isNotIPOpp(Opportunity opp) { //NOSONAR
-    	Boolean check = false;
-    	if(opp.recordTypeId != Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_GM_opp).getRecordTypeId() &&
-    			opp.recordTypeId != Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_opp).getRecordTypeId()) {
-    		check = true;
-    	}
-    	return check;
+      Boolean check = false;
+      if(opp.recordTypeId != Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_GM_opp).getRecordTypeId() &&
+          opp.recordTypeId != Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get(Label.DES_RT_Inside_opp).getRecordTypeId()) {
+        check = true;
+      }
+      return check;
     }
 
     private Boolean isProductTemplate(OpportunityLineItem oppLine) { //NOSONAR
-    	Boolean check = false;
-    	if(LABEL.DES_Corporate_Loans == oppLine.solution_classification_desc__c || LABEL.DES_Leverage_Buyout_LBOs == oppLine.solution_classification_desc__c ||
+      Boolean check = false;
+      if(LABEL.DES_Corporate_Loans == oppLine.solution_classification_desc__c || LABEL.DES_Leverage_Buyout_LBOs == oppLine.solution_classification_desc__c ||
                 LABEL.DES_Structure_Trade_Finance == oppLine.solution_classification_desc__c || LABEL.DES_Transaction_Trade_Finance == oppLine.solution_classification_desc__c ||
                 LABEL.DES_Project_Finance_Lending == oppLine.solution_classification_desc__c || LABEL.DES_Working_Capital == oppLine.solution_classification_desc__c) {
     		check = true;
@@ -918,37 +917,39 @@ public with sharing class OpportunityTriggerHandler {
     	return check;
     }
 
-    public void checkDeletePermission(final List<Opportunity> oldList) { //NOSONAR
-      system.debug(Logginglevel.INFO,'>>>>>>> Entrando trigger Opportunity (before delete)');
-      List<PermissionSetAssignment> psaList = new List<PermissionSetAssignment>();
+    public void checkDeletePermission(final List<Opportunity> oldList) {
+      // Usar caché para profile name
+      String profileName = TriggerCacheManager.getInstance().getCurrentUserProfileName();
 
-      psaList = [SELECT id, PermissionSet.Name, AssigneeId FROM PermissionSetAssignment 
-            WHERE AssigneeId = :UserInfo.getUserId() AND PermissionSet.Name = 'Champions_Locales'];
+      List<PermissionSetAssignment> psaList = [
+          SELECT Id, AssigneeId
+          FROM PermissionSetAssignment
+          WHERE AssigneeId = :UserInfo.getUserId()
+          AND PermissionSet.Name = 'Champions_Locales'
+      ];
 
-      List<Id> userIds = new List<Id>();
+      Set<Id> userIds = new Set<Id>();
       for (PermissionSetAssignment psa : psaList) {
-            userIds.add(psa.AssigneeId);
+          userIds.add(psa.AssigneeId);
       }
 
-      if (PROFILENAME == Label.DES_ADMIN_PROFILE) {
+      if (profileName == Label.DES_ADMIN_PROFILE) {
           userIds.add(UserInfo.getUserId());
       }
 
       for (Opportunity opp : oldList) {
-
-        if (checkIfRTisIP(opp)
-        && !opp.remove_record_type__c
-        && !(userSettings.CIB_Is_Admin__c || bypassSettings.CIB_DES_Delete_Opp_Permission__c)) {
-          opp.addError(label.DES_IP_DELETE_OPP);
-        } else if (opp.StageName != Label.DES_OPP_stage_draft
-        && !(userSettings.CIB_Is_Admin__c || bypassSettings.CIB_DES_Delete_Opp_Permission__c)) {
-        if(userIds.size()==0) {
-             opp.addError(label.DES_USER_CANNOT_DELETE_OPP);
+          if (checkIfRTisIP(opp) && !opp.remove_record_type__c &&
+              !(userSettings.CIB_Is_Admin__c || bypassSettings.CIB_DES_Delete_Opp_Permission__c)) {
+              opp.addError(Label.DES_IP_DELETE_OPP);
+          } else if (opp.StageName != Label.DES_OPP_stage_draft &&
+                    !(userSettings.CIB_Is_Admin__c || bypassSettings.CIB_DES_Delete_Opp_Permission__c)) {
+              if (userIds.isEmpty()) {
+                  opp.addError(Label.DES_USER_CANNOT_DELETE_OPP);
+              }
           }
-        }
       }
-      timesExecuted ++;
   }
+
 
     /**
     *
@@ -967,45 +968,33 @@ public with sharing class OpportunityTriggerHandler {
   *                  al cambiar el subestado
   *
   **/
-  public static void updateProbability (List<Opportunity> triggerNew, Map<Id, Opportunity> triggerOldMap) {
-    // Compruebo si la funcionalidad de ExpectedProbability dinámica está marcada
-    system.debug('>>>>> checkExpecProb(): ' + checkExpecProb());
-    if(checkExpecProb()) {
-      // Recojo los datos de la expected probability que tiene que tener cada Stage
-      final Map<String, Decimal> mapStgExpProb = gtExpecProbMTD();
-      system.debug('>>>>> mapStgExpProb : ' + mapStgExpProb);
-      //SOLO TIENE QUE CAMBIAR LA PROBABILIDAD SI ESTÁS EN PROPOSAL Y LE DAS A MANDATE
-      //EN CASO DE QUE SE MARQUE LA OPCIÓN DE MANDATE EN UNA FASE QUE NO SEA PROPOSAL,
-      //SE MARCA EL CHECK DE MANDATE PERO NO SE MODIFICA LA EXPECTED PROBABILITY
-      if(mapStgExpProb != null && !mapStgExpProb.isEmpty()) {
-        system.debug('>>>>> triggerNew' + triggerNew);
-        for(Opportunity opp : triggerNew) {
-          if(triggerOldMap == null
-          || opp.StageName != triggerOldMap.get(opp.Id).StageName
-          /*|| opp.opportunity_substage_type__c != triggerOldMap.get(opp.Id).opportunity_substage_type__c*/ ) {
-            system.debug('>>>>> ACTUALIZAR SUBSTAGE');
-            /*if(opp.opportunity_substage_type__c != Label.MANDATE_BUTTON
-            || (opp.opportunity_substage_type__c == Label.MANDATE_BUTTON
-            && triggerOldMap.get(opp.Id).opportunity_substage_type__c != Label.DES_Proposal)) {
-              opp.opportunity_substage_type__c = opp.StageName;
-            }*/
-            system.debug('>>>>> opp.StageName : ' + opp.StageName);
-            /*system.debug('>>>>> opp.opportunity_substage_type__c: ' + opp.opportunity_substage_type__c);
-            if(mapStgExpProb.get(opp.opportunity_substage_type__c.toUpperCase()) != null) {
-              system.debug('>>>>> ACTUALIZAR EXPEC.PROB.: ' + mapStgExpProb.get(opp.opportunity_substage_type__c.toUpperCase()));
-              opp.DES_Expected_Probability__c	 = mapStgExpProb.get(opp.opportunity_substage_type__c.toUpperCase());
-            }*/
-            if(mapStgExpProb.get(opp.StageName.toUpperCase()) != null) {
-              system.debug('>>>>> ACTUALIZAR EXPEC.PROB.: ' + mapStgExpProb.get(opp.StageName.toUpperCase()));
-              opp.DES_Expected_Probability__c	 = mapStgExpProb.get(opp.StageName.toUpperCase());
-            }
 
-          }
-        }
+  public static void updateProbability(List<Opportunity> triggerNew, Map<Id, Opportunity> triggerOldMap) {
+      // Usar caché para verificar si está habilitado
+      TriggerCacheManager cache = TriggerCacheManager.getInstance();
+
+      if (!cache.isAutoExpectedProbabilityEnabled()) {
+          return;
       }
-    }
 
-  }//FIN UPDATE PROBABILITY
+      // Usar caché para obtener el mapa de probabilidades
+      Map<String, Decimal> mapStgExpProb = cache.getStageToExpectedProbabilityMap();
+
+      if (mapStgExpProb.isEmpty()) {
+          return;
+      }
+
+      for (Opportunity opp : triggerNew) {
+          if (triggerOldMap == null || opp.StageName != triggerOldMap.get(opp.Id).StageName) {
+              Decimal expectedProb = mapStgExpProb.get(opp.StageName.toUpperCase());
+              if (expectedProb != null) {
+                  opp.DES_Expected_Probability__c = expectedProb;
+              }
+          }
+      }
+}
+
+  //FIN UPDATE PROBABILITY
 
   /*
    *  @author Global Desktop  - DSL
@@ -1055,70 +1044,70 @@ public with sharing class OpportunityTriggerHandler {
 
     }
   }
-  
+
 	private static Set<String> obtainOppExc() {
 		final Set<String> values = new Set<String>();
 		for(Opp_excluded__mdt oppExc : [SELECT Id, Label from Opp_excluded__mdt LIMIT 100]) {
             values.add(oppExc.Label);
         }
-		return values;
-	}
+    return values;
+  }
 
-	private static Boolean checkOppExc(Id oppid, Set<String> setOppExc) { //NOSONAR
-		Boolean noExcluido = true;
-		final List<OpportunityLineItem> listaProdOppNew = new List<OpportunityLineItem>([
-		                                                                                SELECT  Id,solution_classification_desc__c
-		                                                                        	    FROM OpportunityLineItem
-		                                                                        	    WHERE OpportunityId = :oppid and solution_classification_desc__c IN :setOppExc]);
-		if(listaProdOppNew != null && !listaProdOppNew.isEmpty()) {
-     		noExcluido = false;
-    	}
+  private static Boolean checkOppExc(Id oppid, Set<String> setOppExc) { //NOSONAR
+    Boolean noExcluido = true;
+    final List<OpportunityLineItem> listaProdOppNew = new List<OpportunityLineItem>([
+                                                                                    SELECT  Id,solution_classification_desc__c
+                                                                                  FROM OpportunityLineItem
+                                                                                  WHERE OpportunityId = :oppid and solution_classification_desc__c IN :setOppExc]);
+    if(listaProdOppNew != null && !listaProdOppNew.isEmpty()) {
+         noExcluido = false;
+      }
 
 
-		return noExcluido;
-	}
+    return noExcluido;
+  }
 
-	private Set<Id> obtainAccounts(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
-		Set<Id> setIdDirectClient = setIdDC;
-		//Si antes era DRAFT y ahora es PROPOSAL y no tiene productos excluidos
+  private Set<Id> obtainAccounts(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
+    Set<Id> setIdDirectClient = setIdDC;
+    //Si antes era DRAFT y ahora es PROPOSAL y no tiene productos excluidos
         setIdDirectClient = checkDraftProposal(opp, triggerOldMap, noExcluido, setIdDirectClient);
-	    //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
+      //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
         setIdDirectClient = checkClose(opp, triggerOldMap, noExcluido, setIdDirectClient);
-		return setIdDirectClient;
-	}
+    return setIdDirectClient;
+  }
 
-	private Set<Id> checkAccountExists(Opportunity opp,  Set<Id> setIdDirectClient) { //NOSONAR
-		if(!setIdDirectClient.contains(opp.AccountId)) {
-	            setIdDirectClient.add(opp.AccountId);
+  private Set<Id> checkAccountExists(Opportunity opp,  Set<Id> setIdDirectClient) { //NOSONAR
+    if(!setIdDirectClient.contains(opp.AccountId)) {
+              setIdDirectClient.add(opp.AccountId);
       }
       System.debug('>>>>>>>> Opp añadida al lstOppUpdDrftPrp' + opp);
-	    lstOppUpdDrftPrp.add(opp);
-		return setIdDirectClient;
-	}
+      lstOppUpdDrftPrp.add(opp);
+    return setIdDirectClient;
+  }
 
-	private Set<Id> checkDraftProposal(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
-		Set<Id> setIdDirectClient = setIdDC;
-		if(noExcluido && ((triggerOldMap == null && opp.StageName == Label.DES_Proposal)
-	         || (opp.StageName == Label.DES_Proposal && triggerOldMap.get(opp.Id).StageName == Label.DES_Draft))) {
-	          //Se asigna permisos a los miembros del cliente directo y del grupo de la matriz
-	          //Asigno permisos a los miembros del cliente directo
-	          setIdDirectClient = checkAccountExists(opp,setIdDirectClient);
-	         //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
+  private Set<Id> checkDraftProposal(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
+    Set<Id> setIdDirectClient = setIdDC;
+    if(noExcluido && ((triggerOldMap == null && opp.StageName == Label.DES_Proposal)
+           || (opp.StageName == Label.DES_Proposal && triggerOldMap.get(opp.Id).StageName == Label.DES_Draft))) {
+            //Se asigna permisos a los miembros del cliente directo y del grupo de la matriz
+            //Asigno permisos a los miembros del cliente directo
+            setIdDirectClient = checkAccountExists(opp,setIdDirectClient);
+           //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
         }
         return setIdDirectClient;
-	}
+  }
 
-	private Set<Id> checkClose(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
-		Set<Id> setIdDirectClient = setIdDC;
-		if(!noExcluido && (triggerOldMap == null || triggerOldMap.get(opp.Id).StageName == Label.DES_Ready_to_close)
-         && (opp.StageName == Label.DES_Closed_Lose	 || opp.StageName == Label.DES_Closed_Won)) {
-	          //Se asigna permisos a los miembros del cliente directo y del grupo de la matriz
-	          //Asigno permisos a los miembros del cliente directo
-	          setIdDirectClient = checkAccountExists(opp,setIdDirectClient);
-	         //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
+  private Set<Id> checkClose(Opportunity opp, Map<Id, Opportunity> triggerOldMap, Boolean noExcluido, Set<Id> setIdDC) {
+    Set<Id> setIdDirectClient = setIdDC;
+    if(!noExcluido && (triggerOldMap == null || triggerOldMap.get(opp.Id).StageName == Label.DES_Ready_to_close)
+         && (opp.StageName == Label.DES_Closed_Lose   || opp.StageName == Label.DES_Closed_Won)) {
+            //Se asigna permisos a los miembros del cliente directo y del grupo de la matriz
+            //Asigno permisos a los miembros del cliente directo
+            setIdDirectClient = checkAccountExists(opp,setIdDirectClient);
+           //Si tiene productos excluidos al cerrar la oportunidad se comparte con le euqipo de cobertura
         }
         return setIdDirectClient;
-	}
+  }
 
   /******************************************************************************
   * @Author:      David Rodriguez
@@ -1335,14 +1324,14 @@ public with sharing class OpportunityTriggerHandler {
              delete lsNonull;//NOSONAR
          }
       }
-      
+
       if(!nbcMembers.isEmpty()) {
-      	insert nbcMembers;
+        insert nbcMembers;
       }
     }
-	
-	
-	 /**
+
+
+   /**
       * @author       JSS
       * @description  metodo con la lógica para evitar que se eliminen oportunidades con la funcionalidad de Pricing que ya se ha enviado a Workflow
       */
@@ -1357,6 +1346,61 @@ public with sharing class OpportunityTriggerHandler {
 
         }
 
+    }
+
+    /**
+     * @description Compares the StageName of DMT Opportunities and logs snapshot version.
+     * @param newOpps List of new Opportunity records from Trigger.new
+     * @param oldOppMap Map of old Opportunity records from Trigger.oldMap
+     */
+    public void createOppVersionSnapshot(List<Opportunity> newOpps, Map<Id, Opportunity> oldOppMap) {
+      
+      // User Context
+      String userId = UserInfo.getUserId();
+      List<User> users = [SELECT ID_User__c FROM User WHERE Id = :userId LIMIT 1];
+      String dmtUserId = !users.isEmpty() ? users[0].ID_User__c : '';
+
+      for (Opportunity opp : newOpps) {
+          Opportunity oldOpp = oldOppMap.get(opp.Id);
+
+          if (oldOpp != null && opp.StageName != oldOpp.StageName) {
+              // Build the standard Request
+              DMT_SnapshotEvaluationVersions.PostRequestWrapperClass req = new DMT_SnapshotEvaluationVersions.PostRequestWrapperClass();
+              req.user = dmtUserId;
+              req.opportunityId = opp.DMT_Opp_Id__c;
+              req.categoryId = oldOpp.StageName + '-' + opp.StageName;
+              req.versionDescription = '';
+
+              // Add directly as a SnapshotPayload (Interface implementation)
+              DMT_AsyncOrchestrator.enqueue(new DMT_SnapshotPayload(req, opp.Id, 'Opportunity'));
+          }
+      }
+  }
+    /**
+     * @description Called in AFTER UPDATE trigger.
+     * Monitors StageName changes to trigger Passport refresh.
+     */
+    public void updatePassport_OppStatusChanged(List<Opportunity> newOpps, Map<Id, Opportunity> oldMapOpps) {
+
+        Id oppRTId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity')?.getRecordTypeId();
+
+        Set<Id> oppIds = new Set<Id>();
+        for (Opportunity opp : newOpps) {
+            if (opp.RecordTypeId == oppRTId) {
+                oppIds.add(opp.Id);
+            }
+        }
+
+        for (Opportunity opp : newOpps) {
+            Opportunity oldOpp = oldMapOpps.get(opp.Id);
+
+            Boolean statusChanged = opp.StageName != oldOpp.StageName;
+            Boolean passesIntegrity = opp.RecordTypeId == oppRTId;
+
+            if (statusChanged && passesIntegrity) {
+                DMT_AsyncOrchestrator.enqueue(new DMT_PassportPayload(opp.Id, opp.AccountId, 'DMTO_EvaluationOpportunity'));
+            }
+        }
     }
 
  }

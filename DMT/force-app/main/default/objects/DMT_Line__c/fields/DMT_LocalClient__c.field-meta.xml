@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_LocalClient__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Local Client</label>
+    <referenceTo>Local_Client__c</referenceTo>
+    <relationshipLabel>Lines</relationshipLabel>
+    <relationshipName>Lines</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

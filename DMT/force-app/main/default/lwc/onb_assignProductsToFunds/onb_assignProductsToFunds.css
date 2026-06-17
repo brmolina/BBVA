@@ -1,0 +1,21 @@
+.full-bleed {
+  width: calc(100% + 2rem);  /* compensa padding lateral del body */
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+.full-bleed lightning-datatable,
+.full-bleed ::slotted(lightning-datatable) {
+  width: 100%;
+  margin: 0;
+}
+
+::deep(tr.slds-hint-parent:hover) {
+  background-color: #f4f6f9 !important;
+}
+
+::deep(.slds-table td) {
+  padding: 0.5rem 0.75rem;
+}

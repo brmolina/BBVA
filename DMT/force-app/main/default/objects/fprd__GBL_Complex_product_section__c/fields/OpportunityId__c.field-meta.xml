@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OpportunityId__c</fullName>
+    <businessStatus>Active</businessStatus>
+    <description>Campo formula que copia el valor del fprd__GBL_Opportunity_product__c. Es necesario para el joined-report con Opportunities And Products, ya que para sacar los campos comunes hay que llamar al campo con la misma label (en este caso &quot;Line Item ID&quot;)</description>
+    <externalId>false</externalId>
+    <formula>fprd__GBL_Opportunity_product__c</formula>
+    <label>Line Item ID</label>
+    <required>false</required>
+    <securityClassification>Public</securityClassification>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

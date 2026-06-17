@@ -1,0 +1,36 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+  access="GLOBAL" controller="PRC_PriceForm_CONTROLLER">
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+  <!-- aura:attribute name="options" type="List" default="[]" / -->
+  <aura:attribute name="productsService" type="object" />
+  <aura:attribute name="picklists" type="object" />
+  <aura:attribute name="pickloaded" type="Boolean" default="false"/>
+  <aura:attribute name="options" type="List" access="PRIVATE"/>
+  <aura:attribute name="product" type="String" default="" />
+  <aura:attribute name="opportunitylineitemid" type="String" default="" />
+  <aura:attribute name="selectedproduct" type="String" default=""/>
+      <aura:attribute name="selectedValue" type="String" access="PRIVATE"/>
+
+  <!-- aura:attribute name="recordId" type="Id" / -->
+  <aura:method name="saveproduct" action="{!c.selectproduct}"></aura:method>
+  <aura:registerEvent name="loadcomponentevt" type="c:PRC_LoadComponent"/>
+  <aura:registerEvent name="closemodalevt" type="c:PRC_CloseModal" />
+  <aura:handler name="closemodalevt" event="c:PRC_CloseModal" action="{!c.closemodal}" />
+
+  <aura:if isTrue="{!v.pickloaded}">
+  <lightning:messages aura:id="validationMessages1"/>
+  <p>Please, select the product:</p>
+   <br/>
+  <lightning:recordEditForm aura:id="formulario" objectApiName="PRC_Pricing_Detail__c" onsuccess="{!c.aftersubmit}">
+	<lightning:select onchange="{!c.onChangeRiskProduct}" value="{!v.selectedValue}" >
+      <option text="--None--" value="" />
+    	<aura:iteration items="{!v.productsService.records}" var="option">
+        	<option text="{!option.name}" value="{!option.id}" />
+        </aura:iteration>
+   	</lightning:select>
+    <lightning:inputField fieldName="gf_pricing_risk_product_id__c" value="{!v.selectedValue}" aura:id="riskProductId" class="hiddenElement"/>
+    <lightning:inputField fieldName="gf_pricing_risk_product_name__c" aura:id="riskProductName" class="hiddenElement"/>
+    <lightning:inputField fieldName="PRC_Opportunity__c" value="{!v.recordId}" class="hiddenElement"/>
+  </lightning:recordEditForm>
+    </aura:if>
+</aura:component>

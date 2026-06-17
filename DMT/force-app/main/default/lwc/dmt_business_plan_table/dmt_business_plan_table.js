@@ -13,11 +13,11 @@ export default class Dmt_business_plan_table extends LightningElement {
     originalData;
 
     columns = [
-        { label: '', fieldName: 'category', type: 'text', isEditable: false},
-        { label: 'FY' + `${new Date().getFullYear() - 2}`, fieldName: 'pastYear2', type: 'text', isEditable: true},
-        { label: 'FY' + `${new Date().getFullYear() - 1}`, fieldName: 'pastYear', type: 'text', isEditable: true},
-        { label: 'FY' + `${new Date().getFullYear()}` + 'E', fieldName: 'currentYear', type: 'text', isEditable: true},
-        { label: 'FY' + `${new Date().getFullYear() + 1}` + 'E', fieldName: 'nextYear', type: 'text', isEditable: true}
+        { label: '', fieldName: 'category', type: 'text', isEditable: false },
+        { label: 'FY' + `${new Date().getFullYear() - 1}`, fieldName: 'pastYear2', type: 'text', isEditable: true },
+        { label: 'FY' + `${new Date().getFullYear()}`, fieldName: 'pastYear', type: 'text', isEditable: true },
+        { label: 'FY' + `${new Date().getFullYear() + 1}` + 'E', fieldName: 'currentYear', type: 'text', isEditable: true },
+        { label: 'FY' + `${new Date().getFullYear() + 2}` + 'E', fieldName: 'nextYear', type: 'text', isEditable: true }
     ];
 
     columnsHorizontal = [

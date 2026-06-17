@@ -1,0 +1,30 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction" 
+  controller="ComponentVirtualNBC_Controller" access="global">
+
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="nbc" type="Boolean" default="false"/>
+    <aura:attribute name="descr" type="String" default=""/>
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <aura:attribute name="resp" type="String" default=""/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:renderIf isTrue="{!v.nbc}">
+        <div>
+        	<lightning:recordEditForm
+            onsubmit="{!c.nbcChange}"
+            onsuccess="{!c.handleSuccess}"
+            onerror="{!c.handleError}"
+            recordId="{!v.recordId}"
+            objectApiName="DES_Template__c">
+            <!-- the messages component is for error messages -->
+
+            <lightning:inputField fieldName="opportunity_nbc_comments_desc__c" />
+            <div class="slds-m-top_medium">
+                <lightning:button  disabled="{!v.disabled}" variant="brand" type="submit" name="save" label="Save" />
+            </div>
+        </lightning:recordEditForm>
+        </div>
+    </aura:renderIf>
+
+</aura:component>

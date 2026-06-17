@@ -52,8 +52,8 @@ public with sharing class DMT_Opp_Currency_Conversion_Utils {
             }
 
             // Si existen XSell para la Opp, revisar si el Currency es diferente al de la Opp y usar ese
-            if (objXsell != null && objXsell.DMT_Currency__c != null) {
-                strCurrencyToLook = (objXsell.DMT_Currency__c != objOpp.CurrencyIsoCode) ? objXsell.DMT_Currency__c : objOpp.CurrencyIsoCode;
+            if (objXSell != null && objXSell.DMT_Currency__c != null) {
+                strCurrencyToLook = (objXSell.DMT_Currency__c != objOpp.CurrencyIsoCode) ? objXSell.DMT_Currency__c : objOpp.CurrencyIsoCode;
             } else {
                 strCurrencyToLook = objOpp.CurrencyIsoCode;
             }

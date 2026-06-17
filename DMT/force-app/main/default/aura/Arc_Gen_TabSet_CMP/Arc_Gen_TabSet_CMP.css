@@ -1,0 +1,17 @@
+.THIS .slds-table_tree [aria-level="2"] > .dwp_dvDynamic_Table_Cell_cmp {
+  padding-left: 0 !important;
+}
+
+.THIS .tabset-disabled {
+  pointer-events: none;
+}
+
+.THIS .tabset-disabled li.slds-tabs_default__item {
+  color: lightgray;
+}
+
+.THIS .warningIcon svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  color: orange;
+}

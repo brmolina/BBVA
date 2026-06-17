@@ -22,7 +22,7 @@ global class Batch_UpdateParentAccount implements Database.Batchable<sObject>, D
   * Start method
   */
   global Database.QueryLocator start(Database.BatchableContext batchBC) {
-    this.query = 'Select Id, DES_Main_Parent__c,SER_CClient__c, DES_Subsidiary_Group_Code__c from Account where DES_Entity_Hierarchy__c = \'S\' and DES_Main_Parent__c<>null';
+    this.query = 'Select Id, DES_Main_Parent__c,g_customer_id__c, DES_Subsidiary_Group_Code__c from Account where DES_Entity_Hierarchy__c = \'S\' and DES_Main_Parent__c<>null';
     return Database.getQueryLocator(query);
   }
 

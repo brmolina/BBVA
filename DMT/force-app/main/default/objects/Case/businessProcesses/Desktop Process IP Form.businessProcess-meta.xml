@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BusinessProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Desktop Process IP Form</fullName>
+    <description>Proceso para validar un formulario de información privilegiada</description>
+    <isActive>true</isActive>
+    <values>
+        <fullName>Case approved</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Case rejected</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Sent to IP manager</fullName>
+        <default>true</default>
+    </values>
+    <values>
+        <fullName>Sent to compliance</fullName>
+        <default>false</default>
+    </values>
+</BusinessProcess>

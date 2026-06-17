@@ -4,7 +4,9 @@ export default class Dmt_custom_tree_row extends LightningElement {
     @api item;
     @api columns;
     @api depth;
-    
+    @api isSelectionMode = false;
+    @api selectedRowKeys = [];
+
 
     @api
     get expanded() {
@@ -27,7 +29,9 @@ export default class Dmt_custom_tree_row extends LightningElement {
     }
 
     get colourStyle() {
-        return this.item.isParent ? 'slds-hint-parent group slds-theme_shade collapsed' : 'slds-hint-parent';
+        return (this.item.isParent && parseInt(this.depth, 10) === 0)
+            ? 'slds-hint-parent group slds-theme_shade collapsed'
+            : 'slds-hint-parent';
     }
 
     get hasChildren() {
@@ -64,4 +68,39 @@ export default class Dmt_custom_tree_row extends LightningElement {
         this.openModal();
     }
 
+    //DESARROLLO ACCIONES MASIVAS
+
+    get isSelectable() {
+        return this.depth === "0" || this.depth === 0;
+    }
+
+    get isChecked() {
+        return this.isSelectable && Array.isArray(this.selectedRowKeys) && this.selectedRowKeys.includes(this.item.itemKey);
+    }
+
+    // NUEVO: Manejador del clic en el checkbox
+    handleCheckboxChange(event) {
+        console.log('JACG evento ' + JSON.stringify(event.target.checked));
+        const isChecked = event.target.checked;
+
+        // Avisamos a la tabla de que esta fila se ha marcado/desmarcado
+        this.dispatchEvent(new CustomEvent('rowselect', {
+            detail: {
+                itemKey: this.item.itemKey,
+                isSelected: isChecked
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    // NUEVO: Si una sub-fila lanza un evento (aunque en tu caso no sean seleccionables,
+    // es buena práctica para mantener la estructura recursiva), lo reenviamos hacia arriba.
+    forwardSelectionEvent(event) {
+        this.dispatchEvent(new CustomEvent('rowselect', {
+            detail: event.detail,
+            bubbles: true,
+            composed: true
+        }));
+    }
 }

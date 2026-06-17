@@ -95,7 +95,7 @@ public without sharing class SER_CaseMethods_HELPER_ParentCp {
 
     if(case2) {//GM Bussines Logic
       asignarAssetPtoC (caso, casoPadre);
-      asignarSernovaClientPtoC (caso, casoPadre);    
+      asignarSernovaClientPtoC (caso, casoPadre);
       caso.SER_Type_GM__c           = casoPadre.SER_Type_GM__c;
       caso.SER_Subtype_GM__c        = casoPadre.SER_Subtype_GM__c;
       caso.SER_Classification__c    = casoPadre.SER_Classification__c;
@@ -132,10 +132,11 @@ public without sharing class SER_CaseMethods_HELPER_ParentCp {
   * @autor: Victor Velandia (VV)
   */
   private static void asignarsernovaClientPtoC (Case caso, Case casoPadre) {
-    final boolean sameAccount = caso.AccountId != casoPadre.AccountId && caso.AccountId == null;   
+    final boolean sameAccount = caso.AccountId != casoPadre.AccountId && caso.AccountId == null;
     if(sameAccount) {
       Id sernovaSupId;
-      sernovaSupId = [select Id,Name from Account where Client_STAR_ID__C = :Label.SER_SernovaAccountNAME and SER_CClient__c = :Label.SER_SernovaAccountNAME limit 1].Id;
+      // --
+      sernovaSupId = [select Id,Name from Account where Client_STAR_ID__C = :Label.SER_SernovaAccountNAME and g_customer_id__c = :Label.SER_SernovaAccountNAME limit 1].Id;
       Boolean sernovaSupplier;
       sernovaSupplier = caso.SER_IsSernova__c == true && sernovaSupId != null;
       if(sernovaSupplier) {

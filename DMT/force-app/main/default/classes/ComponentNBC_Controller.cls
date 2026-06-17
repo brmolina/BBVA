@@ -210,7 +210,10 @@ public with sharing class ComponentNBC_Controller {
 
     // 2022-10-03 torcuato.tejada.contractor@bbva.com
     // Preload ESG Information from Toolkit
-    preloadToolkitInfo(opp, template);
+    final cstk__toolkit_settings__mdt bypassNbc = cstk.Utils.getGeneralConfiguration();
+    if (bypassNbc != null && !bypassNbc.cstk__bypass_nbc__c) {
+      preloadToolkitInfo(opp, template);
+    }
 
     // 2024-11-22 torcuato.tejada.tech@bbva.com
     // Add PAWIF Id and URL to NBC Template
@@ -310,6 +313,58 @@ public with sharing class ComponentNBC_Controller {
         }
 
         template.Reputational_Risk_type__c = getDefaultValue(cstkInfo.get('ReputationalRisk'), '');
+        template.cstk_gf_cust_esg_profile_aspects_improve__c = getDefaultValue(cstkInfo.get('GroupEngagementPlan'), '');
+        template.cstk_portfolio_alignment_engagement_link__c = getDefaultValue(cstkInfo.get('PlanLink'), '');
+
+        try {
+          template.cstk_tri_auto__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triAuto')));
+        } catch (Exception e) {
+          template.cstk_tri_auto__c = null;
+          system.debug('Tri Auto cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_autoparts__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triAutoparts')));
+        } catch (Exception e) {
+          template.cstk_tri_autoparts__c = null;
+          system.debug('Tri Autoparts cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_cement__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triCement')));
+        } catch (Exception e) {
+          template.cstk_tri_cement__c = null;
+          system.debug('Tri Cement cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_energy__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triEnergy')));
+        } catch (Exception e) {
+          template.cstk_tri_energy__c = null;
+          system.debug('Tri Energy cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_generic__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triGeneric')));
+        } catch (Exception e) {
+          template.cstk_tri_generic__c = null;
+          system.debug('Tri Generic cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_steel__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triSteel')));
+        } catch (Exception e) {
+          template.cstk_tri_steel__c = null;
+          system.debug('Tri Steel cannot be converted to decimal');
+        }
+
+        try {
+          template.cstk_tri_utilities__c = Decimal.valueOf(String.valueOf(cstkInfo.get('triUtilities')));
+        } catch (Exception e) {
+          template.cstk_tri_utilities__c = null;
+          system.debug('Tri Utilities cannot be converted to decimal');
+        }
+
         //Thermal Coal Fields Added
         template.cstk_g_thermal_coal_exps_ind_type__c = getDefaultValue(cstkInfo.get('ExposureThermalCoal'), '');
         template.cstk_g_thermal_coal_exps_i_src_type__c = getDefaultValue(cstkInfo.get('ExposureIndicatorSource'), '');
@@ -375,18 +430,31 @@ public with sharing class ComponentNBC_Controller {
 
     final Map<String, Object> res = new Map<String, Object>();
     final Set<Id> ids = new Set<Id>{toolkitId};
-
-    final Map<String, Object> info = cstk.Toolkit_Service.getNbcInfo(toolkitId);
-    final List<cstk__General_Data__c> toolkits = (List<cstk__General_Data__c>)info.get('GeneralData');
-    final List<cstk__Strategy__c> listStrategy = (List<cstk__Strategy__c>)info.get('strategy');
-    final List<cstk__EmissionTarget__c> listTarget = (List<cstk__EmissionTarget__c>)info.get('emissionTargets');
-    final List<cstk__Rating__c> ratingList = (List<cstk__Rating__c>)info.get('ratingList');
+    Map<String, Object> info = new Map<String, Object>();
+    try {
+      info = cstk.Toolkit_Service.getNbcInfo(toolkitId);
+    } catch (Exception e) {
+      System.debug('Could not get toolkit info'); //NOSONAR
+    }
+    List<cstk__General_Data__c> toolkits = new List<cstk__General_Data__c>();
+    List<cstk__Strategy__c> listStrategy = new List<cstk__Strategy__c>();
+    List<cstk__EmissionTarget__c> listTarget = new List<cstk__EmissionTarget__c>();
+    List<cstk__Rating__c> ratingList = new List<cstk__Rating__c>();
+    List<cstk__Tri_Generic__c> triGen = new List<cstk__Tri_Generic__c>();
+    List<cstk__Tri_Autoparts__c> triAutoparts = new List<cstk__Tri_Autoparts__c>();
     //final cstk.Strategy_Wrapper getNbc =  cstk.Strategy_Service.getNbc(toolkitId);
-    final String sector = (String)info.get('sector');
+    final String sector;
+    if (!info.isEmpty()) {
+      sector = (String)info.get('sector');
+      toolkits = (List<cstk__General_Data__c>)info.get('GeneralData');
+      listStrategy = (List<cstk__Strategy__c>)info.get('strategy');
+      listTarget = (List<cstk__EmissionTarget__c>)info.get('emissionTargets');
+      triGen = (List<cstk__Tri_Generic__c>)info.get('triGeneric');
+      triAutoparts = (List<cstk__Tri_Autoparts__c>)info.get('triAutoparts');
+    } 
 
     String rating;
     String sectorAvg;
-    String positioning;
     String reputational;
     String scope;
 
@@ -409,28 +477,27 @@ public with sharing class ComponentNBC_Controller {
       }
       res.put('EsgScore', esgStr);
     }
+
+    if(!triGen.isEmpty()) {
+      res.put('triGeneric', triGen[0].cstk__gf_generic_sector_tri_final_score_number__c);
+    }
+    if(!triAutoparts.isEmpty()) {
+      res.put('triAutoparts', triAutoparts[0].cstk__gf_autoparts_sector_tri_final_score_id__c);
+    }
+
     if(!toolkits.isEmpty()) {
 
-        res.put('TRI',toolkits[0].cstk__tri__c);
+        res.put('TRI',toolkits[0].cstk__gf_tri_final_score_number__c);
         res.put('CCA',toolkits[0].cstk__cca__c);
         res.put('CTA',toolkits[0].cstk__cta__c);
         res.put('TRIAssesment', toolkits[0].cstk__tri_assessment__c);
+        res.put('Positioning', toolkits[0].cstk__gf_tri_final_score_label_desc__c);
+        res.put('triUtilities',toolkits[0].cstk__gf_utilities_sc_tri_final_score_number__c);
+        res.put('triAuto',toolkits[0].cstk__gf_auto_sector_tri_final_score_number__c);
+        res.put('triEnergy',toolkits[0].cstk__gf_energy_sector_tri_final_score_number__c);
+        res.put('triSteel',toolkits[0].cstk__gf_steel_sector_tri_final_score_number__c);
+        res.put('triCement',toolkits[0].cstk__gf_cement_sector_tri_final_score_number__c);
 
-        if (toolkits[0].cstk__tri__c != null) {
-            if (toolkits[0].cstk__tri__c >= 0 && toolkits[0].cstk__tri__c <= 2) {
-                positioning = 'Advanced';
-            }
-            if (toolkits[0].cstk__tri__c > 2 && toolkits[0].cstk__tri__c <= 5) {
-                positioning = 'Strong';
-            }
-            if (toolkits[0].cstk__tri__c > 5 && toolkits[0].cstk__tri__c <= 8) {
-                positioning = 'Moderate';
-            }
-            if (toolkits[0].cstk__tri__c > 8) {
-                positioning = 'Poor';
-            }
-            res.put('Positioning', positioning);
-        }
 
         if (toolkits[0].cstk__tfdc_supporter__c != null) {
             res.put('TcfdSupporter', toolkits[0].cstk__tfdc_supporter__c.toUpperCase());
@@ -455,7 +522,9 @@ public with sharing class ComponentNBC_Controller {
 
     if (!listStrategy.isEmpty()) {
         res.put('TRIEngagementPlan',listStrategy[0].cstk__tri_engagement_link__c);
-        res.put('SectorAffected',listStrategy[0].cstk__affected_sector__c);
+        res.put('GroupEngagementPlan', (!String.isBlank(listStrategy[0].cstk__gf_cust_esg_profile_aspects_improve_id__c)) ? 'Yes' : '');
+        res.put('PlanLink', (!String.isBlank(listStrategy[0].cstk__gf_cust_esg_profile_aspects_improve_id__c)) ? listStrategy[0].cstk__portfolio_alignment_engagement_link__c : '');
+        //res.put('SectorAffected',listStrategy[0].cstk__affected_sector__c);
         //Thermal coal fields goes here, get from toolkit
         res.put('ExposureThermalCoal',listStrategy[0].cstk__g_thermal_coal_exps_ind_type__c);
         res.put('RevenuesThermalCoalActivity',listStrategy[0].cstk__gf_thermal_coal_rev_wg_per__c);
@@ -513,17 +582,22 @@ public with sharing class ComponentNBC_Controller {
     List<DES_Template__c> request = new List<DES_Template__c>(); //NOSONAR
     request = [SELECT id, Status__c, opportunity_id__c, gf_paris_agreement_ind_type__c, gf_esg_score_close_ope_name__c, gf_co_list_tcfd_ind_type__c, gf_customer_sustnbl_strg_desc__c, cstk_tri_engagement_plan__c, cstk_positioning__c,
     cstk_group_alignment_degree__c, cstk_sector_alignment_degree__c, cstk_emissions_intensity_units__c, cstk_sust_indicators_comments__c, cstk_sector_affected__c, Sectorial_Norms_type__c, Reputational_Risk_type__c, cstk_g_thermal_coal_exps_ind_type__c,
-    cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_emissions_intensity__c
+    cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_emissions_intensity__c,
+    cstk_gf_cust_esg_profile_aspects_improve__c, cstk_portfolio_alignment_engagement_link__c, cstk_tri_auto__c, cstk_tri_autoparts__c, cstk_tri_cement__c, cstk_tri_energy__c, cstk_tri_generic__c, cstk_tri_steel__c, cstk_tri_utilities__c
     FROM DES_Template__c WHERE Id = :templateId];
 
     DES_Template__c requestAux = request[0]; //NOSONAR
     final Opportunity opp = [select Account.Name, AccountId, Account.DES_Main_Parent__c, Account.DES_Client_Type__c  from Opportunity where Id = :requestAux.opportunity_id__c LIMIT 1];
-    preloadToolkitInfo(opp, requestAux);
+    final cstk__toolkit_settings__mdt bypassNbc = cstk.Utils.getGeneralConfiguration();
+    if (bypassNbc != null && !bypassNbc.cstk__bypass_nbc__c) {
+      preloadToolkitInfo(opp, requestAux);
+    }
     System.debug('template to update: ' + requestAux);
     update requestAux;
     List<DES_Template_Table__c> lTabTempl = [SELECT id, gf_paris_agreement_ind_type__c, gf_esg_score_close_ope_name__c, gf_co_list_tcfd_ind_type__c, gf_customer_sustnbl_strg_desc__c, cstk_tri_engagement_plan__c, cstk_positioning__c,
     cstk_group_alignment_degree__c, cstk_sector_alignment_degree__c, cstk_emissions_intensity_units__c, cstk_sust_indicators_comments__c, cstk_sector_affected__c, Sectorial_Norms_type__c, Reputational_Risk_type__c, cstk_g_thermal_coal_exps_ind_type__c,
-    cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_emissions_intensity__c
+    cstk_g_thermal_coal_exps_i_src_type__c, cstk_g_coal_prgrsv_red_pl_ind_type__c, cstk_gf_thermal_coal_rev_wg_per__c, cstk_gf_thermal_coal_prod_wg_per__c, cstk_tri__c, cstk_cca__c, cstk_cta__c, cstk_emissions_intensity__c,
+    cstk_gf_cust_esg_profile_aspects_improve__c, cstk_portfolio_alignment_engagement_link__c, cstk_tri_auto__c, cstk_tri_autoparts__c, cstk_tri_cement__c, cstk_tri_energy__c, cstk_tri_generic__c, cstk_tri_steel__c, cstk_tri_utilities__c
     FROM DES_Template_Table__c WHERE Parent_Template__c = :templateId LIMIT 1]; //NOSONAR
     If (!lTabTempl.isEmpty()) {
       lTabTempl[0].gf_paris_agreement_ind_type__c = requestAux.gf_paris_agreement_ind_type__c;
@@ -548,6 +622,16 @@ public with sharing class ComponentNBC_Controller {
       lTabTempl[0].cstk_cca__c = requestAux.cstk_cca__c;
       lTabTempl[0].cstk_cta__c = requestAux.cstk_cta__c;
       lTabTempl[0].cstk_emissions_intensity__c = requestAux.cstk_emissions_intensity__c;
+      lTabTempl[0].cstk_portfolio_alignment_engagement_link__c = requestAux.cstk_portfolio_alignment_engagement_link__c;
+      lTabTempl[0].cstk_gf_cust_esg_profile_aspects_improve__c = requestAux.cstk_gf_cust_esg_profile_aspects_improve__c;
+      lTabTempl[0].cstk_tri_auto__c = requestAux.cstk_tri_auto__c;
+      lTabTempl[0].cstk_tri_autoparts__c = requestAux.cstk_tri_autoparts__c;
+      lTabTempl[0].cstk_tri_cement__c = requestAux.cstk_tri_cement__c;
+      lTabTempl[0].cstk_tri_energy__c = requestAux.cstk_tri_energy__c;
+      lTabTempl[0].cstk_tri_generic__c = requestAux.cstk_tri_generic__c;
+      lTabTempl[0].cstk_tri_steel__c = requestAux.cstk_tri_steel__c;
+      lTabTempl[0].cstk_tri_utilities__c = requestAux.cstk_tri_utilities__c;
+
       update lTabTempl[0]; //NOSONAR
     }
   }

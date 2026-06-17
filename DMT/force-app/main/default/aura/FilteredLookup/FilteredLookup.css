@@ -1,0 +1,15 @@
+.THIS .leftPaddingClass {
+  padding-left: 2rem;
+}
+
+.THIS .pillSize {
+  width: 100%;
+}
+
+.THIS .ul-filtered {
+  min-height:40px;
+  margin-top:0px !important
+}
+.THIS .textCenter{
+    text-align: center;
+}

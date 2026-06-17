@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Scoring_VR</fullName>
+    <active>false</active>
+    <description>Validate scoring positive</description>
+    <errorConditionFormula>DMT_Scoring__c &gt;  0</errorConditionFormula>
+    <errorMessage>Scoring negative is not allowed.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_CP__c</fullName>
+    <description>Indicate whether it is a collection or payment claim</description>
+    <label>C/P</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Cobro</fullName>
+                <default>false</default>
+                <label>Cobro</label>
+            </value>
+            <value>
+                <fullName>Pago</fullName>
+                <default>false</default>
+                <label>Pago</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,5 +1,5 @@
 @isTest
-public class DMT_CurrencyConversionServiceTest {
+public without sharing class DMT_CurrencyConversionServiceTest {
     @testSetup
     static void setupData() {
         // Crear la línea de prueba
@@ -7,16 +7,23 @@ public class DMT_CurrencyConversionServiceTest {
         testLine.Name = 'Test Line';
         testLine.Amount__c = 10000;
         testLine.CurrencyIsoCode = 'COP';
-        update testLine;
+        Database.SaveResult sr = Database.update(testLine, AccessLevel.SYSTEM_MODE);
+        if (!sr.isSuccess()) {
+            String msg = 'Update failed: ';
+            for (Database.Error e : sr.getErrors()) {
+                msg += e.getStatusCode() + ' - ' + e.getMessage() + ' ';
+            }
+            System.assert(false, msg);
+        }
     }
 
     @isTest
-    static void testConvertProductList_withAmount() {
+    static void testConvertProductListWithAmount() {
         // Recuperar el registro insertado en @testSetup
         DMT_Line__c line = [
-            SELECT Id, Name, Amount__c, CurrencyIsoCode 
-            FROM DMT_Line__c 
-            WHERE Name = 'Test Line' 
+            SELECT Id, Name, Amount__c, CurrencyIsoCode
+            FROM DMT_Line__c
+            WHERE Name = 'Test Line'
             LIMIT 1
         ];
 
@@ -45,7 +52,7 @@ public class DMT_CurrencyConversionServiceTest {
     }
 
     @isTest
-    static void testConvertProductList_withoutAmount() {
+    static void testConvertProductListWithoutAmount() {
         // Construir un wrapper sin monto para validar el flujo alternativo
         DMT_CurrencyConversionService.ProductWrapper pwNoAmt = new DMT_CurrencyConversionService.ProductWrapper();
         pwNoAmt.Id = null;
@@ -69,7 +76,7 @@ public class DMT_CurrencyConversionServiceTest {
     }
 
     @isTest
-    static void test_DMT_convertProductList_basic() {
+    static void testDMTConvertProductList_basic() {
         // Preparar datos de entrada simulados
         DMT_Line__c line = [
             SELECT Id, Amount__c, CurrencyIsoCode
@@ -91,7 +98,7 @@ public class DMT_CurrencyConversionServiceTest {
 
         Map<String, Object> inputMap = new Map<String, Object>{
             'list' => rawList
-        };       
+        };
         Map<String, Object> outMap = new Map<String, Object>();
         Map<String, Object> options = new Map<String, Object>();
 
@@ -104,7 +111,7 @@ public class DMT_CurrencyConversionServiceTest {
 }
 
     @isTest
-    static void test_DMT_convertProductList_basic_noList() {
+    static void testDMTConvertProductList_basic_noList() {
 
         Map<String, Object> inputMap = new Map<String, Object>();
         Map<String, Object> outMap = new Map<String, Object>();
@@ -119,7 +126,7 @@ public class DMT_CurrencyConversionServiceTest {
 }
 
 @isTest
-    static void test_DMT_convertProductList_sanction() {
+    static void testDMTConvertProductList_sanction() {
         // Preparar datos de entrada simulados
         DMT_Line__c line = [
             SELECT Id, Amount__c, CurrencyIsoCode
@@ -141,7 +148,7 @@ public class DMT_CurrencyConversionServiceTest {
 
         Map<String, Object> inputMap = new Map<String, Object>{
             'list' => rawList
-        };       
+        };
         Map<String, Object> outMap = new Map<String, Object>();
         Map<String, Object> options = new Map<String, Object>();
 

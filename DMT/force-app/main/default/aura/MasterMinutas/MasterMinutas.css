@@ -1,0 +1,50 @@
+.THIS.header-fixed {
+	position: sticky;
+    height: 95% !important;
+}
+
+.THIS .table-minute thead th span {
+	background-color: #017ab4;
+	color: white;
+}
+
+.THIS .table-minute a {
+	color: #017ab4;
+}
+
+.THIS .color-blue {
+	background-color: #017ab4 !important;
+	border-color: #017ab4 !important;
+}
+
+.THIS .slds-button_icon-bare {
+	display:none;
+}
+
+.THIS .table-minute thead th span:hover > a span {
+	background-color: white;
+	font-size: 1.001rem;
+	font-weight: bold;
+	color: #017ab4;
+}
+.THIS .padding-0 div {
+	padding:0px !important;
+	margin-top: -23% !important;
+}
+
+.THIS .padding-0 div input{
+	padding:0px !important;
+	text-align:center !important;
+}
+
+.THIS .padding-right {
+	float: right !important;
+}
+
+.THIS .slds-form-element__help {
+	position:absolute !important;
+	bottom: 1px !important;
+	font: 300 !important;
+	left:50% !important;
+	z-index:9999px !important;
+}

@@ -32,6 +32,12 @@ var formatCurrencyLabel = function(value, currencyId) {
       }
 }
 
+var DEFAULT_GRAY_TRAFFIC_LIGHT = [
+    {colour: 'rgba(163, 163, 163, 1)', pos: 0.0},
+    {colour: 'rgba(163, 163, 163, 1)', pos: 0.35},
+    {colour: 'rgba(211, 211, 211, 1)', pos: 1.0}
+];
+
 var colours = {
     trafficlights: {
         stroke: 'rgba(100, 100, 100, 1)',
@@ -54,8 +60,39 @@ var colours = {
             {colour: 'rgba(72, 174, 100, 1)', pos: 0.0},
             {colour: 'rgba(72, 174, 100, 1)', pos: 0.35},
             {colour: 'rgba(136, 202, 154, 1)', pos: 1.0}
-        ]
+        ],
+        gray: DEFAULT_GRAY_TRAFFIC_LIGHT
     }
+}
+
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+    if (!text || maxWidth <= 0) {
+        return 0;
+    }
+
+    const words = String(text).split(' ');
+    let line = '';
+    let linesDrawn = 0;
+
+    words.forEach((word) => {
+        const testLine = line ? `${line} ${word}` : word;
+        const testWidth = ctx.measureText(testLine).width;
+
+        if (testWidth > maxWidth && line) {
+            ctx.fillText(line, x, y + (linesDrawn * lineHeight));
+            linesDrawn += 1;
+            line = word;
+        } else {
+            line = testLine;
+        }
+    });
+
+    if (line) {
+        ctx.fillText(line, x, y + (linesDrawn * lineHeight));
+        linesDrawn += 1;
+    }
+
+    return linesDrawn;
 }
 
 // toggle notices in traffic lights
@@ -156,12 +193,13 @@ export function customTooltip() {
 
         var titleLines = tooltipModel.title ?? [];
         var bodyLines = tooltipModel.body.map(getBody);
-        var newOpportunity = tooltipModel.dataPoints[4].xLabel;
-        var totalAmount = tooltipModel.dataPoints.map(getXLabel).reduce((a, b) => a + b, 0) - newOpportunity;
-        var targetAmount = this._data.targets[tooltipModel.dataPoints[0].index] ?? null;
+        var dataPoints = tooltipModel.dataPoints || [];
+        var newOpportunity = dataPoints.length >= 5 ? dataPoints[4].xLabel : 0;
+        var totalAmount = dataPoints.map(getXLabel).reduce((a, b) => a + b, 0) - newOpportunity;
+        var targetAmount = this._data.targets[dataPoints[0].index] ?? null;
         var currency = this._data.currencyId ?? null;
-        var originTarget = this._data.currencies[tooltipModel.dataPoints[0].index] ?? null;
-        var originCurrency = this._data.currencies[tooltipModel.dataPoints[0].index] ?? null;
+        var originTarget = this._data.currencies[dataPoints[0].index] ?? null;
+        var originCurrency = this._data.currencies[dataPoints[0].index] ?? null;
         var remainingAmount = targetAmount - (totalAmount + newOpportunity);
         var totalBkg = {backgroundColor: "rgba(255, 255, 255, 0.9)",borderColor: "rgba(255, 255, 255, 0.9)"};
         var totalBkgLimit = {backgroundColor: "rgba(255, 0, 0, 0.9)",borderColor: "rgba(0, 0, 0, 0.9)"};
@@ -275,13 +313,27 @@ export function drawTargets(chart) {
                 ctx.moveTo(posX, posY);
                 ctx.font = "13px sans-serif";
                 ctx.fillStyle = "#777";
-                ctx.fillText(bar._model.label, posX, posY - 6);
-                ctx.font = "13px sans-serif";
 
-                ctx.fillText(chart.data.sublabels[index], posX, posY + 9);
+                if (chartInstance.data.showConditionDesc) {
+                    const labelMaxWidth = Math.max(xaxis.getPixelForValue(0) - posX - 12, 60);
+                    drawWrappedText(ctx, bar._model.label, posX, posY - 6, labelMaxWidth, 13);
+
+                    const conditionText = chartInstance.data.conditions?.[index] || chart.data.sublabels?.[index] || '';
+                    const conditionPosX = xaxis.getPixelForValue(0) + 8;
+                    const conditionPosY = posY + (barHeight / 2) + 14;
+                    const conditionMaxWidth = Math.max(chartInstance.width - conditionPosX - 12, 100);
+
+                    ctx.font = "12px sans-serif";
+                    ctx.fillStyle = "#777";
+                    drawWrappedText(ctx, conditionText, conditionPosX, conditionPosY, conditionMaxWidth, 25);
+                } else {
+                    ctx.fillText(bar._model.label, posX, posY - 6);
+                    ctx.font = "13px sans-serif";
+                    ctx.fillText(chart.data.sublabels[index], posX, posY + 9);
+                }
 
                 /* TRAFFIC LIGHTS */
-                var colour = colours.trafficlights[trafficlights[index].colour];
+                var colour = colours.trafficlights[trafficlights[index]?.colour] || DEFAULT_GRAY_TRAFFIC_LIGHT;
 
                 ctx.strokeStyle = colours.trafficlights.stroke;
                 ctx.beginPath();

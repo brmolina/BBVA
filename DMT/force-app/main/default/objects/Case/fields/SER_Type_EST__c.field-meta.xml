@@ -1,0 +1,2025 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Type_EST__c</fullName>
+    <label>Element</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>SER_Product__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Acceso - BRU.</fullName>
+                <default>false</default>
+                <label>Acceso - BRU.</label>
+            </value>
+            <value>
+                <fullName>Acceso - CASH</fullName>
+                <default>false</default>
+                <label>Acceso - CASH</label>
+            </value>
+            <value>
+                <fullName>Acceso - FINET</fullName>
+                <default>false</default>
+                <label>Acceso - FINET</label>
+            </value>
+            <value>
+                <fullName>Acceso - H.K.</fullName>
+                <default>false</default>
+                <label>Acceso - H.K.</label>
+            </value>
+            <value>
+                <fullName>Acceso - LON.</fullName>
+                <default>false</default>
+                <label>Acceso - LON.</label>
+            </value>
+            <value>
+                <fullName>Acceso - MIL</fullName>
+                <default>false</default>
+                <label>Acceso - MIL</label>
+            </value>
+            <value>
+                <fullName>Acceso - N.Y.</fullName>
+                <default>false</default>
+                <label>Acceso - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Acceso - PAR.</fullName>
+                <default>false</default>
+                <label>Acceso - PAR.</label>
+            </value>
+            <value>
+                <fullName>Acceso - POR.</fullName>
+                <default>false</default>
+                <label>Acceso - POR.</label>
+            </value>
+            <value>
+                <fullName>Acceso - WP</fullName>
+                <default>false</default>
+                <label>Acceso - WP</label>
+            </value>
+            <value>
+                <fullName>Activacion</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Activacion</label>
+            </value>
+            <value>
+                <fullName>Activacion - CASH</fullName>
+                <default>false</default>
+                <label>Activacion - CASH</label>
+            </value>
+            <value>
+                <fullName>Activacion - FINET</fullName>
+                <default>false</default>
+                <label>Activacion - FINET</label>
+            </value>
+            <value>
+                <fullName>Activacion - POR.</fullName>
+                <default>false</default>
+                <label>Activacion - POR.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Administracion/Configuraciones</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - BRU.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - BRU.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - CASH</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - CASH</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - FINET</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - FINET</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - H.K.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - H.K.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - LON.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - LON.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - MIL</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - MIL</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - N.Y.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - PAR.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - PAR.</label>
+            </value>
+            <value>
+                <fullName>Administracion/Configuraciones - POR.</fullName>
+                <default>false</default>
+                <label>Administracion/Configuraciones - POR.</label>
+            </value>
+            <value>
+                <fullName>Alertas Y Correo Seguro</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Alertas Y Correo Seguro</label>
+            </value>
+            <value>
+                <fullName>Alertas Y Correo Seguro - CASH</fullName>
+                <default>false</default>
+                <label>Alertas Y Correo Seguro - CASH</label>
+            </value>
+            <value>
+                <fullName>Alertas Y Correo Seguro - POR.</fullName>
+                <default>false</default>
+                <label>Alertas Y Correo Seguro - POR.</label>
+            </value>
+            <value>
+                <fullName>Anticipos</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Anticipos</label>
+            </value>
+            <value>
+                <fullName>Anticipos - WP</fullName>
+                <default>false</default>
+                <label>Anticipos - WP</label>
+            </value>
+            <value>
+                <fullName>API Chanel</fullName>
+                <default>false</default>
+                <label>API Chanel</label>
+            </value>
+            <value>
+                <fullName>Aplicaciones</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Aplicaciones</label>
+            </value>
+            <value>
+                <fullName>Aplicaciones - POR.</fullName>
+                <default>false</default>
+                <label>Aplicaciones - POR.</label>
+            </value>
+            <value>
+                <fullName>App Movilidad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>App Movilidad</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - BRU.</fullName>
+                <default>false</default>
+                <label>App Movilidad - BRU.</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>App Movilidad - CASH</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - H.K.</fullName>
+                <default>false</default>
+                <label>App Movilidad - H.K.</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - LON.</fullName>
+                <default>false</default>
+                <label>App Movilidad - LON.</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - MIL</fullName>
+                <default>false</default>
+                <label>App Movilidad - MIL</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - N.Y.</fullName>
+                <default>false</default>
+                <label>App Movilidad - N.Y.</label>
+            </value>
+            <value>
+                <fullName>App Movilidad - PAR.</fullName>
+                <default>false</default>
+                <label>App Movilidad - PAR.</label>
+            </value>
+            <value>
+                <fullName>App RRSS - CASH</fullName>
+                <default>false</default>
+                <label>App RRSS - CASH</label>
+            </value>
+            <value>
+                <fullName>AvalBox</fullName>
+                <default>false</default>
+                <label>AvalBox</label>
+            </value>
+            <value>
+                <fullName>BBVA ONE VIEW</fullName>
+                <default>false</default>
+                <label>BBVA ONE VIEW</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2016</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2016</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2016 - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2016 - CASH</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2017</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2017</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2018</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2018</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2019</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2019</label>
+            </value>
+            <value>
+                <fullName>Betatester Adeudos 2020</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Adeudos 2020</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2016</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2016</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2016 - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2016 - CASH</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2017</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2017</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2018</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2018</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2019</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2019</label>
+            </value>
+            <value>
+                <fullName>Betatester Confirming 2020</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Confirming 2020</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2016</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2016</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2016 - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2016 - CASH</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2017</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2017</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2018</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2018</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2019</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2019</label>
+            </value>
+            <value>
+                <fullName>Betatester Transferencias 2020</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Betatester Transferencias 2020</label>
+            </value>
+            <value>
+                <fullName>Buzon Saturacion Llamadas Salientes</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Buzon Saturacion Llamadas Salientes</label>
+            </value>
+            <value>
+                <fullName>Buzon Saturacion Llamadas Salientes - CASH</fullName>
+                <default>false</default>
+                <label>Buzon Saturacion Llamadas Salientes - CASH</label>
+            </value>
+            <value>
+                <fullName>Buzon Saturacion Llamadas Salientes - POR.</fullName>
+                <default>false</default>
+                <label>Buzon Saturacion Llamadas Salientes - POR.</label>
+            </value>
+            <value>
+                <fullName>Cliente</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cliente</label>
+            </value>
+            <value>
+                <fullName>Cliente - F.I.</fullName>
+                <default>false</default>
+                <label>Cliente - F.I.</label>
+            </value>
+            <value>
+                <fullName>Clientes</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Clientes</label>
+            </value>
+            <value>
+                <fullName>Clientes - WP</fullName>
+                <default>false</default>
+                <label>Clientes - WP</label>
+            </value>
+            <value>
+                <fullName>Cobros</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Cobros</label>
+            </value>
+            <value>
+                <fullName>Cobros - AUX.</fullName>
+                <default>false</default>
+                <label>Cobros - AUX.</label>
+            </value>
+            <value>
+                <fullName>Cobros - BR-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - BR-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - BRU.</fullName>
+                <default>false</default>
+                <label>Cobros - BRU.</label>
+            </value>
+            <value>
+                <fullName>Cobros - CASH</fullName>
+                <default>false</default>
+                <label>Cobros - CASH</label>
+            </value>
+            <value>
+                <fullName>Cobros - EDI.</fullName>
+                <default>false</default>
+                <label>Cobros - EDI.</label>
+            </value>
+            <value>
+                <fullName>Cobros - EDIF.</fullName>
+                <default>false</default>
+                <label>Cobros - EDIF.</label>
+            </value>
+            <value>
+                <fullName>Cobros - H.K.</fullName>
+                <default>false</default>
+                <label>Cobros - H.K.</label>
+            </value>
+            <value>
+                <fullName>Cobros - HK-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - HK-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - LO-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - LO-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - LON.</fullName>
+                <default>false</default>
+                <label>Cobros - LON.</label>
+            </value>
+            <value>
+                <fullName>Cobros - MI-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - MI-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - MIL</fullName>
+                <default>false</default>
+                <label>Cobros - MIL</label>
+            </value>
+            <value>
+                <fullName>Cobros - N.Y.</fullName>
+                <default>false</default>
+                <label>Cobros - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Cobros - NY-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - NY-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - PA-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - PA-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - PAR.</fullName>
+                <default>false</default>
+                <label>Cobros - PAR.</label>
+            </value>
+            <value>
+                <fullName>Cobros - PG-AUX</fullName>
+                <default>false</default>
+                <label>Cobros - PG-AUX</label>
+            </value>
+            <value>
+                <fullName>Cobros - POR.</fullName>
+                <default>false</default>
+                <label>Cobros - POR.</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Comercio Exterior</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior - CASH</fullName>
+                <default>false</default>
+                <label>Comercio Exterior - CASH</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior - LON.</fullName>
+                <default>false</default>
+                <label>Comercio Exterior - LON.</label>
+            </value>
+            <value>
+                <fullName>Comercio Exterior - POR.</fullName>
+                <default>false</default>
+                <label>Comercio Exterior - POR.</label>
+            </value>
+            <value>
+                <fullName>COMEX</fullName>
+                <default>false</default>
+                <label>COMEX</label>
+            </value>
+            <value>
+                <fullName>Comunicaciones</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Comunicaciones</label>
+            </value>
+            <value>
+                <fullName>Comunicaciones - EDI.</fullName>
+                <default>false</default>
+                <label>Comunicaciones - EDI.</label>
+            </value>
+            <value>
+                <fullName>Confirming Digital</fullName>
+                <default>false</default>
+                <label>Confirming Digital</label>
+            </value>
+            <value>
+                <fullName>Confirming Digital NoClient</fullName>
+                <default>false</default>
+                <label>Confirming Digital NoClient</label>
+            </value>
+            <value>
+                <fullName>Consultas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Consultas</label>
+            </value>
+            <value>
+                <fullName>Consultas - F.ACT</fullName>
+                <default>false</default>
+                <label>Consultas - F.ACT</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Consultas Varias</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - AUX.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - AUX.</label>
+            </value>
+            <value>
+                <fullName>Consultas varias - BR-AUX</fullName>
+                <default>false</default>
+                <label>Consultas varias - BR-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - BRU.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - BRU.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - CASH</fullName>
+                <default>false</default>
+                <label>Consultas Varias - CASH</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - CON.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - CON.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - EDI</fullName>
+                <default>false</default>
+                <label>Consultas Varias - EDI</label>
+            </value>
+            <value>
+                <fullName>Consultas varias - EDIF.</fullName>
+                <default>false</default>
+                <label>Consultas varias - EDIF.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - FINET</fullName>
+                <default>false</default>
+                <label>Consultas Varias - FINET</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - H.K.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - H.K.</label>
+            </value>
+            <value>
+                <fullName>Consultas varias - HK-AUX</fullName>
+                <default>false</default>
+                <label>Consultas varias - HK-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - HSS</fullName>
+                <default>false</default>
+                <label>Consultas Varias - HSS</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - LO-AUX</fullName>
+                <default>false</default>
+                <label>Consultas Varias - LO-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - LON.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - LON.</label>
+            </value>
+            <value>
+                <fullName>Consultas varias - MI-AUX</fullName>
+                <default>false</default>
+                <label>Consultas varias - MI-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - MIL</fullName>
+                <default>false</default>
+                <label>Consultas Varias - MIL</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - N.Y.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Consultas varias - NY-AUX</fullName>
+                <default>false</default>
+                <label>Consultas varias - NY-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - OFF</fullName>
+                <default>false</default>
+                <label>Consultas Varias - OFF</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - PA-AUX</fullName>
+                <default>false</default>
+                <label>Consultas Varias - PA-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - PAR.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - PAR.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - PAS.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - PAS.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - PG-AUX</fullName>
+                <default>false</default>
+                <label>Consultas Varias - PG-AUX</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - POR.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - POR.</label>
+            </value>
+            <value>
+                <fullName>Consultas Varias - SWI.</fullName>
+                <default>false</default>
+                <label>Consultas Varias - SWI.</label>
+            </value>
+            <value>
+                <fullName>Emisión</fullName>
+                <default>false</default>
+                <label>Emisión</label>
+            </value>
+            <value>
+                <fullName>Factura Integral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Factura Integral</label>
+            </value>
+            <value>
+                <fullName>Factura Integral - CASH</fullName>
+                <default>false</default>
+                <label>Factura Integral - CASH</label>
+            </value>
+            <value>
+                <fullName>Ficheros</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ficheros</label>
+            </value>
+            <value>
+                <fullName>Ficheros - CASH</fullName>
+                <default>false</default>
+                <label>Ficheros - CASH</label>
+            </value>
+            <value>
+                <fullName>Ficheros - EDI.</fullName>
+                <default>false</default>
+                <label>Ficheros - EDI.</label>
+            </value>
+            <value>
+                <fullName>Ficheros - POR.</fullName>
+                <default>false</default>
+                <label>Ficheros - POR.</label>
+            </value>
+            <value>
+                <fullName>Firmas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Firmas</label>
+            </value>
+            <value>
+                <fullName>Firmas - CASH</fullName>
+                <default>false</default>
+                <label>Firmas - CASH</label>
+            </value>
+            <value>
+                <fullName>Firmas - POR.</fullName>
+                <default>false</default>
+                <label>Firmas - POR.</label>
+            </value>
+            <value>
+                <fullName>Fraudes</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Fraudes</label>
+            </value>
+            <value>
+                <fullName>Fraudes - CASH</fullName>
+                <default>false</default>
+                <label>Fraudes - CASH</label>
+            </value>
+            <value>
+                <fullName>Fraudes - POR.</fullName>
+                <default>false</default>
+                <label>Fraudes - POR.</label>
+            </value>
+            <value>
+                <fullName>Generador De Ordenes</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Generador De Ordenes</label>
+            </value>
+            <value>
+                <fullName>Generador De Ordenes - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Generador De Ordenes - CASH</label>
+            </value>
+            <value>
+                <fullName>Gestion Confirming</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gestion Confirming</label>
+            </value>
+            <value>
+                <fullName>Gestion Confirming - WP</fullName>
+                <default>false</default>
+                <label>Gestion Confirming - WP</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gestion De Incidencias En Curso</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - BRU.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - BRU.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - CASH</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - CASH</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - CON.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - CON.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - F.ACT</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - F.ACT</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - F.I.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - F.I.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - FINET</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - FINET</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - H.K.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - H.K.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - HSS</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - HSS</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - LON.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - LON.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - MIL</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - MIL</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - N.Y.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - PAR.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - PAR.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - PAS.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - PAS.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - POR.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - POR.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - SWI.</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - SWI.</label>
+            </value>
+            <value>
+                <fullName>Gestion De Incidencias En Curso - WP</fullName>
+                <default>false</default>
+                <label>Gestion De Incidencias En Curso - WP</label>
+            </value>
+            <value>
+                <fullName>Gestión de Tributos (GITIM)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gestión de Tributos (GITIM)</label>
+            </value>
+            <value>
+                <fullName>Gestion De Tributos (Gitim) - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gestion De Tributos (Gitim) - CASH</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gestion Oficina</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - BRU.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - BRU.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - CASH</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - CASH</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - EDI.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - EDI.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - H.K.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - H.K.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - LON.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - LON.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - MIL</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - MIL</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - N.Y.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina - PAR.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - PAR.</label>
+            </value>
+            <value>
+                <fullName>Gestion Oficina -POR.</fullName>
+                <default>false</default>
+                <label>Gestion Oficina - POR.</label>
+            </value>
+            <value>
+                <fullName>Host Bbva</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Host Bbva</label>
+            </value>
+            <value>
+                <fullName>Host Bbva - POR.</fullName>
+                <default>false</default>
+                <label>Host Bbva - POR.</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Informacion De Cuentas</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas - CASH</fullName>
+                <default>false</default>
+                <label>Informacion De Cuentas - CASH</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas - FINET</fullName>
+                <default>false</default>
+                <label>Informacion De Cuentas - FINET</label>
+            </value>
+            <value>
+                <fullName>Informacion De Cuentas - POR.</fullName>
+                <default>false</default>
+                <label>Informacion De Cuentas - POR.</label>
+            </value>
+            <value>
+                <fullName>Informacion Patrimonial - CASH</fullName>
+                <default>false</default>
+                <label>Informacion Patrimonial - CASH</label>
+            </value>
+            <value>
+                <fullName>Inversiones Y Mercados</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Inversiones Y Mercados</label>
+            </value>
+            <value>
+                <fullName>Inversiones Y Mercados - CASH</fullName>
+                <default>false</default>
+                <label>Inversiones Y Mercados - CASH</label>
+            </value>
+            <value>
+                <fullName>Inversiones Y Mercados - POR.</fullName>
+                <default>false</default>
+                <label>Inversiones Y Mercados - POR.</label>
+            </value>
+            <value>
+                <fullName>Llamada Equivocada</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Llamada Equivocada</label>
+            </value>
+            <value>
+                <fullName>Llamada Equivocada - EDI.</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Llamada Equivocada - EDI.</label>
+            </value>
+            <value>
+                <fullName>Llamada Equivocada - OFF</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Llamada Equivocada - OFF</label>
+            </value>
+            <value>
+                <fullName>Oficina BBVA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Oficina BBVA</label>
+            </value>
+            <value>
+                <fullName>Oficina Bbva - CASH</fullName>
+                <default>false</default>
+                <label>Oficina Bbva - CASH</label>
+            </value>
+            <value>
+                <fullName>Oficina Bbva - EDI.</fullName>
+                <default>false</default>
+                <label>Oficina Bbva - EDI.</label>
+            </value>
+            <value>
+                <fullName>Oficina Bbva - POR.</fullName>
+                <default>false</default>
+                <label>Oficina Bbva - POR.</label>
+            </value>
+            <value>
+                <fullName>On boarding</fullName>
+                <default>false</default>
+                <label>On boarding</label>
+            </value>
+            <value>
+                <fullName>On boarding Cliente</fullName>
+                <default>false</default>
+                <label>On boarding Cliente</label>
+            </value>
+            <value>
+                <fullName>Otras Operaciones</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Otras Operaciones</label>
+            </value>
+            <value>
+                <fullName>Otras Operaciones -POR.</fullName>
+                <default>false</default>
+                <label>Otras Operaciones - POR.</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Otros</label>
+            </value>
+            <value>
+                <fullName>Otros - EDI.</fullName>
+                <default>false</default>
+                <label>Otros - EDI.</label>
+            </value>
+            <value>
+                <fullName>Pagos</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Pagos</label>
+            </value>
+            <value>
+                <fullName>Pagos - AUX.</fullName>
+                <default>false</default>
+                <label>Pagos - AUX.</label>
+            </value>
+            <value>
+                <fullName>Pagos - BR-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - BR-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - BRU.</fullName>
+                <default>false</default>
+                <label>Pagos - BRU.</label>
+            </value>
+            <value>
+                <fullName>Pagos - CASH</fullName>
+                <default>false</default>
+                <label>Pagos - CASH</label>
+            </value>
+            <value>
+                <fullName>Pagos - EDI.</fullName>
+                <default>false</default>
+                <label>Pagos - EDI.</label>
+            </value>
+            <value>
+                <fullName>Pagos - EDIF.</fullName>
+                <default>false</default>
+                <label>Pagos - EDIF.</label>
+            </value>
+            <value>
+                <fullName>Pagos - H.K.</fullName>
+                <default>false</default>
+                <label>Pagos - H.K.</label>
+            </value>
+            <value>
+                <fullName>Pagos - HK-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - HK-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - LO-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - LO-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - LON.</fullName>
+                <default>false</default>
+                <label>Pagos - LON.</label>
+            </value>
+            <value>
+                <fullName>Pagos - MI-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - MI-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - MIL</fullName>
+                <default>false</default>
+                <label>Pagos - MIL</label>
+            </value>
+            <value>
+                <fullName>Pagos - N.Y.</fullName>
+                <default>false</default>
+                <label>Pagos - N.Y.</label>
+            </value>
+            <value>
+                <fullName>Pagos - NY-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - NY-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - PA-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - PA-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - PAR.</fullName>
+                <default>false</default>
+                <label>Pagos - PAR.</label>
+            </value>
+            <value>
+                <fullName>Pagos - PG-AUX</fullName>
+                <default>false</default>
+                <label>Pagos - PG-AUX</label>
+            </value>
+            <value>
+                <fullName>Pagos - POR.</fullName>
+                <default>false</default>
+                <label>Pagos - POR.</label>
+            </value>
+            <value>
+                <fullName>Peage</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Peage</label>
+            </value>
+            <value>
+                <fullName>Peage - CASH</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Peage - CASH</label>
+            </value>
+            <value>
+                <fullName>Peticiones Especiales</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Peticiones Especiales</label>
+            </value>
+            <value>
+                <fullName>Peticiones Especiales - EDI.</fullName>
+                <default>false</default>
+                <label>Peticiones Especiales - EDI.</label>
+            </value>
+            <value>
+                <fullName>Peticiones Especiales - POR.</fullName>
+                <default>false</default>
+                <label>Peticiones Especiales - POR.</label>
+            </value>
+            <value>
+                <fullName>Posicion Integral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Posicion Integral</label>
+            </value>
+            <value>
+                <fullName>Posicion Integral - CASH</fullName>
+                <default>false</default>
+                <label>Posicion Integral - CASH</label>
+            </value>
+            <value>
+                <fullName>Posicion Integral - POR.</fullName>
+                <default>false</default>
+                <label>Posicion Integral - POR.</label>
+            </value>
+            <value>
+                <fullName>Posicion Usuario</fullName>
+                <default>false</default>
+                <label>Posicion Usuario - CASH</label>
+            </value>
+            <value>
+                <fullName>Proveedor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Proveedor</label>
+            </value>
+            <value>
+                <fullName>Proveedor - F.I.</fullName>
+                <default>false</default>
+                <label>Proveedor - F.I.</label>
+            </value>
+            <value>
+                <fullName>Recepción</fullName>
+                <default>false</default>
+                <label>Recepción</label>
+            </value>
+            <value>
+                <fullName>Redocumentacion</fullName>
+                <default>false</default>
+                <label>Redocumentacion</label>
+            </value>
+            <value>
+                <fullName>Referencia Auxiliar</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Referencia Auxiliar</label>
+            </value>
+            <value>
+                <fullName>Referencia Auxiliar - CASH</fullName>
+                <default>false</default>
+                <label>Referencia Auxiliar - CASH</label>
+            </value>
+            <value>
+                <fullName>SENDA</fullName>
+                <default>false</default>
+                <label>SENDA</label>
+            </value>
+            <value>
+                <fullName>Tarjetas De Empresa</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tarjetas De Empresa</label>
+            </value>
+            <value>
+                <fullName>Tarjetas De Empresa - CASH</fullName>
+                <default>false</default>
+                <label>Tarjetas De Empresa - CASH</label>
+            </value>
+            <value>
+                <fullName>Tarjetas De Empresa - POR.</fullName>
+                <default>false</default>
+                <label>Tarjetas De Empresa - POR.</label>
+            </value>
+            <value>
+                <fullName>Tokens</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tokens</label>
+            </value>
+            <value>
+                <fullName>Tokens - BRU.</fullName>
+                <default>false</default>
+                <label>Tokens - BRU.</label>
+            </value>
+            <value>
+                <fullName>Tokens - CASH</fullName>
+                <default>false</default>
+                <label>Tokens - CASH</label>
+            </value>
+            <value>
+                <fullName>Tokens - FINET</fullName>
+                <default>false</default>
+                <label>Tokens - FINET</label>
+            </value>
+            <value>
+                <fullName>Tokens - H.K.</fullName>
+                <default>false</default>
+                <label>Tokens - H.K.</label>
+            </value>
+            <value>
+                <fullName>Tokens - LON.</fullName>
+                <default>false</default>
+                <label>Tokens - LON.</label>
+            </value>
+            <value>
+                <fullName>Tokens - MIL</fullName>
+                <default>false</default>
+                <label>Tokens - MIL</label>
+            </value>
+            <value>
+                <fullName>Tokens - N.Y.</fullName>
+                <default>false</default>
+                <label>Tokens -N.Y.</label>
+            </value>
+            <value>
+                <fullName>Tokens - PAR.</fullName>
+                <default>false</default>
+                <label>Tokens - PAR.</label>
+            </value>
+            <value>
+                <fullName>Tokens - POR</fullName>
+                <default>false</default>
+                <label>Tokens - POR</label>
+            </value>
+            <value>
+                <fullName>UFE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>UFE</label>
+            </value>
+            <value>
+                <fullName>Utilidades</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Utilidades</label>
+            </value>
+            <value>
+                <fullName>Utilidades - CASH</fullName>
+                <default>false</default>
+                <label>Utilidades - CASH</label>
+            </value>
+            <value>
+                <fullName>Utilidades - POR.</fullName>
+                <default>false</default>
+                <label>Utilidades - POR.</label>
+            </value>
+            <value>
+                <fullName>Validaciones De Ficheros</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Validaciones De Ficheros</label>
+            </value>
+            <value>
+                <fullName>Validaciones De Ficheros - CASH</fullName>
+                <default>false</default>
+                <label>Validaciones De Ficheros - CASH</label>
+            </value>
+            <value>
+                <fullName>Validaciones De Ficheros - POR</fullName>
+                <default>false</default>
+                <label>Validaciones De Ficheros - POR</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>HSS</controllingFieldValue>
+            <valueName>Consultas Varias - HSS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>HSS</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - HSS</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PASARELAS</controllingFieldValue>
+            <valueName>Consultas Varias - PAS.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PASARELAS</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - PAS.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FIN</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <controllingFieldValue>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</controllingFieldValue>
+            <valueName>Consultas Varias - SWI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FIN</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <controllingFieldValue>SWIFT FILEACT</controllingFieldValue>
+            <valueName>Emisión</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FIN</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <controllingFieldValue>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - SWI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FIN</controllingFieldValue>
+            <controllingFieldValue>SWIFT</controllingFieldValue>
+            <controllingFieldValue>SWIFT FILEACT</controllingFieldValue>
+            <valueName>Recepción</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FILEACT</controllingFieldValue>
+            <controllingFieldValue>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</controllingFieldValue>
+            <valueName>Consultas - F.ACT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>SWIFT FILEACT</controllingFieldValue>
+            <controllingFieldValue>H2H (SWIFT FILEACT, SFTP, FTPS, WEBSERVICES...)</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - F.ACT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Acceso - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Cobros - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Consultas Varias - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Gestion Oficina - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Pagos - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN</controllingFieldValue>
+            <valueName>Tokens - MIL</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - MI-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas varias - MI-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH MILAN-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - MI-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Acceso - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Cobros - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Consultas Varias - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Gestion Oficina - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Pagos - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK</controllingFieldValue>
+            <valueName>Tokens - N.Y.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - NY-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas varias - NY-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH NUEVA YORK-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - NY-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Acceso - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Cobros - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Consultas Varias - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Gestion Oficina - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Pagos - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS</controllingFieldValue>
+            <valueName>Tokens - PAR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - PA-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas Varias - PA-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PARIS-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - PA-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Acceso - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Activacion - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Alertas Y Correo Seguro - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Aplicaciones - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Buzon Saturacion Llamadas Salientes - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Cobros - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Comercio Exterior - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Consultas Varias - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Ficheros - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Firmas - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Fraudes - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Gestion Oficina -POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Host Bbva - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Informacion De Cuentas - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Inversiones Y Mercados - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Oficina Bbva - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Otras Operaciones -POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Pagos - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Peticiones Especiales - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Posicion Integral - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Tarjetas De Empresa - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Tokens - POR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Utilidades - POR.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL</controllingFieldValue>
+            <valueName>Validaciones De Ficheros - POR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - PG-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL AUXILIAR</controllingFieldValue>
+            <valueName>Consultas Varias - PG-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH PORTUGAL AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - PG-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Acceso - WP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Anticipos - WP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Clientes - WP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Confirming Digital NoClient</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Gestion Confirming - WP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA WEB PROVEEDORES NO CLIENTES</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - WP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONSORCIO</controllingFieldValue>
+            <valueName>Consultas Varias - CON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CONSORCIO</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - CON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Acceso - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Activacion - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Consultas Varias - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Informacion De Cuentas - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA FINET</controllingFieldValue>
+            <valueName>Tokens - FINET</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Acceso - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Activacion - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Alertas Y Correo Seguro - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>API Chanel</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>App RRSS - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>AvalBox</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>BBVA ONE VIEW</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Buzon Saturacion Llamadas Salientes - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Cobros - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Comercio Exterior - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>COMEX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Confirming Digital</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Consultas Varias - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Factura Integral - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Ficheros - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Firmas - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Fraudes - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Gestion Oficina - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Informacion De Cuentas - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Inversiones Y Mercados - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Oficina Bbva - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>On boarding</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>On boarding Cliente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Pagos - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Posicion Integral - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Posicion Usuario</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Redocumentacion</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Referencia Auxiliar - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>SENDA</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Tarjetas De Empresa - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Tokens - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Utilidades - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH</controllingFieldValue>
+            <valueName>Validaciones De Ficheros - CASH</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - AUX.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH AUXILIAR</controllingFieldValue>
+            <valueName>Consultas Varias - AUX.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET C@SH AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - AUX.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Acceso - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Cobros - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Consultas Varias - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Gestion Oficina - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Pagos - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS</controllingFieldValue>
+            <valueName>Tokens - BRU.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - BR-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas varias - BR-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH BRUSELAS-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - BR-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Acceso - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Cobros - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Consultas Varias - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Gestion Oficina - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Pagos - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG</controllingFieldValue>
+            <valueName>Tokens - H.K.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - HK-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas varias - HK-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH HONG KONG-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - HK-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Acceso - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Administracion/Configuraciones - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Cobros - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Consultas Varias - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Gestion Oficina - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Pagos - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES</controllingFieldValue>
+            <valueName>Tokens - LON.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES-AUXILIAR</controllingFieldValue>
+            <valueName>Cobros - LO-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES-AUXILIAR</controllingFieldValue>
+            <valueName>Consultas Varias - LO-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>BBVA NET CASH LONDRES-AUXILIAR</controllingFieldValue>
+            <valueName>Pagos - LO-AUX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Cobros - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Comunicaciones - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Consultas Varias - EDI</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Ficheros - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Gestion Oficina - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Oficina Bbva - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Otros - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Pagos - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>EDITRAN</controllingFieldValue>
+            <valueName>Peticiones Especiales - EDI.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>FACTURA INTEGRAL</controllingFieldValue>
+            <valueName>Cliente - F.I.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>FACTURA INTEGRAL</controllingFieldValue>
+            <valueName>Gestion De Incidencias En Curso - F.I.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>FACTURA INTEGRAL</controllingFieldValue>
+            <valueName>Proveedor - F.I.</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

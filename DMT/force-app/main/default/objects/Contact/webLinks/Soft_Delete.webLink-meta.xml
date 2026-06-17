@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Soft_Delete</fullName>
+    <availability>online</availability>
+    <description>First try to delete a Contact. The user that pulse this contact make it invisible and the admin can then hard delete it after the necessary approbations.</description>
+    <displayType>button</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>Soft Delete</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <url>{!REQUIRESCRIPT(&quot;/soap/ajax/32.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/32.0/apex.js&quot;)}
+{!REQUIRESCRIPT(&quot;/support/console/20.0/integration.js&quot;)}
+
+var confirmar = confirm(&quot;Delete contact?&quot;);
+if (confirmar){
+	try{
+	var c = new sforce.SObject(&quot;Contact&quot;);
+	c.id = &quot;{!Contact.Id}&quot;;
+	c.Logical_Delete__c=true;
+	c.OwnerId = &quot;{!$Setup.Application_Settings_Hierarchy__c.System_Admin_ID__c}&quot;;
+	result = sforce.connection.update([c]);
+
+	if ( result[0].getBoolean( &quot;success&quot; ) ) {
+
+		window.location.reload();
+
+	  } else {
+		var errors = result[0].errors;
+		var errorMessages = &quot;&quot;;
+
+		for ( var i = 0; i &lt; errors.length; i++ ) {
+		  errorMessages += errors[i].message + &apos;\n&apos;;
+		}
+		if (errorMessages != &apos;&apos;){
+		alert( errorMessages ); // display all validation errors
+		}
+		else{
+		  alert (&apos;Insufficient Privileges&apos;);
+	   }
+
+	  }
+	}catch ( ex ) {
+
+	  alert( ex ); // display any javascript exception message
+	}
+}</url>
+</WebLink>

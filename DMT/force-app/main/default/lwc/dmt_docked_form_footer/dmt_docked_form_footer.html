@@ -1,0 +1,46 @@
+<template>
+     
+    <div class="slds-docked-form-footer">
+
+        <template if:true={hasError}>
+            <button onclick={handleErrorButtonClick} class="slds-m-right_xxx-small slds-button_icon-inverse slds-button slds-button_icon" title="Resolve Error">
+                <lightning-icon size="small" icon-name="utility:error"
+                    style="--sds-c-icon-color-foreground-default: var(--slds-g-color-error-base-30, var(--lwc-colorBackgroundErrorDark, rgb(186, 5, 23))); --sds-c-icon-color-foreground: var(--slds-g-color-error-base-30, var(--lwc-colorBackgroundErrorDark, rgb(186, 5, 23)));">
+                </lightning-icon>
+            </button>
+        </template>
+
+
+        <lightning-button variant="neutral" label="Cancel" disabled={isLoading} onclick={handleCancel}></lightning-button>
+        <lightning-button variant="brand" label="Save" class="slds-var-m-left_x-small" disabled={isLoading} onclick={handleSave}></lightning-button>
+
+        <template if:true={showErrorPopoverIfNotLoading}>
+            <section
+                aria-describedby="error-popover-body"
+                aria-labelledby="error-popover-title"
+                class="slds-popover slds-popover_error slds-nubbin_bottom-left"
+                role="dialog"
+                style="position:absolute;bottom:56px;left:49.7%;margin-left:62px;transform:translateX(-50%)"
+            >
+                <button class="slds-button slds-button_icon slds-button_icon-small slds-float_right slds-popover__close slds-button_icon-inverse" title="Close dialog" onclick={closeErrorPopover}>
+                    <lightning-icon size="x-small" icon-name="utility:close" style="--sds-c-icon-color-foreground-default: white; --sds-c-icon-color-foreground: white"></lightning-icon>
+                    <span class="slds-assistive-text">Close dialog</span>
+                </button>
+                <header class="slds-popover__header">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon size="x-small" icon-name="utility:error" style="--sds-c-icon-color-foreground-default: white; --sds-c-icon-color-foreground: white"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-truncate slds-text-heading_medium" id="error-popover-title" title="Error updating record">Error updating record</h2>
+                        </div>
+                    </div>
+                </header>
+                <div class="slds-popover__body" id="error-popover-body">
+                    <p>{errorMessage}</p>
+                </div>
+            </section>
+        </template>
+
+    </div>
+</template>

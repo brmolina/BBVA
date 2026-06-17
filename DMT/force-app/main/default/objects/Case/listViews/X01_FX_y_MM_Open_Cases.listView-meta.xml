@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>X01_FX_y_MM_Open_Cases</fullName>
+    <booleanFilter>1 AND 2 AND 3</booleanFilter>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>SER_Email_received__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>SER_Classification__c</columns>
+    <columns>CASES.CREATED_DATE</columns>
+    <columns>SER_Case_age_days__c</columns>
+    <columns>SER_Settlement_Date__c</columns>
+    <columns>OWNER_NAME</columns>
+    <columns>CASES.PRIORITY</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>equals</operation>
+        <value>Closed</value>
+    </filters>
+    <filters>
+        <field>SER_Outbound_Mailbox__c</field>
+        <operation>equals</operation>
+        <value>Email Spanish Fixed Income Settlement</value>
+    </filters>
+    <filters>
+        <field>OWNER_NAME</field>
+        <operation>notContain</operation>
+        <value>INFORMES</value>
+    </filters>
+    <label>02 SLBE Close Cases</label>
+    <sharedTo>
+        <group>SER_SecuritySettlements</group>
+        <group>SETTLEMENT_DEUDA</group>
+    </sharedTo>
+</ListView>

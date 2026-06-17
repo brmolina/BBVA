@@ -1,0 +1,1 @@
+<aura:event type="APPLICATION" description="Event to manage the refresh from the QVCD" />

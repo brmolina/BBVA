@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>validate_nps_account</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+                ISCHANGED(survey_nps_contact_type__c),
+				OR(
+								RecordType.DeveloperName = $Label.RT_Desktop_Contact,
+								RecordType.DeveloperName = $Label.RT_Desktop_Inactive_Contact
+				),
+				NOT($Profile.Name = &quot;System Administrator&quot;),
+                $Setup.CIB_Bypass__c.CIB_skip_NPS_validationrule__c = false,
+                Account.survey_nps_contact_type__c = false,
+                survey_nps_contact_type__c=true
+)</errorConditionFormula>
+    <errorMessage>Please notice you can not mark a contact as NPS, if the client is not under NPS perimeter. Thank you.</errorMessage>
+</ValidationRule>

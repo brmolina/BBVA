@@ -1,0 +1,197 @@
+<aura:component controller="Home_NPS_Wave_Cnt"
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:lightningQuickAction"
+  access="global">
+
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+  <aura:attribute name="popUp" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen2" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen3" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen4" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen5" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isLoading" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="showSpinner" type="Boolean" default="true" />
+  <aura:attribute name="fields" type="Object[]"/>
+  <aura:attribute name="fields2" type="Object[]"/>
+  <aura:attribute name="field3Options" type="List" default="[]"/>
+  <aura:attribute name="field3Items" type="List" default="[]"/>
+  <aura:attribute name="objectName" type="String" default="NPS_Wave__c"/>
+  <aura:attribute name="fieldsParam" type="String" default="gf_nps_sv_cust_prfsnl_seg_desc__c,gf_nps_survey_cust_tier_desc__c,gf_nps_sv_cust_rev_ind_type__c"/>
+  <aura:attribute name="fields2Param" type="String" default="nps_start_date__c,gf_nps_survey_cust_send_date__c,nps_end_date__c"/>
+  <aura:attribute name="field3Param" type="String" default="gf_nps_sv_cust_oper_cntry_desc__c"/>
+  <aura:attribute name="objectNameFilter" type="String" default="Account"/>
+  <aura:attribute name="fieldsParamFilter" type="String" default="DES_Segment__c=gf_nps_sv_cust_prfsnl_seg_desc__c,DES_Tier__c=gf_nps_survey_cust_tier_desc__c"/>
+  <aura:attribute name="otherFilter" type="String" default="gf_nps_sv_cust_rev_ind_type__c"/>
+  <aura:attribute name="recordTypesFilter" type="String" default="('Group','DES_Commercial_Client')"/>
+  <aura:attribute name="gridColumns" type="List" access="PRIVATE" />
+  <aura:attribute name="gridData" type="Object" access="PRIVATE" />
+  <aura:attribute name="gridExpandedRows" type="List" access="PRIVATE" />
+  <aura:attribute name="selectedIds" type="List" access="PRIVATE" />
+  <aura:attribute name="dataTable" type="Object"/>
+  <aura:attribute name="columns" type="List"/>
+  <aura:attribute name="nocountry" type="Boolean" default="false"/>
+  <aura:attribute name="selectedRecords" type="Object" access="PRIVATE" />
+
+  <div class="slds-box">
+    <div class="slds-page-header__name-title">
+      <h1>
+        <span class="slds-page-header__title slds-truncate" title="NPS Perimeter">NPS Perimeter &amp; Wave</span>
+        <br/>
+      </h1>
+      <div class="slds-align_absolute-center" >
+          <lightning:button variant="brand" label="Configure" title="Configure" onclick="{!c.openModal}"/>
+      </div>
+    </div>
+  </div>
+
+  <aura:if isTrue="{!v.popUp}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <div class="slds-modal__content slds-p-around_medium customDiv">
+          <div class="slds-page-header">
+            <span class="slds-page-header__title slds-truncate" title="NPS Perimeter Wave">NPS Perimeter &amp; Wave</span>
+            <br/>
+          </div>
+          <aura:if isTrue="{!v.showSpinner}">
+            <lightning:spinner />
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen}">
+            <div class="customPosition">
+              <lightning:recordEditForm objectApiName="{!v.objectName}" onload="{!c.handleLoad}">
+                <aura:iteration items="{!v.fields}" var="field" indexVar="index">
+                  <lightning:inputField fieldName="{!field.fapiname}" label="{!index}" value="{!field.value}"
+                                        class="slds-p-top_small slds-m-top_medium"/>
+                </aura:iteration>
+              </lightning:recordEditForm>
+              <footer class="slds-modal__footer bottom">
+                <lightning:button class="slds-float_left" variant="neutral" label="Close" title="Close" onclick="{!c.closeModal}"/>
+                <lightning:button variant="brand" label="Next" title="Next" onclick="{!c.next}"/>
+              </footer>
+            </div>
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen2}">
+            <aura:if isTrue="{!not(empty(v.gridData))}">
+              <div class="slds-checkbox">
+                <lightning:treeGrid
+                  checked="true"
+                  columns="{! v.gridColumns }"
+                  data="{! v.gridData }"
+                  expandedRows="{! v.gridExpandedRows }"
+                  keyField="id"
+                  aura:id="tableData"
+                  minColumnWidth="140"
+                  onrowselection = "{!c.getSelectedName}"
+                  selectedRows = "{!v.selectedIds}"
+                />
+                <!-- selectedRows = "{!v.selectedIds}"  -->
+              </div>
+              <aura:set attribute="else">
+                <div class="slds-box">
+                  <p>There are no records for applied filters</p>
+                </div>
+              </aura:set>
+            </aura:if>
+            <footer class="slds-modal__footer bottom">
+              <lightning:button class="slds-float_left" variant="neutral" label="Close" title="Close" onclick="{!c.closeModal}"/>
+              <lightning:button variant="neutral" label="Back" title="Back" onclick="{!c.back}"/>
+              <aura:if isTrue="{!not(empty(v.gridData))}">
+                <lightning:button variant="brand" label="Next" title="Next" onclick="{!c.next2}"/>
+              </aura:if>
+            </footer>
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen3}">
+            <aura:if isTrue="{!not(empty(v.selectedRecords))}">
+              <div class="slds-scrollable_y">
+                <lightning:treeGrid
+                  columns="{! v.gridColumns }"
+                  data="{! v.selectedRecords }"
+                  expandedRows="{! v.gridExpandedRows }"
+                  keyField="id"
+                  hideCheckboxColumn="true"
+                  aura:id="tableData"
+                  minColumnWidth="140"
+                  onrowselection = "{!c.getSelectedName}"
+                />
+                <!-- selectedRows = "{!v.selectedIds}"  -->
+              </div>
+              <aura:set attribute="else">
+                <div class="slds-box">
+                  <p>There are no records selected</p>
+                </div>
+              </aura:set>
+            </aura:if>
+            <footer class="slds-modal__footer bottom">
+              <lightning:button class="slds-float_left" variant="neutral" label="Close" title="Close" onclick="{!c.closeModal}"/>
+              <lightning:button variant="neutral" label="Back" title="Back" onclick="{!c.back2}"/>
+              <!-- <lightning:button variant="brand" label="Save &amp; Next" title="Next" onclick="{!c.next3}"/> -->
+              <aura:if isTrue="{!not(empty(v.selectedRecords))}">
+                <lightning:button variant="brand" label="Save &amp; Next" title="Next" onclick="{!c.next3}"/>
+              </aura:if>
+            </footer>
+          </aura:if>
+
+          <aura:if isTrue="{!v.isLoading}">
+            <div class="slds-box">
+              <p>The perimeter is not created yet. You will receive an email when it is created.</p>
+            </div>
+            <footer class="slds-modal__footer bottom">
+              <lightning:button class="slds-float_left" variant="neutral" label="Close" title="Close" onclick="{!c.closeModal}"/>
+            </footer>
+            <!-- <lightning:spinner alternativeText="Loading" size="large"/> -->
+            <!-- <div class="customPosition"><p><lightning:formattedText value="The perimeter is not created yet. Try again in a few minutes."/></p></div> -->
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen4}">
+            <lightning:recordEditForm objectApiName="{!v.objectName}" onload="{!c.handleLoad}" onsubmit="{!c.next4}">
+              <div class="customPosition">
+                <aura:iteration items="{!v.fields2}" var="field" indexVar="index">
+                  <lightning:inputField fieldName="{!field.fapiname}" label="{!index}" value="{!field.value}" required="true"
+                          class="slds-p-top_small slds-m-top_medium"/>
+                </aura:iteration>
+                <lightning:dualListbox aura:id="countries"
+                  name="gf_nps_sv_cust_oper_cntry_desc__c"
+                  label="Countries" sourceLabel="Available"
+                  selectedLabel="Chosen"
+                  required="true"
+                  options="{!v.field3Options}"
+                  value="{!v.field3Items}"
+                  class="slds-p-top_small slds-m-top_medium"/>
+                <aura:if isTrue="{!v.nocountry}">
+                  <span aria-live="assertive" class="slds-has-error slds-form-element__help slds-text-color_error">
+                    An option must be selected
+                  </span>
+                </aura:if>
+              </div>
+              <footer class="slds-modal__footer bottom">
+                <lightning:button class="slds-float_left" variant="neutral" label="Close" title="Close" onclick="{!c.closeModal}"/>
+                <lightning:button variant="neutral" label="Modify the NPS Perimeter" title="Back" onclick="{!c.back3}"/>
+                <lightning:button variant="brand" label="Save" title="Save" type="submit"/>
+              </footer>
+            </lightning:recordEditForm>
+          </aura:if>
+
+          <aura:if isTrue="{!v.isOpen5}">
+            <div class="slds-box">
+              <p>The NPS wave is being created.</p>
+            </div>
+            <!--<div class="slds-modal__content slds-p-around_medium customBox" id="modal-content-id-1">
+              <lightning:datatable
+                columns="{! v.columns }"
+                data="{! v.dataTable }"
+                keyField="Id"
+                hideCheckboxColumn="true"
+              />
+            </div>-->
+            <footer class="slds-modal__footer bottom">
+              <lightning:button variant="brand" label="Finish" title="Finish" onclick="{!c.closeModal}"/>
+            </footer>
+          </aura:if>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+</aura:component>

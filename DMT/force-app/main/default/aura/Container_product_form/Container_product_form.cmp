@@ -1,0 +1,23 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="SanctionPrice_ctrl">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:handler event="force:refreshView" action="{!c.doInitRefreshView}" />
+	<aura:handler event="fprd:GBL_SelectedProduct_evt" action="{!c.doInitRefreshView}"/>
+	<aura:attribute name="objectInput" type="Object" />
+	<aura:attribute name="isLoad" type="Boolean" default="false"/>
+	<aura:attribute name="Product" type="String" />
+	<aura:attribute name="priceIndicator" type="Boolean" default="false"/>
+	<aura:attribute name="hasOLI" type="Boolean" default="false"/>
+    <aura:attribute name="isOk" type="Boolean" default="false"/>
+	<aura:if isTrue="{!v.isLoad &amp;&amp; v.hasOLI}">
+		<br /><lightning:icon iconName="standard:product" size="medium" />
+		<span class="slds-page-header__title slds-truncate slds-aling-middle slds-m-left_small">{!v.Product}</span><br />
+		<div class="slds-m-bottom_medium">
+			<c:InformationSection_cmp isCollapsed="false" sectionTitle="{!$Label.c.InformationProduct}" recordId="{!v.recordId}" objectInput="{!v.objectInput}"/>
+		</div>
+		<aura:if isTrue="{!v.isOk}">
+			<div class="slds-m-bottom_medium">
+				<c:CriteriaSection_cmp isCollapsed="true" sectionTitle="{!$Label.c.CriteriaProduct}" recordId="{!v.recordId}" objectInput="{!v.objectInput}"/>
+			</div>
+		</aura:if>
+	</aura:if>
+</aura:component>

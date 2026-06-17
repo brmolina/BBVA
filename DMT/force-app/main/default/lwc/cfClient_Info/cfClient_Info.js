@@ -22,11 +22,11 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_ClientType:"Client Type",
-        dmt_cl_Client_Code:"Client Code",
-        dmt_cl_Group_Code:"Group Code",
+              @track Label={dmt_cl_Tax_Payer:"Tax payer",
         dmt_cl_Country:"Country",
-        dmt_cl_Tax_Payer:"Tax payer"
+        dmt_cl_Group_Code:"Group Code",
+        dmt_cl_Client_Code:"Client Code",
+        dmt_cl_ClientType:"Client Type"
         };
               pubsubEvent = [];
               customEvent = [];

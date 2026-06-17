@@ -1,0 +1,11 @@
+<aura:documentation>
+  <aura:description>
+    <h5><b>Component to show links in dynamic form</b></h5>
+    <p>attribute label: Message to show</p>
+    <p>attribute link: link reference</p>
+    <p><code>c:Arc_Gen_LinkManager</code></p>
+  </aura:description>
+  <aura:example name="Arc_Gen_LinkManager" ref="c:Arc_Gen_LinkManager" label="Link Manager">
+    <p>Component to show links in dynamic form</p>
+  </aura:example>
+</aura:documentation>

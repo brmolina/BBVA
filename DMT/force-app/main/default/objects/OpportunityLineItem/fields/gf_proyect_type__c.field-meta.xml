@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_proyect_type__c</fullName>
+    <label>Proyect Type</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>P.F. Bueno</fullName>
+                <default>false</default>
+                <label>P.F. Bueno</label>
+            </value>
+            <value>
+                <fullName>P.F. Satisfactorio</fullName>
+                <default>false</default>
+                <label>P.F. Satisfactorio</label>
+            </value>
+            <value>
+                <fullName>P.F. Debil</fullName>
+                <default>false</default>
+                <label>P.F. Debil</label>
+            </value>
+            <value>
+                <fullName>P.F. Solido con Ponderacion Preferente</fullName>
+                <default>false</default>
+                <label>P.F. Solido con Ponderacion Preferente</label>
+            </value>
+            <value>
+                <fullName>P.F. Bueno con Ponderacion Preferente</fullName>
+                <default>false</default>
+                <label>P.F. Bueno con Ponderacion Preferente</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

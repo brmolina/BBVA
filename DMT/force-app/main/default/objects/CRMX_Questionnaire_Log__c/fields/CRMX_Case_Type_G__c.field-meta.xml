@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Case_Type_G__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Section of the regulation of the Article 52, Section IV criterion that represents if the expected source of funds for the repayment of loans or credits of both counterparties to the Institution is the same.</description>
+    <label>Case Type G</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

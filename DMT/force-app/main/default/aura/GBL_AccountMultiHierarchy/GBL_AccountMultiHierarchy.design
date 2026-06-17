@@ -1,0 +1,8 @@
+<design:component >
+  <design:attribute name="leadLookupField" label="Lead Lookup Field to Account (API Name):" description="To show Leads related to an account, please specify the API Name for the Account Lookup field in the Lead Object."/>  
+  <design:attribute name="useStandard" label="Use Account Standard Hierarchy" description="The component will use standard Salesforce Account Hierarchy to represent relationships."/>
+  <design:attribute name="accountTypeField" label="Account Type Field:" description="When using Salesforce standard hierarchy, please specify the field name where the account type is specified (example: Group, Subsidiary, etc.)"/>
+  <sfdc:objects>
+    <sfdc:object>Account</sfdc:object>
+</sfdc:objects>
+</design:component>

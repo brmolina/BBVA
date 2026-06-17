@@ -1,0 +1,6 @@
+.THIS .table-title {
+  font-weight: var(--lwc-fontWeightLight, 300);
+  font-size: var(--lwc-fontSize7, 1.25rem);
+  line-height: var(--lwc-lineHeightHeading, 1.25);
+  margin-bottom: var(--lwc-spacingSmall, 0.75rem);
+}

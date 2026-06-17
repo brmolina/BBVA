@@ -1,0 +1,21 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_ValidateRating_cmp</p>
+        <p><b>DESCRIPTION: </b>Component that changes the Rating status to Validated.</p>
+        <p>The modal shows the final rating and the final number score</p>
+        <p>The button "Validate" calls a Web service that persists the rating in oracle</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>hasRecordId = String {!v.recordId} : Standard id of the current record</li>
+                <li>ratingId = String : Standard Id of the calculated rating record</li>
+                <li>success = String : If yes, the service and the save records process were successful</li>
+                <li>message = String : Message obtained by the service</li>
+                <li>ratingFinal = String : Calculated Final Rating</li>
+                <li>ratingScore = String : Status of the calculated Rating</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_ValidateRating_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ValidateRating_cmp" ref="c:Arc_Gen_ValidateRating_cmp" label="Validate Rating">
+    </aura:example>
+</aura:documentation>

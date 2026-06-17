@@ -64,27 +64,28 @@ public with sharing class DES_AP_BPAccessHandler_CTRL {
     final List<String> sections = new List<String>();
     final Id parentId = recordId;
     final String parentObjectName = parentId.getSObjectType().getDescribe().getName();
-    String businessPlanVersionIdQuery; //Query a lanzar sobre el objeto en el que se visualiza el componente para sacar el objeto del que saquen los hijos enlazados
-    businessPlanVersionIdQuery = 'select bupl__gf_business_plan_version_id__c  from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = \''+recordId+'\' LIMIT 1';
-    System.debug('La query sobre el businessplanID : '+businessPlanVersionIdQuery);
+   /*  String businessPlanVersionIdQuery=[Select bupl__gf_business_plan_version_id__c  from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = :recordId LIMIT 1]; //Query a lanzar sobre el objeto en el que se visualiza el componente para sacar el objeto del que saquen los hijos enlazados
+    System.debug('La query sobre el businessplanID : '+businessPlanVersionIdQuery); */
 
-    final List<SObject> parent = Database.query(businessPlanVersionIdQuery); //NOSONAR
+    final List<SObject> parent =[Select bupl__gf_business_plan_version_id__c  from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = :recordId LIMIT 1]; //Query a lanzar sobre el objeto en el que se visualiza el componente para sacar el objeto del que saquen los hijos enlazados
+
     final String bpVersionId = (Id) parent[0].get('bupl__gf_business_plan_version_id__c').toString();
-    String childrenquery; //Query sobre los hijos filtrada por el registro padre del registro en el que se situa el componente
+    /* String childrenquery; //Query sobre los hijos filtrada por el registro padre del registro en el que se situa el componente
     childrenquery = ' select bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c ';
-    childrenquery += '= \''+recordId+'\'';
+    childrenquery += '= \''+recordId+'\''; */
+    List<AggregateResult> childrenAgregate = new List<AggregateResult>();
       if(lastValidatedV) {
-          childrenquery +=' AND bupl__gf_business_plan_version_id__c.gf_bus_pl_lst_vldt_vr_ind_type__c = true ';
+          childrenAgregate=[select bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = :recordId AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c  = true GROUP BY bupl__gf_booking_operation_cntry_id__c];
       } else {
           if(bpVersionId == '' || bpVersionId == null) {
-              childrenquery +=' AND bupl__gf_business_plan_version_id__c.gf_business_plan_act_ind_type__c =\'Yes\' ';
+              childrenAgregate =[select bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = :recordId AND bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_act_ind_type__c ='Yes' GROUP BY bupl__gf_booking_operation_cntry_id__c ];
           } else {
-              childrenquery +=' AND bupl__gf_business_plan_version_id__c  = \''+bpVersionId+'\'';
+              childrenAgregate =[select bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c = :recordId AND bupl__gf_business_plan_version_id__c  = :bpVersionId GROUP BY bupl__gf_booking_operation_cntry_id__c];
           }
       }
-    childrenquery += ' GROUP BY bupl__gf_booking_operation_cntry_id__c';
-    System.debug('La query sobre los hijos queda : '+childrenquery);
-    for(AggregateResult section : Database.query(childrenquery)) { //NOSONAR
+    //childrenquery += ' GROUP BY bupl__gf_booking_operation_cntry_id__c';
+    System.debug('La query sobre los hijos queda : '+childrenAgregate);
+    for(AggregateResult section : childrenAgregate) { //NOSONAR
       sections.add((String) section.get('bupl__gf_booking_operation_cntry_id__c'));
     }
     return sections;

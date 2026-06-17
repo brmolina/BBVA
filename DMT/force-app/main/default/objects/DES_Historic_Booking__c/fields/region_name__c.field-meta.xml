@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>region_name__c</fullName>
+    <label>Region</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>RESTO LATAM</fullName>
+                <default>false</default>
+                <label>RESTO LATAM</label>
+            </value>
+            <value>
+                <fullName>R.EUROPA</fullName>
+                <default>false</default>
+                <label>R.EUROPA</label>
+            </value>
+            <value>
+                <fullName>MEXICO</fullName>
+                <default>false</default>
+                <label>MEXICO</label>
+            </value>
+            <value>
+                <fullName>ESPAÑA</fullName>
+                <default>false</default>
+                <label>ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>EEUU</fullName>
+                <default>false</default>
+                <label>EEUU</label>
+            </value>
+            <value>
+                <fullName>ASIA</fullName>
+                <default>false</default>
+                <label>ASIA</label>
+            </value>
+            <value>
+                <fullName>AMESUR</fullName>
+                <default>false</default>
+                <label>AMESUR</label>
+            </value>
+            <value>
+                <fullName>TURQUIA</fullName>
+                <default>false</default>
+                <label>TURQUIA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

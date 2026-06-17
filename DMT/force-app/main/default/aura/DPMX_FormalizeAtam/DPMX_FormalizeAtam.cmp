@@ -1,0 +1,182 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId" controller="DPMX_FormalizeAtam_ctrl" access="global">
+
+    <aura:attribute name="dynamicPricingId" type="String" />
+
+    <aura:attribute name="templateName" type="String" default="DPMX_SendReport" />
+    <aura:attribute name="templateBody" type="String" />
+    <aura:attribute name="sectionLst" type="Object" />
+    <aura:attribute name="checkCC" type="Boolean" default="true" />
+    <aura:attribute name="sendCC" type="List" default="[]" />
+    <aura:attribute name="dynamicPricing" type="Object" />
+    <aura:attribute name="isTasaSelectd" type="Boolean" default="false" />
+    <aura:attribute name="saludoTasa" type="String" />
+    <aura:attribute name="introduccionTasa" type="String" />
+    <aura:attribute name="closeTasa" type="String" />
+
+    <aura:attribute name="comentario" type="String" />
+
+    <aura:attribute name="debitTasa" type="String" />
+    <aura:attribute name="creditTasa" type="String" />
+    <aura:attribute name="internationalTasa" type="String" />
+
+    <aura:attribute name="DPMX_Company_Name__c" type="String" />
+    <aura:attribute name="DPMX_familia__c" type="String" />
+    <aura:attribute name="DPMX_NumeroCliente__c" type="String" />
+    <aura:attribute name="consultDate" type="String" />
+
+    <aura:attribute name="DPMX_debit" type="String" />
+    <aura:attribute name="DPMX_credit" type="String" />
+    <aura:attribute name="DPMX_International" type="String" />
+    <aura:attribute name="DPMX_Resultado" type="String" />
+    <aura:attribute name="DPMX_Rentabilidad" type="String" />
+    <aura:attribute name="DPMX_BAI" type="String" />
+
+    <aura:attribute name="DPMX_Date" type="String" />
+
+    <aura:attribute name="DPMX_monetaryCeiling" type="String" />
+    <aura:attribute name="DPMX_extraBilling" type="String" />
+    <aura:attribute name="DPMX_billing" type="String" />
+    <aura:attribute name="DPMX_cellnet" type="String" />
+    <aura:attribute name="DPMX_totalAmount" type="String" />
+    <aura:attribute name="DPMX_mit" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_debit_own" type="String" />
+    <aura:attribute name="DPMX_billing_debit_own" type="String" />
+    <aura:attribute name="DPMX_tickets_debit_own" type="String" />
+    <aura:attribute name="DPMX_percentage_debit_own" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_billing_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_tickets_debit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_percentage_debit_thirdParty" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_credit_own" type="String" />
+    <aura:attribute name="DPMX_billing_credit_own" type="String" />
+    <aura:attribute name="DPMX_tickets_credit_own" type="String" />
+    <aura:attribute name="DPMX_percentage_credit_own" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_billing_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_tickets_credit_thirdParty" type="String" />
+    <aura:attribute name="DPMX_percentage_credit_thirdParty" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_international" type="String" />
+    <aura:attribute name="DPMX_billing_international" type="String" />
+    <aura:attribute name="DPMX_tickets_international" type="String" />
+    <aura:attribute name="DPMX_percentage_international" type="String" />
+
+    <aura:attribute name="DPMX_transaction_y_total" type="String" />
+    <aura:attribute name="DPMX_billing_total" type="String" />
+    <aura:attribute name="DPMX_tickets_total" type="String" />
+    <aura:attribute name="DPMX_percentage_total" type="String" />
+
+    <aura:attribute name="DPMX_terminal" type="String" />
+    <aura:attribute name="DPMX_pinPads" type="String" />
+    <aura:attribute name="DPMX_ecommerceCheckbox" type="String" />
+    <aura:attribute name="DPMX_devicesNumber" type="String" />
+
+    <aura:attribute name="DPMX_scenario" type="String" />
+
+    <aura:attribute name="DPMX_debitPorpio" type="String" />
+    <aura:attribute name="DPMX_creditPorpio" type="String" />
+    <aura:attribute name="DPMX_interPorpio" type="String" />
+    <aura:attribute name="DPMX_resultPorpio" type="String" />
+    <aura:attribute name="DPMX_rentPorpio" type="String" />
+    <aura:attribute name="DPMX_baiPorpio" type="String" />
+
+    <aura:attribute name="DPMX_oppPosExtra" type="String" />
+    <aura:attribute name="DPMX_oppCallnet" type="String" />
+    <aura:attribute name="DPMX_oppLowBilling" type="String" />
+
+    <aura:attribute name="DPMX_basisPoints" type="String" />
+
+    <aura:attribute name="DPMX_interchangeRates_debit" type="String" />
+    <aura:attribute name="DPMX_interchangeRates_credit" type="String" />
+    <aura:attribute name="DPMX_interchangeRates_International" type="String" />
+
+    <aura:attribute name="DPMX_discountRates_debit" type="String" />
+    <aura:attribute name="DPMX_discountRates_credit" type="String" />
+    <aura:attribute name="DPMX_discountRates_International" type="String" />
+
+    <aura:attribute name="DPMX_DescuentoMaximo" type="String" />
+
+    <aura:attribute name="formalizeExist" type="Boolean" default="false" />
+
+    <aura:attribute name="initDate" type="String" />
+    <aura:attribute name="revisionDate" type="String" />
+
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true"/>
+
+    <!--Atributos de padre-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isSimulationTab" type="Boolean" />
+    <aura:attribute name="isLastMonthTab" type="Boolean" />
+    <aura:attribute name="sendConditionLst" type="List" default="[]" />
+    <aura:attribute name="sendSimulationLst" type="List" default="[]" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 50rem; width: 100%; max-width: 100rem; }
+    </aura:html>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Formalizar tasa: Paso TAM</h1>
+            </div>
+            <div class="slds-modal-body">
+                <div class="slds-box slds-theme_default">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-4">
+                            <div class="slds-form-element">
+                                <lightning:textarea required="true" name="Agrege algún comentario: " onchange="{!c.checkComment}" aura:id="Introduction" value="" label="Comentario: " />
+                            </div>
+                            <div class="slds-form-element">
+                                <lightning:textarea name="cc" aura:id="cc" value="" label="Agrege algun correo para que quede en copia: " onchange="{!c.checkCC}" messageWhenValueMissing="Este campo es obliatorio." />
+                            </div>
+                            <div class="slds-m-top_small slds-m-bottom slds-text-heading_small">
+                                <div class="slds-form-element slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                    <div>Inicio de vigencia de la tasa:</div>
+                                    <div>{!v.initDate}</div>
+                                </div>
+                            </div>
+                            <div class="slds-m-top_small slds-m-bottom slds-text-heading_small">
+                                <div class="slds-form-element slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                    <div>Recordatorio de revisión de tasa: </div>
+                                    <div>{!v.revisionDate}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-col slds-size_3-of-4">
+                            <div>
+                                {!v.saludoTasa}
+                            </div>
+
+                            <div>
+                                {!v.introduccionTasa}
+                            </div>
+                            <div>
+                                <div>Datos de la solicitud:</div>
+                                <div> Formalización de nueva tasa</div>
+                                <div> Fecha vigente para el cliente : {!v.initDate}</div>
+                                <div> Fecha de formalización aceptada : {!v.consultDate}</div>
+                                <div> Razón social: {!v.DPMX_Company_Name__c}</div>
+                            </div>
+
+                            <div>
+                                {!v.closeTasa}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.handleClose}" />
+                <button class="slds-button slds-button_brand" disabled="{!v.disableSubmitBtn}" name="{!v.savebutton}" label="Aceptar" onclick="{!c.handleSave}">Aceptar</button>
+            </div>
+        </div>
+    </section>
+</aura:component>

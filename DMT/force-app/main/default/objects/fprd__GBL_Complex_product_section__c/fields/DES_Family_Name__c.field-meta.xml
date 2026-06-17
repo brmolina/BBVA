@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Family_Name__c</fullName>
+    <externalId>false</externalId>
+    <formula>TEXT(fprd__GBL_Complex_section__r.fprd__Product_configuration__r.fprd__Product__r.Family)</formula>
+    <label>Family Name</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

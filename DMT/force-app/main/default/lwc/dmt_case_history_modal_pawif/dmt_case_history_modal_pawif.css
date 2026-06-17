@@ -1,0 +1,68 @@
+/* 1. Custom Header Look and Feel */
+.custom-modal-header {
+    background-color: #f3f3f3 !important;
+    border-bottom: 1px solid #dddbda !important;
+    padding: 1rem;
+    margin: 0 !important;
+    width: 100% !important;
+    border-radius: 0.25rem 0.25rem 0 0 !important; 
+    box-shadow: none !important;
+    flex-shrink: 0; /* Prevents header from collapsing */
+}
+
+.custom-modal-header .slds-modal__title {
+    font-weight: 700;
+    color: #181818;
+}
+
+/* 2. Modal Container for Absolute Positioning */
+.slds-modal__container {
+    position: relative; /* Keeps the absolute spinner inside the modal walls */
+    border-radius: 1.25rem !important;
+}
+
+/* 3. Read-Only Input Styling */
+.text-line-task {
+    background-color: transparent;
+    color: #0a0100;
+    outline: none;
+    border: none;
+    border-bottom: solid #eeeeee 1px;
+    padding: 0px 10px 0px 0px;
+    cursor: default;
+    margin-bottom: 1rem;
+    box-shadow: none; 
+    width: 100%;
+    display: block;
+}
+
+.text-line-task:hover,
+.text-line-task:focus {
+    border-color: #eeeeee !important; 
+    box-shadow: none !important; 
+}
+
+.textarea-line-task {
+    --slds-c-textarea-color-border: #eeeeee;
+    height: 8rem;
+}
+
+/* 4. Localized Blurry Spinner for Cards */
+.relative-card {
+    position: relative; /* Anchor for the glass overlay */
+}
+
+.card-glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(4px);            
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+}

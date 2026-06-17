@@ -1,0 +1,32 @@
+<aura:component implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId" access="global">
+    <aura:attribute name="isLoading" type="boolean" default="false" description="Indicates if the spinner is active" access="global" />
+    <aura:attribute name="ahaId" type="String" default="" description="Indicates the id of the current Account has Analysis" access="global" />
+    <aura:attribute name="modalHeader" type="String" default="" description="Indicates the title of the modal" access="global" />
+    <aura:attribute name="modalButton" type="String" default="" description="Indicates the name of the selected button" access="global" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!not(empty(v.modalButton))}">
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnCancel'}">
+            <c:Arc_IFIS_ButtonsCancel aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnReturn'}">
+            <c:Arc_IFIS_ButtonsReturn aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnPropose'}">
+            <c:Arc_IFIS_ButtonsPropose aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnFinalize'}">
+            <c:Arc_IFIS_ButtonsFinalize aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnValidate'}">
+            <c:Arc_IFIS_ButtonsValidate aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnGetRating'}">
+            <arce:Arc_IFIS_ButtonsGetRating aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.modalButton == 'Arc_IFIS_BtnRefreshServices'}">
+            <arce:Arc_IFIS_RefreshServices_CMP aura:id="{!v.modalButton}" ahaId="{!v.ahaId}" modalHeader="{!v.modalHeader}"/>
+        </aura:if>
+    </aura:if>
+</aura:component>

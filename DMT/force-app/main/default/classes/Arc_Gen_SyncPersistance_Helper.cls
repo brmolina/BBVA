@@ -173,7 +173,6 @@ public class Arc_Gen_SyncPersistance_Helper {
     * @return arce__Analysis__c - finished record from which the "Mod/Ren" process took its data
     * @example getRelatedArce(List<arce__Account_has_Analysis__c>)
     **/
-    @AuraEnabled
     public static arce__Analysis__c getRelatedArce(List<arce__Account_has_Analysis__c> ahaList) {
         arce__Analysis__c relatedArce = new arce__Analysis__c();
 

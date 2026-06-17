@@ -14,6 +14,7 @@
 *             Class creation.
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.EmptyStatementBlock')
 public class Arc_Gen_SyncPersistance_Service {
     /**
     * @Description: String with GROUP string
@@ -41,15 +42,20 @@ public class Arc_Gen_SyncPersistance_Service {
     * @return Map<String, String> - Map of the needed parameters for the service
     * @example getServiceParameters(String accHasAnalysisId)
     **/
-    @AuraEnabled
     public static Map<String, String> getServiceParameters(String accHasAnalysisId) {
         final List<arce__Account_has_Analysis__c> ahaList = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{accHasAnalysisId});
         final arce__Analysis__c relatedArce = Arc_Gen_SyncPersistance_Helper.getRelatedArce(ahaList);
+
+        String participantType = ahaList.get(0).arce__group_asset_header_type__c;
+        if(ahaList.get(0).arce__RAR_rating_tool_id__c.contains('RTC')) {
+            participantType = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) accHasAnalysisId});
+        }
+
         return new Map<String, String> {
             'relatedAnalysisId' => relatedArce.Id,
             'accHasAnalysisId'  => ahaList.get(0).Id,
             'subprocessType'    => ahaList.get(0).arce__Analysis__r.arce__anlys_wkfl_sub_process_type__c,
-            'participantType'   => ahaList.get(0).arce__group_asset_header_type__c
+            'participantType'   => participantType
 
         };
     }
@@ -63,7 +69,6 @@ public class Arc_Gen_SyncPersistance_Service {
     * @return arce.Arc_Gen_ServiceAndSaveResponse - Wrapper that contains the service response
     * @example setupPersistanceService(Map<string,string> data)
     **/
-    @AuraEnabled
     public static arce.Arc_Gen_ServiceAndSaveResponse setupPersistanceService(Map<string,string> data) {
         arce.Arc_Gen_ServiceAndSaveResponse response = new arce.Arc_Gen_ServiceAndSaveResponse();
         final String jsonInput = JSON.serialize(Arc_Gen_SyncPersistance_Helper.setServiceParams(data));
@@ -82,7 +87,6 @@ public class Arc_Gen_SyncPersistance_Service {
     * @return List<arce__Account_has_Analysis__c> - List of analyzed client objects
     * @example getAccHasAnalysis(String accHasAnalysisId)
     **/
-    @AuraEnabled
     public static List<arce__Account_has_Analysis__c> getAccHasAnalysis(String accHasAnalysisId) {
         return arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{accHasAnalysisId});
     }

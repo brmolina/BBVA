@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_expected_loss_amount__c</fullName>
+    <description>Amount associated to the  resulting proposal’s credit risk.
+(para el tipo CREDIT_RISK y EXPECTED_LOSS)</description>
+    <externalId>false</externalId>
+    <label>Annual Expected Loss (thousands)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

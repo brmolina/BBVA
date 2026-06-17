@@ -119,8 +119,6 @@ private class SER_EmailMessageMethods_TEST_2 {
     newCase.Type                      = 'ACCESO';
     newCase.Subtype__c                = 'ACCESO';
     newCase.SER_Type_EST__c           = 'Acceso - FINET';
-    newCase.SER_Type_GM__c            = 'Otros';
-    newCase.SER_Subtype_GM__c         = 'Otros';
     newCase.SER_Classification__c     = 'Consulta';
     newCase.SuppliedEmail             = 'testemailaddress@example.com';
     newCase.SER_Business_Case_Type__c = SER_Constant.BUSINESS_GTB;

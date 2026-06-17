@@ -1,0 +1,172 @@
+<!-- /*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/ -->
+<template>
+    <section class="modal-shell" role="dialog" aria-modal="true" aria-labelledby="nonc-modal-heading">
+        <div class="modal-container">
+            <header class="modal-header">
+                <h2 id="nonc-modal-heading" class="slds-text-heading_medium">{headerText}</h2>
+                <lightning-button-icon
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    onclick={handleCancel}>
+                </lightning-button-icon>
+            </header>
+
+            <div class="modal-body">
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading form"></lightning-spinner>
+                </template>
+
+                <template if:true={hasLoadError}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <h2>{loadError}</h2>
+                    </div>
+                </template>
+
+                <template if:true={isReady}>
+                    <p class="help-text">{helpText}</p>
+
+                    <!-- CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER — Mobile Lookup Component -->
+                    <template if:true={showLookup}>
+                        <div class="lookup-section">
+                            <c-n-o-n-c-custom-lookup-l-w-c
+                                label={lookupConfig.lookupFieldLabel}
+                                field-a-p-i-name={lookupConfig.lookupField}
+                                where-condition={lookupConfig.whereField}
+                                icon-name="standard:account"
+                                onlookupselected={handleLookupSelected}
+                                onlookupcleared={handleLookupCleared}
+                            ></c-n-o-n-c-custom-lookup-l-w-c>
+                        </div>
+                    </template>
+
+                    <!-- Esta vista sustituye al formulario final, pero mantiene el input
+                        de la pantalla Aura de duplicados mediante getDataFirstScreen/clientName. -->
+                    <lightning-record-edit-form
+                        object-api-name={objectApiName}
+                        record-type-id={recordTypeId}
+                        onsubmit={handleSubmit}
+                        onsuccess={handleSuccess}>
+
+                        <lightning-messages></lightning-messages>
+
+                        <div class="form-grid">
+                            <template for:each={visibleFields} for:item="field">
+                                <div key={field.key} class="field-cell">
+                                    <lightning-input-field
+                                        field-name={field.fieldAPIName}
+                                        value={field.fieldValue}
+                                        disabled={field.isDisabled}
+                                        required={field.isRequired}>
+                                    </lightning-input-field>
+                                </div>
+                            </template>
+                        </div>
+
+                        <template if:false={hasProspectSubsidiaryToggle}>
+                            <div class="slds-form-element slds-form-element_stacked">
+                               <div class="slds-form-element__control">
+                                    <lightning-input
+                                        label="Parent"
+                                        checked={isMatrix}
+                                        type="checkbox"
+                                        onchange={handleMatrixCheckboxChange}>
+                                    </lightning-input>
+                                    <br/>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER
+                             Prospect Subsidiary toggle + conditional section -->
+                        
+                        <template if:true={hasProspectSubsidiaryToggle}>
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control slds-grid slds-grid_vertical-align-center">
+                                    <lightning-input
+                                        type="checkbox"
+                                        variant="label-hidden"
+                                        checked={showProspectSubsidiarySection}
+                                        onchange={handleSubsidiaryToggle}>
+                                    </lightning-input>
+                                    <label style="font-weight: bold;">
+                                        {prospectSubsidiaryToggleLabel}
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+
+
+                        <template if:true={showProspectSubsidiarySection}>
+                            <div class="slds-box slds-m-top_medium">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">{prospectSubsidiarySectionTitle}</h3>
+                                <!-- Checkbox Matrix solo visible cuando showMatrixCheckbox es true -->
+                                <template if:true={showMatrixCheckbox}>
+                                    <div class="slds-m-top_medium">
+                                        <lightning-input
+                                            type="checkbox"
+                                            label="Parent"
+                                            checked={isMatrix}
+                                            onchange={handleMatrixCheckboxChange}>
+                                        </lightning-input>
+                                    </div>
+                                </template>
+                                <div class="form-grid">
+                                    <lightning-input
+                                        label="Name"
+                                        value={subsidiaryName}
+                                        onchange={handleSubsidiaryNameChange}
+                                        name="subsidiaryName">
+                                    </lightning-input>
+                                    <lightning-combobox
+                                        name="progress"
+                                        label="Country of Management"
+                                        value={subsidiaryCountryManagement}
+                                        placeholder="--None--"
+                                        options={subsidiaryCountryManagement}
+                                        onchange={subsidiaryCMhandleChange}
+                                        dropdown-alignment="auto" >
+                                    </lightning-combobox> 
+                                    <lightning-input
+                                        label="Tax ID"
+                                        value={subsidiaryTaxId}
+                                        onchange={handleSubsidiaryTaxIdChange}
+                                        name="subsidiaryTaxId"
+                                        required="true">
+                                    </lightning-input>
+                                </div>
+                                
+                                
+
+                                
+                            </div>
+                        </template>
+
+                        <footer class="modal-footer">
+                            <!--
+                            <lightning-button
+                                label={labels.back}
+                                onclick={handleBack}
+                                disabled={isSaving}>
+                            </lightning-button>
+                            <lightning-button
+                                label={labels.close}
+                                onclick={handleCancel}
+                                disabled={isSaving}>
+                            </lightning-button>
+                            -->
+                            <lightning-button
+                                class="slds-m-left_small"
+                                variant="brand"
+                                type="submit"
+                                label={labels.save}
+                                disabled={isSaving}>
+                            </lightning-button>
+                        </footer>
+                    </lightning-record-edit-form>
+                </template>
+            </div>
+        </div>
+    </section>
+    <div class="modal-backdrop"></div>
+</template>
+<!-- /*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/ -->

@@ -1,0 +1,260 @@
+<aura:component access="global" extends="dwp_mdal:ModalTemplate_cmp" controller="DPMX_SimulatorClientInfo_Ctrl">
+    <aura:attribute name="acquirerActivitiesWrapper" type="Object" />
+    <aura:attribute name="action" type="String" />
+    <aura:attribute name="dynamicPricing" type="Object" />
+    <aura:attribute name="dynamicPricingUpsert" type="Object" />
+    <aura:attribute name="waiting" type="Boolean" default="false" />
+    <aura:attribute name="hasHeader" type="Boolean" default="false" />
+    <aura:attribute name="isCustom" type="Boolean" default="false" />
+    <aura:attribute name="flagBool" type="Integer" />
+    <aura:attribute name="initalValues" type="List" default="[]" />
+    <aura:set attribute="modalSizeSLDS" value="slds-modal_medium" />
+    <aura:registerEvent name="DPMX_SimulatorRefresh_evt" type="c.DPMX_SimulatorRefresh_evt" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-modal__header">
+        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!$Label.c.DPMX_Update_Data}</h1>
+        <p class="slds-m-top_x-small">{!$Label.c.DPMX_SimulatorClientInfo_Text1}</p>
+    </div>
+    <div class="slds-modal__content slds-p-around_large slds-is-relative" id="modal-content-id-1">
+        <aura:if isTrue="{!v.waiting}">
+            <lightning:spinner variant="brand" />
+        </aura:if>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column1}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_SimulatorClientInfo_Input1}</div>
+                        </th>
+                    </aura:if>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column2}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_SimulatorClientInfo_Input2}</div>
+                        </th>
+                    </aura:if>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column3}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <th scope="col">
+                            <div class="slds-truncate">{!$Label.c.DPMX_SimulatorClientInfo_Input3}</div>
+                        </th>
+                    </aura:if>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column4}</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product1}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivitiesWrapper.transaction_y.debit.total}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Transaction_Debit_Own__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.billing.debit.total}" currencyText="{!v.acquirerActivitiesWrapper.billing.debit.own.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Billing_Debit_Own_Amount__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.tickets.debit.total}" currencyText="{!v.acquirerActivitiesWrapper.tickets.debit.own.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Tickets_Debit_Own_Amount__c}" />
+                        </div>
+                    </td>
+                </tr>
+                <!--
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product2}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivitiesWrapper.transaction_y.debit.thirdParty}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Transaction_Debit_ThirdParty__c}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.billing.debit.thirdParty.amount}" currencyText="{!v.acquirerActivitiesWrapper.billing.debit.thirdParty.currency_y}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Billing_Debit_ThirdParty_Amount__c}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.tickets.debit.thirdParty.amount}" currencyText="{!v.acquirerActivitiesWrapper.tickets.debit.thirdParty.currency_y}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Tickets_Debit_ThirdParty_Amount__c}" />
+                        </div>
+                    </td>
+                </tr>
+                -->
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product3}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivitiesWrapper.transaction_y.credit.total}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Transaction_Credit_Own__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.billing.credit.total}" currencyText="{!v.acquirerActivitiesWrapper.billing.credit.own.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Billing_Credit_Own_Amount__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.tickets.credit.total}" currencyText="{!v.acquirerActivitiesWrapper.tickets.credit.own.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Tickets_Credit_Own_Amount__c}" />
+                        </div>
+                    </td>
+                </tr>
+                <!--
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product4}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivitiesWrapper.transaction_y.credit.thirdParty}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Transaction_Credit_ThirdParty__c}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.billing.credit.thirdParty.amount}" currencyText="{!v.acquirerActivitiesWrapper.billing.credit.thirdParty.currency_y}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Billing_Credit_ThirdParty_Amount__c}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.tickets.credit.thirdParty.amount}" currencyText="{!v.acquirerActivitiesWrapper.tickets.credit.thirdParty.currency_y}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Tickets_Credit_ThirdParty_Amount__c}" />
+                        </div>
+                    </td>
+                </tr>
+                -->
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product5}</div>
+                    </th>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivitiesWrapper.transaction_y.international}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Transaction_International__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.billing.international.amount}" currencyText="{!v.acquirerActivitiesWrapper.billing.international.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Billing_International_Amount__c}" />
+                        </div>
+                    </td>
+                    <aura:if isTrue="{!v.isCustom}">
+                        <td>
+                            <div class="slds-truncate">
+                                <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivitiesWrapper.tickets.international.amount}" currencyText="{!v.acquirerActivitiesWrapper.tickets.international.currency_y}" />
+                            </div>
+                        </td>
+                    </aura:if>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:inputNumber value="{!v.dynamicPricingUpsert.Sim_Tickets_International_Amount__c}" />
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <footer class="slds-modal__footer">
+        <lightning:button label="{!$Label.c.DPMX_Cancel}" onclick="{!c.handleOnCancel}" disabled="{!v.waiting}" class="slds-m-top_none" />
+        <lightning:button label="{!$Label.c.DPMX_Save}" onclick="{!c.handleOnSave}" disabled="{!v.waiting}" variant="brand" class="slds-m-top_none" />
+    </footer>
+</aura:component>

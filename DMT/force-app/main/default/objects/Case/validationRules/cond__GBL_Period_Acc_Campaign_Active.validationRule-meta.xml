@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__GBL_Period_Acc_Campaign_Active</fullName>
+    <active>true</active>
+    <description>Evaluate that the period is active and valid.</description>
+    <errorConditionFormula>IF(OR(AND(NOT($Setup.cond__GBL_Clarification_Period__c.cond__GBL_Active__c),CONTAINS(RecordType.DeveloperName,&apos;GBL_Account_Campaign_Clarification&apos;)),AND(CONTAINS(RecordType.DeveloperName,&apos;GBL_Account_Campaign_Clarification&apos;),$Setup.cond__GBL_Clarification_Period__c.cond__GBL_Active__c,OR(TODAY() &lt; $Setup.cond__GBL_Clarification_Period__c.cond__GBL_Start_Period__c, TODAY() &gt;  $Setup.cond__GBL_Clarification_Period__c.cond__GBL_End_Period__c))),true,false)</errorConditionFormula>
+    <errorMessage>It is not within the clarification period.</errorMessage>
+</ValidationRule>

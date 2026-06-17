@@ -43,15 +43,15 @@ public with sharing class Pitch_Helper {
       listDenormPitch.add(iDenormPitch);
     }
 
-    final List<dwp_acmh__GBL_Account_Relationship__c> listAccRel = [SELECT Id,
-                                                                      dwp_acmh__Parent_Account__c,
-                                                                      dwp_acmh__Vision__c
-                                                                    FROM dwp_acmh__GBL_Account_Relationship__c
-                                                                    WHERE dwp_acmh__Child_Account__c = :iAccountId];
+    final List<AMH_GBL_Account_Relationship__c> listAccRel = [SELECT Id,
+                                                                      AMH_Parent_Account__c,
+                                                                      AMH_Vision__c
+                                                                    FROM AMH_GBL_Account_Relationship__c
+                                                                    WHERE AMH_Child_Account__c = :iAccountId];
 
-    for (dwp_acmh__GBL_Account_Relationship__c iAccRel : listAccRel) {
-      if(listAccRel.size() == 1 || iAccRel.dwp_acmh__Vision__c == 'Negocio') {
-        recursiveFxn(iAccRel.dwp_acmh__Parent_Account__c, iPitchId, listDenormPitch);
+    for (AMH_GBL_Account_Relationship__c iAccRel : listAccRel) {
+      if(listAccRel.size() == 1 || iAccRel.AMH_Vision__c == 'Negocio') {
+        recursiveFxn(iAccRel.AMH_Parent_Account__c, iPitchId, listDenormPitch);
       }
     }
 

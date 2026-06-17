@@ -30,6 +30,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               @track _sessionApiVars = {};
               @track Label={dmt_cl_SelectLineType_Text:"Select the type of Line:",
         dmt_cl_SelectLineStatus_text:"Select Line Status:",
+        dmt_cl_reconnectoperations:"Reconnect operations",
         dmt_cl_recalculationLine:"Recalculate Approvals",
         dmt_cl_toastRecalculationErrorMessage:"An error occurred while refreshing. Please try again later.",
         dmt_cl_toastRecalculationSuccessMessage:"The refresh has been successfully completed.",
@@ -44,7 +45,8 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
                 this.setStyleDefinition(styleDef);
                 data.Session = {} //reinitialize on reload
                 
-                
+                this.flexiPageWidthAwareCB = this.flexiPageWidthAware.bind(this);
+                  window.addEventListener('resize', this.flexiPageWidthAwareCB);
                 this.customLabels = this.Label;
                       
                           this.fetchUpdatedCustomLabels();
@@ -53,9 +55,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6QqYAK"
+                  " card-0koKE000000L7mDYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pUVz2AM");
+                this.loadCustomStylesheetAttachement("00PKE000001ZQ3K2AW");
                 
                 
               }
@@ -63,7 +65,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               disconnectedCallback(){
                 super.disconnectedCallback();
                     this.omniSaveState(this.records,this.omniSupportKey,true);
-                    
+                    window.removeEventListener('resize', this.flexiPageWidthAwareCB);
 
                   this.unregisterEvents();
               }
@@ -88,6 +90,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
             this.template.addEventListener(this.customEventName2,this.customEvent[2]);
 
           
+            this.customEventName3 = interpolateWithRegex(`updateFilterValues`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[3] = this.handleEventAction.bind(this, data.events[3],3);
+
+            this.template.addEventListener(this.customEventName3,this.customEvent[3]);
+
+          
+            this.customEventName4 = interpolateWithRegex(`newLineModal`,this._allMergeFields,this._regexPattern,"noparse");
+            this.customEvent[4] = this.handleEventAction.bind(this, data.events[4],4);
+
+            this.template.addEventListener(this.customEventName4,this.customEvent[4]);
+
+          
               }
 
               unregisterEvents(){
@@ -98,10 +112,18 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
 
             this.template.removeEventListener(this.customEventName2,this.customEvent[2]);
 
+            this.template.removeEventListener(this.customEventName3,this.customEvent[3]);
+
+            this.template.removeEventListener(this.customEventName4,this.customEvent[4]);
+
               }
             
               renderedCallback() {
                 super.renderedCallback();
                 
+                if(!this.containerWidthInitialised) {
+                  this.containerWidthInitialised = true;
+                  this.flexiPageWidthAware();
+                }
               }
           }

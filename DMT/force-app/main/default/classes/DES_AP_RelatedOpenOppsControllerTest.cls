@@ -7,9 +7,9 @@
 @isTest
 public class DES_AP_RelatedOpenOppsControllerTest{
     /**
-	* @author Global Desktop
-	* @description Test
-	*/
+  * @author Global Desktop
+  * @description Test
+  */
     @isTest
     public static void getRelatedOpportunitiesTest(){
         final DES_UtilTestClass utilTestClass = new DES_UtilTestClass();
@@ -36,10 +36,10 @@ public class DES_AP_RelatedOpenOppsControllerTest{
         Opportunity opp1 = utilTestClass.createOpportunity(acc2);
         insert opp1;
         
-        dwp_acmh__Denorm_Account_Opportunity__c oppDenorm = new dwp_acmh__Denorm_Account_Opportunity__c ();
+        AMH_Denorm_Account_Opportunity__c oppDenorm = new AMH_Denorm_Account_Opportunity__c ();
         oppDenorm.DES_Opportunity_Stage_Rollup__c = Label.DES_Proposal;
-        oppDenorm.dwp_acmh__AccountId__c = acc1.Id;
-        oppDenorm.dwp_acmh__OpportunityId__c = opp1.Id;
+        oppDenorm.AMH_AccountId__c = acc1.Id;
+        oppDenorm.AMH_OpportunityId__c = opp1.Id;
         insert oppDenorm;
 
         final DES_Group_Analysis__c gAnalysis = utilTestClassAux.createGroupAnalysis(accountPlan,acc1);

@@ -1,0 +1,15 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 03-29-2021
+  @last modified by  : David Rodríguez
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-29-2021   David Rodríguez   Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="PRC_PricingDetails_CONTROLLER">
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+  <aura:handler event="c:PRC_RefreshDetailsEvt" action="{!c.doinit}" />
+  {!v.body}
+</aura:component>

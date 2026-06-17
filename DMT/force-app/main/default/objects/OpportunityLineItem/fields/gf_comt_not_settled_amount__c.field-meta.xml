@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_comt_not_settled_amount__c</fullName>
+    <formula>CASE(underwriting_agreement_type__c, 
+	&quot;Deal not materialised&quot;,
+		IF((gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c) &gt; 0, 
+			gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c, 
+		0),
+	&quot;Mandatory sell down&quot;,
+		IF((gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c) &gt; 0, 
+			gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c, 
+        0),
+    &quot;Best Efforts&quot;,
+        IF((gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c) &gt; 0, 
+            gf_synd_fnl_primry_allc_amount__c - gf_prort_setl_order_tl_amount__c, 
+		0),
+	&quot;Yes&quot;,
+		IF((bbva_prtcp_tranche_amount__c - gf_prort_setl_order_tl_amount__c) &gt; 0, 
+			bbva_prtcp_tranche_amount__c - gf_prort_setl_order_tl_amount__c, 
+		0),
+	0
+	)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Current Hold</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Currency</type>
+</CustomField>

@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event fired from Multiselect">
+    <aura:attribute name="auraid" type="String" />
+    <aura:attribute name="selectedOptions" type="String[]" />
+</aura:event>

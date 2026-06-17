@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oficer_Manager__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( ISBLANK(organizational_unit_name__c),&apos;OTRA&apos;,organizational_unit_name__c)</formula>
+    <label>Oficina Gestor</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,25 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_AutoRetailTableContainer_cmp</p>
+        <p><b>DESCRIPTION: </b>Component that contains the year selector and the table component</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>hasRecordId = String : Standard record Id</li>
+                <li>tableType = String : 1 -> New, 2 -> Semi-New</li>
+                <li>tableTitle = String : Text with the title of the table</li>
+                <li>year1 = String : Input Year 1</li>
+                <li>year2 = String : Input Year 2</li>
+                <li>insert = String : Boolean value to enable/disable insert</li>
+                <li>edit = String : Boolean value to enable/disable edit</li>
+                <li>delete = String : Boolean value to enable/disable delete</li>
+                <li>tableIsVisible = String : Indicates if the table is visible or not</li>
+                <li>options = String : List of years to select</li>
+                <li>selectedValue = String : Indicates the selected year</li>
+                <li>disableButton = String : Indicates if the button is available</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_AutoRetailTableContainer_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_AutoRetailTableContainer_cmp" ref="c:Arc_Gen_AutoRetailTableContainer_cmp" label="Auto Retail Behavior table container">
+    </aura:example>
+</aura:documentation>

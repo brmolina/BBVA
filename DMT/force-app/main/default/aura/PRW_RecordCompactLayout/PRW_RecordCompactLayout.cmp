@@ -1,0 +1,101 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="PRW_RecordCompactCtrl">
+  <!-- attributes -->
+  <aura:attribute name="iconName" type="String" default="partners" access="global" />
+  <aura:attribute name="iconType" type="String" default="standard" access="global" />
+  <aura:attribute name="mainTitle" type="String" default="Title" access="global" />
+  <aura:attribute name="subTitle" type="String" default="Sub-Title" access="global" />
+
+  <aura:attribute name="acc" type="Account" access="global"/>
+  <aura:attribute name="profSheetUrl" type="String" />
+  <aura:attribute name="profSheetSFId" type="String" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="profSheetEnd" type="Date" />
+  <aura:attribute name="profSheetStart" type="Date" />
+  <aura:attribute name="profSheet" type="Object" />
+
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="isGroup" type="String"/>
+  <aura:attribute name="lAccountId" type="List" />
+  <aura:attribute name="lAccountNames" type="List" />
+  <aura:attribute name="dataTable" type="Object" />
+  <aura:attribute name="columnsTable" type="List" />
+  <aura:attribute name="activeSections" type="List" default="['Clients']" />
+
+
+  <!-- private attributes -->
+  <!-- handlers -->
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <aura:handler name="change" value="{!v.lAccountNames}" action="{!c.chargeData}"/>
+  <!-- events -->
+  <!-- Compact Layout -->
+  <div class="slds-page-header">
+    <div class="slds-page-header__row">
+      <div class="slds-page-header__col-title">
+        <div class="slds-media">
+          <div class="slds-media__figure">
+            <span class="slds-icon_container slds-icon-standard-opportunity" title="opportunity">
+              <lightning:icon iconName="{!v.iconType + ':' + v.iconName}" alternativeText="{!v.iconName}" />
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <p class="slds-page-header__name-meta">{!v.subTitle}</p>
+            <div class="slds-page-header__name">
+              <div class="slds-page-header__name-title">
+                <h1>
+                  <span class="slds-page-header__title slds-truncate" title="{!v.acc.Name}">{!v.acc.Name}</span>
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slds-page-header__row slds-page-header__row_gutters">
+      <div class="slds-page-header__col-details">
+        <ul class="slds-page-header__detail-row">
+          <li class="slds-page-header__detail-block">
+            <div class="slds-text-title slds-truncate" title="Type">Type</div>
+            <div class="slds-truncate" title="{!v.acc.DES_Client_Type__c}">{!v.acc.DES_Client_Type__c}</div>
+          </li>
+          <li class="slds-page-header__detail-block">
+            <div class="slds-text-title slds-truncate" title="Condition Book">Condition book</div>
+            <div class="slds-truncate" title="{!v.profSheetId}">
+                <a href="{!v.profSheetUrl+'/'+v.profSheetSFId}">{!v.profSheetId}</a>
+              </div>
+          </li>
+          <li class="slds-page-header__detail-block">
+            <div class="slds-text-title slds-truncate" title="Agreement Date">Agreement date</div>
+              <div class="slds-truncate" title="{!v.profSheetStart}"><lightning:formattedDateTime value="{!v.profSheetStart}" year="numeric" month="2-digit" day="numeric" timeZone="America/New_York" /></div>
+          </li>
+          <li class="slds-page-header__detail-block">
+            <div class="slds-text-title slds-truncate" title="Expiration Date">Expiration date</div>
+            <div class="slds-truncate" title="{!v.profSheetEnd}"><lightning:formattedDateTime value="{!v.profSheetEnd}" year="numeric" month="2-digit" day="numeric" timeZone="America/New_York" /></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <aura:if isTrue="{!not(empty(v.lAccountNames))}">
+    <div class="slds-p-top_small">
+      <lightning:card class="customCardClass">
+        <lightning:accordion aura:id="accordion"
+        activeSectionName="{!v.activeSections}"
+        allowMultipleSectionsOpen="true"
+        onsectiontoggle="{!c.handleSectionToggle}">
+          <lightning:accordionSection aura:id="clientsSection" name="Clients" label="Clients" class="divNames1">
+            <div class="tableClass slds-p-top_small">
+              <lightning:datatable
+                class="table-test"
+                keyField="id"
+                data="{!v.dataTable}"
+                columns="{!v.columnsTable}"
+                hideCheckboxColumn="true"/>
+            </div>
+          </lightning:accordionSection>
+        </lightning:accordion>
+      </lightning:card>
+    </div>
+  </aura:if>
+
+</aura:component>

@@ -1,4 +1,4 @@
-public class DMT_LogExceptionPayload implements DMT_AsyncPayload {
+public with sharing class DMT_LogExceptionPayload implements DMT_AsyncPayload {
     public String message { get; set; }
     public String stackTrace { get; set; }
     public Integer lineNumber { get; set; }

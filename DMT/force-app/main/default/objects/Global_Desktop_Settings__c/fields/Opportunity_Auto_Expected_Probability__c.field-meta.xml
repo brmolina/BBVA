@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Auto_Expected_Probability__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Automatizar el cambio del campo &apos;Expected Probability&apos; en función del Stage</description>
+    <inlineHelpText>Activa este campo para activar la funcionalidad que se encarga de modificar automáticamente la Expected Probability de las oportunidades según los CustomMetadata &apos;Opportunity_Expected_Probability__mdt&apos;</inlineHelpText>
+    <label>Opportunity Auto Expected Probability</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

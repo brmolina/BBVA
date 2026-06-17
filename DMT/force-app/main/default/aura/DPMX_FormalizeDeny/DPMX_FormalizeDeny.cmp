@@ -1,0 +1,34 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,force:hasRecordId" controller="DPMX_FormalizeDeny_ctrl" access="global">
+
+    <aura:attribute name="disableSubmitBtn" type="Boolean" default="true" />
+    <aura:attribute name="statusAuth" type="Boolean" default="false" />
+
+    <!--Atributos de padre-->
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ height : 100%; max-height: 100rem; width: 50%; max-width: 50rem; }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Rechazar formalizar</h1>
+            </div>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-p-around_xx-small">
+                    <div class="slds-form-element__control">
+                        <lightning:textarea name="textAreaComment" aura:id="commentarioTxt" required="true" label="Motivo de la denegación:" onchange="{!c.checkComment}" maxlength="300" messageWhenTooLong="Has superado el maximo de los 300 caracteres que permite el comentario."
+                            messageWhenValueMissing="Este campo es obligatorio." />
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button name="{!v.closebutton}" label="Cancelar" onclick="{!c.handleClose}" />
+                <button class="slds-button slds-button_brand" name="{!v.savebutton}" disabled="{!v.disableSubmitBtn}" label="formalizarSave" onclick="{!c.handleSave}">Denegar</button>
+            </div>
+        </div>
+
+    </section>
+</aura:component>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ONB_ContractType__c</fullName>
+    <label>Contract Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>CDEAEUROP</fullName>
+                <default>false</default>
+                <label>CDEAEUROP</label>
+            </value>
+            <value>
+                <fullName>CDEA USA</fullName>
+                <default>false</default>
+                <label>CDEA USA</label>
+            </value>
+            <value>
+                <fullName>CMOF</fullName>
+                <default>false</default>
+                <label>CMOF</label>
+            </value>
+            <value>
+                <fullName>CMOF reducido</fullName>
+                <default>false</default>
+                <label>CMOF reducido</label>
+            </value>
+            <value>
+                <fullName>DRV derivatives</fullName>
+                <default>false</default>
+                <label>DRV derivatives</label>
+            </value>
+            <value>
+                <fullName>DRV repos</fullName>
+                <default>false</default>
+                <label>DRV repos</label>
+            </value>
+            <value>
+                <fullName>EMA</fullName>
+                <default>false</default>
+                <label>EMA</label>
+            </value>
+            <value>
+                <fullName>FBF</fullName>
+                <default>false</default>
+                <label>FBF</label>
+            </value>
+            <value>
+                <fullName>FBF Pensions Livrees</fullName>
+                <default>false</default>
+                <label>FBF Pensions Livrees</label>
+            </value>
+            <value>
+                <fullName>FBF PL</fullName>
+                <default>false</default>
+                <label>FBF PL</label>
+            </value>
+            <value>
+                <fullName>GMRA</fullName>
+                <default>false</default>
+                <label>GMRA</label>
+            </value>
+            <value>
+                <fullName>GMRA Triparty</fullName>
+                <default>false</default>
+                <label>GMRA Triparty</label>
+            </value>
+            <value>
+                <fullName>GMSLA</fullName>
+                <default>false</default>
+                <label>GMSLA</label>
+            </value>
+            <value>
+                <fullName>ISDA</fullName>
+                <default>false</default>
+                <label>ISDA</label>
+            </value>
+            <value>
+                <fullName>MRA</fullName>
+                <default>false</default>
+                <label>MRA</label>
+            </value>
+            <value>
+                <fullName>NAMFII</fullName>
+                <default>false</default>
+                <label>NAMFII</label>
+            </value>
+            <value>
+                <fullName>Rahmenvertrag für</fullName>
+                <default>false</default>
+                <label>Rahmenvertrag für</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

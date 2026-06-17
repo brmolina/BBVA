@@ -1,0 +1,293 @@
+body, td{
+    margin:0;
+    color:#333;
+    font-size:75%;
+    font-family:'Arial','Helvetica',sans-serif;
+    background-color:#fff;
+	page-break-inside: avoid;
+}
+a{
+    color:#222;
+    font-size:75%;
+}
+th{
+    text-align:left;
+    font-weight:bold;
+    font-size:75%;
+    white-space:nowrap;
+	page-break-inside: avoid;
+}
+.checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #999;
+    background-color: #e0e0e0;
+    color: #666;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "Arial Unicode MS", Arial, sans-serif;
+    text-align: center;
+    vertical-align: middle;
+}
+.slds-scope{
+    -ms-text-size-adjust:100%;
+    -webkit-text-size-adjust:100%;
+    margin:0;
+}
+.slds-scope table{
+    border-collapse:collapse;
+    border-spacing:0;
+}
+.slds-scope td, .slds-scope th{
+    padding:0;
+}
+.slds-scope *, .slds-scope *:before,.slds-scope *:after{
+    box-sizing:border-box;
+}
+.slds-scope{
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-size:100%;
+    line-height:1.5;
+    background:rgba(176, 196, 223, 1);
+    color:#181818;-webkit-tap-highlight-color:transparent;
+}
+.slds-scope a{
+    color:rgba(11, 92, 171, 1);
+    text-decoration:none;
+    transition:color .1s linear;
+}
+.slds-scope table{
+    width:100%;
+}
+.slds-scope th, .slds-scope td{
+    text-align:left;
+}
+.slds-scope th, .slds-scope td{
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+.slds-scope .slds-table{
+    background-color:rgb(255, 255, 255);
+    font-size:inherit;
+}
+.slds-scope .slds-table th, .slds-scope .slds-table td{
+    padding:.25rem .5rem;white-space:nowrap;
+    position:relative;
+}
+.slds-scope .slds-table th{
+    font-weight:400;
+}
+.slds-scope .slds-table thead th{
+    background-color:#f2f2f2;
+    color:#444444;
+    padding:.25rem .5rem;
+    font-weight:700;
+    line-height:normal;
+}
+.slds-scope .slds-table tbody tr{
+    counter-increment:row-number;
+}
+.slds-scope .slds-table_cell-buffer tr>th:first-child{
+    padding-left:1.5rem;
+}
+.slds-scope .slds-table_cell-buffer tr>th:last-child,.slds-scope .slds-table_cell-buffer tr>td:last-child{
+    padding-right:1.5rem;
+}
+.slds-scope .slds-table_bordered{
+    border-collapse:separate;
+    border-top:1px solid #e5e5e5;
+    border-bottom:1px solid #e5e5e5;
+}
+.slds-scope .slds-table_bordered tbody td, .slds-scope .slds-table_bordered tbody th{
+    border-top:1px solid #e5e5e5;
+}
+.slds-scope .slds-truncate{
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.slds-scope .slds-line-height_reset{
+    line-height:1;
+}
+/*! CSS for Barchart */
+.barchart_table{
+    width: 100%;
+    border-collapse: collapse;
+    border:0px solid #000;
+}
+.barchart_th, .barchart_td{
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+.barchart_xaxis{
+        position: absolute;
+        height: 4px;
+        top: -3px;
+        width: 1px;
+        background-color: #333;
+        z-index:2
+}
+.barchart_year{
+    width: 10%;
+    white-space: nowrap;
+    border-right: 1px solid #000;
+}
+.barchart_bar{
+    height: 25px;
+    width: 100%;
+    display: table;
+    position: relative;
+    padding: 0px;
+    border: 0px;
+}
+.barchart_segment{
+    height:25px;
+    display: table-cell;
+}
+.barchart_target-segment{
+    position: relative;
+    border: 0px;
+    border-left: 2px solid red;
+    display: table-cell;
+}
+.barchart_target-line{
+    position: absolute;
+    height: 25px;
+    width: 2px;
+    background-color: red;
+    top: auto;
+    z-index:2
+}
+.barchart_border{
+    padding: 0.5px;
+    border-left: solid 0px #062647;
+    border-top: solid 0px #062647;
+    border-bottom: solid 0px #062647;
+}
+.barchart_borderleft{
+    border: 0px;
+    border-left: solid 0px #062647;
+}
+.barchart_lastrow{
+    border-bottom: 1px solid #000;
+}
+.barchart_legend{
+    border: 0px solid #000;
+    white-space: nowrap;
+    text-align: left;
+}
+/*! CSS Used from: Embedded */
+.divTable{
+    display:table;
+    width:100%;
+    margin-bottom:20px;
+}
+.divTableRow{
+    display:table-row;
+}
+.divTableHeading{
+    background-color:#EEE;
+    display:table-header-group;
+}
+.divTableCell, .divTableHead{
+    border:1px solid #999999;
+    display:table-cell;
+    padding:3px 10px;
+}
+.divTableHeading{
+    background-color:#EEE;
+    display:table-header-group;
+    font-weight:bold;
+}
+.divTableHead{
+    background-color:rgba(0,0,0,0.1);
+    font-weight:bold;
+}        
+.divTableFoot{
+    background-color:#EEE;
+    display:table-footer-group;
+    font-weight:bold;
+}
+.divTableBody{
+    display:table-row-group;
+}       
+/*! CSS Used from: Embedded ; media=print */
+@media print{
+    .slds-scope a, .slds-scope a:visited{
+        text-decoration:none;
+    }
+    .slds-scope thead{
+        display:table-header-group;
+    }
+    .slds-scope tr{
+        page-break-inside:avoid;
+    }
+	table {
+        page-break-inside: avoid;
+    }
+    tr {
+        page-break-inside: avoid;
+    }
+    td, th {
+        page-break-inside: avoid;
+    }
+    div.header{
+        padding:10px;
+        position:running(header);
+    }
+    div.footer{
+        display:block;
+        padding:5px;
+        position:running(footer);
+    }
+    .pagenumber:before{
+        content:counter(page);
+    }
+    .pagecount:before{
+        content:counter(pages);
+    }
+    .pagebreak{
+        clear:both;page-break-after:always;
+    }
+    .traffic-light-container{
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        place-items: center;
+    }
+}
+/*! CSS Used from: Embedded ; media=screen */
+@media screen{
+    div.header{
+        display:none;
+    }
+    div.footer{
+        display:none;
+    }
+	.barchart_target-line {
+        height: 26px;
+    }
+    .pagebreak{
+        border-top:1px dashed #999;
+        margin-top:20px;
+        margin-bottom:20px;
+    }
+}
+
+@page{
+    margin-top: 25mm;
+    margin-bottom: 25mm;
+    margin-left: 10mm;
+    margin-right: 10mm;
+    size: A4;
+    @top-left{
+        content: element(header); padding-top:5mm;
+    }
+    @bottom-right{
+        content:element(footer);
+    }
+}

@@ -1,0 +1,3 @@
+<design:component label="Revenues last N months">
+    <design:attribute name="monthsToDisplay" label="Months to be displayed" default="6" />
+</design:component>

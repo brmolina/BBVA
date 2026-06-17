@@ -5,6 +5,8 @@ private class savePDFTest {
     //Datos necesarios
         DES_UtilTestClass utilTestClass = new DES_UtilTestClass();
         String profileTest = utilTestClass.createProfile();
+        
+        utilTestClass.createCustomSettingByPass();
 
         User userTest1 = utilTestClass.createUser(profileTest);
         //userTest1.ProfileId = [SELECT Id, Name FROM Profile WHERE Name = 'Desktop Integration' LIMIT 1].Id;

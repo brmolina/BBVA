@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Relationship Types that Account Multi Hierarchy accepts. Contains three main fields: Label, Value and if it is selected by default</description>
+    <label>Account Multi Hierarchy - Relationship</label>
+    <pluralLabel>Account Multi Hierarchy - Relationships</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

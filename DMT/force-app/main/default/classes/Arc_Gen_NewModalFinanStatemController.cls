@@ -145,6 +145,7 @@ public with sharing class Arc_Gen_NewModalFinanStatemController {
     public static List<String> getSplittedMdtValue(String arceConfigName) {
         return Arc_Gen_AnalysisWizard_Service.getSplittedMdtValue(arceConfigName);
     }
+
     /**
     *---------------------------------------------------------------------------------------------------------------------
     * @Description Helper method for checkRatingType.
@@ -182,7 +183,6 @@ public with sharing class Arc_Gen_NewModalFinanStatemController {
     public static List<arce__Financial_Statements__c> saveEEFF(List<arce__Financial_Statements__c> fflist, List<arce__Financial_Statements__c> draft, String selectedRows) {
         return Arc_Gen_ModalFinanStatemController.saveEEFF(fflist, draft, selectedRows);
     }
-
 
     /**
     *----------------------------------------------------------------------------------------------------------------------------------------
@@ -275,4 +275,25 @@ public with sharing class Arc_Gen_NewModalFinanStatemController {
 
         return attributesMap;
     }
+
+    /**
+    *---------------------------------------------------------------------------------------------------------------------
+    * @Description Check NPL Status.
+    *---------------------------------------------------------------------------------------------------------------------
+    * @Date 16/09/2024
+    * @author aleksandar.dinkov.contractor@bbva.com
+    * @param String ahaId
+    * @return Boolean
+    * @example checkNplStatus(ahaId);
+    *---------------------------------------------------------------------------------------------------------------------
+    */
+    @AuraEnabled
+    public static Boolean checkNplStatus(String ahaId, String model) {
+        Boolean showRating = true;
+        if (arce.Arc_Gen_WatchList_Utils.isNplCheckEnabled(model)) {
+            showRating = !arce.Arc_Gen_WatchList_Data.getNPLValueByAhaId(ahaId);
+        }
+        return showRating;
+    }
+
 }

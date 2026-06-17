@@ -1,0 +1,91 @@
+<!--
+  @Component Name     : Arc_Gen_ContinueARCE_CMP.cmp
+  @Description        : Component that calls the modal of creation of the analysis when it is postponed
+  @Author             : ARCE TEAM
+  @Group              : ARCE
+  @Last Modified By   : ChangeMeIn@UserSettingsUnder.SFDoc
+  @Last Modified On   : 01-15-2026
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	Modification
+  ==============================================================================
+  1.0    XX/7/2019            ARCE TEAM     		    		        Initial Version
+  1.1    06/7/2019   		  angel.fuertes2@bbva.com               Add functionallity to redirect to valid Arce
+  1.2    19/5/2020   joseluis.garcia4.contractor@bbva.com       Add resume ARCE functionality for RAIP.
+  1.2    28/9/2020   juanignacio.hita.contractor@bbva.com       Change controller class
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasSObjectName,force:hasRecordId" controller="Arc_Gen_NewAnalysis_Controller" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="Init variable"/>
+    <aura:handler name="closeModalEvent" event="arce:Arc_Gen_WizardEvent_evt" action="{!c.closeModal}" description="Event to closes the modal" />
+
+    <aura:attribute name="idGroup" type="String" access="global" description="Id record Group"/>
+    <aura:attribute name="loading" type="boolean" default="false" description="Indicates if the component is loading"/>
+    <aura:attribute name="arceData" type="Object" default="{}" description="Data related to the ARCE"/>
+    <aura:attribute name="arceTypeToContinue" type="String" description="Type of the ARCE to resume" />
+    <aura:attribute name="rollbackStatus" type="String" default="" description="Status of the rollback process" />
+    <aura:attribute name="rollbackError" type="String" default="" description="Rollback result error message" />
+
+    <aura:if isTrue="{!v.loading}">
+      <div class="slds-m-around_xx-large">
+        <lightning:spinner alternativeText="Loading" size="medium"></lightning:spinner>
+      </div>
+      <aura:set attribute="else">
+        <aura:if isTrue="{!v.arceData.arce__wf_status_id__c == '01'}">
+          <aura:if isTrue="{!v.arceData.arce__is_RTC__c}">
+
+            <div class="slds-m-around_xx-large" aura:id="mymodal">
+              <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                  <div class="slds-modal__header slds-size_1-of-1">
+                    <div class="slds-text-heading_medium">{!$Label.c.Arc_Gen_Rollback_Arce}</div>
+                  </div>
+                  <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-text-heading_small slds-text-align_center slds-p-bottom_medium">{!$Label.c.Arc_Gen_Rollback_Arce_Info}</p>
+                    <div class="slds-form-element slds-col slds-size_1-of-1">
+                      <div class="rollbackWrapper slds-p-left_medium">
+                        <div class="rollbackSpinner">
+                          <aura:if isTrue="{!v.rollbackStatus == 'IN_PROGRESS'}">
+                            <lightning:spinner size="small"></lightning:spinner>
+                            <aura:set attribute="else">
+                              <lightning:icon
+                                  iconName="{!v.rollbackStatus == 'OK' ? 'utility:check' : (v.rollbackStatus == 'ERROR' ? 'utility:clear' : 'utility:clock')}"
+                                  variant="{!v.rollbackStatus == 'OK' ? 'success' : (v.rollbackStatus == 'ERROR' ? 'error' : '')}"
+                                  size="small"/>
+                            </aura:set>
+                          </aura:if>
+                        </div>
+                        <div class="rollbackContent">{!$Label.c.Arc_Gen_Rollback_Arce_Step}</div>
+                      </div>
+
+                      <aura:if isTrue="{!v.rollbackError}">
+                        <div class="errorsWrapper">
+                            <lightning:accordion class="errorAccordion" allowMultipleSectionsOpen="true">
+                                <lightning:accordionSection name="generalError" label="{!v.rollbackError.message}">
+                                    <p>{!v.rollbackError.details}</p>
+                                    <p>{!v.rollbackError.trace}</p>
+                                </lightning:accordionSection>
+                            </lightning:accordion>
+                        </div>
+                    </aura:if>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <div aura:id="mymodal" class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+
+            <aura:set attribute="else">
+              <div class="slds-m-around_xx-large" aura:id="mymodal">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                  <div class="slds-modal__container">
+                    <c:Arc_Gen_NewAnalysis_modal recordId="{!v.idGroup}" sObjectName="Account" continue="true" arceTypeToContinue="{!v.arceTypeToContinue}" showCloseButton="true"/>
+                  </div>
+                </section>
+                <div aura:id="mymodal" class="slds-backdrop slds-backdrop_open"></div>
+              </div>
+            </aura:set>
+          </aura:if>
+        </aura:if>
+      </aura:set>
+    </aura:if>
+</aura:component>

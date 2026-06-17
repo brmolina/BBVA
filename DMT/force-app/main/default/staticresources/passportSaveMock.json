@@ -1,0 +1,338 @@
+{
+  "data": {
+    "opportunityId": "00001",
+    "version": "001",
+    "features": [
+      {
+        "id": "Test1",
+        "name": "Global validations",
+        "passportSanction": "passport",
+        "active": "Y",
+        "motorDesc": "Salesforce",
+        "stateName": "RED",
+        "validations": [
+          {
+            "name": "isCurrentLine",
+            "message": "For these dates the following clients already have current lines:ES0182042785388",
+            "state": "RED"
+          },
+          {
+            "name": "restricGreaterTerm",
+            "message": "There are no terms of operational restrictions longer than the line term",
+            "state": "GREEN"
+          },
+          {
+            "name": "deriRestricNOFdDvp",
+            "message": "There are no operational restrictions on products for Derivatives and not for Free Delivery or Delivery versus Payment",
+            "state": "GREEN"
+          },
+          {
+            "name": "noSettlementAmount",
+            "message": "Free Delivery and Delivery versus Payment without amount and has operational restrictions for the following products: FX, CCS, Asset repos",
+            "state": "RED"
+          }
+        ],
+        "tasks": [
+          {
+            "id": "1",
+            "name": "Task 1",
+            "yesFlag": "Yes Approved",
+            "noFlag": "No Approved",
+            "naFlag": "Not Apply Approved",
+            "closingCapacity": "N",
+            "nextTask": "2",
+            "status": "OPEN",
+            "approvers": [
+              {
+                "id": "10",
+                "name": "Specialist1",
+                "entific": "HO",
+                "branch": "BBVA SA - Spain",
+                "documentManagerEnable": "Y"
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "name": "Task 2",
+            "yesFlag": "Yes",
+            "noFlag": "No",
+            "naFlag": "Not Apply",
+            "closingCapacity": "Y",
+            "nextTask": "3",
+            "status": "OPEN"
+          },
+          {
+            "id": "3",
+            "name": "Task 3",
+            "yesFlag": "Yes Consolidated",
+            "noFlag": "No Consolidated",
+            "naFlag": "Not Apply",
+            "closingCapacity": "Y",
+            "nextTask": "",
+            "status": "CLOSED"
+          }
+        ],
+        "consumptionLimits": [
+          {
+            "consumptionLastLevelId": "10200",
+            "cutoffDate": "2024-04-21",
+            "limitId": "0000233056_10200",
+            "customerId": "AR0017002063668",
+            "groupId": "023511501358232",
+            "goldenCustomerId": "G20090302125629",
+            "customerGroupId": "AR0017002063668",
+            "limitDesc": "L/TFinancialrisk",
+            "originType": "HO",
+            "limitType": "PF",
+            "amount": {
+              "unavailableRiskAmount": "3904746.88",
+              "authorizedRiskAmount": "500000.00",
+              "cmtContDisposedAmount": "800000.00",
+              "uncmtContDisposedAmount": "100.00",
+              "cmtContNonDspsAmount": "300000.00",
+              "uncmtContNonDspsAmount": "250000.35",
+              "notSignedTrConsumptionAmount": "100.00",
+              "currentAprrovedAmount": "30.00"
+            },
+            "currencyId": "EUR",
+            "riskAnalysisExpiryDate": "2025-01-15",
+            "consumLimitExceededActionDesc": "TEXTABOUTLIMIT",
+            "riskAnalystId": "XXX",
+            "conditionDesc": "TEXT",
+            "stateName": "GREEN"
+          }
+        ]
+      },
+      {
+        "id": "Test",
+        "name": "Limit Feature test 1",
+        "passportSanction": "passport",
+        "active": "Y",
+        "motorDesc": "Limit Engine Lib Name",
+        "stateName": "GREEN",
+        "validations": [
+          {
+            "name": "Validation 1",
+            "message": "The following clients are not in the GDT Salesforce environment: AR0017002063668",
+            "state": "GREEN"
+          },
+          {
+            "name": "Validation 2",
+            "message": "The term of the line is less than that of the following operating restrictions: Derivatives",
+            "state": "RED"
+          }
+        ]
+      },
+      {
+  "id": "Approval1",
+  "name": "Approval workflow feature",
+  "passportSanction": "passport",
+  "active": "Y",
+  "motorDesc": "Approval Engine",
+  "stateName": "GREEN",
+  "validations": [
+    {
+      "name": "approvalValidation",
+      "message": "This is a test approval feature",
+      "state": "GREEN"
+    }
+  ],
+  "tasks": [
+          {
+            "id": "1",
+            "name": "Task 1",
+            "yesFlag": "Yes Approved",
+            "noFlag": "No Approved",
+            "naFlag": "Not Apply Approved",
+            "closingCapacity": "N",
+            "nextTask": "2",
+            "status": "OPEN",
+            "approvers": [
+              {
+                "id": "10",
+                "name": "Specialist1",
+                "entific": "HO",
+                "branch": "BBVA SA - Spain",
+                "documentManagerEnable": "Y"
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "name": "Task 2",
+            "yesFlag": "Yes",
+            "noFlag": "No",
+            "naFlag": "Not Apply",
+            "closingCapacity": "Y",
+            "nextTask": "3",
+            "status": "OPEN"
+          },
+          {
+            "id": "3",
+            "name": "Task 3",
+            "yesFlag": "Yes Consolidated",
+            "noFlag": "No Consolidated",
+            "naFlag": "Not Apply",
+            "closingCapacity": "Y",
+            "nextTask": "",
+            "status": "CLOSED"
+          }
+        ],
+  "consumptionLimits": [
+          {
+            "consumptionLastLevelId": "10200",
+            "cutoffDate": "2024-04-21",
+            "limitId": "0000233056_10200",
+            "customerId": "AR0017002063668",
+            "groupId": "023511501358232",
+            "goldenCustomerId": "G20090302125629",
+            "customerGroupId": "AR0017002063668",
+            "limitDesc": "L/TFinancialrisk",
+            "originType": "HO",
+            "limitType": "PF",
+            "amount": {
+              "unavailableRiskAmount": "3904746.88",
+              "authorizedRiskAmount": "500000.00",
+              "cmtContDisposedAmount": "800000.00",
+              "uncmtContDisposedAmount": "100.00",
+              "cmtContNonDspsAmount": "300000.00",
+              "uncmtContNonDspsAmount": "250000.35",
+              "notSignedTrConsumptionAmount": "100.00",
+              "currentAprrovedAmount": "30.00"
+            },
+            "currencyId": "EUR",
+            "riskAnalysisExpiryDate": "2025-01-15",
+            "consumLimitExceededActionDesc": "TEXTABOUTLIMIT",
+            "riskAnalystId": "XXX",
+            "conditionDesc": "TEXT",
+            "stateName": "GREEN"
+          }
+        ]
+},
+{
+        "id": "441",
+        "name": "Profitability Test",
+        "passportSanction": "passport",
+        "active": "Y",
+        "motorDesc": "Profitability Engine",
+        "stateName": "GREEN",
+        "profitability": {
+          "audit": {
+            "engineVersion": "0.7",
+            "isError": false
+          },
+          "results": [
+            {
+              "productId": "00kKN000003OCOgYAO",
+              "economicCcf": 50,
+              "regulatoryCcf": 40,
+              "economicLgd": 40,
+              "regulatoryLgd": 40,
+              "taxRate": 30,
+              "economicEad": 10500,
+              "regulatoryEad": 10400,
+              "averageLife": 0.9999999999999997,
+              "spreadDbPbs": 1.0000000000000002,
+              "spreadFbPbs": 1.1,
+              "fundingFbPbs": 0,
+              "fundingDbPbs": 0,
+              "bonificationFunding": 0,
+              "countryRiskProvisionDbPbs": 0,
+              "countryRiskProvisionFbPbs": 0,
+              "expectedLossPbs": 0,
+              "feesUpFrontPbs": 120.00000000000003,
+              "periodicFeesPbs": 130,
+              "bdi": 194.6462,
+              "allInDb": 0,
+              "allInFb": 0,
+              "economicApr": 20.71831496875854,
+              "regulatoryApr": 26,
+              "economicCapital": 727.2609451445068,
+              "regulatoryCapital": 26,
+              "prospectedBdi": 21.76146,
+              "prospectedEconomicCapital": 0,
+              "prospectedRegulatoryCapital": 0,
+              "raroec": 0.267642860928444,
+              "raroecNoxsell": 0,
+              "raroecProspected": 0,
+              "rorc": 7.486392307692308,
+              "rorcNoxsell": 0,
+              "rorcProspected": 0,
+              "totalYears": [
+                {
+                  "year": 2025,
+                  "eadEcoYearly": 10400,
+                  "eadRegYearly": 10400,
+                  "rorcYearly": 43.86550469863013,
+                  "raroecYearly": 1.4327970371919598
+                },
+                {
+                  "year": 2026,
+                  "eadEcoYearly": 10400,
+                  "eadRegYearly": 10400,
+                  "rorcYearly": 129.73806232093196,
+                  "raroecYearly": 4.493787913475883
+                }
+              ]
+            },
+            {
+              "economicCcf": 50,
+              "regulatoryCcf": 40,
+              "economicLgd": 40,
+              "regulatoryLgd": 40,
+              "taxRate": 30,
+              "economicEad": 10500,
+              "regulatoryEad": 10400,
+              "averageLife": 0.9999999999999997,
+              "spreadDbPbs": 1.0000000000000002,
+              "spreadFbPbs": 1.1,
+              "fundingFbPbs": 0,
+              "fundingDbPbs": 0,
+              "bonificationFunding": 0,
+              "countryRiskProvisionDbPbs": 0,
+              "countryRiskProvisionFbPbs": 0,
+              "expectedLossPbs": 0,
+              "feesUpFrontPbs": 120.00000000000003,
+              "periodicFeesPbs": 130,
+              "bdi": 194.6462,
+              "allInDb": 0,
+              "allInFb": 0,
+              "economicApr": 20.71831496875854,
+              "regulatoryApr": 26,
+              "economicCapital": 727.2609451445068,
+              "regulatoryCapital": 26,
+              "prospectedBdi": 21.76146,
+              "prospectedEconomicCapital": 0,
+              "prospectedRegulatoryCapital": 0,
+              "raroec": 0.267642860928444,
+              "raroecNoxsell": 0,
+              "raroecProspected": 0,
+              "rorc": 7.486392307692308,
+              "rorcNoxsell": 0,
+              "rorcProspected": 0,
+              "totalYears": [
+                {
+                  "year": 2025,
+                  "eadEcoYearly": 10400,
+                  "eadRegYearly": 10400,
+                  "rorcYearly": 43.86550469863013,
+                  "raroecYearly": 1.4327970371919598
+                },
+                {
+                  "year": 2026,
+                  "eadEcoYearly": 10400,
+                  "eadRegYearly": 10400,
+                  "rorcYearly": 129.73806232093196,
+                  "raroecYearly": 4.493787913475883
+                }
+              ]
+            }
+          ]
+        }
+      }
+
+    ],
+    "auditDate": "2024-11-14 16:14:52"
+  }
+}

@@ -3,6 +3,7 @@ public with sharing class DMT_ProductsRenderer implements DMT_ViewRenderer {
     private static Id treasuryId;
     private static Id otherId;
     private static Id dmtOpportunityId;
+    private static Id sanctionId;
 
     static {
         Map<String, Schema.RecordTypeInfo> rtInfos = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName();
@@ -10,11 +11,15 @@ public with sharing class DMT_ProductsRenderer implements DMT_ViewRenderer {
         treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         otherId = rtInfos.get('OtherProducts').getRecordTypeId();
         dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
+        sanctionId = rtInfos.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_TreasuryProductsRenderer());
         recordTypeRenderers.put(otherId, new DMT_OtherProductsRenderer());
         recordTypeRenderers.put('treasuryProductsCO', new DMT_TreasuryProductsRenderer_CO());
         recordTypeRenderers.put('treasuryProductsPE', new DMT_TreasuryProductsRenderer_PE());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_OpportunityProductsRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_LineSanctionProductsRenderer());
+
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

@@ -37,6 +37,9 @@ export default class ProductTreeNode extends LightningElement {
     }
 
     toggleExpand() {
+        if(this.product.disabled){
+            return;
+        }
         if( !this.zeroLevel || ((this.zeroLevel || this.product.length > 0) && !this.product.selected)){
             const clone = { ...this.product, expanded: !this.product.expanded, selected: !this.product.expanded };
             this.isSelected = !this.product.expanded;

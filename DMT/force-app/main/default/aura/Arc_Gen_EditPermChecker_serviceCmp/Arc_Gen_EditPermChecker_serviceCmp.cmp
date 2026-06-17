@@ -1,0 +1,5 @@
+<aura:component controller="Arc_Gen_EditPermChecker_Controller">
+    <aura:method name="checkEditPermission" action="{!c.checkEditPermission}">
+        <aura:attribute name="ahaId" type="String" />
+    </aura:method>
+</aura:component>

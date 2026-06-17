@@ -1,0 +1,113 @@
+<template>
+    <lightning-spinner if:true={isLoading} alternative-text="Loading" size="medium"></lightning-spinner>
+    <div class="slds-grid slds-gutters cib-container">
+        <div class={faqsClases}>
+            <div class="cib-desplegable" onclick={handleAbrirLateral}>
+                <span>Q&amp;A</span>
+                <template if:false={clickFAQ}>
+                    <lightning-icon title="Open Q&amp;A" icon-name="utility:right" size="x-small"></lightning-icon>
+                </template>
+                <template if:true={clickFAQ}>
+                    <lightning-icon title="Close Q&amp;A" icon-name="utility:left" size="x-small"></lightning-icon>
+                </template>
+            </div>
+
+            <template if:true={clickFAQ}>
+                <c-cbia_faqs-side-panel listafaqs={listaEntranteFAQS}></c-cbia_faqs-side-panel>
+            </template>
+        </div>
+        <div class={chatClases}>
+            <div class="slds-chat-bookend cib-cabecera">
+                <img src={logoCibia} alt="Chat logo">
+            </div>
+            <section role="log" class="slds-chat cib-chat" data-id="chat">
+                <ul class="slds-chat-list">
+                    <template for:each={listaMensajes} for:item="elemento" for:index="index">
+                        <c-cbia_message-bubble class={elemento.tipoMensaje} key={elemento} mensaje={elemento.mensaje}
+                            tipo-mensaje={elemento.tipoMensaje} hora={horaLocal} nombre={userName}
+                            id-mensaje={elemento.idMensaje} onfeedbackok={handleFeedbackOK}
+                            onfeedbackko={handleOpenFeedbackKO}></c-cbia_message-bubble>
+                    </template>
+                    <template if:true={cargando}>
+                        <li class="slds-chat-listitem slds-chat-listitem_inbound cib-replying">
+                            <div class="slds-chat-message cib-reply-dots">
+                                <span aria-hidden="true" class="slds-avatar slds-avatar_circle slds-chat-avatar">
+                                    <abbr class="slds-avatar__initials slds-avatar__initials_inverse"
+                                        title="CIBIA">C</abbr>
+                                </span>
+                                <div class="slds-chat-message__body">
+                                    <div class="slds-chat-message__text slds-chat-message__text_inbound">
+                                        <span class="slds-icon-typing slds-is-animated">
+                                            <span class="slds-icon-typing__dot"></span>
+                                            <span class="slds-icon-typing__dot"></span>
+                                            <span class="slds-icon-typing__dot"></span>
+                                            <span class="slds-assistive-text">{label.replying}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+                <div class="separador"></div>
+            </section>
+            <div class="cib-footer">
+                <div class="cib-footer-info">
+                    <template if:false={conversacionIniciada}>
+                        <span class="span-1">{label.startConversation}</span>
+                    </template>
+                    <div class="cib-new-chat">
+                        <lightning-button variant="brand" label="New conversation" title="New conversation"
+                            onclick={handleOpenConfirmationModal} disabled={conversacionNoIniciada}></lightning-button>
+                    </div>
+                </div>
+
+                <div class="cib-send">
+                    <div class="cib-txt-area dis-inl-block">
+                        <textarea data-id="mensaje-usuario" placeholder={label.typeHere} class="slds-textarea"
+                            onkeypress={handleEnter} maxlength="3000"></textarea>
+                    </div>
+                    <div class="cib-send-button dis-inl-block">
+                        <template if:false={cargando}>
+                            <lightning-icon title="Send" icon-name="utility:send" size="x-small"
+                                onclick={handleMensajeEnviado}></lightning-icon>
+                        </template>
+                        <template if:true={cargando}>
+                            <lightning-icon title="Stop" icon-name="utility:stop" size="x-small"></lightning-icon>
+                        </template>
+                    </div>
+                </div>
+                <div class="cib-chat-info">
+                    <lightning-icon icon-name="utility:comments" size="xx-small"></lightning-icon>
+                    <span class="span-2">{label.translate}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <template if:true={showConfirmationModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container cib-confirmation">
+                <header class="slds-modal__header">
+                    <h2>{label.newConversation}</h2>
+                    <p>{label.endConversation}</br>{label.wantToContinue}</p>
+                </header>
+                <footer class="slds-modal__footer">
+                    <lightning-button variant="brand-outline" label="Cancel" title="Cancel"
+                        onclick={handleCloseConfirmationModal}></lightning-button>
+                    <lightning-button variant="brand" label="Continue" title="Continue" onclick={handeNewConversation}
+                        class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showFeedbackModal}>
+        <c-cbia_feedback-popup onisloading={handleLoading} conversation-id={conversationId}
+            user-federation-id={userFederationId} user-country-code={userCountryCode} user-uo-code={userUoCode}
+            onclosefeedbackmodal={handleCloseFeedback}
+            onfeedbacksendingresult={handleFeedbackSendingResult}></c-cbia_feedback-popup>
+    </template>
+</template>

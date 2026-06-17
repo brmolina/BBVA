@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Component_Item__c</fullName>
+    <label>component Item</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Type_Item__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Treasury Line</fullName>
+                <default>false</default>
+                <label>Treasury Line</label>
+            </value>
+            <value>
+                <fullName>Treasury Client</fullName>
+                <default>false</default>
+                <label>Treasury Client</label>
+            </value>
+            <value>
+                <fullName>Treasury Participants</fullName>
+                <default>false</default>
+                <label>Treasury Participants</label>
+            </value>
+            <value>
+                <fullName>Treasury Approval Process Data</fullName>
+                <default>false</default>
+                <label>Treasury Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Page Break</fullName>
+                <default>false</default>
+                <label>Page Break</label>
+            </value>
+            <value>
+                <fullName>Treasury Products</fullName>
+                <default>false</default>
+                <label>Treasury Products</label>
+            </value>
+            <value>
+                <fullName>Text 18px</fullName>
+                <default>false</default>
+                <label>Text 18px</label>
+            </value>
+            <value>
+                <fullName>Text 14px</fullName>
+                <default>false</default>
+                <label>Text 14px</label>
+            </value>
+            <value>
+                <fullName>Text 12px</fullName>
+                <default>false</default>
+                <label>Text 12px</label>
+            </value>
+            <value>
+                <fullName>Line Break</fullName>
+                <default>false</default>
+                <label>Line Break</label>
+            </value>
+            <value>
+                <fullName>Passport</fullName>
+                <default>false</default>
+                <label>Passport</label>
+            </value>
+            <value>
+                <fullName>Limit</fullName>
+                <default>false</default>
+                <label>Limit</label>
+            </value>
+            <value>
+                <fullName>Limit Detail</fullName>
+                <default>false</default>
+                <label>Limit Detail</label>
+            </value>
+            <value>
+                <fullName>Limit Visual</fullName>
+                <default>false</default>
+                <label>Limit Visual</label>
+            </value>
+            <value>
+                <fullName>Line Info</fullName>
+                <default>false</default>
+                <label>Line Info</label>
+            </value>
+            <value>
+                <fullName>Client</fullName>
+                <default>false</default>
+                <label>Client</label>
+            </value>
+            <value>
+                <fullName>Participants</fullName>
+                <default>false</default>
+                <label>Participants</label>
+            </value>
+            <value>
+                <fullName>Products</fullName>
+                <default>false</default>
+                <label>Products</label>
+            </value>
+            <value>
+                <fullName>Approval Process Data</fullName>
+                <default>false</default>
+                <label>Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Opportunity Info</fullName>
+                <default>false</default>
+                <label>Opportunity Info</label>
+            </value>
+            <value>
+                <fullName>Commercial Process Data</fullName>
+                <default>false</default>
+                <label>Commercial Process Data</label>
+            </value>
+            <value>
+                <fullName>Executive Summary</fullName>
+                <default>false</default>
+                <label>Executive Summary</label>
+            </value>
+            <value>
+                <fullName>Business Plan</fullName>
+                <default>false</default>
+                <label>Business Plan</label>
+            </value>
+            <value>
+                <fullName>Deal</fullName>
+                <default>false</default>
+                <label>Deal</label>
+            </value>
+            <value>
+                <fullName>Requirements</fullName>
+                <default>false</default>
+                <label>Requirements</label>
+            </value>
+            <value>
+                <fullName>Client Information</fullName>
+                <default>false</default>
+                <label>Client Information</label>
+            </value>
+            <value>
+                <fullName>Sustainability</fullName>
+                <default>false</default>
+                <label>Sustainability</label>
+            </value>
+            <value>
+                <fullName>Approval Process</fullName>
+                <default>false</default>
+                <label>Approval Process</label>
+            </value>
+            <value>
+                <fullName>Validation Process</fullName>
+                <default>false</default>
+                <label>Validation Process</label>
+            </value>
+            <value>
+                <fullName>Transaction Overview</fullName>
+                <default>false</default>
+                <label>Transaction Overview</label>
+            </value>
+            <value>
+                <fullName>Economics</fullName>
+                <default>false</default>
+                <label>Economics</label>
+            </value>
+            <value>
+                <fullName>Basic Financials</fullName>
+                <default>false</default>
+                <label>Basic Financials</label>
+            </value>
+            <value>
+                <fullName>Business Plan Data</fullName>
+                <default>false</default>
+                <label>Business Plan Data</label>
+            </value>
+            <value>
+                <fullName>Client Tier</fullName>
+                <default>false</default>
+                <label>Client Tier</label>
+            </value>
+            <value>
+                <fullName>Sustainable Finance</fullName>
+                <default>false</default>
+                <label>Sustainable Finance</label>
+            </value>
+            <value>
+                <fullName>Main Characteristics of the Deal</fullName>
+                <default>false</default>
+                <label>Main Characteristics of the Deal</label>
+            </value>
+            <value>
+                <fullName>Other Aspect</fullName>
+                <default>false</default>
+                <label>Other Aspect</label>
+            </value>
+            <value>
+                <fullName>Risks</fullName>
+                <default>false</default>
+                <label>Risks</label>
+            </value>
+            <value>
+                <fullName>Basic Requirement</fullName>
+                <default>false</default>
+                <label>Basic Requirement</label>
+            </value>
+            <value>
+                <fullName>Intro Opportunity Deal</fullName>
+                <default>false</default>
+                <label>Intro Opportunity Deal</label>
+            </value>
+            <value>
+                <fullName>Active Related Lines</fullName>
+                <default>false</default>
+                <label>Active Related Lines</label>
+            </value>
+            <value>
+                <fullName>Approval Modifications</fullName>
+                <default>false</default>
+                <label>Approval Modifications</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Info</fullName>
+                <default>false</default>
+                <label>Sanction Approval Info</label>
+            </value>
+            <value>
+                <fullName>Sanction Client</fullName>
+                <default>false</default>
+                <label>Sanction Client</label>
+            </value>
+            <value>
+                <fullName>Sanction Products</fullName>
+                <default>false</default>
+                <label>Sanction Products</label>
+            </value>
+            <value>
+                <fullName>Sanction Participants</fullName>
+                <default>false</default>
+                <label>Sanction Participants</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Process Data</fullName>
+                <default>false</default>
+                <label>Sanction Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>Sanction Passport</fullName>
+                <default>false</default>
+                <label>Sanction Passport</label>
+            </value>
+            <value>
+                <fullName>Sanction Limit</fullName>
+                <default>false</default>
+                <label>Sanction Limit</label>
+            </value>
+            <value>
+                <fullName>Sanction Limit Visual</fullName>
+                <default>false</default>
+                <label>Sanction Limit Visual</label>
+            </value>
+            <value>
+                <fullName>Approval Info</fullName>
+                <default>false</default>
+                <label>Approval Info</label>
+            </value>
+            <value>
+                <fullName>Profitability</fullName>
+                <default>false</default>
+                <label>Profitability</label>
+            </value>
+            <value>
+                <fullName>Product Simple</fullName>
+                <default>false</default>
+                <label>Product Simple</label>
+            </value>
+            <value>
+                <fullName>Opportunity Info NBC</fullName>
+                <default>false</default>
+                <label>Opportunity Info NBC</label>
+            </value>
+            <value>
+                <fullName>Client NBC</fullName>
+                <default>false</default>
+                <label>Client NBC</label>
+            </value>
+            <value>
+                <fullName>Profitability Summaries</fullName>
+                <default>false</default>
+                <label>Profitability Summaries</label>
+            </value>
+            <value>
+                <fullName>Profitability Visual</fullName>
+                <default>false</default>
+                <label>Profitability Visual</label>
+            </value>
+            <value>
+                <fullName>Status</fullName>
+                <default>false</default>
+                <label>Status</label>
+            </value>
+            <value>
+                <fullName>Opp product profitability</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Opp product profitability</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Treasury Line</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Treasury Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Treasury Participants</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Treasury Approval Process Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Treasury Products</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Passport</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Limit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Limit Detail</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Limit Visual</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Line Info</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Participants</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Products</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Approval Process Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Opportunity Info</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Commercial Process Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Executive Summary</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Business Plan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Deal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Requirements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Client Information</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sustainability</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Approval Process</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Validation Process</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Transaction Overview</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Economics</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Basic Financials</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Business Plan Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Client Tier</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sustainable Finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Main Characteristics of the Deal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Other Aspect</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Risks</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Basic Requirement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Intro Opportunity Deal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Active Related Lines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Approval Modifications</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Approval Info</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Products</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Participants</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Approval Process Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Passport</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Limit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Sanction Limit Visual</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Approval Info</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Profitability</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Product Simple</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Opportunity Info NBC</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Client NBC</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Profitability Summaries</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Profitability Visual</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Component</controllingFieldValue>
+            <valueName>Status</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Break</controllingFieldValue>
+            <valueName>Page Break</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Break</controllingFieldValue>
+            <valueName>Line Break</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Text</controllingFieldValue>
+            <valueName>Text 18px</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Text</controllingFieldValue>
+            <valueName>Text 14px</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Text</controllingFieldValue>
+            <valueName>Text 12px</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

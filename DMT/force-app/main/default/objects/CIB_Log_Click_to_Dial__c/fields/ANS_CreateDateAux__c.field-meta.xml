@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ANS_CreateDateAux__c</fullName>
+    <description>Campo creado para poder mostrar en los informes la fecha y hora de creación</description>
+    <formula>DATETIMEVALUE(CreatedDate)</formula>
+    <label>ANS_CreateDateAux</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

@@ -48,9 +48,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L50pYAC"
+                  " card-0koKE000000L75CYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003SzXj2AK");
+                this.loadCustomStylesheetAttachement("00PKE000001ZPzA2AW");
                 
                 
               }

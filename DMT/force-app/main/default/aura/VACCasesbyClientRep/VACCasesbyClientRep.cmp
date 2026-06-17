@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" >
+	<div class="slds-card">
+    	<div class="slds-m-vertical_small">
+            <div class="slds-m-left_small">
+        <lightning:button variant="brand" label="Cases for this Client" onclick="{!c.openReport}" />
+	</div>
+    </div>
+    </div>
+</aura:component>

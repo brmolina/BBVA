@@ -1,0 +1,8 @@
+.THIS .ajuste{
+    margin-left: 1em;
+    width: 97.6%;
+}
+.THIS .color{
+color: var(--lwc-colorTextLabel,rgb(62, 62, 60));
+                padding-bottom: 2em;
+        }

@@ -1,0 +1,34 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName">
+	<lightning:layout >
+        <lightning:layoutItem flexibility="auto" padding="around-small">
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Summary"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="true"
+                                              		  reportTitleAPI="AccountProductClassification1"
+                                                      Object="Account_Product__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="product_name__c,product_contracted_calc__c"
+                                                      FilterStatic="{!'product_classification__c=\''+ $Label.c.AccountProductClassificationTable1 +'\''}"
+                                                      Format='-,IMG'
+                                                      headerApiName='-,empty_value__c'
+                                                      Order='product_contracted_calc__c ASC'/>
+        </lightning:layoutItem>
+        <lightning:layoutItem flexibility="auto" padding="around-small">
+			<dwp_dv:DynamicRelatedGrupedTable_comp recordId="{!v.recordId}" 
+                                                      sObjectName="{!v.sObjectName}"
+                                                      Type="Summary"
+                                                      customLabelAPInameError="AccountNoData"
+                                                      showTitle="true"
+                                              		  reportTitleAPI="AccountProductClassification2"
+                                                      Object="Account_Product__c"
+                                                      RelatedField="Local_Client_id__c"
+                                                      Header="product_name__c,product_contracted_calc__c"
+                                                      FilterStatic="{!'product_classification__c=\''+ $Label.c.AccountProductClassificationTable2 +'\''}"
+                                                      Format='-,IMG'
+                                                      headerApiName='-,empty_value__c'
+                                                      Order='product_contracted_calc__c ASC'/>
+        </lightning:layoutItem>
+    </lightning:layout>
+</aura:component>

@@ -1,0 +1,5 @@
+<aura:component implements="force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Wrapper_ctrl">
+    <aura:handler event="dwp_kitv:createUpdateEvent" action="{!c.launchSyncronization}"/>
+
+    <dwp_kitv:Launch_Meeting_cmp recordId= "{!v.recordId}"/>
+</aura:component>

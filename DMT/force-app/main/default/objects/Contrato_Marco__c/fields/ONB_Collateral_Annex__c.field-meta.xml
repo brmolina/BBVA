@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ONB_Collateral_Annex__c</fullName>
+    <label>Collateral Annex</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Collateral</fullName>
+                <default>false</default>
+                <label>Collateral</label>
+            </value>
+            <value>
+                <fullName>Collateral VM</fullName>
+                <default>false</default>
+                <label>Collateral VM</label>
+            </value>
+            <value>
+                <fullName>Collateral VM + Collateral IM</fullName>
+                <default>false</default>
+                <label>Collateral VM + Collateral IM</label>
+            </value>
+            <value>
+                <fullName>CSA</fullName>
+                <default>false</default>
+                <label>CSA</label>
+            </value>
+            <value>
+                <fullName>CSA VM</fullName>
+                <default>false</default>
+                <label>CSA VM</label>
+            </value>
+            <value>
+                <fullName>CSA VM + ACA</fullName>
+                <default>false</default>
+                <label>CSA VM + ACA</label>
+            </value>
+            <value>
+                <fullName>CSA VM + CSA IM</fullName>
+                <default>false</default>
+                <label>CSA VM + CSA IM</label>
+            </value>
+            <value>
+                <fullName>CSA VM + CSA IM + ACA</fullName>
+                <default>false</default>
+                <label>CSA VM + CSA IM + ACA</label>
+            </value>
+            <value>
+                <fullName>Anexo III</fullName>
+                <default>false</default>
+                <label>Anexo III</label>
+            </value>
+            <value>
+                <fullName>Anexo III VM</fullName>
+                <default>false</default>
+                <label>Anexo III VM</label>
+            </value>
+            <value>
+                <fullName>Anexo III VM + Anexo III IM</fullName>
+                <default>false</default>
+                <label>Anexo III VM + Anexo III IM</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

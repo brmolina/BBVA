@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Edicion_campos</fullName>
+    <active>true</active>
+    <description>se bloquea la edición de campos en prospect subsidiary para los estados que no sea draft</description>
+    <errorConditionFormula>AND(
+    RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;,
+
+    OR(
+         ISCHANGED(Rating),
+        ISCHANGED(CIB_Commercial_Prospect__c),
+								ISCHANGED(DES_Legal_Entity_Type__c),
+        ISCHANGED(DES_Main_Parent__c),
+        ISCHANGED(gf_data_institution_type_name__c),
+								ISCHANGED(DES_Country_of_Management_OLD__c),
+        ISCHANGED(Name),
+								ISCHANGED(OwnerId),
+        ISCHANGED(DES_ID_Fiscal__c),
+        ISCHANGED(customer_stock_exchange_name__c),
+								ISCHANGED(Industry),
+        ISCHANGED(Subsector__c),
+        ISCHANGED(DES_Country_Client__c),
+								ISCHANGED(DES_AGGR_Sector__c)
+    ),
+
+    NOT(
+        OR(
+             ISPICKVAL(DES_Prospect_Status_Funnel__c, &quot;Identify&quot;)
+        )
+    )
+)</errorConditionFormula>
+    <errorMessage>The field cannot be edited in this state.</errorMessage>
+</ValidationRule>

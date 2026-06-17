@@ -1,0 +1,175 @@
+.slds-container_large {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.slds-form-element {
+    margin-bottom: 1rem;
+}
+
+.slds-form-element__label {
+    font-weight: 600;
+    color: #3e3e3c;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.slds-form-element__static {
+    padding: 0.5rem 0;
+    color: #3e3e3c;
+    word-wrap: break-word;
+}
+
+.slds-text-color_error {
+    color: #c23030;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.slds-grid {
+    display: grid;
+}
+
+.slds-col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.slds-border_top {
+    border-top: 1px solid #e5e5e3;
+}
+
+.slds-text-align_right {
+    text-align: right;
+}
+
+.slds-m-top_x-small {
+    margin-top: 0.25rem;
+}
+
+.slds-m-top_medium {
+    margin-top: 1rem;
+}
+
+.slds-m-top_large {
+    margin-top: 2rem;
+}
+
+.slds-m-bottom_medium {
+    margin-bottom: 1rem;
+}
+
+.slds-m-bottom_x-small {
+    margin-bottom: 0.25rem;
+}
+
+.slds-p-around_x-small {
+    padding: 0.25rem;
+}
+
+.slds-p-around_medium {
+    padding: 1rem;
+}
+
+.slds-p-around_large {
+    padding: 2rem;
+}
+
+.slds-var-p-around_medium {
+    padding: 1rem;
+}
+
+.slds-var-p-around_small {
+    padding: 0.5rem;
+}
+
+.custom-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.form-section {
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.form-section-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #3e3e3c;
+    border-bottom: 1px solid #e5e5e3;
+    padding-bottom: 0.5rem;
+}
+
+.date-validation-error {
+    color: #c23030;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.error-message {
+    padding: 1rem;
+    background-color: #fde7e7;
+    border-left: 4px solid #c23030;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+.success-message {
+    padding: 1rem;
+    background-color: #dffcf0;
+    border-left: 4px solid #04844b;
+    border-radius: 0.25rem;
+    margin: 1rem 0;
+}
+
+/* Table Styles */
+.slds-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.slds-table thead {
+    background-color: #f3f3f1;
+    border-bottom: 2px solid #e5e5e3;
+}
+
+.slds-table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #3e3e3c;
+}
+
+.slds-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e5e3;
+}
+
+.slds-table tbody tr:hover {
+    background-color: #f7f7f6;
+}
+
+/* Button Styles */
+lightning-button::part(button) {
+    text-transform: none;
+    font-weight: 500;
+}
+
+/* Read-only styling */
+.readonly-field {
+    background-color: #f7f7f6;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e5e5e3;
+}

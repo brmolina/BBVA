@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Approvers_View_Opportunity__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Approvers View for Opportunity</description>
+    <inlineHelpText>Approvers View for Opportunity</inlineHelpText>
+    <label>Approvers View Opportunity</label>
+    <referenceTo>DMT_ApproversView__c</referenceTo>
+    <relationshipLabel>Approvers (Approvers View Opportunity)</relationshipLabel>
+    <relationshipName>Approvers2</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

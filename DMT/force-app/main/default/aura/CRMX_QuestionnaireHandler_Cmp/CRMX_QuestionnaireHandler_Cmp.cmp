@@ -1,0 +1,14 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" controller="CRMX_Questionnaire_Ctrl" access="global">
+    <aura:attribute name="recordId" type="String" description="ID of the current record in context, usually provided by the platform when the component is used in a Lightning Record Page." />
+    <aura:attribute name="templateCuestionarios" type="String" default="CRMX_Regulatory Questionnaire" description="Name of the questionnaire template that will be used as the basis for generating the dynamic form." />
+    <aura:attribute name="view" type="boolean" default="false" description="Indicates whether the dynamic form should be displayed in read-only mode (true) or editable (false)." />
+    <aura:attribute name="editButton" type="String" default="{&quot;style&quot;:&quot;neutral&quot;, &quot;unactiveStyle&quot;:&quot;hidden&quot;, &quot;active&quot;:true}" description="Edit button configuration: style and state in JSON." />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.view}">
+        <dyfr:Dynamic_Form_cmp 
+            recordId="{!v.recordId}" 
+            templateName="{!v.templateCuestionarios}" 
+            selectionType="Static" 
+            editButton="{!v.editButton}"/>
+    </aura:if>
+</aura:component>

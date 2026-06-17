@@ -1,0 +1,15 @@
+<aura:documentation>
+    <aura:description>
+        <p><b>NAME: </b>Arc_Gen_ArceTypeSelector_cmp</p>
+        <p><b>DESCRIPTION: </b>Component to select the type of the analysis to create</p>
+        <p><b>ATTRIBUTES: </b>
+            <ul>
+                <li>availableArceTypes = String : list of available arce types</li>
+                <li>isArceTypeEnabled = String : map that contains the arces and their types</li>
+            </ul>
+        </p>
+        <p><code>c:Arc_Gen_ArceTypeSelector_cmp</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ArceTypeSelector_cmp" ref="c:Arc_Gen_ArceTypeSelector_cmp" label="Arce type selector">
+    </aura:example>
+</aura:documentation>

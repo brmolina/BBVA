@@ -7,22 +7,37 @@ export default class DmtRiskApproval extends LightningElement {
 
     @api oppId;
     @api customerId;
+    @api linerecordType;
+
     _lineName = '';
     _lineId = '';
     _status = '';
     @track selectedOption = 'Limit'; // opción radio seleccionada
     @track showLine = false;
     @track isReadOnly = false;
+    @track variantLimit = 'brand'
+    @track variantLine = 'neutral'
 
     @api
     set lineName(value) {
-        if (value && value !== 'null' && value !== 'undefined') {
-            this._lineName = value;
-            this.showLine = true;
-        } else {
+        if(this.linerecordType != 'Risk Approval'){
+            if (value && value !== 'null' && value !== 'undefined') {
+                this.variantLimit = 'neutral';
+                this.variantLine = 'brand';
+                this._lineName = value;
+                this.showLine = true;
+            } else {
+                this._lineName = '';
+                this.showLine = false;
+            }
+        }else{
+            this.variantLimit = 'brand';
+            this.variantLine = 'neutral';
             this._lineName = '';
+            this.isReadOnly = true;
             this.showLine = false;
         }
+        
         
     }
 
@@ -83,7 +98,10 @@ export default class DmtRiskApproval extends LightningElement {
             }
         }));
     }
-
+    handleLimitClick(){
+        this.variantLimit = 'brand';
+        this.variantLine = 'neutral';
+    }
     /**
      * Recibe los datos cuando se guarda el modal
      */
@@ -99,15 +117,14 @@ export default class DmtRiskApproval extends LightningElement {
      * Maneja la desasociación de la línea al seleccionar Limit
      */
     handleUnassociateLine() {
-        // Aquí puedes llamar a tu Apex para desasociar la línea de la oportunidad
-        // Ejemplo:
-        // unassociateLine({ oppId: this.oppId, lineId: this.lineId });
 
         // NO borramos lineName ni lineId para mantener el link visible
         console.log('Línea desasociada internamente, link permanece visible');
     }
     handleLineLinkClick() {
         this.selectedOption = 'Line'; // marca el radio
+        this.variantLimit = 'neutral';
+        this.variantLine = 'brand';
         this.openModal();
     }
 }

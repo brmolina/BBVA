@@ -24,6 +24,7 @@
 * 1.11   23/09/2020     saimassimilianno.jordana.contractor@bbva.com          Added arce. namespace to all classes that are now in the arce-dependencies package
 * 1.12   10/08/2021           juanignacio.hita.contractor@bbva.com            Changes owner user to current user logged in the request of service
 **/
+@SuppressWarnings('PMD.ExcessiveParameterList')
 public class Arc_Gen_Triage_service {
     /**
     * @Description: Service response identificator
@@ -110,7 +111,12 @@ public class Arc_Gen_Triage_service {
         parameters.riskAssessmentId = analyzedClient.Name;
         parameters.participantId = customerNumber;
         parameters.businessAgentId = uInfo.userBasicInfo.FederationIdentifier == null ? '' : uInfo.userBasicInfo.FederationIdentifier;
-        parameters.participationType = analysisGroup.participantType;
+
+        String participantType = analysisGroup.participantType;
+        if(analyzedClient.arce__RAR_rating_tool_id__c.contains('RTC')) {
+            participantType = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) analyzedClient.Id});
+        }
+        parameters.participationType = participantType;
         parameters.bankId = BANKID;
         parameters.branchId = uInfo.branchId;
         parameters.branchLevel = uInfo.branchLevel;

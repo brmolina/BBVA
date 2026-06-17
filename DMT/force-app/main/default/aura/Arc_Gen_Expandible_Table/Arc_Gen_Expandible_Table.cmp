@@ -1,0 +1,122 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="Arc_Gen_Expandible_Table_Controller" >
+  <aura:attribute name="inputClass" type="String" access="global" description="input class used on the component" />
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <aura:attribute name="gridColumns" type="List" access="global" description="variable to show columns" />
+  <aura:attribute name="gridData" type="Object" access="global" description="variable to show rows and data" />
+  <aura:attribute name="insert" type="boolean" access="global" default="false" description="variable to insert tipologies" />
+  <aura:attribute name="edit" type="boolean" access="global" default="false"  description="variable to edit tipologies" />
+  <aura:attribute name="readOnly" type="boolean" access="global" default="false" description="variable to validate edit permit"/>
+  <aura:attribute name="delete" type="boolean" access="global" default="false" description="variable to delete tipologies" />
+  <aura:attribute name="spliceColumn" type="String" access="global" default="0,0;0,0" description="variable to split columns" />
+  <aura:attribute name="spliceRow" type="String" access="global" default="0,0;0,0" description="variable to split rows" />
+  <aura:attribute name="editName" type="String" access="global" default="c:Arc_Gen_Edition" description="Name of the component to edit records" />
+  <aura:attribute name="insertName" type="String" access="global" default="c:Arc_Gen_Insertion" description="Name of the component to insert records" />
+  <aura:attribute name="show" type="boolean" access="global" default="false" description="variable to show tipologies" />
+  <aura:attribute name="row" type="Object" access="global" description="variable store the row of the table" />
+  <aura:attribute name="headerDate" type="String" description="Date of Sanction."/>
+  <aura:attribute name="hideCheckboxColumn" type="Boolean" description="Controls checkboxes visibility" default="true"/>
+  <aura:attribute name="refreshVariable" type="boolean" access="global" default="false" description="control the refresh of the table" />
+  <aura:attribute name="errorMessage" type="String" default="" description="Error message to display in case the policies could not be loaded." />
+  <aura:attribute name="analysisType" type="String" default="" description="Type of Analysis" />
+  <aura:attribute name="spinner" type="boolean" access="global" default="false" description="Delete section modal" />
+  <aura:attribute name="delBodyModal" type="boolean" access="global" default="true" description="Delete section modal" />
+  <aura:attribute name="titleModal" type="boolean" access="global" default="true" description="Title modal" />
+  <aura:attribute name="statusPersServices" type="boolean" access="global" default ="true" description="Status persistence services" />
+  <aura:attribute name="callLimitsRefresh" type="boolean" access="global" default ="true" description="Value of call limit flag field" />
+
+  <aura:handler event="c:Arc_Gen_PositionEvent" action="{!c.handleRefreshEvt}"/>
+  <aura:handler name="change" value="{!v.refreshVariable}" action="{!c.init}"/>
+  <aura:registerEvent name="tableLoadedEvent" type="c:Arc_Gen_TableLoadedEvent"/>
+
+  <c:Arc_Gen_EditPermChecker_serviceCmp aura:id="permChecker" />
+
+  <aura:if isTrue="{!v.show}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+            <span class="slds-assistive-text">{!$Label.c.Lc_arce_Close}</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.titleModal}</h2>
+        </header>
+        <aura:if isTrue="{!v.delBodyModal}">
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <div class="slds-align_absolute-center">
+              <p>{!$Label.c.Arc_Gen_Delete_Record}</p>
+            </div>
+          </div>
+          <footer class="slds-modal__footer">
+            <div class="slds-align_absolute-center">
+              <lightning:button class="slds-button slds-button--neutral" onclick="{!c.close}">{!$Label.c.Arc_Gen_No}</lightning:button>
+              <lightning:button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.accept}">{!$Label.c.Arc_Gen_Yes}</lightning:button>
+            </div>
+          </footer>
+        </aura:if>
+        <aura:if isTrue="{!v.spinner}">
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <div class="slds-align_absolute-center slds-p-top_x-large">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_inline">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+          </div>
+        </aura:if>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+  <lightning:overlayLibrary aura:id="overlayLib"/>
+  <aura:if isTrue="{!v.errorMessage != ''}">
+    <div class="slds-p-vertical_medium slds-text-color_error">
+      {!v.errorMessage}
+    </div>
+    <aura:set attribute="else">
+      <aura:if isTrue="{!v.statusPersServices == false}">
+        <mbr:messageBar forceDisplay="true" message="{!$Label.c.Arc_Gen_MsgStatusLimitPersServices}" />
+      </aura:if>
+      <div class="slds-grid slds-gutters">
+        <div class="slds-col">
+          <table class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered slds-table_col-bordered  slds-no-row-hover">
+              <thead style="background:RGB(250, 250, 248);">
+                <tr class="slds-line-height_reset">
+                  <div style ="width: 400px; ">
+                    <th  scope="col" tabindex="0" style="Color: #3E3E3C;width: 400px; font-size: 12px"></th>
+                  </div>
+                    <th class="" scope="col" tabindex="-1" style="width: 16.2857%; Color: #3E3E3C; font-size: 12px;">
+                    <div class="slds-truncate" title="{!$Label.c.Arc_Gen_MaximumLimit}" align="center">{!$Label.c.Arc_Gen_MaximumLimit}</div>
+                  </th>
+                  <th class="" scope="col" tabindex="-1" style="width: 68.1428%; Color: #3E3E3C; font-size: 12px;">
+                    <div class="slds-truncate" title="{!$Label.c.Arc_Gen_RiskExposure}" align="center">{!$Label.c.Arc_Gen_RiskExposure}</div>
+                  </th>
+                  <th class="" scope="col" tabindex="-1" style="width: 15.5714%; Color: #3E3E3C; font-size: 12px;">
+                    <div class="slds-truncate" title="{!$Label.c.Arc_Gen_NewMaxLimit}" align="center">{!$Label.c.Arc_Gen_NewMaxLimit}</div>
+                    <div class="slds-truncate" title="(DATE)" align="center">{! v.headerDate}</div>
+                  </th>
+                  <div style ="width: 50px;">
+                    <th  scope="col" tabindex="-1" style="Color: #3E3E3C;width: 50px; font-size: 12px"></th>
+                  </div>
+                </tr>
+              </thead>
+            </table>
+        </div>
+      </div>
+      <div aura:id="expandible_table" style="width: 100%;">
+        <lightning:treeGrid
+          columns="{! v.gridColumns }"
+          data="{! v.gridData }"
+          keyField="name"
+          hideCheckboxColumn="{! v.hideCheckboxColumn }"
+          resizeColumnDisabled="true"
+          onrowaction="{! c.handleRowAction }"
+          />
+      </div>
+    </aura:set>
+  </aura:if>
+  <aura:if isTrue="{!v.analysisType == '1'}">
+    <div>
+      <lightning:button variant="Neutral" label="{!$Label.c.Arc_Gen_BtnExpTableRen}" title="{!$Label.c.Arc_Gen_BtnExpTableRen}" onclick="{!c.getProposeInfo}" />
+    </div>
+  </aura:if>
+</aura:component>

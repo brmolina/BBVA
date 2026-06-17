@@ -1,0 +1,95 @@
+<aura:component implements="force:hasRecordId" extends="dwp_mdal:ModalTemplate_cmp" access="global" controller="PRW_AddFlatPRoductCtrl">
+  <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+  <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <aura:attribute name="dataTable" type="Object" />
+  <aura:attribute name="waiting" type="Boolean" default="false"/>
+  <aura:attribute name="showWarning" type="Boolean" default="false"/>
+  <aura:attribute name="showNotChecked" type="Boolean" default="false"/>
+  <aura:attribute name="families" type="List" default="[]" />
+  <aura:attribute name="sectionsAccord" type="List" default="[]" />
+  <aura:attribute name="activeSections" type="List" default="[]" />
+  <aura:attribute name="products" type="List" default="[]" />
+  <aura:attribute name="sections" type="List" default="[]" />
+  <aura:attribute name="firstProdIds" type="List" default="[]" />
+  <aura:attribute name="catalog" type="String" />
+  <aura:attribute name="otherTableData" type="String" />
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+
+  <aura:registerEvent name="productSelectContinueEvt" type="c:PRW_AddProductEvent"/>
+
+  <aura:set attribute="title" value="{!$Label.c.PRW_Add_condition_title}" />
+
+  <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+    <aura:if isTrue="{!v.waiting}">
+      <lightning:spinner variant="brand" alternativeText="Loading..." />
+    </aura:if >
+
+    <aura:if isTrue="{!v.showWarning}">
+      <div class="slds-notify slds-notify_alert slds-alert_warning lds-m-top_small" style="padding-right:50px;" role="alert">
+        <h2><lightning:icon iconName="utility:warning" size="x-small" class="slds-m-right_x-small" />{!$Label.c.PRW_Select_product_warning}</h2>
+        <div class="slds-notify__close">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissWarning}" variant="bare" title="Close" alternativeText="Close"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.showNotChecked}">
+      <div class="slds-notify slds-notify_alert slds-alert_error slds-m-top_small must_select_conditions" style="padding-right:50px;" role="alert">
+        <h2><lightning:icon iconName="utility:error" size="x-small" class="slds-m-right_x-small" variant="inverse" />{!$Label.c.PRW_Mandatory_cond_selection}</h2>
+        <div class="slds-notify__close">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.dismissNotChecked}" variant="bare-inverse" title="Close" alternativeText="Close"/>
+        </div>
+      </div>
+    </aura:if>
+
+    <div class="slds-m-top_small">
+      {!$Label.c.PRW_Add_condition_subtitle}
+    </div>
+    <div class="warning slds-m-top_small">
+      {!$Label.c.PRW_Add_Specialcondition_NoAvailable}
+    </div>
+    <div class="warning slds-m-top_small">
+      {!$Label.c.PRW_Add_Specialcondition_NoAvailable2}
+    </div>
+    <div class="slds-m-top_medium">
+      <lightning:accordion
+        class="slds-text-body_regular conditions_select_accordion"
+        allowMultipleSectionsOpen="true"
+        activeSectionName="{!v.sectionsAccord}">
+        <aura:iteration items="{!v.sections}" var="section" indexVar="key3">
+          <lightning:accordionSection name="{!section}" label="{!section}">
+            <lightning:accordion
+              class="slds-text-body_regular conditions_select_accordion family-flat"
+              allowMultipleSectionsOpen="true"
+              activeSectionName="{!v.activeSections}">
+
+              <aura:iteration items="{!v.families}" var="family" indexVar="key">
+                <aura:if isTrue="{!section == family.section}">
+                  <div class="slds-is-relative">
+                    <lightning:input type="checkbox" aura:id="group" checked="{!family.checked}" disabled="{!family.disabled}" class="{!family.indeterminated ? 'checkbox-flat indeterminated' : 'checkbox-flat'}" name="{!'group' + family.name}" onchange="{!c.toggleGroup}" label="" value="{!family.name}" />
+                    <lightning:accordionSection name="{!family.name}" label="{!family.semiDisable ? family.nameDis : family.name}">
+                      <aura:iteration items="{!v.products}" var="product" indexVar="key2">
+                        <aura:if isTrue="{!product.family == family.name}">
+                          <p class="flatpad"><lightning:input type="checkbox" aura:id="checkbox"  disabled="{!product.disabled}" checked="{!product.checked}" label="{!product.prod_name}" name="{!family.name}" value="{!product.prod_id}" onchange="{!c.evaluateToggleGroup}"/></p>
+                        </aura:if>
+                      </aura:iteration>
+                    </lightning:accordionSection>
+                  </div>
+                </aura:if>
+              </aura:iteration>
+            </lightning:accordion>
+          </lightning:accordionSection>
+        </aura:iteration>
+      </lightning:accordion>
+    </div>
+  </div>
+
+  <footer class="slds-modal__footer">
+    <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="slds-m-top_x-small" />
+    <lightning:button label="Continue" onclick="{!c.handleContinue}" variant="brand" class="slds-m-top_x-small" />
+  </footer>
+  {!v.body}
+</aura:component>

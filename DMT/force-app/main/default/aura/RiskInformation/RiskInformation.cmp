@@ -1,0 +1,83 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="RiskInformation">
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="MaxConsumo" type="Object" />
+    <aura:attribute name="LimitConsumo" type="Object" />
+    <aura:attribute name="RiskId" type="String" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="activeSections" type="List" default="['A']" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }" activeSectionName="{! v.activeSections }">
+         <lightning:accordionSection name="A" label="Risk Information">
+            <div class="slds-media">
+                <div class="slds-media__body">
+                    <lightning:layout multipleRows="true">
+                        <div class="slds-col">
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Credit_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].Credit_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Deposits_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].Deposits_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Derivatives_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].Derivatives_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_DVP_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].DVP_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Repos_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].Repos_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Settlement_Consumption}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.MaxConsumo[0].Settlement_Consumption}" currencySymbol="EUR " class="text "/>
+                            </div>
+                        </div>
+                        <div class="slds-col">
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Credit_Limit}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].credit_prdt_limit_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Derivatives_Limit}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].derv_prdt_limit_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Deposits_Limit}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].dpst_prdt_limit_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Repos_Limit}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].repos_prdt_limit_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_Settlement_Limit}</span>
+                                <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].settl_prdt_limit_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                            <div class="slds-col slds-form-element slds-form-element_readonly mTop">
+                                <span class="text2">{!$Label.c.Risk_DVP_Limit}</span>
+                                 <br/>
+                                <ui:outputCurrency value="{!v.LimitConsumo[0].dlvry_vs_pay_lim_tenor_amount__c}" currencySymbol="EUR " class="text "/>
+                            </div>
+                        </div>
+                     </lightning:layout>
+                </div>
+            </div>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

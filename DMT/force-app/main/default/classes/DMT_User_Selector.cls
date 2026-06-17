@@ -9,7 +9,7 @@ public without sharing class DMT_User_Selector {
         return [SELECT Id, DES_Country__c, Profile.Name, FederationIdentifier
                 FROM User
                 WHERE Id = :UserInfo.getUserId()
-                /*WITH SECURITY_ENFORCED*/
+                /*WITH USER_MODE*/
                 LIMIT 1];
     }
 

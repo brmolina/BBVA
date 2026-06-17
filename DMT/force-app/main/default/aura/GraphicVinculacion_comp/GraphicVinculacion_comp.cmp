@@ -1,0 +1,20 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL">
+  <aura:handler name="init" value="{!this}" action="{!c.init}" />
+  <aura:attribute name="bGrafica" type="Boolean" default="false" />
+  <aura:attribute name="sFiltro" type="String" default="Total" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="rows" type="List" />
+  <center>
+    <div style="width:75%;">
+      <aura:if isTrue="{!v.bGrafica}">
+    	  <c:GraphicsGenerator_comp NombreCanvas="VINCULACIÓN"
+        posicionLeyenda="right"
+        NombreInforme="VINCULACION"
+        TipoGrafica="bar"
+        Id="{!v.recordId}"
+        Colores="#004481,#01A1DF,#75DFD9,#06A69E"
+        />
+      </aura:if>
+    </div>
+  </center>
+</aura:component>

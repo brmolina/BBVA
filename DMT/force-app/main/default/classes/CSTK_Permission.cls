@@ -57,7 +57,7 @@ global with sharing class CSTK_Permission implements cstk.Permissions_Itf {
 
         Boolean hasESFramworkEdit = FeatureManagement.checkPermission('ESFrameworkEdition');
         System.debug('ESFrameworkEdition ' + hasESFramworkEdit);
-        res.put('editESFrmwrk', isToolkitEditUser && yearEditable && hasESFramworkEdit);
+        res.put('editESFrmwrkByYear', isToolkitEditUser && yearEditable && hasESFramworkEdit);
 
         Boolean hasEnggmntPermission = FeatureManagement.checkPermission('EnggmntPlanPermission');
         System.debug('EnggmntPlanPermission ' + hasEnggmntPermission);
@@ -108,6 +108,9 @@ global with sharing class CSTK_Permission implements cstk.Permissions_Itf {
         Boolean hasPermissionTri = FeatureManagement.checkPermission('TriValidationRecalcu');
         System.debug('TriValidationRecalcu ' + hasPermissionTri);
         //res.put('managetri', hasPermissionTri);
+
+        Boolean hasESFramworkEdit = FeatureManagement.checkPermission('ESFrameworkEdition');
+        res.put('editESFrmwrk', isToolkitEditUser && hasESFramworkEdit);
 
         res.put('editThldPP', hasPermission);
 

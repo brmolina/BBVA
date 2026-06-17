@@ -229,7 +229,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
         Test.startTest();
 
         try {
-            result = arce.Arc_IFIS_ButtonsFinalize_Ctrl.getRatingData(''); 
+            result = arce.Arc_IFIS_ButtonsFinalize_Ctrl.getRatingData('');
         } catch (Exception e) {
             System.assertEquals(
                 System.Label.arce.Arc_IFIS_Error_Aha_Not_Provided,
@@ -243,7 +243,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
 
     /**
     * -----------------------------------------------------------------------------------------------
-    * @description [Ctrl] Unit test for callParticipantRelation().
+    * @description [Ctrl] Unit test for callRatingPersistence().
     * -----------------------------------------------------------------------------------------------
     * @autor    marcos.gimeno.next@bbva.com
     * @date     04-09-2023
@@ -254,7 +254,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
         final String ahaId = [SELECT Id FROM arce__Account_has_Analysis__c LIMIT 1].Id;
 
         Test.startTest();
-        final arce.Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callParticipantRelation(
+        final Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callRatingPersistence(
             ahaId
         );
         Test.stopTest();
@@ -264,7 +264,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
 
     /**
     * -----------------------------------------------------------------------------------------------
-    * @description [Ctrl] Unit test for callParticipantRelation() with null account.
+    * @description [Ctrl] Unit test for callRatingPersistence() with null account.
     * -----------------------------------------------------------------------------------------------
     * @autor    marcos.gimeno.next@bbva.com
     * @date     04-09-2023
@@ -277,7 +277,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
         Test.startTest();
         delete [SELECT Id FROM Account LIMIT 1];
 
-        final arce.Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callParticipantRelation(
+        final Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callRatingPersistence(
             ahaId
         );
         Test.stopTest();
@@ -287,7 +287,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
 
     /**
     * -----------------------------------------------------------------------------------------------
-    * @description [Ctrl] Unit test for callParticipantRelation() with exception.
+    * @description [Ctrl] Unit test for callRatingPersistence() with exception.
     * -----------------------------------------------------------------------------------------------
     * @autor    marcos.gimeno.next@bbva.com
     * @date     04-09-2023
@@ -296,7 +296,7 @@ public class Arc_IFIS_ButtonsFinalize_Test {
     @IsTest
     static void testCallParticipantRelationException() {
         Test.startTest();
-        final arce.Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callParticipantRelation(
+        final Arc_IFIS_Buttons_Wrp.ValidateResponse result = Arc_IFIS_ButtonsFinalize_Ctrl.callRatingPersistence(
             null
         );
         Test.stopTest();
@@ -402,13 +402,14 @@ public class Arc_IFIS_ButtonsFinalize_Test {
 
         Test.startTest();
         try {
-            result = Arc_IFIS_ButtonsFinalize_Ctrl.callRatingValidation(testMapJson);
+            Arc_IFIS_ButtonsFinalize_Ctrl.callRatingValidation(null);
         } catch (Exception e) {
             expectedException = e;
         }
-        System.assert(expectedException != null && result == null, 'Result should be null.');
 
         Test.stopTest();
+
+        System.assert(expectedException != null, 'Should throw an exception.');
     }
 
     /**

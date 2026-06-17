@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_IncidentSettlement</fullName>
+    <active>false</active>
+    <errorConditionFormula>AND
+(
+ !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+ $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ OR(
+ AND(ISCHANGED(SER_Settled__c),
+ SER_Settled__c = true),
+ AND(ISCHANGED(SER_Instructed__c),
+ SER_Instructed__c = true)
+ ),
+ ISPICKVAL(SER_Classification__c,&apos;Incidencia&apos;),
+ OR(ISPICKVAL(SER_Type_GM__c,&apos;&apos;),ISPICKVAL(SER_Subtype_GM__c,&apos;&apos;))
+)</errorConditionFormula>
+    <errorMessage>Settled or Instructed may not be changed for an Untyped or Reasonless Incident case type.</errorMessage>
+</ValidationRule>

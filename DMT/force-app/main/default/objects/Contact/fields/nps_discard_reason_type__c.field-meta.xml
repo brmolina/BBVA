@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nps_discard_reason_type__c</fullName>
+    <label>NPS Unchecking Reason</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Contact changed role in the company</fullName>
+                <default>false</default>
+                <label>Contact changed role in the company</label>
+            </value>
+            <value>
+                <fullName>Contact changed</fullName>
+                <default>false</default>
+                <label>Contact changed</label>
+            </value>
+            <value>
+                <fullName>Client does not want to be contacted</fullName>
+                <default>false</default>
+                <label>Client does not want to be contacted</label>
+            </value>
+            <value>
+                <fullName>Contact is no longer working in the company</fullName>
+                <default>false</default>
+                <label>Contact is no longer working in the company</label>
+            </value>
+            <value>
+                <fullName>Contact is not relevant - No banker is covering the client</fullName>
+                <default>false</default>
+                <label>Contact is not relevant - No banker is covering the client</label>
+            </value>
+            <value>
+                <fullName>Customer is in liquidation process</fullName>
+                <default>false</default>
+                <label>Customer is in liquidation process</label>
+            </value>
+            <value>
+                <fullName>NPS checkbox was checked by mistake</fullName>
+                <default>false</default>
+                <label>NPS checkbox was checked by mistake</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

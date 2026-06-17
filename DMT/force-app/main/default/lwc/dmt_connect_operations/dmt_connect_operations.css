@@ -1,0 +1,8 @@
+:host thead input[type="checkbox"] {
+    display: none !important;
+}
+
+/* Mantener el padding/ancho de la columna */
+:host .slds-cell-checkbox {
+    width: 3rem !important;
+}

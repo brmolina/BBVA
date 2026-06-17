@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subsidiary_Prospect_Compact</fullName>
+    <fields>Name</fields>
+    <fields>DES_Client_Type__c</fields>
+    <fields>business_group_header_type__c</fields>
+    <fields>DES_Main_Parent_formula__c</fields>
+    <fields>DES_Country_Client__c</fields>
+    <fields>SER_CClient__c</fields>
+    <fields>gf_cust_orig_prospect_ind_type__c</fields>
+    <label>Subsidiary Prospect Compact</label>
+</CompactLayout>

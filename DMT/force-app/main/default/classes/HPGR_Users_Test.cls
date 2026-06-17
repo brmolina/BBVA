@@ -108,6 +108,19 @@ public with sharing class HPGR_Users_Test {
     }
 
     @isTest
+    static void canManageTransactionsTest() {
+        User testUser = [SELECT Id FROM User WHERE Username = :USER_USERNAME];
+        hpgr.Test_Utils.assignPermissionSet(GCE_RISK_PERMISSION_SET, testUser.Id);
+        Test.startTest();
+            System.runAs(testUser) {
+                HPGR_Users hpgrUsers = new HPGR_Users();
+                Boolean canManageTransactions = hpgrUsers.canManageTransactions();
+                system.assertEquals(true, canManageTransactions, 'canManageTransactionsTest - Not passed - canManageTransactions');
+            }
+        Test.stopTest();
+    }
+
+    @isTest
     static void canDownloadCsvTest() {
         User testUser = [SELECT Id FROM User WHERE Username = :USER_USERNAME];
         hpgr.Test_Utils.assignPermissionSet(GCE_RISK_PERMISSION_SET, testUser.Id);

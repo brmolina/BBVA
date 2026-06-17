@@ -1,0 +1,14 @@
+<template>
+    <li class="slds-listbox__item result-item" role="presentation" onclick={handleSelectRecord}>
+        <div class="slds-media slds-listbox__option slds-listbox__option_entity" role="option">
+            <span class="slds-media__figure">
+                <lightning-icon icon-name={iconName} size="x-small" alternative-text="Record"></lightning-icon>
+            </span>
+            <span class="slds-media__body">
+                <span class="slds-listbox__option-text slds-listbox__option-text_entity">{recordName}</span>
+            </span>
+        </div>
+    </li>
+</template>
+
+<!--CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER-->

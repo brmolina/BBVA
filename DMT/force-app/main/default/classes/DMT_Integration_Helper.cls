@@ -96,9 +96,14 @@ public with sharing class DMT_Integration_Helper {
                     template.jsonTemplate = JSON.serialize(value);
                 }
             } else {
-                // template has other text -> keep using string casting
-                if(value != null){
-                    template.jsonTemplate = template.jsonTemplate.replace('#' + key + '#', String.valueOf(value));
+                // template has surrounding JSON text -> serialize non-string values
+                // so arrays/objects (for example structureCodes) are injected as valid JSON.
+                if (value != null) {
+                    String replacement =
+                        (value instanceof String)
+                            ? String.valueOf(value)
+                            : JSON.serialize(value);
+                    template.jsonTemplate = template.jsonTemplate.replace('#' + key + '#', replacement);
                 }
             }
         }
@@ -145,6 +150,7 @@ public with sharing class DMT_Integration_Helper {
         request = applySecurity(request, serviceConfig.DeveloperName);
 
         request = modifyHeaders(request, serviceConfig.DeveloperName);
+        System.debug('BODY => ' + request.getBody());
         return request;
     }
 
@@ -156,7 +162,7 @@ public with sharing class DMT_Integration_Helper {
         if (objType == null) {
             throw new DMT_CustomException('Class not found: ' + iasoClassName);
         }
-        iaso_GBL_Integration_Authentication authenticationService = (iaso_GBL_Integration_Authentication)objType.newInstance();
+        iaso.GBL_Integration_Authentication authenticationService = (iaso.GBL_Integration_Authentication)objType.newInstance();
         request = authenticationService.applySecurity(request, authenticationConfig); //NOSONAR
         return request;
     }
@@ -168,7 +174,7 @@ public with sharing class DMT_Integration_Helper {
             String className = serviceConfig.iaso__Headers_Class__c;
             if ( className != null && className.length() > 0 ){
                 System.Type objType = Type.forName(className);
-                iaso_GBL_Integration_Headers integrationHeaders = (iaso_GBL_Integration_Headers)objType.newInstance();
+                iaso.GBL_Integration_Headers integrationHeaders = (iaso.GBL_Integration_Headers)objType.newInstance();
                 request = integrationHeaders.modifyRequest(request); //NOSONAR
             }
         }
@@ -183,7 +189,7 @@ public with sharing class DMT_Integration_Helper {
         if (objType == null) {
             throw new DMT_CustomException('Class not found: ' + iasoClassName);
         }
-        iaso_GBL_Integration_Authentication authenticationService = (iaso_GBL_Integration_Authentication)objType.newInstance();
+        iaso.GBL_Integration_Authentication authenticationService = (iaso.GBL_Integration_Authentication)objType.newInstance();
         return authenticationService.resetToken(authenticationConfig);
     }
 
@@ -195,7 +201,7 @@ public with sharing class DMT_Integration_Helper {
         if (objType == null) {
             throw new DMT_CustomException('Class not found: ' + iasoClassName);
         }
-        iaso_GBL_Integration_Authentication authenticationService = (iaso_GBL_Integration_Authentication)objType.newInstance();
+        iaso.GBL_Integration_Authentication authenticationService = (iaso.GBL_Integration_Authentication)objType.newInstance();
         return authenticationService.isAuthenticated(authenticationConfig);
     }
 

@@ -61,6 +61,15 @@ global with sharing class HPGR_Users implements hpgr.Users_Itf {
     }
 
     /**
+    * @description check if user can manage 'Transactions'
+    * @param - : no param
+    * @return boolean
+    */
+    public Boolean canManageTransactions() {
+        return FeatureManagement.checkPermission(HPGR_ACCESSRISK_CUSTOM_PERMISSION);
+    }
+
+    /**
     * @description check if user can download csv
     * @param - : no param
     * @return boolean

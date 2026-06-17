@@ -1,0 +1,39 @@
+<aura:component access="public">
+    <aura:handler name='init' value='{!this}' action='{!c.doint}'/>
+    
+    <aura:attribute name="numberOfDecimals" type="String" access="public"/>
+    <aura:attribute name="mapObject" type="Object" access="public" />
+    <aura:attribute name="fieldName" type="String" access="public" />
+    <aura:attribute name="FieldValue" type="String" access="public" />
+    <aura:attribute name="theMapValue" type="Integer" access="public" />
+
+    <aura:attribute name="fieldType" type="String" access="private" />
+    <aura:attribute name="theNumberFormat" type="String" default="" access="private" />
+
+    <aura:handler name="change" value="{!v.theMapValue}" action="{!c.mapValueIsChanged}"/>
+
+    <aura:if isTrue="{!v.fieldType =='CURRENCY'}">
+        <aura:if isTrue="{!v.numberOfDecimals !='Unformatted'}">
+            <b><ui:outputText value="{!v.FieldValue}" /></b>
+        <aura:set attribute="else">
+            <b><ui:outputCurrency value="{!v.FieldValue}" /></b>
+        </aura:set>
+        </aura:if>
+    </aura:if>
+
+    <aura:if isTrue="{!v.fieldType =='NUMBER'}" >
+        <b><ui:outputNumber value="{!v.FieldValue}" format="{!v.theNumberFormat}"/></b>
+    </aura:if>
+     <aura:if isTrue="{!v.fieldType =='STRING'}">
+        <b><ui:outputText value="{!v.FieldValue}"/></b>
+    </aura:if>
+      <aura:if isTrue="{!v.fieldType =='DOUBLE'}">
+        <b><ui:outputNumber value="{!v.FieldValue}" format="{!v.theNumberFormat}"/></b>
+    </aura:if>
+    <aura:if isTrue="{!v.fieldType =='PERCENT'}">
+        <b><ui:outputNumber value="{!v.FieldValue}" format="{!v.theNumberFormat}"/>%</b>
+    </aura:if>
+
+   <!-- <ui:button label='test' press='{!c.test}'></ui:button>-->
+ 	
+</aura:component>

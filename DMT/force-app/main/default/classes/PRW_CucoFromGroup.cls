@@ -10,7 +10,7 @@
 *
 * |2021-10-10 daniel.herrero.guerrica-echev.contractor@bbva.com
 *             Class Creation
-* -----------------------------------------------------------------------------------------------
+* ------------------------------------------------------------------------------------------------
 */
 public with sharing class PRW_CucoFromGroup {
 
@@ -65,7 +65,7 @@ public with sharing class PRW_CucoFromGroup {
     final Set<Id> accountIds = new Set<Id>{recordId};
     final Set<Id> localOrSpainIds = new Set<Id>{};
 
-    final List<Account> accounts = [SELECT Id, DES_Country_Client__c FROM Account WHERE DES_Main_Parent__c = :recordId AND SER_CClient__c != null AND ((DES_Provisioning_Method__c = 'Datio' AND DES_Structure_Type__c = 'Subsidiary') OR (DES_Structure_Type__c = 'NIF Client'))]; //NOSONAR
+    final List<Account> accounts = [SELECT Id, DES_Country_Client__c FROM Account WHERE DES_Main_Parent__c = :recordId AND g_customer_id__c != null AND (((DES_Provisioning_Method__c = 'Datio' OR DES_Provisioning_Method__c = 'ADA') AND DES_Structure_Type__c = 'Subsidiary') OR (DES_Structure_Type__c = 'NIF Client'))]; //NOSONAR
     final Account thisAccount = [SELECT Id ,DES_Structure_Type__c, DES_Country_Client__c FROM Account WHERE Id =:recordId LIMIT 1];//NOSONAR
     if(thisAccount.DES_Structure_Type__c == 'Subsidiary'){
        accounts.add(thisAccount);
@@ -119,7 +119,7 @@ public with sharing class PRW_CucoFromGroup {
         final List<DES_Subsidiary_Group_Relation__c> lMatrix = new List<DES_Subsidiary_Group_Relation__c>([
           SELECT id, participant_child_id__c, participant_child_id__r.name, participant_parent_id__c, participant_child_id__r.DES_Country_Client__c
           FROM DES_Subsidiary_Group_Relation__c
-          WHERE participant_parent_id__c = :accId AND ((participant_child_id__r.DES_Provisioning_Method__c = 'Datio' AND participant_child_id__r.DES_Structure_Type__c = 'Subsidiary') OR (participant_child_id__r.DES_Structure_Type__c = 'NIF Client'))
+          WHERE participant_parent_id__c = :accId AND (((participant_child_id__r.DES_Provisioning_Method__c = 'Datio' OR participant_child_id__r.DES_Provisioning_Method__c = 'ADA') AND participant_child_id__r.DES_Structure_Type__c = 'Subsidiary') OR (participant_child_id__r.DES_Structure_Type__c = 'NIF Client'))
           ORDER BY participant_child_id__c
         ]);
 

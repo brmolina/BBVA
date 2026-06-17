@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_off_balance_funding_per__c</fullName>
+    <description>Basic points to determine the funding cost of the off-balance amount.</description>
+    <externalId>false</externalId>
+    <label>Funding Cost Off Balance (B.P.)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

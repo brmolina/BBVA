@@ -1,0 +1,164 @@
+<aura:component access="global" controller="arce_ClientInfo_ctrl" implements="force:appHostable,force:lightningQuickAction,flexipage:availableForAllPageTypes,lightning:availableForFlowScreens,flexipage:availableForAllPageTypes">
+    <aura:attribute name="acctList" type="Object" />
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'All', 'value': 'All'}
+    ]" />
+    <aura:attribute name="mycolumns" type="List" />
+    <aura:attribute name="data" type="List" />
+    <aura:attribute name="filter" type="String" />
+    <aura:attribute name="filterField" type="String" />
+    <aura:attribute name="styleHier" type="String" default="height: 150px" />
+    <aura:attribute name="channel" type="String" default="mhmgNodeClicked" />
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="notifications" type="List" />
+    <aura:attribute name="showTable" type="Boolean" default="false" />
+    <aura:attribute name="showHierarchy" type="Boolean" default="false" />
+    <aura:attribute name="enableMode" type="Boolean" default="false" />
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="pagenumber" type="integer" />
+    <aura:attribute name="changePage" type="integer" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{ max-width: 90rem !important; width:90% !important; }
+    </aura:html>
+    <dwp_mhmg:eventListener onnodeClicked="{!c.handleNodeClicked}" />
+    <div class="c-container slds-m-horizontal_none slds-box slds-p-around_none">
+        <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-small">
+            <lightning:layoutItem flexibility="auto" alignmentBump="left">
+                <lightning:combobox name="filterBy" aura:id="fildName" value="All" placeholder="Select Field" class="custom-box" options="{! v.options }" onchange="{! c.handleChange }" />
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" size="3" alignmentBump="left">
+                <lightning:input type="search" aura:id="filterName" placeholder="Search..." onchange="{!c.handlefilter}" value="{!v.filter}" />
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="MoreInfo"></div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="GroupName">Group Name</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="GroupId">Group Id</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Country">Country</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.acctList}" var="status" indexVar="indexStatus">
+                <tr class="slds-hint-parent">
+                    <td>
+                        <button onclick="{!c.handleMostrarInfo}" data-row-index="{!indexStatus}" class="slds-button slds-button_neutral" iconName="utility:chevrondown"> +
+                        </button>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.Name}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.DES_Group_Code__c}" />
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="{!status.DES_Country_Client__c}" />
+                        </div>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+        <!-- 
+            <tr class="slds-hint-parent">
+                <td>
+                    <lightning:buttonIcon onclick="{!c.handleMostrarInfo1}" iconName="utility:hierarchy" alternativeText="ShadowBanking" title="ShadowBanking" />
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Test Financial" />
+                    </div>
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                    </div>
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                    </div>
+                </td>
+            </tr>
+            <tr class="slds-hint-parent">
+                <td>
+                    <lightning:buttonIcon onclick="{!c.handleMostrarInfo2}" iconName="utility:hierarchy" alternativeText="ShadowBanking" title="ShadowBanking" />
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Test Insurance" />
+                    </div>
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                    </div>
+                </td>
+                <td>
+                    <div class="slds-truncate">
+                        <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                    </div>
+                </td>
+            </tr>
+        <tr class="slds-hint-parent">
+            <td>
+                <lightning:buttonIcon onclick="{!c.handleMostrarInfo3}" iconName="utility:hierarchy" alternativeText="ShadowBanking" title="ShadowBanking" />
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Test Corpo" />
+                </div>
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                </div>
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                </div>
+            </td>
+        </tr>
+        <tr class="slds-hint-parent">
+            <td>
+                <lightning:buttonIcon onclick="{!c.handleMostrarInfo4}" iconName="utility:hierarchy" alternativeText="ShadowBanking" title="ShadowBanking" />
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="STRING" fieldValue="Test Funds" />
+                </div>
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                </div>
+            </td>
+            <td>
+                <div class="slds-truncate">
+                    <c:DPMX_DynamicTableField fieldType="DATE" fieldValue="" />
+                </div>
+            </td>
+        </tr>
+        -->
+    </table>
+    {!v.body}
+</aura:component>

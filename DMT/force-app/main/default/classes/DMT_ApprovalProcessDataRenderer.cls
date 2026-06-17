@@ -7,9 +7,12 @@ public with sharing class DMT_ApprovalProcessDataRenderer implements DMT_ViewRen
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
         Id dmtOpportunityId = rtInfosOpportunity.get('DMT_Opportunity').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_TreasuryApprovalProcessDataRenderer());
         recordTypeRenderers.put(otherId, new DMT_OtherApprovalProcessDataRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_OppApprovalProcessDataRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_LineSancAppProcessDataRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

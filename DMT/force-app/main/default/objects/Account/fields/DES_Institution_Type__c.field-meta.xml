@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Institution_Type__c</fullName>
+    <label>Institution Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>RESTO OTRAS ENTIDADES DE CREDITO</fullName>
+                <default>false</default>
+                <label>RESTO OTRAS ENTIDADES DE CREDITO</label>
+            </value>
+            <value>
+                <fullName>BANCO DE ESPAÑA</fullName>
+                <default>false</default>
+                <label>BANCO DE ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>ENTIDADES DE CREDITO EXTRANJERAS</fullName>
+                <default>false</default>
+                <label>ENTIDADES DE CREDITO EXTRANJERAS</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS QUE SE CLASIFICAN COMO COMUNUNIDADES AUTONOMAS</fullName>
+                <default>false</default>
+                <label>EMPRESAS QUE SE CLASIFICAN COMO COMUNUNIDADES AUTONOMAS</label>
+            </value>
+            <value>
+                <fullName>ADMINISTRACION GENERAL AUTONOMICA</fullName>
+                <default>false</default>
+                <label>ADMINISTRACION GENERAL AUTONOMICA</label>
+            </value>
+            <value>
+                <fullName>BANCOS</fullName>
+                <default>false</default>
+                <label>BANCOS</label>
+            </value>
+            <value>
+                <fullName>CAJAS DE AHORRO</fullName>
+                <default>false</default>
+                <label>CAJAS DE AHORRO</label>
+            </value>
+            <value>
+                <fullName>COOPERATIVAS DE CREDITO</fullName>
+                <default>false</default>
+                <label>COOPERATIVAS DE CREDITO</label>
+            </value>
+            <value>
+                <fullName>INSTITUTO DE CREDITO OFICIAL</fullName>
+                <default>false</default>
+                <label>INSTITUTO DE CREDITO OFICIAL</label>
+            </value>
+            <value>
+                <fullName>FAMILIAS</fullName>
+                <default>false</default>
+                <label>FAMILIAS</label>
+            </value>
+            <value>
+                <fullName>ESTABLECIMIENTOS FINANCIEROS DE CREDITO (NO ENT. CREDITO)</fullName>
+                <default>false</default>
+                <label>ESTABLECIMIENTOS FINANCIEROS DE CREDITO (NO ENT. CREDITO)</label>
+            </value>
+            <value>
+                <fullName>ENTIDADES DE DINERO ELECTRONICO</fullName>
+                <default>false</default>
+                <label>ENTIDADES DE DINERO ELECTRONICO</label>
+            </value>
+            <value>
+                <fullName>OTRAS EMPRESAS NO FINANCIERAS (NO FGD) Y SOCIEDADES NR. MULTINACIONALES/HOLDING/GRUPO</fullName>
+                <default>false</default>
+                <label>OTRAS EMPRESAS NO FINANCIERAS (NO FGD) Y SOCIEDADES NR. MULTINACIONALES/HOLDING/GRUPO</label>
+            </value>
+            <value>
+                <fullName>BANCOS CENTRALES Y AUTORIDADES MONETARIAS NACIONALES</fullName>
+                <default>false</default>
+                <label>BANCOS CENTRALES Y AUTORIDADES MONETARIAS NACIONALES</label>
+            </value>
+            <value>
+                <fullName>INSTITUCIONES PRIVADAS SIN FINES DE LUCRO</fullName>
+                <default>false</default>
+                <label>INSTITUCIONES PRIVADAS SIN FINES DE LUCRO</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS QUE SE CLASIFICAN COMO ADMINISTRACIONES LOCALES</fullName>
+                <default>false</default>
+                <label>EMPRESAS QUE SE CLASIFICAN COMO ADMINISTRACIONES LOCALES</label>
+            </value>
+            <value>
+                <fullName>BANCOS MULTILATERALES DE DESARROLLO</fullName>
+                <default>false</default>
+                <label>BANCOS MULTILATERALES DE DESARROLLO</label>
+            </value>
+            <value>
+                <fullName>ADMINISTRACION GENERAL LOCAL</fullName>
+                <default>false</default>
+                <label>ADMINISTRACION GENERAL LOCAL</label>
+            </value>
+            <value>
+                <fullName>BANCO CENTRAL EUROPEO</fullName>
+                <default>false</default>
+                <label>BANCO CENTRAL EUROPEO</label>
+            </value>
+            <value>
+                <fullName>ADMINISTRACIONES SEGURIDAD SOCIAL</fullName>
+                <default>false</default>
+                <label>ADMINISTRACIONES SEGURIDAD SOCIAL</label>
+            </value>
+            <value>
+                <fullName>ESTADO</fullName>
+                <default>false</default>
+                <label>ESTADO</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS AUTONOMOS DE ADMINISTRACIONES AUTONOMICAS</fullName>
+                <default>false</default>
+                <label>ORGANISMOS AUTONOMOS DE ADMINISTRACIONES AUTONOMICAS</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS AUTONOMOS DE ADMINISTRACIONES LOCALES</fullName>
+                <default>false</default>
+                <label>ORGANISMOS AUTONOMOS DE ADMINISTRACIONES LOCALES</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS QUE SE CLASIFICAN COMO ADMINISTRACION CENTRAL</fullName>
+                <default>false</default>
+                <label>EMPRESAS QUE SE CLASIFICAN COMO ADMINISTRACION CENTRAL</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS AUTONOMOS DEL ESTADO</fullName>
+                <default>false</default>
+                <label>ORGANISMOS AUTONOMOS DEL ESTADO</label>
+            </value>
+            <value>
+                <fullName>RESTO DE S.A. SIENDO EMPRESAS SEGUROS PRIVADOS</fullName>
+                <default>false</default>
+                <label>RESTO DE S.A. SIENDO EMPRESAS SEGUROS PRIVADOS</label>
+            </value>
+            <value>
+                <fullName>MUTUALIDADES</fullName>
+                <default>false</default>
+                <label>MUTUALIDADES</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS EXTRANJERAS</fullName>
+                <default>false</default>
+                <label>EMPRESAS EXTRANJERAS</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS VINCULADOS A ADMINISTRACIONES LOCALES</fullName>
+                <default>false</default>
+                <label>ORGANISMOS VINCULADOS A ADMINISTRACIONES LOCALES</label>
+            </value>
+            <value>
+                <fullName>CONSORCIO DE COMPENSACION DE SEGUROS</fullName>
+                <default>false</default>
+                <label>CONSORCIO DE COMPENSACION DE SEGUROS</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE VALORES</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE VALORES</label>
+            </value>
+            <value>
+                <fullName>FDOS.INV.ACT.MERC.MONETARIO.FIAMM</fullName>
+                <default>false</default>
+                <label>FDOS.INV.ACT.MERC.MONETARIO.FIAMM</label>
+            </value>
+            <value>
+                <fullName>REASEGUROS</fullName>
+                <default>false</default>
+                <label>REASEGUROS</label>
+            </value>
+            <value>
+                <fullName>ENTIDADES DE PREVISION SOCIAL</fullName>
+                <default>false</default>
+                <label>ENTIDADES DE PREVISION SOCIAL</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE PENSIONES</fullName>
+                <default>false</default>
+                <label>FONDOS DE PENSIONES</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE INVERSION INMOBILIARIA</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE INVERSION INMOBILIARIA</label>
+            </value>
+            <value>
+                <fullName>MEDIADORES EN LOS MERCADOS MONETARIOS</fullName>
+                <default>false</default>
+                <label>MEDIADORES EN LOS MERCADOS MONETARIOS</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE CAPITAL RIESGO</fullName>
+                <default>false</default>
+                <label>FONDOS DE CAPITAL RIESGO</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE TASACION</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE TASACION</label>
+            </value>
+            <value>
+                <fullName>RESTO DE OTRAS EMPRESAS NO FINANCIERAS</fullName>
+                <default>false</default>
+                <label>RESTO DE OTRAS EMPRESAS NO FINANCIERAS</label>
+            </value>
+            <value>
+                <fullName>OTROS ORGANISMOS INTERNACIONALES</fullName>
+                <default>false</default>
+                <label>OTROS ORGANISMOS INTERNACIONALES</label>
+            </value>
+            <value>
+                <fullName>INSTITUCIONES PUBLICAS EUROPEAS</fullName>
+                <default>false</default>
+                <label>INSTITUCIONES PUBLICAS EUROPEAS</label>
+            </value>
+            <value>
+                <fullName>SOC. BOLSA RECTORA DEL SISTEMA DE INTERCONEXION BURSATIL</fullName>
+                <default>false</default>
+                <label>SOC. BOLSA RECTORA DEL SISTEMA DE INTERCONEXION BURSATIL</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES Y FONDOS DE TITULIZACION HIPOTECARIA</fullName>
+                <default>false</default>
+                <label>SOCIEDADES Y FONDOS DE TITULIZACION HIPOTECARIA</label>
+            </value>
+            <value>
+                <fullName>SUC. ESPAÑA DE EMPRESAS DE SERV. DE INVERSION NR, DEDICADAS A SERVICIOS Y ACT. DE INVERSION</fullName>
+                <default>false</default>
+                <label>SUC. ESPAÑA DE EMPRESAS DE SERV. DE INVERSION NR, DEDICADAS A SERVICIOS Y ACT. DE INVERSION</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS RECTORES DE OTROS MERCADOS: AIAF</fullName>
+                <default>false</default>
+                <label>ORGANISMOS RECTORES DE OTROS MERCADOS: AIAF</label>
+            </value>
+            <value>
+                <fullName>ESPACLEAR (VALORES NEGOCIADOS EN AIAF)</fullName>
+                <default>false</default>
+                <label>ESPACLEAR (VALORES NEGOCIADOS EN AIAF)</label>
+            </value>
+            <value>
+                <fullName>CAMARAS DE COMPENSACION BANCARIA</fullName>
+                <default>false</default>
+                <label>CAMARAS DE COMPENSACION BANCARIA</label>
+            </value>
+            <value>
+                <fullName>MEDIADORES EN LOS MERCADOS DE DIVISAS</fullName>
+                <default>false</default>
+                <label>MEDIADORES EN LOS MERCADOS DE DIVISAS</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE GARANTIA RECIPROCA</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE GARANTIA RECIPROCA</label>
+            </value>
+            <value>
+                <fullName>FONDOS DEL MERCADO MONETARIO</fullName>
+                <default>false</default>
+                <label>FONDOS DEL MERCADO MONETARIO</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE INVERSION MOBILIARIA FIM</fullName>
+                <default>false</default>
+                <label>FONDOS DE INVERSION MOBILIARIA FIM</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE INVERSION MOBILIARIA DE CAPITAL FIJO SIM</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE INVERSION MOBILIARIA DE CAPITAL FIJO SIM</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE INVERSION MOBILIARIA CAPITAL VARIABLE SICAV</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE INVERSION MOBILIARIA CAPITAL VARIABLE SICAV</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE INVERSION INMOBILIARIA</fullName>
+                <default>false</default>
+                <label>FONDOS DE INVERSION INMOBILIARIA</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE REAFIANZAMIENTO</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE REAFIANZAMIENTO</label>
+            </value>
+            <value>
+                <fullName>OTRAS SOCIEDADES DE GARANTIA</fullName>
+                <default>false</default>
+                <label>OTRAS SOCIEDADES DE GARANTIA</label>
+            </value>
+            <value>
+                <fullName>EXCLUSIVAMENTE DE COMPRA BILLETES EXTRANJEROS (SOLO PJ)</fullName>
+                <default>false</default>
+                <label>EXCLUSIVAMENTE DE COMPRA BILLETES EXTRANJEROS (SOLO PJ)</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE REGULACION DEL MERCADO HIPOTECARIO</fullName>
+                <default>false</default>
+                <label>FONDOS DE REGULACION DEL MERCADO HIPOTECARIO</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE CAPITAL RIESGO</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE CAPITAL RIESGO</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES Y FONDOS DE TITULIZACION DE ACTIVOS</fullName>
+                <default>false</default>
+                <label>SOCIEDADES Y FONDOS DE TITULIZACION DE ACTIVOS</label>
+            </value>
+            <value>
+                <fullName>EST.COMPRAVENTA DE BILL.EXTRANJ.Y TRANSF</fullName>
+                <default>false</default>
+                <label>EST.COMPRAVENTA DE BILL.EXTRANJ.Y TRANSF</label>
+            </value>
+            <value>
+                <fullName>CORREDORES Y AGENTES DE SEGUROS</fullName>
+                <default>false</default>
+                <label>CORREDORES Y AGENTES DE SEGUROS</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES GESTORAS DE FONDOS DE TITULIZACION</fullName>
+                <default>false</default>
+                <label>SOCIEDADES GESTORAS DE FONDOS DE TITULIZACION</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES GESTORAS DE FONDOS DE CAPITAL RIESGO</fullName>
+                <default>false</default>
+                <label>SOCIEDADES GESTORAS DE FONDOS DE CAPITAL RIESGO</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES GESTORAS DE FONDOS DE PENSIONES</fullName>
+                <default>false</default>
+                <label>SOCIEDADES GESTORAS DE FONDOS DE PENSIONES</label>
+            </value>
+            <value>
+                <fullName>AGENCIA DE CALIFICACION FINANCIERA</fullName>
+                <default>false</default>
+                <label>AGENCIA DE CALIFICACION FINANCIERA</label>
+            </value>
+            <value>
+                <fullName>SUCURSALES EN ESPAÑA DE EMPRESAS SERV. INVERSION NR, DEDICADAS A SERV. AUXILIARES</fullName>
+                <default>false</default>
+                <label>SUCURSALES EN ESPAÑA DE EMPRESAS SERV. INVERSION NR, DEDICADAS A SERV. AUXILIARES</label>
+            </value>
+            <value>
+                <fullName>OTRAS SOCIEDADES DE INVERSION EN ACTIVOS FINANACIEROS</fullName>
+                <default>false</default>
+                <label>OTRAS SOCIEDADES DE INVERSION EN ACTIVOS FINANACIEROS</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE GARANTIA DE DEPOSITOS DE LAS ENTIDADES DE DEPÓSITOS</fullName>
+                <default>false</default>
+                <label>FONDOS DE GARANTIA DE DEPOSITOS DE LAS ENTIDADES DE DEPÓSITOS</label>
+            </value>
+            <value>
+                <fullName>OTRAS EMPRESAS NO FINANCIERAS VINCULADAS A ADMINISTRACIONES LOCALES</fullName>
+                <default>false</default>
+                <label>OTRAS EMPRESAS NO FINANCIERAS VINCULADAS A ADMINISTRACIONES LOCALES</label>
+            </value>
+            <value>
+                <fullName>AGENCIAS DE VALORES</fullName>
+                <default>false</default>
+                <label>AGENCIAS DE VALORES</label>
+            </value>
+            <value>
+                <fullName>AGENTES DE VALORES</fullName>
+                <default>false</default>
+                <label>AGENTES DE VALORES</label>
+            </value>
+            <value>
+                <fullName>SOC. RECTORA DE BOLSA DE MADRID BARCELON BIO VALENCIA</fullName>
+                <default>false</default>
+                <label>SOC. RECTORA DE BOLSA DE MADRID BARCELON BIO VALENCIA</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES RECTORAS DE LOS MERCADOS DE TUROS Y OPCIONES</fullName>
+                <default>false</default>
+                <label>SOCIEDADES RECTORAS DE LOS MERCADOS DE TUROS Y OPCIONES</label>
+            </value>
+            <value>
+                <fullName>SDADES.GESTORAS CARTERA Y DE OTRAS INSTITUCIONES FINANCIERAS Y DE SEGUROS</fullName>
+                <default>false</default>
+                <label>SDADES.GESTORAS CARTERA Y DE OTRAS INSTITUCIONES FINANCIERAS Y DE SEGUROS</label>
+            </value>
+            <value>
+                <fullName>ENTIDADES DE PAGO</fullName>
+                <default>false</default>
+                <label>ENTIDADES DE PAGO</label>
+            </value>
+            <value>
+                <fullName>SDADES.GESTORAS INSTITUCIONES INV. COLEC (ICC)</fullName>
+                <default>false</default>
+                <label>SDADES.GESTORAS INSTITUCIONES INV. COLEC (ICC)</label>
+            </value>
+            <value>
+                <fullName>CAMARA DE CONTRAPARTIDA CENTRAL</fullName>
+                <default>false</default>
+                <label>CAMARA DE CONTRAPARTIDA CENTRAL</label>
+            </value>
+            <value>
+                <fullName>SERVICIO COMPENSACION Y LIQUIDACION VALO</fullName>
+                <default>false</default>
+                <label>SERVICIO COMPENSACION Y LIQUIDACION VALO</label>
+            </value>
+            <value>
+                <fullName>COMISION LIQUIDADORA DE ENTIDADES ASEGUR</fullName>
+                <default>false</default>
+                <label>COMISION LIQUIDADORA DE ENTIDADES ASEGUR</label>
+            </value>
+            <value>
+                <fullName>VINCULADOS AL ESTADO</fullName>
+                <default>false</default>
+                <label>VINCULADOS AL ESTADO</label>
+            </value>
+            <value>
+                <fullName>VINCULADOS A LA ADMINISTRACION AUTONOMIC</fullName>
+                <default>false</default>
+                <label>VINCULADOS A LA ADMINISTRACION AUTONOMIC</label>
+            </value>
+            <value>
+                <fullName>ORGANISMOS PUBLICOS DE ASEGURAMIENTO DE CREDITO (CESCE)</fullName>
+                <default>false</default>
+                <label>ORGANISMOS PUBLICOS DE ASEGURAMIENTO DE CREDITO (CESCE)</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES EMISORAS DE PARTICIPACIONES PREFERENTES</fullName>
+                <default>false</default>
+                <label>SOCIEDADES EMISORAS DE PARTICIPACIONES PREFERENTES</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS HOLDING DE INSTITUCIONES FINANCIERAS</fullName>
+                <default>false</default>
+                <label>EMPRESAS HOLDING DE INSTITUCIONES FINANCIERAS</label>
+            </value>
+            <value>
+                <fullName>HOLDING DE ORGANISMOS RECTORES DE MERCADOS OFICIALES</fullName>
+                <default>false</default>
+                <label>HOLDING DE ORGANISMOS RECTORES DE MERCADOS OFICIALES</label>
+            </value>
+            <value>
+                <fullName>ENTIDADES DE CRÉDITO SUJETAS A REQUERIMIENTOS DE RESERVAS QUE NO SON IFM</fullName>
+                <default>false</default>
+                <label>ENTIDADES DE CRÉDITO SUJETAS A REQUERIMIENTOS DE RESERVAS QUE NO SON IFM</label>
+            </value>
+            <value>
+                <fullName>I.F.DEPENDIENTES DE COMUNID.AUTONOMAS</fullName>
+                <default>false</default>
+                <label>I.F.DEPENDIENTES DE COMUNID.AUTONOMAS</label>
+            </value>
+            <value>
+                <fullName>I.F.DEPENDIENTES DE CORPORAC.LOCALES</fullName>
+                <default>false</default>
+                <label>I.F.DEPENDIENTES DE CORPORAC.LOCALES</label>
+            </value>
+            <value>
+                <fullName>ESTABLECIMIENTOS FINANCIEROS DE CREDITO</fullName>
+                <default>false</default>
+                <label>ESTABLECIMIENTOS FINANCIEROS DE CREDITO</label>
+            </value>
+            <value>
+                <fullName>FONDOS DE INVERSION LIBRE (HEDGE FUNDS</fullName>
+                <default>false</default>
+                <label>FONDOS DE INVERSION LIBRE (HEDGE FUNDS</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE INVERSION LIBRE</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE INVERSION LIBRE</label>
+            </value>
+            <value>
+                <fullName>RESTO DE ENTIDADES DE INVERSION COLECTIVa</fullName>
+                <default>false</default>
+                <label>RESTO DE ENTIDADES DE INVERSION COLECTIVa</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES DE GESTION DE ACTIVOS</fullName>
+                <default>false</default>
+                <label>SOCIEDADES DE GESTION DE ACTIVOS</label>
+            </value>
+            <value>
+                <fullName>SOCIEDADES ANONIMAS COTIZADAS DE INVERSION EN EL MERCADO INMOBILIARIO (SOCIMIS)</fullName>
+                <default>false</default>
+                <label>SOCIEDADES ANONIMAS COTIZADAS DE INVERSION EN EL MERCADO INMOBILIARIO (SOCIMIS)</label>
+            </value>
+            <value>
+                <fullName>EMPRESAS HOLDING QUE NO GESTIONAN FILIAL</fullName>
+                <default>false</default>
+                <label>EMPRESAS HOLDING QUE NO GESTIONAN FILIAL</label>
+            </value>
+            <value>
+                <fullName>OTRAS ENTIDADES FINANCIERAS ESPECIALIZAD</fullName>
+                <default>false</default>
+                <label>OTRAS ENTIDADES FINANCIERAS ESPECIALIZAD</label>
+            </value>
+            <value>
+                <fullName>GENERICO NO CLASIFICADOS</fullName>
+                <default>false</default>
+                <label>GENERICO NO CLASIFICADOS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

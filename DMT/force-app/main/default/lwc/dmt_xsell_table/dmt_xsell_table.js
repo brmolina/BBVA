@@ -1,13 +1,13 @@
 import { LightningElement,api,wire,track } from 'lwc';
 
-import getXsell from "@salesforce/apex/DMT_XSell.getXsell";
+import getXsell from "@salesforce/apex/DMT_XSell.getXSellRecords";
 import DMT_Styles from "@salesforce/resourceUrl/DMT_Styles";
 import { loadStyle } from "lightning/platformResourceLoader";
 
 
 export default class Dmt_xsell_table extends LightningElement {
 
-@api recordId; 
+@api recordId;
 @track xSell;
 @track activeSections =['xSell'];
 @track isExpanded = true;
@@ -44,7 +44,7 @@ export default class Dmt_xsell_table extends LightningElement {
       data.forEach(element => {
         var elementFormat = Object.assign({}, element);
         elementFormat.g_year__c = new Date(element.g_year__c).getFullYear();
-        dataFormat.push(elementFormat);  
+        dataFormat.push(elementFormat);
       });
 
       this.xSell = dataFormat;
@@ -76,6 +76,6 @@ export default class Dmt_xsell_table extends LightningElement {
     }else {
       this.icon = 'utility:chevronright';
     }
-    
+
   }
 }

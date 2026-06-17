@@ -1,0 +1,260 @@
+.modal-loading-state {
+    min-height: 10rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.loading-copy {
+    max-width: 28rem;
+}
+
+.loading-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #181818;
+    margin-bottom: 0.125rem;
+}
+
+.loading-subtitle {
+    font-size: 0.75rem;
+    color: #706e6b;
+}
+
+.lines-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: visible;
+}
+
+.line-table-card {
+    border: 1px solid #c9c9c9;
+    border-left: 0.35rem solid #0176d3;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    padding: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: visible;
+}
+
+.line-table-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f3f6f9;
+    border-radius: 0.35rem;
+    padding: 0.55rem 0.65rem;
+    margin-bottom: 0.65rem;
+}
+
+.line-table-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+.line-table-subtitle {
+    font-size: 0.72rem;
+    color: #706e6b;
+    font-weight: 600;
+}
+
+.table-container {
+    position: relative;
+    overflow: visible;
+}
+
+.edit-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.edit-table th {
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: #f8f8f8;
+    position: relative;
+    vertical-align: top;
+    overflow: visible;
+}
+
+.edit-table td {
+    vertical-align: top;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+.edit-table lightning-input,
+.edit-table lightning-combobox {
+    display: block;
+    width: 100%;
+    --slds-c-input-spacing-block-start: 0;
+    --slds-c-input-spacing-block-end: 0;
+    --slds-c-input-sizing-border: 1px;
+    --slds-c-input-radius-border: 0.2rem;
+}
+
+.edit-table lightning-input,
+.edit-table lightning-combobox {
+    font-size: 0.7rem;
+}
+
+.edit-table .slds-form-element,
+.edit-table .slds-form-element__control {
+    margin: 0;
+}
+
+.edit-table .slds-input,
+.edit-table .slds-combobox__input {
+    min-height: 1.55rem;
+    height: 1.55rem;
+    padding: 0 0.35rem;
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+.edit-table .slds-checkbox,
+.edit-table .slds-checkbox_standalone {
+    margin-top: 0.15rem;
+}
+
+.column-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.bulk-column-trigger {
+    --slds-c-button-color-border: transparent;
+    --slds-c-button-color-background: transparent;
+    --slds-c-button-text-color: #0176d3;
+}
+
+.bulk-popover {
+    position: absolute;
+    top: calc(100% + 0.2rem);
+    right: 0;
+    width: 12rem;
+    max-width: 13rem;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.35rem;
+    padding: 0.4rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    z-index: 9000;
+}
+
+.bulk-popover-field-row {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    margin-bottom: 0.3rem;
+}
+
+.bulk-popover-title {
+    margin: 0;
+    font-size: 0.69rem;
+    font-weight: 700;
+    color: #181818;
+}
+
+.bulk-popover-warning {
+    margin: 0.35rem 0;
+    font-size: 0.64rem;
+    color: #8a6d3b;
+    background: #fff8e1;
+    border: 1px solid #f2d98d;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+}
+
+.bulk-popover-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.grouped-name-cell {
+    background: #f9f9f9;
+    font-size: 0.72rem;
+    font-weight: 600;
+    vertical-align: middle !important;
+    text-align: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.line-link-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: center;
+}
+
+.line-column-header,
+.product-column-header {
+    min-width: 7.5rem;
+}
+
+.line-cell-wrap,
+.product-cell-wrap {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.row-label-cell {
+    font-size: 0.7rem;
+    color: #514f4d;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    vertical-align: middle;
+}
+
+.readonly-cell-value {
+    display: inline-block;
+    min-height: 1.75rem;
+    padding-top: 0.3rem;
+    font-size: 0.72rem;
+    color: #3e3e3c;
+}
+
+.changed-cell {
+    background: #fff5bf;
+    box-shadow: inset 0 0 0 1px #f0d96c;
+}
+
+.empty-state {
+    min-height: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #706e6b;
+}
+
+.fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.75rem;
+    align-items: start;
+}
+
+.compact-fields-grid {
+    gap: 0.45rem 0.75rem;
+}
+
+@media (max-width: 48rem) {
+    .edit-table {
+        width: 100%;
+    }
+}

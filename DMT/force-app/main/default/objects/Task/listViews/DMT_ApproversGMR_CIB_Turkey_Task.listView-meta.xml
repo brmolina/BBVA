@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGMR_CIB_Turkey_Task</fullName>
+    <filterScope>Queue</filterScope>
+    <label>GMR_CIB_Turkey</label>
+    <queue>DMT_ApproversGMR_CIB_Turkey</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

@@ -301,7 +301,7 @@ public without sharing class PRCPricingUtils {
         transaction_country_name__c, gf_operation_term_number__c, gf_funding_curve_type__c, lgd_per__c, gf_on_balance_funding_per__c,
         gf_off_balance_funding_per__c, amortization_desc__c, payment_type__c, frequency_type__c, currency_id__c, gf_on_bal_mrgn_gen_amount__c,
         gf_off_bal_mrgn_gen_amount__c, gf_ope_on_balance_margin_per__c, gf_ope_off_balance_margin_per__c, gf_tax_rate_per__c, gf_cost_income_ratio_per__c,
-        gf_accrual_per__c, gf_non_accrual_comission_per__c,economic_activity_sector_desc__c, PRC_Opportunity__r.Account.SER_CClient__c,
+        gf_accrual_per__c, gf_non_accrual_comission_per__c,economic_activity_sector_desc__c, PRC_Opportunity__r.Account.g_customer_id__c,
         business_area_desc__c, gf_ope_cpt_25_pct_red_ind_type__c, PRC_Opportunity__r.AccountId
         FROM PRC_Pricing_Detail__c
         WHERE PRC_Opportunity__c = :idList];

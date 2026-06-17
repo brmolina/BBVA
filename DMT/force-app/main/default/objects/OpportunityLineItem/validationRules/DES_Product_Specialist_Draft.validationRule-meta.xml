@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Product_Specialist_Draft</fullName>
+    <active>true</active>
+    <description>No permitir borrar si es distinto de Draft Opp</description>
+    <errorConditionFormula>AND(ISPICKVAL(Opportunity.StageName, &apos;Draft Opp&apos;),
+    NOT(ISBLANK(DES_Product_Specialist__c))
+    )</errorConditionFormula>
+    <errorMessage>Sorry, you can&apos;t do this yet. You can&apos;t add Product Specialist in &apos;Draft Opp&apos;.</errorMessage>
+</ValidationRule>

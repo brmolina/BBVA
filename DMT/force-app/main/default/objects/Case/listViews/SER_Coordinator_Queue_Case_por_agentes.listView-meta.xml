@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Coordinator_Queue_Case_por_agentes</fullName>
+    <booleanFilter>1 AND 2 AND 3 AND 4</booleanFilter>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>SER_Classification__c</columns>
+    <columns>CASES.CREATED_DATE_DATE_ONLY</columns>
+    <columns>CASES.LAST_UPDATE_DATE_ONLY</columns>
+    <columns>SER_Transactional_Reference__c</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>CASES.SUBJECT</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>SER_Product__c</columns>
+    <columns>CASES.PRIORITY</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CASES.STATUS</field>
+        <operation>equals</operation>
+        <value>Remedy - Escalated,Remedy - Pending information,Remedy - Pending to close,Remedy - Rejected</value>
+    </filters>
+    <filters>
+        <field>SER_Escalate__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>SER_Classification__c</field>
+        <operation>equals</operation>
+        <value>Incidencia</value>
+    </filters>
+    <label>TSE - 05 - Gestionadas por agente</label>
+    <sharedTo></sharedTo>
+</ListView>

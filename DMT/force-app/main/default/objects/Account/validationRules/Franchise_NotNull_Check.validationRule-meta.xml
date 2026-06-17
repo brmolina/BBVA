@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Franchise_NotNull_Check</fullName>
+    <active>false</active>
+    <description>Check that all franchise fields are not null</description>
+    <errorConditionFormula>AND(
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+OR(ISNULL(MTD_Total_Franchise__c), MTD_Total_Franchise__c = 0),
+OR(ISNULL(YTD_Total_Franchise__c), YTD_Total_Franchise__c = 0),
+OR(ISNULL(Prior_Year_Franchise__c), Prior_Year_Franchise__c = 0),
+
+OR(ISNULL(Cash_Bond_MTD_Total_Franchise__c), Cash_Bond_MTD_Total_Franchise__c = 0),
+OR(ISNULL(Cash_Bond_YTD_Total_Franchise__c), Cash_Bond_YTD_Total_Franchise__c = 0),
+OR(ISNULL(Prior_Year_Franchise_Cash_Bond__c), Prior_Year_Franchise_Cash_Bond__c = 0),
+
+OR(ISNULL(FX_MTD_Total_Franchise__c), FX_MTD_Total_Franchise__c = 0),
+OR(ISNULL(FX_YTD_Total_Franchise__c), FX_YTD_Total_Franchise__c = 0),
+OR(ISNULL(Prior_Year_Franchise_FX__c), Prior_Year_Franchise_FX__c = 0),
+
+OR(ISNULL(CE_MTD_Total_Franchise__c), CE_MTD_Total_Franchise__c = 0),
+OR(ISNULL(CE_YTD_Total_Franchise__c), CE_YTD_Total_Franchise__c = 0),
+OR(ISNULL(Prior_Year_Franchise_CE__c), Prior_Year_Franchise_CE__c = 0)
+)</errorConditionFormula>
+    <errorMessage>All franchise fields can not be null</errorMessage>
+</ValidationRule>

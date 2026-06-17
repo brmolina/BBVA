@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_External_ID__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>Campo utilizado para migrar las Opp y Productos de la plataforma antigua de Global Desktop. Se rellena manualmente con el mismo valor que el NAME del product.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>true</externalId>
+    <label>DES External ID</label>
+    <length>100</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

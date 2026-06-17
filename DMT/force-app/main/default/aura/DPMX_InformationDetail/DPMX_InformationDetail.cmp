@@ -1,0 +1,277 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="acquirerActivityWrapper" type="Object"/>
+	
+    <div class="slds-m-right_x-small slds-m-vertical_x-small">
+        <div class="slds-text-heading_small slds-m-top_small">
+            <p><strong>{!$Label.c.DPMX_InformationDetail_Title} - {!v.acquirerActivityWrapper.monthName}&nbsp;{!v.acquirerActivityWrapper.year}</strong></p>
+        </div>
+        <div class="slds-m-top_xx-small slds-m-bottom_small">
+            <p>{!$Label.c.DPMX_InformationDetail_Text}</p>
+        </div>
+        <div class="slds-box slds-theme_shade slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+            <p>{!$Label.c.DPMX_Client_Information}</p>
+        </div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered margenFondoTab1">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column1}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column2}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column3}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column4}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Column5}</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product1}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.debit.own}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.debit.own.amount}" currencyText="{!v.acquirerActivityWrapper.billing.debit.own.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.debit.own.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.debit.own.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.debit.mixOwn}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product2}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.debit.thirdParty}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.debit.thirdParty.amount}" currencyText="{!v.acquirerActivityWrapper.billing.debit.thirdParty.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.debit.thirdParty.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.debit.thirdParty.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.debit.mixExternal}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product3}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.credit.own}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.credit.own.amount}" currencyText="{!v.acquirerActivityWrapper.billing.credit.own.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.credit.own.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.credit.own.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.credit.mixOwn}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product4}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.credit.thirdParty}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.credit.thirdParty.amount}" currencyText="{!v.acquirerActivityWrapper.billing.credit.thirdParty.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.credit.thirdParty.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.credit.thirdParty.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.credit.mixExternal}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product5}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.international}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.international.amount}" currencyText="{!v.acquirerActivityWrapper.billing.international.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.international.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.international.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.mixInternational}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Client_Information_Product6}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.transaction_y.acquirerAffiliation}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.billing.totalAmount.amount}" currencyText="{!v.acquirerActivityWrapper.billing.totalAmount.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.tickets.totalAmount.amount}" currencyText="{!v.acquirerActivityWrapper.tickets.totalAmount.currency_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="PERCENT" fieldValue="{!v.acquirerActivityWrapper.percentage.total}"/>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="slds-box slds-theme_shade slds-m-top_small slds-m-bottom_large slds-text-heading_small">
+            <p>{!$Label.c.DPMX_Devices}</p>
+        </div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Información del cliente">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column1}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column2}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column3}</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Column4}</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row1}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.terminal.id_y}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row5}</div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.extraBilling.amount}" currencyText="{!v.acquirerActivityWrapper.fees.extraBilling.currency_y}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row2}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.pinPadsInfo.pinPads}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row6}</div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.cellnet.amount}" currencyText="{!v.acquirerActivityWrapper.fees.cellnet.currency_y}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row3}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CHECKBOX" fieldValue="{!v.acquirerActivityWrapper.ecommerceCheckbox}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row7}</div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="CURRENCY" fieldValue="{!v.acquirerActivityWrapper.fees.billing.amount}" currencyText="{!v.acquirerActivityWrapper.fees.billing.currency_y}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="slds-hint-parent">
+                    <th scope="row">
+                        <div class="slds-truncate">{!$Label.c.DPMX_InformationDetail_Devices_Row4}</div>
+                    </th>
+                    <td>
+                        <div class="slds-truncate">
+                            <c:DPMX_DynamicTableField fieldType="INTEGER" fieldValue="{!v.acquirerActivityWrapper.devicesInfo.devices}"/>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+	
+</aura:component>

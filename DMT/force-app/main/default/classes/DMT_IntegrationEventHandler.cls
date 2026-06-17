@@ -52,11 +52,45 @@ public with sharing class DMT_IntegrationEventHandler {
 
         if(lineList.isEmpty()) return;
         System.debug('line list is not empty.proceed');
-        List<Id> validIds = new List<Id>();
-        for(DMT_Line__c line : lineList){
-            validIds.add(line.Id);
+        // 🔥 Agrupar por Line_Id__c
+        Map<String, Set<Id>> lineIdToLineIds = new Map<String, Set<Id>>();
+
+        for (DMT_Line__c line : lineList) {
+            if (String.isBlank(line.Line_Id__c)) continue;
+
+            if (!lineIdToLineIds.containsKey(line.Line_Id__c)) {
+                lineIdToLineIds.put(line.Line_Id__c, new Set<Id>());
+            }
+            lineIdToLineIds.get(line.Line_Id__c).add(line.Id);
         }
-        publish('DMT_Line__c', operation, validIds, payloadVersion);    
+
+        // 🔥 Construir eventos (uno por Line_Id__c)
+        List<DMT_Integration_Event__e> events = new List<DMT_Integration_Event__e>();
+
+        String version = String.isBlank(payloadVersion) ? DEFAULT_VERSION : payloadVersion;
+        String seed = String.valueOf(System.currentTimeMillis());
+
+        for (String lineBusinessId : lineIdToLineIds.keySet()) {
+
+            List<Id> ids = new List<Id>(lineIdToLineIds.get(lineBusinessId));
+
+            DMT_Integration_Event__e evt = new DMT_Integration_Event__e();
+            evt.Object__c          = 'DMT_Line__c';
+            evt.Operation__c       = String.isBlank(operation) ? 'Update' : operation;
+            evt.PayloadVersion__c  = version;
+            evt.Seed__c            = seed;
+            evt.RecordIds__c       = joinIds(ids);
+
+            events.add(evt);
+        }
+
+        // 🔥 Publicación bulk (UNA SOLA LLAMADA)
+        DMT_IntegrationContext.setInbound(true);
+        try {
+            EventBus.publish(events);
+        } finally {
+            DMT_IntegrationContext.setInbound(false);
+        }
     }
 
     /**

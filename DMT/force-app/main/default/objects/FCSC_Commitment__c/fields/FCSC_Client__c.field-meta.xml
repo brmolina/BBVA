@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Client__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>Cliente al que esta ligado el Compromiso</description>
+    <label>Client</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Client will be of type Subsidiary</errorMessage>
+        <filterItems>
+            <field>Account.DES_Structure_Type__c</field>
+            <operation>equals</operation>
+            <value>Subsidiary</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Commitments</relationshipLabel>
+    <relationshipName>Commitments</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

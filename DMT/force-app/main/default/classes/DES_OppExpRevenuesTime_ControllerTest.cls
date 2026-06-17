@@ -21,11 +21,11 @@ public class DES_OppExpRevenuesTime_ControllerTest {
             listaCuentas.add(acc2);
             insert listaCuentas;
             
-            dwp_acmh__GBL_Account_Relationship__c accRel1 = new dwp_acmh__GBL_Account_Relationship__c();       
-            accRel1.dwp_acmh__Child_Account__c = listaCuentas.get(0).Id;
-            accRel1.dwp_acmh__Parent_Account__c = listaCuentas.get(1).Id;
-            accRel1.dwp_acmh__Type__c = '3'; // Subgroup
-            accRel1.dwp_acmh__Vision__c = 'Negocio';
+            AMH_GBL_Account_Relationship__c accRel1 = new AMH_GBL_Account_Relationship__c();       
+            accRel1.AMH_Child_Account__c = listaCuentas.get(0).Id;
+            accRel1.AMH_Parent_Account__c = listaCuentas.get(1).Id;
+            accRel1.AMH_Type__c = '03 - Filial'; // Subgroup
+            accRel1.AMH_Vision__c = 'Negocio';
             insert accRel1;
             
             
@@ -72,7 +72,7 @@ public class DES_OppExpRevenuesTime_ControllerTest {
             
             PricebookEntry pbe1 = utilTestClass.createPricebookEntry(prd1);
             insert pbe1;
-			Test.startTest();
+      Test.startTest();
             List<OpportunityLineItem> listaOpli = new List<OpportunityLineItem>();
             OpportunityLineItem opli1 = utilTestClass.createOppLineItem(listaOpps.get(0), prd1, pbe1);
             opli1.pre_oppy_revenue_next_12m_amount__c = 50;
@@ -91,7 +91,7 @@ public class DES_OppExpRevenuesTime_ControllerTest {
             listaOpli.add(opli5);           
             insert listaOpli;
             
-			
+      
             listaOpps.get(1).StageName = 'Ready to close';
             listaOpps.get(1).DES_Reasons_Lost__c = 'Pricing';
             listaOpps.get(1).DES_Description_reason_for_lost_deal__c = 'Descripción de ejemplo';
@@ -102,7 +102,7 @@ public class DES_OppExpRevenuesTime_ControllerTest {
             listaOpps.get(2).StageName = Label.DES_Closed_Won;
             //update listaOpps;
             
-			
+      
             String oppsProducts = DES_OppExpRevenuesTime_Controller.getOppProducts(listaCuentas.get(0).Id);
             String curUserIso = DES_OppExpRevenuesTime_Controller.getCurrentUserISOCode();
             Test.stopTest();

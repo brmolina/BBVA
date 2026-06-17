@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Oportunidades_NBC_INFRA_CONSTRUCTION</fullName>
+    <booleanFilter>1 AND 2 AND 3 AND 4 AND (5 OR 6)</booleanFilter>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>OPPORTUNITY.AMOUNT</columns>
+    <columns>CORE.USERS.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Committee_id__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Template_approved_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>NBC_Decision_Taken_type__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>,Infrastructure construction - Civil engineering,Non Residential Building,Residential Building,Other construction activities,Cement-based products and materials,&apos;Products and materials based on glass,ceramics and refractories&apos;</value>
+    </filters>
+    <filters>
+        <field>Client_Sector__c</field>
+        <operation>equals</operation>
+        <value>Cement-based products and materials,Rest of construction materials and products,Non-Residential Building Construction and Maintenance Projects,Forestry,Wood,Paper</value>
+    </filters>
+    <label>Oportunidades NBC - INFRA &amp; CONSTRUCTION</label>
+</ListView>

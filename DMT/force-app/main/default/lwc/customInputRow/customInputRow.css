@@ -1,0 +1,24 @@
+:host {
+    display: block;
+    
+    /* Add standard spacing between cells */
+    padding: 0 0.2rem; 
+    
+    /* Optional: Match the clean look to avoid double blue rings */
+    --slds-c-input-shadow-focus: none; 
+    height: 100%;
+}
+
+.input-with-suffix {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+}
+
+.input-suffix {
+    font-size: 0.75rem;
+    color: #3e3e3c;
+    white-space: nowrap;
+    flex-shrink: 0;
+}

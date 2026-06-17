@@ -1,0 +1,14 @@
+<aura:component
+    implements="force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens"
+    access="global">
+    <aura:attribute name="AddOption" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="NewOption" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="AddButton" type="String" default="Add" access="global"/>
+    <aura:attribute name="NewButton" type="String" default="New" access="global"/>
+    <div class="slds-align_absolute-center">
+        <lightning:button aura:id="NEXT" label="{!v.AddButton}" variant="neutral"
+            class="slds-button slds-button_neutral" onclick="{!c.addFunction}"/>
+        <lightning:button aura:id="NEXT" label="{!v.NewButton}" variant="brand"
+            class="slds-button slds-button_brand" onclick="{!c.newFunction}"/>
+    </div>
+</aura:component>

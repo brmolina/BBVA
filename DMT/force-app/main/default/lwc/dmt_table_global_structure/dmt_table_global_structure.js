@@ -21,13 +21,15 @@ export default class DmtStructureTable extends LightningElement {
     @track isDataProcessed = false;
 
     _internalEditMode = false;
+    _isReadOnly = false;
+    _stageName;
     eventHandlers = {};
     _tableData = [];
 
     typeMapping = {
-        "DEBT FUNDS (Mn)": "Funding Debt",
-        "EQUITY FUNDS (Mn)": "Funding Equity",
-        "USES": "Uses"
+        "Debt Funds (Mn)": "Funding Debt",
+        "Equity Funds (Mn)": "Funding Equity",
+        "Uses": "Uses"
     };
 
     @api
@@ -35,7 +37,6 @@ export default class DmtStructureTable extends LightningElement {
         return this._tableData;
     }
     set tableData(value) {
-        console.log('tableData setter called:', JSON.stringify(value));
         this._tableData = Array.isArray(value) ? value : [];
         this.initializeTable();
     }
@@ -50,6 +51,35 @@ export default class DmtStructureTable extends LightningElement {
         if (this.processedData && isTrue) {
             this.setEditModeForView(true);
         }
+    }
+
+    @api
+    get isReadOnlyUser() {
+        return this._isReadOnly;
+    }
+    set isReadOnlyUser(value) {
+        this._isReadOnly = (value === true || value === 'true');
+    }
+
+    @api
+    get stageName() {
+        return this._stageName;
+    }
+    set stageName(value) {
+        this._stageName = value;
+    }
+
+    @api
+    get StageName() {
+        return this._stageName;
+    }
+    set StageName(value) {
+        this._stageName = value;
+    }
+
+    get isEditPencilEnabled() {
+        return this._isReadOnly === false
+            && (this._stageName === 'Draft' || this._stageName === 'Proposal');
     }
 
     connectedCallback() {
@@ -74,7 +104,7 @@ export default class DmtStructureTable extends LightningElement {
             this.originalData = filteredData.map((r, index) => ({
                 index,
                 Id: r.Id,
-                Name: r.Name ?? "",
+                Name: this.getDisplayName(r.Name, r.Id),
                 DMT_Funds__c: r.DMT_Funds__c ?? "",
                 DMT_Type__c: convertedType,
                 isTotal: false,
@@ -109,9 +139,9 @@ export default class DmtStructureTable extends LightningElement {
 
     createDefaultRows() {
         let count = 0;
-        if (this.label === "DEBT FUNDS (Mn)") count = 5;
-        else if (this.label === "EQUITY FUNDS (Mn)") count = 4;
-        else if (this.label === "USES") count = 10;
+        if (this.label === "Debt Funds (Mn)") count = 5;
+        else if (this.label === "Equity Funds (Mn)") count = 4;
+        else if (this.label === "Uses") count = 10;
 
         const rows = [];
         for (let i = 0; i < count; i++) {
@@ -129,7 +159,7 @@ export default class DmtStructureTable extends LightningElement {
         rows.push({
             index: count,
             Id: null,
-            Name: "TOTAL",
+            Name: "Total",
             DMT_Funds__c: "",
             DMT_Type__c: this.label,
             isTotal: true,
@@ -189,6 +219,9 @@ export default class DmtStructureTable extends LightningElement {
     }
 
     handleEditCell() {
+        if (!this.isEditPencilEnabled) {
+            return;
+        }
         this.setEditModeForView(true);
     }
 
@@ -210,7 +243,6 @@ export default class DmtStructureTable extends LightningElement {
 
     @api
     async handleSave() {
-        console.log('handleSave called');
         this.isDataProcessed = false;
 
         const changedRows = this.originalData.filter(r => r.hasChanged && !r.isTotal);
@@ -227,7 +259,6 @@ export default class DmtStructureTable extends LightningElement {
             if (row.Id) {
                 const fields = this.buildUpdateObject(row, convertedType);
                 try {
-                    console.log('update record:', JSON.stringify(fields));
                     await updateRecord({ fields });
                 } catch (error) {
                     pubsub.fire(EVENT_SET, "Error", { errorMessage: 'Error updating record' });
@@ -240,10 +271,8 @@ export default class DmtStructureTable extends LightningElement {
                     [OPPORTUNITY_FIELD.fieldApiName]: this.recordId
                 };
                 try {
-                    console.log('create record:', JSON.stringify(fields));
                     await createRecord({ apiName: 'DMT_Global_Structure__c', fields });
                 } catch (error) {
-                    console.log('error createRecord:', JSON.stringify(error));
                     pubsub.fire(EVENT_SET, "Error", { errorMessage: 'Error creating record' });
                 }
             }
@@ -258,13 +287,34 @@ export default class DmtStructureTable extends LightningElement {
         pubsub.fire(EVENT_BUTTON, "FinancialsSave", {});
     }
 
-    buildUpdateObject(row, convertedType) {
-        return {
+    isTechnicalName(value, recordId) {
+        if (!value) return false;
+
+        const trimmedValue = String(value).trim();
+
+        if (recordId && trimmedValue === recordId) {
+            return true;
+        }
+
+        return /^[a-zA-Z0-9]{15,18}$/.test(trimmedValue);
+    }
+
+    getDisplayName(value, recordId) {
+        return this.isTechnicalName(value, recordId) ? '' : (value ?? '');
+    }
+
+   buildUpdateObject(row, convertedType) {
+        const fields = {
             [ID_FIELD.fieldApiName]: row.Id,
-            [NAME_FIELD.fieldApiName]: row.Name,
             [FUNDS_FIELD.fieldApiName]: row.DMT_Funds__c !== "" ? Number(row.DMT_Funds__c) : null,
             [TYPE_FIELD.fieldApiName]: convertedType,
             [OPPORTUNITY_FIELD.fieldApiName]: this.recordId
         };
+
+        if (row.Name && row.Name.trim() !== '') {
+            fields[NAME_FIELD.fieldApiName] = row.Name.trim();
+        }
+
+        return fields;
     }
 }

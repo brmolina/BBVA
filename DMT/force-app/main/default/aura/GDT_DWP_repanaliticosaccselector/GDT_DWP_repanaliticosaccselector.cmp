@@ -1,0 +1,50 @@
+<aura:component controller= "GDT_DWP_repanaliticosaccselector"  implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="public">
+    
+    <aura:attribute name="informesGRP" type="Object"/>
+    <aura:attribute name="informesCL" type="Object"/>
+    <aura:attribute name="AccountRecord" type="string" />
+    <aura:attribute name="url" type="map" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <aura:attribute name="Customsetting" type="Map" default="{}" />
+    <aura:attribute name="ClientId" type="string" />
+    <aura:attribute name="allItems" type="string" />
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+        
+        
+        <h2>
+            <b>Analytic Reports</b>
+        </h2>
+    </aura:attribute>
+    <lightning:card title="{! v.headerTitle }" iconName="standard:account" >
+        
+       <div class="container">
+
+           <aura:iteration items="{!v.informesGRP}" var="item">
+            <ul class="slds-align_absolute-center">
+                <li> <a onclick="{!c.navigate}" href="#" data-produto="{!item.value}">{!item.key}</a> </li>
+            </ul>
+        </aura:iteration>
+                  
+     
+              
+            
+            
+            
+            
+            
+            
+            
+        </div>
+        
+        
+        
+        
+    </lightning:card>
+    
+    
+    
+    
+    
+</aura:component>

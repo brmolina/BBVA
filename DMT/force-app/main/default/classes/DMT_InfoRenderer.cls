@@ -6,10 +6,12 @@ public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer {
         Map<String, Schema.RecordTypeInfo> rtInfos_Opportunity = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
         Id treasuryId = rtInfos_Line.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos_Line.get('OtherProducts').getRecordTypeId();
+        Id sanctionId = rtInfos_Line.get('Sanction').getRecordTypeId();
         Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
         recordTypeRenderers.put(treasuryId, new DMT_TreasuryLineInfoRenderer());
         recordTypeRenderers.put(otherId, new DMT_OtherLineInfoRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_OpportunityInfoRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_LineSanctionApprovalInfoRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

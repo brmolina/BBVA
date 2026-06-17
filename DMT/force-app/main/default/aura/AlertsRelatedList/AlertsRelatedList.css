@@ -1,0 +1,51 @@
+.THIS .slds-table_header-fixed_container{
+	border-left:1px solid rgb(243, 242, 242) !important;
+    border-right:1px solid rgb(243, 242, 242) !important;
+}
+
+.THIS.customContainer {
+	background-color:#FFF;
+	border-top:1px solid rgb(243, 242, 242);
+	border-left:1px solid rgb(243, 242, 242);
+	border-right:1px solid rgb(243, 242, 242);
+}
+
+.THIS.customNoData {
+	padding:15px;
+	text-align: center;
+	border:1px #CDCDCD solid;
+	border-radius:5px;
+}
+
+.THIS.customBox {
+	text-align:center;
+	padding:10px 0px;
+	border-bottom:1px solid #E4E4E4;
+	border-left:1px solid #E4E4E4;
+	border-right:1px solid #E4E4E4;
+}
+
+.THIS .customDiv{
+	height: 77px;
+	z-index: 9999999
+}
+
+/* SCROLL */
+.THIS.sWrapTest {
+	height:100vh !important;
+	width:100vw !important;
+	padding-bottom: 500px !important;
+}
+
+.THIS .sWrapTestDesktop {
+	height:100%;
+	width:100%;
+}
+
+.THIS.outerScroller {
+	border-radius: 11px;
+}
+
+.THIS.innerScroller {
+	border-radius: 10px;
+}

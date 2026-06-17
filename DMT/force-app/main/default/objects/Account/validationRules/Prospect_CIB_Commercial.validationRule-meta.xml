@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prospect_CIB_Commercial</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( OR(RecordType.DeveloperName == $Setup.Prospect_validation__c.Additional_Non_Client_RecordType__c, RecordType.DeveloperName ==  $Setup.Prospect_validation__c.Non_Client_RecordType__c ),  ISBLANK(TEXT(CIB_Commercial_Prospect__c)))</errorConditionFormula>
+    <errorDisplayField>CIB_Commercial_Prospect__c</errorDisplayField>
+    <errorMessage>CIB / Commercial is required.</errorMessage>
+</ValidationRule>

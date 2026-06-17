@@ -1,0 +1,5 @@
+<design:component>
+    <flexipage:template >
+        <flexipage:region name="fullarea" defaultWidth="Large" />
+    </flexipage:template>
+</design:component>

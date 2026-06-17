@@ -1,0 +1,28 @@
+.THIS .slds-button_icon-bare {
+  display: none;
+}
+
+.THIS.table thead th span {
+  white-space: pre-line;
+  height: 7em;
+  margin-top: 0.5em;
+  width: fit-content;
+}
+
+.THIS .slds-cell-fixed {
+  position: relative;
+}
+
+.THIS .slds-table_header-fixed_container {
+  padding-top: 0;
+  background-color: transparent;
+}
+
+.THIS .slds-scrollable_y {
+  overflow-y: hidden;
+}
+
+.THIS .slds-truncate {
+  white-space: pre-line;
+  letter-spacing: 0.5px;
+}

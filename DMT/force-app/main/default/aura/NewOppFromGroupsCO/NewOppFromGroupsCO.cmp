@@ -1,0 +1,20 @@
+<aura:component controller="NewOppFormGroupsCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:availableForFlowScreens,force:lightningQuickActionWithoutHeader,force:appHostable"
+				access="global">
+
+	<aura:attribute name="accountId" type="String"/>
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:attribute name="countrySelector" type="List" default="[]"/>
+    <aura:attribute name="subsidiarySelector" type="List" default="[]"/>
+    <aura:attribute name="matrixParent" type="String" default=""/>
+    <aura:attribute name="selectedOption" type="String" default=""/>
+    <aura:attribute name="subsidiaryId" type="String"/>
+
+    <div class="slds-m-bottom_large">
+        Parent:
+	    <a href="javascript:void(0)" onclick="{!c.matrixRedirect}">
+            {!v.matrixParent.matrixName}
+	    </a>
+	</div>
+	<lightning:combobox name="Country" label="Country" value="" placeholder="Select Country" options="{!v.countrySelector}" onchange="{!c.handleChange}"/>
+	<lightning:combobox class="slds-m-top_medium" name="Subsidiary" label="Subsidiary" value="" placeholder="Select Subsidiary" options="{!v.subsidiarySelector}" onchange="{! c.handleAccChange}"/>
+</aura:component>

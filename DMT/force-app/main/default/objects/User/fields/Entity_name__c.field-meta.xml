@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Entity_name__c</fullName>
+    <description>Country of the user for legal matters</description>
+    <label>Legal Entity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BANCO CONTINENTAL</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BANCO_CONTINENTAL</label>
+            </value>
+            <value>
+                <fullName>BBVA BANCO FRANCES S.A.</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_BANCO_FRANCES</label>
+            </value>
+            <value>
+                <fullName>BBVA BANCO PROVINCIAL SA</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_BANCO_PROVINCIAL</label>
+            </value>
+            <value>
+                <fullName>BBVA BANCOMER SA HOUSTON AGY</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_BANCOMER_HOUSTON</label>
+            </value>
+            <value>
+                <fullName>BBVA BANCOMER S.A.INSTITUCION DE BAN</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_BANCOMER_INSTIT</label>
+            </value>
+            <value>
+                <fullName>BBVA IRELAND PLC</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_IRELAND</label>
+            </value>
+            <value>
+                <fullName>BBVA CHILE S.A.</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_CHILE</label>
+            </value>
+            <value>
+                <fullName>BBVA COLOMBIA (ENTIDAD FEDERADA)</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_COLOMBIA</label>
+            </value>
+            <value>
+                <fullName>BBVA S.A. NIEDERLASSUNG DEUTSCHLAND</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_DEUTSCHLAND</label>
+            </value>
+            <value>
+                <fullName>BBVA GRAND CAYMAN-TREASURY</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_GRAND_CAYMAN</label>
+            </value>
+            <value>
+                <fullName>BBVA-HONG KONG</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_HONG_KONG</label>
+            </value>
+            <value>
+                <fullName>BBVA LONDRES-BBVA TESORERIA</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_LONDRES</label>
+            </value>
+            <value>
+                <fullName>BBVA-MADRID-TESORERIA</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_MADRID</label>
+            </value>
+            <value>
+                <fullName>BBVA MILAN-TESORERIA</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_MILAN</label>
+            </value>
+            <value>
+                <fullName>BBVA NEW YORK</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_NEW_YORK</label>
+            </value>
+            <value>
+                <fullName>BBVA-PARIS</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_PARIS</label>
+            </value>
+            <value>
+                <fullName>BBVA PORTUGAL SA -LIS</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_PORTUGAL</label>
+            </value>
+            <value>
+                <fullName>BBVA SEOUL-SE-MG&amp;D</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_SEOUL_SE_MG_D</label>
+            </value>
+            <value>
+                <fullName>BBVA - SINGAPUR</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_SINGAPUR</label>
+            </value>
+            <value>
+                <fullName>BBVA TAIPEI-TP-DBU-TREASURY</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_TAIPEI_TP_DBU</label>
+            </value>
+            <value>
+                <fullName>BBVA TOKIO-TK TREASURY</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_TOKIO_TK</label>
+            </value>
+            <value>
+                <fullName>BBVA-BRUSELAS</fullName>
+                <default>false</default>
+                <label>DES_LEGAL_Entity_BBVA_BRUSELAS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>5</visibleLines>
+</CustomField>

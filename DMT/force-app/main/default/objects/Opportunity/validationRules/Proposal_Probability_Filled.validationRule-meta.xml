@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Proposal_Probability_Filled</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(opportunity_expiration_ind_type__c = false,NOT( $Setup.CIB_Bypass__c.CIB_DES_DataMigration__c ),ISBLANK(Probability), NOT(ISPICKVAL(StageName, &apos;Draft&apos;)))</errorConditionFormula>
+    <errorMessage>Hold on! To move this Opportunity into the next Stage, you must complete the Probability field first.</errorMessage>
+</ValidationRule>

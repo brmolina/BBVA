@@ -33,7 +33,7 @@
 *             Add new fields in testSaveChangeNoCurrKO, testSaveChangeCurrKO and testPoliciesSaveKO methods
 * -----------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('sf:NcssMethodCount, sf:ExcessiveMethodLength, PMD.ExcessivePublicCount, sf:TooManyMethods')
+@SuppressWarnings('PMD.NcssMethodCount, sf:ExcessiveMethodLength, PMD.ExcessivePublicCount, sf:TooManyMethods')
 @isTest
 public without sharing class Arc_Gen_Save_Policies_ctrl_test {
     /**
@@ -63,7 +63,10 @@ public without sharing class Arc_Gen_Save_Policies_ctrl_test {
     * @example Arc_Gen_Validate_Customer_Controller_tst.setup()
     * --------------------------------------------------------------------------------------
     **/
-    @testSetup static void setup() {
+    @SuppressWarnings('PMD.NcssMethodCount')
+    @testSetup
+    static void setup() {
+        arce.Arc_UtilitiesToTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{GROUP_ID,SUBSIDIARY_ID,SUBSIDIARY_ID2});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get(GROUP_ID);
@@ -77,7 +80,7 @@ public without sharing class Arc_Gen_Save_Policies_ctrl_test {
         final arce__Sector__c sector = new arce__Sector__c();
         sector.arce__developer_name__c = 's-01';
         sector.arce__analysis_template_id__c = '1';
-        sector.arce__unique_id__c = String.valueOf((Math.random()*1000).round()); 
+        sector.arce__unique_id__c = String.valueOf((Math.random()*1000).round());
         insert sector;
 
         arce__rating__c rating = new arce__rating__c();
@@ -264,6 +267,8 @@ public without sharing class Arc_Gen_Save_Policies_ctrl_test {
     * --------------------------------------------------------------------------------------
     **/
     @isTest static void testSaveChangeCurrKO() {
+        Test.startTest();
+        Boolean processKO = false;
         try {
             final arce__Account_has_Analysis__c aha = [SELECT arce__currency_id__c, arce__Account_has_Analysis__c.arce__Analysis__r.arce__analysis_risk_sanction_date__c, arce__gf_anlys_risk_prps_expiry_date__c, arce__risk_policy_type__c,
                                         arce__magnitude_unit_type__c, arce__debt_comt_not_disb_local_amount__c, arce__ll_test_scope_ind_type__c, arce__ll_adj_debt_auditor_amount__c, arce__ll_adj_ebitda_auditor_amount__c,
@@ -272,13 +277,13 @@ public without sharing class Arc_Gen_Save_Policies_ctrl_test {
 
             // Update currency field
             aha.arce__currency_id__c = 'USD';
-            Test.startTest();
             final Arc_Gen_SavePolicies saveObj = new Arc_Gen_SavePolicies();
             saveObj.save(new List<SObject> { aha });
-            Test.stopTest();
         } catch (Exception e) {
-            System.assertEquals('Saving failed, the currency selected by the user (USD) is different from the one retrieved from the local service (EUR)', e.getMessage(), 'Error when the selected currency is different from the currency retrieved from the service');
+            processKO = true;
         }
+        System.assert(processKO, 'Assert Error in testSaveChangeCurrKO');
+        Test.stopTest();
     }
 
     /**

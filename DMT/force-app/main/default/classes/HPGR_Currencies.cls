@@ -113,9 +113,8 @@ global with sharing class HPGR_Currencies implements hpgr.Currencies_Itf {
         // Add exchange rate to label
         for (hpgr.Currencies.Picklist_Wrapper picklistValue : currencyPicklistUpdated) {
             if (picklistValue.value != CURRENCY_CODE_EUR) {
-                Decimal exchangeRateEUR = 1 / picklistValue.exchangeRate;
-                String exchangeRateEURFormatted = String.valueOf(exchangeRateEUR.setScale(6));
-                picklistValue.label = picklistValue.label + ' ( ' + exchangeRateEURFormatted + ' ' + CURRENCY_CODE_EUR + ')';
+                String exchangeRateFormatted = picklistValue.exchangeRate.setScale(6).format();
+                picklistValue.label = picklistValue.label + ' (1 ' + CURRENCY_CODE_EUR + ' = ' + exchangeRateFormatted + '  ' + picklistValue.label + ')';
             }
         }
         return currencyPicklistUpdated;

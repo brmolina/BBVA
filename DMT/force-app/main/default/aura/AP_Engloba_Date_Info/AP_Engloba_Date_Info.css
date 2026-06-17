@@ -1,0 +1,11 @@
+.THIS .text-spacing{
+
+    position: relative;
+    top: 0px;
+    left: 0%;
+    text-align: left;
+    color: black;
+    padding: 2px 4px 2px 2px;
+    float: center;
+    width: 100%;
+}

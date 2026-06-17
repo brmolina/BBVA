@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_duplicate_validation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If it is checked, when clicking &apos;Contrast&apos; button, the duplicate control is done by the method &apos;checkDuplicateNonClients&apos; of the class defined in this custom setting.</description>
+    <inlineHelpText>If it is checked, when clicking &apos;Contrast&apos; button, the duplicate control is done by the method &apos;checkDuplicateNonClients&apos; of the class defined in this custom setting.</inlineHelpText>
+    <label>Custom duplicate validation</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,26 @@
+.THIS .title {
+  font-size: 14px;  
+  font-weight: 400;
+  color: #03234d;
+}
+
+.THIS .subtitle {
+  font-size: 20px;  
+  font-weight: 400; 
+  color: #03234d;
+}
+
+.THIS .customBox {
+  border-top: 2px solid #e5e5e5;
+}
+
+.THIS .badgenodata {
+  --slds-c-badge-color-background: #f3f3f3;
+  --slds-c-badge-radius-border: 4px;
+}
+
+.THIS.boxsection {
+  border-radius: 0.75rem;
+  border: 2px solid #e5e5e5;
+  background-color:#FFF;
+}

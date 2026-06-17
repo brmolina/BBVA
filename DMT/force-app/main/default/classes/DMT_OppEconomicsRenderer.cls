@@ -25,7 +25,7 @@ public with sharing class DMT_OppEconomicsRenderer implements DMT_ViewRenderer {
             }
 
             String html = '<div>'
-                        + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">ECONOMICS</h2>'
+                        + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Economics</h2>'
                         + '</br>';
             html += buildHtmlEconomics(data, profitabilityResults)
                  + '</br></br>';
@@ -100,7 +100,7 @@ public with sharing class DMT_OppEconomicsRenderer implements DMT_ViewRenderer {
             for (Object rec : profitabilityResults) {
                 Map<String, Object> mapRec = (Map<String, Object>)rec;
                 String jsonProductId = (String)mapRec.get('productId');
-                if (jsonProductId == oli.Id) {
+                if (jsonProductId == oli.gf_group_priority_opportunity_id__c) {
                     productResult = mapRec;
                     break;
                 }
@@ -108,29 +108,29 @@ public with sharing class DMT_OppEconomicsRenderer implements DMT_ViewRenderer {
         }
 
         switch on label {
-            when 'Up-Front Fee Accrual' { return DMT_FormattingUtils.checkNull(productResult.get('periodicFeesPbs')); }
-            when 'Up-Front Fee Non Accrual' { return DMT_FormattingUtils.checkNull(productResult.get('feesUpFrontPbs')); }
-            when 'Funding Cost' { return DMT_FormattingUtils.checkNull(productResult.get('fundingDbPbs')); }
-            when 'Liquidity Fee' { return DMT_FormattingUtils.checkNull(productResult.get('fundingFbPbs')); }
+            when 'Up-Front Fee Accrual' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('periodicFeesPbs')); }
+            when 'Up-Front Fee Non Accrual' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('feesUpFrontPbs')); }
+            when 'Funding Cost' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('fundingDbPbs')); }
+            when 'Liquidity Fee' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('fundingFbPbs')); }
             when 'Applicable Margin' {
                 Decimal spreadDb = (Decimal)productResult.get('spreadDbPbs');
                 Decimal spreadFb = (Decimal)productResult.get('spreadFbPbs');
                 if(spreadDb != null && spreadFb != null) {
-                    return String.valueOf(spreadDb + spreadFb);
+                    return DMT_FormattingUtils.formatToTwoDecimals(spreadDb + spreadFb);
                 } else if (spreadDb != null) {
-                    return String.valueOf(spreadDb);
+                    return DMT_FormattingUtils.formatToTwoDecimals(spreadDb);
                 } else if (spreadFb != null) {
-                    return String.valueOf(spreadFb);
+                    return DMT_FormattingUtils.formatToTwoDecimals(spreadFb);
                 }
                 return '';
             }
-            when 'Pricing Grid or Step-ups (if applicable)' { return DMT_FormattingUtils.checkNull(oli.DMT_PricingGrid_OR_StepUps__c); }
-            when 'Commitment Fee' { return DMT_FormattingUtils.checkNull(productResult.get('feesFbPbs')); }
-            when 'Utilisation Fee' { return DMT_FormattingUtils.checkNull(productResult.get('feesDbPbs')); }
-            when 'Extension/Duration Fee' { return DMT_FormattingUtils.checkNull(oli.DMT_Extension_Duration_Fees__c); }
-            when 'Expected Drawn' { return DMT_FormattingUtils.checkNull(oli.DMT_Expected_Drawn__c); }
-            when 'All-in: Drawn' { return DMT_FormattingUtils.checkNull(productResult.get('allInDb')); }
-            when 'All-in: Undrawn' { return DMT_FormattingUtils.checkNull(productResult.get('allInFb')); }
+            when 'Pricing Grid or Step-ups (if applicable)' { return DMT_FormattingUtils.formatToTwoDecimals(oli.DMT_PricingGrid_OR_StepUps__c); }
+            when 'Commitment Fee' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('feesFbPbs')); }
+            when 'Utilisation Fee' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('feesDbPbs')); }
+            when 'Extension/Duration Fee' { return DMT_FormattingUtils.formatToTwoDecimals(oli.DMT_Extension_Duration_Fees__c); }
+            when 'Expected Drawn' { return DMT_FormattingUtils.formatToTwoDecimals(oli.DMT_Expected_Drawn__c); }
+            when 'All-in: Drawn' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('allInDb')); }
+            when 'All-in: Undrawn' { return DMT_FormattingUtils.formatToTwoDecimals(productResult.get('allInFb')); }
 
             when else { return ''; }
         }
@@ -173,19 +173,19 @@ public with sharing class DMT_OppEconomicsRenderer implements DMT_ViewRenderer {
             Map<String, Object> component = new Map<String, Object>();
 
             contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 60 });
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('ECONOMICS'));
+            contentList.add(DMT_Create_Pdf_Controller.createTitle('Economics'));
 
             contentList.addAll(buildPdfEconomics(data, profitabilityResults));
 
             component.put('content', contentList);
-            component.put('name', 'ECONOMICS');
+            component.put('name', 'Economics');
 
             System.debug('returning component: ' + JSON.serialize(component));
             return component;
 
         } catch (Exception e) {
             System.debug('Error in DMT_OppEconomicsRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppEconomicsRenderer','renderPdfJson','DMT',''));
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppEconomicsRenderer','renderPdfJson','DMT',''));
             return new Map<String, Object>();
         }
     }

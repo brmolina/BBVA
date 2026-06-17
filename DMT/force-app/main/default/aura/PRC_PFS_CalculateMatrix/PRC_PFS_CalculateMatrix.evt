@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template">
+  <aura:attribute name="request" type="PRC_PFS_Request"/>
+  <aura:attribute name="response" type="PRC_PFS_Response"/>
+</aura:event>

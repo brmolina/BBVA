@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__FlowAction</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowAction">
+            <property name="pageUrl" type="String" label="URL" description="Relative URL, for example /lightning/o/Opportunity/list?filterName=__Recent" />
+            <property name="useReplace" type="Boolean" label="Replace current URL" description="When true, replaces browser history entry with window.location.replace" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

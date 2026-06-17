@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>aiChatRobot2_PostMessageFeedback</label>
+    <protected>false</protected>
+    <values>
+        <field>bbvacon__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">Robot2Conector</value>
+    </values>
+    <values>
+        <field>bbvacon__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">aiChatRobot2</value>
+    </values>
+    <values>
+        <field>bbvacon__Default_Integration_User__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>bbvacon__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;:&quot;application/json;charset=UTF-8&quot;,&quot;Accept-Language&quot;:&quot;es-ES&quot;}</value>
+    </values>
+    <values>
+        <field>bbvacon__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>bbvacon__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;conversationId&quot;: &quot;#conversationId#&quot;,
+  &quot;user&quot;: {
+    &quot;id&quot;: &quot;#userId#&quot;,
+    &quot;country&quot;: &quot;#userCountry#&quot;
+  },
+  &quot;message&quot;: {
+    &quot;id&quot;: &quot;#messageId#&quot;,
+    &quot;category&quot;: &quot;#category#&quot;,
+    &quot;reason&quot;: &quot;#reason#&quot;,
+    &quot;otherReasonDetail&quot;: &quot;#otherReasonDetail#&quot;,
+    &quot;additionalComments&quot;: &quot;#additionalComments#&quot;
+  },
+  &quot;channel&quot;: &quot;#channel#&quot;,
+  &quot;creationDate&quot;: &quot;#creationDate#&quot;
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;data&quot;:{&quot;status&quot;:&quot;OK&quot;}}</value>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">/xmas/macb/aibanker-feedback/0.1.0/v0/aibanker/feedback/</value>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

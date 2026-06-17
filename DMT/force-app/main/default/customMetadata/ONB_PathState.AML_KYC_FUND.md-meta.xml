@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>AML &amp; KYC information</label>
+    <protected>false</protected>
+    <values>
+        <field>BlockClick__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Order__c</field>
+        <value xsi:type="xsd:double">50.0</value>
+    </values>
+    <values>
+        <field>PathKey__c</field>
+        <value xsi:type="xsd:string">ONB_NEWFUND_V1</value>
+    </values>
+    <values>
+        <field>StepKey__c</field>
+        <value xsi:type="xsd:string">AML_KYC</value>
+    </values>
+    <values>
+        <field>VisibleCondition__c</field>
+        <value xsi:type="xsd:string">ONB_Onboarding__c.Request_Type__c!=Add funds (without derivatives)|ONB_Onboarding__c.Request_Type__c!=Add funds to an existing contract (with derivatives/repos)</value>
+    </values>
+</CustomMetadata>

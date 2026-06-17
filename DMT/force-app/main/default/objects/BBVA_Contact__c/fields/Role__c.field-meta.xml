@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <label>Role</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>&quot;Datos Fijos&quot;</fullName>
+                <default>false</default>
+                <label>&quot;Datos Fijos&quot;</label>
+            </value>
+            <value>
+                <fullName>Account Manager</fullName>
+                <default>false</default>
+                <label>Account Manager</label>
+            </value>
+            <value>
+                <fullName>Banker</fullName>
+                <default>false</default>
+                <label>Banker</label>
+            </value>
+            <value>
+                <fullName>Comex / FX</fullName>
+                <default>false</default>
+                <label>Comex / FX</label>
+            </value>
+            <value>
+                <fullName>Compliance Officer</fullName>
+                <default>false</default>
+                <label>Compliance Officer</label>
+            </value>
+            <value>
+                <fullName>Desk Responsible</fullName>
+                <default>false</default>
+                <label>Desk Responsible</label>
+            </value>
+            <value>
+                <fullName>Global Banker</fullName>
+                <default>false</default>
+                <label>Global Banker</label>
+            </value>
+            <value>
+                <fullName>Legal</fullName>
+                <default>false</default>
+                <label>Legal</label>
+            </value>
+            <value>
+                <fullName>Middle Officer</fullName>
+                <default>false</default>
+                <label>Middle Officer</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>RPM</fullName>
+                <default>false</default>
+                <label>RPM</label>
+            </value>
+            <value>
+                <fullName>Sales Trader</fullName>
+                <default>false</default>
+                <label>Sales Trader</label>
+            </value>
+            <value>
+                <fullName>Transactional Banker</fullName>
+                <default>false</default>
+                <label>Transactional Banker</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

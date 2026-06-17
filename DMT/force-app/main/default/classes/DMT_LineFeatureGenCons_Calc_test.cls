@@ -72,6 +72,8 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         DMT_Test_DataFactory.generateCustomAssociation(lines[0].Id, lines[0].Client__c);
         lines[0].Status__c = 'Closed';
         lines[0].Closed__c = 'Won';
+        lines[0].Start_Date__c = Date.today();
+        lines[0].End_Date__c = Date.today().addMonths(1);
         List<Map<String, Object>> clientsGroup = new List<Map<String, Object>>{new Map<String, Object>
             {
                 'customerId' => 'ES0182054986618',
@@ -89,6 +91,8 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         List<DMT_Line__c> lines = [SELECT Id, Client__c FROM DMT_Line__c];
         lines[0].Status__c = 'Closed';
         lines[0].Closed__c = 'Won';
+        lines[0].Start_Date__c = Date.today();
+        lines[0].End_Date__c = Date.today().addMonths(1);
         List<Map<String, Object>> clientsGroup = new List<Map<String, Object>>{new Map<String, Object>
             {
                 'customerId' => 'ES0182054986618',
@@ -186,6 +190,8 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         DMT_Test_DataFactory.generateCustomAssociation(lines[0].Id, lines[0].Client__c);
         lines[0].Status__c = 'Closed';
         lines[0].Closed__c = 'Won';
+		lines[0].Start_Date__c = Date.today();
+        lines[0].End_Date__c = Date.today().addMonths(1);
         List<Map<String, Object>> clientsGroup = new List<Map<String, Object>>{new Map<String, Object>
             {
                 'customerId' => 'ES0182054986618',
@@ -370,7 +376,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         Test.startTest();
         // Should return GREEN if no duplicate
         DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result2 = DMT_LineFeatureGenCons_Calc.endDate(line);
-        Assert.areEqual( DMT_Constants.FEATURE_GC_STATE_YELLOW, result2.state, 'Should be RED when the End date is not the last day of the month');
+        Assert.areEqual( DMT_Constants.FEATURE_GC_STATE_RED, result2.state, 'Should be RED when the End date is not the last day of the month');
         Test.stopTest();
     }
     // Test for DMT_LineFeatureGenCons_Calc.isCurrentLine
@@ -402,6 +408,41 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_YELLOW, result2.state, 'Should be RED when duplicate client line exists');
 
         Test.stopTest();
+    }
+
+    @isTest
+    private static void testCheckValidations_customAssociationClientValidation() {
+
+        DMT_Line__c line = [SELECT Id, Status__c, Closed__c, DMT_DerivativesAmount__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c, Start_Date__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        Account acc = [SELECT Id FROM Account WHERE Name='Test company 1' LIMIT 1];
+
+        Custom_Association__c customAss = DMT_Test_DataFactory.generateCustomAssociation(line.Id, acc.Id);
+
+        // Build clientsGroup with matching customerId and scaleLastUpdDate
+        List<Map<String, Object>> clientsGroup = new List<Map<String, Object>>{
+            new Map<String, Object>{
+                'customerId' => 'TESTCODE',
+                'scaleLastUpdDate' => String.valueOf(Date.today()),
+                'customerCounterpartiesCodesDesc' => 'A+',
+                'operationMitigantDesc' => 'Mitigant',
+                'ratingValidityStartDate' => String.valueOf(Date.today())
+            }
+        };
+
+        Custom_Association_Client__c testAssociation = new Custom_Association_Client__c(
+            Name = 'Test Association',
+            Custom_Association__c = customAss.Id,
+            DMT_Amount__c = 2000000000,
+            Alpha_Code_Client__c = 'ES0182054986618'
+        );
+        insert testAssociation;
+
+        Test.startTest();
+        // Should return GREEN if no duplicate
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result2 = DMT_LineFeatureGenCons_Calc.customAssociationClientValidation(line);
+        Assert.areEqual( DMT_Constants.FEATURE_GC_STATE_RED, result2.state, 'Should be RED when the amount of the Custom association client is greather or equal than the line');
+        Test.stopTest();
+
     }
 
     @isTest

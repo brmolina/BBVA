@@ -1,0 +1,7 @@
+<design:component>
+	<design:attribute name="countriesToDisplay" label="Countries"
+      required="false" />
+    <design:attribute name="roleHierarchy" label="Role Hierarchy"
+      required="false" />
+    <design:attribute name="gmRolVery" label="Rol verify" description="Show all visit by role/department"/>
+</design:component>

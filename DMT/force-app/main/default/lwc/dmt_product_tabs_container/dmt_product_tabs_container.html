@@ -1,0 +1,73 @@
+<template>
+    <template lwc:if={isReady}>
+        <div class="slds-tabs_scoped">
+
+        <!-- ── Tab navigation bar (SLDS scoped) ── -->
+        <ul class="slds-tabs_scoped__nav" role="tablist">
+
+            <template for:each={tabsConfig} for:item="tab">
+                <li key={tab.id}
+                    class={tab.itemClass}
+                    title={tab.label}
+                    role="presentation"
+                    data-tab-item>
+                    <a class="slds-tabs_scoped__link tab-link-product"
+                       href="#"
+                       role="tab"
+                       tabindex={tab.tabIndex}
+                       aria-selected={tab.ariaSelected}
+                       aria-controls={tab.panelId}
+                       id={tab.linkId}
+                       data-controls={tab.id}>
+                        <span class="tab-product-name">{tab.label}</span>
+                        <span class="tab-product-amount">{tab.amount}</span>
+                    </a>
+                </li>
+            </template>
+
+            <!-- "More" overflow button -->
+            <li class="slds-tabs_scoped__item slds-tabs_scoped__overflow-button slds-hide" role="presentation">
+                <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                    <button class="slds-button tab-more-button" aria-haspopup="true" role="tab">
+                        More
+                        <lightning-icon icon-name="utility:down" size="xx-small"></lightning-icon>
+                    </button>
+                    <div class="slds-dropdown slds-dropdown_right">
+                        <ul class="slds-dropdown__list" role="menu">
+                            <template for:each={dropdownItems} for:item="ditem">
+                                <li key={ditem.id}
+                                    class="slds-dropdown__item"
+                                    role="presentation">
+                                    <a href="#"
+                                       role="menuitem"
+                                       tabindex="-1"
+                                       class="dropdown-link-product"
+                                       data-tab-id={ditem.id}
+                                       onclick={handleDropdownItemClick}>
+                                        <span class="dropdown-product-name">{ditem.label}</span>
+                                        <span class="dropdown-product-amount">{ditem.amount}</span>
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+        <template for:each={tabsConfig} for:item="tab">
+            <div key={tab.id}
+                 id={tab.panelId}
+                 class={tab.panelClass}
+                 role="tabpanel"
+                 aria-labelledby={tab.linkId}
+                 data-panel-id={tab.id} style="min-height: 500px;" >
+                <template lwc:if={tab.isActive}>
+                    <slot></slot>
+                </template>
+            </div>
+        </template>
+
+        </div>
+    </template>
+</template>

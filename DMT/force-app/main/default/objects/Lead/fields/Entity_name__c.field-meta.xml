@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Entity_name__c</fullName>
+    <description>Legal Entity of the record, determining access for Global Markets users</description>
+    <label>GM Entity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>Global_Markets_Entity</valueSetName>
+    </valueSet>
+</CustomField>

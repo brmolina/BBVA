@@ -1,0 +1,9 @@
+/*CAMBIOS MIGRACIÓN A LWC GLOBAL BANKER*/
+.result-item {
+    cursor: pointer;
+}
+
+.result-item:active .slds-listbox__option,
+.result-item:hover .slds-listbox__option {
+    background-color: #f3f6fb;
+}

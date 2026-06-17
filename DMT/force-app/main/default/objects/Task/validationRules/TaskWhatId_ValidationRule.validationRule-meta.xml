@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TaskWhatId_ValidationRule</fullName>
+    <active>false</active>
+    <description>Esta regla comprueba que la tarea que se crea solo puede estar relacionada (el WhtaId) con los objetos que se utilizan en la aplicación:
+Account, Campaign y Opportunity</description>
+    <errorConditionFormula>IF($Setup.CIB_User_Org__c.CIB_Is_Sales__c,
+IF (
+OR(
+BEGINS (WhatId , &apos;a00&apos;),
+BEGINS( WhatId , &apos;001&apos;),
+BEGINS( WhatId , &apos;006&apos;),
+BEGINS( WhatId , &apos;701&apos;),
+NOT(ISBLANK(WhoId))
+),
+false, true), false)</errorConditionFormula>
+    <errorDisplayField>WhatId</errorDisplayField>
+    <errorMessage>Select an Account, a Campaign or an Opportunity (or select a Contact or a Prospect in &apos;Name&apos; field)</errorMessage>
+</ValidationRule>

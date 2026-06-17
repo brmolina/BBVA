@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Risk_Observations__c</fullName>
+    <encryptionScheme>ProbabilisticEncryption</encryptionScheme>
+    <label>OLD Risk Observations</label>
+    <required>false</required>
+    <type>TextArea</type>
+</CustomField>

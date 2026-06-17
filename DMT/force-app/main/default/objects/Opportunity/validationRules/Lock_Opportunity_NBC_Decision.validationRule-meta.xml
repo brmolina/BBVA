@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lock_Opportunity_NBC_Decision</fullName>
+    <active>true</active>
+    <description>Lock the opportunity depending on decision of NBC Commitee.</description>
+    <errorConditionFormula>TEXT(NBC_Decision_Taken_type__c) =  $Label.NBC_Decision_Not_Recommended &amp;&amp;
+Template_approved_type__c &amp;&amp;
+NOT(ISCHANGED(StageName)) &amp;&amp;
+NOT(ISCHANGED(NBC_Decision_Taken_type__c)) &amp;&amp;
+NOT(ISCHANGED(DES_Reasons_Lost__c)) &amp;&amp;
+NOT(ISCHANGED(DES_Description_reason_for_lost_deal__c)) &amp;&amp;
+$Profile.Name != $Label.DES_Profile_BBVA_Desktop_SP &amp;&amp; $Profile.Name != &quot;System Administrator&quot;</errorConditionFormula>
+    <errorMessage>You can&apos;t modify the opportunity if the decision of NBC Commitee is &apos;Not Recommended&apos;</errorMessage>
+</ValidationRule>

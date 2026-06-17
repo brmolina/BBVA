@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Inc_Impact_Close_case_Validation_GM</fullName>
+    <active>true</active>
+    <description>To close a case that is classified as &quot;Incidencia&quot; with impact economic must have the following fields completed: Classification, Reason, Client Name (no BBVA internal), Asset, FO Deal Id,Notional,Deal currency, Actual SD, etc</description>
+    <errorConditionFormula>AND(
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+!$Setup.CIB_User_Org__c.CIB_Is_Admin__c,
+$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ISPICKVAL(SER_Business_Case_Type__c, &quot;GM&quot;),
+SER_Incident_with_economic_impact__c = TRUE,
+OR(
+ISBLANK(TEXT( SER_Subtype_GM__c )),
+ISBLANK(SER_Asset__c ),
+ISBLANK(TEXT(SER_Deal_Currency__c)),
+ISBLANK(SER_FO_Deal_Id__c ),
+ISBLANK(SER_Notional__c),
+ISBLANK(SER_Settlement_Date__c),
+ISBLANK(SER_Actual_SD__c),
+ISBLANK(TEXT (SER_Currency__c)),
+ISBLANK(TEXT (SER_Booking__c)),
+ISBLANK(TEXT (SER_Payer__c)),
+ISBLANK(SER_Amount_finally_assumed__c),
+ISBLANK(SER_Operational_risk__c),
+ISBLANK(TEXT (SER_SIRO_Account__c)),
+ISBLANK(SER_Accounting_date__c),
+ISBLANK(SER_Analysis__c),
+OR(
+ISBLANK(AccountId ) , AND(!ISBLANK(AccountId) ,Account.Name = &quot;BBVA Internal Contact&quot;)
+)
+),
+OR(
+ISPICKVAL( SER_Booking__c, &quot;BBVA Madrid&quot;), ISBLANK(TEXT(SER_Office__c))),
+
+OR(
+ISPICKVAL( SER_Classification__c, &quot;Incidencia&quot;),
+ISPICKVAL( SER_Classification__c, &quot;Reclamación&quot;),
+ISPICKVAL( SER_Classification__c, &quot;Monetary claim&quot;)
+),
+OR(
+ISPICKVAL(Status,&quot;Closed&quot;),
+SER_Close__c = True ))</errorConditionFormula>
+    <errorMessage>To close a case that is classified as &quot;Incidencia&quot; with impact economic must have the following fields completed: Classification, Reason, Client Name (no BBVA internal), Asset, FO Deal Id,Notional,Deal currency, Actual SD, etc</errorMessage>
+</ValidationRule>

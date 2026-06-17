@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ClosedLine</fullName>
+    <active>true</active>
+    <errorConditionFormula>PRIORVALUE(DMT_Cancel__c)=true   &amp;&amp;  $Profile.Name != &quot;System Administrator&quot; &amp;&amp;  $Permission.DMT_Line_God != TRUE</errorConditionFormula>
+    <errorMessage>This line is closed, editing is not allowed.</errorMessage>
+</ValidationRule>

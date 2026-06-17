@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_Relevant_Information_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>(max 370 characters)</inlineHelpText>
+    <label>Other Relevant Information</label>
+    <length>370</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

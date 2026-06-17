@@ -1,0 +1,11 @@
+.slds-textarea{
+    min-height: 10vh;
+}
+
+.slds-assistive-text{
+    overflow: visible;
+}
+
+.textAreaBody {
+    --sds-c-textarea-sizing-min-height:125px;
+}

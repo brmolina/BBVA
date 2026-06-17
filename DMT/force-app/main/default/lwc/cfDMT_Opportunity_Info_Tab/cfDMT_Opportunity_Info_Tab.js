@@ -51,9 +51,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKG000000L6OfYAK"
+                  " card-0koKE000000L8JhYAK"
                 );
-                this.loadCustomStylesheetAttachement("00PKG000003pTsT2AU");
+                this.loadCustomStylesheetAttachement("00PKE000001uj6D2AQ");
                 
                 
               }
@@ -72,7 +72,8 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           [interpolateWithRegex(`activeEditMode`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[1],1),
 [interpolateWithRegex(`reloadAfterSave`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[2],2),
 [interpolateWithRegex(`changeDataChild`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[4],4),
-[interpolateWithRegex(`reloadOpportunityInfo`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[8],8)
+[interpolateWithRegex(`reloadOpportunityInfo`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[8],8),
+[interpolateWithRegex(`setError`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[9],9)
         };
         this.pubsubChannel0 = interpolateWithRegex(`DMT_Opportunity_Info_Tab`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel0,this.pubsubEvent[0]);

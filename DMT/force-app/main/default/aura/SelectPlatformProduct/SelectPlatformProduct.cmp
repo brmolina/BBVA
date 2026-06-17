@@ -1,0 +1,202 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction"
+  controller="OnboardingPlatformProduct_ctrl" access="global">
+
+  <aura:attribute name="canEdit" type="Boolean" default="false"/>
+  <aura:attribute name="assetType" type="String"/>
+  <aura:attribute name="onboardType" type="String"/>
+  <aura:attribute name="assetProductID" type="String"/>
+  <aura:attribute name="lPlatform" type="List"/>
+  <aura:attribute name="picklistValues" type="String"/>
+  <aura:attribute name="selectedPlatform" type="String"/>
+  <aura:attribute name="oldPlatform" type="String"/>
+  <aura:attribute name="lPriorPlatform" type="List"/>
+  <aura:attribute name="oldPriorPlatform" type="String"/>
+  <aura:attribute name="lClearingHouse" type="List"/>
+  <aura:attribute name="oldClearingHouse" type="String"/>
+  <aura:attribute name="lAccess" type="List"/>
+  <aura:attribute name="oldAccess" type="String"/>
+  <aura:attribute name="lFormat" type="List"/>
+  <aura:attribute name="oldFormat" type="String"/>
+  <aura:attribute name="lProduct" type="List"/>
+  <aura:attribute name="selectedProduct" type="String"/>
+  <aura:attribute name="oldProduct" type="String"/>
+  <aura:attribute name="lTier" type="List"/>
+  <aura:attribute name="selectedTier" type="String"/>
+  <aura:attribute name="oldTier" type="String"/>
+  <aura:attribute name="stage" type="String"/>
+  <aura:attribute name="lFieldsWrong" type="List"/>
+  <aura:attribute name="lFieldsTrader" type="List"/>
+  <aura:attribute name="lFields" type="List"/>
+  <aura:attribute name="lFieldsAll" type="List"/>
+  <aura:attribute name="lFieldsPickList" type="List"/>
+  <aura:attribute name="isClone" type="Boolean" default="false"/>
+  <aura:attribute name="editMode" type="Boolean" default="false"/>
+  <aura:attribute name="editTierMode" type="Boolean" default="false"/>
+  <aura:attribute name="saveMode" type="Boolean" default="false"/>
+  <aura:attribute name="saveTierMode" type="Boolean" default="false"/>
+  <aura:attribute name="isStart" type="Boolean" default="true"/>
+
+  <aura:attribute name="flagPriorPlatform" type="Boolean" default="false"/>
+  <aura:attribute name="flagPlatform" type="Boolean" default="false"/>
+  <aura:attribute name="flagProduct" type="Boolean" default="false"/>
+  <aura:attribute name="flagTier" type="Boolean" default="false"/>
+  <aura:attribute name="flagClearingHouse" type="Boolean" default="false"/>
+  <aura:attribute name="flagAccess" type="Boolean" default="false"/>
+  <aura:attribute name="flagFormat" type="Boolean" default="false"/>
+  <aura:attribute name="isProfile" type="Boolean" default="false"/>
+
+  <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> -->
+  <aura:handler name="change" value="{!v.saveMode}" action="{!c.handleValueChange}"/>
+  <aura:handler name="change" value="{!v.saveTierMode}" action="{!c.handleValueTierChange}"/>
+  <!-- <aura:handler name="change" value="{!v.isStart}" action="{!c.hideOnStart}"/> -->
+  <ltng:require scripts="{!$Resource.JQuery17}" afterScriptsLoaded="{!c.doInit}" />
+
+  <aura:registerEvent name="refreshEvent" type="c:AssetTemplateEvents"/>
+
+  <div aura:id="contenedor" class="slds-tabs_card slds-m-bottom_x-small slds-hide">
+
+    <!--Cuando se edita en fase de error se muestran los campos no editables bloqueados-->
+    <aura:if isTrue="{!v.stage == 'Wrong Data'}">
+      <lightning:recordViewForm aura:id="recordViewForm" recordId="{!v.assetProductID}" objectApiName="Asset_Product__c" class="{!if(!v.editMode,'slds-hide','')}">
+          <lightning:messages />
+          <div class="slds-grid slds-wrap">
+            <aura:iteration items="{!v.lFieldsWrong}" var="item10">
+              <div class="slds-col slds-size_1-of-2" id="{!item10 + v.assetProductID + 'read'}">
+                <lightning:outputField fieldName="{!item10}" class="{!item10 + v.assetProductID + 'read'}"/>
+              </div>
+            </aura:iteration>
+          </div>
+      </lightning:recordViewForm>
+    </aura:if>
+
+    <!--Cuando se edita en fase de validate se muestran los campos editables-->
+    <aura:if isTrue="{!and(v.stage == 'Validate', v.isClone == 'false' )}">
+      <lightning:recordEditForm aura:id="recordEditForm2" recordId="{!v.assetProductID}" onsubmit="{!c.saveProductTrader}" objectApiName="Asset_Product__c" class="{!if(!v.editTierMode,'slds-hide','')}">
+        <lightning:messages />
+        <div class="slds-grid slds-wrap">
+          <aura:iteration items="{!v.lFieldsTrader}" var="item8">
+            <div class="slds-col slds-size_1-of-2" id="{!item8 + v.assetProductID}">
+              <lightning:inputField fieldName="{!item8}"/>
+            </div>
+          </aura:iteration>
+        </div>
+        <!-- tier value se muestra si no es nueva plataforma  ni nuevo cliente para fixed income -->
+        <div class="{!if(v.flagTier ,'slds-col first-col', 'slds-hidden display-none')}">
+          <lightning:inputField fieldName="Tier__c" class="slds-hide"/>
+          <lightning:select aura:id="tierTrader" name="tier" label="Tier" onchange="{!c.getSelected}" disabled="{!or(v.isClone == 'true', !v.editTierMode)}" class="slds-p-right_xx-large">
+            <option value="">empty</option>
+            <aura:iteration items="{!v.lTier}" var="item9">
+              <option value="{!item9}">{!item9}</option>
+            </aura:iteration>
+          </lightning:select>
+        </div>
+        <button type="submit" class="rigth-position" id="{! 'btnEnviarFrm' + v.assetProductID + 'trader'}" hidden="hidden" ></button>
+      </lightning:recordEditForm>
+    </aura:if>
+
+    <aura:if isTrue="{!v.canEdit}">
+      <div class="slds-float_right">
+        <lightning:button label="Clone" title="Clone" onclick="{! c.cloneProduct }" />
+        <lightning:button label="Delete" title="Delete" onclick="{! c.deleteProduct }"/>
+      </div>
+    </aura:if>
+
+    <div class="{!if(!v.editMode,'slds-hide slds-grid slds-gutters','slds-grid slds-gutters')}">
+      <!-- prior value si la es nueva plataforma para fixed income -->
+      <div class="{!if(v.flagPriorPlatform ,'slds-col first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="priorplatform" name="priorplatform" label="Prior Platform" disabled="{!!v.editMode}">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lPriorPlatform}" var="item0">
+            <option value="{!item0}">{!item0}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+      <div class="{!if(v.flagPlatform ,'slds-col first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="platform" name="platform" label="Platform" onchange="{!c.getProduct}" disabled="{!!v.editMode}">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lPlatform}" var="item">
+            <option value="{!item}">{!item}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+      <!-- el producto se muestra si no es new user -->
+      <div class="{!if(v.flagProduct ,'slds-col first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="product" name="product" label="Product" onchange="{!c.getTier}" disabled="{!!v.editMode}" class="slds-p-right_xx-large">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lProduct}" var="item1">
+            <option value="{!item1}">{!item1}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+      <!-- tier value se muestra si no es nueva plataforma  ni nuevo cliente para fixed income -->
+      <div class="{!if(v.flagTier ,'slds-col first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="tier" name="tier" label="Tier" onchange="{!c.getSelected}" disabled="{!or(v.isClone == 'true', and(!v.editMode,!v.editTierMode))}" class="slds-p-right_xx-large">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lTier}" var="item2">
+            <option value="{!item2}">{!item2}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+    </div>
+
+    <div class="slds-m-top_x-small"></div>
+
+    <lightning:recordEditForm aura:id="recordEditForm" recordId="{!v.assetProductID}" onsubmit="{!c.saveProduct}" objectApiName="Asset_Product__c" class="{!if(!v.editMode,'slds-hide','')}">
+        <lightning:messages />
+        <div class="slds-grid slds-wrap">
+          <aura:iteration items="{!v.lFields}" var="item">
+            <div class="slds-col slds-size_1-of-2" id="{!item + v.assetProductID}">
+              <lightning:inputField fieldName="{!item}"/>
+            </div>
+          </aura:iteration>
+        </div>
+        <aura:if isTrue="{!v.assetType == 'Equity'}">
+          <div class="display-none">
+            <lightning:inputField fieldName="Additional_info_per_Country__c"/>
+          </div>
+        </aura:if>
+        <button type="submit" class="rigth-position" id="{! 'btnEnviarFrm' + v.assetProductID}" hidden="hidden" ></button>
+    </lightning:recordEditForm>
+
+    <!-- NUEVAS PICKLIST ADMINISTRABLES -->
+    <div class="{!if(!v.editMode,'slds-hide slds-grid slds-gutters','container-picklist slds-grid slds-gutters')}">
+      <!-- Clearing House -->
+      <div class="{!if(v.flagClearingHouse ,'slds-col slds-size_1-of-2 first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="clearingHouse" name="clearingHouse" label="Clearing House" disabled="{!or(v.isClone == 'true', and(!v.editMode,!v.editTierMode))}" class="slds-p-right_xx-large">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lClearingHouse}" var="item4">
+            <option value="{!item4}">{!item4}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+      <div class="{!if(v.flagAccess ,'slds-col slds-size_1-of-2 first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="access" name="access" label="Access" disabled="{!or(v.isClone == 'true', and(!v.editMode,!v.editTierMode))}" class="slds-p-right_xx-large">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lAccess}" var="item5">
+            <option value="{!item5}">{!item5}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+      <div class="{!if(v.flagFormat ,'slds-col slds-size_1-of-2 first-col', 'slds-hidden display-none')}">
+        <lightning:select aura:id="format" name="format" label="Format" disabled="{!or(v.isClone == 'true', and(!v.editMode,!v.editTierMode))}" class="slds-p-right_xx-large">
+          <option value="">empty</option>
+          <aura:iteration items="{!v.lFormat}" var="item6">
+            <option value="{!item6}">{!item6}</option>
+          </aura:iteration>
+        </lightning:select>
+      </div>
+    </div>
+
+    <lightning:recordViewForm aura:id="recordViewForm" recordId="{!v.assetProductID}" objectApiName="Asset_Product__c" class="{!if(v.editMode,'slds-hide','')}">
+        <lightning:messages />
+        <div class="slds-grid slds-wrap">
+          <aura:iteration items="{!v.lFieldsAll}" var="item">
+            <div class="slds-col slds-size_1-of-2" id="{!item + v.assetProductID + 'read'}">
+              <lightning:outputField fieldName="{!item}" class="{!item + v.assetProductID + 'read'}"/>
+            </div>
+          </aura:iteration>
+        </div>
+    </lightning:recordViewForm>
+  </div>
+
+</aura:component>

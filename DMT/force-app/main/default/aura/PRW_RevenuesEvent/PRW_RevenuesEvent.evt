@@ -1,0 +1,7 @@
+<aura:event type="APPLICATION" description="Event to pass revenues to compact layout">
+  <aura:attribute name="revenuesType" type="String"/>
+  <aura:attribute name="revenues" type="Decimal"/>
+  <aura:attribute name="operationType" type="String"/>
+  <aura:attribute name="idProd" type="String"/>
+  <aura:attribute name="isSpecial" type="Boolean"/>
+</aura:event>

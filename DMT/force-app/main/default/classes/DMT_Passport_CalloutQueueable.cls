@@ -22,10 +22,10 @@ public class DMT_Passport_CalloutQueueable implements Queueable, Database.Allows
         // Tu lógica de callout aquí
         String lastDate = DMT_HPG_Utils.lastDate();
         List<String> countries = new List<String> {'All'};
-        DMT_HPG_Consumption.Wrapper wrapper = new DMT_HPG_Consumption.Wrapper();
+        DMT_HPG_GlobalPosition.Wrapper wrapper = new DMT_HPG_GlobalPosition.Wrapper();
         if(!Test.isRunningTest()) {
             Object res = DMT_HPG_MainTableCustomController.fetchData('passport', this.clientId, countries, lastDate,'Y/N', '1', '5000', String.valueOf(this.clientId));
-            wrapper = (DMT_HPG_Consumption.Wrapper) JSON.deserialize(JSON.serialize(res), DMT_HPG_Consumption.Wrapper.class);
+            wrapper = (DMT_HPG_GlobalPosition.Wrapper) JSON.deserialize(JSON.serialize(res), DMT_HPG_GlobalPosition.Wrapper.class);
         } 
         return JSON.serialize(wrapper.data);
     }

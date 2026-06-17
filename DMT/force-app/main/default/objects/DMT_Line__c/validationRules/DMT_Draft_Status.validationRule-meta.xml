@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Draft_Status</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+NOT(ISCHANGED(Allowed__c)),
+DMT_RecordTypeName__c == &quot;Risk Approval&quot;,
+ISCHANGED(Status__c)
+)</errorConditionFormula>
+    <errorMessage>You cant change status in Sanction.</errorMessage>
+</ValidationRule>

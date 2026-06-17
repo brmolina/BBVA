@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Case_Hightlight</fullName>
+    <fields>DMT_Owner_Name__c</fields>
+    <fields>LastModifiedById</fields>
+    <fields>AccountId</fields>
+    <fields>DMT_LineOpportunity_Link__c</fields>
+    <fields>DMT_Amount__c</fields>
+    <fields>DMT_LineOppDateToProposal__c</fields>
+    <fields>DMT_SanctionLink__c</fields>
+    <label>DMT Case Hightlight</label>
+</CompactLayout>

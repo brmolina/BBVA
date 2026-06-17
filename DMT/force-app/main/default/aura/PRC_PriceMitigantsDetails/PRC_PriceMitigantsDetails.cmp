@@ -1,0 +1,68 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 03-25-2021
+  @last modified by  : David Rodríguez
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-25-2021   David Rodríguez   Initial Version
+-->
+
+<aura:component controller="PRC_PricingDetails_CONTROLLER" implements="force:appHostable,flexipage:availableForAllPageTypes">
+    <aura:attribute name="pricingDetailsId" type="Id" access="public"/>
+    <aura:attribute name="mitigantList" type="PRC_Mitigant__c[]"/>
+	<aura:attribute name="mitigantForm" type="Boolean" default="false" access="public"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:PRC_MitigantEvent" action="{!c.doInit}" />
+	<aura:registerEvent name="vieweditevt" type="c:PRC_ViewEditEvent" />
+
+
+    <div class="slds-card">
+		<div class="slds-card__body slds-card__body_inner">
+			<aura:if isTrue="{!not(empty(v.mitigantList))}">
+                <!-- aura:if isTrue="{!not(empty(v.amortizationList))}" -->
+				<table width="400" class="slds-table slds-table_cell-buffer slds-table_bordered slds-max-medium-table_stacked">
+					<thead>
+						<tr class="slds-line-height_reset">
+							<th class="" scope="col">MITIGATING TYPE</th>
+                            <th class="" scope="col">MITIGATING</th>
+                            <th class="" scope="col">CONTERPARTY</th>
+                            <th class="" scope="col">POLITICAL %</th>
+                            <th class="" scope="col">COMMERCIAL %</th>
+                            <th class="" scope="col">EXPIRATION</th>
+                            <th class="" scope="col">END DATE</th>
+							<aura:if isTrue="{!v.mitigantForm}">
+								<th class="" scope="col">ACTIONS</th>
+							</aura:if>
+						</tr>
+					</thead>
+					<tbody id="table_body">
+						<aura:iteration items="{!v.mitigantList}" var="miti">
+							<tr class="slds-hint-parent">
+                                <td><div class="slds-truncate">{!miti.gf_warranty_type__c}</div></td>
+								<td><div class="slds-truncate">{!miti.labelWarranty}</div></td>
+								<td><div class="slds-truncate">{!miti.DES_Client_Mitigant__r.Name}</div></td>
+                                <td><div class="slds-truncate">{!miti.gf_cty_rqst_wrrnty_risk_per__c}</div></td>
+                                <td><div class="slds-truncate">{!miti.gf_mit_rk_rqst_warranty_per__c}</div></td>
+                                <td><div class="slds-truncate">{!miti.labelExpiration}</div></td>
+                                <td><div class="slds-truncate">{!miti.gf_end_guarantee_date__c}</div></td>
+								<aura:if isTrue="{!v.mitigantForm}">
+									<td>
+										<div class="slds-p-around_medium lgc-bg">
+											<lightning:buttonMenu aura:id="menu" onselect="{! c.removeMitigant }" alternativeText="Show menu" iconSize="x-small" variant="border" >
+                                				<lightning:menuItem value="{!'Edit--' + miti.Id + '--' + miti.gf_warranty_ptt_rating_type__c + '--' + miti.gf_external_rating_agncy_type__c}" label="View/Edit" />
+												<lightning:menuItem value="{!'Delete--' + miti.Id}" label="Delete" />
+                            				</lightning:buttonMenu>
+										</div>
+									</td>
+								</aura:if>
+							</tr>
+						</aura:iteration>
+					</tbody>
+				</table>
+            </aura:if>
+		</div>
+	</div>
+
+</aura:component>

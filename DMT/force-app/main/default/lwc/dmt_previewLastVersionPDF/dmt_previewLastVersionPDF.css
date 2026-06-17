@@ -1,0 +1,33 @@
+.spinner-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-message {
+    margin-top: 6.5rem; 
+    font-size: 1rem;
+    color: #000000;
+    max-width: 90%;
+}
+    
+.full-height-content {
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    width: 80rem;
+    min-width: 80rem ;
+    margin-left: -27rem;
+}
+
+.pdfStyle{
+    height: 80rem;
+    align-items: center;
+    justify-content: center;
+  
+}
+.nonChargedpdfStyle{
+    display: none;
+}

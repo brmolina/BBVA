@@ -1,5 +1,5 @@
-@IsTest
-private class DMT_Consolidated_Line_PETrigger_Test {
+@isTest
+private without sharing class DMT_Consolidated_Line_PETrigger_Test {
 
     @testSetup
     static void setupTestData() {

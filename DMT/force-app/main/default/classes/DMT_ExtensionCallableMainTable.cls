@@ -1,5 +1,5 @@
-public class DMT_ExtensionCallableMainTable implements Callable {
- 
+public with sharing class DMT_ExtensionCallableMainTable implements Callable {
+
     // Dispatch actual methods
     public Object call(String action, Map<String, Object> args) {
       switch on action {

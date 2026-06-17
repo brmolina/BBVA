@@ -56,7 +56,7 @@ public without sharing class SER_CaseMethodsCurrency {
     for(Case casoItem : news) {    //Iterate over trigger list
       if( casoItem.SER_Currency__c != null
           && (casoItem.SER_Operational_risk__c != null || casoItem.SER_Amount_finally_assumed__c != null
-              || casoItem.SER_Claim_partially_recovered__c != null)) {
+              || casoItem.SER_Claim_partially_recovered__c != null || casoItem.SER_Waiver__c != null)) {
         //The case has a currency and its financial field values aren't null.
         if(mapCasesToProcess.containsKey(casoItem.SER_Currency__c)) {
           mapCasesToProcess.get(casoItem.SER_Currency__c).add(casoItem);
@@ -105,6 +105,7 @@ public without sharing class SER_CaseMethodsCurrency {
                       || casoItem.SER_Amount_finally_assumed__c != oldCase.SER_Amount_finally_assumed__c
                       || casoItem.SER_Claim_partially_recovered__c != oldCase.SER_Claim_partially_recovered__c
                       || casoItem.SER_Accounting_date__c != oldCase.SER_Accounting_date__c
+                      || casoItem.SER_Waiver__c != oldCase.SER_Waiver__c
                       /** Begin: validation for GTB currency -- (vv) */
                       || casoItem.return_amount__c != oldCase.return_amount__c;
       /** End: */
@@ -115,6 +116,8 @@ public without sharing class SER_CaseMethodsCurrency {
                         && oldCase.SER_Operational_risk__c == null
                         && oldCase.SER_Amount_finally_assumed__c == null
                         && oldCase.SER_Claim_partially_recovered__c == null
+                        && casoItem.SER_Waiver__c == null
+                        && oldCase.SER_Waiver__c == null
                         /** Begin: validation for GTB currency -- (vv) */
                         && casoItem.return_amount__c == null
                         && oldCase.return_amount__c == null;
@@ -135,10 +138,12 @@ public without sharing class SER_CaseMethodsCurrency {
           mapCasesToProcess.get(casoItem.SER_Currency__c).add(casoItem);
           listCaseToProcess.add(casoItem);
           setCurrencies.add(casoItem.SER_Currency__c);
+          setCurrencies.add('USD');
         } else {
           mapCasesToProcess.put(casoItem.SER_Currency__c,new List<Case> {casoItem});
           listCaseToProcess.add(casoItem);
           setCurrencies.add(casoItem.SER_Currency__c);
+          setCurrencies.add('USD');
         }
       }
     }

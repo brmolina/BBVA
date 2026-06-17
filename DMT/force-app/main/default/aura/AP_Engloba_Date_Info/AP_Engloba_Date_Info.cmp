@@ -1,0 +1,14 @@
+<aura:component controller="AP_Engloba_Data_Info"
+                implements="flexipage:availableForAllPageTypes,force:hasSObjectName,force:hasRecordId" 
+                access="global" >
+    <aura:attribute name="mensaje" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+ 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+    <div class="slds-grid">
+        <p class="slds-card-none text-spacing">
+            {!v.mensaje}
+        </p>
+   </div>
+</aura:component>

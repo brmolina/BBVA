@@ -26,10 +26,10 @@ public class DES_Schedulable_createGBMatrixTest{
         teamMember.DES_Member_Role__c = Label.DES_ROLE_GLOBAL_BANKER;
         teamMember.DES_Client__c = acc1.Id;
         insert teamMember;
-        dwp_acmh__GBL_Account_Relationship__c relAccount = new dwp_acmh__GBL_Account_Relationship__c();
-        relAccount.dwp_acmh__Parent_Account__c = acc1.Id;
-        relAccount.dwp_acmh__Child_Account__c = acc2.Id;
-        relAccount.dwp_acmh__Vision__c = 'Riesgo';
+        AMH_GBL_Account_Relationship__c relAccount = new AMH_GBL_Account_Relationship__c();
+        relAccount.AMH_Parent_Account__c = acc1.Id;
+        relAccount.AMH_Child_Account__c = acc2.Id;
+        relAccount.AMH_Vision__c = 'Riesgo';
         insert relAccount;
 
         String jobId = system.schedule('Test Check', '0 0 2 * * ?', new DES_Schedulable_createGBMatrix ());

@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event to pass cuco information processed to FirstTabContent">
+  <aura:attribute name="conditionWrp" type="String"/>
+  <aura:attribute name="dataProcessed" type="String"/>
+  <aura:attribute name="catalog" type="String"/>
+</aura:event>

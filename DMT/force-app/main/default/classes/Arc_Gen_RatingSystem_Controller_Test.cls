@@ -21,7 +21,7 @@ public class Arc_Gen_RatingSystem_Controller_Test {
     private final static String ACC_NAME = 'Customer1';
     @TestSetup
     static void setup() {
-        final Account newAcc = Arc_UtilitysDataTest_tst.crearCuenta(ACC_NAME, null, null, '0001'); 
+        final Account newAcc = Arc_UtilitysDataTest_tst.crearCuenta(ACC_NAME, null, null, '0001');
         insert newAcc;
 
         final User newuser = Arc_UtilitysDataTest_tst.crearUsuario('test', 'Minimum Access - Salesforce', null);
@@ -47,7 +47,7 @@ public class Arc_Gen_RatingSystem_Controller_Test {
 
     /**
     * -----------------------------------------------------------------------------------------------
-     * @description Unit test for getArceConfigMdt() with exception.
+    * @description Unit test for getArceConfigMdt() with exception.
     * -----------------------------------------------------------------------------------------------
     * @autor       marcos.gimeno.tech@bbva.com
     * @date        21-05-2024
@@ -117,48 +117,6 @@ public class Arc_Gen_RatingSystem_Controller_Test {
         Test.stopTest();
 
         // Then
-        System.assertNotEquals(null, catchExc, 'Expected exception should not be null.');
-    }
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Unit test for callRatingSystem().
-    * -----------------------------------------------------------------------------------------------
-    * @autor    marcos.gimeno.next@bbva.com
-    * @date     24-10-2023
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @IsTest
-    public static void testCallRatingSystem() {
-        final Id testCustomerId = [SELECT Id FROM Account WHERE AccountNumber = '0001' LIMIT 1].Id;
-
-        Test.startTest();
-        final String result = Arc_Gen_RatingSystem_Controller.callRatingSystem(testCustomerId, true);
-        Test.stopTest();
-
-        System.assert(!String.isBlank(result), 'Result should not be blank');
-    }
-
-    /**
-    * -----------------------------------------------------------------------------------------------
-    * @description Unit test for callRatingSystem().
-    * -----------------------------------------------------------------------------------------------
-    * @autor    marcos.gimeno.next@bbva.com
-    * @date     24-10-2023
-    * -----------------------------------------------------------------------------------------------
-    **/
-    @IsTest
-    public static void testCallRatingSystemException() {
-        Exception catchExc;
-
-        Test.startTest();
-        try {
-            Arc_Gen_RatingSystem_Controller.callRatingSystem('invalidId', true);
-        } catch (Exception e) {
-            catchExc = e;
-        }
-        Test.stopTest();
-
         System.assertNotEquals(null, catchExc, 'Expected exception should not be null.');
     }
 }

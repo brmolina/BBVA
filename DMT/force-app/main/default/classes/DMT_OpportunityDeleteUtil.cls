@@ -33,15 +33,30 @@ public without sharing class DMT_OpportunityDeleteUtil {
                 Id oppId = input.opportunity.Id;
                 List<SObject> recordsToDelete = new List<SObject>();
 
-                if (input.tenors != null) recordsToDelete.addAll(input.tenors);
-                if (input.mitigants != null) recordsToDelete.addAll(input.mitigants);
-                if (input.opportunityLineItems != null) recordsToDelete.addAll(input.opportunityLineItems);
-                if (input.xSells != null) recordsToDelete.addAll(input.xSells);
-                if (input.participants != null) recordsToDelete.addAll(input.participants);
-                if (input.opportunityClient != null) recordsToDelete.add(input.opportunityClient);
-                if (input.cases != null) recordsToDelete.addAll(input.cases);
-                if (input.tasks != null) recordsToDelete.addAll(input.tasks);
-                if (input.passports != null) recordsToDelete.addAll(input.passports);
+                if (input.tenors != null) {
+                    recordsToDelete.addAll(input.tenors);
+                }
+                if (input.mitigants != null) {
+                    recordsToDelete.addAll(input.mitigants);
+                }
+                if (input.opportunityLineItems != null) {
+                    recordsToDelete.addAll(input.opportunityLineItems);
+                }
+                if (input.xSells != null) {
+                    recordsToDelete.addAll(input.xSells);
+                }
+                if (input.participants != null) {
+                    recordsToDelete.addAll(input.participants);
+                }
+                if (input.opportunityClient != null) {
+                    recordsToDelete.add(input.opportunityClient);
+                }
+                if (input.cases != null) {
+                    recordsToDelete.addAll(input.cases);
+                }
+                if (input.passports != null) {
+                    recordsToDelete.addAll(input.passports);
+                }
                 recordsToDelete.add(input.opportunity);
 
                 List<SObject> cleanList = new List<SObject>();
@@ -54,7 +69,7 @@ public without sharing class DMT_OpportunityDeleteUtil {
                 if (!cleanList.isEmpty()) {
                     delete cleanList;
                 }
-                
+
                 res.success = true;
                 res.deletedOpportunityId = oppId;
 

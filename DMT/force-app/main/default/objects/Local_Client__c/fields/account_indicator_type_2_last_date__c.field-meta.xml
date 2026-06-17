@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>account_indicator_type_2_last_date__c</fullName>
+    <label>Account Indicator Type 2 Last Date</label>
+    <summarizedField>Account_Indicator__c.year_month_day_date__c</summarizedField>
+    <summaryFilterItems>
+        <field>Account_Indicator__c.indicator_type__c</field>
+        <operation>equals</operation>
+        <value>02</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Account_Indicator__c.Local_Client_id__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

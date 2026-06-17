@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>endrs_fee_fnl_curr_year_amount__c</fullName>
+    <description>Commission that accrues a guarantee issued in this year</description>
+    <formula>pre_endrs_fee_next_12m_amount__c * ((13 - (MONTH( TODAY())/12)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Risk Fee Year End (amount)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Currency</type>
+</CustomField>

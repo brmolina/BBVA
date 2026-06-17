@@ -1,23 +1,23 @@
 <template>
     <lightning-card>
         <div class="slds-m-around_medium">          
-            <div class="slds-p-around_xx-small">
+            <div class="slds-p-around_xx-small" lwc:if={isOppView}>
                 <lightning-button 
                     icon-name="utility:redo"
                     icon-position="right"
-                    label="Redo all table"
+                    label={label.DMT_modify_financials_table}
                     variant="base" 
                     onclick={handleRedoAllTable}>
                 </lightning-button>
             </div>         
             <c-dmt_-table-header-section
-                titletable="BASIC FINANCIALS"
+                titletable="Basic Financials"
                 showcopypaste="false"
                 context="derivatives"
             ></c-dmt_-table-header-section>
             <template lwc:if={isDataProcessed}>
                 <div class="slds-table_edit_container">
-                    <table aria-describedby="tableDataProcesed" class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_edit slds-table_fixed-layout" role="grid">
+                    <table aria-describedby="tableDataProcesed" class="tablaStyles slds-table slds-table_cell-buffer slds-table_bordered slds-table_edit slds-table_fixed-layout" role="grid">
                         <thead>
                             <tr class="slds-line-height_reset">
                                 <template for:each={columns} for:item="column">
@@ -43,7 +43,9 @@
                                                             <div class="slds-col slds-truncate slds-size_2-of-8 cell-value">
                                                                 <p>{cell.value}
                                                                     <template lwc:if={isOpportunity}>
-                                                                        <span><c-dmt_warning_hover content={cell.accountValue} is-equals={cell.isEquals} object="Client"> </c-dmt_warning_hover></span>
+                                                                        <template lwc:if={cell.hasComparisonValue}>
+                                                                            <span><c-dmt_warning_hover content={cell.accountValue} is-equals={cell.isEquals} object="Client"> </c-dmt_warning_hover></span>
+                                                                        </template>
                                                                     </template>
                                                                 </p>
                                                             </div>
@@ -53,7 +55,9 @@
                                                                         <template lwc:if={isOpportunity}>
                                                                             <lightning-button-icon icon-name="utility:redo" class="redo-icon no-border" alternative-text="redo" data-id={row.Id} data-field={cell.field} onclick={handleRedo} variant='bare' style={cell.styleRedo}></lightning-button-icon>
                                                                         </template>
-                                                                        <lightning-button-icon icon-name="utility:edit" class="edit-icon no-border" alternative-text="Edit" data-id={row.Id} data-field={cell.field} onclick={handleEdit} variant='bare'></lightning-button-icon>
+                                                                        <template lwc:if={isEditPencilEnabled}>
+                                                                            <lightning-button-icon icon-name="utility:edit" class="edit-icon no-border" alternative-text="Edit" data-id={row.Id} data-field={cell.field} onclick={handleEdit} variant='bare'></lightning-button-icon>
+                                                                        </template>
                                                                     </div>
                                                                 </template>
                                                             </div>

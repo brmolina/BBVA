@@ -31,15 +31,8 @@ Data class: Arc_Gen_Balance_Tables_data
 *1.17       14/03/2022     francisco.munoz.torres.contractor@bbva.com   Get audit data from FFSS details and set into FFSS object
 *1.18       27/02/2023     joseluis.miralles.contractor@bbva.com        Update overlay record with ratingEngine value
 -----------------------------------------------------------------------------------------*/
-@SuppressWarnings('PMD.ExcessiveParameterList, PMD.ExcessivePublicCount')
+@SuppressWarnings('PMD.ExcessiveParameterList, PMD.ExcessivePublicCount, PMD.CognitiveComplexity, PMD.CyclomaticComplexity')
 public with sharing class Arc_Gen_ModalFinanStatemController {
-
-    /**
-    * Empty constructor to avoid static code analysis tool warnings.
-    */
-    private Arc_Gen_ModalFinanStatemController() {
-
-    }
     /**
     * @Description Value of the "Valid" picklist entry of the ffss_valid_type field.
     */
@@ -128,6 +121,7 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
     /**
     * @Description: Structure of the Auditor
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     public Auditor() {}
     }
 
@@ -162,6 +156,15 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
         */
         @AuraEnabled public Arc_Gen_Balance_Tables_service.Pagination pagination { get; set; }
     }
+
+    /**
+    * Empty constructor to avoid static code analysis tool warnings.
+    */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
+    private Arc_Gen_ModalFinanStatemController() {
+
+    }
+
     /**
     *-------------------------------------------------------------------------------
     * @description method that draw the table of financial statements.
@@ -260,15 +263,17 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
         Map<String, String> updatedOrder = new Map<String, String>();
         for(arce__Financial_Statements__c aux :updatedEEFF) {
             updatedOrder.put(aux.arce__financial_statement_id__c, aux.arce__Order__c);
+            updatedOrder.put('arce__Selected_Adjustment_Type__c', aux.arce__Selected_Adjustment_Type__c);
         }
-        if (!hasPermissions && pFolderArceId  == null) {
+        if (!hasPermissions && pFolderArceId == null) {
             throw new AuraHandledException(System.Label.Arc_Gen_Generic_NotAllowed);
         }
         Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
         try {
             final List<arce__Financial_Statements__c> financialStat = Arc_Gen_Balance_Tables_service.setupFFSSHeadersProp(recordId, false, ratingToolSelect, pFolderArceId);
-            for(arce__Financial_Statements__c aux :financialStat) { 
+            for(arce__Financial_Statements__c aux :financialStat) {
                 aux.arce__Order__c = updatedOrder.get(aux.arce__financial_statement_id__c);
+                aux.arce__Selected_Adjustment_Type__c = updatedOrder.get('arce__Selected_Adjustment_Type__c');
             }
             final List<arce__Financial_Statements__c> selectedFinancialStatements = Arc_Gen_Balance_Tables_service.filterFFSSByServiceId(financialStat, financialIdList);
             Arc_Gen_Balance_Tables_service.RatiosAndRatingResponse resp = new Arc_Gen_Balance_Tables_service.RatiosAndRatingResponse();
@@ -281,17 +286,16 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
                 Arc_Gen_Balance_Tables_data.insertNewRecord(selectedFinancialStatements[0]);
                 Arc_Gen_Balance_Tables_helper.saveRatingFfss(analyzedClient[0], selectedFinancialStatements, resp, selectedFinancialStatements[0]);
             }
-            
-            
+
             if(pFolderArceId == null) {
                 dataValueUpdate(recordId);
             }
-              
+
             return resp;
         } catch (Exception ex) {
             System.debug('e '+ex.getStackTraceString());
-            AuraHandledException auraEx = financialStatementExceptionHandling(ex);
-            throw auraEx; // NOSONAR
+            //AuraHandledException auraEx = financialStatementExceptionHandling(ex);
+            throw ex;
         }
     }
     /**
@@ -323,7 +327,6 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
         }
         return res;
     }
-
 
     /**
     *----------------------------------------------------------------------------------------------------------------------------------------
@@ -373,7 +376,9 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
     **/
     @AuraEnabled
     public static void updateEEFF(List<arce__Financial_Statements__c> eeffList) {
-        update eeffList;
+        if (Schema.sObjectType.arce__Financial_Statements__c.isUpdateable()) {
+            update eeffList;
+        }
     }
     /**
     *----------------------------------------------------------------------------------------------------------------------------------------
@@ -412,48 +417,6 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
         return gen.getAsString();
     }
 
-    /**
-    *----------------------------------------------------------------------------------------------------------------------------------------
-    * @Description Write new JSON node that represents a column.
-    *----------------------------------------------------------------------------------------------------------------------------------------
-    * @Author   aleksandar.dinkov.contractor@bbva.com
-    * @Date     2022-04-22
-    * @param JSONGenerator gen      - JSONGenerator instance must be started and ended, see example below.
-    * @param String label           - set null to avoid creating this parameter
-    * @param Integer initialWidth   - set null to avoid creating this parameter
-    * @param String fieldName       - set null to avoid creating this parameter
-    * @param String type            - set null to avoid creating this parameter
-    * @param Boolean editable       - set null to avoid creating this parameter
-    * @param Boolean sortable       - set null to avoid creating this parameter
-    * @example
-    * JSONGenerator gen = JSON.createGenerator(false);
-    * gen.writeStartArray();
-    * writeNewCol(gen, 'RandomLabel', 25, 'arce__Order__c', 'phone', true, true);
-    * gen.writeEndArray();
-    * ---------------------------------------------------------------------------------------------------------------------------------------
-    **/
-    public static void writeNewCol(JSONGenerator gen, String label, Integer initialWidth, String fieldName, String type, Boolean editable, Boolean sortable) {
-        gen.writeStartObject();
-        if (label != null) {
-            gen.writeStringField('label', label);
-        }
-        if (initialWidth != null) {
-            gen.writeNumberField('initialWidth', initialWidth);
-        }
-        if (fieldName != null) {
-            gen.writeStringField('fieldName', fieldName);
-        }
-        if (type != null) {
-            gen.writeStringField('type', type);
-        }
-        if (editable != null) {
-            gen.writeBooleanField('editable', editable);
-        }
-        if (sortable != null) {
-            gen.writeBooleanField('sortable', sortable);
-        }
-        gen.writeEndObject();
-    }
     /**
     *----------------------------------------------------------------------------------------------------------------------------------------
     * @Description save EEFF
@@ -502,7 +465,7 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
         final List<Double> ratiosToGet = new List<Double>{RATIO_ID};
         final List<arce__Account_has_Analysis__c> listFFSS = balanceClass.getAccountHasAnalysis(recordId);
         final String idFFSS = listFFSS.isEmpty() ?  '' : listFFSS.get(0).arce__ffss_for_rating_id__r.arce__financial_statement_id__c;
-        final List<arce__Table_Content_per_Analysis__c> ratiosValues = Arc_Gen_Balance_Tables_data.getRatiosRecords(recordId,idFFSS,ratiosToGet); 
+        final List<arce__Table_Content_per_Analysis__c> ratiosValues = Arc_Gen_Balance_Tables_data.getRatiosRecords(recordId,idFFSS,ratiosToGet);
         if(!ratiosValues.isEmpty() && String.isNotBlank(idFFSS)) {
             Arc_Gen_Balance_Tables_data.updateDataValueOverlay(recordId,String.valueOf(ratiosValues.get(0).arce__table_content_value__c));
         }
@@ -521,10 +484,63 @@ public with sharing class Arc_Gen_ModalFinanStatemController {
     **/
     @AuraEnabled
     public static void updateIsRTC(String ahaId) {
-        final arce__Account_has_Analysis__c aha = [SELECT arce__Analysis__c FROM	arce__Account_has_Analysis__c WHERE Id =: ahaId];
-        final arce__Analysis__c analysis = new arce__Analysis__c(Id = aha.arce__Analysis__c);
-        analysis.arce__is_RTC__c = true;
-        arce.Arc_Gen_ArceAnalysis_Data.updateArce(new List<arce__Analysis__c>{analysis});
+        if (Schema.sObjectType.arce__Account_has_Analysis__c.isAccessible()) {
+            final arce__Account_has_Analysis__c aha = [SELECT arce__Analysis__c FROM	arce__Account_has_Analysis__c WHERE Id =: ahaId];
+            final arce__Analysis__c analysis = new arce__Analysis__c(Id = aha.arce__Analysis__c);
+            analysis.arce__is_RTC__c = true;
+            arce.Arc_Gen_ArceAnalysis_Data.updateArce(new List<arce__Analysis__c>{analysis});
+        }
+    }
 
+    /**
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Description Write new JSON node that represents a column.
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Author   francisco.munoz.torres.next@bbva.com
+    * @Date     26/02/2024
+    * @param JSONGenerator gen      - JSONGenerator instance must be started and ended, see example below.
+    * @param String label           - set null to avoid creating this parameter.
+    * @param Integer initialWidth   - set null to avoid creating this parameter.
+    * @param String fieldName       - set null to avoid creating this parameter.
+    * @param String type            - set null to avoid creating this parameter.
+    * @param Boolean editable       - set null to avoid creating this parameter.
+    * @param Boolean sortable       - set null to avoid creating this parameter.
+    * @example
+    * JSONGenerator gen = JSON.createGenerator(false);
+    * gen.writeStartArray();
+    * writeNewCol(gen, 'RandomLabel', 25, 'arce__Order__c', 'phone', true, true);
+    * gen.writeEndArray();
+    * ---------------------------------------------------------------------------------------------------------------------------------------
+    **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static void writeNewCol(
+        JSONGenerator gen,
+        String label,
+        Integer initialWidth,
+        String fieldName,
+        String type,
+        Boolean editable,
+        Boolean sortable
+    ) {
+        gen.writeStartObject();
+        if (label != null) {
+            gen.writeStringField('label', label);
+        }
+        if (initialWidth != null) {
+            gen.writeNumberField('initialWidth', initialWidth);
+        }
+        if (fieldName != null) {
+            gen.writeStringField('fieldName', fieldName);
+        }
+        if (type != null) {
+            gen.writeStringField('type', type);
+        }
+        if (editable != null) {
+            gen.writeBooleanField('editable', editable);
+        }
+        if (sortable != null) {
+            gen.writeBooleanField('sortable', sortable);
+        }
+        gen.writeEndObject();
     }
 }

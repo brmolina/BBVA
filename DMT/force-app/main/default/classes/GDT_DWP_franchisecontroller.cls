@@ -20,7 +20,7 @@ public with sharing class GDT_DWP_franchisecontroller {//NOSONAR
                                                  FROM DES_Franchises__c
                                                  WHERE DES_Client__c =:accountId
                                                  AND DES_Type_of_vision__c = 'Business Line'
-                                                 AND source_code_desc__c = 'Datio'
+                                                 AND (source_code_desc__c = 'Datio' OR source_code_desc__c = 'ADA')
                                                  GROUP BY DES_Vision__c, solution_name_path_desc__c];
             system.debug(franchises);
             
@@ -31,7 +31,7 @@ public with sharing class GDT_DWP_franchisecontroller {//NOSONAR
                                                  FROM DES_Franchises__c
                                                  WHERE DES_Client__c =:accountId
                                                  AND DES_Type_of_vision__c = 'Business Line'
-                                                 AND source_code_desc__c = 'Datio'
+                                                 AND (source_code_desc__c = 'Datio' OR source_code_desc__c = 'ADA')
                                                  GROUP by DES_Vision__c
                                                  ];
             return franchiseValues(franchises, newProducts, 'Year');
@@ -49,7 +49,7 @@ public with sharing class GDT_DWP_franchisecontroller {//NOSONAR
                                                  FROM DES_Franchises__c
                                                  WHERE DES_Client__c =:accountId
                                                  AND DES_Type_of_vision__c = 'Business Line'
-                                                 AND source_code_desc__c = 'Datio'
+                                                 AND (source_code_desc__c = 'Datio' OR source_code_desc__c = 'ADA')
                                                  GROUP BY DES_Vision__c, solution_name_path_desc__c];
             system.debug(franchises);
             
@@ -60,7 +60,7 @@ public with sharing class GDT_DWP_franchisecontroller {//NOSONAR
                                                  FROM DES_Franchises__c
                                                  WHERE DES_Client__c =:accountId
                                                  AND DES_Type_of_vision__c = 'Business Line'
-                                                 AND source_code_desc__c = 'Datio'
+                                                 AND (source_code_desc__c = 'Datio' OR source_code_desc__c = 'ADA')
                                                  GROUP by DES_Vision__c
                                                  ];
             return franchiseValues(franchises, newProducts, 'Month');

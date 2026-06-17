@@ -1,0 +1,16 @@
+.THIS .inputSize {
+    width:100%;
+}
+.THIS span.color{
+    color:#FF0000;
+}
+.THIS .estiloBuscar{
+    width: 50%;
+    margin: auto;
+}
+.THIS.estiloTabla{
+    margin-top: 2rem !important;
+    width: 80%;
+    margin: auto;
+    margin-bottom: 2rem !important;
+}

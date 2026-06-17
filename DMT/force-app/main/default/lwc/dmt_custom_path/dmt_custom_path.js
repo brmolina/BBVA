@@ -1,130 +1,140 @@
 import { LightningElement, api } from 'lwc'
-import { loadStyle } from 'lightning/platformResourceLoader'
-import DMT_Styles from '@salesforce/resourceUrl/DMT_Styles'
 
-export default class dmt_custom_path_refactor extends LightningElement {
-  @api recordId
-  @api objectApiName
-  @api status
-  @api stages = []
+export default class dmt_custom_path extends LightningElement {
+    @api recordId
+    @api objectApiName
+    @api status
+    @api stages = []
+    @api disabledStages = []
+    @api readOnlyMode = false
 
-  _selectedStage
+    _selectedStage
 
-  @api
-  get selectedStage() {
-    return this._selectedStage;
-  }
-  set selectedStage(value) {
-    this._selectedStage = value;
-  }
-
-  isLoading = false
-  isDisabled = false
-  _stylesLoaded = false
-
-  @api
-  setLoading(value) {
-    this.isLoading = value;
-    this.isDisabled = value;
-  }
-
-  @api
-  setIsDisabled(value) {
-    this.isDisabled = value;
-  }
-
-  get computedSteps() {
-    if (!this.stages || this.stages.length === 0) return [];
-
-    const visualSelection = this._selectedStage || this.status;
-    const currentStatusIndex = this.stages.indexOf(this.status);
-    const isLostRecord = this.status && this.status.includes('Lost');
-
-    return this.stages.map((stage, index) => {
-      const isSelected = (stage === visualSelection);
-      const isCurrentStatus = (stage === this.status);
-      const isPast = (index < currentStatusIndex);
-
-      // --- CONSTRUCCIÓN DE CLASES (ORDEN ESTRICTO) ---
-      // Empezamos con la base
-      let classList = 'slds-path__item';
-
-      // 1. ESTADO BASE (Color de fondo)
-      if (isCurrentStatus) {
-         if (isLostRecord) classList += ' slds-is-lost'; // Rojo
-         else classList += ' slds-is-current'; // Azul claro
-      }
-      else if (isPast) {
-         if (isLostRecord) classList += ' slds-is-incomplete'; // Blanco (Efecto Ghost para Lost)
-         else classList += ' slds-is-complete'; // Verde (Normal)
-      }
-      else {
-         classList += ' slds-is-incomplete'; // Blanco/Gris (Futuro)
-      }
-
-      // 2. ESTADO ACTIVO (Selección manual)
-      // Esta clase añade el Z-Index 100 y el color Azul Oscuro
-      if (isSelected) {
-         classList += ' slds-is-active';
-      }
-
-      return {
-        label: stage,
-        value: stage,
-        className: classList,
-        // Check icon: Solo en pasos pasados verdes que NO están seleccionados
-        showCheckIcon: isPast && !isLostRecord && !isSelected
-      };
-    });
-  }
-
-  // ... (Tus getters buttonLabel, buttonIcon, renderedCallback, handlers siguen igual)
-  get buttonLabel() {
-    if (this.isLoading) return 'Saving...';
-    if (this._selectedStage && this._selectedStage !== this.status) return 'Mark as Current Status';
-    return 'Mark Status as Complete';
-  }
-
-  get buttonIcon() {
-    return this.isLoading || (this._selectedStage && this._selectedStage !== this.status) ? null : 'utility:check';
-  }
-
-  renderedCallback() {
-    if (!this._stylesLoaded) {
-        Promise.all([loadStyle(this, DMT_Styles)])
-        .then(() => { this._stylesLoaded = true; })
-        .catch(error => { console.error('Error loading styles', error); });
+    @api
+    get selectedStage() {
+        return this._selectedStage
     }
-  }
-
-  handleStageClick(event) {
-    event.preventDefault();
-    const stageName = event.currentTarget.dataset.value;
-
-    // Actualización visual INMEDIATA
-    this._selectedStage = stageName;
-
-    // Avisar al padre
-    this.dispatchEvent(new CustomEvent('stageclick', { detail: { selectedStage: stageName } }));
-  }
-
-  handleMarkComplete() {
-    this.isLoading = true;
-    this.isDisabled = true;
-
-    let nextStage;
-    if (this._selectedStage && this._selectedStage !== this.status) {
-      nextStage = this._selectedStage;
-    } else {
-      const currentIndex = this.stages.indexOf(this.status);
-      const nextIndex = currentIndex + 1;
-      if (nextIndex >= this.stages.length) {
-        this.isLoading = false;
-        this.setIsDisabled(false);
-        return;
-      }
-      nextStage = this.stages[nextIndex];
+    set selectedStage(value) {
+        this._selectedStage = value
     }
-    this.dispatchEvent(new CustomEvent('markcomplete', { detail: { nextStage: nextStage } }));
-  }
+
+    isLoading = false
+    isDisabled = false
+
+    @api setLoading(value) {
+        this.isLoading = value
+    }
+
+    @api setIsDisabled(value) {
+        this.isDisabled = value
+    }
+
+    /* ── Items del path con clases SLDS y estado calculado ───────────────── */
+    get computedSteps() {
+        if (!this.stages || this.stages.length === 0) return []
+
+        // La selección visual es el stage clickeado, o el actual por defecto
+        const visualSelection = this._selectedStage || this.status
+        const currentIdx = this.stages.indexOf(this.status)
+        const isLostRecord = !this.readOnlyMode && this.status && this.status.includes('Lost')
+        const disabledSet = new Set(this.disabledStages || [])
+
+        return this.stages.map((stage, index) => {
+            const isSelected = stage === visualSelection
+            const isCurrentStatus = stage === this.status
+            const isPast = index < currentIdx
+            const isStageDisabled = disabledSet.has(stage)
+            const isInteractive = !this.readOnlyMode && !isStageDisabled
+
+            let cssClass = 'slds-path__item'
+
+            // Estado base
+            if (isCurrentStatus) {
+                cssClass += isLostRecord ? ' slds-is-lost slds-is-current' : ' slds-is-current'
+            } else if (isPast) {
+                cssClass += isLostRecord ? ' slds-is-incomplete' : ' slds-is-complete'
+            } else {
+                cssClass += ' slds-is-incomplete'
+            }
+
+            // slds-is-active: marca el stage seleccionado visualmente (por defecto el actual).
+            // Es puramente visual, se aplica también en read-only para que el actual se vea azul.
+            // Solo se omite en stages deshabilitados (esos van en gris).
+            if (isSelected && !isStageDisabled) {
+                cssClass += ' slds-is-active'
+            }
+
+            // Stages deshabilitados (gris)
+            if (isStageDisabled) {
+                cssClass += ' dmt-stage-disabled'
+            }
+
+            // Modo read-only (para CSS de cursor / pointer-events)
+            if (this.readOnlyMode) {
+                cssClass += ' dmt-readonly'
+            }
+
+            return {
+                label: stage,
+                value: stage,
+                cssClass,
+                isSelected: isSelected && isInteractive ? 'true' : 'false',
+                tabindex: isSelected && isInteractive ? '0' : '-1',
+                ariaDisabled: isInteractive ? 'false' : 'true'
+            }
+        })
+    }
+
+    /* ── Visibilidad del botón ───────────────────────────────────────────── */
+    get showActionButton() {
+        return !this.readOnlyMode
+    }
+
+    /* ── Botón de acción ─────────────────────────────────────────────────── */
+    get buttonLabel() {
+        if (this.isLoading) return 'Saving...'
+        if (this._selectedStage && this._selectedStage !== this.status) return 'Mark as Current Status'
+        return 'Mark Status as Complete'
+    }
+
+    /* ── Handlers ────────────────────────────────────────────────────────── */
+    handleStageClick(event) {
+        event.preventDefault()
+
+        if (this.isLoading || this.readOnlyMode) return
+
+        const stageName = event.currentTarget.dataset.value
+
+        // Bloquear stages deshabilitados
+        if (this.disabledStages && this.disabledStages.includes(stageName)) return
+
+        this._selectedStage = stageName
+
+        this.dispatchEvent(new CustomEvent('stageclick', {
+            detail: { selectedStage: stageName }
+        }))
+    }
+
+    handleMarkComplete() {
+        if (this.readOnlyMode) return
+
+        this.isLoading = true
+
+        let nextStage
+        if (this._selectedStage && this._selectedStage !== this.status) {
+            nextStage = this._selectedStage
+        } else {
+            const currentIndex = this.stages.indexOf(this.status)
+            const nextIndex = currentIndex + 1
+            if (nextIndex >= this.stages.length) {
+                this.isLoading = false
+                return
+            }
+            nextStage = this.stages[nextIndex]
+        }
+
+        this.dispatchEvent(new CustomEvent('markcomplete', {
+            detail: { nextStage }
+        }))
+    }
 }

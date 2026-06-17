@@ -47,12 +47,12 @@ public class GBL_TestDataFactory_Initiative_AUX {
   /*
    * Variable string
    */
-  static final String CIBPLATINUM = 'CIB-Platinum';
+  static final String CIBPLATINUM = '00000020';
 
   /*
    * Variable string
    */
-  static final String CORPORATE = 'Corporate';
+  static final String CORPORATE = '00005';
 
   /*
    * Variable string
@@ -138,8 +138,8 @@ public class GBL_TestDataFactory_Initiative_AUX {
     } else {
       camp.Status = DRAFT;
       camp.Name = 'camp885';
-      camp.tier_desc__c = 'CIB-Gold';
-      camp.segment_desc__c = 'Corporate;Others';
+      camp.tier_desc__c = '00000021';
+      camp.segment_desc__c = '00005;Others';
       final Id recType = Schema.SObjectType.Campaign.getRecordTypeInfosByName().get(INITIATIVE).getRecordTypeId();
       camp.RecordTypeId = recType;
       camp.StartDate = system.today();

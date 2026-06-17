@@ -32,7 +32,38 @@ export default class DmtBankingPoolTable extends LightningElement {
     @track isDataProcessed = false;
 
     _internalEditMode = false;
+    _isReadOnly = false;
+    _stageName;
     eventHandlers = {};
+
+    @api
+    get isReadOnlyUser() {
+        return this._isReadOnly;
+    }
+    set isReadOnlyUser(value) {
+        this._isReadOnly = (value === true || value === 'true');
+    }
+
+    @api
+    get stageName() {
+        return this._stageName;
+    }
+    set stageName(value) {
+        this._stageName = value;
+    }
+
+    @api
+    get StageName() {
+        return this._stageName;
+    }
+    set StageName(value) {
+        this._stageName = value;
+    }
+
+    get isEditPencilEnabled() {
+        return this._isReadOnly === false
+            && (this._stageName === 'Draft' || this._stageName === 'Proposal');
+    }
 
     @api
     get isEditMode() {
@@ -192,6 +223,9 @@ export default class DmtBankingPoolTable extends LightningElement {
     }
 
     handleEditCell() {
+        if (!this.isEditPencilEnabled) {
+            return;
+        }
         this.setEditModeForView(true);
     }
 

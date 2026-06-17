@@ -1,0 +1,95 @@
+<aura:component controller='GBL_AccountMultiHierarchy_SrvrCtrl' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="change" value="{!v.currentNodeId}" action="{!c.handleNodeClick}"/>
+    <aura:handler event="c:GBL_GetHierarchyNode_evt" action="{!c.handleGetNode}"/>
+
+    <aura:attribute name="leadLookupField" type="String" default="" access="global"/>
+    <aura:attribute name="useStandard" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="accountTypeField" type="String" default="" access="global"/>
+    <aura:attribute name="visibleNodeIds" type="List" default="[]" />
+    <aura:attribute name="scopeOptions" type="List" default="[]" />
+    <aura:attribute name="mySelectedRels" type="List" default="[]" />
+    <aura:attribute name="ResourcesLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="OptionsLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="hierarchyMode" type="List" default="[
+                                                              {'label': 'Ascendants', 'value': 'ModeAsc', 'title': 'Displays Client Ascendants hierarchy'},
+                                                              {'label': 'Descendants', 'value': 'ModeDesc', 'title': 'Displays Client Descendants hierarchy'}
+                                                              ]"/>
+    <aura:attribute name="hmValue" type="String" default="ModeDesc"/>
+    <aura:attribute name="dspOrientation" type="String" default="left-to-right"/>
+    <aura:attribute name="dspCollapsed" type="Boolean" default="false"/>
+    <aura:attribute name="treeData" type="Object"/>
+    <aura:attribute name="childsLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="currentNodeId" type="String"/>
+    <aura:attribute name="nodeTypes" type="List"/>
+
+    <ltng:require scripts="{!join(',',
+                          $Resource.d3v4min,
+                          $Resource.jquery321min)}"
+                  afterScriptsLoaded="{!c.afterLoaded}" />
+
+    <article class="slds-card slds-card_boundary">
+        <div class="slds-grid slds-card__header slds-grid_vertical-align-end slds-grid_pull-padded-medium">
+        <div aura:id="scopeCombo" class="slds-p-horizontal_xx-small myCombo-header">
+              <lightning:combobox aura:id="selectScope" name="Scope" label="Vision:"
+                                placeholder="Select a Vision"
+                                title="Select the vision to apply to the hierarchy. Please refresh after selection."
+                                onchange="{!c.handleScope}"
+                                options="{!v.scopeOptions}"/>
+          </div>
+          <div class="slds-p-horizontal_xx-small myCombo-header">
+              <c:GBL_MultiSelector aura:id="my-multi-select" selectChange="{!c.handleSelectChangeEvent}" optionsLoaded="{!c.handleOptionsLoadedEvent}" title="Relationship Types:"/>
+          </div>
+          <div class="slds-p-horizontal_xx-small">
+              <lightning:buttonIcon iconName="utility:refresh" variant="border" onclick="{! c.handleRefresh}" alternativeText="Refreshes the diagram using the new filters setup" />
+          </div>
+          <div class="slds-p-horizontal_xx-small slds-col_bump-left">
+              <lightning:radioGroup aura:id="rgHierarchy"
+                                  name="rgHierarchy"
+                                  label=""
+                                  options="{!v.hierarchyMode}"
+                                  value="{!v.hmValue}"
+                                  onchange="{!c.handleHierarchyModeChange}"
+                                  type="button"/>
+          </div>
+        </div>
+    </article>
+
+    <article class="slds-card slds-card_boundary">
+        <lightning:spinner aura:id="treeSpinner" variant="brand" class="slds-hide" size="large" alternativeText="retrieving hierarchy structure"/>
+        <div class="slds-card__header">
+            <div>
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-hierarchy" title="Desc Account Hierarchy">
+                            <lightning:icon iconName="standard:hierarchy" size="small"/>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h1>
+                            <span class="slds-text-heading_small" style="font-weight:bold">Hierarchy</span>
+                        </h1>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-p-horizontal_xx-small">
+              <lightning:helptext class="slds-align-center" content="OPEN/CLOSE NODE: Click on circle. CLIENT DETAIL DRILLDOWN: Click on client name. MOVE DIAGRAM: Move the mouse while pressing left button. ZOOM IN/OUT: Use mouse wheel or two fingers in touchpad." />
+            </div>
+        </div>
+        <div class="slds-card__body slds-card__body_inner slds-scrollable">
+            <div id="svgcontainer" aura:id="svgContainerAura" style="height:100%;width:100%">
+            </div>
+        </div>
+
+        <footer class="slds-card__footer">
+            <div class="slds-grid slds-grid_vertical-align-start slds-grid_pull-padded-medium">
+                <aura:iteration items="{!v.nodeTypes}" var="node">
+                    <span class="slds-badge" style="{!'background-color: ' + node.color}">{!node.label}</span>
+                </aura:iteration>
+            </div>
+        </footer>
+    </article>
+    <div>
+        <p>{!v.rgHierarchy.value}</p>
+    </div>
+</aura:component>

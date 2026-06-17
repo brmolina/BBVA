@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>GDT_Block_Studies_Proposal_Controller</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GDT_Proposal_Path_Controller</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>Arce_Proposal_Ambit_Hierarchy__mdt</name>
+    </customMetadataTypeAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>GDT_Committee_Geo__mdt</name>
+    </customMetadataTypeAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>GDT_Proposal_Taxonomy__mdt</name>
+    </customMetadataTypeAccesses>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>GDT_Proposal_Button</name>
+    </customPermissions>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>isARCE</name>
+    </customPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>GDT Proposal Modify</label>
+</PermissionSet>

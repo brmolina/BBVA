@@ -1,0 +1,12 @@
+<design:component>
+    <design:attribute name="selectedLookUpUserID" label="User"/>
+    <design:attribute name="selectedLookUpRecordID" label="PS Product"/>
+    <design:attribute name="productFamily" label="Family Product"/>
+    <design:attribute name="memberRole" label="Member Role"/>
+    <design:attribute name="memberScope" label="Scope"/>
+    <design:attribute name="memberCoverage" label="Coverage"/>
+    <design:attribute name="existsGB" label="Exists Global Banker"/>
+    <design:attribute name="existsSGB" label="Exists Secondary Global Banker"/>
+    <design:attribute name="existsIH" label="Exists Industry Head"/>
+    <design:attribute name="lookupObject" label="ID Object"/>
+</design:component>

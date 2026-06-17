@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_tot_sold_order_fees_amount__c</fullName>
+    <description>Corresponde al sumatorio de las Fees pagadas al Mercado por cada una de las Ordenes de Venta realizadas para desintermediar toda la posición.</description>
+    <label>Total Fees paid to the market</label>
+    <summarizedField>Sold_Order__c.gf_sold_order_fees_paid_amount__c</summarizedField>
+    <summaryForeignKey>Sold_Order__c.opportunity_id__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>USA</fullName>
+    <columns>NAME</columns>
+    <columns>region_emea__c</columns>
+    <columns>region_latam__c</columns>
+    <columns>region_usa__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>region_usa__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>USA</label>
+</ListView>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>View_Fields</fullName>
+    <columns>MasterLabel</columns>
+    <columns>CSL__c</columns>
+    <columns>CSL_Compass__c</columns>
+    <columns>ECA__c</columns>
+    <columns>GTB__c</columns>
+    <columns>PF__c</columns>
+    <columns>WVL_fld_NombreCampo__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>View Fields</label>
+    <language>en_US</language>
+</ListView>

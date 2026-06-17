@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Set_Closed_Won_Lost</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL(Status__c, &quot;Closed&quot;), 
+AND(NOT(ISPICKVAL(Closed__c, &quot;Won&quot;)),NOT(ISPICKVAL(Closed__c, &quot;Lost&quot;))))</errorConditionFormula>
+    <errorMessage>Confirm whether it is a Won or Lost line before</errorMessage>
+</ValidationRule>

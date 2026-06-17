@@ -17,6 +17,7 @@
 @isTest
 public class Arc_Gen_UtilityBarResumeTable_Test {
     @testSetup static void setup() {
+        arce.Arc_UtilitiesToTest_tst.enableBypass();
         Arc_UtilitysDataTest_tst.setupAcccounts();
         final Map<String,arce.Arc_Gen_Account_Wrapper> groupAccWrapper = arce.Arc_Gen_Account_Locator.getAccountByAccNumber(new List<String>{'G000001','C000001'});
         final arce.Arc_Gen_Account_Wrapper groupAccount = groupAccWrapper.get('G000001');

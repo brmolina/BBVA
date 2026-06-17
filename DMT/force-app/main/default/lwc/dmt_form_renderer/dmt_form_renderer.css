@@ -1,0 +1,120 @@
+* { }
+
+/* ===================================================================
+   TEXTAREA — truncado horizontal con "View More / View Less"
+   =================================================================== */
+
+.textarea-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.textarea-text {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+    line-height: 1.1;
+}
+
+.textarea-text.is-expanded {
+    white-space: pre-wrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.textarea-toggle {
+    position: absolute;
+    right: -33px;
+    top: -1px;
+    padding-left: 0.2rem;
+    background: rgb(255, 255, 255);
+    color: #0070d2;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 0.72rem;
+}
+
+.textarea-toggle.is-block {
+    position: static;
+    padding-left: 0.25rem;
+    background: none;
+    display: inline;
+}
+
+.textarea-toggle:hover {
+    text-decoration: underline;
+}
+
+/* ===================================================================
+   CONTROL helpers
+   =================================================================== */
+
+.control-min-height {
+    min-height: 1.5rem;
+}
+
+/* ===================================================================
+   LIGHTNING-INPUT wrappers — reset margin and display
+   =================================================================== */
+
+.date-wrapper lightning-input {
+    display: block;
+}
+
+.date-wrapper .slds-form-element {
+    margin: 0;
+}
+
+.lightning-wrapper lightning-input {
+    display: block;
+}
+
+.lightning-wrapper .slds-form-element {
+    margin: 0;
+}
+
+.lightning-wrapper.checkbox-wrapper {
+    border-bottom: 1px solid #dddbda;
+    padding-top: 0.4rem;
+    min-height: 2rem;
+}
+
+/* ===================================================================
+   RECORD PICKER wrapper
+   — Aligns the native lightning-record-picker visually with the rest
+     of the inputs: removes extra margin, forces block display, and
+     ensures the inner combobox fills 100% of the available width so
+     it behaves like every other field in the grid.
+   =================================================================== */
+
+.record-picker-wrapper {
+    /* Ensure the wrapper stretches to the full column width */
+    width: 100%;
+}
+
+.record-picker-wrapper lightning-record-picker {
+    display: block;
+    width: 100%;
+}
+
+/* Reset the internal form-element margin so vertical rhythm matches
+   other inputs rendered inside .lightning-wrapper */
+.record-picker-wrapper .slds-form-element {
+    margin: 0;
+}
+
+/* The native component renders a div.slds-combobox-group or similar;
+   make sure it also stretches to 100% */
+.record-picker-wrapper lightning-record-picker div {
+    max-width: 100%;
+}
+
+.truncate-label-text{
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

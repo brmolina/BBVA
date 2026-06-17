@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_My_Prospects</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>DES_Client_Type__c</columns>
+    <columns>DES_Country_Client__c</columns>
+    <columns>DES_Priority__c</columns>
+    <columns>ACCOUNT.INDUSTRY</columns>
+    <columns>DES_AGGR_Sector__c</columns>
+    <columns>DES_Global_banker__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Prospect_Group,Account.Prospect_Subsidiary</value>
+    </filters>
+    <label>My Prospects</label>
+</ListView>

@@ -1,0 +1,7 @@
+<aura:component controller="DES_cls_DynamicButtonsCtrlLWC"
+    implements="force:lightningQuickAction,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes"
+    access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+</aura:component>

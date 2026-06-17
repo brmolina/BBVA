@@ -1,5 +1,5 @@
 @IsTest
-global class DMT_Integration_MockGenerator implements HttpCalloutMock {
+global without sharing class DMT_Integration_MockGenerator implements HttpCalloutMock {
     global HttpResponse respond(HttpRequest req) {
         HttpResponse res = new HttpResponse();
         String endpoint = req.getEndpoint();
@@ -15,9 +15,6 @@ global class DMT_Integration_MockGenerator implements HttpCalloutMock {
         Map<String, Map<String, String>> endpointToMethodDevName = new Map<String, Map<String, String>>{
             'assumption' => new Map<String, String>{
                 'POST' => 'DMT_ProfitabilityMatrix'
-            },
-            'consumption' => new Map<String, String>{
-                'POST' => 'DMT_HPG_GetConsumption'
             },
             'lines' => new Map<String, String>{
                 'POST' => 'DMTO_RiskPositionLine'
@@ -47,12 +44,6 @@ global class DMT_Integration_MockGenerator implements HttpCalloutMock {
             'opportunities-codes' => new Map<String, String>{
                 'POST' => 'DMT_OpportunityCodes'
             },
-            'capital-provision' => new Map<String, String>{
-                'POST' => 'DMT_HPG_GetCapitalProvision'
-            },
-            'connected-customers' => new Map<String, String>{
-                'GET' => 'DMT_HPG_ConnectedCustomers'
-            },
             'evaluation-line' => new Map<String, String>{
                 'GET' => 'DMTO_EvaluationLine'
             },
@@ -64,10 +55,6 @@ global class DMT_Integration_MockGenerator implements HttpCalloutMock {
             },
             'risk-proposals' => new Map<String, String>{
                 'GET' => 'GDT_BlockStudiesProposal'
-            },
-            'override-consumption' => new Map<String, String>{
-                'POST' => 'DMT_HPG_CreateOverrideConsumption',
-                'PATCH' => 'DMT_HPG_UpdateOverrideConsumption'
             }
         };
 

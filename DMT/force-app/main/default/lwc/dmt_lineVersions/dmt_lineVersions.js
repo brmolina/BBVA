@@ -13,7 +13,9 @@ import OPP_NAME_FIELD from '@salesforce/schema/Opportunity.Name';
 import checkEditPermission from '@salesforce/apex/DMT_LineController.checkEditPermission';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 import getSnapshotEvaluationVersions from '@salesforce/apex/DMT_SnapshotEvaluationVersions.getSnapshotEvaluationVersions';
+import fillLastGeneratedVersionField from '@salesforce/apex/DMT_SnapshotEvaluationVersions.fillLastGeneratedVersionField';
 import processPostSnapshotEvaluationVersion from '@salesforce/apex/DMT_SnapshotEvaluationVersions.processPostSnapshotEvaluationVersion';
+import sendEmailToApprovers from '@salesforce/apex/DMT_SnapshotEvaluationVersions.sendEmailToApprovers';
 import getDMTUserId from '@salesforce/apex/DMT_SnapshotEvaluationVersions.getDMTUserId';
 import generatePdfJSON from '@salesforce/apex/DMT_SnapshotEvaluationVersions.generatePdfJSON';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -24,6 +26,8 @@ import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import enteredAdditionalText from '@salesforce/label/c.dmt_cl_enterAdditionalDataText';
 import versionDescriptionText from '@salesforce/label/c.dmt_cl_VersionDescriptionText';
 import versionCategoryText from '@salesforce/label/c.dmt_cl_VersionCategoryText';
+
+import DmtLineVersionsCompare from 'c/dmt_lineVersions_compare';
 
 export default class DmtLineVersions extends LightningElement {
 
@@ -54,6 +58,10 @@ export default class DmtLineVersions extends LightningElement {
       this.showDefault = false;
     }
 
+    get compareDisabled() {
+        return this.data.length < 2;
+    }
+
     pdfData = null;
     showPdf = false;
     displayModal = false;
@@ -64,6 +72,7 @@ export default class DmtLineVersions extends LightningElement {
 
     userInput = '';
     selectedCategory = 'User Defined'; // Default category for new versions
+    selectedCategoryClosedView = 'Closed-Won';
     selectCategoryDisabled = true;
 
     //create custom Labels variable
@@ -84,6 +93,8 @@ export default class DmtLineVersions extends LightningElement {
     currentPage = 1; // Tracks the current page
     totalPages = 0; // Stores the total number of pages
     paginatedData = []; // Stores the data for the current page
+
+    viewType = null;
 
     columns = [
         { label: 'View', type: 'button-icon', hideDefaultActions: true, initialWidth: 60 , cellAttributes: { style: 'text-align: center;' },
@@ -110,6 +121,33 @@ export default class DmtLineVersions extends LightningElement {
     connectedCallback() {
         this.registerErrorListener();
         this.handleSubscribe();
+    }
+
+    initializeViewType() {
+     //   if (this.viewType) return; // Return early if already set
+
+        switch (this.objectApiName) {
+            case 'Opportunity':
+                this.viewType = 'Opportunity';
+                break;
+            case 'DMT_Line__c':
+                this.viewType = 'Line';
+                break;
+            default:
+                console.warn('Unknown Object API Name:', this.objectApiName);
+        }
+    }
+
+    async handleOpenCompare() {
+        this.initializeViewType();
+        const result = await DmtLineVersionsCompare.open({
+            size: 'large', // Options: small, medium, large, full
+            description: 'Comparison Modal',
+            allVersions: this.data,
+            lineId: this.lineId,
+            viewType: this.viewType 
+        });
+        console.log('Modal closed with:', result);
     }
 
     handleSubscribe() {
@@ -227,6 +265,13 @@ export default class DmtLineVersions extends LightningElement {
                         body: version.body
                     })).sort((a, b) => b.versionNumber - a.versionNumber); // Sort by versionNumber in descending order
                     this.setData([...updatedData]); // Use setData to update data and pagination
+                    if(this.objectApiName === 'DMT_Line__c'){
+                        if (parsedResponse.data.versions != null && parsedResponse.data.versions.length > 0) {
+                           fillLastGeneratedVersionField({ LineId : this.lineId ,  description : updatedData[0].description,  category :  updatedData[0].category, version :  updatedData[0].version});
+                        }
+                    }
+                    console.log('updatedData[0]: '+JSON.stringify(updatedData[0]));
+
                 } else {
                     console.error('Error retrieving data from get snapshot evaluation versions, ', parsedResponse.errorMessage);
                     this.showToast('Error', 'Error in getSnapshotEvaluationVersions', 'error');
@@ -298,14 +343,16 @@ export default class DmtLineVersions extends LightningElement {
         } catch (error) {
             console.error('Error in processCreateNewVersion:', error.message);
             this.showToast('Warning', 'Failed validating duplicated data. Proceeding with create new version', 'warning');
-            this.handleCreateNewVersion(true);
+            //this.handleCreateNewVersion(true);
         }
     }
 
     async handleGeVersionBody(payload) {
+        console.log('Payload for getSnapshotEvaluationVersions:', payload);
         try {
             const response = await getSnapshotEvaluationVersions({ requestStr: payload });
             const parsedResponse = JSON.parse(response); // Parse the response string
+            console.log('Response from getSnapshotEvaluationVersions for version body:', JSON.stringify(parsedResponse));
             if (parsedResponse.success) {
               //  console.log('Parsed response body:', parsedResponse.data.versions[0].body);
                 return parsedResponse.data.versions[0].body; // Return the body of the first version
@@ -419,43 +466,53 @@ export default class DmtLineVersions extends LightningElement {
 
     inputFocused = false;
 
-    async handleCreateNewVersion() {
+    async handleCreateNewVersion(event) {
+        let actionSelected;
+        if(event){
+          actionSelected  = event.currentTarget.dataset.action;
+        }
+
+        
 
         if(this.showLineClosedView == false){
             let result;
             try {
                 result = await this.showPromptWithInput();
+
             } catch (e) {
-                // Prompt was cancelled (e.g., Esc pressed), so do not proceed
                 return;
             }
-            this.inputFocused = false; // Reset input focus state
+            this.inputFocused = false;
         }else{
-            this.isLoading = true; // Show spinner
+            this.isLoading = true;
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
         const payload = JSON.stringify({
             opportunityId: this.lineId,
             user: this.loggedInDmtUserId/*  ?? this.dmtUserId */,
-            categoryId: this.selectedCategory,
+            categoryId:  this.showLineClosedView ? this.selectedCategoryClosedView : this.selectedCategory,
             versionDescription: this.userInput
         });
-
+        
         this.userInput = ''; // Clear the input field after capturing the value
 
         let versionId;
         let body;
-        let type;
-             switch (this.objectApiName) {
+        /*let type;
+              switch (this.objectApiName) {
                 case 'Opportunity':
                     type = 'Opportunity';
                     break;
                 case 'DMT_Line__c':
                     type = 'Line';
                     break;
-            }
+            } */
 
-        processPostSnapshotEvaluationVersion({ requestStr: payload, recordId: this.recordId, type: type })
+        this.initializeViewType();
+
+
+        processPostSnapshotEvaluationVersion({ requestStr: payload, recordId: this.recordId, type: this.viewType })
             .then((response) => {
                     console.log('Response from processPostSnapshotEvaluationVersion:', response);
                     const parsedResponse = JSON.parse(response);
@@ -473,16 +530,59 @@ export default class DmtLineVersions extends LightningElement {
             .catch((error) => {
                 console.error('Error in processPostSnapshotEvaluationVersion:', error);
                 this.showToast('Error', 'Error in processPostSnapshotEvaluationVersion', 'error');
-            }).finally(() => {
+            }).finally(async () => {
                     this.cachePdfForVersion(versionId, body);
                     this.handleCheckEditPermission(); // Recheck edit permission to re-enable the button
                     this.isLoading = false; // Hide spinner
                     if(this.showLineClosedView != false){
                         this.showLineClosedView = false;
+                        if(actionSelected === 'sendMailVersion' ){
+                            const pdfGenerator = this.template.querySelector('c-pdf-generator');
+                            pdfGenerator.jsonData = JSON.parse(body);
+                            pdfGenerator.fileName = this.name;
+                            pdfGenerator.output = 'blob'; 
+                            const pdfBlob = await pdfGenerator.generatePDF();
+                            if (pdfBlob) {
+                                await this.saveBase64Pdf(pdfBlob);
+                            }        
+                           
+                        }
                         this.dispatchEvent(new CustomEvent('reloadCard', { detail: true, bubbles: true, composed: true }));
                     }     
             });
+
+            
+                    
         }
+
+    async saveBase64Pdf(pdfBlob) {
+        try {
+            const dataBase64 = await this.convertBlobToBase64(pdfBlob);
+            const response = await sendEmailToApprovers({
+                pdfBase64: dataBase64,
+                lineId: this.recordId,
+                lineName: this.name
+            });
+            console.log('Proceso finalizado in SavePdfToContent. PDF Guardado ID:', response);
+
+        } catch (error) {
+            console.error('Error guardando PDF in SavePdfToContent :', JSON.stringify(error));
+        }
+    }    
+
+    convertBlobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    
 
     async cachePdfForVersion(versionId, body) {
         try {
@@ -548,7 +648,7 @@ export default class DmtLineVersions extends LightningElement {
     // retrieve json data for the PDF generation and/or validation on creation of new version
     async handleGeneratePdfJSON() {
         try {
-            let type;
+            /* let type;
              switch (this.objectApiName) {
                 case 'Opportunity':
                     type = 'Opportunity';
@@ -556,8 +656,9 @@ export default class DmtLineVersions extends LightningElement {
                 case 'DMT_Line__c':
                     type = 'Line';
                     break;
-            }
-            return await generatePdfJSON({ recordId: this.recordId, type: type });
+            } */
+           this.initializeViewType();
+            return await generatePdfJSON({ recordId: this.recordId, type: this.viewType });
         } catch (error) {
             console.error('Error in handleGeneratePdfJSON:', error);
             throw new Error('Failed to fetch JSON data.');

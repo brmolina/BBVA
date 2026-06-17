@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_BBVA_Opportunity_Role__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE( TEXT(TeamMemberRole) ,  &quot;Global Banker&quot;,&quot;Participant&quot;,&quot;Local Banker&quot;,&quot;Participant&quot;,&quot;Industry Head&quot;,&quot;Participant&quot;,&quot;Risk Analyst&quot;,&quot;Participant&quot;,&quot;Product Specialist&quot;,&quot;Product Specialist&quot;,&quot;Participant&quot;)</formula>
+    <label>BBVA Opportunity Role</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,66 @@
+<!--
+  @Component Name     : Arc_Gen_ExpGuaranteeSelector.cmp
+  @Description        : Tool to select the IRP process for Explicit Guarantee RTC flow
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : alberto.martinez.carrero.next@bbva.com
+  @Last Modified On   : 24/10/2023
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0    24/10/2023                  ARCE TEAM     		        Initial Version
+-->
+<aura:component>
+    <!-- Public attributes. -->
+    <aura:attribute name="processSelected" type="String" description="Selected process" access="public"/>
+    <aura:attribute name="model" type="String" access="public"/>
+
+    <!-- Private attributes. -->
+    <aura:attribute name="ratingValue" type="String" default="IRPFlow" description="value for rating"/>
+    <aura:attribute name="cessionValue" type="String" default="DirectCessionFlow" description="value for cession"/>
+    <aura:attribute name="ratingTypeOptions" type="List" description="CRP type options"/>
+
+    <!-- Component body. -->
+    <fieldset class="slds-form-element options-container">
+        <div class="slds-form-element__control options-container__options">
+            <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="rating-option" value="{!v.ratingValue}" name="arce-type"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="rating-option">
+                <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                    <lightning:icon iconName="utility:favorite" alternativeText="Adjustment" size="large" />
+                    </span>
+                </span>
+                <span class="slds-visual-picker__body">
+                    <span class="slds-text-heading_small">{!$Label.c.Lc_arce_NewIRP_FullRating}</span>
+                    <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_FullRatingDescRTC}</span>
+                </span>
+                <span class="slds-icon_container slds-visual-picker__text-check">
+                    <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                </span>
+                </label>
+            </div>
+
+            <div class="slds-visual-picker slds-visual-picker_medium">
+                <input type="radio" id="cession-option" value="{!v.cessionValue}" name="arce-type"
+                        onchange="{!c.changeArceSelection}" />
+                <label for="cession-option">
+                <span class="slds-visual-picker__figure slds-visual-picker__text slds-align_absolute-center">
+                    <span>
+                    <lightning:icon iconName="utility:approval" alternativeText="cession" size="large" />
+                    </span>
+                </span>
+                <span class="slds-visual-picker__body">
+                    <span class="slds-text-heading_small">Parent Rating Transfer</span>
+                    <span class="slds-text-title">{!$Label.c.Lc_arce_NewIRP_CesionDirectaDesc}</span>
+                </span>
+                <span class="slds-icon_container slds-visual-picker__text-check">
+                    <lightning:icon iconName="utility:check" size="x-small" variant="inverse" />
+                </span>
+                </label>
+            </div>
+        </div>
+    </fieldset>
+</aura:component>

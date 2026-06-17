@@ -1,0 +1,17 @@
+<template>
+    <div class="link-box">
+
+        <template if:false={targetUrl}>
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-text"></div>
+        </template>
+
+        <template if:true={targetUrl}>
+            <lightning-icon icon-name="utility:info" size="small" class="slds-m-right_small"></lightning-icon>
+            <div class="text-content">
+                {resolvedInfoText} <a href={targetUrl} target="_blank">{labels.dmtHereText}</a>
+            </div>
+        </template>
+
+    </div>
+</template>

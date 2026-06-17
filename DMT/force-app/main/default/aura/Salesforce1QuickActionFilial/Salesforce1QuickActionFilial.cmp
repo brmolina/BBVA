@@ -1,0 +1,69 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable,force:lightningQuickAction" access="global">
+
+	<aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+	<aura:attribute name="fieldsToDisplayInput" type="String" default="DES_Rating_Int__c,DES_LIMIT_PF__c,DES_PF_RENEWAL_DATE__c"/>
+    <aura:attribute name="inNumberOfDecimalsInput" type="String" default="2"/>
+    <aura:attribute name="cssClassNameInput" type="String" default="Vertical_Clear"/>
+    <lightning:navigation aura:id="nav" />
+    <aura:attribute name="activeSections" type="List" default="['CommercialActivity']" />
+
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+    	This action is not available for browser.
+    </aura:if>
+
+    <aura:if isTrue="{!$Browser.formFactor == 'PHONE'}">
+    	This action is not available for mobile.
+    </aura:if>
+
+    <aura:if isTrue="{!$Browser.formFactor == 'TABLET'}">
+
+		<div class="slds-modal__content mainWrap customDiv">
+			<ui:scrollerWrapper  class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+    			<div class="customDiv2">
+    				<lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+            			<div class="slds-text-longform customDivLonggForm">
+                			<qvcd:GBL_Carousel_CMP recordId="{! v.recordId}"
+             										nameCards="BBVABusiness,CommercialActivityCSFil,Top3Geographies,ClientInfo"
+																	slidesToShow="3"/>
+											<c:DES_DetailsTable recordId="{!v.recordId}" sObjectName="Account" filial="true"
+																	fieldsToDisplay="gf_ibf_cyr_revenue_amount__c,gm_revenue_cyr_amount__c,gtb_revenue_cyr_amount__c"
+														 inNumberOfDecimals="2" cssClassName="Vertical_fourColumnsFamilyProducts" rowSubitle="BBVA revenues (YTD)" prettyHeader="true"/>
+
+
+											<lightning:accordionSection name="BBVABusiness" label="BBVA BUSINESS">
+												<div class="customDivSections">
+													<c:RevenuesWrapperLastMonths recordId="{!v.recordId}" monthsToDisplay="6" />
+													<c:DES_Simple_Revenues recordId="{!v.recordId}" />
+												</div>
+											</lightning:accordionSection>
+
+
+			                <lightning:accordionSection name="CommercialActivity" label="COMMERCIAL ACTIVITY">
+								<div class="customDivSections">
+									<c:OppsCommercialActivity recordId="{! v.recordId}"/>
+									<c:RevenuesWrapper recordId="{! v.recordId}"/>
+									<c:RateOfSuccessChart recordId="{! v.recordId}" filial="true"/>
+									<c:OpportunitiesInProgressByFamily recordId="{! v.recordId}" filial="true" breadcrumbsActive="true"/>
+									<c:VisitsCommercialActivity recordId="{! v.recordId}"/>
+									<c:VisitsPieContainer recordId="{! v.recordId}"/>
+									<c:NextVisitsByFamily recordId="{! v.recordId}"/>
+								</div>
+			                </lightning:accordionSection>
+
+
+											<lightning:accordionSection name="BBVAPotential" label="BBVA POTENTIAL">
+														<div class="customDivSections">
+															<c:AlertsPotentialActivity recordId="{! v.recordId}"/>
+															<c:AlertsRelatedList recordId="{! v.recordId}" tableSize="5" familyParam="All"/>
+														</div>
+											</lightning:accordionSection>
+            			</div>
+        			</lightning:accordion>
+    			</div>
+
+    		</ui:scrollerWrapper>
+		</div>
+
+    </aura:if>
+
+</aura:component>

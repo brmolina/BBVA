@@ -1,0 +1,14 @@
+<aura:component controller="DES_TemplateApprovalHistory"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction"
+                access="global">
+
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="IdProcess" type="String" default=""/>
+    <aura:attribute name="ShowMessage" type="Boolean" default="false"/>
+
+  <aura:handler name="init" action="{!c.doInit}" value="{!this}" oncomplete="window.location.reload()"/>
+  <aura:if isTrue="{!v.ShowMessage}">
+      <div class="slds-align_absolute-center" style="height: 5rem;">Sorry, this template does not have any pending approval request.</div>
+  </aura:if>
+
+  </aura:component>

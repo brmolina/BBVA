@@ -300,6 +300,9 @@ public class Arc_Gen_RatingAsIndepProcess_service {
             } else {
                 ahaToUpdate = fillRatingToolCustom(ahaToUpdate, ratingModel, triageConfig);
             }
+            if (ratingModelValue == '2021RTC_EXPG' && arceList.arce__Is_RAIP_Renewal__c) {
+                ahaToUpdate.arce__RAR_rating_tool_id__c = '2021RTC_GEN';
+            }
             //final Arc_Gen_getPathDataService_data locator = new Arc_Gen_getPathDataService_data();
             if (ratingModel.length() >= TWELVE) {
                 ahaToUpdate.arce__rating_model_type__c = ratingModel.substring(8, 12).replaceFirst('^0*', '');
@@ -311,10 +314,9 @@ public class Arc_Gen_RatingAsIndepProcess_service {
         if (arceList.arce__wf_status_id__c == arce.Arc_Gen_Constants.STATUS_VALIDATINGCHECKLIST) {
             arceList.arce__wf_status_id__c = arce.Arc_Gen_Constants.RAIP_STATUS_PREPARING;
         }
-        final arce.Arc_Gen_RatingGlobal_data locator = new arce.Arc_Gen_RatingGlobal_data(); 
+        final arce.Arc_Gen_RatingGlobal_data locator = new arce.Arc_Gen_RatingGlobal_data();
         final arce.Arc_Gen_RatingGlobal_data.saveResult res = locator.updateRecords(new List<sObject>{ahaToUpdate,arceList});
         Arc_Gen_NewAnalysis_data.updateArceName(arceList.Id, false);
-        // arce.Arc_Gen_WatchList_Utils.setWatchListValue(accHasAnalysis);
         response.saveStatus = res.status == 'true' ? 'true' : 'false';
         response.saveMessage = res.message;
         response.analysisId = accHasAnalysis.arce__Analysis__c;

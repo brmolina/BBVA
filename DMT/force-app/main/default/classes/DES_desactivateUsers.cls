@@ -12,7 +12,7 @@ public with sharing class DES_desactivateUsers implements Schedulable {
      * @param           SchedulableContext sc - Proporciona contexto para el trabajo programado.
      *********************************************************************************************************/
     public void execute(SchedulableContext sc) {
-        desactivateUsersFuture();
+        desactivateUsers();
     }
 
     /*********************************************************************************************************

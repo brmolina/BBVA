@@ -73,8 +73,12 @@ public with sharing class DES_Exception_Utils {
     }
 
     private static boolean insertImmediate(List<DES_Exceptions__b> exceptions) {
+        if (exceptions == null || exceptions.isEmpty()) {
+            return true;
+        }
+
         if (!Test.isRunningTest()) {
-            Database.insertImmediate(exceptions);
+        System.enqueueJob(new ExceptionInsertQueueable(exceptions));
         }
 
         return true;

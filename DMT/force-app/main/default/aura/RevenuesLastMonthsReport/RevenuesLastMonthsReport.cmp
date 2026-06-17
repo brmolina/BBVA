@@ -1,0 +1,83 @@
+<aura:component controller="RevenuesLastMonthsCnt"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+    <ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.doInit}" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="myData" type="Object" default="false" />
+    <aura:attribute name="myColumns" type="List" default="false" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="sortedDirection" type="String" />
+    <aura:attribute name="defaultSortDirection" type="String" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="userISOCode" type="String" />
+    <aura:attribute name="familyParam" type="String" default="" />
+
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+    <aura:attribute name="monthsToDisplay" type="String" default="6" />
+
+
+    <aura:attribute name="gridColumns" type="List" access="PRIVATE" />
+    <aura:attribute name="gridData" type="Object" access="PRIVATE" />
+    <aura:attribute name="gridExpandedRows" type="List" access="PRIVATE" />
+
+
+    <lightning:navigation aura:id="nav" />
+
+    <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}" layoutType="{!v.layout}" fields="Id, Name"
+        mode="VIEW" targetRecord="{!v.record}" targetFields="{!v.simpleRecord}" targetError="{!v.error}" />
+
+        <div class="slds-page-header">
+                <div class="slds-media">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-opportunity" title="RCF Expiration">
+                            <lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Revenues Last 6 months">{!v.simpleRecord.Name}: Revenues Last 6 months Report
+                    {!v.familyParam}</h1>
+                    <lightning:breadcrumbs>
+                        <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                            label="{!v.simpleRecord.Name}" onclick="{! c.onClickButtonAcc}" title="Go back to the client" />
+                        <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small" label="{!v.familyParam}"
+                            onclick="{! c.onClickButtonFamily}" title="Go back the family section" />
+                    </lightning:breadcrumbs>
+				<p class="slds-text-body_small slds-line-height_reset">Report</p>
+			</div>
+		</div>
+	</div>
+
+
+
+    <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapTestDesktop':'sWrapTest'}">
+            <center class="topClass">
+                <div class="widthBottom">
+                    <c:RevenuesLastMonths familyParam="{! v.familyParam }" recordId="{! v.recordId }" monthsToDisplay="{! v.monthsToDisplay }"
+                    showViewDetails="false" />
+                </div>
+            </center>
+            <div class="reportTabla">
+                <aura:if isTrue="{! empty(v.myData)}">
+                    <aura:set attribute="else">
+                            <lightning:treeGrid
+                                columns="{! v.gridColumns }"
+                                data="{! v.gridData }"
+                                expandedRows="{! v.gridExpandedRows }"
+                                keyField="name"
+                                aura:id="potencialBBVAdata"
+                                hideCheckboxColumn="true"
+                                minColumnWidth="140"
+                            />
+                    </aura:set>
+                </aura:if>
+            </div>
+        </ui:scrollerWrapper>
+
+
+
+    <br /><br />
+
+</aura:component>

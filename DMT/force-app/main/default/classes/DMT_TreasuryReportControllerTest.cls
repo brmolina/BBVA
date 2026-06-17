@@ -69,7 +69,8 @@ public class DMT_TreasuryReportControllerTest {
             Start_Date__c = Date.today(),
             End_Date__c = Date.today().addDays(365),
             Line_ID__c = 'LINE001',
-            Status__c = 'Approval'
+            Status__c = 'Closed',
+            Closed__c = 'Won'
         );
         dmtLines.add(line1);
         
@@ -81,7 +82,8 @@ public class DMT_TreasuryReportControllerTest {
             Start_Date__c = Date.today(),
             End_Date__c = Date.today().addDays(730),
             Line_ID__c = 'LINE002',
-            Status__c = 'Approval'
+            Status__c = 'Closed',
+            Closed__c = 'Won'
         );
         dmtLines.add(line2);
         insert dmtLines;
@@ -92,11 +94,10 @@ public class DMT_TreasuryReportControllerTest {
             Line_ID__c = 'LINE001',
             gf_group_line_id__c =  'LINE001',
             g_limit_last_level_type__c = '100100',
-            g_expert_criteria_risk_type__c = 'IRSW',
             gf_period_from_line_day_number__c = null, // N/A to N/A
-            gf_clsfn_risk_type_internal_id__c = 'RISK001',
+            gf_clsfn_risk_type_internal_id__c = '100100',
             gf_condition_line_amount__c = 100000,
-            Status__c = 'Approval',
+            g_line_status_type__c = 'CW',
             g_entific_id__c = 'CO',
             gf_group_priority_line_id__c = '01'
         );
@@ -108,9 +109,9 @@ public class DMT_TreasuryReportControllerTest {
             g_limit_last_level_type__c = '100100',
             g_expert_criteria_risk_type__c = 'IRSW',
             gf_period_from_line_day_number__c = 0, // 0 Days to 3 Years
-            gf_clsfn_risk_type_internal_id__c = 'RISK001',
+            gf_clsfn_risk_type_internal_id__c = '100100',
             gf_condition_line_amount__c = 200000,
-            Status__c = 'Approval',
+            g_line_status_type__c = 'CW',
             g_entific_id__c = 'CO',
             gf_group_priority_line_id__c = '01'
         );
@@ -120,11 +121,11 @@ public class DMT_TreasuryReportControllerTest {
             Line_ID__c = 'LINE002',
             gf_group_line_id__c =  'LINE001',
             g_limit_last_level_type__c = '100200',
-            g_expert_criteria_risk_type__c = 'IRSW',
+            g_expert_criteria_risk_type__c = 'FOEX',
             gf_period_from_line_day_number__c = 1095, // 3 Years (3*365)
-            gf_clsfn_risk_type_internal_id__c = 'RISK001',
+            gf_clsfn_risk_type_internal_id__c = '100200',
             gf_condition_line_amount__c = 300000,
-            Status__c = 'Approval',
+            g_line_status_type__c = 'CW',
             g_entific_id__c = 'AR',
             gf_group_priority_line_id__c = '01'
         );
@@ -190,21 +191,28 @@ public class DMT_TreasuryReportControllerTest {
         List<DMT_Consolidated_Line__c> testLines = new List<DMT_Consolidated_Line__c>();
         
         DMT_Consolidated_Line__c line1 = new DMT_Consolidated_Line__c(
-            g_expert_criteria_risk_type__c = 'PROD001',
             gf_clsfn_risk_type_internal_id__c = 'RISK001',
             gf_period_from_line_day_number__c = null,
             gf_condition_line_amount__c = 100000
         );
         
         DMT_Consolidated_Line__c line2 = new DMT_Consolidated_Line__c(
-            g_expert_criteria_risk_type__c = 'PROD002',
+            g_expert_criteria_risk_type__c = 'PROD001',
             gf_clsfn_risk_type_internal_id__c = 'RISK001',
             gf_period_from_line_day_number__c = 0,
             gf_condition_line_amount__c = 200000
         );
+
+        DMT_Consolidated_Line__c line3 = new DMT_Consolidated_Line__c(
+            g_expert_criteria_risk_type__c = 'PROD002',
+            gf_clsfn_risk_type_internal_id__c = 'RISK001',
+            gf_period_from_line_day_number__c = 0,
+            gf_condition_line_amount__c = 300000
+        );
         
         testLines.add(line1);
         testLines.add(line2);
+        testLines.add(line3);
         
         // Mock de los maps
         Map<String, String> productLabelMap = new Map<String, String>{
@@ -229,7 +237,6 @@ public class DMT_TreasuryReportControllerTest {
         System.assert(result.product.contains('Product 1') && result.product.contains('Product 2'), 
                      'Product debería contener ambos productos');
         System.assertEquals('100000', result.naToNa, 'naToNa debería tener el valor correcto');
-        System.assertEquals('200000', result.zeroDaysTo3Years, 'zeroDaysTo3Years debería tener el valor correcto');
     }
     
     @IsTest

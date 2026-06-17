@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>notify_meeting_changed__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(visit_status_type__c,&quot;03&quot;),(IMAGE(&quot;/servlet/servlet.FileDownload?file=0157E000000Nx3O&quot;,&quot;Remember to click on &apos;Update visit&apos; to synchronize the calendar of the selected contacts.&quot;)),&quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Notify meeting changed</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

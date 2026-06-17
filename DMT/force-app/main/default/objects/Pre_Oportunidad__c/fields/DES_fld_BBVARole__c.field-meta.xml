@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_fld_BBVARole__c</fullName>
+    <label>BBVA Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Agent</fullName>
+                <default>false</default>
+                <label>Agent</label>
+            </value>
+            <value>
+                <fullName>Bilateral</fullName>
+                <default>false</default>
+                <label>Bilateral</label>
+            </value>
+            <value>
+                <fullName>Bookrunner</fullName>
+                <default>false</default>
+                <label>Bookrunner</label>
+            </value>
+            <value>
+                <fullName>Coordinator</fullName>
+                <default>false</default>
+                <label>Coordinator</label>
+            </value>
+            <value>
+                <fullName>ESG Coordinator / Agent</fullName>
+                <default>false</default>
+                <label>ESG Coordinator / Agent</label>
+            </value>
+            <value>
+                <fullName>MLA</fullName>
+                <default>false</default>
+                <label>MLA</label>
+            </value>
+            <value>
+                <fullName>Participant</fullName>
+                <default>false</default>
+                <label>Participant</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

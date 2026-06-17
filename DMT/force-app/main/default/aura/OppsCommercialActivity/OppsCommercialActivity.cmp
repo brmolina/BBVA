@@ -1,0 +1,85 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="OppsCommercialActivityController" access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro"/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+
+    <aura:if isTrue="{!empty(v.data)}">
+        <div>
+            <div class="boxsection slds-p-around_small">
+                <div class="slds-text-align_center">
+                    <span class="slds-m-vertical_small slds-badge slds-text-title_caps badgenodata">{!$Label.c.NoOppCurrentYear}</span>
+                </div>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                <div aura:id="changeIt" class="slds-size_1-of-1 slds-m-bottom_x-small">
+                    <div class="customDiv customBackground slds-p-around_xxx-small">
+                        <table class="no-border">
+                            <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Total Opportunities(YTD)</div>
+                                <div class="valueCont"><strong><ui:outputNumber value="{!v.data[0].returnTotalOpp}"/></strong></div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-6 slds-truncate slds-border_right slds-p-around_xx-small backgroundSucc">
+                                <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small fontColorSucc">Won(YTD)</div>
+                                <div class="valueCont fontColorSucc"><ui:outputText value="{!v.data[0].returnWon}"/> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppWonNumber})</div>
+                            </th>
+                            <th scope="col" class="slds-size_1-of-6 slds-truncate slds-p-around_xx-small backgroundRed">
+                                <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small fontColorRed">Lost(YTD)</div>
+                                <div class="valueCont fontColorRed"><strong><ui:outputText value="{!v.data[0].returnLost}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLostNumber})</strong></div>
+                            </th>
+                            <aura:if isTrue="{!$Label.c.DES_RT_Subsidiary == v.data[0].oppType}">
+                                <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_left slds-p-around_xx-small">
+                                    <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Hit/Miss</div>
+                                    <div class="valueCont"><strong><ui:outputText value="{!v.data[0].hitMiss}" /> %</strong></div>
+                                </th>
+                                <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_left slds-p-around_xx-small">
+                                    <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Expected Revenues</div>
+                                    <div class="valueCont"><strong><ui:outputText value="{!v.data[0].returnLive}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLiveNumber})</strong></div>
+                                </th>
+                            </aura:if>
+                        </table>
+                    </div>
+                </div>
+                
+                
+                <aura:set attribute="else">
+                    <div aura:id="changeIt" class="Normal mobileCustomDiv slds-scrollable">
+                        <div class="customDiv customBackground slds-p-around_xxx-small">
+                            <table class="no-border">
+                                <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_right slds-p-around_xx-small">
+                                    <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Total Opportunities(YTD)</div>
+                                    <div class="valueCont"><strong><ui:outputNumber value="{!v.data[0].returnTotalOpp}"/></strong></div>
+                                </th>
+                                <th scope="col" class="slds-size_1-of-6 slds-truncate slds-border_right slds-p-around_xx-small backgroundSucc">
+                                    <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small fontColorSucc">Won(YTD)</div>
+                                    <div class="valueCont fontColorSucc"><strong><ui:outputText value="{!v.data[0].returnWon}"/> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppWonNumber})</strong></div>
+                                </th>
+                                <th scope="col" class="slds-size_1-of-6 slds-truncate slds-p-around_xx-small backgroundRed">
+                                    <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small fontColorRed">Lost(YTD)</div>
+                                    <div class="valueCont fontColorRed"><strong><ui:outputText value="{!v.data[0].returnLost}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLostNumber})</strong></div>
+                                </th>
+                                <aura:if isTrue="{!$Label.c.DES_RT_Subsidiary == v.data[0].oppType}">
+                                    <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_left slds-p-around_xx-small">
+                                        <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Hit/Miss</div>
+                                        <div class="valueCont"><strong><ui:outputText value="{!v.data[0].hitMiss}" /> %</strong></div>
+                                    </th>
+                                    <th scope="col" class="slds-size_1-of-6 slds-truncate customBackground slds-border_left slds-p-around_xx-small">
+                                        <div class="slds-text-title_caps slds-truncate title slds-m-bottom_xx-small">Expected Revenues</div>
+                                        <div class="valueCont"><strong><ui:outputText value="{!v.data[0].returnLive}" /> M {!v.data[0].returnCurrencyCode} ({!v.data[0].oppLiveNumber})</strong></div>
+                                    </th>
+                                </aura:if>
+                            </table>
+                        </div>
+                    </div>
+                </aura:set>
+                
+            </aura:if>
+        </aura:set>
+    </aura:if>
+
+</aura:component>

@@ -920,6 +920,10 @@
         <value xsi:type="xsd:string">KPI_searchController</value>
     </values>
     <values>
+        <field>cstk__bypass_nbc__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
         <field>cstk__client_itf_class_name__c</field>
         <value xsi:type="xsd:string">CSTK_Client</value>
     </values>
@@ -1080,6 +1084,10 @@
     <values>
         <field>cstk__st_reject_email_template__c</field>
         <value xsi:type="xsd:string">st_recalculation_rejected</value>
+    </values>
+    <values>
+        <field>cstk__susTurn_expiration_email_template__c</field>
+        <value xsi:type="xsd:string">sustainable_turnover_expiration</value>
     </values>
     <values>
         <field>cstk__susTurn_request_email__c</field>

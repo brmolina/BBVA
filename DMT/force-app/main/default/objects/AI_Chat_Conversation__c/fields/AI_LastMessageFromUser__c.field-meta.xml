@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_LastMessageFromUser__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Campo de control que indica si el último mensaje registrado en la conversación ha sido del usuario o del sistema de IA</description>
+    <inlineHelpText>Campo de control que indica si el último mensaje registrado en la conversación ha sido del usuario o del sistema de IA</inlineHelpText>
+    <label>Last Message From User</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

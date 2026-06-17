@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Structure_Type__c</fullName>
+    <label>Structure Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Supragroup</fullName>
+                <default>false</default>
+                <label>Supragroup</label>
+            </value>
+            <value>
+                <fullName>Group</fullName>
+                <default>false</default>
+                <label>Group</label>
+            </value>
+            <value>
+                <fullName>Subgroup</fullName>
+                <default>false</default>
+                <label>Subgroup</label>
+            </value>
+            <value>
+                <fullName>Subsidiary</fullName>
+                <default>false</default>
+                <label>Subsidiary</label>
+            </value>
+            <value>
+                <fullName>Shared Management Group</fullName>
+                <default>false</default>
+                <label>Shared Management Group</label>
+            </value>
+            <value>
+                <fullName>Non Client</fullName>
+                <default>false</default>
+                <label>Non Client</label>
+            </value>
+            <value>
+                <fullName>NIF Client</fullName>
+                <default>false</default>
+                <label>NIF Client</label>
+            </value>
+            <value>
+                <fullName>No Client</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>No Client</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

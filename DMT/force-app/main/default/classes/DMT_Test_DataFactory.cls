@@ -604,6 +604,10 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
+
+        Local_Client__c lc = new Local_Client__c(Cib_Client__c = accTest1Update.Id,
+                                                Alpha_code__c ='TEST123');
+        insert lc;
         return accTest1Update;
     }
 
@@ -617,10 +621,15 @@ public with sharing class  DMT_Test_DataFactory {
         testOpportunity.AccountId = testAcc.Id;
         testOpportunity.DMT_Opp_Id__c = '00001';
         testOpportunity.RecordTypeId = opportunityRecordTypeID;
-        testOpportunity.DMT_Entity__c = 'ES0182';
         testOpportunity.DMT_CUR_Notional_Amount__c = 100;
+        testOpportunity.DMT_CurrencyText__c = 'EUR';
         testOpportunity.DMT_DATE_Initial_Date__c = Date.today();
         testOpportunity.DMT_DATE_Maturity_Date__c = Date.today() + 1;
+        testOpportunity.Entific__c='ES';
+        testOpportunity.DMT_Entity__c='ES0182';
+        testOpportunity.DMT_Product_Area__c='GTB';
+        testOpportunity.DMT_Threshold_Type__c='Global';
+
 
         insert testOpportunity;
         Opportunity testOpportunityUpdate = [SELECT Id,AccountId FROM Opportunity WHERE Id =: testOpportunity.Id LIMIT 1 FOR UPDATE];
@@ -633,16 +642,9 @@ public with sharing class  DMT_Test_DataFactory {
         oppCl.DMT_MDE_Opportunity__c = oppId;
         oppCl.Past2_FY_Corp_Synd_Lending_amount__c = 14;
         oppCl.Revenues_Last_Year_number__c = 14;
-        oppCl.g_upd_lmscl_internal_ratg_type__c = 'AAA';
-        oppCl.External_Rating__c = 'NR';
-        oppCl.DMT_Subsector__c = 'ID';
-        oppCl.DMT_Sector__c = 'I';
-        oppCl.DMT_Activity__c = 'LBB';
-        oppCl.Counterpart__c = 'Pub Inst';
-        oppCl.SCRA__c = 'AA-';
-        oppCl.AVC_Check__c = true ;
-        oppCl.European_Bank_Check__c = true ;
-        oppCl.Group_Sales_Check__c = true;
+        oppCl.Counterpart__c='Corporates';
+        oppCl.DMT_Sector__c='N';
+        oppCl.g_upd_lmscl_internal_ratg_type__c='-A';
 
         insert oppCl;
         DMT_Opportunity_Client__c oppClUpdate = [SELECT Id FROM DMT_Opportunity_Client__c WHERE Id =: oppCl.Id LIMIT 1 FOR UPDATE];
@@ -842,7 +844,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert rsklt1;
     }
-    
+
     public static void generateTestRiskApprovalLines(){
 
         Account accTest1 = new Account();
@@ -1043,6 +1045,24 @@ public with sharing class  DMT_Test_DataFactory {
         } else {
             c.opportunity_id__c = opportunityId;
         }
+        c.DMT_Feature_Id__c = 'Test';
+        c.DMT_Related_feature_name__c = 'Test1';
+        c.Amount__c = 45;
+        c.CurrencyIsoCode = 'EUR';
+        c.Subject = 'Test Subject';
+        c.DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}';
+        c.RecordTypeId = approvalCaseRecordTypeID;
+        c.OwnerId = ownerId;
+        insert c;
+
+        //Case caseUpdate = [SELECT Id FROM Case WHERE Id =: c.Id LIMIT 1 FOR UPDATE];
+        return c;
+    }
+
+    public static Case generateCaseOppLine(Id lineId, Id opportunityId, Id ownerId) {
+        Case c = new Case();
+        c.DMT_Line__c = lineId;
+        c.opportunity_id__c = opportunityId;
         c.DMT_Feature_Id__c = 'Test';
         c.DMT_Related_feature_name__c = 'Test1';
         c.Amount__c = 45;
@@ -1299,6 +1319,26 @@ public with sharing class  DMT_Test_DataFactory {
         return userTest;
     }
 
+    public static User generateDesktopIntegrationUser() {
+        User userTest = new User();
+        // Targeting the profile that bypasses the Validation Rule in Opportunity 'NotBackFromApproval'
+        userTest.ProfileId = [SELECT Id FROM Profile WHERE Name = 'Desktop Integration' LIMIT 1].Id;
+        userTest.FirstName = 'Integration';
+        userTest.LastName = 'User';
+        userTest.Alias = 'DskInt';
+        userTest.Email = 'desktop-int@test.bbva.com';
+        userTest.Username = 'desktop-int' + DateTime.now().getTime() + '@test.bbva.com';
+        userTest.CommunityNickname = 'desktopint' + DateTime.now().getTime();
+        userTest.EmailEncodingKey = 'UTF-8';
+        userTest.Timezonesidkey = 'Europe/London';
+        userTest.Localesidkey = 'en_US';
+        userTest.languagelocalekey = 'en_US';
+        userTest.ID_User__c = 'dsk-int-' + Integer.valueOf((Math.random() * 100000000));
+
+        insert userTest;
+        return userTest;
+    }
+
     public static List<DMT_Taxonomy_Values__c> generateTaxonomies() {
 
         Pricebook2 pb2 = generatePricebook2();
@@ -1482,7 +1522,19 @@ public with sharing class  DMT_Test_DataFactory {
             PricebookEntryId = pricebookEntry.Id,
             Quantity = 1,
             TotalPrice = 100.00,
-            g_currency_id__c='EUR'
+            g_currency_id__c='EUR',
+            gf_group_priority_opportunity_id__c = '01',
+            g_branch_id__c='ES0182-US',
+            DMT_Risk_Type__c= '3000000',
+            gf_initial_date__c= System.today(),
+            gf_maturity_date__c= System.today().addDays(365),
+            gf_amortization_type__c='Bullet' ,
+            gf_payment_frequency__c= 'Quarterly',
+            DMT_Deal_Amount_Tenors__c= 200000,
+            gf_accrual_fees_bp__c= 1,
+            DMT_Extension_Duration_Fees__c= 1,
+            Life_Funding_Type__c= 'Term',
+            g_line_commitment_level_type__c= 'COMMITED'
         );
         insert opportunityLineItem;
         return opportunityLineItem;
@@ -1496,6 +1548,7 @@ public with sharing class  DMT_Test_DataFactory {
             OpportunityId = opp.Id,
             PricebookEntryId = pricebookEntry.Id,
             Quantity = 1,
+            g_currency_Id__c = 'EUR',
             TotalPrice = 100.00
         );
         insert opportunityLineItem;
@@ -1561,6 +1614,37 @@ public with sharing class  DMT_Test_DataFactory {
         );
         insert xsell;
         return xsell;
+    }
+
+    public static void loadCurrencies() {
+
+         DateTime today = DateTime.now();
+	    String currencyDate = today.format('yyyy-MM-dd');
+
+        Map<String, Double> currencies = new Map<String, Double>{
+            'EUR' => 1.0,
+            'ARS' => 800.0,
+            'COP' => 4000,
+            'MXN' => 18.0,
+            'PEN' => 4.0,
+            'USD' => 1.2,
+            'UYU' => 40.0,
+            'VEF' => 300000.0,
+			'GBP' => 0.8
+        };
+
+        List<SER_EUR_Currency_exchange_rate__c> exRateList = new List<SER_EUR_Currency_exchange_rate__c>();
+        for(String curr : currencies.keySet()) {
+            SER_EUR_Currency_exchange_rate__c exRate = new SER_EUR_Currency_exchange_rate__c(
+                SER_Base_currency__c = 'EUR',
+                SER_Counter_currency__c = curr,
+                SER_Exchange_rate__c = currencies.get(curr),
+                SER_Process_date__c = Date.valueOf(currencyDate).addDays(-1),
+                SER_Unlisted__c = false
+            );
+            exRateList.add(exRate);
+        }
+        insert exRateList;
     }
 
 }

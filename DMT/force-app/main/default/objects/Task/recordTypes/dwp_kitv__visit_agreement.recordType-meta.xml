@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__visit_agreement</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>dwp_kitv__Agreements_Compact</compactLayoutAssignment>
+    <label>Agreement</label>
+    <picklistValues>
+        <picklist>Asset_Class__c</picklist>
+        <values>
+            <fullName>EQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Business_area_desc__c</picklist>
+        <values>
+            <fullName>DUS CORPORATE DUSSELDORF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS EQ DELTA 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS EQ PB NORDICS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS ESTRUCTURADOS DUSSELDORF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS FLOW DERIVATIVES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS PROD EST DUSSELDORF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS PROD FLUJO DUSSELDORF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DUS STRUCTURED NORDICS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIS CORPORATE LISBOA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIS DERIVADOS CORPORATES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIS ESTRUCTURADOS LISBOA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIS PROD EST LISBOA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LIS PROD FLUJO LISBOA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD BANCA PRIVADA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD BBVA TRADER</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD BOLSA DIRECTA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD COMPLEMENTO RED</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD CORPORATE BEC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD CORPORATE GLOBALES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD DERIVADOS CORPORATES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD DERIVADOS CORPORATES GERMANY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD DIRECCIÓN REDES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD DIST CORTO PLAZO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EJ FX INV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ DELTA 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ INSURANCE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ INSURANCE FLOW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ PB ESPAÑA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ RETAIL FUNDS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD EQ RETAIL FUNDS FLOW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD FLOW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD FX TIER 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD FX TIER 2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD GC FIXING</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD IN VTA CRUZADA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD IN VTA CRUZADA REC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD NET CASH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD NET CASH TIER 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD PRODUCTOS DE FLUJO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD PRODUCTOS ESTRUCTURADOS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD QUEBRANTOS RED</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES CATALUÑA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES CENTRO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES ESTE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES NOROESTE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES NORTE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD REDES SUR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MAD SEGUROS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MIL CORPORATE MILAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MIL ESTRUCTURADOS MILAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MIL FLOW DERIVATIVES MILAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MIL PROD EST MILAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MIL PROD FLUJO MILAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR CORPORATE PARIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR DERIVADOS CORPORATES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR EQ DELTA 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR ESTRUCTURADOS PARIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR FLOW DERIVATIVES PARIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR PROD EST PARIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PAR PROD FLUJO PARIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA CORPORATE LDN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA EQ DELTA 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA EQ PB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA EQ PB SUIZA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA ESTRUCTURADOS SUIZA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA ESTRUCTURADOS UK%2FSUIZA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA FLOW DERIVATIVES DUTCH%2FNORDICS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA FLOW DERIVATIVES GERMANY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA FLOW DERIVATIVES UK%2FNOREUROPA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA MERCADOS EMERGENTES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UKA PROD FLUJO LONDRES</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Business_line_desc__c</picklist>
+        <values>
+            <fullName>Cash Equity</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Corporates</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Equity Derivatives</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Flow FI %26 FX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Internal Networks</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Structured FI Investors</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Call_Category__c</picklist>
+        <values>
+            <fullName>Answered</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Discard</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DMT_Step_Result__c</picklist>
+        <values>
+            <fullName>NA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DMT_Step_Type__c</picklist>
+        <values>
+            <fullName>1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>4</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Email_Alert_Team__c</picklist>
+        <values>
+            <fullName>GNC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global Direct Channels GMM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Soporte Swift</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Entity_name__c</picklist>
+        <values>
+            <fullName>BANCO CONTINENTAL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA - SINGAPUR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA BANCO FRANCES S%2EA%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA BANCO PROVINCIAL SA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA BANCOMER S%2EA%2EINSTITUCION DE BAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA BANCOMER SA HOUSTON AGY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA CHILE S%2EA%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA COLOMBIA %28ENTIDAD FEDERADA%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA GRAND CAYMAN-TREASURY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA IRELAND PLC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA LONDRES-BBVA TESORERIA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA MILAN-TESORERIA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA NEW YORK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA PORTUGAL SA -LIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA S%2EA%2E NIEDERLASSUNG DEUTSCHLAND</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA SEOUL-SE-MG%26D</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA TAIPEI-TP-DBU-TREASURY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA TOKIO-TK TREASURY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA-BRUSELAS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA-HONG KONG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA-MADRID-TESORERIA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BBVA-PARIS</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Priority</picklist>
+        <values>
+            <fullName>High</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Low</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Normal</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Related_To__c</picklist>
+        <values>
+            <fullName>EM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>G10</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Iberdrola</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LATAM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Repsol</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Telefónica</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status</picklist>
+        <values>
+            <fullName>Completed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>In Progress</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not Started</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Subactivity__c</picklist>
+        <values>
+            <fullName>OTHER</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>REPORT A</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>REPORT B</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Subject</picklist>
+        <values>
+            <fullName>Call</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Email</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Send Quote</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>coverage_country_name__c</picklist>
+        <values>
+            <fullName>Argentina</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Belgium</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chile</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Colombia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compass</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>France</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Germany</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hong Kong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>India</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indonesia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Italy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Japan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mexico</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Peru</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Portugal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Singapore</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Spain</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Taiwan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>United Kingdom</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Uruguay</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Venezuela</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>departament_name__c</picklist>
+        <values>
+            <fullName>ANS ADEUDOS COMPENSACION CARTERA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANS EXTRANJERO Y COMEX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANS FACTORING CONFIRMING</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANS IMPUESTOS Y SERVICIOS ESPECIALES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANS PAGOS _TRANSFERENCIAS PRISMA ISSP SNCE_</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ANS SSTT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mantener equipo resolutor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PARAMGLOBAL CIB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SOPORTE EXTENDIDO B2B</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SOPORTE GLOBAL COMMERCIAL CARD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SOPORTE SWIFT HOST-TO-HOST</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>gf_critical_task_ind_type__c</picklist>
+        <values>
+            <fullName>1%2E Critical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>2%2E High</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3%2E Medium</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>4%2E Low</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>5%2E No Impact</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>gf_task_execution_team_name__c</picklist>
+        <values>
+            <fullName>FUCIB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global Client Service</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global Comm Cards</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global Direct Channels GMM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global Param</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>gf_tech_impact_case_name__c</picklist>
+        <values>
+            <fullName>1%2E Critical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>2%2E High</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>3%2E Medium</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>4%2E Low</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>5%2E No Impact</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>solution_name_path_desc__c</picklist>
+        <values>
+            <fullName>Credit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EQ</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rates</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>status_type__c</picklist>
+        <values>
+            <fullName>Accepted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

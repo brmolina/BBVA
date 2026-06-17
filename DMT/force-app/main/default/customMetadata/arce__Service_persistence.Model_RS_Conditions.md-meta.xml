@@ -4,14 +4,14 @@
     <protected>false</protected>
     <values>
         <field>arce__JSON_input__c</field>
-        <value xsi:type="xsd:string">[ 
+        <value xsi:type="xsd:string">[
           {
-            &quot;conditions&quot;: [  
+            &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;ifis&quot; },
               { &quot;key&quot;: &quot;ifisModel&quot;, &quot;value&quot;: &quot;IFIS-RTC-BAN&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;IFIS-RTC-BAN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSI&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS04&quot;
           },
           {
             &quot;conditions&quot;: [
@@ -19,7 +19,7 @@
               { &quot;key&quot;: &quot;ifisModel&quot;, &quot;value&quot;: &quot;IFIS-RTC-FNB&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;IFIS-RTC-FNB&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSI&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS04&quot;
           },
           {
             &quot;conditions&quot;: [
@@ -27,7 +27,7 @@
               { &quot;key&quot;: &quot;ifisModel&quot;, &quot;value&quot;: &quot;IFIS-RTC-INS&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;IFIS-RTC-INS&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSI&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS04&quot;
           },
           {
             &quot;conditions&quot;: [
@@ -35,7 +35,7 @@
               { &quot;key&quot;: &quot;ifisModel&quot;, &quot;value&quot;: &quot;IFIS-RTC-INV&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;IFIS-RTC-INV&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSI&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS04&quot;
           },
           {
             &quot;conditions&quot;: [
@@ -43,56 +43,51 @@
               { &quot;key&quot;: &quot;ifisModel&quot;, &quot;value&quot;: &quot;IFIS-RTC-ALT&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;IFIS-RTC-ALT&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSI&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS04&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
               { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_EXPG&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
               { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;false&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
               { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN_NBF&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_NBF&quot;,
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
@@ -100,211 +95,35 @@
               { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_FS&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
               { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;false&quot; }
+              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           },
           {
             &quot;conditions&quot;: [
               { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;ES&quot; },
               { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
               { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;true&quot; },
+              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;false&quot; },
               { &quot;key&quot;: &quot;arce__matrizIg__c&quot;, &quot;value&quot;: &quot;true&quot; },
               { &quot;key&quot;: &quot;arce__common_ops_no_ffss__c&quot;, &quot;value&quot;: &quot;true&quot; }
             ],
             &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_NFI&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSC&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_EXPG&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;false&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN_NBF&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_FS&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;false&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;MX&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__matrizIg__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__common_ops_no_ffss__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_NFI&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCMX&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_EXPG&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__level_Shell__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;false&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN_NBF&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_FS&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;false&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_GEN&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
-          },
-          {
-            &quot;conditions&quot;: [
-              { &quot;key&quot;: &quot;entityType&quot;, &quot;value&quot;: &quot;corporates&quot; },
-              { &quot;key&quot;: &quot;arce__unit_booking__c&quot;, &quot;value&quot;: &quot;AR;PE;CO;TR&quot; },
-              { &quot;key&quot;: &quot;arce__group_corporative__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__explicit_guarantee__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__filial_Core__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__captive_nbf__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__group_treasury_subsidiary__c&quot;, &quot;value&quot;: &quot;false&quot; },
-              { &quot;key&quot;: &quot;arce__legal_EEFF__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__matrizIg__c&quot;, &quot;value&quot;: &quot;true&quot; },
-              { &quot;key&quot;: &quot;arce__common_ops_no_ffss__c&quot;, &quot;value&quot;: &quot;true&quot; }
-            ],
-            &quot;arce__RAR_rating_tool_id__c&quot;: &quot;2021RTC_NFI&quot;,
-            &quot;arce__rating_system__c&quot;: &quot;RSCAD&quot;
+            &quot;arce__rating_system__c&quot;: &quot;RS03&quot;
           }
         ]</value>
     </values>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Account</fullName>
+    <active>false</active>
+    <description>Only users with  System Administrator profile can create new Accounts.</description>
+    <errorConditionFormula>AND(
+!$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+ISNEW(),
+OR(AND($Profile.Name &lt;&gt; &quot;System Administrator&quot;,
+$Profile.Name &lt;&gt; &quot;System Dataloader&quot;,
+$Profile.Name &lt;&gt; &quot;Service Client Service Manager GM&quot;,
+$Profile.Name &lt;&gt; &quot;Service Management STE&quot;),
+$Setup.CIB_User_Org__c.CIB_Is_Desktop__c &lt;&gt; TRUE)
+)</errorConditionFormula>
+    <errorMessage>You cannot create a new Account</errorMessage>
+</ValidationRule>

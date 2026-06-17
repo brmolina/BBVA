@@ -1,0 +1,80 @@
+<template>
+    <template if:true={showRiskTables}>
+        <!--*******SETTLEMENT LINES*****-->
+        <template if:true={showSettlementLines}>
+            <div class="onb-card">
+                <c-onb_onboarding-table
+                    record-id={recordId}
+                    parent-field-api-name={parentFieldApiName}
+                    object-api-name={objectApiName}
+                    title={label.ONB_SETTLEMENT_LINES}
+                    columns={columnsSettlements}
+                    initial-rows={settlementsRows}
+                    add-label={label.ONB_BTN_ADD_SETTLEMENT_LINE}
+                    show-add={showSettlementAdd}
+                    disable-add={disableSettlementAdd}
+                    show-delete=true
+                    create-record-on-add=true
+                    default-values={defaultValuesForTables}
+                    required-field-api-names={requiredFieldApiNames}
+                    product-options-by-row-id={productOptionsByRowId}
+                    cell-disabled-when={settlementCellDisabledWhen}
+                    onrowdeleted={handleRowDeleted}
+                    onrowcreated={handleRowCreated}
+                    line-type={lineTypeDvp}>
+                </c-onb_onboarding-table>
+            </div>
+        </template>
+
+        <!--*******CREDIT LINES*****-->
+        <template if:true={showCreditLines}>
+            <div class="onb-card slds-m-top_large">
+                <c-onb_onboarding-table
+                    record-id={recordId}
+                    parent-field-api-name={parentFieldApiName}
+                    object-api-name={objectApiName}
+                    title={label.ONB_CREDIT_LINES}
+                    columns={columnsCredit}
+                    initial-rows={creditRows}
+                    add-label={label.ONB_BTN_ADD_CREDIT_LINE}
+                    show-add={showCreditAdd}
+                    show-delete=true
+                    create-record-on-add=true
+                    default-values={defaultValuesForTables}
+                    required-field-api-names={requiredFieldApiNames}
+                    product-options-by-row-id={productOptionsByRowId}
+                    cell-disabled-when={creditCellDisabledWhen}
+                    onrowdeleted={handleRowDeleted}
+                    onrowcreated={handleRowCreated}
+                    conditional-required-rules={conditionalRequiredRulesCredit}
+                    line-type={lineTypeCred}>
+                </c-onb_onboarding-table>
+            </div>
+        </template>
+
+        <!--*******REPOS NOTIONALS (GROSS LIMIT)*****-->
+        <template if:true={showReposLines}>
+            <div class="onb-card slds-m-top_large">
+                <c-onb_onboarding-table
+                    record-id={recordId}
+                    parent-field-api-name={parentFieldApiName}
+                    object-api-name={objectApiName}
+                    title={label.ONB_GROSS_LIMIT}
+                    columns={columnsRepos}
+                    initial-rows={reposRows}
+                    add-label={label.ONB_BTN_ADD_GROSS_LIMIT}
+                    show-add={showReposAdd}
+                    disable-add={disableReposAdd}
+                    show-delete=true
+                    create-record-on-add=true
+                    default-values={defaultValuesForTables}
+                    required-field-api-names={requiredFieldApiNames}
+                    product-options-by-row-id={productOptionsByRowId}
+                    onrowdeleted={handleRowDeleted}
+                    onrowcreated={handleRowCreated}
+                    line-type={lineTypeRepos}>
+                </c-onb_onboarding-table>
+            </div>
+        </template>
+    </template>
+</template>

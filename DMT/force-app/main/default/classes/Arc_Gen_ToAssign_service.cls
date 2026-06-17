@@ -48,7 +48,6 @@ public without sharing class Arc_Gen_ToAssign_service {
     * @example searchUser(inputTerm)
     * ---------------------------------------------------------------------------------------------------
     **/
-    @AuraEnabled
     public static List<map<String,String>> searchUser(String inputTerm){
         List<map<String,String>> ltsUsers = new list<map<String,String>>();
         List<arce.Arc_Gen_User_Wrapper> lstWrap = arce.Arc_Gen_User_Locator.getUsers(inputTerm);
@@ -69,7 +68,6 @@ public without sharing class Arc_Gen_ToAssign_service {
     * @example toAssign(userId, recordId)
     * ---------------------------------------------------------------------------------------------------
     **/
-    @AuraEnabled
     public static String toAssign(Id userId, Id recordId) {
         final arce.Arc_Gen_User_Wrapper wrpUserCurrent = arce.Arc_Gen_User_Locator.getUserInfo(System.UserInfo.getUserId());
         final arce.Arc_Gen_User_Wrapper wrpUser = arce.Arc_Gen_User_Locator.getUserInfo(UserId);

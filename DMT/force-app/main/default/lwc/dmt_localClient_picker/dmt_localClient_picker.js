@@ -4,6 +4,7 @@ import { FlowAttributeChangeEvent } from 'lightning/flowSupport';
 export default class LocalClientPicker extends LightningElement {
 
     @api clientId;
+    @api mitangt;
     _entityId;
     filter={};
     disabled=false;
@@ -15,21 +16,30 @@ export default class LocalClientPicker extends LightningElement {
 
     set entityId(value) {
         this._entityId = value;
+        console.log('ABS Entity value:'+value);
 
     if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+        console.log('ABS entra en if filter null');
         this.filter = null;
         return;
     }
 
-        this.filter = {
-            criteria: [
-                {
-                    fieldPath: 'Alpha_code__c',
-                    operator: 'like',
-                    value: '%' + value + '%'
-                }
-            ]
-        };
+    this.filter = {
+        criteria: [
+            {
+                fieldPath: 'Alpha_code__c',
+                operator: 'like',
+                value: '%' + value + '%'
+            },
+
+            {
+                fieldPath: 'DMT_ID_Fiscal__c',
+                operator: 'like',
+                value: '%' + value + '%'
+            }
+        ],
+        filterLogic: '1 OR 2'  
+    };
     }
 
     matchingInfo = {
@@ -38,16 +48,33 @@ export default class LocalClientPicker extends LightningElement {
     }
 
     displayInfo = {
-        primaryField: 'Name'
+        primaryField: 'Name',
+        additionalFields: ['Alpha_code__c']
     };
 
-get hasValue() {
-    return this.clientId && this.clientId !== '' && this.clientId !== 'null' && this.clientId !== 'undefined';
-}
+    get hasValue() {
+        return this.clientId && this.clientId !== '' && this.clientId !== 'null' && this.clientId !== 'undefined';
+    }
 
     get hasValueEntity() {
+        console.log('ABS hasValue '+ this.entityId && this.entityId !== '' && this.entityId !== 'null' && this.entityId !== 'undefined');
         return this.entityId && this.entityId !== '' && this.entityId !== 'null' && this.entityId !== 'undefined';
     }
+    get labelValue() {
+        if(this.mitangt) {
+            return 'Select Guarantor';
+        } else {
+            return 'Local Client';
+        }
+    }
+    get placeholderValue() {
+        if(this.mitangt) {
+            return 'Search Guarantor...';
+        } else {
+            return 'Search Clients...';
+        }
+    }
+    
 
 connectedCallback() {
     if (!this.clientId) {

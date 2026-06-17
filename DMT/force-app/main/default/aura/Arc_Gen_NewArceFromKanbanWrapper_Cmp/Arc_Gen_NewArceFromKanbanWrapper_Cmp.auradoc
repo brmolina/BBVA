@@ -1,0 +1,9 @@
+<aura:documentation>
+      <aura:description>
+      <p>isOpen used to show or hide modal</p>
+      <p>continue used to ccontinue to new arce</p>
+      <p>chosenRecordId Used to store the selected record id While calling this component from other component,
+      set this attribute to the lookup field API name </p>
+      <p>chosenRecordLabel This is used to show the selected record Name in search input </p>
+      </aura:description>
+</aura:documentation>

@@ -70,10 +70,16 @@ public with sharing class Arc_Gen_FinStatDetails_Service {
       arce__Financial_Statements__c ffss = new arce__Financial_Statements__c();
       final Integer auditorOpMaxLength = arce__Financial_Statements__c.arce__ffss_auditor_opinion_desc__c.getDescribe().getLength();
       ffss.id = ffssData.id;
-      ffss.arce__ffss_auditor_opinion_desc__c = auditData.auditor.opinion == null ? null : auditData.auditor.opinion.abbreviate(auditorOpMaxLength);
-      ffss.arce__ffss_auditor_opinion_type__c = auditData.auditor.hasQualification;
-      ffss.arce__ffss_auditor_qlfn_type__c = getAuditorQualification(ffssData.arce__ffss_certification_type__c, ffss.arce__ffss_auditor_opinion_type__c);
-      ffss.arce__ffss_auditor_name__c = auditData.auditor.name;
+       // Validate auditData and auditor are not null before accessing properties
+      // Handle null audit data first
+      if (auditData == null || auditData.auditor == null) {
+        ffss.arce__ffss_auditor_qlfn_type__c = getAuditorQualification(ffssData.arce__ffss_certification_type__c, null);
+      } else {
+        ffss.arce__ffss_auditor_opinion_desc__c = auditData.auditor.opinion == null ? null : auditData.auditor.opinion.abbreviate(auditorOpMaxLength);
+        ffss.arce__ffss_auditor_opinion_type__c = auditData.auditor.hasQualification;
+        ffss.arce__ffss_auditor_name__c = auditData.auditor.name;
+        ffss.arce__ffss_auditor_qlfn_type__c = getAuditorQualification(ffssData.arce__ffss_certification_type__c, ffss.arce__ffss_auditor_opinion_type__c);
+      }
       update ffss;
     }
 

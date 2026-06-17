@@ -6,10 +6,5 @@
         <minorNumber>1</minorNumber>
         <namespace>bupl</namespace>
     </packageVersions>
-    <packageVersions>
-        <majorNumber>1</majorNumber>
-        <minorNumber>4</minorNumber>
-        <namespace>dwp_acmh</namespace>
-    </packageVersions>
     <status>Active</status>
 </ApexClass>

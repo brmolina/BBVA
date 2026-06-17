@@ -1,0 +1,32 @@
+<aura:component  implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL" controller="Object_Controller">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<aura:attribute name="recordId" type="Id" />
+	<aura:attribute name="bProduct" type="Boolean" default="false" />
+	<aura:attribute name="Prod2" type="Product2" />
+	<div class="{!v.Prod2.product_risk_approval_indicator__c ? 'slds-page-header' : 'slds-hide'}" style="cursor: pointer;" onclick="{!c.sectionTwo}">
+		<section class="slds-clearfix">
+			<div class="slds-float--left">
+				<lightning:icon class="slds-show" aura:id="articleTwo" iconName="utility:chevronright" size="xx-small" alternativeText="Indicates add"/>
+				<lightning:icon class="slds-hide" aura:id="articleTwo" iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates dash"/>
+			</div>
+                <div class="slds-m-left--large" style="font-size:16px">Garantías</div>
+		</section>
+	</div>
+	<div class="slds-hide slds-p-around--medium" aura:id="articleTwo">
+		<c:ProductGuarantee_comp recordId="{!v.recordId}"/>
+	</div>
+	<br/>
+	<div class="{!v.Prod2.product_risk_approval_indicator__c ? 'slds-page-header' : 'slds-hide'}"  style="cursor: pointer;" onclick="{!c.sectionThree}">
+		<section class="slds-clearfix">
+			<div class="slds-float--left">
+				<lightning:icon class="slds-show" aura:id="articleThree" iconName="utility:chevronright" size="xx-small" alternativeText="Indicates add"/>
+				<lightning:icon class="slds-hide" aura:id="articleThree" iconName="utility:chevrondown" size="xx-small" alternativeText="Indicates dash"/>
+			</div>
+			<div class="slds-m-left--large" style="font-size:16px">Intervinientes</div>
+		</section>
+	</div>
+	<div aura:id="articleThree" class="slds-hide slds-p-around--medium">
+		<c:ProductParticipants_comp recordId="{!v.recordId}"/>
+	</div>
+	<br/>
+</aura:component>

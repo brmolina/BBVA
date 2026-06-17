@@ -1,0 +1,11 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner
+                alternative-text={alternativeText}
+                size={size}
+                variant={variant}>
+            </lightning-spinner>
+        </div>
+    </template>
+</template>

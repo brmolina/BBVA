@@ -13,7 +13,7 @@ Data class: Arc_Gen_Balance_Tables_data
 *1.3		17/05/2019	   diego.miguel.contractor@bbva.com 	        Modify function to handle 3 calls to WS
 *1.4		29/05/2019	   eduardoefrain.hernandez.contractor@bbva.com 	Modify function buildTables to fix the errors managing
 *1.5		17/07/2019	   ricardo.almanza.contractor@bbva.com      	Modify method listToInsertMethod to set arce__table_content_year__c adding full
-*                                                                       date and arce__ffss_certification_type__c 
+*                                                                       date and arce__ffss_certification_type__c
 *1.6		20/09/2019	   eduardoefrain.hernandez.contractor@bbva.com 	Fix managing error incidence
 *1.7		26/09/2019	   javier.soto.carrascosa@bbva.com 	            Remove mock
 *1.8        23/10/2019     mariohumberto.ramirez.contractor@bbva.com    Added new method updateEEFFtoShow
@@ -66,7 +66,7 @@ Data class: Arc_Gen_Balance_Tables_data
 *1.41       05/01/2022     amunguia.contractor@bbva.com                 The header of the key figure table is modified.
 *1.42       17/02/2022     juanignacio.hita.contractor@bbva.com         Adds exception when service call failed with the valid eeff
 -----------------------------------------------------------------------------------------*/
-@SuppressWarnings('PMD.ExcessivePublicCount,sf:TooManyMethods,sf:ExcessiveClassLength,PMD.ExcessiveClassLength')
+@SuppressWarnings('PMD.ExcessivePublicCount,sf:TooManyMethods,sf:ExcessiveClassLength,PMD.ExcessiveClassLength, PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.ExcessiveParameterList, PMD.AvoidDeeplyNestedIfStmts, PMD.StdCyclomaticComplexity, PMD.NcssMethodCount')
 public with sharing class Arc_Gen_Balance_Tables_service {
     /*
     * @Description map with the picklist values and labels of arce__collection_table__c
@@ -104,6 +104,10 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @Description amount Literal
     */
     private static final String TRUE_VALUE = 'true';
+    /**
+    * @Description: Double with value "7300"
+    */
+    private static final Double RATIO_ID = 7300;
 
     /**
     *-------------------------------------------------------------------------------
@@ -112,6 +116,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     *@author otiliaramona.veres.contractor@bbva.com
     *@Date   Created:2021-04-30
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @TestVisible
     private Arc_Gen_Balance_Tables_service() { }
     /**
@@ -219,7 +224,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @author   ARCE TEAM
     * @date     09/03/2020
     **/
-    class RatiosResponse {
+    public class RatiosResponse {
         /*
         * @Description Status code returned by the service.
         */
@@ -231,7 +236,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         /*
         * @Description HTTP responses from the service.
         */
-        public List<HttpResponse> validHttpResponses { get; set; }
+        public List<String> validHttpRespBody { get; set; }
         /*
         * @Description Processed FFSS that are valid for rating.
         */
@@ -249,7 +254,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         */
         public RatiosResponse() {
             this.ffssToProcess = new List<arce__Financial_Statements__c>();
-            this.validHttpResponses = new List<HttpResponse>();
+            this.validHttpRespBody = new List<String>();
             this.validFFSS = new List<arce__Financial_Statements__c>();
         }
     }
@@ -377,32 +382,12 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * 		Exceptions calling WS will return 'Error calling service'
     * @example public static arce.Arc_Gen_ServiceAndSaveResponse setupFFSSHeaders(String analysisId, Boolean translatePicklistValues) {
     **/
-    //public static SetupFFSSHeadersWrapper setupFFSSHeaders(String analysisId, Boolean transPLValues, String ratingToolSelect, Integer requestedPage, String proposalFolderArceId) {
-    //    return setupFFSSHeaders(analysisId, transPLValues, ratingToolSelect, requestedPage, null);
-    //} revisar
-    /**
-    *-------------------------------------------------------------------------------
-    * @description call financialStatement aso service and insert into salesforce.
-    * 		This method will only get the new FFSS, old FFSS will not be updated
-    *--------------------------------------------------------------------------------
-    * @author  ARCE TEAM
-    * @date     11/04/2019
-    * @param analysisId recordId of the account_has_analysis.
-    * @param translatePicklistValues modifies values of picklist fields on returned records
-    *   so they contain picklist value labels instead of picklist values.
-    * @return SetupFFSSHeadersWrapper
-    * 		if OK serviceCode = 200, other case controller will format serviceCode and
-    * 		if not OK serviceCode = 'Error - MessageError' to be displayed to user
-    * 		Exceptions calling WS will return 'Error calling service'
-    * @example public static arce.Arc_Gen_ServiceAndSaveResponse setupFFSSHeaders(String analysisId, Boolean translatePicklistValues) {
-    **/
-    public static SetupFFSSHeadersWrapper setupFFSSHeaders(String analysisId, Boolean transPLValues, String ratingToolSelect, Integer requestedPage, String proFolderArcId) {
+    public static SetupFFSSHeadersWrapper setupFFSSHeaders(String analysisId, Boolean transPLValues, String ratingToolSelect, Integer requestedPage, String proposalFolderArceId) {
         final arce.Arc_Gen_CustomServiceMessages serviceMessage = new arce.Arc_Gen_CustomServiceMessages();
         final Arc_Gen_Balance_Tables_data locator = new Arc_Gen_Balance_Tables_data();
 
         final arce.Arc_Gen_Account_Wrapper accountInfo = locator.getCustomerData(analysisId);
         final String customerNumber = arce.Arc_Gen_CallEncryptService.getEncryptedClient(accountInfo.accNumber);
-
         // Get financial statements service name depending on whether the account is a group or a client.
         final String ffssServiceName = getServiceNameByParticipantType(accountInfo.participantType);
 
@@ -421,7 +406,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         }
 
         SetupFFSSHeadersWrapper toBeReturned = new SetupFFSSHeadersWrapper();
-        toBeReturned.ffssList = Arc_Gen_Balance_Tables_helper.processFinancialStatements(analysisId, response, transPLValues, accountInfo, ratingToolSelect, proFolderArcId);
+        toBeReturned.ffssList = Arc_Gen_Balance_Tables_helper.processFinancialStatements(analysisId, response, transPLValues, accountInfo, ratingToolSelect, proposalFolderArceId);
 
         final Set<String> servRespKeys = response.serviceResponse.keySet();
         if (servRespKeys.contains('pagination') && isServPaginated) {
@@ -454,7 +439,8 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         final String customerNumber = arce.Arc_Gen_CallEncryptService.getEncryptedClient(accountInfo.accNumber);
 
         // Get rtc financial statements service name depending on whether the account is a group or a client.
-        final String ffssServiceName = getServiceNameByParticipantType(accountInfo.participantType);
+        final String groupClient = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) analysisId});
+        final String ffssServiceName = getServiceNameByParticipantType(groupClient);
 
         // Call RTC Financial Statements service to get FS data.
         String paramsJsonRTC;
@@ -511,7 +497,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @date     08/01/2025
     * @param analysisId recordId of the account_has_analysis.
     * @param translatePicklistValues modifies values of picklist fields on returned records
-    * @param proFolderArcId recordId of proposal folder
+    * @param proposalFolderArceId recordId of proposal folder
     *   so they contain picklist value labels instead of picklist values.
     * @return List<arce__Financial_Statements__c>
     * 		if OK serviceCode = 200, other case controller will format serviceCode and
@@ -519,8 +505,8 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * 		Exceptions calling WS will return 'Error calling service'
     * @example public static arce.Arc_Gen_ServiceAndSaveResponse setupFFSSHeaders(String analysisId, Boolean translatePicklistValues) {
     **/
-    public static List<arce__Financial_Statements__c> setupFFSSHeadersProp(String analysisId, Boolean transPLValues, String ratingToolSelect, String proFolderArcId) {
-        return setupFFSSHeaders(analysisId, transPLValues, ratingToolSelect, null, proFolderArcId).ffssList;
+    public static List<arce__Financial_Statements__c> setupFFSSHeadersProp(String analysisId, Boolean transPLValues, String ratingToolSelect, String proposalFolderArceId) {
+        return setupFFSSHeaders(analysisId, transPLValues, ratingToolSelect, null, proposalFolderArceId).ffssList;
     }
     /**
     *-------------------------------------------------------------------------------
@@ -576,70 +562,127 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @param recordId recordId of the account_has_analysis
     * @param selectedFfssList list of financial statements
     * @param isRAIP boolean if is RAIP
-    * @param proFolderArcId proposal folder arce id for proposal
+    * @param propFolArceId proposal folder arce id for proposal
     * @return RatiosAndRatingResponse
     *       if OK serviceCode = 200,
     *           ratiosErrorMsg will cointain error messages formated to be displayed
     *       if not OK serviceCode = 'Error - MessageError' to be displayed to user
     *       Exceptions calling WS will return 'Error calling service'
-    *   @example public static RatiosAndRatingResponse buildTables(recordId, selectedFfssList, isRAIP, proFolderArcId) {
+    * @example public static RatiosAndRatingResponse buildTables(String recordId,
+    *              List<arce__Financial_Statements__c> selectedFfssList, Boolean isRAIP, propFolArceId) {
     **/
-    public static RatiosAndRatingResponse buildTables(String recordId, List<arce__Financial_Statements__c> selectedFfssList, Boolean isRAIP, Boolean isFinancialRAIP, String proFolderArcId) {
-        List<SObject> listToClean = new List<SObject>();
+    public static RatiosAndRatingResponse buildTables(String ahaId, List<arce__Financial_Statements__c> selectedFfssList, Boolean isRAIP, Boolean isFinancialRAIP, String propFolArceId) {
+
         final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
+        final arce__Account_has_Analysis__c aha = dataAccess.getAccountHasAnalysis(ahaId)[0];
 
-        final List<String> filterValues = new List<String>{'02','03','04','07'};
-        if(proFolderArcId == null) {
-            listToClean = dataAccess.getRecordsToClean(recordId, filterValues);
-        } else {
-            listToClean = Arc_Gen_Balance_Tables_data.getRecordsToCleanByProposal(proFolderArcId , filterValues);
-        }
+        final RatiosResponse response = getRatiosResponse(aha, selectedFfssList, isRAIP);
 
-        final List<arce__Account_has_Analysis__c> analyzedClient = dataAccess.getAccountHasAnalysis(recordId);
-        final String subprocessType = analyzedClient[0].arce__Analysis__r.arce__anlys_wkfl_sub_process_type__c;
+        return processRatiosResponse(aha, isFinancialRAIP, propFolArceId, response);
+    }
+
+    /**
+    *-------------------------------------------------------------------------------
+    * @description Return the ratios service response
+    *--------------------------------------------------------------------------------
+    * @author  francisco.munoz.torres.tech@bbva.com
+    * @date    02/09/2025
+    * @param ahaId ahaId
+    * @param selectedFfssList list of FFSS
+    * @param isRAIP is RAIP
+    * @return RatiosResponse
+    **/
+    public static RatiosResponse getRatiosResponse(arce__Account_has_Analysis__c aha, List<arce__Financial_Statements__c> selectedFfssList, Boolean isRAIP) {
+        final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
 
         // Get parameters to be sent to the service.
         final arce.Arc_Gen_User_Wrapper wrapperUser = arce.Arc_Gen_User_Locator.getUserInfo(UserInfo.getUserId());
 
         final RatiosServiceParameters ratiosParams = new RatiosServiceParameters();
         ratiosParams.federationId = wrapperUser.businessAgentId;
-        ratiosParams.customerId = dataAccess.getCustomerData(recordId).accNumber;
+        ratiosParams.customerId = dataAccess.getCustomerData(aha.Id).accNumber;
         ratiosParams.customerNumber = arce.Arc_Gen_CallEncryptService.getEncryptedClient(ratiosParams.customerId);
-        ratiosParams.analysisIdToSend = dataAccess.getAccountHasAnalysis(recordId)[0].Name;
-        ratiosParams.eventType = arce.Arc_Gen_GenericUtilities.getEventTypeValue(subprocessType);
-        ratiosParams.participantType = getParticipantType(analyzedClient[0].arce__group_asset_header_type__c);
+
+        final String groupClient = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) aha.Id});
+        if(groupClient == null) {
+            ratiosParams.participantType = getParticipantType(aha.arce__group_asset_header_type__c);
+        } else {
+            ratiosParams.participantType = groupClient;
+        }
+        ratiosParams.analysisIdToSend = aha.name;
+        ratiosParams.eventType = arce.Arc_Gen_GenericUtilities.getEventTypeValue(aha.arce__Analysis__r.arce__anlys_wkfl_sub_process_type__c);
 
         // Call ratios engine for each selected financial statement.
-        final RatiosResponse response = callRatiosEngine(selectedFfssList, ratiosParams, isRAIP);
+        return callRatiosEngine(selectedFfssList, ratiosParams, isRAIP);
+    }
+
+    /**
+    *-------------------------------------------------------------------------------
+    * @description Process the ratios response
+    *--------------------------------------------------------------------------------
+    * @author  francisco.munoz.torres.tech@bbva.com
+    * @date    02/09/2025
+    * @param aha aha object
+    * @param isFinancialRAIP financial RAIP
+    * @param proposalFolderId proposal folder id
+    * @param response Ratios service response
+    * @return RatiosAndRatingResponse
+    **/
+    public static RatiosAndRatingResponse processRatiosResponse(arce__Account_has_Analysis__c aha, Boolean isFinancialRAIP, String propFolArceId, RatiosResponse response) {
+        return processRatiosResponse(aha, isFinancialRAIP, propFolArceId, response, null);
+    }
+    /**
+    *-------------------------------------------------------------------------------
+    * @description Process the ratios response
+    *--------------------------------------------------------------------------------
+    * @author  francisco.munoz.torres.tech@bbva.com
+    * @date    02/09/2025
+    * @param aha aha object
+    * @param isFinancialRAIP financial RAIP
+    * @param proposalFolderId proposal folder id
+    * @param response Ratios service response
+    * @return RatiosAndRatingResponse
+    **/
+    @SuppressWarnings('sf:NPathComplexity, sf:DUDataflowAnomalyAnalysis')
+    public static RatiosAndRatingResponse processRatiosResponse(arce__Account_has_Analysis__c aha, Boolean isFinancialRAIP, String propFolArceId, RatiosResponse response, String ratingType) {
+        final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
+
+        List<SObject> listToClean = new List<SObject>();
+        final List<String> filterValues = new List<String>{'02','03','04','07'};
+        if(propFolArceId == null) {
+            listToClean = dataAccess.getRecordsToClean(aha.Id, filterValues);
+        } else {
+            listToClean = Arc_Gen_Balance_Tables_data.getRecordsToCleanByProposal(propFolArceId , filterValues);
+        }
 
         // Sync financial statements:
         // - Delete existing FFSS that were not selected
         // - Update existing FFSS that were selected
         // - Insert new FFSS
         Boolean ffssChanged = false;
-        if(!isFinancialRAIP && proFolderArcId == null) {
-            ffssChanged = dataAccess.persistProcessedFfss(analyzedClient[0].Id, response.ffssToProcess);
+        if(propFolArceId == null) {
+            ffssChanged = dataAccess.persistProcessedFfss(aha.Id, response.ffssToProcess);
         }
         // Logical validation of the valid financial statements to save rating
-        final arce__Financial_Statements__c finStateValidObj = response.validFFSS.isEmpty() ? new arce__Financial_Statements__c() : Arc_Gen_Balance_Tables_helper.validationFFSSRating(analyzedClient[0], response.validFFSS);
+        final arce__Financial_Statements__c finStateValidObj = response.validFFSS.isEmpty() ? new arce__Financial_Statements__c() : Arc_Gen_Balance_Tables_helper.validationFFSSRating(aha, response.validFFSS);
         // Generates arce__Table_Content_per_Analysis__c records from engine response.
-        final Arc_Gen_Balance_Tables_data.SaveResult saveRes = callProcessData(response.ffssToProcess, response.validHttpResponses, recordId, finStateValidObj, proFolderArcId);
+        final Arc_Gen_Balance_Tables_data.SaveResult saveRes = callProcessData(response.ffssToProcess, response.validHttpRespBody, aha.Id, finStateValidObj, propFolArceId);
         final RatiosAndRatingResponse resp = setResults(saveRes, response.atLeastOneValid, response.globalResponseErrorMessage, response.serviceStatusCode);
 
         // Set "new FFSS" indicator on Account_has_analysis__c record. This indicator
         // means the rating engine has not been called yet with this subset of FFSS.
-        if(isFinancialRAIP || proFolderArcId != null) {
+        if(isFinancialRAIP || propFolArceId != null) {
             resp.fsServiceId = finStateValidObj.arce__financial_statement_id__c;
         } else {
-            analyzedClient[0].arce__newFFSS_ind__c = 'YES';
-            analyzedClient[0].arce__ffss_for_rating_id__c = null;     // NOSONAR
-            dataAccess.updateRecords(analyzedClient);
+            aha.arce__newFFSS_ind__c = 'YES';
+            aha.arce__ffss_for_rating_id__c = null;     // NOSONAR
+            dataAccess.updateRecords(new List<sObject>{ aha });
 
             // Reinitialize Leveraged Test fields.
-            Arc_Gen_TestLeverage_service.clearTestLeveragedResults(recordId);
+            Arc_Gen_TestLeverage_service.clearTestLeveragedResults(aha.Id);
 
             // Choose a valid financial statement to use for rating (if any).
-            Arc_Gen_Balance_Tables_helper.saveRatingFfss(analyzedClient[0], response.validFFSS, resp, finStateValidObj);
+            Arc_Gen_Balance_Tables_helper.saveRatingFfss(aha, response.validFFSS, resp, finStateValidObj);
         }
 
         // [DMT] We are deleting previosList even if the WS fail (if there were any info, user will lose it until WS problem get solved)
@@ -647,14 +690,52 @@ public with sharing class Arc_Gen_Balance_Tables_service {
             dataAccess.deletePrevious(listToClean);
         }
 
+        arce__Analysis__c updatedArce = null;
+
         // If FFSS have changed, force the user to validate the AHAs again.
         if (ffssChanged) {
-            final arce__Analysis__c updatedArce = new arce__Analysis__c(Id = analyzedClient[0].arce__Analysis__c, arce__Temporal_status__c = false);
+            updatedArce = new arce__Analysis__c(Id = aha.arce__Analysis__c, arce__Temporal_status__c = false);
+        }
+
+        // If rating type is defined and is different from the current one, update it
+        if (ratingType != null && aha.arce__Analysis__r.arce__rating_prerating_type__c != ratingType) {
+            if (updatedArce == null) {
+                updatedArce = new arce__Analysis__c(Id = aha.arce__Analysis__c, arce__Temporal_status__c = false);
+            }
+            updatedArce.arce__rating_prerating_type__c = ratingType;
+        }
+
+        // Update analysis if needed
+        if (updatedArce != null) {
             arce.Arc_Gen_ArceAnalysis_Data.updateArce(new List<arce__Analysis__c> { updatedArce });
+        }
+
+        if(propFolArceId == null) {
+            dataValueUpdate(aha);
         }
 
         return resp;
     }
+
+    /**
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Description Update datavalue from ratiosEngine response
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Author   joseluis.miralles.contractor@bbva.com
+    * @Date     Created: 2023-02-28
+    * @param String recordId
+    * @return void
+    * ---------------------------------------------------------------------------------------------------------------------------------------
+    **/
+    public static void dataValueUpdate(arce__Account_has_Analysis__c aha) {
+        final List<Double> ratiosToGet = new List<Double>{RATIO_ID};
+        final String idFFSS = aha.arce__ffss_for_rating_id__r.arce__financial_statement_id__c;
+        final List<arce__Table_Content_per_Analysis__c> ratiosValues = Arc_Gen_Balance_Tables_data.getRatiosRecords(aha.Id,idFFSS,ratiosToGet);
+        if(!ratiosValues.isEmpty() && String.isNotBlank(idFFSS)) {
+            Arc_Gen_Balance_Tables_data.updateDataValueOverlay(aha.Id,String.valueOf(ratiosValues.get(0).arce__table_content_value__c));
+        }
+    }
+
     /**
     *-------------------------------------------------------------------------------
     * @description Gets value for participant type field.
@@ -724,7 +805,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
 
                         // Add to correctly processed FFSS. If valid, record it.
                         ratiosResponse.ffssToProcess.add(financialItem);
-                        ratiosResponse.validHttpResponses.add(response);
+                        ratiosResponse.validHttpRespBody.add(response.getBody());
                         //ratiosResponse.atLeastOneValid = false;
 
                         if (financialItem.arce__ffss_valid_type__c == '1' || isRAIP) {
@@ -784,7 +865,8 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @return Arc_Gen_Balance_Tables_data.SaveResult
     * @example public static void callProcessData(ffssToProcess, validHttpResp, recordId) {
     **/
-    public static Arc_Gen_Balance_Tables_data.SaveResult callProcessData(List<arce__Financial_Statements__c> ffssToProcess, List<HttpResponse> validHttpResp, String recordId, arce__Financial_Statements__c validFs, String proposalFolderArceId) {
+    @SuppressWarnings('sf:DUDataflowAnomalyAnalysis')
+    public static Arc_Gen_Balance_Tables_data.SaveResult callProcessData(List<arce__Financial_Statements__c> ffssToProcess, List<String> validHttpRespBody, String recordId, arce__Financial_Statements__c validFs, String propFoldArceId) {
         final List<Map<String,String>> eeffData2Update = new List<Map<String,String>>();
         final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
         Arc_Gen_Balance_Tables_data.SaveResult saveRes = new Arc_Gen_Balance_Tables_data.SaveResult();
@@ -795,14 +877,16 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         ffssImportantMap.put('valFS', validFs);
         ffssImportantMap.put('prevFS', finStaPrevYearLts.isEmpty() ? new arce__Financial_Statements__c() : finStaPrevYearLts[0]);
 
+        final List<arce__Data_Collections__c> dataCollectList = dataAccess.getRecordsToInsert(new List<String>{'07','02','03','04'});
+        final arce__Arce_Config__mdt orderTableField = Arc_Gen_Balance_Tables_data.orderTableField();
         for (Integer i=0; i<ffssToProcess.size(); i++) {
             final arce__Financial_Statements__c financialItem = ffssToProcess[i];
-            final HttpResponse response = validHttpResp[i];
+            final String responseBody = validHttpRespBody[i];
             try {
                 final Map<String, arce__Table_Content_per_Analysis__c> completeResptMap = new Map<String, arce__Table_Content_per_Analysis__c>();
-                eeffData2Update.add(processData(response,completeResptMap));
+                eeffData2Update.add(processData(responseBody,completeResptMap));
                 if (financialItem.arce__financial_statement_id__c != Arc_Gen_ArceCore_Constants.DUMMY_FFSS) {
-                    listToInsert.addAll(listToInsertMethod(ffssImportantMap,financialItem,recordId,completeResptMap, proposalFolderArceId));
+                    listToInsert.addAll(listToInsertMethod(ffssImportantMap, financialItem, recordId, completeResptMap, propFoldArceId, dataCollectList, orderTableField));
                 }
             } catch(Exception e) {
                 saveRes.status = System.Label.Cls_arce_GRP_glbError;
@@ -815,6 +899,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         saveRes = dataAccess.insertRecords(listToInsert);
         return saveRes;
     }
+
     /**
     *-------------------------------------------------------------------------------
     * @Description Update the all the eeff
@@ -897,13 +982,13 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @author  ARCE TEAM
     * @date     11/04/2019
     * @param HttpResponse retrieved FROM Ratios WS
-    * @param Map<String, arce__Table_Content_per_Analysis__c> completeResponsetMap
+    * @param Map<String, arce__Table_Content_per_Analysis__c> fullRespMap
     * @return Map<String,String>
-    * @example public static void processData(HttpResponse response, Map<String, arce__Table_Content_per_Analysis__c> completeResponsetMap) {
+    * @example public static void processData(HttpResponse response, Map<String, arce__Table_Content_per_Analysis__c> fullRespMap) {
     **/
-    public static Map<String,String> processData(HttpResponse response, Map<String, arce__Table_Content_per_Analysis__c> completeResponsetMap) {
+    public static Map<String,String> processData(String responseBody, Map<String, arce__Table_Content_per_Analysis__c> fullRespMap) {
         final Map<String,String> eeffData = new Map<String,String>();
-        final Map<String, Object> mapResponse = (Map<String, Object>)JSON.deserializeUntyped(response.getBody());
+        final Map<String, Object> mapResponse = (Map<String, Object>)JSON.deserializeUntyped(responseBody);
         final Map<String, Object> data = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(mapResponse.get('data')));
         final Map<String, Object> calculations = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data.get('calculations')));
         final Map<String, Object> balanceFs = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(data.get('financialStatement')));
@@ -920,7 +1005,7 @@ public with sharing class Arc_Gen_Balance_Tables_service {
             for(Object element: specificMag) {
                 final Map<String,Object> data1 = (Map<String,Object>) element;
                 final arce__Table_Content_per_Analysis__c recordToInsert = processRatioDataValues(data1, parentId);
-                completeResponsetMap.put(String.valueOf(data1.get('id')), recordToInsert);
+                fullRespMap.put(String.valueOf(data1.get('id')), recordToInsert);
             }
         }
         final Map<String, Object> globalSynthesis = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(calculations.get('globalSynthesis')));
@@ -928,15 +1013,15 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         final Map<String, Object> ratiosMetrics = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(calculations.get('ratiosMetrics')));
         for(Object element: globalSynthesis.keyset()) {
             final arce__Table_Content_per_Analysis__c recordToInsert = processRatioDataValues(element, globalSynthesis, 'globalSynthesis', parentId);
-            completeResponsetMap.put(String.valueOf(element), recordToInsert);
+            fullRespMap.put(String.valueOf(element), recordToInsert);
         }
         for(Object element: cashFlow.keyset()) {
             final arce__Table_Content_per_Analysis__c recordToInsert = processRatioDataValues(element, cashFlow, 'cashFlow', parentId);
-            completeResponsetMap.put(String.valueOf(element), recordToInsert);
+            fullRespMap.put(String.valueOf(element), recordToInsert);
         }
         for(Object element: ratiosMetrics.keyset()) {
             final arce__Table_Content_per_Analysis__c recordToInsert = processRatioDataValues(element, ratiosMetrics, 'ratiosMetrics', parentId);
-            completeResponsetMap.put(String.valueOf(element), recordToInsert);
+            fullRespMap.put(String.valueOf(element), recordToInsert);
         }
         return eeffData;
     }
@@ -1097,11 +1182,8 @@ public with sharing class Arc_Gen_Balance_Tables_service {
     * @return void (insert data)
     * @example public static void listToInsertMethod(Arc_Gen_Balance_Tables_data dataAccess, Date year, String recordId, Map<String, arce__Table_Content_per_Analysis__c> completeResponsetMap ) {
     **/
-    public static List<sObject> listToInsertMethod(Map<String,arce__Financial_Statements__c> ffssImportantMap, arce__Financial_Statements__c ffss, String recordId, Map<String, arce__Table_Content_per_Analysis__c> cmpltRespMap, String proFolderArcId) {
-        final Arc_Gen_Balance_Tables_data dataAccess = new Arc_Gen_Balance_Tables_data();
-        final arce__Arce_Config__mdt orderTableField = Arc_Gen_Balance_Tables_data.orderTableField();
+    public static List<sObject> listToInsertMethod(Map<String,arce__Financial_Statements__c> ffssImportantMap, arce__Financial_Statements__c ffss, String recordId, Map<String, arce__Table_Content_per_Analysis__c> cmpltRespMap, String propFolArceId, List<arce__Data_Collections__c> dataCollectList, arce__Arce_Config__mdt orderTableField) {
         final List<arce__Table_Content_per_Analysis__c> listToInsert = new List<arce__Table_Content_per_Analysis__c>();
-        final List<String> tablesList = new List<String>{'07','02','03','04'};
 
         // Label maps.
         final Map<String, Map<String, String>> mapLabels = new Map<String, Map<String, String>> {
@@ -1109,29 +1191,29 @@ public with sharing class Arc_Gen_Balance_Tables_service {
             'certTypeMap' => arce.Arc_Gen_GenericUtilities.getMapLabelFromValue('arce__Financial_Statements__c', 'arce__ffss_certification_type__c'),
             'submTypeMap' => arce.Arc_Gen_GenericUtilities.getMapLabelFromValue('arce__Financial_Statements__c', 'arce__ffss_submitted_type__c')
         };
-        final List<arce__Data_Collections__c> dataCollectList = dataAccess.getRecordsToInsert(tablesList);
         final Map<String, String> mapRecordTypeIds = getRecordTypeIdByDataCollection(dataCollectList);
         for(arce__Data_Collections__c dataCollectElemnt : dataCollectList) {
             // If element is not found in ratios response, skip it.
             if (!cmpltRespMap.containsKey(dataCollectElemnt.arce__collection_code_term__c)) {
                 continue;
             }
+            final arce__Table_Content_per_Analysis__c codeTerm = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c);
             final arce__Table_Content_per_Analysis__c recordToInsert = new arce__Table_Content_per_Analysis__c();
             try {
-                recordToInsert.CurrencyIsoCode = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).CurrencyIsoCode;
-                recordToInsert.arce__table_content_value__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__table_content_value__c;
-                recordToInsert.arce__table_content_percentage__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__table_content_percentage__c;
-                recordToInsert.arce__table_content_parent_code_id__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__table_content_parent_code_id__c;
+                recordToInsert.CurrencyIsoCode = codeTerm.CurrencyIsoCode;
+                recordToInsert.arce__table_content_value__c = codeTerm.arce__table_content_value__c;
+                recordToInsert.arce__table_content_percentage__c = codeTerm.arce__table_content_percentage__c;
+                recordToInsert.arce__table_content_parent_code_id__c = codeTerm.arce__table_content_parent_code_id__c;
                 recordToInsert.RecordTypeId = mapRecordTypeIds.get(dataCollectElemnt.arce__collection_table__c);
                 recordToInsert.arce__collection_table__c = dataCollectElemnt.arce__collection_table__c;
                 recordToInsert.arce__table_content_year__c = getTableHeaderByFinancialStatement(ffss, mapLabels);
-                
-                if(proFolderArcId == null) {
+
+                if(propFolArceId == null) {
                     recordToInsert.arce__account_has_analysis_id__c = recordId;
                 } else {
-                    recordToInsert.arce__SP2_Proposal_Folder__c = proFolderArcId;
+                    recordToInsert.arce__SP2_Proposal_Folder__c = propFolArceId;
                 }
-                  
+
                 recordToInsert.arce__Data_Collection_Id__c = dataCollectElemnt.id;
                 recordToInsert.put(orderTableField.arce__Value1__c, String.valueof(dataCollectElemnt.arce__collection_order_number__c)); // PARCE
                 recordToInsert.arce__valid_fin_statement__c = false;
@@ -1143,10 +1225,10 @@ public with sharing class Arc_Gen_Balance_Tables_service {
                     recordToInsert.arce__previous_valid__c = true;
                 }
                 recordToInsert.arce__table_dynamic_header_field__c = ffss.arce__economic_month_info_number__c + 'M ' +ffss.arce__economic_period_type_id__c;
-                recordToInsert.arce__Unit_Type__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__Unit_Type__c;
-                recordToInsert.arce__base_amount__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__base_amount__c;
-                recordToInsert.arce__original_amount__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__original_amount__c;
-                recordToInsert.arce__original_currency__c = cmpltRespMap.get(dataCollectElemnt.arce__collection_code_term__c).arce__original_currency__c;
+                recordToInsert.arce__Unit_Type__c = codeTerm.arce__Unit_Type__c;
+                recordToInsert.arce__base_amount__c = codeTerm.arce__base_amount__c;
+                recordToInsert.arce__original_amount__c = codeTerm.arce__original_amount__c;
+                recordToInsert.arce__original_currency__c = codeTerm.arce__original_currency__c;
                 recordToInsert.arce__collection_order_type__c = '2300';
             } catch(Exception e) {
                 // This error should not be presented to the user, but it is important to determinate if the errors came FROM WS
@@ -1282,4 +1364,5 @@ public with sharing class Arc_Gen_Balance_Tables_service {
         resp.fsServiceId = ffssId;
         return resp;
     }
+
 }

@@ -1,0 +1,20 @@
+.THIS .text{
+    font-size: .875rem;
+    font-weight: 400;
+}
+.THIS .text2 {
+    font-weight: bold;
+    line-height: 1.5;
+    font-size: .75rem;
+}
+.THIS .mTop{
+         height: 3em;
+}
+.THIS .slds-col{
+    margin-left: 0.8em;
+}
+.THIS .slds-accordion__summary-action{
+    background-color: #f3f2f2;
+    border-radius: 0rem;
+    padding: 0.5rem;
+}

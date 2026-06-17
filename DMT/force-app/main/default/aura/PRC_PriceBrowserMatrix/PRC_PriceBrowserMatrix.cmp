@@ -1,0 +1,98 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 03-25-2021
+  @last modified by  : David Rodríguez
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-25-2021   David Rodríguez   Initial Version
+-->
+
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="PrcPriceMatrixBrowser_Ctrl">
+    <aura:attribute name="opportunityId" access="public" type="String" />
+    <aura:attribute name="responseData" access="public" type="PRC_PFS_Response" />
+
+    <aura:attribute name="selectedPrice" access="private" type="PRC_PFS_Scenario" />
+    <aura:attribute name="initPriceId" access="private" type="Integer" default="13"/>
+	<aura:attribute name="matrixOptions" access="private" type="List"/>
+    <!-- aura:attribute name="numMatrix" access="private" type="Integer" / -->
+
+	<aura:attribute name="selectedMatrix" access="private" type="String" />
+    <aura:attribute name="selectedMatrixAxis1" access="private" type="String" />
+    <aura:attribute name="selectedMatrixAxis2" access="private" type="String" />
+    <aura:attribute name="matrixColumns" access="private" type="Integer"/>
+    <!-- <aura:attribute name="isLoadedData" access="private" type="Boolean" default="false" /> -->
+    <aura:attribute name="displaySpinner" access="private" type="Boolean" default="true" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="onPriceSelected" event="c:PRC_PriceSelectedEvent" action="{!c.onPriceSelected}"/>
+
+    <aura:method name="savePrice" action="{!c.savePrice}" description="Save selected price from Matrix" access="public"/>
+    <aura:registerEvent name="refreshDetailEvt" type="c:PRC_RefreshDetailsEvt" />
+    <aura:registerEvent name="closemodalevt" type="c:PRC_CloseModal" />
+
+    <!-- aura:if isTrue="{!v.isLoadedData==false}">
+        <div class="spinner-container">
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </div>
+    <aura:set attribute="else">
+    -->
+        <!-- para poner saltos de línea en los mensajes del toast
+        <aura:html tag="style">.toastMessage.forceActionsText{white-space : pre-line!important;} </aura:html>-->
+        <ltng:require styles="{!$Resource.multilineToastCSS}" />
+
+        <aura:if isTrue="{!v.displaySpinner}">
+       		 <div>
+       		     <lightning:spinner alternativeText="Loading" size="large" />
+       		 </div>
+        </aura:if>
+
+        <div class="mycontainer" >
+            <aura:if isTrue="{!v.matrixColumns==1}">
+                <c:PRC_UniquePriceTile price="{!v.responseData.data.engineWorksWith.scenarios[0]}" opportunityId="{!v.opportunityId}"/>
+
+                <div class="footer">
+                    <c:PRC_PriceDetailBottom price="{!v.selectedPrice}" standarType="false" />
+                </div>
+
+            <aura:set attribute="else">
+
+                <div class="slds-m-bottom_small">
+                    <p>Select an option from the sensitivity map</p>
+                </div>
+                <div class="header">
+                    <lightning:radioGroup name="radioButtonMatrix" label="" options="{! v.matrixOptions }"
+                                    value="{! v.selectedMatrix }" type="button" onchange="{! c.onMatrixSelected }" />
+                    <BR/>
+                </div>
+                <!-- div class="menu">Menu</div -->
+
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_1-of-2 left-column-style">
+                        <c:PRC_PriceTilesList scenarios="{!v.responseData.data.engineWorksWith.scenarios}" selectedPriceId="{!v.initPriceId}" matrixColumns="{!v.matrixColumns}" matrixAxis1="{!v.selectedMatrixAxis1}" matrixAxis2="{!v.selectedMatrixAxis2}"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 right-column-style">
+                        <!-- Ya no hacen falta el número de columnas c:PRC_PriceDetailRight matrixColumns="{!v.matrixColumns}" price="{!v.selectedPrice}" operations="{!v.responseData.data.engineWorksWith.operations}"/ -->
+                        <c:PRC_PriceDetailRight price="{!v.selectedPrice}" operations="{!v.responseData.data.engineWorksWith.operations}"/>
+                    </div>
+                </div>
+
+        <!--         Mejor utilizar las clases de salesforce
+                <div class="leftColumn">
+                </div>
+                <div class="rightColumn">
+                </div>
+        -->
+                <div class="footer">
+                    <c:PRC_PriceDetailBottom price="{!v.selectedPrice}" standarType="true"  />
+                </div>
+
+            </aura:set>
+            </aura:if>
+        </div>
+
+<!--    </aura:set>
+    </aura:if>
+-->
+</aura:component>

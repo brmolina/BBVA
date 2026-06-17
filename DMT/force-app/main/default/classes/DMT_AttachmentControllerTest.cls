@@ -1,5 +1,5 @@
 @isTest
-public class DMT_AttachmentControllerTest {
+public with sharing class DMT_AttachmentControllerTest {
     @TestSetup
     static void makeData(){
         DMT_Test_DataFactory.generateTestTreasuryLines();

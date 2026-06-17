@@ -1,0 +1,60 @@
+{
+  "data": {
+    "currencyCode": "EUR",
+    "features": [
+      {
+        "id": "1000",
+        "name": "Placeholder Feature",
+        "stateName": "GREEN",
+        "consumptionLimits": []
+      },
+      {
+        "id": "1745",
+        "name": "S&T Credit Risk Group Approval",
+        "stateName": "YELLOW",
+        "consumptionLimits": [
+          {
+            "consumptionLastLevelId": "90000",
+            "limitDesc": "be680b79c5603078a249b08da6074628483",
+            "amount": {
+              "unavailableRiskAmount": 7422237750,
+              "authorizedRiskAmount": 3358571397.62,
+              "cmtContDisposedAmount": 1519221482.38,
+              "uncmtContDisposedAmount": 0,
+              "cmtContNonDspsAmount": 0,
+              "uncmtContNonDspsAmount": 0,
+              "notSignedTrConsumptionAmount": 35435346536,
+              "currentApprovedAmount": 6300000000
+            },
+            "currencyId": "EUR",
+            "conditionDesc": "Limit exceeded (Requested amount does not fit).",
+            "stateName": "RED"
+          },
+          {
+            "consumptionLastLevelId": "200000",
+            "currencyId": "EUR",
+            "conditionDesc": "No limits apply to this trade",
+            "stateName": "GRAY"
+          },
+          {
+            "consumptionLastLevelId": "50000",
+            "limitDesc": "613d792c08470dee86e87ab6938e5af1041",
+            "amount": {
+              "unavailableRiskAmount": 7410237750,
+              "authorizedRiskAmount": 3346571397.62,
+              "cmtContDisposedAmount": 1519221482.38,
+              "uncmtContDisposedAmount": 0,
+              "cmtContNonDspsAmount": 0,
+              "uncmtContNonDspsAmount": 0,
+              "notSignedTrConsumptionAmount": 35435346536,
+              "currentApprovedAmount": 6000000000
+            },
+            "currencyId": "EUR",
+            "conditionDesc": "Limit exceeded (Requested amount does not fit).",
+            "stateName": "RED"
+          }
+        ]
+      }
+    ]
+  }
+}

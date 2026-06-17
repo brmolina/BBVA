@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>IXMAS_Context_Request_PROD</label>
+    <protected>false</protected>
+    <values>
+        <field>bbvacon__Authentication_Service__c</field>
+        <value xsi:type="xsd:string">IXMAS_Context_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Blocked_Service__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Custom_Setting__c</field>
+        <value xsi:type="xsd:string">IXMAS_Context_Request_PROD</value>
+    </values>
+    <values>
+        <field>bbvacon__Default_Integration_User__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>bbvacon__Headers_Class__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Http_Headers_LTA__c</field>
+        <value xsi:type="xsd:string">{&quot;Content-Type&quot;: &quot;application/json&quot;}</value>
+    </values>
+    <values>
+        <field>bbvacon__Http_Method__c</field>
+        <value xsi:type="xsd:string">POST</value>
+    </values>
+    <values>
+        <field>bbvacon__IsCacheable__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Json_Input_Template_LTA__c</field>
+        <value xsi:type="xsd:string">{
+&quot;idUser&quot;: &quot;#idUser#&quot;,
+&quot;idRequestedBy&quot;: &quot;#idRequestedBy#&quot;,
+&quot;idCompany&quot;: &quot;#idCompany#&quot;,
+&quot;mode&quot;: &quot;#mode#&quot;,
+&quot;includeApprovers&quot;: #includeApprovers#
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Mock_LTA__c</field>
+        <value xsi:type="xsd:string">{
+    &quot;roles&quot;: [
+{
+            &quot;approversChain&quot;: [
+                {
+                    &quot;name&quot;: &quot;POZA GARCIA, IVAN MANUEL&quot;,
+                    &quot;id&quot;: &quot;E019562&quot;,
+                    &quot;order&quot;: 1
+                },
+                {
+                    &quot;name&quot;: &quot;PEDRO&quot;,
+                    &quot;id&quot;: &quot;T037641&quot;,
+                    &quot;order&quot;: 2
+                }
+            ],
+            &quot;id&quot;: &quot;RCB&quot;,
+            &quot;label&quot;: &quot;CIB Banker&quot;
+        },
+        {
+            &quot;approversChain&quot;: [
+                {
+                    &quot;name&quot;: &quot;MARQUINA TESTILLANO, JOSE&quot;,
+                    &quot;id&quot;: &quot;U530858&quot;,
+                    &quot;order&quot;: 1
+                },
+                {
+                    &quot;name&quot;: &quot;VANESSA MARIA&quot;,
+                    &quot;id&quot;: &quot;U516096&quot;,
+                    &quot;order&quot;: 2
+                },
+                {
+                    &quot;name&quot;: &quot;LAURA&quot;,
+                    &quot;id&quot;: &quot;E020083&quot;,
+                    &quot;order&quot;: 3
+                },
+                {
+                    &quot;name&quot;: &quot;RAMON&quot;,
+                    &quot;id&quot;: &quot;E059872&quot;,
+                    &quot;order&quot;: 4
+                },
+                {
+                    &quot;name&quot;: &quot;RUBEN&quot;,
+                    &quot;id&quot;: &quot;T002306&quot;,
+                    &quot;order&quot;: 5
+                },
+                {
+                    &quot;name&quot;: &quot;PEDRO&quot;,
+                    &quot;id&quot;: &quot;T037641&quot;,
+                    &quot;order&quot;: 6
+                }
+            ],
+            &quot;locations&quot;: [
+                {
+                    &quot;name&quot;: &quot;ASIA&quot;,
+                    &quot;id&quot;: &quot;1&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;EUROPA&quot;,
+                    &quot;id&quot;: &quot;3&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;HOLDING&quot;,
+                    &quot;id&quot;: &quot;6&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;LATAM&quot;,
+                    &quot;id&quot;: &quot;4&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;RESTO&quot;,
+                    &quot;id&quot;: &quot;5&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TURQUIA&quot;,
+                    &quot;id&quot;: &quot;7&quot;
+                }
+            ],
+            &quot;id&quot;: &quot;RRB&quot;,
+            &quot;label&quot;: &quot;Regional Banker&quot;
+        },
+{
+            &quot;subsidiaries&quot;: [
+                {
+                    &quot;idSubsidiary&quot;: &quot;A02296046&quot;,
+                    &quot;nameCountry&quot;: &quot;ESPAÑA&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;BANCA PUEYO, S.A.&quot;
+                },
+                {
+                    &quot;idSubsidiary&quot;: &quot;A02373014&quot;,
+                    &quot;nameCountry&quot;: &quot;ESPAÑA&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;FONDPUEYO PENSIONES, FONDO DE PENSIONES&quot;
+                },
+                {
+                    &quot;idSubsidiary&quot;: &quot;A27905218&quot;,
+                    &quot;nameCountry&quot;: &quot;PORTUGAL&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;VIA DIRECTA - COMPANHIA DE SEGUROS, S.A.&quot;
+                }
+            ],
+            &quot;id&quot;: &quot;RLB&quot;,
+            &quot;label&quot;: &quot;Local Banker&quot;
+        },
+        {
+            &quot;approversChain&quot;: [
+                {
+                    &quot;name&quot;: &quot;MARQUINA TESTILLANO, JOSE&quot;,
+                    &quot;id&quot;: &quot;U530858&quot;,
+                    &quot;order&quot;: 1
+                },
+                {
+                    &quot;name&quot;: &quot;VANESSA MARIA&quot;,
+                    &quot;id&quot;: &quot;U516096&quot;,
+                    &quot;order&quot;: 2
+                },
+                {
+                    &quot;name&quot;: &quot;LAURA&quot;,
+                    &quot;id&quot;: &quot;E020083&quot;,
+                    &quot;order&quot;: 3
+                },
+                {
+                    &quot;name&quot;: &quot;RAMON&quot;,
+                    &quot;id&quot;: &quot;E059872&quot;,
+                    &quot;order&quot;: 4
+                },
+                {
+                    &quot;name&quot;: &quot;RUBEN&quot;,
+                    &quot;id&quot;: &quot;T002306&quot;,
+                    &quot;order&quot;: 5
+                },
+                {
+                    &quot;name&quot;: &quot;PEDRO&quot;,
+                    &quot;id&quot;: &quot;T037641&quot;,
+                    &quot;order&quot;: 6
+                }
+            ],
+            &quot;locations&quot;: [
+                {
+                    &quot;name&quot;: &quot;GL.SECURITIES SERVICES-EMP.SERV.INV.&quot;,
+                    &quot;id&quot;: &quot;01820983&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;IFI SPAIN&quot;,
+                    &quot;id&quot;: &quot;01826249&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB A CORUÑA&quot;,
+                    &quot;id&quot;: &quot;01824646&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB BARCELONA&quot;,
+                    &quot;id&quot;: &quot;01824649&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB BILBAO&quot;,
+                    &quot;id&quot;: &quot;01824647&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB MADRID&quot;,
+                    &quot;id&quot;: &quot;01823994&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB PALMA DE MALLORCA&quot;,
+                    &quot;id&quot;: &quot;01824581&quot;
+                }
+            ],
+            &quot;id&quot;: &quot;RTB&quot;,
+            &quot;label&quot;: &quot;Transaction Banker&quot;
+        },
+        {
+            &quot;locations&quot;: [
+                {
+                    &quot;name&quot;: &quot;GL.SECURITIES SERVICES-EMP.SERV.INV.&quot;,
+                    &quot;id&quot;: &quot;01820983&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;IFI SPAIN&quot;,
+                    &quot;id&quot;: &quot;01826249&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB A CORUÑA&quot;,
+                    &quot;id&quot;: &quot;01824646&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB BARCELONA&quot;,
+                    &quot;id&quot;: &quot;01824649&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB BILBAO&quot;,
+                    &quot;id&quot;: &quot;01824647&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB MADRID&quot;,
+                    &quot;id&quot;: &quot;01823994&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;TB PALMA DE MALLORCA&quot;,
+                    &quot;id&quot;: &quot;01824581&quot;
+                }
+            ],
+            &quot;subsidiaries&quot;: [
+                {
+                    &quot;idSubsidiary&quot;: &quot;A02296046&quot;,
+                    &quot;nameCountry&quot;: &quot;ESPAÑA&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;BANCA PUEYO, S.A.&quot;
+                },
+                {
+                    &quot;idSubsidiary&quot;: &quot;A02373014&quot;,
+                    &quot;nameCountry&quot;: &quot;ESPAÑA&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;FONDPUEYO PENSIONES, FONDO DE PENSIONES&quot;
+                },
+                {
+                    &quot;idSubsidiary&quot;: &quot;A27905218&quot;,
+                    &quot;nameCountry&quot;: &quot;PORTUGAL&quot;,
+                    &quot;nameSubsidiary&quot;: &quot;VIA DIRECTA - COMPANHIA DE SEGUROS, S.A.&quot;
+                }
+            ],
+            &quot;approversChain&quot;: [],
+            &quot;id&quot;: &quot;RRA&quot;,
+            &quot;label&quot;: &quot;Rating Analyst&quot;
+        }
+    ]
+}</value>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA_TEMP__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Querystring_Input_Template_LTA__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA_TEMP__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>bbvacon__Retrieve_Mock_LTA__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+</CustomMetadata>

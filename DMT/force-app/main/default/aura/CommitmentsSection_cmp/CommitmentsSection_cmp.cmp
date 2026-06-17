@@ -1,0 +1,5 @@
+<aura:component  extends="c:Collapsable_comun" implements="force:hasRecordId" controller="SanctionPrice_ctrl">
+	<div class="slds-p-top_small">
+		<c:CommitmentsTable_cmp oppRecordId="{!v.recordId}" readOnly="true"/>
+	</div>
+</aura:component>

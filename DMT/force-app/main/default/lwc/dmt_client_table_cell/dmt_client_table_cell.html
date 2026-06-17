@@ -1,0 +1,44 @@
+<template>
+    <template lwc:if={isName}>
+        <div class="slds-truncate" title={value}>
+            <a href="#" name={Name} id={getClientId} onclick={handleClick}>{Name}</a>
+            <template lwc:if={isClient}>
+                 <span style="display:block;font-size:0.87em;">{clientInfo}</span>
+            </template>
+        </div>
+    </template>
+    <template lwc:else>
+        <div class={alignClass} title={value}>
+            <template lwc:if={isLink}>
+                <a href="#" name={onclick} id={getClientId} onclick={handleClick} >
+                    <template lwc:if={isCurrency}>
+                        <lightning-formatted-number title={title} value={value}></lightning-formatted-number>{currencyCode}
+                    </template>
+                    <template lwc:elseif={isDate}>
+                        <lightning-formatted-date-time title={title} value={value}></lightning-formatted-date-time>
+                    </template>
+                    <template lwc:elseif={isPercent}>
+                        <lightning-formatted-number title={title} value={value}></lightning-formatted-number>
+                    </template>
+                    <template lwc:else>
+                        <lightning-formatted-text title={title} value={value}></lightning-formatted-text>
+                    </template>
+                </a>
+            </template>
+            <template lwc:else>
+                <template lwc:if={isCurrency}>
+                    <lightning-formatted-number title={title} value={value}></lightning-formatted-number>{currencyCode}
+                </template>
+                <template lwc:elseif={isDate}>
+                    <lightning-formatted-date-time title={title} value={value}></lightning-formatted-date-time>
+                </template>
+                <template lwc:elseif={isPercent}>
+                    <lightning-formatted-number title={title} value={value}></lightning-formatted-number>
+                </template>
+                <template lwc:else>
+                    <lightning-formatted-text title={title} value={value}></lightning-formatted-text>
+                </template>
+            </template>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,115 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:LightningQuickAction"
+    access="global" controller="DES_NbcMembers">
+
+    <aura:attribute name="OppName" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="oppId" type="Id" />
+    <aura:attribute name="ClientName" type="String" />
+    <aura:attribute name="Description" type="String" />
+    <aura:attribute name="descLen" type="Integer" />
+    <aura:attribute name="Supportive" type="String" default="-" />
+    <aura:attribute name="iden" type="boolean" default="false" />
+    <aura:attribute name="NotSupportive" type="String" default="-" />
+    <aura:attribute name="numberof" type="Integer" />
+    <aura:attribute name="commiteUser" type="NBC_Commitee_Member__c[]" />
+    <aura:attribute name="endpoint" type="Boolean" />
+    <aura:attribute name="canSee" type="Boolean" />
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.handleComponentEvent}" />
+    <aura:if isTrue="{!v.iden}">
+        <aura:if isTrue="{!v.canSee == true}">
+            <div class="ground">
+                <div class="slds-box ground">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-1 slds-text-align_left">
+                            <lightning:icon class="imgstyle2" iconName="standard:opportunity" alternativeText="Approved"
+                                size="small" />
+                            <span class="slds-text-heading_medium"><b>{!v.OppName} - {!v.ClientName}</b></span>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-col_bump-left slds-col slds-size_3-of-6   slds-is-relative ">
+                                <lightning:button class="slds-theme_shade NonSupportive boton2 slds-text-align_center"
+                                    aura:id="decision1" onclick="{!c.notsupportive}">
+                                    <div class=" slds-text-heading_small">
+                                        <h3 class="centrar"><b>{!v.NotSupportive}</b><br /></h3>
+                                        <span>Non Supportive</span>
+                                    </div>
+                                </lightning:button>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-col slds-size_3-of-6 slds-is-relative slds-col_bump-right">
+                                <lightning:button class="slds-theme_shade Supportive boton1 slds-text-align_center"
+                                    aura:id="decision2" onclick="{!c.supportives}">
+                                    <div class=" slds-text-heading_small">
+                                        <h3 class="centrar"><b>{!v.Supportive}</b></h3>
+                                        <span> Supportive </span>
+                                    </div>
+                                </lightning:button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-grid_align-center">
+                        <div class="slds-col">
+                            <ul>
+                                <li aura:id="view">
+                                    <lightning:button variant="base" onclick="{!c.showList}" title="settings">
+                                        <lightning:icon iconName="utility:preview" size="x-small"
+                                            class="imgstyle2 view" />
+                                        <u><span>View Voting Details</span></u>
+                                    </lightning:button>
+                                </li>
+                                <li class="slds-hide hide">
+                                    <lightning:button variant="base" onclick="{!c.showList}" title="settings">
+                                        <lightning:icon iconName="utility:preview" alternativeText="Hide"
+                                            onclick="{!c.showList}" size="x-small" class="imgstyle2" />
+                                        <u><span>Hide Voting Details</span></u>
+                                    </lightning:button>
+                                </li>
+                                <ul class="list hide slds-hide">
+                                    <aura:iteration items="{!v.commiteUser}" var="mapKey">
+                                        <li id="{!mapKey.gf_oppy_virtual_cmtee_user_id__c}">
+                                            {!mapKey.gf_oppy_virtual_cmtee_user_id__r.Name}</li>
+                                    </aura:iteration>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.descLen != 0}">
+                        <div class="slds-grid slds-gutters ">
+                            <div class="slds-col slds-size_1-of-1 slds-text-align_left ">
+                                <h3 class="slds-text-color_weak">Description</h3>
+                               
+                            </div>
+                        </div>
+                        <div>
+                            <ui:outputRichText aura:id="description"  class="description littel slds-text-longform"
+                                value="{!v.Description}" /><br />
+                        </div>
+                            <div class="slds-grid slds-gutters ">
+                                <div class="slds-col slds-size_1-of-1 slds-text-align_rigth ">
+                                    <div aura:id="view2">
+                                        <lightning:button class="view2" variant="base" onclick="{!c.viewmore}"
+                                            title="settings">
+                                            <lightning:icon iconName="utility:add" alternativeText="view"
+                                                onclick="{!c.viewmore}" size="x-small" class="imgstyle2" />
+                                            <u><span>View More</span></u>
+                                        </lightning:button>
+                                    </div>
+                                    <div class="hide2 slds-hide">
+                                        <lightning:button variant="base" onclick="{!c.viewmore}" title="settings">
+                                            <lightning:icon iconName="utility:dash" alternativeText="view"
+                                                onclick="{!c.viewmore}" size="x-small" class="imgstyle2" />
+                                            <u><span>View Less</span></u>
+                                        </lightning:button>
+                                    </div>
+                                </div>
+                            </div>
+                    </aura:if>
+                </div>
+            </div>
+        </aura:if>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,42 @@
+<aura:component controller="PRC_UniquePriceTile_Controller"> 
+        
+    <!-- 
+    <aura:attribute name="matrixAxis1" type="String" access="public" default="MARGIN" />
+    <aura:attribute name="matrixAxis2" type="String" access="public" default="TERM" />
+     -->
+    <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+    <aura:attribute name="opportunityId" type="Id" access="public" />
+    <aura:attribute name="pricingDetailRecord" type="PRC_Pricing_Detail__c" access="public" />
+
+    <aura:registerEvent name="onPriceSelected" type="c:PRC_PriceSelectedEvent" />   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card title="Selected price">
+		<br/>
+		<lightning:recordViewForm recordId="{!v.pricingDetailRecord.Id}" objectApiName="PRC_Pricing_Detail__c">
+			<div class="slds-grid">
+				<div class="slds-col slds-size_1-of-2">
+					<div><span>&nbsp;Amortization Type</span></div>
+					<div class="outputitem slds-border_bottom"><lightning:outputField fieldName="amortization_desc__c" variant="label-hidden" /></div>
+				</div>
+				<div class="slds-col slds-size_1-of-2">
+					<div><span>&nbsp;Payment Rate</span></div>
+					<div class="outputitem slds-border_bottom"><lightning:outputField fieldName="payment_type__c" variant="label-hidden"/></div>
+				</div>
+			</div>
+			<br/>
+			<div class="slds-grid">
+				<div class="slds-col slds-size_1-of-2">
+					<div><span>&nbsp;Payment Frecuency</span></div>
+					<div class="outputitem slds-border_bottom"><lightning:outputField fieldName="frequency_type__c" variant="label-hidden" /></div>
+				</div>
+				<div class="slds-col slds-size_1-of-2">
+					<div><span>&nbsp;Non Accrual Fees (B.P.)</span></div>
+					<div class="outputitem slds-border_bottom"><lightning:outputField fieldName="gf_non_accrual_comission_per__c" variant="label-hidden"/></div>
+				</div>
+			</div>
+		</lightning:recordViewForm>
+	</lightning:card>		
+    <br/><br/> 
+
+</aura:component>

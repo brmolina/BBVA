@@ -1,0 +1,70 @@
+.THIS .contenedor{
+  margin-top:30px;
+  padding-top:10px;
+}
+
+.THIS .customTabs {
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.THIS .wrapperComponents{
+  width:80%;
+  margin-left:10%;
+  margin-bottom:60px;
+}
+
+.THIS.height77 {
+  height: 77px;
+}
+.THIS.zIndexMax {
+   z-index: 9999999;
+}
+
+.THIS.srollWrap {
+  height:100%;
+  width:100%;
+}
+
+.THIS .width100 {
+  width:100%;
+}
+.THIS.customDiv {
+	height: 95%;
+}
+
+.THIS .customDiv2 {
+	/* height:100%; */
+	width:95%;
+}
+
+.THIS .wrapperRisk{
+    padding-right: 10%;
+    padding-left: 10%;
+}
+
+/*SCROLL*/
+.THIS .sWrapTest {
+  height:100vh;
+  width:100vw;
+  padding-bottom: 250px;
+}
+
+.THIS.sWrapTest {
+  height:100vh;
+  width:100vw;
+  padding-bottom: 250px;
+}
+
+.THIS .sWrapTestDesktop {
+  height:100%;
+  width:100%;
+}
+
+.THIS.outerScroller {
+  border-radius: 11px;
+}
+
+.THIS.innerScroller {
+  border-radius: 10px;
+}

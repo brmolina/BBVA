@@ -35,7 +35,7 @@ export default class PdfGenerator extends LightningElement {
     valuesStyles = defaults.styles.values;
     values2Styles = defaults.styles.values2;
     doc;
-    now =  new Date();
+    now = new Date();
 
     renderedCallback() {
         if (this.jsPdfInitialized) {
@@ -51,7 +51,7 @@ export default class PdfGenerator extends LightningElement {
         ]);
     }
 
-    get formatString(){
+    get formatString() {
         return this.format.join(' ');
     }
 
@@ -74,7 +74,7 @@ export default class PdfGenerator extends LightningElement {
 
         // merge and override default styles with custom styles
         if (this.jsonData.hasOwnProperty('styles')) {
-            Object.keys(this.styles).forEach( style => {
+            Object.keys(this.styles).forEach(style => {
                 style = Object.assign(this.styles[style], this.jsonData.styles[style] ? this.jsonData.styles[style] : {});
             });
         }
@@ -114,7 +114,7 @@ export default class PdfGenerator extends LightningElement {
 
                     console.log('adding element type: ', element.type, ' page: ', this.doc.internal.getCurrentPageInfo().pageNumber, ' startY: ', startY, ' marginTop: ' + element.margin.top, ' marginBottom: ' + element.margin.bottom);
 
-                    if (element.type ==='title') {
+                    if (element.type === 'title') {
                         startY = this.addTitle(element, startY);
                         return;
                     }
@@ -134,17 +134,22 @@ export default class PdfGenerator extends LightningElement {
                         return;
                     }
 
+                    if (element.type === 'dynamicGrid') {
+                        startY = this.addDynamicGrid(element, startY);
+                        return;
+                    }
+
                     if (element.type === 'text') {
                         startY = this.addText(element, startY);
                         return;
                     }
 
-                    if(element.type === 'pageBreak'){
+                    if (element.type === 'pageBreak') {
                         startY = this.addPageBreak(element, startY);
                         return;
                     }
 
-                    if(element.type === 'lineBreak'){
+                    if (element.type === 'lineBreak') {
                         if (startY + 30 > pageHeight) {
                             startY = this.addNewPage()
                         }
@@ -163,17 +168,17 @@ export default class PdfGenerator extends LightningElement {
                         return;
                     }
 
-                    if(element.type ===  'circle') {
+                    if (element.type === 'circle') {
                         startY = this.draw(startY, element);
                         return;
                     }
 
-                    if(element.type ===  'rect') {
+                    if (element.type === 'rect') {
                         startY = this.draw(startY, element);
                         return;
                     }
 
-                    if(element.type ===  'line') {
+                    if (element.type === 'line') {
                         startY = this.draw(startY, element);
                         return;
                     }
@@ -197,7 +202,7 @@ export default class PdfGenerator extends LightningElement {
                     return this.doc.output("datauristring");
             }
 
-        } catch(error) { alert("Error when creating PDF" + error);}
+        } catch (error) { alert("Error when creating PDF" + error); }
     }
 
     setStyle(type, customStyle) {
@@ -237,7 +242,7 @@ export default class PdfGenerator extends LightningElement {
         }
     }
 
-    addTitle (element, startY) {
+    addTitle(element, startY) {
 
         const textSize = this.doc.getTextDimensions(element.text);
 
@@ -257,10 +262,10 @@ export default class PdfGenerator extends LightningElement {
         this.doc.text(element.text, posX, posY);
 
         this.calculateCurrentX(textSize.w + element.margin.left + element.margin.right, element.style?.nobreak);
-        return element.style?.nobreak ? posY :  posY- textSize.h + (textSize.h * this.doc.getLineHeightFactor()) + element.margin.bottom;
+        return element.style?.nobreak ? posY : posY - textSize.h + (textSize.h * this.doc.getLineHeightFactor()) + element.margin.bottom;
     }
 
-    addText (element, startY) {
+    addText(element, startY) {
 
         const textWidth = this.width - this.marginLeft - this.marginRight - element.margin.left - element.margin.right;
         const lines = this.doc.splitTextToSize(element.text, textWidth);
@@ -269,7 +274,7 @@ export default class PdfGenerator extends LightningElement {
         let posX = this.marginLeft + element.margin.left;
         let posY = startY + lineHeight + element.margin.top;
 
-        lines.forEach( line => {
+        lines.forEach(line => {
             this.doc.text(line, posX, posY);
             posY += lineHeight;
             if (posY >= this.height - this.marginBottom) {
@@ -309,7 +314,7 @@ export default class PdfGenerator extends LightningElement {
                 columnStyles: columnStyles,
                 headStyles: headStyles,
                 bodyStyles: bodyStyles,
-                margin:{
+                margin: {
                     top: this.marginTop,
                     bottom: this.marginBottom,
                     left: this.marginLeft + element.margin.left,
@@ -329,17 +334,17 @@ export default class PdfGenerator extends LightningElement {
                         let posY = y + (height - paddingTop - paddingBottom);
                         let contentWidth = 0;
 
-                        data.cell.raw.custom.forEach( (cellraw) => {
+                        data.cell.raw.custom.forEach((cellraw) => {
                             posX += cellraw.margin?.left || 0;
                             switch (cellraw.content.type) {
                                 case 'circle':
                                     this.setStyle('circle', cellraw.styles);
-                                    posY = this.draw(posY + (cellraw.margin?.top || 0), {type: 'circle', x: posX + cellraw.content.radius, y: posY - cellraw.content.radius, radius: cellraw.content.radius});
+                                    posY = this.draw(posY + (cellraw.margin?.top || 0), { type: 'circle', x: posX + cellraw.content.radius, y: posY - cellraw.content.radius, radius: cellraw.content.radius });
                                     posX += cellraw.content.radius * 2 + (cellraw.content.margin?.right || 0);
                                     break;
                                 case 'rect':
                                     this.setStyle('rect', cellraw.styles);
-                                    posY = this.draw(posY + (cellraw.margin?.top || 0), {type: 'rect', x: posX, y: posY - cellraw.content.width, width: cellraw.content.width, height: cellraw.content.height})
+                                    posY = this.draw(posY + (cellraw.margin?.top || 0), { type: 'rect', x: posX, y: posY - cellraw.content.width, width: cellraw.content.width, height: cellraw.content.height })
                                     posX += cellraw.content.width + (cellraw.content.margin?.right || 0);
                                     break;
                                 case 'tableCustom':
@@ -407,7 +412,7 @@ export default class PdfGenerator extends LightningElement {
             return finalReturnY + element.margin.bottom;
         } catch (error) {
             console.error('Error while creating table: ', error);
-       }
+        }
     }
 
     addValues2(element, startY) {
@@ -437,11 +442,21 @@ export default class PdfGenerator extends LightningElement {
                     this.doc.setFont(this.values2Styles.font || 'helvetica', 'bold');
                     this.doc.setFontSize(element.style?.fontSize - 1 || this.values2Styles.fontSize - 1 || 10);
                     const nameLines = this.doc.splitTextToSize(cell.name, colWidth);
-                    // Value (normal)
-                    this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
-                    this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
-                    const valueLines = this.doc.splitTextToSize(cell.value, colWidth);
-                    const height = (nameLines.length + valueLines.length) * this.getTextDimensions('A').h * this.doc.getLineHeightFactor() + 3;
+
+                    // Value (Check if it is an image object or normal text)
+                    let height = 0;
+                    cell.value = cell.value ? cell.value : '';
+                    if (typeof cell.value === 'object' && cell.value.image) {
+                        // Image Height Calculation
+                        height = (nameLines.length * this.getTextDimensions('A').h * this.doc.getLineHeightFactor()) + cell.value.height + 3;
+                    } else {
+                        // Text Height Calculation
+                        this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
+                        this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
+                        const valueLines = this.doc.splitTextToSize(cell.value, colWidth);
+                        height = (nameLines.length + valueLines.length) * this.getTextDimensions('A').h * this.doc.getLineHeightFactor() + 3;
+                    }
+
                     if (height > maxHeight) maxHeight = height;
                 }
             }
@@ -467,28 +482,41 @@ export default class PdfGenerator extends LightningElement {
                         this.doc.text(line, x, cellY, { align: 'left', baseline: 'top' });
                         cellY += this.getTextDimensions(line).h * this.doc.getLineHeightFactor();
                     });
-                    // Value (normal)
-                    this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
-                    this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
-                    const valueLines = this.doc.splitTextToSize(cell.value, colWidth);
-                    valueLines.forEach(line => {
-                        if (cellY > this.height - this.marginBottom) {
-                            this.doc.addPage();
-                            y = this.marginTop;
-                            cellY = y + 2;
-                            this.doc.setFont(this.values2Styles.font || 'helvetica', 'bold');
-                            this.doc.setFontSize(element.style?.fontSize - 1 || this.values2Styles.fontSize - 1 || 10);
-                            nameLines.forEach(line2 => {
-                                this.doc.text(line2, x, cellY, { align: 'left', baseline: 'top' });
-                                cellY += this.getTextDimensions(line2).h * this.doc.getLineHeightFactor();
-                            });
-                            this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
-                            this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
-                        }
-                        this.doc.text(line, x, cellY, { align: 'left', baseline: 'top' });
-                        cellY += this.getTextDimensions(line).h * this.doc.getLineHeightFactor();
-                    });
+
+                    // Value (Check if it is an image object or normal text)
+                    if (typeof cell.value === 'object' && cell.value.image) {
+
+                        // It is an image! Add it to the PDF canvas directly
+                        this.doc.addImage(cell.value.image, 'PNG', x, cellY, cell.value.width, cell.value.height, '', 'FAST');
+                        cellY += cell.value.height; // Move cursor down past the image
+
+                    } else {
+
+                        // It is normal text!
+                        this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
+                        this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
+                        const valueLines = this.doc.splitTextToSize(cell.value, colWidth);
+                        valueLines.forEach(line => {
+                            if (cellY > this.height - this.marginBottom) {
+                                this.doc.addPage();
+                                y = this.marginTop;
+                                cellY = y + 2;
+                                this.doc.setFont(this.values2Styles.font || 'helvetica', 'bold');
+                                this.doc.setFontSize(element.style?.fontSize - 1 || this.values2Styles.fontSize - 1 || 10);
+                                nameLines.forEach(line2 => {
+                                    this.doc.text(line2, x, cellY, { align: 'left', baseline: 'top' });
+                                    cellY += this.getTextDimensions(line2).h * this.doc.getLineHeightFactor();
+                                });
+                                this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
+                                this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
+                            }
+                            this.doc.text(line, x, cellY, { align: 'left', baseline: 'top' });
+                            cellY += this.getTextDimensions(line).h * this.doc.getLineHeightFactor();
+                        });
+                    }
                 }
+
+                // Draw the line below the row
                 this.doc.setDrawColor(this.values2Styles.tableLineColor);
                 this.doc.setLineWidth(this.values2Styles.tableLineWidth);
                 this.doc.line(
@@ -502,7 +530,6 @@ export default class PdfGenerator extends LightningElement {
 
         return y + element.margin.bottom;
     }
-
     addValues(element, startY) {
         const nestedTableCell = {
             content: '',
@@ -534,9 +561,9 @@ export default class PdfGenerator extends LightningElement {
 
                         startY: data.cell.y,
                         margin: {
-                             top: this.marginTop,
-                             bottom: this.marginBottom,
-                             left: data.cell.x
+                            top: this.marginTop,
+                            bottom: this.marginBottom,
+                            left: data.cell.x
                         },
                         tableWidth: data.cell.width - 2,
 
@@ -549,7 +576,7 @@ export default class PdfGenerator extends LightningElement {
                         tableLineColor: this.valuesStyles.tableLineColor,
                         styles: this.valuesStyles,
 
-                        columnStyles: { name: { halign: 'left', fontStyle: 'bold'}, value: { halign: 'right' } },
+                        columnStyles: { name: { halign: 'left', fontStyle: 'bold' }, value: { halign: 'right' } },
                         columns: [
                             { dataKey: 'name', header: 'Name' },
                             { dataKey: 'value', header: 'Value' },
@@ -565,7 +592,7 @@ export default class PdfGenerator extends LightningElement {
 
     addImage(element, startY) {
 
-        const factor = element.aspectRatio || 1/3;
+        const factor = element.aspectRatio || 1 / 3;
         const posX = element.x ? this.parseValues(element.x) : this.currentX + element.margin.left;
         const posY = element.y ? this.parseValues(element.y) : startY + element.margin.top;
         const width = this.parseValues(element.width);
@@ -589,7 +616,7 @@ export default class PdfGenerator extends LightningElement {
 
     addChart(element, startY, chartPromises) {
 
-        const factor = element.aspectRatio || 1/3;
+        const factor = element.aspectRatio || 1 / 3;
         let posY = element.y ? this.parseValues(element.y) : startY + element.margin.top;
         const posX = element.x ? this.parseValues(element.x) : this.currentX + element.margin.left;
         const width = this.parseValues(element.width);
@@ -608,7 +635,7 @@ export default class PdfGenerator extends LightningElement {
 
         const chartPage = this.doc.internal.getCurrentPageInfo().pageNumber;
         const chart = this.template.querySelector('c-' + element.chartType);
-        const promise = chart.getChartImage(width, width * factor, JSON.parse(JSON.stringify(element.params))).then( imgBase64 => {
+        const promise = chart.getChartImage(width, width * factor, JSON.parse(JSON.stringify(element.params))).then(imgBase64 => {
             const currentPage = this.doc.internal.getCurrentPageInfo().pageNumber;
             const alias = `${element.chartType}_${Date.now()}`;
             const format = element.format || 'PNG';
@@ -631,16 +658,16 @@ export default class PdfGenerator extends LightningElement {
 
         element.margin = { top: element.margin?.top || 0, left: element.margin?.left || 0, right: element.margin?.right || 0, bottom: element.margin?.bottom || 0 };
 
-        switch(element.type) {
+        switch (element.type) {
             case 'circle':
                 posX = element.x ? this.parseValues(element.x) : this.currentX + element.radius + element.margin.left;
                 posY = element.y ? this.parseValues(element.y) : startY + element.margin.top;
                 elementWidth = this.parseValues(element.radius);
                 this.doc.circle(posX, posY, elementWidth, 'FD');
-                if(!element.y && !element.style?.nobreak) {
+                if (!element.y && !element.style?.nobreak) {
                     startY += element.margin.top + elementWidth + element.margin.bottom;
                 }
-                width = element.margin.left + elementWidth*2 + element.margin.right;
+                width = element.margin.left + elementWidth * 2 + element.margin.right;
                 break;
 
             case 'rect':
@@ -649,7 +676,7 @@ export default class PdfGenerator extends LightningElement {
                 elementWidth = this.parseValues(element.width);
                 elementHeight = this.parseValues(element.height);
                 this.doc.rect(posX, posY, elementWidth, elementHeight, 'FD');
-                if(!element.y && !element.style?.nobreak) {
+                if (!element.y && !element.style?.nobreak) {
                     startY += (element.margin.top + elementHeight + element.margin.bottom);
                 }
                 width = element.margin.left + elementWidth + element.margin.right;
@@ -658,12 +685,12 @@ export default class PdfGenerator extends LightningElement {
             case 'line':
                 const lineWidth = element.style?.lineWidth || this.styles.line.lineWidth;
                 posX = element.x ? this.parseValues(element.x) : this.currentX + element.margin.left;
-                posY = element.y ? this.parseValues(element.y) : startY + (lineWidth/2) + element.margin.top;
+                posY = element.y ? this.parseValues(element.y) : startY + (lineWidth / 2) + element.margin.top;
                 const endX = element.endX ? this.parseValues(element.endX) : posX + this.width - this.currentX - element.margin.left - element.margin.right - this.marginRight
                 const endY = element.endY ? this.parseValues(element.endY) : posY;
                 this.doc.setLineWidth(lineWidth);
                 this.doc.line(posX, posY, endX, endY);
-                if(!element.style?.nobreak) {
+                if (!element.style?.nobreak) {
                     startY += lineWidth + element.margin.bottom;
                 }
                 width = endX - posX;
@@ -671,7 +698,7 @@ export default class PdfGenerator extends LightningElement {
 
             default:
                 console.error('Unknown element type: ', element.type);
-            break;
+                break;
         }
         if (!element.x) {
             this.calculateCurrentX(width, element.style?.nobreak);
@@ -721,11 +748,11 @@ export default class PdfGenerator extends LightningElement {
                 img.src = logoSrc;
                 img.decode();
             } catch (e) {
-               console.error("Error while loading logo:", e);
+                console.error("Error while loading logo:", e);
             }
         }
 
-        for(let i = 1; i <= pagesTotal; i++) {
+        for (let i = 1; i <= pagesTotal; i++) {
             this.doc.setPage(i);
 
             //header
@@ -762,7 +789,7 @@ export default class PdfGenerator extends LightningElement {
 
     addNumberPage(page, pagesTotal) {
         this.setStyle('pageNumber');
-        this.doc.text(`Page ${page} of ${pagesTotal}`, this.width - this.marginRight, this.height - (this.marginBottom/2 + 5), { align: 'right' });
+        this.doc.text(`Page ${page} of ${pagesTotal}`, this.width - this.marginRight, this.height - (this.marginBottom / 2 + 5), { align: 'right' });
     }
 
     parseValues(value) {
@@ -823,6 +850,111 @@ export default class PdfGenerator extends LightningElement {
 
         // return next startY (leave space for marginBottom)
         return posY + marginBottom;
+    }
+
+    addDynamicGrid(element, startY) {
+        const marginLeft = this.marginLeft + (element.margin?.left || 0);
+        const marginRight = this.marginRight + (element.margin?.right || 0);
+        const marginBottom = this.marginBottom + (element.margin?.bottom || 0);
+
+        const pageWidth = this.width - marginLeft - marginRight;
+        const totalColumns = 4; // Nuestro sistema de base es de 4 columnas (QUARTER)
+        const colSpacing = 3;
+        // Calculamos el ancho base de 1 sola columna (1/4 del espacio)
+        const baseColWidth = (pageWidth - (totalColumns - 1) * colSpacing) / totalColumns;
+
+        let y = startY + (element.margin?.top || 0);
+        this.doc.setTextColor(this.values2Styles.textColor);
+
+        // 1. Calcular las alturas máximas de cada fila
+        const rowHeights = [];
+        element.body.forEach((row) => {
+            let maxHeight = 0;
+            row.forEach((cell) => {
+                // Si es un objeto vacío de relleno (creado por el colSpan en Apex), lo ignoramos
+                if (!cell || !cell.name) return;
+
+                const span = cell.colSpan || 1;
+                // El ancho real de esta celda = (Ancho base * span) + (los espacios intermedios que absorbe)
+                const cellWidth = (baseColWidth * span) + (colSpacing * (span - 1));
+
+                this.doc.setFont(this.values2Styles.font || 'helvetica', 'bold');
+                this.doc.setFontSize(element.style?.fontSize - 1 || this.values2Styles.fontSize - 1 || 10);
+                const nameLines = this.doc.splitTextToSize(cell.name, cellWidth);
+
+                let height = 0;
+                if (typeof cell.value === 'object' && cell.value.image) {
+                    height = (nameLines.length * this.getTextDimensions('A').h * this.doc.getLineHeightFactor()) + (cell.value.height || 4) + 3;
+                } else {
+                    this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
+                    this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
+                    const valueLines = this.doc.splitTextToSize(cell.value || '', cellWidth);
+                    height = (nameLines.length + valueLines.length) * this.getTextDimensions('A').h * this.doc.getLineHeightFactor() + 3;
+                }
+
+                if (height > maxHeight) maxHeight = height;
+            });
+            rowHeights.push(maxHeight || 12);
+        });
+
+        // 2. Dibujar las filas y celdas
+        const rowSpacing = 2;
+
+        element.body.forEach((row, rowIdx) => {
+            const rowHeight = rowHeights[rowIdx];
+
+            // Salto de página si no cabe la fila entera
+            if (y + rowHeight + rowSpacing + marginBottom > this.height - this.marginBottom) {
+                this.doc.addPage();
+                y = this.marginTop;
+            }
+
+            let x = marginLeft;
+
+            row.forEach((cell) => {
+                // Ignorar celdas vacías (no sumamos X, el colSpan de la anterior ya ocupó este espacio)
+                if (!cell || !cell.name) return;
+
+                const span = cell.colSpan || 1;
+                const cellWidth = (baseColWidth * span) + (colSpacing * (span - 1));
+                let cellY = y + 2;
+
+                // Dibujar Título (Bold)
+                this.doc.setFont(this.values2Styles.font || 'helvetica', 'bold');
+                this.doc.setFontSize(element.style?.fontSize - 1 || this.values2Styles.fontSize - 1 || 10);
+                const nameLines = this.doc.splitTextToSize(cell.name, cellWidth);
+
+                nameLines.forEach(line => {
+                    this.doc.text(line, x, cellY, { align: 'left', baseline: 'top' });
+                    cellY += this.getTextDimensions(line).h * this.doc.getLineHeightFactor();
+                });
+
+                // Dibujar Valor (Imagen o Texto Normal)
+                if (typeof cell.value === 'object' && cell.value.image) {
+                    this.doc.addImage(cell.value.image, 'PNG', x, cellY, cell.value.width || 4, cell.value.height || 4, '', 'FAST');
+                } else {
+                    this.doc.setFont(this.values2Styles.font || 'helvetica', 'normal');
+                    this.doc.setFontSize(element.style?.fontSize || this.values2Styles.fontSize || 11);
+                    const valueLines = this.doc.splitTextToSize(cell.value || '', cellWidth);
+                    valueLines.forEach(line => {
+                        this.doc.text(line, x, cellY, { align: 'left', baseline: 'top' });
+                        cellY += this.getTextDimensions(line).h * this.doc.getLineHeightFactor();
+                    });
+                }
+
+                // Dibujar la línea inferior
+                this.doc.setDrawColor(this.values2Styles.tableLineColor || 204);
+                this.doc.setLineWidth(this.values2Styles.tableLineWidth || 0.1);
+                this.doc.line(x, y + rowHeight, x + cellWidth, y + rowHeight);
+
+                // Avanzar el cursor X para la siguiente celda real
+                x += cellWidth + colSpacing;
+            });
+
+            y += rowHeight + rowSpacing;
+        });
+
+        return y + (element.margin?.bottom || 0);
     }
 
 }

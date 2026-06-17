@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidateClientSTARID</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND (
+  !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+  ISCHANGED(Client_STAR_ID__c),
+  NOT($Profile.Name = &quot;System Administrator&quot;)
+)</errorConditionFormula>
+    <errorDisplayField>Client_STAR_ID__c</errorDisplayField>
+    <errorMessage>Client Star ID is not editable</errorMessage>
+</ValidationRule>

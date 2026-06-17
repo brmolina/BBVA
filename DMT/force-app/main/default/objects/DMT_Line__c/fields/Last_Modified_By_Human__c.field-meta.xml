@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Modified_By_Human__c</fullName>
+    <description>Tracks last non integration user (&apos;Desktop Integration&apos; Profile) that updates the record. This field will be updated by trigger. Not in record page. Ex. user full name + Datetime.now().format(&apos;dd/MM/yyyy HH:mm:ss&apos;)</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Last Modified By Human</label>
+    <length>200</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

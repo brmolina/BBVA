@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>account_profitability_type_1_last_date__c</fullName>
+    <label>Account Profitability Type 1 Last Date</label>
+    <summarizedField>Account_Profitability__c.year_month_day_date__c</summarizedField>
+    <summaryFilterItems>
+        <field>Account_Profitability__c.profitability_type__c</field>
+        <operation>equals</operation>
+        <value>01</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Account_Profitability__c.Local_Client_id__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

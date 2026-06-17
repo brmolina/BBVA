@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>product_contracted_calc__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF( product_contracted__c ,IMAGE(&apos;/resource/Green_Flag_Icon&apos;,&quot;&quot;,20,20),IMAGE(&apos;/resource/Red_Flag_Icon&apos;,&quot;&quot;,20,20))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Contracted?</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

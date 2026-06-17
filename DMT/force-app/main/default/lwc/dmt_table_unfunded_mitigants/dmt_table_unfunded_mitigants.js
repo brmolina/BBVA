@@ -1,4 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
+import { deleteRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getCurrencyValues from '@salesforce/apex/DMT_MitigantsController.getCurrencyValues';
 import TITLETABLE from '@salesforce/label/c.dmt_cl_Guarantors_Text';
 
@@ -8,7 +10,6 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
   @api tabletype;
   @api totalamount;
   @api conversionLabel;
-  @api oppState;
   @api endDateProduct;
   currencyvalue;
   defaultLimitvalue;
@@ -19,14 +20,24 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
   };
   @api columnstablecopypaste = [];
   CurrencyIsoCode;
-  validValuesLabel = ['Others > Guarantee in favour of Public Administration', 'Others > ECA Guarantor (Exporte Credit agency)', 'Others > Shared maintenance clause', 
+  validValuesLabel = ['Others > Guarantee in favour of Public Administration', 'Others > ECA Guarantor (Exporte Credit agency)', 'Others > Shared maintenance clause',
     'Personal > Parent guarantee',  'Personal > Corporate', 'Personal > Bank'];
+
+
+  @api
+  set oppState(value) {
+    this._oppState = value;
+    this.updateButtonsState();
+  }
+  get oppState() {
+    return this._oppState;
+  }
 
   @wire(getCurrencyValues)
   wiredCurrencies({ error, data }) {
       if (data) {
           this.CurrencyIsoCode = data.map(item => ({
-              label: item,   
+              label: item,
               value: item
           }));
           this.error = null;
@@ -41,6 +52,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
   }
 
   set table(value) {
+    console.log('oppState en set table Irene:', this.oppState);
     let normalizedData;
 
     try {
@@ -75,9 +87,9 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         if (index === normalizedData.length - 1) {
           newItem.buttonDisabled = this.oppState == 'Draft' ? false : true;
           newItem.pickDisabled = this.oppState == 'Draft' ? false : true;
-          newItem.deleteDisabled = this.oppState == 'Draft' ? normalizedData.length === 1 : true; 
+          newItem.deleteDisabled = this.oppState == 'Draft' ? normalizedData.length === 1 : true;
           newItem.editDisabled = this.oppState == 'Draft' ? false : true;
-          
+
         }
         return newItem;
       });
@@ -86,7 +98,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     } else {
       this.tableData = [
           {
-              "deleteDisabled":  this.oppState === 'Draft' ? false : true,
+              "deleteDisabled": true,
               "pickDisabled":  this.oppState === 'Draft' ? false : true,
               "initRead": "true",
               "buttonDisabled":  this.oppState === 'Draft' ? false : true,
@@ -122,45 +134,11 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
   set currency(value) {
     this.columns = [
       {
-        fieldName: 'End_Date__c',
-        label: 'DATE',
-        type: 'date',
-        editable:false,
-        initialWidth :140,
-        hideDefaultActions:true,
-        cellAttributes:{style: 'text-align: center;'},
-        typeAttributes: {            
-            aviableItem: {fieldName: 'aviableItem'},
-            dateValue: { fieldName: 'End_Date__c' },
-            fieldName: 'End_Date__c',
-            value: { fieldName: 'End_Date__c' },
-            context: { fieldName: 'Id' }
-        }
-      },
-      {
-          fieldName:"CurrencyIsoCode",
-          label:"CURRENCY",
-          type: "text",
-          editable:false,
-          hideDefaultActions:true,
-          cellAttributes: 
-          { 
-            alignment: 'center'
-          },
-          typeAttributes: 
-          {
-            placeholder: 'Select..',
-            options: this.CurrencyIsoCode,
-            fieldName: 'CurrencyIsoCode',
-            value: { fieldName: 'CurrencyIsoCode' }, 
-            context: { fieldName: 'Id' }
-          }
-        },
-      {
         fieldName: "Mitigant_Type__c",
-        label: "MITIGANT TYPE",
+        label: "Mitigant Type",
         type: "text",
         editable: false,
+        initialWidth : 270,
         hideDefaultActions: true,
         cellAttributes:
         {
@@ -176,8 +154,17 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         }
       },
       {
+        fieldName: "DMT_Guarantor_Display__c",
+        label: "Guarantor (IDClient - Nombre)",
+        type: "text",
+        editable: false,
+        initialWidth : 270,
+        hideDefaultActions: true,
+        cellAttributes: { alignment: 'center' }
+      },
+      {
         fieldName: "Commercial_Percentage__c",
-        label: "COMMERCIAL RISK (%)",
+        label: "Commercial Risk (%)",
         type: 'percent-fixed',
         editable: false,
         hideDefaultActions: true,
@@ -192,7 +179,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
       },
       {
         fieldName: "Political_Percentage__c",
-        label: "POLITICAL RISK (%)",
+        label: "Political Risk (%)",
         type: 'percent-fixed',
         editable: false,
         hideDefaultActions: true,
@@ -206,8 +193,42 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         }
       },
       {
+        fieldName: 'End_Date__c',
+        label: 'End Date',
+        type: 'date',
+        editable:false,
+        initialWidth :140,
+        hideDefaultActions:true,
+        cellAttributes:{style: 'text-align: center;'},
+        typeAttributes: {
+            aviableItem: {fieldName: 'aviableItem'},
+            dateValue: { fieldName: 'End_Date__c' },
+            fieldName: 'End_Date__c',
+            value: { fieldName: 'End_Date__c' },
+            context: { fieldName: 'Id' }
+        }
+      },
+      {
+        fieldName: "Internal_Rating__c",
+        label: "Internal Rating",
+        type: "text",
+        editable: false,
+        initialWidth : 100,
+        hideDefaultActions: true,
+        cellAttributes: { alignment: 'center' }
+      },
+      {
+        fieldName: "DMT_Scoring__c",
+        label: "Scoring",
+        type: "text",
+        editable: false,
+        initialWidth : 90,
+        hideDefaultActions: true,
+        cellAttributes: { alignment: 'center' }
+      },
+      {
         fieldName: "External_Rating__c",
-        label: "EXTERNAL RATING",
+        label: "External Rating",
         type: "text",
         editable: false,
         hideDefaultActions: true,
@@ -222,6 +243,23 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         }
       },
       {
+        fieldName: "DMT_Currency__c",
+        label: "Currency",
+        type: "text",
+        editable: false,
+        hideDefaultActions: true,
+        cellAttributes: {
+          alignment: 'center'
+        },
+        typeAttributes: {
+          placeholder: 'Select..',
+          options: this.CurrencyIsoCode,
+          fieldName: 'DMT_Currency__c',
+          value: { fieldName: 'DMT_Currency__c' },
+          context: { fieldName: 'Id' }
+        }
+      },
+      /*{
         fieldName: "Counterpart__c",
         label: "CLIENT TYPE",
         type: "text",
@@ -306,7 +344,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
           value: { fieldName: 'European_Bank_Check__c' },
           context: { fieldName: 'Id' }
         }
-      },
+      },*/
       {
         type: 'button',
         hideDefaultActions: true,
@@ -374,45 +412,11 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
 
   columns = [
     {
-      fieldName: 'End_Date__c',
-      label: 'DATE',
-      type:  'date',
-      editable:false,
-      initialWidth :140,
-      hideDefaultActions:true,
-      cellAttributes:{style: 'text-align: center;'},
-      typeAttributes: {            
-          aviableItem: {fieldName: 'aviableItem'},
-          dateValue: { fieldName: 'End_Date__c' },
-          fieldName: 'End_Date__c',
-          value: { fieldName: 'End_Date__c' },
-          context: { fieldName: 'Id' }
-      }
-    },
-    {
-          fieldName:"CurrencyIsoCode",
-          label:"CURRENCY",
-          type: "text",
-          editable:false,
-          hideDefaultActions:true,
-          cellAttributes: 
-          { 
-            alignment: 'center'
-          },
-          typeAttributes: 
-          {
-            placeholder: 'Select..',
-            options: this.CurrencyIsoCode,
-            fieldName: 'CurrencyIsoCode',
-            value: { fieldName: 'CurrencyIsoCode' }, 
-            context: { fieldName: 'Id' }
-          }
-        },
-    {
       fieldName: "Mitigant_Type__c",
       label: "MITIGANT TYPE",
       type: "text",
       editable: false,
+      initialWidth : 270,
       hideDefaultActions: true,
       cellAttributes:
       {
@@ -426,6 +430,15 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         value: { fieldName: 'Mitigant_Type__c' },
         context: { fieldName: 'Id' }
       }
+    },
+    {
+      fieldName: "DMT_Guarantor_Display__c",
+      label: "GUARANTOR (IDCLIENT - NOMBRE)",
+      type: "text",
+      editable: false,
+      initialWidth : 270,
+      hideDefaultActions: true,
+      cellAttributes: { alignment: 'center' }
     },
     {
       fieldName: "Commercial_Percentage__c",
@@ -444,7 +457,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     },
     {
       fieldName: "Political_Percentage__c",
-      label: "POLITICAL RISK (%)",
+      label: "Political Risk (%)",
       type: 'percent-fixed',
       editable: false,
       hideDefaultActions: true,
@@ -458,8 +471,42 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
       }
     },
     {
+      fieldName: 'End_Date__c',
+      label: 'END DATE',
+      type:  'date',
+      editable:false,
+      initialWidth :140,
+      hideDefaultActions:true,
+      cellAttributes:{style: 'text-align: center;'},
+      typeAttributes: {
+          aviableItem: {fieldName: 'aviableItem'},
+          dateValue: { fieldName: 'End_Date__c' },
+          fieldName: 'End_Date__c',
+          value: { fieldName: 'End_Date__c' },
+          context: { fieldName: 'Id' }
+      }
+    },
+    {
+      fieldName: "Internal_Rating__c",
+      label: "INTERNAL RATING",
+      type: "text",
+      editable: false,
+      initialWidth : 100,
+      hideDefaultActions: true,
+      cellAttributes: { alignment: 'center' }
+    },
+    {
+      fieldName: "DMT_Scoring__c",
+      label: "SCORING",
+      type: "text",
+      editable: false,
+      initialWidth : 90,
+      hideDefaultActions: true,
+      cellAttributes: { alignment: 'center' }
+    },
+    {
       fieldName: "External_Rating__c",
-      label: "EXTERNAL RATING",
+      label: "External Rating",
       type: "text",
       editable: false,
       hideDefaultActions: true,
@@ -474,6 +521,25 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
       }
     },
     {
+          fieldName:"DMT_Currency__c",
+          label:"CURRENCY",
+          type: "text",
+          editable:false,
+          hideDefaultActions:true,
+          cellAttributes:
+          {
+            alignment: 'center'
+          },
+          typeAttributes:
+          {
+            placeholder: 'Select..',
+            options: this.CurrencyIsoCode,
+            fieldName: 'DMT_Currency__c',
+            value: { fieldName: 'DMT_Currency__c' },
+            context: { fieldName: 'Id' }
+          }
+        },
+    /*{
       fieldName: "Counterpart__c",
       label: "CLIENT TYPE",
       type: "text",
@@ -558,7 +624,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         value: { fieldName: 'European_Bank_Check__c' },
         context: { fieldName: 'Id' }
       }
-    },
+    },*/
     {
       type: 'button',
       hideDefaultActions: true,
@@ -622,16 +688,85 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     const action = event.detail.action;
     const row = event.detail.row;
     switch (action.name) {
-      case 'deleteRecord':
-      const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
+      case 'deleteRecord':{
+            const removeFromTable = () => {
+                let copyData = (this.tableData || []).filter(item => item.Id !== row.Id);
+                if (copyData.length === 0) {
+                  copyData = [{
+                    deleteDisabled: true,
+                    pickDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                    initRead: 'true',
+                    buttonDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                    editDisabled: this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true,
+                    tabletype: 'Derivatives',
+                    Mitigant_Type__c: '',
+                    Political_Percentage__c: '0',
+                    Commercial_Percentage__c: '0',
+                    Id: '0',
+                    updateKeyId: ''
+                  }];
+                }
+
+                if (copyData.length > 0) {
+                  const lastRow = copyData[copyData.length - 1];
+                  lastRow.buttonDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                  lastRow.editDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                  lastRow.pickDisabled = this.oppState === 'Draft' || this.oppState === 'Ready to close' ? false : true;
+                  lastRow.deleteDisabled = (this.oppState === 'Draft' || this.oppState === 'Ready to close') && copyData.length > 0 ? false : true;
+
+                  copyData[0].buttonDisabled = true;
+                }
+
+                this.tableData = copyData;
+                this.dispatchEvent(new CustomEvent('tableMitigantChange', {
+                  bubbles: true,
+                  composed: true,
+                  detail: { data: copyData }
+                }));
+            };
+
+            // Detectar si es un Id real de Salesforce: evita llamar deleteRecord en filas nuevas temporales
+            const hasRealId = this.isSalesforceId ? this.isSalesforceId(row.Id) : (typeof row.Id === 'string' && row.Id !== '0' && row.Id.length >= 15);
+            if (!hasRealId) {
+                    removeFromTable();
+                    break;
+            }
+            deleteRecord(row.Id)
+            .then(() => {
+              this.dispatchEvent(
+              new ShowToastEvent({
+                title: 'Record deleted',
+                message: 'The Guarantors was successfully deleted.',
+                variant: 'success'
+              }));
+
+              removeFromTable();
+
+              this.dispatchEvent(new CustomEvent('reloadparent', { bubbles: true, composed: true }));
+
+            })
+            .catch(error => {
+              this.dispatchEvent(new ShowToastEvent({
+                title: 'Error deleting',
+                message: (error && error.body && error.body.message) ? error.body.message : 'It was not possible to delete the record.',
+                variant: 'error'
+              }));
+            });
+
+          break;
+        }
+
+/*       const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
+
+      console.log('mitigantname irene', this.tableData[index]["Name"]);
        this.dispatchEvent(new CustomEvent('deleteModal', {
           detail: { rowId: row.Id, tabletype: row.tabletype ,mitigantId : this.tableData[index]["Id"], mitigantName : this.tableData[index]["Name"] },
           bubbles: true,
           composed: true
         }));
 
-        
-        break;
+
+        break; */
       case 'addRecord':
         /*
         const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
@@ -659,7 +794,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
         this.dispatchEvent(new CustomEvent('tableRiskchange', { bubbles: true, composed: true, detail: { data: sendcopyDataNew, tabletype: sendcopyDataNew[0]['tabletype'] } }));
 */
           this.dispatchEvent(new CustomEvent('openModalEdit', {
-          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : '', mitigantName : 'New Mitigant' },
+          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : '', mitigantEndData: this.endDateProduct, mitigantName : 'New Mitigant' },
           bubbles: true,
           composed: true
         }));
@@ -668,11 +803,14 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
       case 'edit':
         const ind = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
         this.dispatchEvent(new CustomEvent('openModalEdit', {
-          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : this.tableData[ind]["Id"], mitigantName : this.tableData[ind]["Name"]},
+          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : this.tableData[ind]["Id"], mitigantName : this.tableData[ind]["Name"], localClientId : this.tableData[ind]["DMT_Local_Client__c"], DMT_Currency__c: this.tableData[ind]["DMT_Currency__c"]},
           bubbles: true,
           composed: true
         }));
+        console.log('Currency enviada al modal:', this.tableData[ind]["DMT_Currency__c"]);
         break;
+      
+      
     }
   }
 
@@ -680,7 +818,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     event.stopPropagation();
     let dataRecieved = event.detail.data;
     let updatedItem;
-    // Comentado por error SONAR 
+    // Comentado por error SONAR
     /*if (dataRecieved.fieldname === 'Mitigant_Type__c') {
       updatedItem = { Id: dataRecieved.context, Mitigant_Type__c: dataRecieved.value };
     } else {
@@ -697,7 +835,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     let updatedItem;
     updatedItem = { Id: dataRecieved.context};
     updatedItem[dataRecieved.fieldname]= dataRecieved.value;
-    
+
     this.updateDataValues(updatedItem);
   }
   updateDataValues(updateItem) {
@@ -712,6 +850,32 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
     copyData[copyData.length - 1]['buttonDisabled'] = false;
     //write changes back to original data
     this.dispatchEvent(new CustomEvent('tableRiskchange', { bubbles: true, composed: true, detail: { data: copyData, tabletype: copyData[0]['tabletype'] } }));
+  }
+  isRowPopulated(row) {
+    const hasRealId = this.isSalesforceId ? this.isSalesforceId(row?.Id) : (typeof row?.Id === 'string' && row.Id !== '0' && row.Id.length >= 15);
+    const hasKeyFields = !!(row && (row.Mitigant_Type__c || row.Commercial_Percentage__c || row.Political_Percentage__c));
+    return hasRealId || hasKeyFields;
+  }
+  updateButtonsState() {
+    if (!this.tableData) return;
+    const canEditOrAdd = (this._oppState === 'Draft' || this._oppState === 'Ready to close');
+    const lastIndex = this.tableData.length - 1;
+    this.tableData = this.tableData.map((r, index) => {
+      const hasData = this.isRowPopulated(r);
+      return {
+        ...r,
+        buttonDisabled: !(canEditOrAdd && index === lastIndex), // Solo la última fila habilita el "+"
+        editDisabled: !canEditOrAdd,
+        deleteDisabled: !(canEditOrAdd && hasData)
+      };
+    });
+/*     this.tableData = this.tableData.map((row, index, arr) => ({
+      ...row,
+      editDisabled: this._oppState !== 'Draft',
+      buttonDisabled: index === arr.length - 1
+        ? this._oppState !== 'Draft'
+        : true
+    })); */
   }
 
   copiarLista(listaOriginal) {

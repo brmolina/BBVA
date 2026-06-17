@@ -1,0 +1,136 @@
+<aura:component controller="DES_APRevenuesEvolutionChartCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName"
+				access="global">
+
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="country" type="String" default=""/>
+    <aura:attribute name="ready" type="Boolean" default="false"/>
+    <aura:attribute name="timeRefresh" type="String" default="false"/>
+	<aura:attribute name="noData" type="Boolean" default="false"/>
+	<aura:attribute name="showViewDetails" type="Boolean" default="true" />
+	<aura:attribute name="filial" type="Boolean" default="false"/>
+    <aura:attribute name="chartobj" type="Object" access="public"/>
+    
+    <aura:attribute name="markersTitle" type="String" access="public" default="Countries"/>
+    <aura:attribute name="lstCountries" type="List" />
+    <aura:attribute name="mapCountriesInfo" type="Object" /> <!--ni idea de dónde se rellena esto -->
+    <aura:attribute name="truthy" type="boolean" default="true" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	    
+    <ltng:require scripts="{! join(',',
+							$Resource.Chart,
+							$Resource.baseFichaGrupo)}"
+	afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+		
+        <div class="slds-box customDiv">
+            <div id="wr_Contenido" class="slds slds-grid slds-wrap slds-grid_pull-padded-medium"  >
+                <!--<aura:renderIf isTrue="{!v.truthy}">-->
+                <div id="wr_main" class=" slds-col slds-size_1-of-2 slds-small-size_1-of-1 slds-medium-size_9-of-12 slds-p-horizontal_medium slds-p-verticall_small container-map" >
+                    <div class="customDiv1">
+                        <h1>Revenues Evolution</h1>
+                        <div class="slds-p-horizontal_small slds-size_1-of-1 slds-m-top_medium">
+                            <aura:if isTrue="{!v.noData}">
+                                <p class="customP">
+                                    {!$Label.c.DES_Chart_No_Data}
+                                </p>
+                                <aura:set attribute="else">
+                                    <div id="chartjs-tooltip"></div>
+                                    <canvas aura:id="chart" class="customCanvas"></canvas>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <aura:if isTrue="{!!v.noData}">
+                            <aura:if isTrue="{! v.showViewDetails == true}">
+                                <div class="customDiv2">
+                                    <a href="" class="slds-text-link customA" onclick="{!c.navigateToMyComponent}">View Report</a>
+                                    <span class="customSpan2">
+                                        <span class="customSpan">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+                                        <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+                                    </span>
+                                </div>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+                <aura:if isTrue="{!!v.noData}">
+                    <div class="slds-grid slds-grid_vertical slds-navigation-list_vertical select-country slds-col">
+                        <lightning:verticalNavigation class="slds-grid slds-grid_vertical slds-navigation-list_vertical ">
+                            <lightning:verticalNavigationSection label="{!v.markersTitle}">
+                                <aura:iteration indexVar="x" items="{!v.lstCountries}" var="item">
+                                    <div id="wr_lista" class="slds-grid slds-wrap slds-grid_pull-padded-medium slds-m-bottom_x-small" >
+                                        <lightning:icon iconName="action:map" size="medium" alternativeText="country"/>
+                                        <lightning:verticalNavigationItem label="{!item}"
+                                                                          name="{!item}"
+                                                                          aura:id="item"
+                                                                          onclick="{!c.clickCountry}"
+                                                                          data-index="{!item}"
+                                                                          class="customLightning"/>
+                                    </div>
+                                </aura:iteration>
+                            </lightning:verticalNavigationSection>
+                        </lightning:verticalNavigation>
+                    </div>
+                </aura:if>
+            </div>
+            
+        </div>
+
+	    
+
+    	<aura:set attribute="else">
+    		<div class="slds-box mobileCustomDiv">
+	        <h1>Revenues Evolution</h1>
+	        <div class="slds-p-horizontal_small slds-size_1-of-1 slds-m-top_medium">
+	            <aura:if isTrue="{!v.noData}">
+					<p class="customP">
+	        			{!$Label.c.DES_Chart_No_Data}
+	        		</p>
+                    <aura:set attribute="else">
+                        <div id="chartjs-tooltip"></div>
+                        <canvas aura:id="chart" class="customCanvas"></canvas>
+                        <ui:scrollerWrapper class="scrollWrap">
+                        <div class="slds-grid slds-grid_vertical slds-navigation-list_vertical select-country slds-col">
+                            <lightning:verticalNavigation class="slds-grid slds-grid_vertical slds-navigation-list_vertical ">
+                                <lightning:verticalNavigationSection label="{!v.markersTitle}">
+                                    
+                                    <aura:iteration indexVar="x" items="{!v.lstCountries}" var="item">
+                                        
+                                            <div id="wr_lista" class="slds-grid slds-wrap slds-grid_pull-padded-medium slds-m-bottom_x-small" >
+                                                <lightning:icon iconName="action:map" size="medium" alternativeText="country"/>
+                                                <lightning:verticalNavigationItem label="{!item}"
+                                                                                  name="{!item}"
+                                                                                  aura:id="item"
+                                                                                  onclick="{!c.clickCountry}"
+                                                                                  data-index="{!item}"
+                                                                                  class="customLightning"/>
+                                            </div>
+                                           
+                                    </aura:iteration>
+                                    
+                                </lightning:verticalNavigationSection>
+                            </lightning:verticalNavigation>
+                        </div>
+                        </ui:scrollerWrapper>
+                    </aura:set>
+				</aura:if>
+	        </div>
+	        <aura:if isTrue="{!!v.noData}">
+				<aura:if isTrue="{! v.showViewDetails == true}">
+					<div class="customDiv2">
+						<a href="" class="slds-text-link customA" onclick="{!c.navigateToMyComponent}">View Report</a>
+						<span class="customSpan2">
+							<span class="customSpan">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+							<lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+						</span>
+					</div>
+				</aura:if>
+			</aura:if>
+	    </div>
+
+    	</aura:set>
+   	</aura:if>
+
+
+</aura:component>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Onboarding_Compact_Layout</fullName>
+    <fields>Client__c</fields>
+    <fields>CreatedById</fields>
+    <fields>Prioritization__c</fields>
+    <fields>Branch__c</fields>
+    <fields>Segment__c</fields>
+    <fields>Status__c</fields>
+    <fields>ONB_Lei_Peding_Formula__c</fields>
+    <label>Onboarding Compact Layout</label>
+</CompactLayout>

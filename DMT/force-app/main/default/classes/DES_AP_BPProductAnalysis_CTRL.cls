@@ -18,7 +18,8 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
 
   @AuraEnabled
   public static String getGridData(String parentquery , String sectionquery, String gridGroupingField, String bpVersionId, Boolean lastValidatedV) { //NOSONAR
-    String query = 'select Id,';
+    List<SObject> results = new List<SObject>();
+     /* results = 'select Id,';
     query += 'bupl__solution_category_desc__c,';
     query += 'bupl__solution_category_id__c,';
     query += 'convertCurrency(bupl__expected_revenue_amount__c),';
@@ -28,9 +29,9 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
     query += 'other_information_desc__c,';
     query += 'gf_lcl_prdt_sustnbl_oppy_name__c,';
     query += 'bupl__gf_booking_operation_cntry_id__c ';
-    query += 'from bupl__BusinessPlan_Item__c where '+ sectionquery;
+    query += 'from bupl__BusinessPlan_Item__c where  bupl__gf_booking_operation_cntry_id__c =:sectionquery;
       if(lastValidatedV) {
-          query += ' and '+ parentquery;
+          query += ' and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =parentquery;
           query +=' AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c = true ';
       } else {
           if(bpVersionId == '' || bpVersionId == null) {
@@ -39,11 +40,34 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
           } else {
             query +=' and bupl__gf_business_plan_version_id__c = \''+bpVersionId+'\'';
           }
+      } */
+      if(lastValidatedV) {
+        results = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,
+                convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c),
+                bbva_share_of_wallet_per__c,gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c,
+                bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where  bupl__gf_booking_operation_cntry_id__c =:sectionquery
+                and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =:parentquery
+                 AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c = true];
+      } else {
+          if(bpVersionId == '' || bpVersionId == null) {
+            results = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,
+                convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c),
+                bbva_share_of_wallet_per__c,gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c,
+                bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where  bupl__gf_booking_operation_cntry_id__c =:sectionquery
+                and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =:parentquery
+                AND bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_act_ind_type__c ='Yes'];
+          } else {
+            results = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,
+                convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c),
+                bbva_share_of_wallet_per__c,gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c,
+                bupl__gf_booking_operation_cntry_id__c from bupl__BusinessPlan_Item__c where  bupl__gf_booking_operation_cntry_id__c =:sectionquery
+                and bupl__gf_business_plan_version_id__c = :bpVersionId];
+          }
       }
-    System.debug('La query para rellenar la grid queda : '+query);
+    //System.debug('La query para rellenar la grid queda : '+query);
     System.debug('La parent query para rellenar la grid queda : '+parentquery);
     System.debug('La section query para rellenar la grid queda : '+sectionquery);
-    List<SObject> results = Database.query(query); //NOSONAR
+    //List<SObject> results = Database.query(query); //NOSONAR
     final Map<String, List<bupl__BusinessPlan_Item__c>> groups = new Map<String, List<bupl__BusinessPlan_Item__c>>();
     //groups.put('Totals',new List<bupl__BusinessPlan_Item__c>());
     for(SObject result : results) {
@@ -171,8 +195,9 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
   /* TABLE */
   @AuraEnabled
   public static String getTableData(String parentquery, String sectionquery, String gridGroupingField, String bpVersionId, Boolean lastValidatedV) {
-    final String query = getDataQuery(parentquery, sectionquery, gridGroupingField, bpVersionId, lastValidatedV);
-    final List<bupl__BusinessPlan_Item__c> bpItems = (List<bupl__BusinessPlan_Item__c>) Database.query(query); //NOSONAR
+    //final String query = getDataQuery(parentquery, sectionquery, gridGroupingField, bpVersionId, lastValidatedV);
+    //final List<bupl__BusinessPlan_Item__c> bpItems = (List<bupl__BusinessPlan_Item__c>) Database.query(query); //NOSONAR
+    final List<bupl__BusinessPlan_Item__c> bpItems = getDataQuery(parentquery, sectionquery, gridGroupingField, bpVersionId, lastValidatedV);
     final List<TableRow> tablerows = new List<TableRow>();
     for(bupl__BusinessPlan_Item__c bpItem : bpItems) {
       tablerows.add(new TableRow(bpItem));
@@ -278,8 +303,10 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
     }
   }
   /* COMMON */
-  public static String getDataQuery(String parentquery, String sectionquery, String gridGroupingField, String bpVersionId, Boolean lastValidatedV) {
-    String query = 'select Id,';
+  public static List<bupl__BusinessPlan_Item__c> getDataQuery(String parentquery, String sectionquery, String gridGroupingField, String bpVersionId, Boolean lastValidatedV) {
+    List<bupl__BusinessPlan_Item__c> bpList = new List<bupl__BusinessPlan_Item__c>();
+    
+   /*  String query = 'select Id,';
     query += 'bupl__solution_category_desc__c,';
     query += 'bupl__solution_category_id__c,';
     query += 'bupl__gf_booking_operation_cntry_id__c,';
@@ -289,19 +316,36 @@ public with sharing class DES_AP_BPProductAnalysis_CTRL {
     query += 'gf_potencial_level_oppy_type__c,';
     query += 'other_information_desc__c,';
     query += 'gf_lcl_prdt_sustnbl_oppy_name__c ';
-    query += 'from bupl__BusinessPlan_Item__c where '+sectionquery;
+    query += 'from bupl__BusinessPlan_Item__c  where  bupl__gf_booking_operation_cntry_id__c =:sectionquery'; */
       if(lastValidatedV) {
-        query +=+' and '+ parentquery;
-        query +=' AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c = true ';
+        bpList = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,bupl__gf_booking_operation_cntry_id__c,
+              convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c)bbva_share_of_wallet_per__c,
+              gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c
+              from bupl__BusinessPlan_Item__c where bupl__gf_booking_operation_cntry_id__c =:sectionquery
+              and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =:parentquery 
+              AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c = true  ];
+        //query +=+' and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =parentquery';
+        //query +=' AND bupl__gf_business_plan_version_id__r.bupl__gf_bus_pl_lst_vldt_vr_ind_type__c = true ';
       } else {
         if(bpVersionId == '' || bpVersionId == null) {
-          query +=+' and '+ parentquery;
-          query +=' AND bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_act_ind_type__c =\'Yes\' ';
+          bpList = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,bupl__gf_booking_operation_cntry_id__c,
+              convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c)bbva_share_of_wallet_per__c,
+              gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c
+              from bupl__BusinessPlan_Item__c where bupl__gf_booking_operation_cntry_id__c =:sectionquery
+              and bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_id__r.acpl__gf_account_planning_id__c =:parentquery 
+              AND bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_act_ind_type__c ='Yes'];
+         // query +=+' and '+ parentquery;
+          //query +=' AND bupl__gf_business_plan_version_id__r.bupl__gf_business_plan_act_ind_type__c =\'Yes\' ';
         } else {
-          query +=' and bupl__gf_business_plan_version_id__c = \''+bpVersionId+'\'';
+           bpList = [select Id,bupl__solution_category_desc__c,bupl__solution_category_id__c,bupl__gf_booking_operation_cntry_id__c,
+              convertCurrency(bupl__expected_revenue_amount__c),convertCurrency(gf_est_ginc_lcl_product_amount__c)bbva_share_of_wallet_per__c,
+              gf_potencial_level_oppy_type__c,other_information_desc__c,gf_lcl_prdt_sustnbl_oppy_name__c
+              from bupl__BusinessPlan_Item__c where bupl__gf_booking_operation_cntry_id__c =:sectionquery
+              and bupl__gf_business_plan_version_id__c = :bpVersionId];
+          //query +=' and bupl__gf_business_plan_version_id__c = \''+bpVersionId+'\'';
         }
       }
-    return query;
+    return bpList;
   }
   
 

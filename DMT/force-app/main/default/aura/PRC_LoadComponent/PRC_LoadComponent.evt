@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Event template">
+  <aura:attribute name="componentname" type="String"/>
+  <aura:attribute name="params" type="Object"/>
+</aura:event>

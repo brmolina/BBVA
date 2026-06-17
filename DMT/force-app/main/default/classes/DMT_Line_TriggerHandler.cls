@@ -41,8 +41,12 @@ public with sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
         lineHelper.closeFather(lstNew, mapOld);
         System.debug('entering createLineVersionSnapshot');
         lineHelper.createLineVersionSnapshot(lstNew, mapOld);
-        //lineHelper.syncCustomAssociationName(lstNew);
+        lineHelper.syncCustomAssociationName(lstNew);
         lineHelper.handleCancelChange(lstNew, mapOld);
+        lineHelper.updatePassport_LineStatusChanged(lstNew, mapOld);
+
+        //after all after update methods
+        DMT_AsyncOrchestrator.flush();
     }
 
     public override void beforeUpdate() {
@@ -51,6 +55,8 @@ public with sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
         lineHelper.avoidPassingApproval(lstNew, mapOld, Trigger.size);
         lineHelper.fillFields(lstNew, mapOld);
         lineHelper.updateLastModifiedByHuman(lstNew);
+        lineHelper.updateStartDateOnClosedWon(lstNew, mapOld);
+        lineHelper.validateRiskLineTermContinuity(lstNew, mapOld);
     }
 
     public override void beforeInsert() {

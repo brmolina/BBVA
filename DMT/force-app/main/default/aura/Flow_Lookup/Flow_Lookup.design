@@ -1,0 +1,15 @@
+<design:component>
+	<design:attribute name="selectedLookUpUserID" label="Id"/>
+    <design:attribute name="selectedLookUpRecordID" label="PS Product"/>
+	<design:attribute name="objectAPIName" label="Object api name"/>
+    <design:attribute name="equals" label="Checked for equals, Unchecked for Like"/>
+    <design:attribute name="searchField" label="Field api name for search"/>
+    <design:attribute name="label" label="Label"/>
+    <design:attribute name="height" label="Minimum height"/>
+    <design:attribute name="selectedValue" label="Default value"/>
+    <design:attribute name="showHelpText" label="Show help text"/>
+    <design:attribute name="contentHelpText" label="Content of help text"/>
+    <design:attribute name="ipUserFilter" label="IP User lookup filter"/>
+    <design:attribute name="iconName" label="Icon to show in the lookup"/>
+    <design:attribute name="custom" label="Custom query"/>
+</design:component>

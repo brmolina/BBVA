@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Request_Type__c</fullName>
+    <label>Request Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Add funds (without derivatives)</fullName>
+                <default>false</default>
+                <label>Add funds (without derivatives)</label>
+            </value>
+            <value>
+                <fullName>Add funds to an existing contract (with derivatives/repos)</fullName>
+                <default>false</default>
+                <label>Add funds to an existing contract (with derivatives/repos)</label>
+            </value>
+            <value>
+                <fullName>Amendment of contracts and annexes</fullName>
+                <default>false</default>
+                <label>Amendment of contracts and annexes</label>
+            </value>
+            <value>
+                <fullName>New client onboarding</fullName>
+                <default>false</default>
+                <label>New client onboarding</label>
+            </value>
+            <value>
+                <fullName>New product onboarding</fullName>
+                <default>false</default>
+                <label>New product onboarding</label>
+            </value>
+            <value>
+                <fullName>New subaccount / sleeves</fullName>
+                <default>false</default>
+                <label>New subaccount / sleeves</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

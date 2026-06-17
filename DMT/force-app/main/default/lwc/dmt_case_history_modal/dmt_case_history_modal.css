@@ -1,164 +1,67 @@
-.modal-task-history{
-    margin: 0 auto;
-    width: 90%;
-    max-width: 120rem;
-    min-width: 20rem;
+/* 1. Custom Header Look and Feel */
+.custom-modal-header {
+    background-color: #f3f3f3 !important;
+    border-bottom: 1px solid #dddbda !important;
     padding: 1rem;
-    overflow: hidden;
+    margin: 0 !important;
+    width: 100% !important;
+    border-radius: 0.25rem 0.25rem 0 0 !important; 
+    box-shadow: none !important;
+    flex-shrink: 0; /* Prevents header from collapsing */
 }
 
+.custom-modal-header .slds-modal__title {
+    font-weight: 700;
+    color: #181818;
+}
+
+/* 2. Modal Container for Absolute Positioning */
+.slds-modal__container {
+    position: relative; /* Keeps the absolute spinner inside the modal walls */
+}
+
+/* 3. Read-Only Input Styling */
 .text-line-task {
     background-color: transparent;
     color: #0a0100;
     outline: none;
-    outline-style: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: none;
     border-bottom: solid #eeeeee 1px;
     padding: 0px 10px 0px 0px;
     cursor: default;
     margin-bottom: 1rem;
-    box-shadow: none; /* Elimina el efecto de sombra al hacer clic */
+    box-shadow: none; 
+    width: 100%;
+    display: block;
 }
 
-/* Desactivar el efecto hover y focus */
 .text-line-task:hover,
 .text-line-task:focus {
-    border-color: #eeeeee !important; /* Evita cambios de borde */
-    box-shadow: none !important; /* Evita la sombra */
+    border-color: #eeeeee !important; 
+    box-shadow: none !important; 
 }
 
-.task-modal-content{
-    height: 100%;
-    overflow-y: auto;
-}
-
-.task-modal-body{
-    height: 100%;
-}
-
-.task-modal-first-col{
-    padding-right: 10px;
-}
-
-.textarea-line-task{
+.textarea-line-task {
     --slds-c-textarea-color-border: #eeeeee;
     height: 8rem;
 }
-.styleText{
+
+/* 4. Localized Blurry Spinner for Cards */
+.relative-card {
+    position: relative; /* Anchor for the glass overlay */
+}
+
+.card-glass-overlay {
     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(4px);            
+    z-index: 10;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    height: 100%;
-    font-size: 1.5rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-44%, -44%);
-    color: black;
-    z-index: 5;
-}
-.styleSpinner{
-    position: absolute;
-    top: 55%;
-    left: 47%;
-    transform: translate(-46.7%, -56%);
-    width: 97%;
-    height: 87%;
-    background-color: rgb(255 255 255 / 69%);
-
-}
-:host .slds-table--bordered tbody th {
-    all: initial;
-    border-top: var(--lwc-borderWidthThin, 0px) solid var(--slds-g-color-palette-neutral-100, var(--lwc-colorBorder, rgb(255, 254, 254))) !important;
-}
-
-:host .slds-table th .slds-table td {
-    all: initial;
-    white-space: normal !important;
-    position: relative !important;
-}
-.containerView{
-    top: 38vh;
-    position: absolute;
-    width: 43vh;
-}
-.styleSpinnerView{
-    position: absolute;
-    top: -3em;
-    left: 29em;
-}
-.styleTextView{
-    font-size: 2em;
-    position: absolute;
-    top: 1em;
-    left: 7em;
-    width: 18em;
-}
-.styleProgessBar{
-    position: relative;
-    width: 20vh;
-    left: 11vh;
-    top: -3vh;
-}
-.styleImagBar{
-    width: 33rem;
-    height: 10rem;
-    bottom: -8.9em;
-    position: absolute;
-    left: -5em;
-    margin-bottom: 2em;
-}
-.styleLoading{
-    position: relative;
-    left: 1.6em;
-    font-size: 11px;
-    color: #010921;
-    font-weight: bold;
-}
-/* Overlay inside footer for download progress */
-.footerOverlay {
-    position: absolute; /* relative to lightning-card */
-    bottom: 0rem;       /* distance from bottom of card */
-    left: 10%;          /* center horizontally */
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 1rem 2rem;
-    border-radius: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 20;
-}
-
-/* Loader content */
-.loaderContent {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* Progress bar */
-.progressBar {
-    width: 120px;
-    height: 8px;
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.progressBarInner {
-    width: 30%;
-    height: 100%;
-    background: linear-gradient(90deg, #0921f7, #448fff);
-    border-radius: 4px;
-    animation: loadingPulse 1s infinite ease-in-out;
-}
-
-@keyframes loadingPulse {
-    0% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
-    100% { transform: translateX(300%); }
+    border-radius: 0.25rem;
 }

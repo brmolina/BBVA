@@ -1,6 +1,19 @@
-import { LightningElement, track, api } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
+
 import DMTMarco_GCE_icon from '@salesforce/resourceUrl/DMTMarco_GCE_SVG';
+
+import goToGCEText from '@salesforce/label/c.DMT_GoToGCEText';
+import dataFromText from '@salesforce/label/c.dmt_cl_DataFrom_Text';
+import collapsePanelText from '@salesforce/label/c.DMT_CollapsePanelText';
+import expandPanelText from '@salesforce/label/c.DMT_ExpandPanelText';
+import searchClientsText from '@salesforce/label/c.DMT_SearchClientsText';
+import clientsFilterText from '@salesforce/label/c.DMT_ClientsFilterText';
+import withExposureText from '@salesforce/label/c.DMT_WithExposureText';
+import withAndWithoutExposureText from '@salesforce/label/c.DMT_WithAndWithoutExposureText';
+import goToClientInfoText from '@salesforce/label/c.DMT_GoToClientInfoText';
+import selectFilterText from '@salesforce/label/c.DMT_SelectFilterText';
+import searchClientsTextWhithTreePoints from '@salesforce/label/c.DMT_SearchClientsTextWhithTreePoints';
 
 /**
  * Sidebar that exposes search/filter parameters and emits its expand/collapse state.
@@ -15,18 +28,34 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
 
     /* ----- Internal state ----- */
     iconMarcoGCE = DMTMarco_GCE_icon;
-    @track isExpanded = true;
-    @track searchValue = '';
-    @track filterValue = 'Y';
+
+    isExpanded = true;
+    searchValue = '';
+    filterValue = 'Y';
+
+    label = {
+        goToGCEText,
+        dataFromText,
+        collapsePanelText,
+        expandPanelText,
+        searchClientsText,
+        clientsFilterText,
+        withExposureText,
+        withAndWithoutExposureText,
+        goToClientInfoText,
+        selectFilterText,
+        searchClientsTextWhithTreePoints
+    };
 
     /* Exposure filter values (business-driven) */
-    filterOptions = [
-        { label: 'With exposure', value: 'Y' },
-        { label: 'With and Without Exposure', value: 'Y/N' }
-    ];
+    get filterOptions() {
+        return [
+            { label: this.label.withExposureText, value: 'Y' },
+            { label: this.label.withAndWithoutExposureText, value: 'Y/N' }
+        ];
+    }
 
     /* ----- Navigation ----- */
-
     /**
      * Opens the Global Clients Exposure component with the current group context.
      */
@@ -37,7 +66,7 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
             state: { c__customerId: this.groupcode }
         };
 
-        this[NavigationMixin.GenerateUrl](pageReference).then(url => {
+        this[NavigationMixin.GenerateUrl](pageReference).then((url) => {
             window.open(url, '_blank');
         });
     }
@@ -50,7 +79,6 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
     }
 
     /* ----- Input handlers ----- */
-
     handleInputChange(event) {
         this.searchValue = event.target.value;
     }
@@ -60,36 +88,35 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
     }
 
     /* ----- Template helpers ----- */
-
     get hideElements() {
-        return this.isExpanded
-            ? 'slds-p-horizontal_small slds-show'
-            : 'slds-p-horizontal_small slds-hide';
+        return this.isExpanded ? 'slds-p-left_large slds-show table-flex slds-p-bottom_x-small' : 'slds-hide';
     }
 
     get toggleLabel() {
-        return this.isExpanded ? 'Collapse panel' : 'Expand panel';
+        return this.isExpanded ? this.label.collapsePanelText : this.label.expandPanelText;
     }
+    get expandedClasses() {
+    return this.isExpanded ? 'slds-show' : 'slds-hide';
+}
 
-    get cardClasses() {
-        return this.isExpanded
-            ? 'slds-size_12-of-12 sidebar-expanded'
-            : 'slds-size_12-of-12 card-collapsed sidebar-collapsed';
-    }
+get collapsedClasses() {
+    return this.isExpanded ? 'slds-hide' : 'slds-show';
+}
 
     /* ----- Expand/Collapse ----- */
-
     /**
      * Syncs internal expand/collapse state and notifies parent components.
      */
     togglePanel() {
         this.dispatchEvent(
-            new CustomEvent('isExpandedSideBar', {
+            new CustomEvent('sidebartoggle', {
                 bubbles: true,
                 composed: true,
                 detail: { isExpanded: !this.isExpanded }
             })
         );
+
         this.isExpanded = !this.isExpanded;
     }
+
 }

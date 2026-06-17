@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Group_Description__c</fullName>
+    <description>Identificar si la contrapartida está agrupada o hay que agruparlo</description>
+    <externalId>false</externalId>
+    <formula>IF( DES_Main_Parent__c !=&apos;&apos;, DES_Main_Parent__r.Name, &quot;Ungrouped&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Group Description</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

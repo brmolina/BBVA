@@ -151,7 +151,6 @@ export default class Hpg_main_table_cell extends LightningElement {
                 params.subgroups = [];
                 params.cellid = this.cellid;
                 params.hasSupraGroup = !!this.hassupragroup;
-
                 var evt = new CustomEvent('selectclient', {
                     bubbles: true,
                     composed: true,

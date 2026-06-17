@@ -1,0 +1,10 @@
+.THIS .opp-layout-sidebar {
+    /* Keeps sidebar aligned under the header/path block rendered by dmt_opp_custom_page */
+    margin-top: 8.75rem;
+}
+
+@media (max-width: 1023px) {
+    .THIS .opp-layout-sidebar {
+        margin-top: 0;
+    }
+}

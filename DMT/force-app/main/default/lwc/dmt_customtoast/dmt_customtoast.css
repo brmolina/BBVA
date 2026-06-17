@@ -1,0 +1,9 @@
+.toast-container {
+    position: fixed;
+    top: 1rem; /* Ajusta esto si hay una cabecera muy grande */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999; /* Para que quede por encima de todo */
+    min-width: 20rem;
+    max-width: 50rem; /* Evita que sea demasiado ancho */
+}

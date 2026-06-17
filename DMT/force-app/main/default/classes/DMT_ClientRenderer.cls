@@ -8,9 +8,12 @@ public with sharing class DMT_ClientRenderer implements DMT_ViewRenderer {
         Id treasuryId = rtInfos_Line.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos_Line.get('OtherProducts').getRecordTypeId();
         Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
+        Id sanctionId = rtInfos_Line.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_DefaultClientRenderer());
         recordTypeRenderers.put(otherId, new DMT_OtherClientRenderer());
         recordTypeRenderers.put(dmtOpportunityId, new DMT_OpportunityClientRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_LineSanctionClientRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

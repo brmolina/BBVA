@@ -1,0 +1,45 @@
+<aura:component controller= "GDT_DWP_Selector_FormularioReportes"  implements="flexipage:availableForAllPageTypes,force:hasRecordId,lightning:actionOverride" access="global">
+
+    <aura:attribute name="url1" type="String" />
+    <aura:attribute name="url2" type="String"/>
+    <aura:attribute name="cliente1" type="String"/>
+    <aura:attribute name="cliente2" type="String"/>
+     <aura:attribute name="rtCliente" type="List"/>
+    <aura:attribute name="name" type="String"/>
+    <aura:attribute name="camposDeAccount" type="Object"/>
+    <aura:attribute name="report" type="Object"/>
+
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <h2>
+        <b>Crear nuevo informe</b>
+    </h2>
+    <lightning:card title="{! v.headerTitle }" iconName="standard:account" >
+        <div>
+           <ui:inputText label="Nombre del informe"  aura:id="name" />
+            <lightning:select label="Selecciona tipo de cliente" aura:id="rtCliente" required="true">
+                <option text="Elija un Campo" value=""/> 
+        		<option value="Ficha de grupo">Ficha de grupo</option>
+        		<option value="Ficha de cliente">Ficha de cliente</option>
+        		<option value="Ficha de grupo y Ficha de cliente">Ficha de grupo y Ficha de cliente</option>
+            </lightning:select>
+           <ui:inputText label="Campo URL 1"  aura:id="url1" />
+			<ui:inputText label="Campo URL 2"  aura:id="url2"/>
+            <lightning:select label="Selecciona Campo de Cliente 1" aura:id="cliente1">
+                <option text="Elija un Campo" value=""/>
+                <aura:iteration items="{!v.camposDeAccount}" var="itemcampo">
+                    <option text="{!itemcampo.value}" value="{!itemcampo.key}"/>
+                </aura:iteration>        
+            </lightning:select>
+                        <lightning:select label="Selecciona Campo de Cliente 2" aura:id="cliente2">
+                <option text="Elija un Campo" value=""/>
+                <aura:iteration items="{!v.camposDeAccount}" var="itemcampo">
+                    <option text="{!itemcampo.value}" value="{!itemcampo.key}"/>
+                </aura:iteration>        
+            </lightning:select>
+        </div>
+        <div>
+            <lightning:button label="Crear nuevo informe" onclick="{!c.insertreport}" />
+        </div>
+    </lightning:card>
+</aura:component>

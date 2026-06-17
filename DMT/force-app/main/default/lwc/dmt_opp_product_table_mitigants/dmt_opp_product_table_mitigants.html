@@ -1,0 +1,49 @@
+<template>
+    <div class="slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <c-dmt_-table-header-section
+            titletable={label.TITLETABLE}
+            showcopypaste="true"
+            rowscopypaste={displayRows}
+            tablecolumnscopypaste={columns}
+            context="Mitigants"
+            isreadonlyuser={isReadOnly}>
+        </c-dmt_-table-header-section>
+
+        <template lwc:if={hasRows}>
+            <c-custom-data-table
+                data={displayRows}
+                style="max-height: 5vh; height: inherit;"
+                columns={columns}
+                key-field="Id"
+                max-row-selection="0"
+                hide-checkbox-column="true"
+                onpicklistchanged={handlePicklistChange}
+                oncomboboxchange={handlePicklistChange}
+                oncustomtextinputchanged={handleCellInput}
+                oncustomnumberinputchanged={handleCellNumber}
+                oncustomdateinputchanged={handleCellDate}
+                onrowaction={handleRowAction}
+                suppress-bottom-bar>
+            </c-custom-data-table>
+        </template>
+
+        <template lwc:else>
+            <div class="slds-text-align_center slds-p-around_x-large slds-box slds-theme_shade slds-m-top_xx-small">
+                <h3 class="slds-text-heading_small slds-m-bottom_xxx-small">No Collateral Guarantees Configured</h3>
+                <div style="zoom: 90%;" class="slds-p-top_x-small slds-p-bottom_xx-small">
+                    <lightning-button
+                        label="Add Collateral Guarantee"
+                        icon-name="utility:add"
+                        variant="brand"
+                        disabled={globalAddDisabled}
+                        onclick={handleAddRowGlobal}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

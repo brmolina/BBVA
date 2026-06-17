@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_RollupAmount__c</fullName>
+    <description>Rollup of the amounts of products in line</description>
+    <label>Rollup Amount of Line</label>
+    <summarizedField>DMT_Risk_Line_Term__c.DMT_Amount__c</summarizedField>
+    <summaryForeignKey>DMT_Risk_Line_Term__c.DMT_Line__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

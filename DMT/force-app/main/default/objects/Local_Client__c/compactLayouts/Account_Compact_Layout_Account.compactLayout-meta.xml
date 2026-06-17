@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account_Compact_Layout_Account</fullName>
+    <fields>Name</fields>
+    <fields>participant_name__c</fields>
+    <fields>gf_prtcpt_act_status_ind_type__c</fields>
+    <fields>Cib_Client__c</fields>
+    <fields>g_residence_country_id__c</fields>
+    <label>Account Compact Layout Account</label>
+</CompactLayout>

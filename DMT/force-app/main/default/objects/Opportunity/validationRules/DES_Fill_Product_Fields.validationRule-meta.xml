@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Fill_Product_Fields</fullName>
+    <active>true</active>
+    <description>Controla que se rellene el campo Producto si seleccionas una Familia</description>
+    <errorConditionFormula>AND(
+  ISBLANK( DES_Product__c ),
+  NOT(ISPICKVAL( DES_Product_Family__c,&apos;&apos;)),
+  ISPICKVAL(StageName,&apos;Draft Opp&apos;)
+
+  )</errorConditionFormula>
+    <errorMessage>Sorry, you can&apos;t do this yet. To create an opportunity, please make sure that you have filled out the following fields: Product</errorMessage>
+</ValidationRule>

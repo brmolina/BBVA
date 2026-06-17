@@ -1,0 +1,4 @@
+<design:component>
+	<design:attribute name="accountId" label="accountId" default=""/>
+    <design:attribute name="subsidiaryId" label="subsidiaryId" default=""/>
+</design:component>

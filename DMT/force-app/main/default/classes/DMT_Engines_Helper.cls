@@ -1,5 +1,5 @@
 @JsonAccess(serializable='always' deserializable='always')
-public class DMT_Engines_Helper {
+public with sharing class DMT_Engines_Helper {
 
     public static void setCorrectionLevels(DMT_IP_Wrapper limitAttr, DMT_Engines_Wrapper.Request requestAttr) {
         final List<String> invalidIdList = new List<String> {'-1000','{Session.element.groupId}','{Session.element.subGroupId}', '{Session.element.level3groupId}','{Session.element.clientId}'};
@@ -86,14 +86,7 @@ public class DMT_Engines_Helper {
         Boolean level3NotNull = requestNotNull && DMT_Vlocity_Helper.isNotEmpty(requestAttr.level3groupId);
         Boolean hassLevel3 = requestNotNull && DMT_Vlocity_Helper.isNotEmpty(requestAttr.level3groupName);
 
-        Boolean groupIsSupragroup = false;
-        try {
-            Account acc = DMT_Client_Selector.getStructureTypeByGroupCode(requestAttr.groupId);
-            groupIsSupragroup = acc.DES_Structure_Type__c == 'Supragroup';
-        } catch (Exception e) {
-           System.debug('Error retrieving client group, group does not exist in Salesforce? ' + e.getMessage());
-        }
-
+        Account supragroup = DMT_Client_Selector.getStructureTypeByGroupCode(requestAttr.groupId);
 
         if(requestAttr.clientTypeStructure == 'client') {
             requestAttr.aggregationLevel = 'Local customer';
@@ -119,15 +112,13 @@ public class DMT_Engines_Helper {
             wrapperList.add(wrapperItem);
         }
 
-        if((requestAttr.clientTypeStructure == 'client' || requestAttr.clientTypeStructure == 'subgroup' || requestAttr.clientTypeStructure == 'group') && groupIsSupragroup){
+        if((requestAttr.clientTypeStructure == 'client' || requestAttr.clientTypeStructure == 'subgroup' || requestAttr.clientTypeStructure == 'group') && supragroup != null && supragroup.DES_Structure_Type__c == 'Supragroup'){
             requestAttr.aggregationLevel = 'Group';
             requestAttr.aggregationId = requestAttr?.groupId;
             wrapperItem = callSpecificEngine(requestAttr);
             wrapperItem.callEntityName = 'Supragroup Limit ' + requestAttr?.groupName;
             wrapperList.add(wrapperItem);
         }
-
-        DMT_Integration_GenericService.commitAllLogsViaBatch();
 
         return wrapperList;
     }
@@ -151,7 +142,7 @@ public class DMT_Engines_Helper {
         mapImgDes.put('GREEN','Further limitations may apply to this trade. Please, verify with risk analyst');
         mapImgDes.put('ORANGE','ORANGE');
 
-        for(Document contDocitem: [SELECT Id, Name  FROM Document WHERE Name IN ('Green','Orange','Red','White') WITH SECURITY_ENFORCED]){
+        for(Document contDocitem: [SELECT Id, Name  FROM Document WHERE Name IN ('Green','Orange','Red','White') WITH USER_MODE]){
             mapImg.put(contDocitem.Name,contDocitem.Id);
         }
 
@@ -274,17 +265,19 @@ public class DMT_Engines_Helper {
 
             inc+=1;
         }
+
         return responseList;
     }
 
     public static void getResponse(DMT_Engines_Wrapper.Request requestAttr,List<DMT_Engines_Wrapper> wrapperList, DMT_IP_Wrapper ipWrapper) {
 
         List<DMT_Engines_Wrapper.ResponseItem> responseList = transformResponse(requestAttr,wrapperList);
+
         String isViewErrorAttr = '';
         List<String> capabilityList  = new List<String>();
         List<String> errorList  = new List<String>();
+
         ipWrapper.outputMap.put('ACrecords',responseList);
-        System.debug('***ACrecords --> ' + responseList);
         if(responseList != null && !responseList.isEmpty()){
             for(DMT_Engines_Wrapper.ResponseItem responseItem: responseList){
                 if(!capabilityList.contains(responseItem.Capability)){
@@ -338,9 +331,11 @@ public class DMT_Engines_Helper {
 
     // Método para obtener la posición global
     public static DMT_Engines_Wrapper callEngine(Map<String, Object> payloadMap, String federationId) {
+
         Map<String, Object> requestRest = DMT_Utils.setRequest(payloadMap, federationId);
-        System.debug('***callEngines--DMT_Engines '+ requestRest);
-        final HttpResponse response = DMT_HPG_Utils.callService_DMT('DMT_Engines', requestRest);//ATENCION
+
+        final HttpResponse response = DMT_Utils.callService('DMT_Engines', requestRest);//ATENCION
+
         DMT_Engines_Wrapper wrapper = new DMT_Engines_Wrapper();
 
         Map<String, String> errorMessages = new Map<String, String>();
@@ -366,7 +361,7 @@ public class DMT_Engines_Helper {
                 List<DMT_Engines_Wrapper.Message> errorRespMessage = errorResponse.messages;
                 if(errorRespMessage.get(0).message.contains('00000002#LAST LEVEL NO ENCONTRADO')){
                     wrapper.errorMessage = 'Limit last level not found. Ask your system administrator';
-                }
+                }                
                 wrapper.success = false;
                 wrapper.data = new List<DMT_Engines_Wrapper.ConsumptionLimitItem>();
             }
@@ -392,14 +387,14 @@ public class DMT_Engines_Helper {
         DMT_Engines_Wrapper.CurrencyResponse currencyR = new DMT_Engines_Wrapper.CurrencyResponse();
         List<DMT_Engines_Wrapper.PickItem> picklist = new List<DMT_Engines_Wrapper.PickItem>();
         Map<String,String> currencyMap = new Map<String,String>();
-        final List<DMT_Taxonomy_Values__c> taxonomyList = [SELECT Id, DMT_Catalog__c, DMT_Key__c, DMT_Name__c, DMT_Value__c FROM DMT_Taxonomy_Values__c WHERE DMT_Catalog__c = 'C264' WITH SECURITY_ENFORCED];
+        final List<DMT_Taxonomy_Values__c> taxonomyList = [SELECT Id, DMT_Catalog__c, DMT_Key__c, DMT_Name__c, DMT_Value__c FROM DMT_Taxonomy_Values__c WHERE DMT_Catalog__c = 'C264' WITH USER_MODE];
         final Set<String> currenciesSet = new Set<String>();
 
         for(DMT_Taxonomy_Values__c taxonomyItem:taxonomyList){
-            currenciesSet.add(taxonomyItem.DMT_Key__c != null ? taxonomyItem.DMT_Key__c : taxonomyItem.DMT_Value__c);
+            currenciesSet.add(taxonomyItem.DMT_Key__c);
         }
 
-        final List<CurrencyType> currencyTypeList = [SELECT Id, IsoCode, ConversionRate, IsCorporate, IsActive, LastModifiedDate  FROM CurrencyType WHERE IsActive = true AND IsoCode IN :currenciesSet WITH SECURITY_ENFORCED ORDER BY IsoCode ];
+        final List<CurrencyType> currencyTypeList = [SELECT Id, IsoCode, ConversionRate, IsCorporate, IsActive, LastModifiedDate  FROM CurrencyType WHERE IsActive = true AND IsoCode IN :currenciesSet WITH USER_MODE ORDER BY IsoCode ];
         for(CurrencyType currencyTypeItem: currencyTypeList){
             DMT_Engines_Wrapper.PickItem pickItem = new DMT_Engines_Wrapper.PickItem();
             pickItem.label = currencyTypeItem.IsoCode + ' ('+ (1/currencyTypeItem.ConversionRate).setScale(6, RoundingMode.HALF_UP)+ ' EUR)';

@@ -1,0 +1,40 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="DPMX_SimulationResult_Ctrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="dynamicPricing" type="Object"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:DPMX_SimulatorRefresh_evt" action="{!c.doInit}"/>
+    
+    <div class="slds-m-left_x-small slds-m-vertical_x-small">
+        <div class="slds-text-heading_small slds-m-top_small">
+            <p><strong>{!$Label.c.DPMX_SimulationResult_Title}</strong></p>
+        </div>
+        <div class="slds-m-top_xx-small slds-m-bottom_small">
+            <p>{!$Label.c.DPMX_SimulationResult_Text1}</p>
+        </div>
+
+        <aura:if isTrue="{!v.dynamicPricing.Simulation_Result__c}">
+        
+            <aura:set attribute="else">
+                <div class="slds-modal__container slds-align_absolute-center slds-size_xx-large"> 
+                <div class="slds-var-p-around_medium slds-m-left_xx-small slds-m-right_xx-small">
+                    <img class="slds-align_absolute-center slds-m-top_small" src="{!$Resource.DPMX_SimulationResult_Image}"/>
+                    <div class="slds-text-align_center slds-text-heading_medium slds-m-top_small">
+                        <p>{!$Label.c.DPMX_SimulationResult_Text2}</p>
+                    </div>
+                    <div class="slds-text-align_center slds-m-top_small">
+                        <p>{!$Label.c.DPMX_SimulationResult_Text3}</p>
+                    </div>
+                    <div class="slds-align_absolute-center slds-m-top_small">
+                        <p>
+                            <lightning:button class="slds-button slds-button_brand" label="{!$Label.c.DPMX_Simulate}" onclick="{!c.handleOnSimulate}" disabled="{!or(!v.dynamicPricing.Client_Information__c,!v.dynamicPricing.Devices__c)}"/>
+                        </p>
+                    </div>
+                </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+	
+</aura:component>

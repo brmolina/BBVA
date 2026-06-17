@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BBVA_Entity__c</fullName>
+    <label>BBVA Entity</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BBVA SA</fullName>
+                <default>true</default>
+                <label>BBVA SA</label>
+            </value>
+            <value>
+                <fullName>BBVA BSI</fullName>
+                <default>false</default>
+                <label>BBVA BSI</label>
+            </value>
+            <value>
+                <fullName>BBVA PORTUGAL</fullName>
+                <default>false</default>
+                <label>BBVA Portugal SA</label>
+            </value>
+            <value>
+                <fullName>ALTURA</fullName>
+                <default>false</default>
+                <label>ALTURA</label>
+            </value>
+            <value>
+                <fullName>BBVA Bancomer SA</fullName>
+                <default>false</default>
+                <label>BBVA Bancomer SA</label>
+            </value>
+            <value>
+                <fullName>BBVA Colombia SA</fullName>
+                <default>false</default>
+                <label>BBVA Colombia SA</label>
+            </value>
+            <value>
+                <fullName>BBVA Paraguay SA</fullName>
+                <default>false</default>
+                <label>BBVA Paraguay SA</label>
+            </value>
+            <value>
+                <fullName>BBVA Uruguay SA</fullName>
+                <default>false</default>
+                <label>BBVA Uruguay SA</label>
+            </value>
+            <value>
+                <fullName>BBVA Banco Frances SA</fullName>
+                <default>false</default>
+                <label>BBVA Banco Frances SA</label>
+            </value>
+            <value>
+                <fullName>BBVA Banco Continental</fullName>
+                <default>false</default>
+                <label>BBVA Banco Continental</label>
+            </value>
+            <value>
+                <fullName>BBVA Compass</fullName>
+                <default>false</default>
+                <label>BBVA Compass</label>
+            </value>
+            <value>
+                <fullName>BBVA Suiza</fullName>
+                <default>false</default>
+                <label>BBVA Suiza</label>
+            </value>
+            <value>
+                <fullName>BBVA Provincial</fullName>
+                <default>false</default>
+                <label>BBVA Provincial</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

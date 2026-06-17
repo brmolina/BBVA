@@ -1,0 +1,87 @@
+<template>
+    <div class="slds-combobox_container">
+        <div class={comboboxClass} aria-expanded={isListboxOpen} aria-haspopup="listbox" aria-owns="listbox"
+            role="combobox">
+            <div class={inputFormClass} role="none">
+
+                <lightning-icon icon-name={iconName} size="small" alternative-text="Selected item icon"
+                    class={selectIconClass}></lightning-icon>
+
+                <input type="text" class={inputClass} aria-autocomplete="list" aria-controls="listbox"
+                    autocomplete="off" role="textbox" placeholder={placeholder} value={inputValue}
+                    readonly={_hasSelection} disabled={disabledInput} required={required} onfocus={handleFocus}
+                    onblur={handleBlur} oninput={handleInput} onkeydown={handleKeyDown} />
+
+                <!-- Spinner shown while resolving an externally set Id; replaces the clear button -->
+                <span class="slds-icon_container slds-input__icon slds-input__icon_right spinner-container"
+                    if:true={showInputSpinner}>
+                    <lightning-spinner alternative-text="Loading record" size="x-small"></lightning-spinner>
+                </span>
+
+                <lightning-icon icon-name="utility:search" size="x-small" alternative-text="Search"
+                    class={searchIconClass}></lightning-icon>
+
+                <button type="button" title="Clear selection" onclick={handleClear} class={clearButtonClass}
+                    disabled={disabled}>
+                    <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Clear selection"
+                        class="slds-button__icon"></lightning-icon>
+                </button>
+
+            </div>
+
+            <div id="listbox" role="listbox" aria-label={label} onmousedown={handleListboxMouseDown}
+                onmouseup={handleListboxMouseUp}>
+                <ul class={listboxClass} role="presentation">
+
+                    <template if:true={_isLoading}>
+                        <li role="presentation" class="slds-listbox__item">
+                            <span
+                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-align_absolute-center slds-p-around_small"
+                                role="option">
+                                <lightning-spinner alternative-text="Searching..." size="small"></lightning-spinner>
+                            </span>
+                        </li>
+                    </template>
+
+                    <template if:true={showNoResults}>
+                        <li role="presentation"
+                            class="slds-listbox__item slds-p-around_x-small slds-p-vertical_x-small">
+                            <span class="slds-media slds-listbox__option slds-listbox__option_entity" role="option">
+                                <span class="slds-media__body">
+                                    <span
+                                        class="slds-listbox__option-text slds-listbox__option-text_entity no-results-text">
+                                        No results found
+                                    </span>
+                                </span>
+                            </span>
+                        </li>
+                    </template>
+
+                    <template for:each={displayOptions} for:item="opt">
+                        <li key={opt.id} role="option"
+                            class="slds-listbox__item slds-p-horizontal_x-small slds-p-vertical_xx-small"
+                            data-id={opt.id} onmousedown={handleListboxMouseDown} onmouseup={handleListboxMouseUp}>
+                            <span class={opt._itemClass} data-recordid={opt.id} onclick={handleResultClick}>
+                                <span class="slds-media__figure slds-listbox__option-icon">
+                                    <lightning-icon icon-name={iconName} size="small"
+                                        alternative-text="Record"></lightning-icon>
+                                </span>
+                                <span class="slds-media__body">
+                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                                        {opt._primaryLabel}
+                                    </span>
+                                    <template if:true={opt._hasSecondary}>
+                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
+                                            {opt._secondaryLabel}
+                                        </span>
+                                    </template>
+                                </span>
+                            </span>
+                        </li>
+                    </template>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>

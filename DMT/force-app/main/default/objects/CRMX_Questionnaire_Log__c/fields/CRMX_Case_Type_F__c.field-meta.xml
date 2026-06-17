@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRMX_Case_Type_F__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Section of the regulation of the Article 52, Section IV criterion that represents if the counterparty shares the same source of funds that, during the last year, on average, represents 80% or more of the funds under the control of each party.</description>
+    <label>Case Type F</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

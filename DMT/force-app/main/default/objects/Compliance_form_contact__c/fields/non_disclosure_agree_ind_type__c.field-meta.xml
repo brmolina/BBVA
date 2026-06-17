@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>non_disclosure_agree_ind_type__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicador de subcripción de compromiso de confidencialidad con el grupo</description>
+    <label>Confidentiality agreement</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

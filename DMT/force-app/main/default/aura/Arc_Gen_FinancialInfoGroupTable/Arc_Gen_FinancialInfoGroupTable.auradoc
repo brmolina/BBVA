@@ -1,0 +1,7 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component that shows the financial statement tables for the group</b></h5>
+        <p>The component shows two tables with information on the client's financial statements, one shows information on the financial statement for the current year and the other shows the information on the financial statement for the previous year</p>
+        <p><code>c:FinancialInfoGroupTable</code></p>
+    </aura:description>
+</aura:documentation>

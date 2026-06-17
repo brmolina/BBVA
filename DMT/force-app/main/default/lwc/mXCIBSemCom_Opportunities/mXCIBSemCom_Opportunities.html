@@ -1,0 +1,33 @@
+<template>
+    <div class="custom-div">
+        <div class="slds-media slds-media_center slds-m-bottom_medium">
+            <div class="slds-media__figure">
+                <div class="orange-icon-circle">
+                    <lightning-icon icon-name="utility:trending" size="xx-small" variant="inverse"></lightning-icon>
+                </div>
+            </div>
+            <div class="slds-media__body">
+                <p class="subtitle-text">Opportunities</p>
+                <h2 class="metrics-title">Metrics Opportunities</h2>
+            </div>
+        </div>
+
+        <div class="slds-grid slds-gutters_small">
+            
+            <div class="slds-col slds-size_1-of-2">
+                <div class="inner-card">
+                    <span class="label-title">Tier</span>
+                    <span class="value-text">{tier}</span>
+                </div>
+            </div>
+
+            <div class="slds-col slds-size_1-of-2">
+                <div class="inner-card">
+                    <span class="label-title">Total Opportunities</span>
+                    <span class="value-text">{totalOpp}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</template>

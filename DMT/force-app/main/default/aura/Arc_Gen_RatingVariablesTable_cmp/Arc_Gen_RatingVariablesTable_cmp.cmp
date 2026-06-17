@@ -1,0 +1,54 @@
+<!--
+@Component Name     : Arc_Gen_RatingVariables_Table_cmp
+@Description        : Rating variables table component
+@Author             : ARCE Team
+@Group              : ARCE
+@Last Modified By   : javier.soto.carrascosa@bbva.com
+@Last Modified On   : 17/06/2020
+@Modification Log   :
+==============================================================================
+Ver         Date                     Author      		      	   Modification
+==============================================================================
+1.0    08/04/2019                  ARCE TEAM     		    	   Initial Version
+1.4    17/06/2020      javier.soto.carrascosa@bbva.com             Add maximum fraction digits attribute in the init
+-->
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="Arc_Gen_RatingVariablesTable_controller" access="global">
+    <aura:attribute name="hasRecordId" type="String" default="{!v.recordId}" access="global" description="Standard current record id"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" description="Init variable"/>
+    <aura:attribute name="gridColumns" type="List" access="PRIVATE" description="List of the table colums"/>
+    <aura:attribute name="gridData" type="Object" access="PRIVATE" description="Table data in JSON type"/>
+    <aura:attribute name="success" type="String" default="" access="Global" description="Indicates if the proccess were successful"/>
+    <aura:attribute name="message" type="String" default="" access="Global" description="Indicates if the proccess were successful"/>
+    <aura:attribute name="hideCheckboxColumn" type="Boolean" description="Controls checkboxes visibility" default="true"/>
+    <aura:attribute name="gridExpandedRows" type="List" access="PRIVATE" description="List of the data rows that can be expanded"/>
+    <div class="{!v.success == 'yes' ? '':'slds-hide'}">
+        <lightning:treeGrid
+            class="slds-grid"
+            columns="{! v.gridColumns }"
+            data="{! v.gridData }"
+            expandedRows="{! v.gridExpandedRows }"
+            keyField="description"
+            aura:id="mytree"
+            hideCheckboxColumn="{! v.hideCheckboxColumn }"
+        />
+    </div>
+    <div class="{!v.success == 'no' ? '':'slds-hide'}">
+        <section role="log" class="slds-chat">
+            <ul class="slds-chat-list">
+                <li class="slds-chat-listitem slds-chat-listitem_event">
+                    <div class="slds-chat-event slds-has-error" role="alert">
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__body">
+                            <span class="slds-icon_container slds-icon-utility-error slds-chat-icon" title="{!$Label.c.Lc_arce_newAnalysisError}">
+                                <lightning:icon iconName="utility:clear" alternativeText="clear!" variant="Error"/>
+                                <span class="slds-assistive-text">{!$Label.c.Lc_arce_newAnalysisError}</span>
+                            </span>
+                        </div>
+                        <div class="slds-chat-event__rule"></div>
+                        <div class="slds-chat-event__agent-message">{!v.message}</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+</aura:component>

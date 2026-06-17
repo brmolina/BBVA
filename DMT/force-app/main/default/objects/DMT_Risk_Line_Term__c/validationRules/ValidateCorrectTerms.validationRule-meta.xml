@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidateCorrectTerms</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(
+				AND(
+								ISNUMBER( TEXT(DMT_Init_Term__c)),  
+ 							ISNUMBER( TEXT(DMT_End_Term__c))
+				), 
+				VALUE(TEXT(DMT_End_Term__c))   &lt;  VALUE(TEXT(DMT_Init_Term__c)), 
+				false
+)</errorConditionFormula>
+    <errorMessage>The End Term value must be greater than the Init Term value.</errorMessage>
+</ValidationRule>

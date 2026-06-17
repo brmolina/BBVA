@@ -1,0 +1,105 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName"
+                controller="RelatedAccOppInProgressController" access="global">
+
+	<ltng:require scripts="{!$Resource.baseFichaGrupo}" afterScriptsLoaded="{!c.doInit}" />
+
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="idAcc" type="String" access="public"
+       description="id del registro de cuenta desde el que se accede al componente." />
+
+
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <lightning:navigation aura:id="nav" />
+
+    <force:recordData aura:id="forceRecordCmp"
+    	recordId="{!v.idAcc}"
+        layoutType="{!v.layout}"
+        fields="Id, Name"
+        mode="VIEW"
+        targetRecord="{!v.record}"
+        targetFields="{!v.simpleRecord}"
+        targetError="{!v.error}" />
+
+	<aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+	    <div class="slds-page-header">
+			<div class="slds-media">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container slds-icon-standard-opportunity" title="Live Opportunities">
+						<lightning:icon iconName="standard:opportunity" size="large" alternativeText="Report"/>
+					</span>
+				</div>
+				<div class="slds-media__body">
+	                <p class="slds-text-body_small slds-line-height_reset">Opportunities</p>
+	                <h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Live Opportunities">Opportunities in progress ({!v.data[0].oppNumber})</h1>
+				</div>
+			</div>
+		</div>
+		<aura:set attribute="else">
+			<div class="slds-page-header">
+	        	<lightning:layout>
+		            <div class="slds-media__figure">
+						<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunity Potential by Region and Products">
+							<lightning:icon iconName="standard:opportunity" size="large" alternativeText="Report"/>
+						</span>
+					</div>
+		            <lightning:layoutItem class="slds-media__body">
+		                <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Opportunity Potential by Region and Products</h1>
+		                <lightning:breadcrumbs>
+		                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+		                                          label="{!v.simpleRecord.Name}"
+		                                          onclick="{! c.onClickButtonAcc}"
+		                                          title="Go back to the client"
+		                                          />
+		                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+		                                          label="Mobile view"
+		                                          onclick="{!c.onClickButtonBefore}"
+		                                          title="Go back the family section"
+		                                          />
+		                </lightning:breadcrumbs>
+		            </lightning:layoutItem>
+	        	</lightning:layout>
+    		</div>
+		</aura:set>
+	</aura:if>
+
+
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+	    <aura:if isTrue="{!empty(v.data)}">
+	       <div class="tableNoData customDiv">
+	   			{!$Label.c.DES_Chart_No_Data}
+	   		</div>
+	       	<aura:set attribute="else">
+	 			<lightning:datatable data="{!v.data}"
+	                                 columns="{!v.columns}"
+	                                 keyField="id"
+	                                 hideCheckboxColumn="true"/>
+	       	</aura:set>
+	   	</aura:if>
+		<aura:set attribute="else">
+			<div class="slds-modal__content mainWrap mobileCustomDivWrapper">
+				<ui:scrollerWrapper class="srollWrap">
+
+					<aura:if isTrue="{!empty(v.data)}">
+	       				<div class="tableNoData mobileCustomDivNoData">
+	   						{!$Label.c.DES_Chart_No_Data}
+	   					</div>
+	       				<aura:set attribute="else">
+	       				<div class="slds-m-bottom_x-large mobileCustomDiv">
+	 					<lightning:datatable data="{!v.data}"
+			                                 columns="{!v.columns}"
+			                                 keyField="id"
+			                                 hideCheckboxColumn="true"/>
+                        </div>
+
+	       				</aura:set>
+	   				</aura:if>
+				</ui:scrollerWrapper>
+			</div>
+		</aura:set>
+	</aura:if>
+
+</aura:component>

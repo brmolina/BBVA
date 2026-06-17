@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>undrawn_fee_next_12m_amount__c</fullName>
+    <formula>syndicated_loan_drawn_amount__c * credit_undrawn_next_12m_per__c * (undrawn_fee_next_12m_per__c/10000)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Annual Commitment Fee Next 12 M (amount)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

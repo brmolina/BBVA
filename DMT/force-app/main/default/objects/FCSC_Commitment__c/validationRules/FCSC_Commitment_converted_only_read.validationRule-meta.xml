@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Commitment_converted_only_read</fullName>
+    <active>true</active>
+    <description>Cuando el Compromiso tiene estatus = &quot;Open Opportunity&quot;, ya no debe poder editarse salvo por un Administrador del Sistema</description>
+    <errorConditionFormula>AND(
+  NOT(ISCHANGED(FCSC_Estatus_Contacto__c )),
+  NOT(ISCHANGED(FCSC_RORC_Fin_Compromiso__c)),
+  OR(
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Open Opportunity&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Lost&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Closed Won&quot;),
+    ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Expired&quot;)
+  ), 
+  OR(
+    ISCHANGED(Name),
+    ISCHANGED(FCSC_Description__c ),
+    ISCHANGED(FCSC_Client__c),
+    ISCHANGED(FCSC_Country__c),
+    ISCHANGED(FCSC_Monto_Estimado__c),
+    ISCHANGED(FCSC_PotentialRevenues__c),
+    ISCHANGED(FCSC_Currency__c),
+    ISCHANGED(FCSC_Fecha_Vencimiento__c),
+    ISCHANGED(FCSC_RORC_Inicio_Compromiso__c),
+    ISCHANGED(FCSC_RORC_Fin_Compromiso__c),
+    ISCHANGED(FCSC_Oportunidad_Origen__c),
+    ISCHANGED(FCSC_Oportunidad_Generada__c),
+    ISCHANGED(FCSC_Comentarios_Adicionales__c),
+    ISCHANGED(FCSC_Product__c)
+  ), 
+  $Profile.Name &lt;&gt; &quot;System Administrator&quot;
+)</errorConditionFormula>
+    <errorMessage>Open Opportunity, Closed Lost/Won or Expired Commitments can no longer be edited</errorMessage>
+</ValidationRule>

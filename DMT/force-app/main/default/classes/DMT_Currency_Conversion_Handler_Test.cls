@@ -1,5 +1,5 @@
 @isTest
-private class DMT_Currency_Conversion_Handler_Test {
+private without sharing class DMT_Currency_Conversion_Handler_Test {
 
 
     private static Map<String, Object> createArgs(Map<String, Object> input) {

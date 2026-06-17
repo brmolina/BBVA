@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Line_Id_Null</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISNEW() &amp;&amp; ISNULL(Line_Id__c)</errorConditionFormula>
+    <errorMessage>An error occurred while connecting to the external system. Please try again, or contact your administrator about this error.</errorMessage>
+</ValidationRule>

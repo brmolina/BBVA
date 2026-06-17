@@ -1,0 +1,98 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    <aura:attribute name="price" type="PRC_PFS_Scenario" access="public" />
+    <aura:attribute name="standarType" type="Boolean" access="public" default="true"/>
+    <aura:attribute name="recordError" access="private" type="String" />
+
+    <!-- aura:handler name="pricechange" value="{!v.price}" action="{!c.pricechange}"/>
+    <aura:attribute name="displayeableprice" type="Object" / -->
+
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.price.priceId}"
+                      targetFields="{!v.price}"
+                      targetError="{!v.recordError}"
+                      recordUpdated="{!c.pricechange}"
+                      fields="profitabilityMetrics[0].deal,profitabilityMetrics[1].deal,
+                              allIn.onBalance,allIn.offBalance,term.value,term.unit,averageLifeInYears"
+                      />
+    <div>
+        <!--
+        <table class="tableStyle">
+            <tr>
+                <td>
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">RAR</h1>
+                    <h1 class="truncate text-black text-medium">{! if(v.price.profitabilityMetrics[0].id == 'RAR',v.price.profitabilityMetrics[0].deal,v.price.profitabilityMetrics[1].deal)}%</h1>
+                </td>
+                <td>
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">RORC</h1>
+                    <h1 class="truncate text-black text-medium">{! if(v.price.profitabilityMetrics[0].id == 'RORC',v.price.profitabilityMetrics[0].deal,v.price.profitabilityMetrics[1].deal)}%</h1>
+                </td>
+            </tr>
+        </table>
+        <table class="tableStyle">
+            <tr>
+                <td>
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">Term&nbsp;<span style="text-transform:lowercase">({!v.price.term.unit})</span></h1>
+                    <h1 class="truncate text-black text-medium" style="text-transform:lowercase">{! v.price.term.value}&nbsp;{!v.price.term.unit}</h1>
+                </td>
+                <td>
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">All-in OffB</h1>
+                    <h1 class="truncate text-black text-medium">{!v.price.allIn.offBalance} BP</h1>
+                </td>
+                <td>
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">Average live (years)</h1>
+                    <h1 class="truncate text-black text-medium">{!v.price.averageLifeInYears}</h1>
+                </td>
+            </tr>
+        </table>
+        -->
+
+
+        <table class="tableStyle">
+            <tr>
+                <td width="33%">
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">RAROEC</h1>
+                    <aura:iteration items="{!v.price.profitabilityMetrics}" var="item">
+                        <aura:if isTrue="{!item.id == 'RAROEC_WITH_FUNDING'}">
+                            <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!item.deal}"/>%</h1>
+                        </aura:if>
+                    </aura:iteration>
+                </td>
+                <td width="33%">
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">All-in OnB</h1>
+                    <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!v.price.allIn.onBalance}"/> BP</h1>
+                </td>
+                <td width="33%">
+                    <aura:if isTrue="{!v.standarType}">
+                        <h1 class="truncate text-larger line-spacing-small text-grey2">Term&nbsp;<span style="text-transform:lowercase">({!v.price.term.unit})</span></h1>
+                        <h1 class="truncate text-black text-medium" style="text-transform:lowercase"><ui:outPutNumber format="0.00" value="{!v.price.term.value}"/>&nbsp;{!v.price.term.unit}</h1>
+                    <aura:set attribute="else">
+                        <h1 class="truncate text-larger line-spacing-small text-grey2">EAD (Thousands)</h1>
+                        <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!v.price.exposuresAtDefault[0].amount}"/></h1>
+                    </aura:set>
+  				    </aura:if>
+                </td>
+            </tr>
+        </table>
+        <table class="tableStyle">
+            <tr>
+                <td width="33%">
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">RORC</h1>
+                    <aura:iteration items="{!v.price.profitabilityMetrics}" var="item">
+                        <aura:if isTrue="{!item.id == 'RORC_WITH_FUNDING'}">
+                            <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!item.deal}"/>%</h1>
+                        </aura:if>
+                    </aura:iteration>
+                </td>
+                <td width="33%">
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">All-in OffB</h1>
+                    <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!v.price.allIn.offBalance}"/> BP</h1>
+                </td>
+                <td width="33%">
+                    <h1 class="truncate text-larger line-spacing-small text-grey2">Average live (years)</h1>
+                    <h1 class="truncate text-black text-medium"><ui:outPutNumber format="0.00" value="{!v.price.averageLifeInYears}"/></h1>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</aura:component>

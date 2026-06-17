@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_sold_orders_fees_bps_amount__c</fullName>
+    <description>Es el porcentaje en bps para las fees pagadas a mercado por las ventas realizadas</description>
+    <externalId>false</externalId>
+    <label>Fees paid to the market (bps)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Task</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <linkType>javascript</linkType>
+    <masterLabel>New Task CUSTOM</masterLabel>
+    <openType>onClickJavaScript</openType>
+    <protected>false</protected>
+    <requireRowSelection>true</requireRowSelection>
+    <url>var asset = &apos;{!User.Asset_Class__c}&apos;;
+var assetFieldID = &apos;{!$Setup.Application_Settings_Hierarchy__c.ActivityAssetClass_fieldID__c}&apos;;
+
+
+// Id necesarios porque el botón se usara para crear Activities desde todos ellos
+var accountId = &apos;{!Account.Id}&apos;;
+var contactId = &apos;{!Contact.Id}&apos;;
+var campaignId = &apos;{!Campaign.Id}&apos;;
+var opportunityId = &apos;{!Opportunity.Id}&apos;;
+var prospectId = &apos;{!Lead.Id}&apos;;
+
+var params = &apos;&amp;retURL=%2F&apos;;
+
+if (campaignId != &apos;&apos;){
+	params += campaignId + &apos;&amp;what_id=&apos; + campaignId;
+}else if (opportunityId != &apos;&apos;){
+	params += opportunityId + &apos;&amp;what_id=&apos; + opportunityId + &apos;&amp;who_id=&apos; + accountId;
+}else if (contactId != &apos;&apos;){
+	params += contactId + &apos;&amp;who_id=&apos; + contactId;
+}else if (prospectId != &apos;&apos;){
+	params += prospectId + &apos;&amp;who_id=&apos; + prospectId;
+}else {
+	params += accountId + &apos;&amp;what_id=&apos; + accountId;
+}
+
+if(asset != &apos;&apos;){
+	var a = asset.split(&apos;;&apos;);
+	if(a.length==1){
+		params += &apos;&amp;&apos; + assetFieldID + &apos;=&apos; + a[0];
+	}
+}
+
+window.parent.location.assign(&apos;/00T/e?&apos; + params);</url>
+</WebLink>

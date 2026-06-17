@@ -1,0 +1,125 @@
+<aura:component controller="PotRevenuesByRegionProductCnt" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+
+	<ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.doInit}"/>
+	<aura:attribute name="ready" type="Boolean" default="false"/>
+	<aura:attribute name="myData" type="Object" default="false"/>
+	<aura:attribute name="myColumns" type="List" default="false"/>
+    <aura:attribute name="sortedBy" type="String"/>
+    <aura:attribute name="sortedDirection" type="String"/>
+    <aura:attribute name="defaultSortDirection" type="String"/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="userISOCode" type="String"/>
+
+    <aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <lightning:navigation aura:id="nav" />
+
+    <force:recordData aura:id="forceRecordCmp"
+    	recordId="{!v.recordId}"
+        layoutType="{!v.layout}"
+        fields="Id, Name"
+        mode="VIEW"
+        targetRecord="{!v.record}"
+        targetFields="{!v.simpleRecord}"
+        targetError="{!v.error}" />
+
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+	    <div class="slds-page-header">
+			<div class="slds-media">
+				<div class="slds-media__figure">
+					<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunity Potential by Region and Products">
+						<lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+					</span>
+				</div>
+				<div class="slds-media__body">
+					<h1 class="slds-page-header__title slds-truncate slds-align-middle" title="Opportunity Potential by Region and Products">Opportunity Potential by Region and Products</h1>
+					<p class="slds-text-body_small slds-line-height_reset">Report</p>
+				</div>
+			</div>
+		</div>
+    	<aura:set attribute="else">
+
+    		<div class="slds-page-header">
+	        	<lightning:layout>
+		            <div class="slds-media__figure">
+						<span class="slds-icon_container slds-icon-standard-opportunity" title="Opportunity Potential by Region and Products">
+							<lightning:icon iconName="standard:report" size="large" alternativeText="Report"/>
+						</span>
+					</div>
+		            <lightning:layoutItem class="slds-media__body">
+		                <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Opportunity Potential by Region and Products</h1>
+		                <lightning:breadcrumbs>
+		                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+		                                          label="{!v.simpleRecord.Name}"
+		                                          onclick="{! c.onClickButtonAcc}"
+		                                          title="Go back to the client"
+		                                          />
+		                     <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+		                                          label="Mobile view"
+		                                          onclick="{!c.onClickButtonBefore}"
+		                                          title="Go back the family section"
+		                                          />
+		                </lightning:breadcrumbs>
+		            </lightning:layoutItem>
+	        	</lightning:layout>
+    		</div>
+
+
+    	</aura:set>
+	</aura:if>
+
+    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+        <div class="slds-align_absolute-center customCenter">
+            <div class="customDiv">
+                <c:PotRevenuesByRegionProduct recordId="{!v.recordId}" showViewDetails="false"/>
+            </div>
+        </div>
+        <div class="reportTabla">
+            <aura:if isTrue="{! empty(v.myData)}">
+                {!$Label.c.DES_Chart_No_Data}
+                <aura:set attribute="else">
+                    <lightning:datatable data="{!v.myData}"
+                        columns="{!v.myColumns}"
+                        keyField="id"
+                        sortedBy="{!v.sortedBy}"
+                        sortedDirection="{!v.sortedDirection}"
+                        defaultSortDirection="{!v.defaultSortDirection}"
+                        onsort="{!c.updateColumnSorting}"
+                        hideCheckboxColumn="true"/>
+                </aura:set>
+            </aura:if>
+        </div>
+        <aura:set attribute="else">
+           	<div class="slds-modal__content mainWrap mobileCustomDivWrapper">
+				<ui:scrollerWrapper class="srollWrap">
+                	<div class="slds-align_absolute-center" style="margin-top:30px; padding-top:10px;">
+                        <div class="mobileCustomDiv2">
+                            <c:PotRevenuesByRegionProduct recordId="{!v.recordId}"  showViewDetails="false"/>
+                        </div>
+					</div>
+        			<div class="reportTabla slds-m-bottom_x-small">
+                        <aura:if isTrue="{! empty(v.myData)}">
+                            {!$Label.c.DES_Chart_No_Data}
+                            <aura:set attribute="else">
+                            	<div class="slds-m-bottom_x-large mobileCustomDiv">
+	                                <lightning:datatable data="{!v.myData}"
+	                                    columns="{!v.myColumns}"
+	                                    keyField="id"
+	                                    sortedBy="{!v.sortedBy}"
+	                                    sortedDirection="{!v.sortedDirection}"
+	                                    defaultSortDirection="{!v.defaultSortDirection}"
+	                                    onsort="{!c.updateColumnSorting}"
+	                                    hideCheckboxColumn="true"/>
+                                    </div>
+                            </aura:set>
+                        </aura:if>
+        			</div>
+                </ui:scrollerWrapper>
+			</div>
+        </aura:set>
+	</aura:if>
+
+
+</aura:component>

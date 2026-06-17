@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_country_risk_is_override__c</fullName>
+    <defaultValue>false</defaultValue>
+    <label>Country Risk Is Override</label>
+    <type>Checkbox</type>
+</CustomField>

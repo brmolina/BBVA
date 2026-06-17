@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Public__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Public for All asset</description>
+    <inlineHelpText>Mark as Checked if you want this Campaign to be Public. Accessible for all Assets (FI, FX, Cash Equity).</inlineHelpText>
+    <label>Public</label>
+    <type>Checkbox</type>
+</CustomField>

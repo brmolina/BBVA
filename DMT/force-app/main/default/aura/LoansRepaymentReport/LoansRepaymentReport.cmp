@@ -1,0 +1,77 @@
+<aura:component controller="LoansRepaymentCnt"
+    implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable" access="global">
+
+    <ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.doInit}" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="myData" type="Object" default="false" />
+    <aura:attribute name="myColumns" type="List" default="false" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="sortedDirection" type="String" />
+    <aura:attribute name="defaultSortDirection" type="String" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="operation" type="String" default="" />
+    <aura:attribute name="selectedTab" type="String" />
+	<aura:attribute name="showViewDetails" type="Boolean" default="true" />
+
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    <aura:attribute name="pageReference" type="Object" />
+
+    <lightning:navigation aura:id="nav" />
+    <aura:handler name="operationSelectedEVT" event="c:valueSelectedEvent" action="{! c.handleOperationSelected }" />
+<!--
+    <force:recordData aura:id="forceRecordCmp" recordId="{!v.recordId}" layoutType="{!v.layout}" fields="Id, Name"
+        mode="VIEW" targetRecord="{!v.record}" targetFields="{!v.simpleRecord}" targetError="{!v.error}" /> -->
+
+    <div class="slds-page-header slds-is-fixed index9 height77" style="height: 77px;z-index: 9999999;">
+        <lightning:layout>
+            <lightning:layoutItem class="slds-media__figure">
+                <lightning:icon iconName="standard:report" size="large" alternativeText="Report" />
+            </lightning:layoutItem>
+            <lightning:layoutItem class="slds-media__body">
+                <h1 class="slds-page-header__title">{!v.simpleRecord.Name}: Loans Repayment Report</h1>
+                <lightning:breadcrumbs>
+                    <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small"
+                                          label="Go back to the client" 
+                                          onclick="{! c.onClickButtonAcc}" 
+                                          title="Go back to the client" 
+                                          />
+                    <lightning:breadcrumb class="slds-text-heading_small slds-m-left_small" 
+                                          label="GF"
+                                          onclick="{! c.onClickButtonFamily}" 
+                                          title="Go back the family section" 
+                                          />
+                </lightning:breadcrumbs>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+    <div id="headerSpace" class="slds-page-header height77" style="height: 77px;"/>
+
+    <div class="chartSize">
+        <!-- "{!v.selectedTab}" -->
+        <c:WrapperLoans  recordId="{!v.recordId}" showViewDetails="false" selectedTab="{!v.selectedTab}"/>
+    </div>
+
+
+    <div class="reportTabla slds-m-top_medium">
+        <aura:if isTrue="{! empty(v.myData)}">
+            {!$Label.c.DES_Chart_No_Data}
+            <aura:set attribute="else">
+                <lightning:datatable data="{!v.myData}" 
+                                     columns="{!v.myColumns}" 
+                                     keyField="id" 
+                                     sortedBy="{!v.sortedBy}"
+                                     sortedDirection="{!v.sortedDirection}" 
+                                     defaultSortDirection="{!v.defaultSortDirection}"
+                                     onsort="{!c.updateColumnSorting}" 
+                                     hideCheckboxColumn="true" />
+            </aura:set>
+        </aura:if>
+    </div>
+
+    <!-- WIP WIP WIP<br />
+    recordId - {!v.recordId}  : {!v.simpleRecord.Name}<br />
+    operation - {!v.operation} -->
+    <br /><br />
+</aura:component>

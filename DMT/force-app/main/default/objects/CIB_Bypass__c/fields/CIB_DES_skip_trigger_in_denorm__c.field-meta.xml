@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CIB_DES_skip_trigger_in_denorm__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Este campo se utiliza para que cuando se lanza el proceso Batch programado que denormaliza las Visitas y las Oportunidades: El usuario admin que programa la clase en el Apex Schedule debe tener este campo chequeado para que no elimine dichas Visitas/Opp en el proceso y haga el denorm correctamente.</description>
+    <inlineHelpText>Este campo se utiliza para que cuando se lanza el proceso Batch programado que denormaliza las Visitas y las Oportunidades: El usuario admin que programa la clase en el Apex Schedule debe tener este campo chequeado para que no elimine dichas Visitas/Opp e</inlineHelpText>
+    <label>CIB DES skip trigger in denorm</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

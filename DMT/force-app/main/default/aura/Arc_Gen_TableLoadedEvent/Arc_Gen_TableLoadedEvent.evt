@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event emitted when the position table or the policies table have finished loading">
+    <aura:attribute name="table" type="String" description="'PolicieTable' if the affected table is Policies, 'PositionTable' if the affected one is Banking Rel." />
+</aura:event>

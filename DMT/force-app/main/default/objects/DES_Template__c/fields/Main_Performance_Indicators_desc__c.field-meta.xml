@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Main_Performance_Indicators_desc__c</fullName>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Banker’s insight on Sposor&apos;s position in its sector; basic financials and internal indicators of Client&apos;s Performance (Revenues Evolution, RaR, X-Border revenues, Product Distribution) (Max 450 characters)</inlineHelpText>
+    <label>Main Performance Indicators</label>
+    <length>450</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>45</visibleLines>
+</CustomField>

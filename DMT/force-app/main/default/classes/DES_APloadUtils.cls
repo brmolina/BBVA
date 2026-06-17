@@ -252,23 +252,23 @@ public without sharing class DES_APloadUtils {
     public static Map<String,Decimal> getMapPipelineBPI(Set<Id> listGroupId) {
         Map<String,Decimal> mapPipelineBPI = new Map<String,Decimal> ();
 
-        List<dwp_acmh__Denorm_Account_Opportunity__c> denormOppList = [SELECT dwp_acmh__OpportunityId__c, dwp_acmh__AccountId__c, dwp_acmh__AccountId__r.DES_Revenue_Update_Engloba__c 
-                                    FROM dwp_acmh__Denorm_Account_Opportunity__c 
-                                    WHERE dwp_acmh__AccountId__c IN :listGroupId AND dwp_acmh__OpportunityId__r.disclosure_info_type__c != :Label.DES_OP_Inside AND 
-                                    ( (dwp_acmh__OpportunityId__r.IsClosed = false AND dwp_acmh__OpportunityId__r.CloseDate = THIS_YEAR) OR 
-                                      (dwp_acmh__OpportunityId__r.IsClosed = true  AND dwp_acmh__OpportunityId__r.StageName = :Label.DES_Closed_Won AND dwp_acmh__OpportunityId__r.DES_Date_Won_Lost__c = THIS_YEAR) )];
+        List<AMH_Denorm_Account_Opportunity__c> denormOppList = [SELECT AMH_OpportunityId__c, AMH_AccountId__c, AMH_AccountId__r.DES_Revenue_Update_Engloba__c 
+                                    FROM AMH_Denorm_Account_Opportunity__c 
+                                    WHERE AMH_AccountId__c IN :listGroupId AND AMH_OpportunityId__r.disclosure_info_type__c != :Label.DES_OP_Inside AND 
+                                    ( (AMH_OpportunityId__r.IsClosed = false AND AMH_OpportunityId__r.CloseDate = THIS_YEAR) OR 
+                                      (AMH_OpportunityId__r.IsClosed = true  AND AMH_OpportunityId__r.StageName = :Label.DES_Closed_Won AND AMH_OpportunityId__r.DES_Date_Won_Lost__c = THIS_YEAR) )];
 
-        Map<Id,dwp_acmh__Denorm_Account_Opportunity__c> mapOppById = new Map<Id,dwp_acmh__Denorm_Account_Opportunity__c>();
-        for(dwp_acmh__Denorm_Account_Opportunity__c denormOpp : denormOppList) {
-            mapOppById.put(denormOpp.dwp_acmh__OpportunityId__c,denormOpp);
+        Map<Id,AMH_Denorm_Account_Opportunity__c> mapOppById = new Map<Id,AMH_Denorm_Account_Opportunity__c>();
+        for(AMH_Denorm_Account_Opportunity__c denormOpp : denormOppList) {
+            mapOppById.put(denormOpp.AMH_OpportunityId__c,denormOpp);
         }
 
-    	List<OpportunityLineItem> oppProductList = [SELECT DES_Expected_Revenue__c, pre_oppy_revenue_next_12m_amount__c, DES_Product_Family__c, DES_Product_Name__c, OpportunityId, //NOSONAR
-    												Opportunity.IsClosed, Opportunity.DES_Booking_Geography__c, Opportunity.DES_Date_Won_Lost__c,
-													Opportunity.Account.DES_Revenue_Update_Engloba__c, DES_Corporate_currency_revenues__c
+      List<OpportunityLineItem> oppProductList = [SELECT DES_Expected_Revenue__c, pre_oppy_revenue_next_12m_amount__c, DES_Product_Family__c, DES_Product_Name__c, OpportunityId, //NOSONAR
+                            Opportunity.IsClosed, Opportunity.DES_Booking_Geography__c, Opportunity.DES_Date_Won_Lost__c,
+                          Opportunity.Account.DES_Revenue_Update_Engloba__c, DES_Corporate_currency_revenues__c
                                                     FROM OpportunityLineItem
                                                     WHERE OpportunityId IN :mapOppById.keySet()
-													AND Opportunity.Account.DES_Revenue_Update_Engloba__c != null AND Opportunity.Account.DES_Revenue_Update_Engloba__c != ''];
+                          AND Opportunity.Account.DES_Revenue_Update_Engloba__c != null AND Opportunity.Account.DES_Revenue_Update_Engloba__c != ''];
 
         for(OpportunityLineItem oppProduct : oppProductList) {
             Date lastEnglobaUpdate =  date.newinstance(
@@ -278,7 +278,7 @@ public without sharing class DES_APloadUtils {
                 );
             //only open opportunities and closed win opportunities after last EnglobaUpdate    
             If (!oppProduct.Opportunity.IsClosed || (oppProduct.Opportunity.IsClosed && oppProduct.Opportunity.DES_Date_Won_Lost__c >= lastEnglobaUpdate)) {
-                String keyMapBPI = mapOppById.get(oppProduct.OpportunityId).dwp_acmh__AccountId__c + '++' + getCountryLabelFromCountryCode(oppProduct.Opportunity.DES_Booking_Geography__c) + '++' + getEnglobaProductName(oppProduct.DES_Product_Name__c);
+                String keyMapBPI = mapOppById.get(oppProduct.OpportunityId).AMH_AccountId__c + '++' + getCountryLabelFromCountryCode(oppProduct.Opportunity.DES_Booking_Geography__c) + '++' + getEnglobaProductName(oppProduct.DES_Product_Name__c);
                 //Decimal auxRevenue = (oppProduct.Opportunity.IsClosed ? oppProduct.pre_oppy_revenue_next_12m_amount__c : oppProduct.DES_Expected_Revenue__c); //  el campo "DES_Expected_Revenue__c" ya está calculando "pre_oppy_revenue_next_12m_amount__c * oppProduct.Opportunity.DES_Expected_Probability__c"
                 Decimal auxRevenue = oppProduct.DES_Corporate_currency_revenues__c;
                 if (mapPipelineBPI.containsKey(keyMapBPI)) {

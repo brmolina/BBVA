@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Prospect__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Prospect</label>
+    <referenceTo>Lead</referenceTo>
+    <relationshipLabel>Denorm Account Visits</relationshipLabel>
+    <relationshipName>Denorm_Account_Visits</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

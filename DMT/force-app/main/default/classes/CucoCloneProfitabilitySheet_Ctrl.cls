@@ -31,6 +31,14 @@ public with sharing class CucoCloneProfitabilitySheet_Ctrl {
     @AuraEnabled
     public static Map<String,Object> clone(String name, Id profSheetId, Id groupId, Boolean clonefr, Boolean clonesc) {
         Map<String, Object> retMap = new Map<String, Object>();
+
+        // First check for inactive participants before proceeding
+        if(hasInactiveParticipant(profSheetId)) {
+            retMap.put('success', false);
+            retMap.put('errMessage', 'Cannot clone profitability sheet that contains inactive participants.');
+            return retMap;
+        }
+
         final Map<String,Object> mapDetails = cuco.ProfitabilitySheet_Service.getProfSheetFullDetails(profSheetId);
         if((Boolean) mapDetails.get('success')) {
             final cuco.ProfitabilitySheet_Wrapper wrapperInfo = (cuco.ProfitabilitySheet_Wrapper) mapDetails.get('profSheetDetails');
@@ -95,5 +103,22 @@ public with sharing class CucoCloneProfitabilitySheet_Ctrl {
             retMap.put('errMessage',Label.cuco.creation_error + mapAnalysisFinal.get('errMessage'));
         }
         return retMap;
+    }
+
+    /**
+    * @description Checks if the profitability sheet has any inactive participants
+    * @param profSheetId The ID of the profitability sheet
+    * @return Boolean true if inactive participants exist, false otherwise
+    */
+    private static Boolean hasInactiveParticipant(Id profSheetId) {
+        // Query the participants related to the profitability sheet and check their status
+        List<cuco__profitability_sheet_participant__c> inactiveParticipants = [
+            SELECT Id 
+            FROM cuco__profitability_sheet_participant__c 
+            WHERE cuco__gf_profitability_sheet_id__c = :profSheetId 
+            AND cuco__participant_id__r.gf_prtcpt_act_status_ind_type__c != true
+        ];
+        
+        return !inactiveParticipants.isEmpty();
     }
 }

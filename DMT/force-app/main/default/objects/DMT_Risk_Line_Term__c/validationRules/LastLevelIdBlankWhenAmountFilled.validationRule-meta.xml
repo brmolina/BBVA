@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LastLevelIdBlankWhenAmountFilled</fullName>
+    <active>false</active>
+    <description>Last Level Id debe informarse cuando amount está relleno.</description>
+    <errorConditionFormula>AND(ISBLANK(DMT_LastLevelId__c),NOT(ISBLANK(DMT_Amount__c)), DMT_Line__r.RecordType.DeveloperName != &apos;TreasurySettlement&apos;)</errorConditionFormula>
+    <errorMessage>Typology risks must be informed</errorMessage>
+</ValidationRule>

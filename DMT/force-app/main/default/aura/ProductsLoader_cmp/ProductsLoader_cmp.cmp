@@ -1,0 +1,16 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes" access="global"
+	controller="ProductsLoader">
+    <aura:handler event="force:refreshView" action="{!c.doInit}" description="Handler of force:refreshView event"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="showProds" type="Boolean" default="false"/>
+    <aura:attribute name="opp" type="Opportunity" access="global"/>
+    
+    <div class="container" style="z-index: -1000; width: 1px; height: 1px; overflow: hidden; position: absolute;">
+        <aura:if isTrue="{!v.showProds}">
+            <aura:iteration items="{!v.opp.OpportunityLineItems}" var="oppli">
+            <fprd:GBL_Product_cmp recordId="{!oppli.Id}" disableEvents="true" onlyImportant="true"/>
+            </aura:iteration>
+        </aura:if>
+    </div>
+</aura:component>

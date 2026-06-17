@@ -141,8 +141,8 @@ public with sharing class PRW_TableBundleProductCtrl {
             idsCIF.add(participant.id_y);
           }
           
-          for(Account acc : [SELECT Id, SER_CClient__c , Name FROM Account WHERE SER_CClient__c IN  : idsCIF]){
-            nombresCif.add(acc.SER_CClient__c + ' - ' + acc.Name);
+          for(Account acc : [SELECT Id, g_customer_id__c , Name FROM Account WHERE g_customer_id__c IN  : idsCIF]){
+            nombresCif.add(acc.g_customer_id__c + ' - ' + acc.Name);
           }
           bundleRow.cifNames = nombresCif;
           bundleRow.cifs = resp.participants.size();

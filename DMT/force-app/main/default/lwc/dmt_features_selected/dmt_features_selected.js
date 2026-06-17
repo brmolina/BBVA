@@ -22,6 +22,7 @@ import FEATURE_CODE_VALUE_FIELD from '@salesforce/schema/DMT_Feature__c.gf_code_
 import FEATURE_GLOBAL_ID_NUMBER_FIELD from '@salesforce/schema/DMT_Feature__c.gf_global_feature_id_number__c';
 import PASSPORT_ID_FIELD from '@salesforce/schema/Passport__c.Id';
 import OBSOLETED_FIELD from "@salesforce/schema/Passport__c.DMT_Is_Obsoleted_Passport_Save__c";
+import ACTIVE_FEATURE_FIELD from "@salesforce/schema/DMT_Feature__c.gf_active_feature_ind_type__c";
 
 import checkEditPermission from '@salesforce/apex/DMT_LineController.checkEditPermission';
 import checkEditPermissionOpp from '@salesforce/apex/DMT_LineController.checkEditPermissionOpp';
@@ -157,7 +158,7 @@ export default class Dmt_features_selected extends LightningElement {
 
     
 
-    editablefeatures() {
+    async editablefeatures() {
 
         let isInEditableStatus = false;
 
@@ -179,36 +180,22 @@ export default class Dmt_features_selected extends LightningElement {
             return;
         }
 
-        const recordIdParam = this.recordId;
-        if (this.objectApiName === OBJECT_NAME_LINE) {
-            checkEditPermission({ recordId: recordIdParam })
-                .then(result => {
-                    const { isAdmin, accessLevel_edit } = result;
-                    this.isEditable = (isAdmin || accessLevel_edit);
+        try {
+            const result = this.objectApiName === OBJECT_NAME_LINE
+                ? await checkEditPermission({ recordId: this.recordId })
+                : await checkEditPermissionOpp({ oppId: this.recordId });
 
-                    this.features = this.features.map(f => ({
-                        ...f,
-                        isEditable: this.isEditable
-                    }));
-                })
-                .catch(error => {
-                    console.error('Error checking edit permission', error);
-                });
-        } else if (this.objectApiName === OBJECT_NAME_OPPORTUNITY) {
-            checkEditPermissionOpp({ oppId: recordIdParam })
-                .then(result => {
-                    const { isAdmin, accessLevel_edit } = result;
-                    this.isEditable = (isAdmin || accessLevel_edit);
-
-                    this.features = this.features.map(f => ({
-                        ...f,
-                        isEditable: this.isEditable
-                    }));
-                })
-                .catch(error => {
-                    console.error('Error checking edit permission', error);
-                });
+            const { isAdmin, accessLevel_edit } = result;
+            this.isEditable = (isAdmin || accessLevel_edit);
+        } catch (error) {
+            console.error('Error checking edit permission', error);
+            this.isEditable = false;
         }
+
+        this.features = this.features.map(f => ({
+            ...f,
+            isEditable: this.isEditable
+        }));
     }
 
    async handleLoadFeatures() {
@@ -221,26 +208,29 @@ export default class Dmt_features_selected extends LightningElement {
 
         loadFeatures({recordId: this.recordId, featureType: featureType})
         .then(result => {
-                const featureAux = result.map(feature => {
-                const isObligatory = this.obligatoryFeatureCodeIds?.has(feature[FEATURE_GLOBAL_ID_NUMBER_FIELD.fieldApiName]);
+                const featureAux = result
+                .filter(feature => feature['gf_active_feature_ind_type__c'] === 'Y')
+                .filter(feature => feature['g_entific_id__c'] === 'HO')
 
+                .map(feature => {
+                const isObligatory = this.obligatoryFeatureCodeIds?.has(feature[FEATURE_GLOBAL_ID_NUMBER_FIELD.fieldApiName]);
                 return {
                     ...feature,
-                    isSelected: isObligatory ? true : feature.isSelected,
-                    isEditable: isObligatory ? false : this.isEditable
+                    isSelected: feature.isSelected,
+                    isEditable: this.isEditable
                 };
             });
             this.features = [...featureAux];
             this.wiredSelectedFeaturesResult = this.features.filter(feature => feature.isSelected);
 
-            for (const feature of this.features) {
-                const isObligatory = this.obligatoryFeatureCodeIds?.has(feature[FEATURE_GLOBAL_ID_NUMBER_FIELD.fieldApiName]);
-                if (isObligatory && !feature.selectedFeatureId) {
-                    continue;
-                } else if (isObligatory && feature.selectedFeatureId) {
-                    this.deleteSelectedFeature(feature);
-                }
-            }
+            // for (const feature of this.features) {
+            //     const isObligatory = this.obligatoryFeatureCodeIds?.has(feature[FEATURE_GLOBAL_ID_NUMBER_FIELD.fieldApiName]);
+            //     if (isObligatory && !feature.selectedFeatureId) {
+            //         continue;
+            //     } else if (isObligatory && feature.selectedFeatureId) {
+            //         this.deleteSelectedFeature(feature);
+            //     }
+            // }
             this.isDataLoaded = true;
         })
         .catch((error) => {

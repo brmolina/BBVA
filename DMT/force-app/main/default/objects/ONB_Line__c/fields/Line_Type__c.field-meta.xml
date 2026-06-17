@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Line_Type__c</fullName>
+    <description>.</description>
+    <label>Line Types</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>LC_CRED</fullName>
+                <default>false</default>
+                <label>Credit line</label>
+            </value>
+            <value>
+                <fullName>LC_DER</fullName>
+                <default>false</default>
+                <label>Derivatives credit line</label>
+            </value>
+            <value>
+                <fullName>LC_DEPOS</fullName>
+                <default>false</default>
+                <label>Depos credit line</label>
+            </value>
+            <value>
+                <fullName>LC_REPOS</fullName>
+                <default>false</default>
+                <label>Repos credit line</label>
+            </value>
+            <value>
+                <fullName>LC_DVP</fullName>
+                <default>false</default>
+                <label>Settlement line</label>
+            </value>
+            <value>
+                <fullName>LC_FDP</fullName>
+                <default>false</default>
+                <label>Free delivery settlement line</label>
+            </value>
+            <value>
+                <fullName>LC_MULTI</fullName>
+                <default>false</default>
+                <label>Multiholder credit line</label>
+            </value>
+            <value>
+                <fullName>LC_SL</fullName>
+                <default>false</default>
+                <label>Sec lending credit line</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CompulsoryAmountLastLevel</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISBLANK(Amount__c) &amp;&amp;  ISBLANK(DMT_LastLevelId__c)
+	&amp;&amp;  ISPICKVAL(Status__c, &quot;Proposal&quot;)  &amp;&amp;  RecordType.DeveloperName  = &quot;OtherProducts&quot;</errorConditionFormula>
+    <errorMessage>The amount and type of risk of the line are mandatory</errorMessage>
+</ValidationRule>

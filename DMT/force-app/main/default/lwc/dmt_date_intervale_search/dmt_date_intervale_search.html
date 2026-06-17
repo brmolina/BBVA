@@ -1,0 +1,11 @@
+<template>
+    <div class="date-range-container">
+        <template lwc:if={hasRangeError}>
+            <div class="date-range-error">{rangeErrorMessage}</div>
+        </template>
+        <div class="date-row">
+            <lightning-input data-id="startDate" class="date-format-hide" type="date" label="Start Date" value={startDate} max={maxStartDate} onchange={handleStartDateChange}></lightning-input>
+            <lightning-input data-id="endDate" class="date-format-hide" type="date" label="End Date" value={endDate} min={minEndDate} onchange={handleEndDateChange}></lightning-input>
+        </div>
+    </div>
+</template>

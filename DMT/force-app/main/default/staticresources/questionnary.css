@@ -1,0 +1,338 @@
+    /* questionnary */
+
+.questn-table2{
+    font-size: 10px;
+    font-family: BentonSansBBVA;
+    font-weight: 300;
+    text-align: center;
+}
+
+/* CABECERA */
+
+header {
+    width: 100%;
+    position: fixed;
+    top: 0mm;
+    margin: 0mm 0mm 0mm 0mm;
+    height: 194px;
+    text-align: center;
+}
+
+
+.header-left{
+    float: left;
+    position: fixed;
+    top: 7mm;
+    left:0mm;
+}
+
+.header-containerTitle {
+    position: relative;
+    width: 100%;
+}
+
+.header-title {
+    position: absolute;
+    top: -126px;
+    width: 100%;
+	text-align: center;
+    font-family: BentonSansBBVA;
+    font-size: 26px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.09;
+    letter-spacing: -0.2px;
+    color: white !important;
+}
+
+}
+
+/*.header-center{*/
+/*    position: fixed;*/
+/*    text-align: center;*/
+/*    width: 100%;*/
+/*}*/
+
+.
+
+img.logo-size {
+    height: 70%;
+    width: 70%;
+}
+
+
+/* FIN CABECERA */
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVAMedium");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVALight");
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVABold");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVABook");
+    font-weight: 300;
+}
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVABookItalic");
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: BentonSansBBVA;
+    src: url("/resource/BentonSansBBVABold");
+    font-weight: 700;
+}
+
+/*@media print {*/
+/*    @page {*/
+/*        size: A4 portrait;*/
+/*        margin: 0;*/
+/*    }*/
+
+/*    .page {*/
+/*        padding: 30px;*/
+/*        page-break-before: always;*/
+/*    }*/
+/*    .container {*/
+/*        border: solid 0.25px;*/
+/*    }*/
+/*}*/
+
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 0mm;
+    }
+    .page {
+        -webkit-print-color-adjust: exact;
+        /*print-color-adjust: exact;*/
+    }
+    img.logo-size {
+    	height: 70%;
+    	width: 70%;
+    }
+    .printable {
+        visibility: visible !important;
+    }
+
+}
+
+
+
+.page {
+    background: white;
+    padding: 214px 20px 20px 20px;
+    page-break-before: always;
+    font-family: BentonSansBBVA;
+    font-weight: 300 !important;
+    font-size:10px;
+    color: black;
+}
+
+.printable {
+    visibility: hidden;
+}
+
+body {
+    /*background-color: black;*/
+    /*color: white;*/
+    line-height: 1.3;
+}
+
+.questn-table  th, .questn-table  td {
+    font-size: 10px;
+    font-family: BentonSansBBVA;
+    font-weight: 300;
+    text-align: center;
+    padding-top: 11px;
+    padding-bottom:11px;
+}
+
+table.questn-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    /*border: solid 1px;*/
+}
+
+.questn-table th {
+    color: #00a4b7;
+    font-weight: 400;
+}
+
+.questn-table thead th:nth-child(1) {
+    width: 45%;
+    text-align: left;
+    padding-bottom: 0px;
+    color: #121212;
+    font-weight: bold;
+    vertical-align: bottom;
+}
+
+.questn-table thead th:nth-child(2) {
+    width: 6%;
+}
+
+.questn-table thead th:nth-child(3) {
+    width: 6%;
+}
+
+.questn-table thead th:nth-child(4) {
+    width: 6%;
+}
+
+.questn-table thead th:nth-child(5) {
+    width: 37%;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.questn-table tbody td:nth-child(5) {
+    text-align: left;
+    padding-left: 10px;
+}
+
+.questn-table tbody td:nth-child(1) {
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 16px;
+    margin-top: 20px;
+}
+
+.checkContainer {
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+    position: relative;
+    border: 1px solid #dddbda;
+    border-radius: .125rem;
+    background-color: #F0EFEF;
+    vertical-align: -70%;
+}
+
+.checkContainer .checked {
+    display: block;
+    content: "";
+    height: .25rem;
+    width: .5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%,-50%,0) rotate(-45deg);
+    border-bottom: 2px solid #0070d2;
+    border-left: 2px solid #0070d2;
+}
+
+.form-table  th, .form-table  td {
+    font-size: 10px;
+    font-family: BentonSansBBVA;
+    font-weight: 300;
+    /*text-align: center;*/
+    padding-top: 11px;
+    padding-bottom:11px;
+}
+
+table.form-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    /*border: solid 1px;*/
+}
+
+.form-table th {
+    color: #00a4b7;
+    font-weight: 400;
+}
+
+
+
+.form-table thead th:nth-child(2) {
+    /*width: 6%;*/
+}
+
+.form-table thead th:nth-child(3) {
+    /*width: 6%;*/
+}
+
+.form-table thead th:nth-child(4) {
+    /*width: 6%;*/
+}
+
+.form-table thead th:nth-child(5) {
+    /*width: 37%;*/
+    text-align: left;
+    padding-left: 10px;
+}
+
+.form-table tbody td:nth-child(5) {
+    text-align: left;
+    padding-left: 10px;
+}
+
+.form-table tbody td:nth-child(1) {
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 16px;
+    margin-top: 20px;
+}
+
+.spinnerHolder {
+    height: 150px;
+}
+/*.page .question>p {*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*.question>div {*/
+/*    padding: 16px 0px 20px 10px;*/
+/*}*/
+
+/*.question table.companies {*/
+/*    width: 300px;*/
+/*}*/
+/*.question table.companies:first-child {*/
+/*    margin-right: 30px;*/
+/*}*/
+
+/*.question table.companies th {*/
+/*    font-weight: 400;*/
+/*    color: #00a4b7;*/
+/*    padding-bottom: 11px;*/
+/*}*/
+
+/*.question table.companies td {*/
+/*    font-weight: 300 !important;*/
+/*    border: 1px solid;*/
+/*}*/
+
+/*.question td:nth-child(1) {*/
+/*    width: 50%;*/
+/*}*/
+
+/*.question th:nth-child(2) {*/
+/*    width: 50%;*/
+/*    text-align: center;*/
+/*}*/
+
+/*.question td:nth-child(3) {*/
+/*    width: 25%;*/
+/*}*/

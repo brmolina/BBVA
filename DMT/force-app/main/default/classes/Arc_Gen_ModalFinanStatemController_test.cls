@@ -36,7 +36,7 @@
 *2.9        13/06/2023     joseluis.miralles.contractor@bbva.com        Updated value of financialStatements and financialStatementsGroup
                                                                         mock to change currency
 -----------------------------------------------------------------------------------------*/
-@SuppressWarnings('sf:TooManyMethods')
+@SuppressWarnings('sf:TooManyMethods,PMD.AvoidHardcodingId,PMD.EmptyCatchBlock,PMD.CyclomaticComplexity')
 @isTest
 public class Arc_Gen_ModalFinanStatemController_test {
     /*
@@ -83,6 +83,7 @@ public class Arc_Gen_ModalFinanStatemController_test {
     * @Description: String with value "000000000000001"
     */
     private static final string FFSS_ID = '000000000000001';
+
     /**
     * --------------------------------------------------------------------------------------
     * @Description setup method
@@ -104,12 +105,20 @@ public class Arc_Gen_ModalFinanStatemController_test {
         final arce__Analysis__c newArce = Arc_UtilitysDataTest_tst.crearArceAnalysis('Arce Analysis', null, groupAccount.accId);
         insert newArce;
 
+        final arce__AHA_Extension__c ahaExt = new arce__AHA_Extension__c(
+            arce__group_corporative__c = true
+        );
+        insert ahaExt;
+
         final arce__Account_has_Analysis__c newAnalysis = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(newSector.id, newArce.Id, groupAccount.accId, '1');
         newAnalysis.arce__main_subsidiary_ind_type__c = false;
+        newAnalysis.arce__AHA_Extension__c = ahaExt.Id;
+        newAnalysis.arce__RAR_rating_tool_id__c = 'sp22012';
         insert newAnalysis;
 
         final arce__Account_has_Analysis__c newChildAcc = Arc_UtilitysDataTest_tst.crearAccHasAnalysis(newSector.id, newArce.Id, childAccount.accId, '1');
         newChildAcc.arce__main_subsidiary_ind_type__c = false;
+        newChildAcc.arce__RAR_rating_tool_id__c = 'sp22012';
         insert newChildAcc;
 
         final arce__rating__c rating = Arc_UtilitysDataTest_tst.crearRating(null);
@@ -273,7 +282,7 @@ public class Arc_Gen_ModalFinanStatemController_test {
     **/
     @isTest static void testCallEngineFinancialState() {
         final arce__Account_has_Analysis__c accHasAnalysis = [SELECT Id FROM arce__Account_has_Analysis__c limit 1];
-        final List<arce__Financial_Statements__c> finStatementList = [SELECT id,arce__Order__c,arce__rating_id__c,arce__financial_statement_id__c,arce__account_has_analysis_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c,arce__magnitude_unit_type__c FROM arce__Financial_Statements__c LIMIT 20];
+        final List<arce__Financial_Statements__c> finStatementList = [SELECT id,arce__Selected_Adjustment_Type__c,arce__Order__c,arce__rating_id__c,arce__financial_statement_id__c,arce__account_has_analysis_id__c,arce__financial_statement_start_date__c,arce__ffss_submitted_type__c,arce__financial_statement_end_date__c,arce__ffss_certification_type__c,arce__ffss_adjusted_type__c,arce__economic_month_info_number__c,arce__ffss_valid_type__c,arce__magnitude_unit_type__c FROM arce__Financial_Statements__c LIMIT 20];
 
         final List<String> ids = new List<String> { '70202018069' };
         final List<String> levValuesList = new List<String>{'totalRevenues','ebitda','grossFinancialDebt','netFinancialDebt','totalAssets'};
@@ -537,7 +546,7 @@ public class Arc_Gen_ModalFinanStatemController_test {
         update ffss;
         accHasAnalysis.arce__ffss_for_rating_id__c = ffss.id;
         update accHasAnalysis;
-        tableCAnalysis.arce__table_content_parent_code_id__c = ffss.arce__financial_statement_id__c; 
+        tableCAnalysis.arce__table_content_parent_code_id__c = ffss.arce__financial_statement_id__c;
         update tableCAnalysis;
         Test.startTest();
         final List<arce__Table_Content_per_Analysis__c> results = Arc_Gen_Balance_Tables_data.getRatiosRecords(String.valueOf(accHasAnalysis.id),ffss.arce__financial_statement_id__c,doubleList);
@@ -563,5 +572,211 @@ public class Arc_Gen_ModalFinanStatemController_test {
         final arce__Analysis__c analysis = [SELECT Id, arce__is_RTC__c FROM arce__Analysis__c where id =: aha.arce__Analysis__c];
         System.assert(true, analysis.arce__is_RTC__c);
         Test.stopTest();
+    }
+
+    /**
+    * @description Validates FinancialDetailsWrapper can be instantiated and fields set.
+    */
+    @isTest static void testFinancialDetailsWrapper() {
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.FinancialDetailsWrapper wrapper = new Arc_Gen_ModalFinanStatemController.FinancialDetailsWrapper();
+        wrapper.gblResulError = 'No error';
+        wrapper.gblSuccessOperation = true;
+        wrapper.gblRespServiceCode = 200;
+        wrapper.employeesNumber = 150;
+        Test.stopTest();
+
+        Assert.isTrue(wrapper.gblSuccessOperation && wrapper.gblRespServiceCode == 200, 'FinancialDetailsWrapper should indicate success with code 200');
+    }
+
+    /**
+    * @description Validates Audit wrapper can be constructed from Map data.
+    */
+    @isTest static void testAuditWrapperWithData() {
+        final Map<String, Object> auditorData = new Map<String, Object>{
+            'opinion' => 'Clean',
+            'name' => 'Deloitte',
+            'origin' => 'Spain',
+            'hasQualification' => true
+        };
+        final Map<String, Object> auditData = new Map<String, Object>{
+            'auditDate' => '2024-01-15',
+            'quality' => 'High',
+            'auditor' => auditorData
+        };
+
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.Audit audit = new Arc_Gen_ModalFinanStatemController.Audit((Object) auditData);
+        Test.stopTest();
+
+        Assert.isTrue(
+            audit.auditDate.equals('2024-01-15') &&
+            audit.auditor.opinion.equals('Clean') &&
+            audit.auditor.hasQualification.equals('S'),
+            'Audit wrapper should be correctly instantiated with provided data'
+        );
+    }
+
+    /**
+    * @description Validates Audit wrapper with null data.
+    */
+    @isTest static void testAuditWrapperNull() {
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.Audit audit = new Arc_Gen_ModalFinanStatemController.Audit(null);
+        Test.stopTest();
+
+        Assert.isNotNull(audit, 'Audit should still be instantiated with null input');
+    }
+
+    /**
+    * @description Validates empty Audit constructor.
+    */
+    @isTest static void testAuditEmptyConstructor() {
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.Audit audit = new Arc_Gen_ModalFinanStatemController.Audit();
+        Test.stopTest();
+
+        Assert.isNotNull(audit.auditor, 'Empty audit should initialize auditor');
+    }
+
+    /**
+    * @description Validates Auditor wrapper with data.
+    */
+    @isTest static void testAuditorWrapperWithData() {
+        final Map<String, Object> auditorData = new Map<String, Object>{
+            'opinion' => 'Qualified',
+            'name' => 'EY',
+            'origin' => 'UK',
+            'hasQualification' => false
+        };
+
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.Auditor auditor = new Arc_Gen_ModalFinanStatemController.Auditor((Object) auditorData);
+        Test.stopTest();
+
+        Assert.isTrue(
+            auditor.opinion.equals('Qualified') &&
+            auditor.hasQualification.equals('N'),
+            'Auditor wrapper should be correctly instantiated with provided data'
+        );
+    }
+
+    /**
+    * @description Validates Auditor empty constructor.
+    */
+    @isTest static void testAuditorEmptyConstructor() {
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.Auditor auditor = new Arc_Gen_ModalFinanStatemController.Auditor();
+        Test.stopTest();
+
+        Assert.isNotNull(auditor, 'Auditor should be instantiated with empty constructor');
+    }
+
+    /**
+    * @description Validates FinancialStatementsFetchWrapper fields.
+    */
+    @isTest static void testFinancialStatementsFetchWrapper() {
+        Test.startTest();
+        final Arc_Gen_ModalFinanStatemController.FinancialStatementsFetchWrapper wrapper = new Arc_Gen_ModalFinanStatemController.FinancialStatementsFetchWrapper();
+        wrapper.ffssList = new List<arce__Financial_Statements__c>();
+        wrapper.ffssListLabel = new List<arce__Financial_Statements__c>();
+        wrapper.validLabel = 'Valid';
+        wrapper.preselected = new Set<String>{'FS001'};
+        Test.stopTest();
+
+        Assert.isTrue(
+            wrapper.validLabel.equals('Valid') &&
+            wrapper.preselected.contains('FS001'),
+            'FinancialStatementsFetchWrapper should have correct valid label and preselected set'
+        );
+    }
+
+    /**
+    * @description Validates getDynamicColumns returns valid JSON for non-RAIP.
+    */
+    @isTest static void testGetDynamicColumnsNotRaip() {
+        Test.startTest();
+        final String result = Arc_Gen_ModalFinanStatemController.getDynamicColumns(false);
+        Test.stopTest();
+
+        Assert.isTrue(result.startsWith('['), 'Should return a JSON array');
+    }
+
+    /**
+    * @description Validates getDynamicColumns returns valid JSON for RAIP.
+    */
+    @isTest static void testGetDynamicColumnsRaip() {
+        Test.startTest();
+        final String result = Arc_Gen_ModalFinanStatemController.getDynamicColumns(true);
+        Test.stopTest();
+
+        Assert.isTrue(result.startsWith('['), 'Should return a JSON array for RAIP');
+    }
+
+    /**
+    * @description Validates financialStatementExceptionHandling with default exception message.
+    */
+    @isTest static void testExceptionHandlingDefault() {
+        final Exception ex = new AuraHandledException('Script-thrown exception');
+
+        Test.startTest();
+        final AuraHandledException result = Arc_Gen_ModalFinanStatemController.financialStatementExceptionHandling(ex);
+        Test.stopTest();
+
+        Assert.isNotNull(result, 'Should return an AuraHandledException');
+    }
+
+    /**
+    * @description Validates financialStatementExceptionHandling with custom message.
+    */
+    @isTest static void testExceptionHandlingCustomMessage() {
+        final Exception ex = new AuraHandledException('Custom error');
+        ex.setMessage('Custom error');
+
+        Test.startTest();
+        final AuraHandledException result = Arc_Gen_ModalFinanStatemController.financialStatementExceptionHandling(ex);
+        Test.stopTest();
+
+        Assert.isNotNull(result, 'Should return an AuraHandledException for custom messages');
+    }
+
+    /**
+    * @description Validates saveEEFF returns reordered list.
+    */
+    @isTest static void testSaveEEFF() {
+        final List<arce__Financial_Statements__c> fflist = new List<arce__Financial_Statements__c>();
+        final arce__Financial_Statements__c fs1 = new arce__Financial_Statements__c();
+        fs1.arce__financial_statement_id__c = 'FS001';
+        fs1.arce__Order__c = '1';
+        fflist.add(fs1);
+
+        final List<arce__Financial_Statements__c> draft = new List<arce__Financial_Statements__c>();
+        final arce__Financial_Statements__c draftFs = new arce__Financial_Statements__c();
+        draftFs.arce__financial_statement_id__c = 'FS001';
+        draftFs.arce__Order__c = '2';
+        draft.add(draftFs);
+
+        final String selectedRows = '["FS001"]';
+
+        Test.startTest();
+        final List<arce__Financial_Statements__c> result = Arc_Gen_ModalFinanStatemController.saveEEFF(fflist, draft, selectedRows);
+        Test.stopTest();
+
+        Assert.areEqual(1, result.size(), 'Should return the reordered list');
+    }
+
+    /**
+    * @description Validates updateEEFF updates records.
+    */
+    @isTest static void testUpdateEEFF() {
+        final arce__Financial_Statements__c ffss = [SELECT Id, arce__ffss_valid_type__c FROM arce__Financial_Statements__c LIMIT 1];
+        ffss.arce__ffss_valid_type__c = '2';
+
+        Test.startTest();
+        Arc_Gen_ModalFinanStatemController.updateEEFF(new List<arce__Financial_Statements__c>{ffss});
+        Test.stopTest();
+
+        final arce__Financial_Statements__c updated = [SELECT arce__ffss_valid_type__c FROM arce__Financial_Statements__c WHERE Id = :ffss.Id];
+        Assert.areEqual('2', updated.arce__ffss_valid_type__c, 'FFSS valid type should be updated');
     }
 }

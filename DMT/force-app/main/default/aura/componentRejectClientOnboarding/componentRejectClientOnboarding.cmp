@@ -1,0 +1,39 @@
+<aura:component controller="Buttons_Onboarding_Controller" implements="dwp_dbpn:DynamicFlowWizardStep_itf,force:hasRecordId,force:hasSObjectName,flexipage:availableForAllPageTypes" access="GLOBAL">
+  <aura:attribute name="recordId" type="Id"/>
+  <aura:attribute name="isModalOpen" type="Boolean" default="false" access="private"/>
+  <aura:attribute name="isOpen" type="Boolean" default="false" access="private"/>
+
+  <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+  <aura:if isTrue="{!v.isModalOpen}">
+    <div class="modal-custom-style">
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close"
+              onclick="{!c.closeModal}"
+              alternativeText="close"
+              variant="bare-inverse"
+              class="slds-modal__close"/>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Complete Reject Reason</h2>
+          </header>
+
+          <aura:if isTrue="{!v.isOpen}">
+            <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Asset_Template__c"
+            onsubmit="{!c.handleSubmit}">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+              <p style="text-align: left">Select a reject reason.</p>
+              <br/>
+                <lightning:inputField fieldName="Rejection_Reason__c" />
+                <lightning:button class="slds-float_left" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                <lightning:button variant="brand" type="submit" name="update" label="Save"/>
+            </div>
+            </lightning:recordEditForm>
+          </aura:if>
+        </div>
+        <!-- <div class="slds-backdrop slds-backdrop_open"></div> -->
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+</aura:component>

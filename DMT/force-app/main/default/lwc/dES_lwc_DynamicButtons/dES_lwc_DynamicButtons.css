@@ -1,0 +1,27 @@
+.buttons-grid {
+    display: grid;
+    
+    grid-template-columns: repeat(auto-fit, minmax(160px, max-content));
+
+    gap: 0.75rem;
+    
+    justify-content: end;
+    
+    width: 100%;
+}
+
+.buttons-grid lightning-button {
+    width: 160px;
+}
+
+@media (max-width: 768px) {
+    .buttons-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .buttons-grid {
+        grid-template-columns: 1fr;
+    }
+}

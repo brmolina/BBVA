@@ -23,7 +23,7 @@ global with sharing class MergeServiceCallout_test {
       */
       private static final String TESTVAR = 'Test';
 
-	
+  
     @TestSetup
     static void testSetup() {
         Local_Client__c lclAcc = TestFactory.createLocalClient();
@@ -40,10 +40,10 @@ global with sharing class MergeServiceCallout_test {
         lstAccountSearch[0].DES_Entity_Hierarchy__c = 'S'; 
         update lstAccountSearch;
         
-        dwp_acmh__GBL_Account_Relationship__c testRelation2 = new dwp_acmh__GBL_Account_Relationship__c();
-        testRelation2.dwp_acmh__Parent_Account__c = testAcc1.Id;
-        testRelation2.dwp_acmh__Child_Account__c = lclAcc2.Cib_Client__c;
-        testRelation2.dwp_acmh__Vision__c = 'Riesgos';
+        AMH_GBL_Account_Relationship__c testRelation2 = new AMH_GBL_Account_Relationship__c();
+        testRelation2.AMH_Parent_Account__c = testAcc1.Id;
+        testRelation2.AMH_Child_Account__c = lclAcc2.Cib_Client__c;
+        testRelation2.AMH_Vision__c = 'Riesgos';
         testRelation2.DES_Main_Parent__c = 'S';
         insert testRelation2;
     }
@@ -89,7 +89,7 @@ global with sharing class MergeServiceCallout_test {
         acc.Name = 'Cliente prueba';
         acc.DES_BBVA_Segmentation__c = CIBVAR;
         acc.DES_Structure_Type__c = SUBSIDIARYVAR;
-        acc.SER_CClient__c = 'client prueba';
+        acc.g_customer_id__c = 'client prueba';
         insert acc;
     
         final Local_Client__c lclient1 = new Local_Client__c();
@@ -100,7 +100,7 @@ global with sharing class MergeServiceCallout_test {
         lclient1.g_residence_country_id__c = 'ES';
         insert lclient1;
     
-        final dwp_kitv__Visit_validations_acc_cs__c	 validation = new dwp_kitv__Visit_validations_acc_cs__c();
+        final dwp_kitv__Visit_validations_acc_cs__c   validation = new dwp_kitv__Visit_validations_acc_cs__c();
         validation.dwp_kitv__bypass__c = true;
         insert validation;
     

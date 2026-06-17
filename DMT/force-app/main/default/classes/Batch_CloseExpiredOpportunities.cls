@@ -39,7 +39,7 @@ public without sharing class Batch_CloseExpiredOpportunities implements Database
 
   public  void execute(Database.BatchableContext bc,List<Opportunity> scope) {
     recordsUpdated = recordsUpdated + scope.size();
-    final dwp_acmh.GBL_DenormalizeOpportunitiesUtils doUtil = new dwp_acmh.GBL_DenormalizeOpportunitiesUtils();
+    final GBL_DenormalizeOpportunitiesUtils doUtil = new GBL_DenormalizeOpportunitiesUtils();
     final set<Id> oppToDenormalize = new Set<Id>();
     for (Opportunity opp : scope){
       if ( opp.StageName == Label.DES_Draft&&opp.DES_Prospect__c!=null&&opp.DES_Prospect__r.DES_Group__c!=null) { //Only Draft_Opp

@@ -1,0 +1,81 @@
+*{
+    font-family: sans-serif;
+}
+
+section header button{
+    top: 10px;
+    right: 10px;
+}
+
+.cib-text textarea {
+    width: 100%;
+    border-radius: 8px;
+    min-height: 60px;
+    font-size: 16px;
+    font-family: sans-serif;
+    padding: 5px 10px;
+}
+
+.cib-feed-title {
+    font-size: 16px;
+}
+
+.cib-other {
+    margin: 10px 0px 5px 0px;
+}
+
+.slds-backdrop_open{
+    z-index: 100 !important;
+}
+
+section {
+    z-index: 101 !important;
+}
+
+.cib-feedback {
+    width: 25% !important;
+}
+
+.cib-feedback lightning-button{
+    --slds-c-button-radius-border: 20px;
+}
+
+.cib-feedback h2{
+    color: #03234d;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    font-size: 18px;
+}
+
+.cib-feedback h3{
+    color: #5C5C5C;
+    line-height: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.cib-feedback textarea {
+    resize: none;
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 7px;
+}
+
+.cib-feedback .other-reason {
+    margin-bottom: 15px;
+}
+
+.cib-feedback .gray-txt {
+    color: #5C5C5C;
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.warning lightning-icon {
+    margin-right: 5px;
+}
+
+.optional {
+    margin-top: 15px;
+}

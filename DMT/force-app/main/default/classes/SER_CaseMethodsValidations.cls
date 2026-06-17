@@ -30,6 +30,7 @@ public without sharing class SER_CaseMethodsValidations {
   ------------------------------------------------------------------------*/
   public static void validatePickList(List<Case> newList, Map<Id, Case> oldMap) {
     System.debug('---->>>>  Entramos a validatePickList');
+    
     for(Case caso : newList) {
       System.debug('Skip validations: ' + caso.SER_Skip_validations__c);
       Boolean validate;
@@ -89,6 +90,9 @@ public without sharing class SER_CaseMethodsValidations {
         }
 
         validatePickList2(caso, oldMap);
+      }
+      if( caso.SER_Classification__c == 'Monetary Claims' ) {
+        caso.SER_Incident_with_economic_impact__c = true;
       }
       caso.SER_Skip_validations__c = false;
     }

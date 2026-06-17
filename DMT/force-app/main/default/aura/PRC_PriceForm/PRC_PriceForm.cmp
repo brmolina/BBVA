@@ -1,0 +1,579 @@
+<aura:component
+  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+  access="global" controller="PRC_PriceForm_CONTROLLER">
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+  <aura:handler event="c:PRC_PFS_FormSubmit" action="{!c.save}" />
+
+  <aura:handler name="calculaterequest" event="c:PRC_PFS_CalculateMatrix" action="{!c.calculate}" />
+
+  <aura:registerEvent name="calculateresponse" type="c:PRC_PFS_CalculateMatrix" />
+  <aura:registerEvent name="PRCPicklistError" type="c:PRC_PicklistError" />
+  <aura:registerEvent name="formsubmitresult" type="c:PRC_FormSubmitResult" />
+
+  <aura:attribute name="recordId" type="Id" />
+
+  <aura:attribute name="pricingDetailId" type="Id" />
+
+  <aura:attribute name="picklists" type="object" />
+  <aura:attribute name="pricingdet" type="object" />
+  <aura:attribute name="loaded" type="Boolean" default="false" />
+  <aura:attribute name="pickloaded" type="Boolean" default="false" />
+
+  <aura:attribute name="flag" type="Boolean" default="false" />
+  <aura:attribute name="displayFundingCost" type="Boolean" default="true" />
+  <aura:attribute name="enableLGD" type="Boolean" default="false" />
+  <aura:attribute name="enableOnBalance" type="Boolean" default="false" />
+  <aura:attribute name="isAmortizationVisible" type="Boolean" default="false" />
+
+  <aura:attribute name="isProjectFinance" type="Boolean" default="false" />
+  <aura:handler name="change" value="{!v.isProjectFinance}" action="{!c.projectFinanceChangeHandler}"/>
+
+  <aura:attribute name="activeSections" type="List" default="['Pricing','Amortization']" />
+  <aura:attribute name="options" type="List" access="PRIVATE" />
+
+  <aura:attribute name="proyectf" type="String" />
+  <aura:attribute name="bookval" type="String" access="PRIVATE" />
+
+  <aura:attribute name="selectedValue" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue2" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue3" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue4" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue5" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue6" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue7" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue8" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue9" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue10" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue11" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue12" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue13" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue14" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue15" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue16" type="String" access="PRIVATE" />
+  <aura:attribute name="selectedValue17" type="String" access="PRIVATE" />
+  <aura:handler event="c:PRC_MitigantEvent" action="{!c.refreshMitigantForm}" />
+
+
+  <aura:method name="submit" action="{!c.save}" description="Form submit">
+  </aura:method>
+  <aura:if isTrue="{!v.loaded}">
+    <aura:if isTrue="{!v.pickloaded}">
+
+      <lightning:accordion aura:id="accordion"
+        activeSectionName="{!if(v.isAmortizationVisible,v.activeSections,'Pricing')}" allowMultipleSectionsOpen="true">
+        <lightning:accordionSection name="Pricing" label="Pricing">
+          <!-- div class="form-width" -->
+
+          <lightning:recordEditForm objectApiName="PRC_Pricing_Detail__c" aura:id="priceform"
+            recordId="{!v.pricingDetailId}" onsuccess="{!c.onsubmitsuccess}">
+            <lightning:messages aura:id="validationMessages"/>
+            <H1 class="text-large">CLIENT</H1><br />
+            <div id="gf_cust_group_rating_type__c" class=" borderTop">
+              <div class="inputitem">
+                <span>Rating Group</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+                  <aura:if isTrue="{!picklistwanted.id=='RATING LARGE SCALE'}">
+                    <lightning:select name="groupid" label="{!picklistwanted.id}" aura:id="groupid"
+                      value="{!v.selectedValue}" disabled="{!if(v.isProjectFinance,true,false)}" >
+                      <option text="--None--" value=""
+                          selected="{!empty(v.pricingdet.gf_cust_group_rating_type__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.gf_cust_group_rating_type__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="gf_cust_group_rating_type__c" class="slds-hide"
+                                      value="{!v.selectedValue}" aura:id="ratingGroupId" />
+              </div>
+
+            </div>
+
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Client Rating</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='RATING LARGE SCALE'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="Crating"
+                      value="{!v.selectedValue2}" disabled="{!if(v.isProjectFinance,true,false)}">
+					<option text="--None--" value=""
+                          selected="{!empty(v.pricingdet.rating_scale_type__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.rating_scale_type__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="rating_scale_type__c" class="slds-hide" value="{!v.selectedValue2}" aura:id="clientRatingId" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Type</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_scope_type__c"
+                  aura:id="clientTypeId" />
+
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Client Industry</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="pickwanted">
+
+                  <aura:if isTrue="{!pickwanted.id=='CLIENT INDUSTRY'}">
+                    <lightning:select name="colorId" label="{!pickwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue4}">
+					            <option text="--None--" value=""
+                        selected="{!empty(v.pricingdet.economic_activity_sector_desc__c)}" />
+                      <aura:iteration items="{!pickwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.economic_activity_sector_desc__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+
+                </aura:iteration>
+                <lightning:inputField fieldName="economic_activity_sector_desc__c" class="slds-hide" value="{!v.selectedValue4}" aura:id="clientIndustryId" />
+
+              </div>
+            </div>
+            <br />
+            <H1 class="text-large">COMMON DATA</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Office</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='OFFICE'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue5}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.branch_name__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.branch_name__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="branch_name__c" class="slds-hide" value="{!v.selectedValue5}" aura:id="officeId" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Business Area</span>
+              </div>
+              <div class="inputitem">
+
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+                  <aura:if isTrue="{!picklistwanted.id=='BUSINESS UNITS'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue17}" onchange="{!c.onChangeAmortizationType}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.business_area_desc__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.business_area_desc__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+
+
+                </aura:iteration>
+                <lightning:inputField fieldName="business_area_desc__c" class="slds-hide" value="{!v.selectedValue17}" aura:id="BssA"/>
+              </div>
+            </div>
+
+            <div class="borderTop">
+              <div class="inputitem">
+                <span>External Rating</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='RATING SHORT SCALE'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue6}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.agency_rating_value_type__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.agency_rating_value_type__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="agency_rating_value_type__c" class="slds-hide"
+                  value="{!v.selectedValue6}" aura:id="externalRatingId" />
+
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Proposal Currency</span>
+              </div>
+              <div class="inputitem">
+                <lightning:inputField fieldName="opportunity_currency_id__c" aura:id="proposalCurrencyId"/>
+              </div>
+            </div>
+            <br />
+            <H1 class="text-large">PRODUCT DATA</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Risk Product</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='PRODUCTS'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" onchange="{!c.onChangeRiskProduct}" aura:id="colorId"
+                      value="{!v.selectedValue7}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.gf_pricing_risk_product_id__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.id}"
+                          selected="{!option.id==v.pricingdet.gf_pricing_risk_product_id__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="gf_pricing_risk_product_id__c" class="slds-hide"
+                  value="{!v.selectedValue7}" aura:id="riskProductId" onchange="{!c.onChangeRiskProduct}" />
+                <lightning:inputField fieldName="gf_pricing_risk_product_name__c" class="slds-hide"
+                   aura:id="riskProductName" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Operational Rating</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='OPERATIONAL RATING'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="prueba2"
+                      value="{!v.selectedValue8}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.gf_ope_agency_rating_type__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.gf_ope_agency_rating_type__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="gf_ope_agency_rating_type__c" class="slds-hide"
+                  value="{!v.selectedValue8}" aura:id="operationalRatingId" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Booking</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='BOOKING'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue9}" onchange="{!c.onChangeBooking}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.gf_ope_booking_entity_name__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.bookval}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+
+                </aura:iteration>
+                <lightning:inputField fieldName="gf_ope_booking_entity_name__c" class="slds-hide"
+                  value="{!v.selectedValue9}" aura:id="bookingId" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Financing type</span>
+              </div>
+              <div class="inputitemPicklist">
+
+                <lightning:inputField fieldName="gf_financing_type_name__c"  aura:id="financingTypeId" onchange="{!c.onChangeFinancing}"/>
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Start Date</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="opportunity_start_date__c" aura:id="startDateId"/>
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Maturity Date</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="current_expiry_date__c" aura:id="maturityDateId"/>
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Country Risk</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='COUNTRY RISK'}">
+                    <lightning:select name="colorId" label="{!picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue11}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.transaction_country_name__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.id}"
+                          selected="{!option.id==v.pricingdet.transaction_country_name__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="transaction_country_name__c" class="slds-hide"
+                  value="{!v.selectedValue11}" aura:id="CR"/>
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Average life funding</span>
+              </div>
+              <div class="inputitemPicklist">
+
+                <lightning:inputField fieldName="gf_operation_term_number__c"  aura:id="averageLifeFundingid" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Funding Curve</span>
+              </div>
+              <div class="inputitemPicklist">
+
+                <lightning:inputField fieldName="gf_funding_curve_type__c" aura:id="fundingCurveId" onchange="{!c.onChangeFundingCurve}" />
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputcheckbox">
+                <span>CRR2 (Essential Public Services)</span>
+              </div>
+              <div class="inputcheckbox">
+                <lightning:inputField fieldName="gf_ope_cpt_25_pct_red_ind_type__c" aura:id="crr2Id"  />
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>LGD (%) (only for Compass and Project Finance)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="lgd_per__c" aura:id="lgdId" disabled="{!if(v.enableLGD,true,false)}" />
+              </div>
+            </div>
+            <!-- aura:if isTrue="{!v.displayFundingCost}" -->
+            <br />
+            <H1 class="text-large">FUNDING COST (DEPENDS ON FIELD FUNDING CURVE)</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Funding Cost On Balance (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_on_balance_funding_per__c" aura:id="fundingCostOnId"
+                  disabled="{!if(and(v.displayFundingCost,v.enableOnBalance),false,true)}" />
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Funding Cost Off Balance (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_off_balance_funding_per__c" aura:id="fundingCostOffId"
+                  disabled="{!if(v.displayFundingCost,false,true)}" />
+              </div>
+            </div>
+            <!-- /aura:if -->
+            <br />
+            <H1 class="text-large">AMORTIZATION</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Amortization Type</span>
+              </div>
+              <div class="inputitemPicklist">
+
+                <lightning:inputField fieldName="amortization_desc__c" aura:id="amortizationTypeId" onchange="{!c.onChangeAmortizationType}"/>
+
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Payment rate</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="payment_type__c"
+                  aura:id="paymentRateId" />
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Payment Frequency</span>
+              </div>
+              <div class="inputitem">
+                <aura:iteration items="{!v.picklists}" var="picklistwanted">
+
+                  <aura:if isTrue="{!picklistwanted.id=='PAYMENT FREQ'}">
+                    <lightning:select name="colorId" label="{!v.picklistwanted.id}" aura:id="colorId"
+                      value="{!v.selectedValue16}" disabled="{!if(v.isAmortizationVisible,true,false)}">
+                      <option text="--None--" value=""
+                      selected="{!empty(v.pricingdet.frequency_type__c)}" />
+                      <aura:iteration items="{!picklistwanted.records}" var="option">
+                        <option text="{!option.name}" value="{!option.name}"
+                          selected="{!option.name==v.pricingdet.frequency_type__c}" />
+                      </aura:iteration>
+                    </lightning:select>
+
+                  </aura:if>
+                </aura:iteration>
+                <lightning:inputField fieldName="frequency_type__c" class="slds-hide" value="{!v.selectedValue16}"
+                  aura:id="paymentFrequencyId" />
+
+              </div>
+            </div>
+            <br />
+            <H1 class="text-large">AMOUNTS</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Operational Currency</span>
+              </div>
+              <div class="inputitemPicklist">
+
+                <lightning:inputField fieldName="currency_id__c" aura:id="operationalCurrencyId" />
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Nominal On Balance (Thousands)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_on_bal_mrgn_gen_amount__c" aura:id="nominalOnId"
+                  disabled="{!if(or(not(v.enableOnBalance),v.isAmortizationVisible),true,false)}" />
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Nominal Off Balance (Thousands)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_off_bal_mrgn_gen_amount__c" aura:id="nominalOffId"
+                  disabled="{!if(v.isAmortizationVisible,true,false)}" />
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Margin On Balance (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_ope_on_balance_margin_per__c" aura:id="marginOnId"
+                  disabled="{!if(or(not(v.enableOnBalance),v.isAmortizationVisible),true,false)}" />
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Margin Off Balance (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_ope_off_balance_margin_per__c" aura:id="marginOffId"
+                  disabled="{!if(v.isAmortizationVisible,true,false)}" />
+              </div>
+            </div>
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Tax Rate (%)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_tax_rate_per__c" disabled="true" aura:id="taxRateId" />
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Cost to Income (%)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_cost_income_ratio_per__c" disabled="true"
+                  aura:id="costToIncomeId" />
+              </div>
+            </div>
+            <br />
+            <H1 class="text-large">FEE</H1><br />
+            <div class=" borderTop">
+              <div class="inputitem">
+                <span>Non accrual fees (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_non_accrual_comission_per__c" aura:id="nonAccrualFeesId"
+                  disabled="{!if(v.isAmortizationVisible,true,false)}" />
+              </div>
+            </div>
+            <div class=" borderTop borderBotom">
+              <div class="inputitem">
+                <span>Accrual fees (B.P.)</span>
+              </div>
+              <div class="inputitemPicklist">
+                <lightning:inputField fieldName="gf_accrual_per__c" aura:id="accrualFeesId"/>
+              </div>
+            </div>
+            <br />
+            <div class="">
+              <div class="">
+                <span>Comments</span>
+              </div>
+              <div>
+                <lightning:inputField fieldName="comments_desc__c" />
+              </div>
+            </div>
+          </lightning:recordEditForm>
+          <!-- /div -->
+        </lightning:accordionSection>
+
+
+
+        <!-- Sección de carga CSV de Amortization -->
+        <aura:if isTrue="{! v.isAmortizationVisible }">
+          <lightning:accordionSection name="Amortization" label="Amortization schedule">
+            <c:PRC_PriceAmortizationCSVCreator recordId="{!v.recordId}" isEditableForm="true"
+              pricingDetailsId="{!v.pricingDetailId}" proyectFinance="{!v.proyectf}" />
+          </lightning:accordionSection>
+        </aura:if>
+
+
+        <lightning:accordionSection name="Mitiganting" label="Mitigating Factors">
+          {!v.body}
+        </lightning:accordionSection>
+      </lightning:accordion>
+    </aura:if>
+  </aura:if>
+</aura:component>

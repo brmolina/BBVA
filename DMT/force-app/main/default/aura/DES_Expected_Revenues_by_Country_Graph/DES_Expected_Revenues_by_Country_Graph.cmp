@@ -1,0 +1,32 @@
+<aura:component controller="DES_CustomReportChartOppByCountry" implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global">
+    <ltng:require scripts="{!$Resource.Chart}" afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+    <aura:attribute name="recordId" type="String" default="false" />
+    <aura:attribute name="ready" type="Boolean" default="false" />
+    <aura:attribute name="timeRefresh" type="String" default="false" />
+    <aura:attribute name="noData" type="Boolean" default="false" />
+
+    <div class="slds-box" style="padding:30px 30px 50px 30px;">
+        <h1>Pipeline Exp. Revenues by Booking Country</h1>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-m-top--medium">
+            <aura:if isTrue="{!v.noData}">
+                <p style="height:200px;text-align:center;padding-top:100px;">
+                    {!$Label.c.DES_Chart_No_Data}
+                </p>
+                <aura:set attribute="else">
+                    <canvas aura:id="chart" height="200"></canvas>
+                    <div id="my-legend-con" class="legend-con"></div>
+                </aura:set>
+            </aura:if>
+            <!-- <canvas aura:id="chart" height="200"></canvas> -->
+        </div>
+        <aura:if isTrue="{!!v.noData}">
+	        <div style="width:100%; margin-top:10px;">
+	            <a href="" class="slds-text-link" style="float:left;" onclick="{!c.navigateToMyComponent}">View Report</a>
+	            <span style="float:right;">
+	                <span style="margin-right:10px;">As of Today at <ui:outputText value="{!v.timeRefresh}"/></span>
+	            <lightning:buttonIcon iconName="utility:refresh" onclick="{!c.afterScriptsLoaded}" alternativeText="Refresh." />
+	            </span>
+	        </div>
+	     </aura:if>
+    </div>
+</aura:component>

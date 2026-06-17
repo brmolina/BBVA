@@ -139,7 +139,11 @@ public with sharing class Arc_Gen_PersistanceArceId_service {
         final String ChildARCE = accSubs.Name;
         final String ParentARCE = header.Name;
         final String NumClient = encryptedClient;
-        final String TypeArc = mapWrap.get(accSubs.arce__Customer__c).participantType;
+        String typeArc = mapWrap.get(accSubs.arce__Customer__c).participantType;
+        if(accSubs.arce__RAR_rating_tool_id__c.contains('RTC')) {
+            typeArc = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) accSubs.id});
+        }
+
         final String NameClient = mapWrap.get(accSubs.arce__Customer__c).name;
         final String docNumber = mapWrap.get(accSubs.arce__Customer__c).docNumber;
         final String docType = mapWrap.get(accSubs.arce__Customer__c).docType;
@@ -147,7 +151,7 @@ public with sharing class Arc_Gen_PersistanceArceId_service {
         final String bankId = mapWrap.get(accSubs.arce__Customer__c).bankId;
         final String assType = getAssessmentType(subprocessType);
         final String finSponsor = analysis.arce__controlled_by_sponsor_type__c == Arc_Gen_SetFinancialSponsor_Service.FINANCIAL_SPONSOR_YES ? 'true' : 'false';
-        iasoResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME,'{"ChildARCE" : "' + ChildARCE +'","assType" : "' + assType +'","ParentARCE" : "' + ParentARCE +'","branchId" : "' + branchId +'","bankId" : "' + bankId +'","docNumber" : "' + docNumber +'","docType" : "' + docType +'","NumClient" : "' + NumClient +'","TypeArc" : "' + TypeArc +'","NameClient" : "' +  NameClient +'","FS" : "' + finSponsor +'","eventType" : "' + eventType +'"}');
+        iasoResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME,'{"ChildARCE" : "' + ChildARCE +'","assType" : "' + assType +'","ParentARCE" : "' + ParentARCE +'","branchId" : "' + branchId +'","bankId" : "' + bankId +'","docNumber" : "' + docNumber +'","docType" : "' + docType +'","NumClient" : "' + NumClient +'","TypeArc" : "' + typeArc +'","NameClient" : "' +  NameClient +'","FS" : "' + finSponsor +'","eventType" : "' + eventType +'"}');
         serviceAndSaveResp.serviceCode = iasoResponse.serviceCode;
         serviceAndSaveResp.serviceMessage = iasoResponse.serviceMessage;
         serviceAndSaveResp.serviceHeaders = iasoResponse.serviceHeaders;
@@ -188,7 +192,7 @@ public with sharing class Arc_Gen_PersistanceArceId_service {
         final String ChildARCE = header.Name;
         final String ParentARCE = header.Name;
         final String NumClient = encryptedClient;
-        final String TypeArc = mapWrap.get(customerId).participantType;
+        final String typeArc = mapWrap.get(customerId).participantType;
         final String NameClient = mapWrap.get(customerId).name;
         final String docNumber = mapWrap.get(customerId).docNumber;
         final String docType = mapWrap.get(customerId).docType;
@@ -196,7 +200,7 @@ public with sharing class Arc_Gen_PersistanceArceId_service {
         final String bankId = mapWrap.get(customerId).bankId;
         final String assType = getAssessmentType(subprocessType);
         final String finSponsor = financialSponsor == Arc_Gen_SetFinancialSponsor_Service.FINANCIAL_SPONSOR_YES ? 'true' : 'false';
-        iasoResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME,'{"ChildARCE" : "' + ChildARCE +'","assType" : "' + assType +'","ParentARCE" : "' + ParentARCE +'","branchId" : "' + branchId +'","bankId" : "' + bankId +'","docNumber" : "' + docNumber +'","docType" : "' + docType +'","NumClient" : "' + NumClient +'","TypeArc" : "' + TypeArc +'","NameClient" : "' +  NameClient +'","FS" : "' + finSponsor +'","eventType" : "' + eventType +'"}');
+        iasoResponse = arce.Arc_Gen_getIASOResponse.calloutIASO(SERVICE_NAME,'{"ChildARCE" : "' + ChildARCE +'","assType" : "' + assType +'","ParentARCE" : "' + ParentARCE +'","branchId" : "' + branchId +'","bankId" : "' + bankId +'","docNumber" : "' + docNumber +'","docType" : "' + docType +'","NumClient" : "' + NumClient +'","TypeArc" : "' + typeArc +'","NameClient" : "' +  NameClient +'","FS" : "' + finSponsor +'","eventType" : "' + eventType +'"}');
         serviceAndSaveResp.serviceCode = iasoResponse.serviceCode;
         serviceAndSaveResp.serviceMessage = iasoResponse.serviceMessage;
         serviceAndSaveResp.serviceHeaders = iasoResponse.serviceHeaders;

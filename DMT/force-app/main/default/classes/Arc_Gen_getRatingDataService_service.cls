@@ -48,6 +48,7 @@
 *             Add error when a valid FFSS is not selected + Parent subsidiary overlay applicability.
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.EmptyStatementBlock,PMD.ExcessiveParameterList')
 public with sharing class Arc_Gen_getRatingDataService_service {
     /**
     *-------------------------------------------------------------------------------
@@ -166,7 +167,11 @@ public with sharing class Arc_Gen_getRatingDataService_service {
         // Check if not group and is not holding.
         final Id customerId = aha.arce__Customer__c;
         final arce.Arc_Gen_Account_Wrapper actWrapper = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id> { customerId }).get(customerId);
-        final Boolean isGroup = actWrapper.participantType == 'GROUP';
+        Boolean isGroup = actWrapper.participantType == 'GROUP';
+        if(aha.arce__RAR_rating_tool_id__c.contains('RTC')) {
+            final String participantType = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) aha.Id});
+            isGroup = participantType == 'GROUP';
+        }
         final Boolean isHolding = aha.arce__main_subsidiary_ind_type__c;
 
         if (!isGroup && !isHolding) {

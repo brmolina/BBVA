@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Data_Origin_Intranet__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Campo creado para que convivan las cargas de datos inicial de Dataloader y las nuevas de Datio. Cuando se realice todo el proceso con cargas desde Datio no será necesario</description>
+    <label>Data Origin Intranet</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

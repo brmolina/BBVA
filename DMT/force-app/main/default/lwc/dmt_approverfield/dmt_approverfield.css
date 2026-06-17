@@ -1,0 +1,31 @@
+/* Contenedor del control para asegurar que el dropdown no se desplace */
+.slds-form-element__control {
+    position: relative !important;
+}
+
+/* Estilo forzado para el Dropdown */
+.custom-dropdown-style {
+    z-index: 10000 !important; /* Valor superior a los elementos de Salesforce */
+    position: absolute !important;
+    background-color: #ffffff !important; /* Fondo blanco sólido */
+    border: 1px solid #dddbda !important;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.4) !important; /* Sombra más pronunciada para tapar lo de abajo */
+    top: 100% !important; /* Justo debajo del input */
+    margin-top: 0.125rem !important;
+}
+
+/* Para evitar que el scrollbar se vea raro */
+.slds-dropdown_length-with-icon-7 {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+/* Añade esto a tu archivo dmt_approverfield.css */
+.slds-listbox__option * {
+    pointer-events: none;
+}
+
+.no-results {
+  cursor: default;
+  user-select: none;
+}

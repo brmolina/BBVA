@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT" description="Event template">
+  <aura:attribute name="idMitigant" type="String"/>
+  <aura:attribute name="rating" type="String"/>
+  <aura:attribute name="externalRating" type="String"/>
+</aura:event>

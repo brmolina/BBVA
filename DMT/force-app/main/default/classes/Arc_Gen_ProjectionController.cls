@@ -24,6 +24,7 @@ public with sharing class Arc_Gen_ProjectionController {
     * @description Empty constructor to avoid SonarQube warning.
     *-------------------------------------------------------------------------------
     **/
+    @SuppressWarnings('PMD.EmptyStatementBlock')    
     private Arc_Gen_ProjectionController() { }
     /**
     * ----------------------------------------------------------------------------------------------------
@@ -39,13 +40,13 @@ public with sharing class Arc_Gen_ProjectionController {
     public static String getDynamicColumns(Boolean isRating) {
         final JSONGenerator gen = JSON.createGenerator(isRating);
         gen.writeStartArray();
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, System.Label.Lc_arce_Date, 110, 'arce__financial_statement_end_date__c', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, System.Label.Lc_arce_Period, 82, 'arce__economic_month_info_number__c', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, System.Label.Lc_arce_Certification, null, 'arce__ffss_certification_type__c', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, System.Label.Lc_arce_Type, null, 'arce__ffss_submitted_type__c', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, System.Label.Lc_arce_AdjustedType, null, 'arce__ffss_adjusted_type__c', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, 'Id', 75, 'shortId', STRING_VALUE_TEXT, null, null);
-        Arc_Gen_ModalFinanStatemController.writeNewCol(gen, 'Used', null, 'arce__Is_used_in_analisys__c', 'boolean', null, null);
+        writeNewCol(gen, System.Label.Lc_arce_Date, 110, 'arce__financial_statement_end_date__c', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, System.Label.Lc_arce_Period, 82, 'arce__economic_month_info_number__c', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, System.Label.Lc_arce_Certification, null, 'arce__ffss_certification_type__c', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, System.Label.Lc_arce_Type, null, 'arce__ffss_submitted_type__c', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, System.Label.Lc_arce_AdjustedType, null, 'arce__ffss_adjusted_type__c', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, 'Id', 75, 'shortId', STRING_VALUE_TEXT, null, null);
+        writeNewCol(gen, 'Used', null, 'arce__Is_used_in_analisys__c', 'boolean', null, null);
         gen.writeEndArray();
         return gen.getAsString();
     }
@@ -340,4 +341,56 @@ public with sharing class Arc_Gen_ProjectionController {
         }
         return errorsList;
     }  
+
+    /**
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Description Write new JSON node that represents a column.
+    *----------------------------------------------------------------------------------------------------------------------------------------
+    * @Author   francisco.munoz.torres.next@bbva.com
+    * @Date     26/02/2024
+    * @param JSONGenerator gen      - JSONGenerator instance must be started and ended, see example below.
+    * @param String label           - set null to avoid creating this parameter
+    * @param Integer initialWidth   - set null to avoid creating this parameter
+    * @param String fieldName       - set null to avoid creating this parameter
+    * @param String type            - set null to avoid creating this parameter
+    * @param Boolean editable       - set null to avoid creating this parameter
+    * @param Boolean sortable       - set null to avoid creating this parameter
+    * @example
+    * JSONGenerator gen = JSON.createGenerator(false);
+    * gen.writeStartArray();
+    * writeNewCol(gen, 'RandomLabel', 25, 'arce__Order__c', 'phone', true, true);
+    * gen.writeEndArray();
+    * ---------------------------------------------------------------------------------------------------------------------------------------
+    **/
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    private static void writeNewCol(
+        JSONGenerator gen,
+        String label,
+        Integer initialWidth,
+        String fieldName,
+        String type,
+        Boolean editable,
+        Boolean sortable
+    ) {
+        gen.writeStartObject();
+        if (label != null) {
+            gen.writeStringField('label', label);
+        }
+        if (initialWidth != null) {
+            gen.writeNumberField('initialWidth', initialWidth);
+        }
+        if (fieldName != null) {
+            gen.writeStringField('fieldName', fieldName);
+        }
+        if (type != null) {
+            gen.writeStringField('type', type);
+        }
+        if (editable != null) {
+            gen.writeBooleanField('editable', editable);
+        }
+        if (sortable != null) {
+            gen.writeBooleanField('sortable', sortable);
+        }
+        gen.writeEndObject();
+    }
 }

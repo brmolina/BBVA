@@ -13,6 +13,7 @@
 *             Class creation.
 * -----------------------------------------------------------------------------------------------
 */
+@SuppressWarnings('PMD.EmptyStatementBlock,PMD.CognitiveComplexity')
 public with sharing class Arc_Gen_Triage_Controller {
     /**
         * @Description: Name of metadata to know the flow suggested
@@ -61,8 +62,7 @@ public with sharing class Arc_Gen_Triage_Controller {
     @AuraEnabled
     public static String getAhaExtensionId(String ahaId) {
         final List<arce__Account_has_Analysis__c> listAha= arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String> {ahaId});
-        final String ahaExtId = listAha[0].arce__AHA_Extension__c;
-        return ahaExtId;
+        return listAha[0].arce__AHA_Extension__c;
     }
 
     /**
@@ -79,7 +79,7 @@ public with sharing class Arc_Gen_Triage_Controller {
     public static arce__AHA_Extension__c getAhaExtension(String ahaId) {
         arce__AHA_Extension__c ahaExtension;
 
-        if(arce__AHA_Extension__c.SObjectType.getDescribe().isAccessible()) {
+        if(Schema.sObjectType.arce__AHA_Extension__c.isAccessible()) {
             final String ahaExtensionId = getAhaExtensionId(ahaId);
 
             ahaExtension = [SELECT arce__level_Shell__c, arce__filial_Core__c, arce__group_corporative__c, arce__matrizIg__c, arce__legal_EEFF__c, arce__conditions_8116__c, arce__explicit_guarantee__c, arce__parametry5__c, arce__bank_spain__c, arce__group_treasury_subsidiary__c FROM arce__AHA_Extension__c WHERE Id =: ahaExtensionId LIMIT 1];
@@ -174,12 +174,7 @@ public with sharing class Arc_Gen_Triage_Controller {
     */
     @AuraEnabled
     public static String getParticipantType(String ahaId) {
-        final arce__Account_has_Analysis__c ahaFullObject = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String> {ahaId})[0];
-        final List<Id> lstAccsId = new List<Id>();
-        lstAccsId.add(ahaFullObject.arce__Customer__c);
-        final Map<Id, arce.Arc_Gen_Account_Wrapper> mapAccount = arce.Arc_Gen_Account_Locator.getAccountInfoById(lstAccsId);
-
-        return mapAccount.get(ahaFullObject.arce__Customer__c).participantType;
+        return arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{ahaId});
     }
 
     /**

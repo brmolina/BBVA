@@ -1,0 +1,17 @@
+<template>
+    <c-dmt_-table-header-section titletable="Product Fees" showcopypaste="false" rowscopypaste={tableData}
+        tablecolumnscopypaste={columnstablecopypaste} context="oli-fees"
+        isreadonlyuser={isEditMode}></c-dmt_-table-header-section>
+
+    <c-custom-data-table data={tableDataResolved} style="max-height: 5vh; height: inherit;" columns={columnsResolved}
+        key-field="Id" max-row-selection="0" hide-checkbox-column="true" oncustomtextinputchanged={textInputChanged}
+        oncellchange={handleChangeCell} onrowaction={handleRowAction} suppress-bottom-bar></c-custom-data-table>
+
+    <template if:true={isEmpty}>
+        <div class="slds-border_top">
+            <p class="slds-p-around_medium slds-text-color_weak slds-text-align_center">
+                No products added to Opportunity
+            </p>
+        </div>
+    </template>
+</template>

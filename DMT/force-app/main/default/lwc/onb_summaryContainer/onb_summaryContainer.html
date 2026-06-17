@@ -1,0 +1,19 @@
+<template>
+    <div class="slds-grid slds-wrap slds-p-horizontal_medium">
+        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+            <c-onb_user-card record-id={recordId}></c-onb_user-card>
+        </div>
+
+        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+            <c-onb_onboarding-form
+                record-id={recordId}
+                title={label.REQUEST_DETAILS}
+                object-api-name={objectApiName}
+                icon-name="standard:form"
+                field-names={activeFields}
+                field-custom-labels={activeLabels}
+                field-rules={activeRules}>
+            </c-onb_onboarding-form>
+        </div>
+    </div>
+</template>

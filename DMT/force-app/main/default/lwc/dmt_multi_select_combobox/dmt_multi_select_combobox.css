@@ -2,38 +2,54 @@
     max-height: 500px;
     overflow-y: auto;
   }
-  
+
   .multi-select-combobox__input {
     background-color: #ffffff;
     border: 1px solid #dddbda;
     border-radius: 0.25rem;
     width: 100%;
     transition: border 0.1s linear, background-color 0.1s linear;
-    /*display: inline-block;*/
-    padding: 0 2rem 0 0.75rem;
+    padding: 0 1.5rem 0 0.5rem; /* Reducimos ligeramente los paddings internos */
     line-height: 1.875rem;
     min-height: calc(1.875rem + (1px * 2));
     box-sizing: border-box;
-  }
-  
+
+    /* AÑADIDO: Permite encoger el input mostrando puntos suspensivos */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
   .multi-select-combobox__input:disabled {
     background-color: #ecebea;
     border: 1px solid #c9c7c5;
   }
-  
+
   .multi-select-combobox__icon {
     margin-right: -3px;
   }
-  
+
   .multi-select-combobox__listbox {
     width: 100%;
   }
 
-  .slds-form-element__label-container {
+.slds-form-element__label-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
+    width: 100%; /* Asegura que ocupa todo el hueco */
+    overflow: hidden; /* Evita que el contenido desborde */
+}
+
+/* NUEVA CLASE: Trunca el texto con "..." y respeta el botón de reset */
+.slds-form-element__label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1; /* Permite que el texto se encoja */
+    min-width: 0; /* Crucial en flexbox para que el text-overflow funcione */
+    margin-right: 0.5rem; /* Separación con el botón de la cruz */
+}
 
   .reset-button {
     margin-left: 0.5rem;

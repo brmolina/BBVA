@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Source_of_the_error__c</fullName>
+    <description>Identified root cause of the error that originated the case</description>
+    <label>Source of the error</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>SER_Classification__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Error Hub</fullName>
+                <default>false</default>
+                <label>Error Hub</label>
+            </value>
+            <value>
+                <fullName>Error Datos fijos</fullName>
+                <default>false</default>
+                <label>Error Datos fijos</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <label>Otros</label>
+            </value>
+            <value>
+                <fullName>Otros - TMPG</fullName>
+                <default>false</default>
+                <label>Otros - TMPG</label>
+            </value>
+            <value>
+                <fullName>Error FRONT</fullName>
+                <default>false</default>
+                <label>Error FRONT</label>
+            </value>
+            <value>
+                <fullName>Camara</fullName>
+                <default>false</default>
+                <label>Camara</label>
+            </value>
+            <value>
+                <fullName>Error de sistemas</fullName>
+                <default>false</default>
+                <label>Error de sistemas</label>
+            </value>
+            <value>
+                <fullName>Cliente</fullName>
+                <default>false</default>
+                <label>Cliente</label>
+            </value>
+            <value>
+                <fullName>Middle Office</fullName>
+                <default>false</default>
+                <label>Middle Office</label>
+            </value>
+            <value>
+                <fullName>Centro Operativo</fullName>
+                <default>false</default>
+                <label>Centro Operativo</label>
+            </value>
+            <value>
+                <fullName>OP+</fullName>
+                <default>false</default>
+                <label>OP+</label>
+            </value>
+            <value>
+                <fullName>Incidencia SSTT</fullName>
+                <default>false</default>
+                <label>Incidencia SSTT</label>
+            </value>
+            <value>
+                <fullName>Customer Support</fullName>
+                <default>false</default>
+                <label>Customer Support</label>
+            </value>
+            <value>
+                <fullName>Error de Input, Verificacion y Control</fullName>
+                <default>false</default>
+                <label>Error de Input, Verificacion y Control</label>
+            </value>
+            <value>
+                <fullName>Mensaje de cobertura</fullName>
+                <default>false</default>
+                <label>Mensaje de cobertura</label>
+            </value>
+            <value>
+                <fullName>CIB operations</fullName>
+                <default>false</default>
+                <label>CIB operations</label>
+            </value>
+            <value>
+                <fullName>Front office</fullName>
+                <default>false</default>
+                <label>Front office</label>
+            </value>
+            <value>
+                <fullName>IT/Systems</fullName>
+                <default>false</default>
+                <label>IT/Systems</label>
+            </value>
+            <value>
+                <fullName>More than one team involved</fullName>
+                <default>false</default>
+                <label>More than one team involved</label>
+            </value>
+            <value>
+                <fullName>Opplus</fullName>
+                <default>false</default>
+                <label>Opplus</label>
+            </value>
+            <value>
+                <fullName>Counterparty failure</fullName>
+                <default>false</default>
+                <label>Counterparty failure</label>
+            </value>
+            <value>
+                <fullName>Accounting mismatch</fullName>
+                <default>false</default>
+                <label>Accounting mismatch</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>Queries</fullName>
+                <default>false</default>
+                <label>Queries</label>
+            </value>
+            <value>
+                <fullName>Error de Input</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Error de Input</label>
+            </value>
+            <value>
+                <fullName>Verificacion y Control</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Verificacion y Control</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Error Hub</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Error Datos fijos</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Otros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Otros - TMPG</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Error FRONT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Camara</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Error de sistemas</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Cliente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Middle Office</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Centro Operativo</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>OP+</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Incidencia SSTT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Customer Support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Error de Input, Verificacion y Control</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <controllingFieldValue>Consulta</controllingFieldValue>
+            <controllingFieldValue>Discarded / Duplicated</controllingFieldValue>
+            <controllingFieldValue>Incidencia</controllingFieldValue>
+            <controllingFieldValue>Caso descartado</controllingFieldValue>
+            <controllingFieldValue>Feedback</controllingFieldValue>
+            <controllingFieldValue>Atención</controllingFieldValue>
+            <controllingFieldValue>Activación GNC</controllingFieldValue>
+            <controllingFieldValue>Query</controllingFieldValue>
+            <valueName>Mensaje de cobertura</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>CIB operations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Front office</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>IT/Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>More than one team involved</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Opplus</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Monetary claim</controllingFieldValue>
+            <valueName>Counterparty failure</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Non monetary claim</controllingFieldValue>
+            <valueName>Accounting mismatch</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Non monetary claim</controllingFieldValue>
+            <valueName>Others</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Queries</controllingFieldValue>
+            <valueName>Queries</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

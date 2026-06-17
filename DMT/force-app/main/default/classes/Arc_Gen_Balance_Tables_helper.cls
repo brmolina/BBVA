@@ -11,7 +11,7 @@
 *
 * |2020-01-13 eduardoefrain.hernandez.contractor@bbva.com
 *             Class creation.
-* |2020-03-26 juanignacio.hita.contractor@bbva.com 
+* |2020-03-26 juanignacio.hita.contractor@bbva.com
 *             Refactoring
 * |2020-04-14 mariohumberto.ramirez.contractor@bbva.com
 *             Added checkEeffPreviousValid method
@@ -56,7 +56,7 @@
 *             The CurrencyIsoCOde field that is used in Projections has been added
 * -----------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveParameterList, sf:TooManyMethods, sf:TooManyFields, sf:ExcessiveClassLength,PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity')
+@SuppressWarnings('PMD.ExcessivePublicCount, PMD.ExcessiveParameterList, sf:TooManyMethods, sf:TooManyFields, sf:ExcessiveClassLength,PMD.ExcessiveClassLength, PMD.CyclomaticComplexity, PMD.StdCyclomaticComplexity, PMD.CognitiveComplexity, PMD.AvoidDeeplyNestedIfStmts, PMD.NcssMethodCount')
 public class Arc_Gen_Balance_Tables_helper {
     /**
         * @Description: Maximum number of valid financial statements
@@ -126,9 +126,6 @@ public class Arc_Gen_Balance_Tables_helper {
     * @Description: type ANCHOR
     */
     static final String ANCHOR = 'ANCHOR';
-    /**
-    * @Description: Structure of the response
-    */
     /**
     * @description Retrieves the IRP flow custom interface.
     * @return The IRP flow custom interface.
@@ -216,6 +213,7 @@ public class Arc_Gen_Balance_Tables_helper {
     * @date		12/03/2020
     * @author	eduardoefrain.hernandez.contractor@bbva.com
     */
+    @SuppressWarnings('PMD.EmptyStatementBlock')
     @testVisible
     private Arc_Gen_Balance_Tables_helper() {
 
@@ -241,8 +239,7 @@ public class Arc_Gen_Balance_Tables_helper {
         final Map<String, Object> serviceResponse = response.serviceResponse;
         List<Object> listServiceResp = (List<Object>) serviceResponse.get('data');
         final List<arce__Account_has_Analysis__c> lstAccHasAnalysis = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String> {analysisId});
-        
-        
+
         if (listServiceResp.isEmpty()) {
             throw new Arc_Gen_Balance_Tables_service.NoFinancialStatementDataException(Arc_Gen_Balance_Tables_service.NoFinancialStatementReason.NO_FFSS_EMPTY_LIST);
         }
@@ -284,7 +281,8 @@ public class Arc_Gen_Balance_Tables_helper {
         return ffssList;
     }
 
-        /**
+
+    /**
     * @description Applies the configuration to the financial statements list.
     * @param ffssList The list of financial statements.
     * @param accHasAnalysis The account analysis data.
@@ -302,7 +300,6 @@ public class Arc_Gen_Balance_Tables_helper {
 
         return ffssListReturn;
     }
-
 
     /**
     *-------------------------------------------------------------------------------
@@ -338,7 +335,6 @@ public class Arc_Gen_Balance_Tables_helper {
             final List<Object> lstConfigStep = (List<Object>) JSON.deserializeUntyped(strTriageCnf);
             impl = Arc_Gen_GenericUtilitiesInterface.getIRPStepFlow((String) lstConfigStep[1]);
         }
-        final Boolean isRaipCorp = Boolean.valueOf(arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('RAIPSelectWorkflow')[0].arce__Value1__c);
         //Bolean to kwnow if have an anchor
         Boolean isAnchor = false;
 
@@ -454,7 +450,7 @@ public class Arc_Gen_Balance_Tables_helper {
         final arce__Financial_Statements__c ffss = new arce__Financial_Statements__c();
         ffss.arce__account_has_analysis_id__c = recordId;
         ffss.arce__SP2_Proposal_Folder__c = proposalFolderId;
-        
+
         ffss.arce__financial_statement_id__c = (String) servResp.get('id');
         ffss.arce__economic_month_info_number__c = String.valueOf(period.get('number'));
         ffss.arce__ffss_submitted_type__c = getSubmittedTypeFromId(ffssType.get('id'));
@@ -462,7 +458,7 @@ public class Arc_Gen_Balance_Tables_helper {
         if (servResp.containsKey('employeesNumber')) {
             try {
                 ffss.arce__employees_number__c = Double.valueOf(servResp.get('employeesNumber').ToString());
-                ffss.arce__employees_number_formatted__c = Integer.valueOf(servResp.get('employeesNumber').ToString());  
+                ffss.arce__employees_number_formatted__c = Integer.valueOf(servResp.get('employeesNumber').ToString());
             } catch (Exception e) {
                 ffss.arce__employees_number__c = null;
             }
@@ -472,6 +468,7 @@ public class Arc_Gen_Balance_Tables_helper {
         ffss.arce__economic_period_type_id__c = respEEFF.period.periodType?.id;
         ffss.arce__ffss_auditor_opinion_comment__c = respEEFF.comments == null?null:respEEFF.comments.abbreviate(auditorOpComMaxLength);
         ffss.arce__Order__c = '';
+        ffss.arce__Selected_Adjustment_Type__c = '';
         ffss.CurrencyIsoCode = (String) servResp.get('currency');
         if (!auditorMap.isEmpty()) {
             ffss.arce__ffss_auditor_opinion_desc__c = ((String)auditorMap.get('opinion')).abbreviate(auditorOp);
@@ -738,7 +735,7 @@ public class Arc_Gen_Balance_Tables_helper {
         final Date endDate = ffss.arce__financial_statement_end_date__c;
         final String certification = ffss.arce__ffss_certification_type__c;
 
-        if ((period == '12' && endDate.monthsBetween(Date.today()) >= 0 && endDate.monthsBetween(Date.today()) <= 20 && isRaipCorp &&(certification == FFSS_CT_AUDITED || certification == FFSS_CT_FISCAL || certification == FFSS_CT_TREGISTRY)) || (period == '12' && endDate.monthsBetween(Date.today()) < 20 &&  !isRaipCorp && (certification == FFSS_CT_AUDITED || certification == FFSS_CT_FISCAL || certification == FFSS_CT_TREGISTRY || certification == PRO_FORMA_MERGER || certification == PROFORMA || certification == PRO_FORMA_MERGER || certification == PRO_FORMA_ACQUISITION))) {
+        if ((period == '12' && endDate.monthsBetween(Date.today()) >= 0 && endDate.monthsBetween(Date.today()) <= 24 && isRaipCorp &&(certification == FFSS_CT_AUDITED || certification == FFSS_CT_FISCAL || certification == FFSS_CT_TREGISTRY)) || (period == '12' && endDate.monthsBetween(Date.today()) < 20 &&  !isRaipCorp && (certification == FFSS_CT_AUDITED || certification == FFSS_CT_FISCAL || certification == FFSS_CT_TREGISTRY || certification == PRO_FORMA_MERGER || certification == PROFORMA || certification == PRO_FORMA_MERGER || certification == PRO_FORMA_ACQUISITION))) {
             validate = true;
         } else {
             validate = false;

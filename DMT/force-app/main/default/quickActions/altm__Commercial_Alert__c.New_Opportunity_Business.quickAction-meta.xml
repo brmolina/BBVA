@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldOverrides>
+        <field>AccountId</field>
+        <formula>altm__Commercial_Alert__c.altm__participant_id__c</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>Business_area_desc__c</field>
+        <formula>TEXT($User.Business_area_desc__c)</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>Business_line_desc__c</field>
+        <formula>TEXT($User.Business_line_desc__c)</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>CloseDate</field>
+        <formula>TODAY() + 45</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>coverage_country_name__c</field>
+        <formula>TEXT($User.coverage_country_name__c)</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>disclosure_info_type__c</field>
+        <literalValue>Confidential information</literalValue>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>solution_name_path_desc__c</field>
+        <formula>IF(INCLUDES($User.solution_name_path_desc__c, &quot;Global&quot;), &quot;Global;&quot;, NULL) +
+IF(INCLUDES($User.solution_name_path_desc__c, &quot;Credit&quot;), &quot;Credit;&quot;, NULL) +
+IF(INCLUDES($User.solution_name_path_desc__c, &quot;EQ&quot;), &quot;EQ;&quot;, NULL) +
+IF(INCLUDES($User.solution_name_path_desc__c, &quot;FX&quot;), &quot;FX;&quot;, NULL) +
+IF(INCLUDES($User.solution_name_path_desc__c, &quot;Rates&quot;), &quot;Rates&quot;, NULL)</formula>
+    </fieldOverrides>
+    <fieldOverrides>
+        <field>StageName</field>
+        <literalValue>Proposal</literalValue>
+    </fieldOverrides>
+    <optionsCreateFeedItem>true</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>AccountId</field>
+                <uiBehavior>Readonly</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>CurrencyIsoCode</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>DES_Description_rich__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>DES_Countries__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>CloseDate</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>Name</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>true</emptySpace>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>true</emptySpace>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>DES_Booking_Geography__c</field>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+    </quickActionLayout>
+    <standardLabel>New</standardLabel>
+    <targetObject>Opportunity</targetObject>
+    <targetParentField>commercial_alert_id__c</targetParentField>
+    <targetRecordType>Opportunity.Confidential_Sales_GM_Opportunity</targetRecordType>
+    <type>Create</type>
+</QuickAction>

@@ -1,0 +1,128 @@
+<!--
+  @Component Name     : Arc_Gen_TabSet_CMP.cmp
+  @Description        : Contains the tabset for a participant analysis
+  @Author             : ARCE Team
+  @Group              : ARCE
+  @Last Modified By   : eduardoefrain.hernandez.contractor@bbva.com
+  @Last Modified On   : 09-02-2020
+  @Modification Log   :
+  ==============================================================================
+  Ver         Date                     Author      		      	   Modification
+  ==============================================================================
+  1.0                                ARCE TEAM     		        Initial Version
+  1.1    08/05/2020      joseluis.garcia4.contractor@bbva.com   Reloads tabset when rating tool changes.
+  1.2    18/06/2020      joseluis.garcia4.contractor@bbva.com   Add check if idItem parameter is other than null.
+  1.3    22/06/2020      javier.soto.carrascosa@bbva.com        Fix editButton incorrect structure
+  1.4    02/07/2020      joseluis.garcia4.contractor@bbva.com   Reloads dynamic form every time the template changes.
+  1.5    15/07/2020      joseluis.garcia4.contractor@bbva.com   Disables tab selection while loading the current tab.
+  1.6    18/08/2020      joseluis.garcia4.contractor@bbva.com   Fix spinner and disabled tabs when handling Arc_Gen_ReloadTabset_evt.
+  1.7    02/10/2020      ivan.cons@bbva.com                       Filter the GBL_SelectItem_EVT event based on name(based on qvcd 4.37)
+  1.8    12/05/2021      otiliaramona.veres.contractor@bbva.com Added a new line at the end of helper file.
+                                                                Formatted a long line of helper file.
+                                                                Assigned '-1' by default to the 'aux' variable of helper file.
+  1.9    12/05/2021      otiliaramona.veres.contractor@bbva.com Undo assigned '-1' by default to the 'aux' variable of helper file and fix sonar issue.
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:appHostable" controller="Arc_Gen_TabSet_controller" access="global" >
+    <aura:attribute name="accHasAnalysis" type="arce__Account_has_Analysis__c" description="Analyzed client record"/>
+    <aura:attribute name="idSelect" type="String" description="recordId from the customer"/>
+    <aura:attribute name="selectedTab" type="String" description="control for the selected tab"/>
+    <aura:attribute name="sectionsLts" type="List"  description="controls section that is visible"/>
+    <aura:attribute name="jsonResponse" type="Object" description="response of the apex call in JSON"/>
+    <aura:attribute name="dynaAtt" type="String" description="control field for the att"/>
+    <aura:attribute name="indexAux" type="Integer" description="control field for the att"/>
+    <aura:attribute name="lstIndexAux" type="List" description="control variable for the index"/>
+    <aura:attribute name="permissionEdit" type="String" description="field to know if edit mode is enabled"/>
+    <aura:attribute name="view" type="boolean" default="false" description="control field to handle visibility"/>
+    <aura:attribute name="tabSetConfigured" type="boolean" default="false" description="control field to handle visibility"/>
+    <aura:attribute name="changeArceState" type="boolean" default="false" description="attribute usefull to show or hide some custom message if the ARCE state change"/>
+    <aura:attribute name="unitMessage" type="String" description="Show message if the unit in the policy table change"/>
+    <aura:attribute name="tabsetDisabled" type="Boolean" default="true" description="Whether the tabset should be disabled or not"/>
+    <aura:attribute name="warningMessage" type="String" description="Whether the tabset should be disabled or not"/>
+    <aura:attribute name="showSubHeading" type="Boolean" default="true" description="Whether the GBL_CardDetails_CMP should be disabled or not"/>
+    <aura:attribute name="isBannerModel" type="Boolean" description="Boolean to is necesary show the banner"/>
+    <aura:attribute name="model" type="String" default='false' description="Label with the mmodel of this rating"/>
+    <aura:attribute name="bannerModelStyle" type="String" default="slds-theme_info" description="Banner model style"/>
+    <aura:handler event="qvcd:GBL_SelectItem_EVT" action="{!c.getItemEvent}"/>
+    <aura:handler event="dyfr:SaveObject_evt" action="{!c.handleSaveEvent}"/>
+    <aura:handler event="aura:locationChange" action="{!c.update}"/>
+    <aura:handler event="c:Arc_Gen_ReloadTabset_evt" action="{!c.loadTabsetConfig}"/>
+    <aura:handler name="formLoadedEvent" event="dyfr:FormLoaded_evt" action="{!c.handleDyfrLoaded}" />
+    <aura:registerEvent name="TabEvent" type="c:Arc_Gen_TabSetEvent"/>
+    <aura:registerEvent name="QVCDEvent" type="c:Arc_Gen_QVCDEvent"/>
+    <aura:if isTrue="{!v.view}">
+        <aura:if isTrue="{!v.isBannerModel}">
+            <mbr:messageBar
+                forceDisplay="true" bannerId="Arc_Banner_Model_Id"
+                style="{!v.bannerModelStyle}" iconName="utility:info"
+                iconVariant="inverse" containerClass="slds-box slds-box_x-small"
+                size="x-small" notificationClass="x-small"
+                message="{!v.model}"/>
+        </aura:if>
+        <div class="slds-card slds-p-around_x-small">
+            <aura:if isTrue="{!v.warningMessage}">
+                <div class="slds-grid slds-gutters">
+                    <div aura:id="colTabs" class="slds-col slds-size_11-of-12">
+                        <lightning:tabset onselect="{!c.handleSelect}" selectedTabId="{#v.selectedTab}" class="{!v.tabsetDisabled ? 'tabset-disabled' : ''}">
+                            <aura:iteration items="{!v.sectionsLts}" var="section">
+                                <aura:if isTrue="{!section.isVisible}">
+                                    <lightning:tab id="{!section.nameTemplate}">
+                                        <aura:set attribute="label">
+                                            {!section.nameSection}
+                                            <aura:if isTrue="{!section.devTemplate == '300'}">
+                                                ({!section.percent}%)
+                                            </aura:if>
+                                            <aura:if isTrue="{!section.devTemplate == '400'}">
+                                                ({!section.percent}%)
+                                            </aura:if>
+                                        </aura:set>
+                                    </lightning:tab>
+                                </aura:if>
+                            </aura:iteration>
+                        </lightning:tabset>
+                    </div>
+                    <div class="slds-col slds-size_1-of-12">
+                        <lightning:helptext
+                            content="{!$Label.c.Arc_Gen_WarningTabsUncomplete}"
+                            iconName="utility:warning"
+                            icon-variant="warning"
+                            class="warningIcon" />
+                    </div>
+                </div>
+                <aura:set attribute="else">
+                    <lightning:tabset onselect="{!c.handleSelect}" selectedTabId="{#v.selectedTab}" class="{!v.tabsetDisabled ? 'tabset-disabled' : ''}">
+                        <aura:iteration items="{!v.sectionsLts}" var="section">
+                            <aura:if isTrue="{!section.isVisible}">
+                                <lightning:tab id="{!section.nameTemplate}">
+                                    <aura:set attribute="label">
+                                        {!section.nameSection}
+                                        <aura:if isTrue="{!section.devTemplate == '300'}">
+                                            ({!section.percent}%)
+                                        </aura:if>
+                                        <aura:if isTrue="{!section.devTemplate == '400'}">
+                                            ({!section.percent}%)
+                                        </aura:if>
+                                    </aura:set>
+                                </lightning:tab>
+                            </aura:if>
+                        </aura:iteration>
+                    </lightning:tabset>
+                </aura:set>
+            </aura:if>
+
+            <div class="slds-m-top_none slds-m-bottom_small slds-col slds-size_12-of-12">
+                <aura:if isTrue="{!v.showSubHeading}">
+                    <qvcd:GBL_CardDetails_CMP recordId="{!v.idSelect}" csNameCard="Arc_Gen_Subheading"/>
+                </aura:if>
+                <aura:if isTrue="{!v.tabSetConfigured}">
+                    <dyfr:Dynamic_Form_cmp recordId="{!v.idSelect}" templateName="{!v.selectedTab}" completionControlField="dyfr__Important__c" dynamicAttributes="{!v.dynaAtt}" selectionType="Static" editButton="{!v.permissionEdit}" msgConfirmCancel="true"/>
+                </aura:if>
+
+                <aura:if isTrue="{!v.tabsetDisabled}">
+                    <div class="slds-is-relative slds-p-vertical_large">
+                        <lightning:spinner alternativeText="Loading..." />
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

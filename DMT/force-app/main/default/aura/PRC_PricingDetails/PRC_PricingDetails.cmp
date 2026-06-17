@@ -1,0 +1,525 @@
+<!--
+  @description       :
+  @author            : David Rodríguez
+  @group             :
+  @last modified on  : 03-25-2021
+  @last modified by  : David Rodríguez
+  Modifications Log
+  Ver   Date         Author            Modification
+  1.0   03-25-2021   David Rodríguez   Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="PRC_PricingDetails_CONTROLLER">
+  <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+  <aura:attribute name="recordId" type="Id" />
+  <aura:attribute name="displayFundingCost" type="Boolean" default="true"/>
+  <aura:attribute name="oppli" type="OpportunityLineItem" />
+
+  <aura:attribute name="opp" type="Opportunity" />
+  <aura:attribute name="priceDetails" type="PRC_Pricing_Detail__c" />
+  <aura:attribute name="loaded" type="Boolean" default="false"/>
+  <aura:attribute name="profitabilityloaded" type="Boolean" default="false" />
+  <aura:attribute name="fundingcost" type="Boolean" default="false" />
+  <aura:attribute name="oppliid" type="Id"/>
+  <aura:attribute name="isAmortizationVisible" type="Boolean" default="false" />
+  <aura:attribute name="isMigitanVisible" type="Boolean" default="false" />
+  <aura:registerEvent name="closemodalevt" type="c:PRC_CloseModal" />
+  <aura:handler name="closemodalevt" event="c:PRC_CloseModal" action="{!c.doinit}" />
+  <aura:handler event="c:PRC_RefreshDetailsEvt" action="{!c.doinit}" />
+
+  <aura:if isTrue="{!v.loaded}">
+    <lightning:recordViewForm recordId="{!v.priceDetails.Id}" objectApiName="PRC_Pricing_Detail__c">
+    <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="pricingdetails">
+      <lightning:accordionSection name="pricingdetails" label="Pricing Details">
+             <H1 class="text-large">CLIENT</H1><br/>
+              <div id="gf_cust_group_rating_type__c" class =" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Rating Group</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_cust_group_rating_type__c"/>
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Client Rating</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="rating_scale_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Type</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_scope_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>Client Industry</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="economic_activity_sector_desc__c" />
+                </div>
+              </div>
+              <br/><H1 class="text-large">COMMON DATA</H1><br/>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Office</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="branch_name__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>External Rating</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="agency_rating_value_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>Proposal Currency</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="opportunity_currency_id__c" />
+                </div>
+              </div>
+              <br/><H1 class="text-large">PRODUCT DATA</H1><br/>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Risk Product</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_pricing_risk_product_name__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Operatoinal Rating</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_ope_agency_rating_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Booking</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_ope_booking_entity_name__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Financing type</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_financing_type_name__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Start Date</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="opportunity_start_date__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Maturity Date</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="current_expiry_date__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Country Risk</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="transaction_country_name__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Average life funding</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_operation_term_number__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Funding Curve</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_funding_curve_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>LGD (%)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="lgd_per__c" />
+                </div>
+              </div>
+              <!-- aura:if isTrue="{!displayFundingCost}" -->
+              	  <br/><H1 class="text-large">FUNDING COST</H1><br/>
+                  <div class=" borderTop">
+                    <div class="inputlabel inputitem">
+                      <span>Funding Cost On Balance (B.P.)</span>
+                    </div>
+                    <div class="inputitem">
+                      <lightning:outputField fieldName="gf_on_balance_funding_per__c" />
+                    </div>
+                  </div>
+                  <div class=" borderTop borderBotom">
+                    <div class="inputlabel inputitem">
+                      <span>Funding Cost Off Balance (B.P.)</span>
+                    </div>
+                    <div class="inputitem">
+                      <lightning:outputField fieldName="gf_off_balance_funding_per__c" />
+                    </div>
+                  </div>
+              <!-- /aura:if -->
+              <br/><H1 class="text-large">AMORTIZATION</H1><br/>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Amortization Type</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="amortization_desc__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Payment rate</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="payment_type__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>Payment Frequency</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="frequency_type__c" />
+                </div>
+              </div>
+              <br/><H1 class="text-large">AMOUNTS</H1><br/>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Operational Currency</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="currency_id__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Nominal On Balance (Thousands)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_on_bal_mrgn_gen_amount__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Nominal Off Balance (Thousands)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_off_bal_mrgn_gen_amount__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Margin On Balance (B.P.)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_ope_on_balance_margin_per__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Margin Off Balance (B.P.)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_ope_off_balance_margin_per__c" />
+                </div>
+              </div>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Tax Rate (%)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_tax_rate_per__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>Cost to Income (%)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_cost_income_ratio_per__c" />
+                </div>
+              </div>
+              <br/><H1 class="text-large">FEE</H1><br/>
+              <div class=" borderTop">
+                <div class="inputlabel inputitem">
+                  <span>Non accrual fees (B.P.)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_non_accrual_comission_per__c" />
+                </div>
+              </div>
+              <div class=" borderTop borderBotom">
+                <div class="inputlabel inputitem">
+                  <span>Accrual fees (B.P.)</span>
+                </div>
+                <div class="inputitem">
+                  <lightning:outputField fieldName="gf_accrual_per__c" />
+                </div>
+              </div >
+              <br/>
+              <div class="">
+                <div class="inputlabel">
+                  <span>Comments</span>
+                </div>
+                <div>
+                  <lightning:outputField fieldName="comments_desc__c" />
+                </div>
+              </div>
+      </lightning:accordionSection>
+
+        <!-- Sección de carga CSV de Amortization -->
+        <aura:if isTrue="{! v.isAmortizationVisible }">
+          <lightning:accordionSection name="Amortization" label="Amortization schedule">
+              <c:PRC_PriceAmortizationCSVCreator recordId="{!v.recordId}" isEditableForm="false" pricingDetailsId="{!v.priceDetails.Id}"/>
+          </lightning:accordionSection>
+        </aura:if>
+         <!-- Sección Mitigantes -->
+        <aura:if isTrue="{!v.isMigitanVisible}">
+        <lightning:accordionSection name="Mitigants" label="Mitigating Factors">
+          <c:PRC_PriceMitigantsDetails  pricingDetailsId="{!v.priceDetails.Id}"/>
+        </lightning:accordionSection>
+      </aura:if>
+        <!-- Sección Profitability -->
+      <aura:if isTrue="{!v.profitabilityloaded}">
+        <lightning:accordionSection name="profitability" label="Profitability">
+            <H1 class="text-large">RAROEC</H1><br/>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>RAROEC with Funding (%)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_fdg_trd_prpsl_rar_tot_per__c" />
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Sensibility 1% OnB (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_on_balance_mrgn_stvy_per__c" />
+                </div>
+            </div>
+            <div class="slds-grid">
+
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>RAROEC Next 12 months (%)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_eoy_fdg_trd_prpsl_rar_per__c" />
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Sensibility 1% OffB (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_off_balance_mrgn_stvy_per__c" />
+                </div>
+            </div>
+
+            <br/><H1 class="text-large">RORC</H1><br/>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>RORC with Funding (%)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_trd_prpsl_rorc_funding_per__c" />
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>RORC Next 12 months (%)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_eoy_fdg_trd_prpsl_rorc_per__c" />
+                </div>
+            </div>
+            <br/><H1 class="text-large">Economics</H1><br/>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Margin All In OnB (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_on_balance_total_per__c" />
+                </div>
+               <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Margin All In OffB (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_off_balance_total_per__c" />
+                </div>
+
+            </div>
+            <div class="slds-grid">
+				<div class="slds-col slds-size_1-of-2">
+                     <div class="inputlabel">
+                      <span>Income Next 12 months (thousand)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_ope_ft_yr_ti_amount__c" />
+                </div>
+            </div>
+            <br/><H1 class="text-large">Risk info</H1><br/>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                     <div class="inputlabel">
+                      <span>EAD (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="ead_amount__c" />
+                </div>
+
+				<div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Currency</span>
+                    </div>
+                    <lightning:outputField fieldName="currency_id__c" />
+                </div>
+            </div>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Total Notional (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="total_nominal_amount__c" />
+                </div>
+
+				<div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Average Life (years)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_trd_prpsl_avg_life_y_number__c" />
+                </div>
+           </div>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Annual Expected Loss (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_expected_loss_amount__c" />
+                </div>
+
+				<div class="slds-col slds-size_1-of-2">
+                     <div class="inputlabel">
+                      <span>Economic Capital Total (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_economic_capital_amount__c" />
+                </div>
+            </div>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Average LGD (%)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_lgd_avg_per__c" />
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Rating in EI terms (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_expected_loss_eqv_rating_id__c" />
+                </div>
+            </div>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Economic RWA Credit Risk (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_tot_risk_wght_asset_amount__c" />
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Regulatory RWA Credit Risk (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_rwa_reglty_thsd_amount__c" />
+                </div>
+            </div>
+              <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Economic Capital Credit Risk (Thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_oper_cr_rsk_econ_cpt_amount__c" />
+                </div>
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Regulatory RWA Total (thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_risk_regy_assets_tl_amount__c" />
+                </div>
+            </div>
+              <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>NIAT (Thousands)</span>
+                    </div>
+                    <lightning:outputField fieldName="net_income_amount__c" />
+                </div>
+
+            </div>
+            <br/><H1 class="text-large">COSTS</H1><br/>
+            <div class="slds-grid">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="inputlabel">
+                      <span>Funding Cost On Balance (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_on_balance_funding_per__c" />
+                </div>
+
+				<div class="slds-col slds-size_1-of-2">
+                     <div class="inputlabel">
+                      <span>Funding Cost Off Balance (B.P.)</span>
+                    </div>
+                    <lightning:outputField fieldName="gf_off_balance_funding_per__c" />
+                </div>
+            </div>
+              <br/>
+
+            <c:PRC_ProfitabilityLifeTimeChart recordId="{!v.recordId}"/>
+        </lightning:accordionSection>
+      </aura:if>
+    </lightning:accordion>
+  </lightning:recordViewForm>
+  </aura:if>
+</aura:component>

@@ -1,0 +1,30 @@
+<aura:component controller="FamilyProductCards_Controller"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,lightning:isUrlAddressable"
+                access="global" >
+
+	<aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="sObjectName" type="String" access="public"/>
+	<aura:attribute name="data" type="List"/>
+	<aura:attribute name="country" type="String" default=""/>
+	<aura:attribute name="fieldLabels" type="String[]" access="private"/>
+	<aura:attribute name="rowSubitle" type="String" access="public"/>
+	<aura:attribute name="userISOCode" type="String"/>
+	<ltng:require scripts="" afterScriptsLoaded="{!c.doInit}"/>
+
+    <aura:handler name="change" value="{!v.country}" action="{!c.doInit}"/>
+
+	<table id="tabled" class="slds-card slds-table slds-table--col-bordered">
+		<aura:iteration indexVar="x" items="{!v.data}" var="fieldsData">
+      		<th scope="col" class="slds-size_1-of-3 slds-truncate customTh">
+          		<div aura:id="labelsFourColumns" class="slds-text-title--caps slds-truncate customDiv">{!fieldsData.familyName}</div>
+          		<div class="slds-text-title--caps slds-truncate subtitle">BBVA REVENUES (YTD)</div>
+          		<div class="horizontal slds-text-heading--medium customDiv2">
+          			<strong>
+          				{!fieldsData.amountRevenues}&nbsp;{!v.userISOCode}
+					  </strong>
+        		</div>
+			</th>
+		</aura:iteration>
+	</table>
+
+</aura:component>

@@ -1,0 +1,7 @@
+<design:component>   
+    <design:attribute name="showtable" label="Show Table" required="false"
+        description="Controls the visibility of table" />
+    <design:attribute name="lastValidatedVersion" label="Last validated BP version data" required="false"
+        description="If checked, totals and table show last validated BP version data. If unchecked, current version data." />
+    <design:attribute name="currencyISOCode" label="Deprecated attribute" required="false"/>
+</design:component>

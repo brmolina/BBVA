@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_operation_term_number__c</fullName>
+    <description>Information regarding the operation’s funding cost. It is used to select if the funding cost is calculated using the term or the average life of the operation</description>
+    <label>Average life funding</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>false</fullName>
+                <default>false</default>
+                <label>Average Life</label>
+            </value>
+            <value>
+                <fullName>true</fullName>
+                <default>false</default>
+                <label>Term</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

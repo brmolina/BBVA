@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FCSC_Opp_Generated_Before_Converted</fullName>
+    <active>true</active>
+    <description>Valida que se haya generado una Oportunidad relacionada al compromiso, antes de asignar el Status de Converted</description>
+    <errorConditionFormula>AND(
+  ISCHANGED(FCSC_Estatus_Contacto__c ),
+  ISPICKVAL(FCSC_Estatus_Contacto__c , &quot;Open Opportunity&quot;),
+  ISBLANK(FCSC_Oportunidad_Generada__c )
+)</errorConditionFormula>
+    <errorDisplayField>FCSC_Oportunidad_Generada__c</errorDisplayField>
+    <errorMessage>Generate Opportunity using the &quot;Launch Opportunity&quot; button</errorMessage>
+</ValidationRule>

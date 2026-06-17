@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Templates_Rechazados</fullName>
+    <columns>NAME</columns>
+    <columns>Fecha_Template_Rechazado__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Reject</value>
+    </filters>
+    <filters>
+        <field>DES_Opportunity_Stage__c</field>
+        <operation>notContain</operation>
+        <value>Closed</value>
+    </filters>
+    <label>Templates under review</label>
+    <sharedTo>
+        <role>S_P_TEAM</role>
+    </sharedTo>
+</ListView>

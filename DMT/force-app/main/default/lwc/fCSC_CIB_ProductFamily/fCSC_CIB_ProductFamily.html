@@ -1,0 +1,36 @@
+<template>
+    <lightning-card title="Product Family">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-combobox label="1. CIB Family" options={cibfamily} value={familyValue} onchange={familyHandler} disabled={isReadOnly}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-combobox label="2. CIB Products" options={cibProducts} value={productValue} onchange={productHandler} disabled={isReadOnly}>
+                    </lightning-combobox>
+                </div>                
+            </div>    
+            <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">   
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-combobox label="3. CIB SubProducts N1" options={cibSubproductsN1} value={subProductN1Value} onchange={subProductN1Handler} disabled={isReadOnly}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-combobox label="4. CIB SubProducts N2" options={cibSubproductsN2} value={subProductN2Value} onchange={subProductN2Handler} disabled={isReadOnly}>
+                    </lightning-combobox>
+                </div>          
+            </div>
+        </div>
+
+    <div class="slds-card_footer slds-grid slds-grid_align-end slds-p-horizontal_medium slds-p-ver"> 
+        <template if:false={isEditMode}>
+            <lightning-button label="Update" title="Clear" onclick={updateHandler}></lightning-button>
+        </template>
+        <template if:true={isEditMode}>
+            <lightning-button label="Clear" title="Clear" onclick={clearHandler} class="slds-m-left_small"></lightning-button>
+            <lightning-button label="Save" title="Save" onclick={saveHandler} variant="brand" class="slds-m-left_small"></lightning-button>                      
+        </template>
+    </div>
+    </lightning-card>
+</template>

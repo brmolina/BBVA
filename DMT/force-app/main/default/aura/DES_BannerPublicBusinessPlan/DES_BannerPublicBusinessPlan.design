@@ -1,0 +1,3 @@
+<design:component label="DES_BannerPublicBusinessPlan">
+    <design:attribute name="privateMsg" label="Message shown when Business Plan is set to private"/>	
+</design:component>

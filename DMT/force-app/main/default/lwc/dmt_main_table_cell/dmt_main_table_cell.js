@@ -1,5 +1,6 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api,track } from 'lwc';
 import DMT_Main_Holder from '@salesforce/label/c.DMT_Main_Holder';
+import DMT_Main_Borrower from '@salesforce/label/c.DMT_Main_Borrower';
 
 export default class dmt_main_table_cell extends LightningElement {
 
@@ -11,11 +12,13 @@ export default class dmt_main_table_cell extends LightningElement {
     @api groupselected;
     @api selectedcell;
     @api currencyrow;
+    @api isLableHolder = false;
 
     labels = {
-        DMT_Main_Holder
+        DMT_Main_Holder,
+        DMT_Main_Borrower
     };
-    ismainholder = false;
+    @track ismainholder = false;
     type;
     value;
     groupName;
@@ -45,6 +48,13 @@ export default class dmt_main_table_cell extends LightningElement {
     isCombobox = false;
     isEmpty = false;
     alignClass = 'slds-truncate';
+    get toggleId() {
+        return `toggle_${this.clientId}`;
+    }
+
+    get mainRoleLabel() {
+        return this.isLableHolder ? this.labels.DMT_Main_Holder : this.labels.DMT_Main_Borrower;
+    }
 
     connectedCallback() {
 
@@ -148,9 +158,13 @@ export default class dmt_main_table_cell extends LightningElement {
                     if(cell.customerId === this.row[6]){
                         this.isSelected = true;
                         this.initComponent = true;
-                        this.ismainholder = cell.mainHolder === cell.customerId ;
-
-                        this.handleClick();
+                        this.ismainholder = false;
+                        console.log('%c[CELL connectedCallback] match encontrado:', 'color:cyan',
+                        'customerId:', cell.customerId,
+                        '| cell.mainHolder:', cell.mainHolder,
+                        '| ismainholder calculado: false (controlled by parent)'
+                        );
+                                        this.handleClick();
                         if(this.inselectcolumn){
                             this.value = cell[this.column.field];
                             setTimeout(() => {
@@ -194,6 +208,7 @@ export default class dmt_main_table_cell extends LightningElement {
             clientType: (this.clientType || ''),
             index: this.index || ''
         };
+        console.log('tab: ',this.tab);
         switch (this.tab) {
             case 'tcm':
                 //extra info for TCM
@@ -222,6 +237,7 @@ export default class dmt_main_table_cell extends LightningElement {
                     detail: params
                 });
                 this.dispatchEvent(evt);
+                console.log('eveeent treasury',JSON.stringify(evt.detail));
             break;
             case 'tcmotherlines':
                 //extra info for TCM
@@ -251,6 +267,34 @@ export default class dmt_main_table_cell extends LightningElement {
                 });
                 this.dispatchEvent(evt);console.log('eveeent2',JSON.stringify(evt.detail));
             break;
+
+            case 'tcmopp':
+                params.countryIfoId = this.countryIfoId || '';
+                // params.riskAnalystId = this.row[10] || '';
+                // params.updLmsclInternalRatgType = this.row[11] || '';
+                // params.assetAllocationActvyType = this.row[12] || '';
+                // params.assetAllocationSubSecType = this.row[13] || '';
+                params.taxpayerId = this.taxpayerId || '';
+                params.clients = this.clients || [];
+                params.l3groups = this.l3groups || [];
+                params.subgroups = [];
+                params.cellid = this.cellid;
+                params.groupsize = this.row[10] || '';
+                params.initComponent = this.initComponent?.toString() || '';
+                params.currency = this.currencyrow || '';
+                params.riskAnalystId = this.row[10] || '';
+                params.customerCounterpartiesCodesDesc = this.row[14] || '';
+                params.operationMitigantDesc = this.row[15] || '';
+                params.updSmsclInternalRatgType = this.row[16] || '';
+                params.currentRatingToolDate = this.row[17] || '';
+                var evt = new CustomEvent('selectclientdmt', { 
+                    bubbles: true,
+                    composed: true,
+                    cancelable: true,
+                    detail: params
+                });
+                this.dispatchEvent(evt);
+            break;
             
 
             default:
@@ -264,7 +308,21 @@ export default class dmt_main_table_cell extends LightningElement {
             break;
         }
     }
-
+    renderedCallback() {
+    if (this.index === 0 && this.isSelected) {
+        const container = this.template.querySelector('.toggle-container');
+        const toggle = this.template.querySelector('input[type="checkbox"]');
+        console.log('%c[CELL rendered]', 'color:orange',
+            'clientId:', this.clientId,
+            '| ismainholder:', this.ismainholder,
+            '| isSelected:', this.isSelected,
+            '| isName:', this.isName,
+            '| index:', this.index,
+            '| container:', container ? 'SÍ' : 'NO',
+            '| checkbox:', toggle ? 'SÍ' : 'NO'
+        );
+    }
+}
     handleChange(event){
         var params={};
         if(event){
@@ -306,16 +364,35 @@ export default class dmt_main_table_cell extends LightningElement {
         return this.clientType === 'group' || this.clientType === 'subgroup' || this.clientType === 'l3group';
     }
 
+    get clientInfo() {        
+        // Prospects do not have taxpayerId
+        if (!this.taxpayerId) {
+            return this.countryIfoId + ' - ' + this.Id;
+        }
+        return this.countryIfoId + ' - ' + this.Id + ' - ' + this.taxpayerId;
+    }
+
     get currencyCode() {
         return typeof this.value === 'number' ? ' ' + this.currency : '';
     }
+    @api activateSelection() {
+    this.isSelected = true;
+    }
 
+    @api deactivateSelection() {
+        this.isSelected = false;
+    }
     @api deactiveMainHolder() {
         this.ismainholder = false;
         
     }
     @api activateMainHolderByDefault() {
-        this.ismainholder = true; 
+        console.log('%c[CELL activate] ANTES ismainholder:', 'color:red', this.ismainholder);
+        console.log('%c[CELL activate] isSelected:', 'color:red', this.isSelected);
+        console.log('%c[CELL activate] clientType:', 'color:red', this.clientType);
+        console.log('%c[CELL activate] clientId:', 'color:red', this.clientId);
+        this.ismainholder = true;
+        console.log('%c[CELL activate] DESPUÉS ismainholder:', 'color:red', this.ismainholder);
     }
     handleToggleChange(event) {
         const isChecked = event?.target.checked;

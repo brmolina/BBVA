@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>employee_department_name__c</fullName>
+    <description>Area o departamento en el que está integrado el iniciado</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Area or Departament</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

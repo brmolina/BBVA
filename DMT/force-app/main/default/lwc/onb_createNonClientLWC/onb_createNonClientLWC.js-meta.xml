@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>ONB Create Non Client Onboarding</masterLabel>
+    <description>Migration of Aura component ONB_createNonClientOnboarding to LWC</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__FlowScreen</target>
+        <target>lightning__UtilityBar</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage,lightning__FlowScreen">
+            <property
+                name="recordTypeId"
+                type="String"
+                label="Default Account Record Type Id"
+                description="Record Type Id used when creating the Account"/>
+            <property
+                name="isOnAccount"
+                type="Boolean"
+                label="Component placed on Account context?"
+                description="Used to decide navigation when closing the component"/>
+            <property
+                name="headerText"
+                type="String"
+                label="Header text"
+                description="Modal title"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

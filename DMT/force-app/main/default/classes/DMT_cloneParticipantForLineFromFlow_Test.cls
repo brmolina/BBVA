@@ -1,5 +1,5 @@
 @isTest
-private class DMT_cloneParticipantForLineFromFlow_Test {
+private without sharing class DMT_cloneParticipantForLineFromFlow_Test {
 
     @TestSetup
     static void makeData(){
@@ -14,6 +14,7 @@ private class DMT_cloneParticipantForLineFromFlow_Test {
         teamMember.User__c = UserInfo.getUserId();
         teamMember.Line__c = line.Id;
         teamMember.AccessLevel__c = 'Edit';
+        teamMember.DMT_ApprovalEdit__c = false;
         insert teamMember;
 
         // Se crea los Coverage Team del Cliente
@@ -93,6 +94,7 @@ private class DMT_cloneParticipantForLineFromFlow_Test {
         teamMember.User__c = UserInfo.getUserId();
         teamMember.Line__c = oldLine.Id;
         teamMember.AccessLevel__c = 'Edit';
+        teamMember.DMT_ApprovalEdit__c = false;
         insert teamMember;
         // Crear la lista de entrada para el método invocable
         List<DMT_cloneParticipantForLineFromFlow.WrapperClone> inputList = new List<DMT_cloneParticipantForLineFromFlow.WrapperClone>();
@@ -144,6 +146,7 @@ private class DMT_cloneParticipantForLineFromFlow_Test {
         teamMember.User__c = UserInfo.getUserId();
         teamMember.Line__c = oldLine.Id;
         teamMember.AccessLevel__c = 'Edit';
+        teamMember.DMT_ApprovalEdit__c = false;
         insert teamMember;
         // Crear la lista de entrada para el método invocable
         List<DMT_cloneParticipantForLineFromFlow.WrapperClone> inputList = new List<DMT_cloneParticipantForLineFromFlow.WrapperClone>();

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>participant_status_type__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Under Analysis</fullName>
+                <default>false</default>
+                <label>Under Analysis</label>
+            </value>
+            <value>
+                <fullName>To be contacted</fullName>
+                <default>false</default>
+                <label>To be contacted</label>
+            </value>
+            <value>
+                <fullName>Ongoing dialogue</fullName>
+                <default>false</default>
+                <label>Ongoing dialogue</label>
+            </value>
+            <value>
+                <fullName>Ongoing dialogue – no near term</fullName>
+                <default>false</default>
+                <label>Ongoing dialogue – no near term</label>
+            </value>
+            <value>
+                <fullName>No response from client</fullName>
+                <default>false</default>
+                <label>No response from client</label>
+            </value>
+            <value>
+                <fullName>Contacted and rejected</fullName>
+                <default>false</default>
+                <label>Contacted and rejected</label>
+            </value>
+            <value>
+                <fullName>Prospect did not meet criteria</fullName>
+                <default>false</default>
+                <label>Prospect did not meet criteria</label>
+            </value>
+            <value>
+                <fullName>Declined by Client</fullName>
+                <default>false</default>
+                <label>Declined by Client</label>
+            </value>
+            <value>
+                <fullName>Declined Internally</fullName>
+                <default>false</default>
+                <label>Declined Internally</label>
+            </value>
+            <value>
+                <fullName>Declined by Risk</fullName>
+                <default>false</default>
+                <label>Declined by Risk</label>
+            </value>
+            <value>
+                <fullName>Dormant</fullName>
+                <default>false</default>
+                <label>Dormant</label>
+            </value>
+            <value>
+                <fullName>Commercial Banking</fullName>
+                <default>false</default>
+                <label>Commercial Banking</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Unique_ID__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If checked, it is not possible to create no customers with field &apos;Unique Id field name&apos; empty.</description>
+    <inlineHelpText>If checked, it is not possible to create no customers with field &apos;Unique Id field name&apos; empty.</inlineHelpText>
+    <label>Required Unique ID</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

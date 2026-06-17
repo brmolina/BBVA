@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_bus_plan_reason_new_vr_desc__c</fullName>
+    <label>Modification reason</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Modification of PF</fullName>
+                <default>false</default>
+                <label>Modification of PF</label>
+            </value>
+            <value>
+                <fullName>Modification of Asset Allocation</fullName>
+                <default>false</default>
+                <label>Modification of Asset Allocation</label>
+            </value>
+            <value>
+                <fullName>Market event</fullName>
+                <default>false</default>
+                <label>Market event</label>
+            </value>
+            <value>
+                <fullName>Client event</fullName>
+                <default>false</default>
+                <label>Client event</label>
+            </value>
+            <value>
+                <fullName>Ongoing draft</fullName>
+                <default>false</default>
+                <label>Ongoing draft</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

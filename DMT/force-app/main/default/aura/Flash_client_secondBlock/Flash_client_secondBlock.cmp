@@ -1,0 +1,38 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="GLOBAL" controller="Object_Controller">
+    <aura:attribute name="recordId" type="Id" default="{!v.recordId}" />
+    <aura:attribute name="varSaList" type="List"  />
+    <aura:attribute name="p1" type="Boolean" default="false"  />   
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'Directa', 'value': 'Directa'},
+                                                        {'label': 'Indirecta', 'value': 'Indirecta'},
+                                                        {'label': 'Recursos gestionados', 'value': 'Recursos gestionados'},
+                                                        ]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <div class='slds-box'>
+        <lightning:combobox name="Tipo"  label="Tipo" value="Directa" placeholder="Directa" options="{! v.options }" onchange="{! c.handleActive }"/>
+        <div class="c-container">
+            <lightning:layout>
+                <lightning:layoutItem aura:id="cont1" flexibility="auto" padding="around-small" >
+                    <div class="custom-box">
+                        <lightning:input aura:id="input1" name="input1"  label="SALDO:" value="{!v.varSaList[0]}" disabled="true" onchange="{! c.VarColorX }"/>
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem aura:id="cont3" flexibility="auto" padding="around-small">
+                    <div class="custom-box" >
+                        <lightning:input aura:id="input3" name="input3"  label="VAR. MES:" value="{!v.varSaList[2]}" disabled="true"  />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem aura:id="cont4" flexibility="auto" padding="around-small">
+                    <div class="custom-box" >
+                        <lightning:input aura:id="input4" name="input4"  label="VAR. AÑO:" value="{!v.varSaList[3]}" disabled="true" />
+                    </div>
+                </lightning:layoutItem>
+                                <lightning:layoutItem aura:id="cont2" flexibility="auto" padding="around-small">
+                    <div class="custom-box">
+                        <lightning:input aura:id="input2"  name="input2"  label="CUOTA:" value="{!v.varSaList[1]}" disabled="true"  />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+    </div>	
+</aura:component>

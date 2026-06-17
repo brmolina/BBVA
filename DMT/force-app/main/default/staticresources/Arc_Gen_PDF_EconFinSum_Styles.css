@@ -1,0 +1,173 @@
+@page {
+  size: A4 landscape;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-top: 8%;
+
+  @top-left {
+    content: element(lHeader);
+  }
+
+  @top-right {
+    content: element(rHeader);
+  }
+}
+
+body {
+  font-family: "Arial Unicode MS", Arial, Helvetica, sans-serif;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-top: 0;
+}
+
+.header {
+  font-size: 0.75em;
+}
+
+.leftHeader {
+  position: running(lHeader);
+}
+
+.rightHeader {
+  position: running(rHeader);
+  text-align: right;
+}
+
+.rightHeader span {
+  display: block;
+}
+
+.headerImg img {
+  height: 80px;
+}
+
+.singlePage {
+  page-break-after: always;
+}
+
+.singlePage.last {
+  page-break-after: avoid;
+}
+
+.ratingSection {
+  margin-top: 1em;
+}
+
+/* TABLE STYLES */
+
+.tableTitle {
+  background: #5ad3ff;
+  text-align: center;
+  font-size: 10pt;
+}
+
+.inlineTable {
+  display: inline-block;
+}
+
+.tableContainer {
+  vertical-align: top;
+  display: inline-block;
+}
+
+.center-content {
+  text-align: center;
+}
+
+.halfWidth {
+  width: 49.5%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 0.5em;
+  width: 100%;
+}
+
+table * {
+  vertical-align: top;
+}
+
+thead th[scope="col"] {
+  text-align: right;
+}
+
+thead th {
+  background: rgb(216, 216, 216);
+}
+
+thead tr th:first-child span {
+  display: block;
+}
+
+tbody th[scope="row"] {
+  text-align: left;
+  min-width: 90px;
+}
+
+tbody td {
+  text-align: right;
+}
+
+/* COMMON STYLING */
+
+.textRight {
+  text-align: right;
+}
+
+.textLeft {
+  text-align: left;
+}
+
+.thinText {
+  font-weight: 100;
+}
+
+.boldText {
+  font-weight: bold;
+}
+.tableTitle2 {
+  background: #ffffff;
+  text-align: center;
+  font-size: 10pt;
+  border: solid 1px;
+}
+.sansSerif {
+  font-family: sans-serif;
+}
+.color1 {
+  background-color: #D5DBDB;
+}
+.color2 {
+  background-color: #FFFFFF;
+}
+.noDisplay {
+  display: none;
+}
+.tableStylePr {
+  border:solid 0.5px #000; 
+  border-top:none; 
+  font-family:sans-serif;
+}
+.tableStylePr2 {
+  padding-left:5px;
+  background-color:#ededed;
+}
+.tableStylePr3 {
+  padding:0.5rem;
+  background:#ccdef9
+}
+.headerTablePr {
+  text-align: right;
+  font-size: 10px;
+}
+.displayBlock {
+  display: block;
+}
+.displayNone {
+  display: none;
+}

@@ -1,0 +1,83 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 04-21-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller="LocalClientSelectCont" access="global">
+    <aura:attribute name="recordId" type="String" description="Record Id" />
+    <aura:attribute name="entityType" type="String" default="" description="indicates the entity type" />
+    <aura:attribute name="countrySlctd" type="String" default="" description="Country selected" />
+    <aura:attribute name="countrySlctdParent" type="String" default="" description="Country selected for parent component" />
+    <aura:attribute name="clientSlctd" type="String" default="" description="Id of the client selected" />
+    <aura:attribute name="countryIsDisabled" type="Boolean" default="" description="To disable the country combobox" />
+    <aura:attribute name="clientIsDisabled" type="Boolean" default="" description="To disable the client combobox" />
+    <aura:attribute name="countryOptions" type="List" description="List of countries to show" />
+    <aura:attribute name="clientsOptions" type="List" description="List of clients to show" />
+    <aura:attribute name="clientOptionSlctd" type="List" description="List of the current client selected" />
+    <aura:attribute name="bankEntities" type="Map" description="Map of bank entities" />
+    <aura:attribute name="bankEntitySlctd" type="String" description="Bank entity for the selected client" />
+    <aura:attribute name="isProspect" type="Boolean" default="false" description="Flag to enable prospect flow." />
+    <aura:attribute name="ratingSystemEnabled" type="Boolean" default="false" description="Flag to enable or disable rating system service by configuration." />
+    <aura:attribute name="ratingSystemBookCodes" type="List" default="[]" description="The unit booking codes available for the rating system service callout." />
+    <aura:attribute name="showAlert" type="Boolean" default="false" description="Flag to show or hide the alert message." />
+    <aura:attribute name="alertTitle" type="String" default="" description="Title for the chat message component" />
+    <aura:attribute name="alertVariant" type="String" default="" description="Variant for the chat message component" />
+    <aura:attribute name="alertMessage" type="String" default="" description="Message for the chat message component" />
+    <aura:attribute name="isBlocked" type="Boolean" default="false" description="Flag to indicate if the process is blocked due to rating system." />
+    <aura:attribute name="isLoading" type="Boolean" default="false" description="Flag to control if the component is loading." />
+    <aura:attribute name="spinnerText" type="String" default="" description="The custom text to show in the spinner." />
+    <aura:attribute name="ratingSystemName" type="String" default="" description="The rating system name retrieved from the service callout." />
+    <aura:attribute name="parentSubsidiarySer" type="String" default="" description="The parent subsidiary retrieved from the service callout." />
+
+    <aura:method name="refreshViewForm" action="{!c.refreshViewForm}" description="Refresh the view form" access="global" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" description="init action" />
+
+    <arce:arcGenCustomSpinner
+        divClass="slds-is-relative slds-var-p-vertical_x-large spinner-container"
+        customText="{!v.spinnerText}"
+        showSpinner="{!v.isLoading}" />
+
+      <aura:if isTrue="{!v.showAlert}">
+        <arce:Arc_Gen_ChatMessages_cmp
+            title="{!v.alertTitle}"
+            assistiveText="{!v.alertTitle}"
+            variant="{!v.alertVariant}"
+            message="{!v.alertMessage}" />
+    </aura:if>
+
+    <aura:if isTrue="{!!v.isBlocked}">
+        <div class="{!!v.isLoading ? 'slds-show' : 'slds-hide'}">
+            <div class="slds-m-top_medium slds-box slds-theme_shade">
+                <lightning:combobox name="country" label="Select the unit booking code" value="{!v.countrySlctd}"
+                    placeholder="Select an Option" options="{!v.countryOptions}" onchange="{!c.handleCountryChange}"
+                    disabled="{!v.countryIsDisabled}" />
+                <lightning:combobox name="client" label="Select the client" value="{!v.clientSlctd}"
+                    placeholder="Select an Option" options="{!v.clientsOptions}" onchange="{!c.handleClientChange}"
+                    disabled="{!v.clientIsDisabled}" />
+
+              <aura:if isTrue="{!not(empty(v.clientSlctd))}">
+                <div class="acc-container">
+                  <lightning:recordViewForm recordId="{!v.clientSlctd}" objectApiName="Account">
+                    <div class="slds-grid">
+                      <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Name" />
+                        <lightning:outputField fieldName="Alpha_code__c" />
+                      </div>
+                      <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Booking_country_code__c" />
+                        <lightning:outputField fieldName="taxpayer_id__c" />
+                      </div>
+                    </div>
+                  </lightning:recordViewForm>
+                </div>
+              </aura:if>
+              <div class="slds-align_absolute-center btn-container">
+                <lightning:button variant="brand" label="Done" title="Done" onclick="{! c.handleDone }" disabled="{!!not(empty(v.clientSlctd))}"/>
+              </div>
+            </div>
+        </div>
+      </aura:if>
+</aura:component>

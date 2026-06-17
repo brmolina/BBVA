@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>g_country_name__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(g_country_id__c),
+&quot;AE&quot;,&quot;Arab Emirates&quot;,
+&quot;AR&quot;,&quot;Argentina&quot;,
+&quot;BE&quot;,&quot;Belgium&quot;,
+&quot;BR&quot;,&quot;Brazil&quot;,
+&quot;CL&quot;,&quot;Chile&quot;,
+&quot;CN&quot;,&quot;China&quot;,
+&quot;CO&quot;,&quot;Colombia&quot;,
+&quot;FR&quot;,&quot;France&quot;,
+&quot;DE&quot;,&quot;Germany&quot;,
+&quot;Global&quot;,&quot;Global&quot;,
+&quot;HK&quot;,&quot;Hong Kong&quot;,
+&quot;IN&quot;,&quot;India&quot;,
+&quot;ID&quot;,&quot;Indonesia&quot;,
+&quot;IT&quot;,&quot;Italy&quot;,
+&quot;JP&quot;,&quot;Japan&quot;,
+&quot;MX&quot;,&quot;Mexico&quot;,
+&quot;PY&quot;,&quot;Paraguay&quot;,
+&quot;PE&quot;,&quot;Peru&quot;,
+&quot;PT&quot;,&quot;Portugal&quot;,
+&quot;PR&quot;,&quot;Puerto Rico&quot;,
+&quot;RU&quot;,&quot;Russia&quot;,
+&quot;SG&quot;,&quot;Singapore&quot;,
+&quot;KR&quot;,&quot;South Korea&quot;,
+&quot;ES&quot;,&quot;Spain&quot;,
+&quot;TW&quot;,&quot;Taiwan&quot;,
+&quot;TR&quot;,&quot;Turkey&quot;,
+&quot;GB&quot;,&quot;United Kingdom&quot;,
+&quot;UY&quot;,&quot;Uruguay&quot;,
+&quot;US&quot;,&quot;USA&quot;,
+&quot;VE&quot;,&quot;Venezuela&quot;,
+&quot;VN&quot;,&quot;Vietnam&quot;,
+  &quot;Error&quot;)</formula>
+    <label>country_gtb_text</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

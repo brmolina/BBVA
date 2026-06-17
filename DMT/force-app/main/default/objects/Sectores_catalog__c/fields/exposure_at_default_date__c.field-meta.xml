@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>exposure_at_default_date__c</fullName>
+    <description>date exposure</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>exposure_at_default_date</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

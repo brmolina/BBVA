@@ -1,0 +1,14 @@
+<aura:component controller="DES_Simple_Table_Controller"
+                implements="flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" 
+                access="global" >
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="cuenta" type="Account" />
+    <aura:attribute name="today" type="Date" />
+ 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	
+    <div class="slds-grid">
+        <p>{!$Label.c.DES_Figures_from_Engloba}&nbsp;{!v.cuenta.CurrencyIsoCode} - <b>{!v.cuenta.DES_Revenue_Update__c}</b>. <br/><br/>
+            {!$Label.c.DES_Revenue_help_text}</p>
+   </div>
+</aura:component>

@@ -23,6 +23,7 @@ public with sharing class DMT_OtherProductsRenderer implements DMT_ViewRenderer 
                 tableRows += DMT_FormattingUtils.tableRow2columns('Asset Allocation Sector Limitation:', DMT_FormattingUtils.checkNull(data.riskLineToTaxonomyC162Map.get(riskLine.Id)), 'Asset Allocation Subsector Limitation:', DMT_FormattingUtils.checkNull(data.riskLineToTaxonomyC164Map.get(riskLine.Id)));
                 tableRows += DMT_FormattingUtils.tableRow2columns('Booking Geography:', DMT_FormattingUtils.checkNull(data.riskLineToTaxonomyH007Map.get(riskLine.Id)), 'Number of months of grace period:', DMT_FormattingUtils.checkNull(riskLine.gf_inscol_months_grace_number__c));
                 tableRows += DMT_FormattingUtils.tableRow2columns('Loan to value LTV (%)', DMT_FormattingUtils.checkNull(riskLine.gf_loan_value_per__c), 'Notary formalization indicator GMOD:', DMT_FormattingUtils.checkNull(riskLine.g_notary_crtfn_ind_type__c));
+                tableRows += DMT_FormattingUtils.tableRow2columns('Amortization Type', DMT_FormattingUtils.checkNull(data.riskLineToTaxonomyALATMap.get(riskLine.Id)), 'Interest Payment Frecuency:', DMT_FormattingUtils.checkNull(riskLine.gf_payment_frequency__c));
                 tableRows += DMT_FormattingUtils.tableRow2columns('Indicator guarantees to public administrations GMOD:', DMT_FormattingUtils.checkNull(riskLine.g_gtee_public_adm_ind_type__c), 'Percentage contribution export credit agency loan:', DMT_FormattingUtils.checkNull(riskLine.gf_loan_eca_cntrb_per__c));
                 tableRows += DMT_FormattingUtils.tableRow2columns('Minimum percentage RAROEC with financing:', DMT_FormattingUtils.checkNull(riskLine.gf_min_raroec_fcg_per__c), 'Minimum percentage RAROEC without financing:', DMT_FormattingUtils.checkNull(riskLine.gf_min_raroec_wo_fcg_per__c));
                 tableRows += DMT_FormattingUtils.tableRow2columns('Minimum percentage RORC with financing:', DMT_FormattingUtils.checkNull(riskLine.gf_min_rorc_fcg_per__c), 'Minimum percentage RORC without financing:', DMT_FormattingUtils.checkNull(riskLine.gf_min_rorc_wo_fcg_per__c));
@@ -148,6 +149,10 @@ public with sharing class DMT_OtherProductsRenderer implements DMT_ViewRenderer 
                 valueProducts.add(DMT_FormattingUtils.checkNull(riskLine.g_gtee_public_adm_ind_type__c));
                 nameProducts.add('Percentage contribution export credit agency loan:');
                 valueProducts.add(DMT_FormattingUtils.checkNull(riskLine.gf_loan_eca_cntrb_per__c));
+                nameProducts.add('Amortization Type:');
+                valueProducts.add(DMT_FormattingUtils.checkNull(data.riskLineToTaxonomyALATMap.get(riskLine.Id)));
+                nameProducts.add('Interest Payment Frecuency:');
+                valueProducts.add(DMT_FormattingUtils.checkNull(riskLine.gf_payment_frequency__c));
                 nameProducts.add('Minimum percentage RAROEC with financing:');
                 valueProducts.add(DMT_FormattingUtils.checkNull(riskLine.gf_min_raroec_fcg_per__c));
                 nameProducts.add('Minimum percentage RAROEC without financing:');

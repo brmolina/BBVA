@@ -1,0 +1,16 @@
+<aura:event type="APPLICATION" description="Event to communicate between Bundles">
+  <aura:attribute name="bundleName" type="String"/>
+  <aura:attribute name="totalAnnualPriceSum" type="String"/>
+  <aura:attribute name="bundleAnnualPrice" type="Decimal" default="0"/>
+  <aura:attribute name="bundleAddedNumber" type="Decimal" default="0"/>
+  <aura:attribute name="dataProductsPreview" type="Object" default="[]"/>
+  <aura:attribute name="dataProductsPreviewInitial" type="Object" default="[]"/>
+  <aura:attribute name="draftValues" type="Decimal" default="0"/>
+  <aura:attribute name="draftValuesPreview" type="Decimal" default="0"/>
+  <aura:attribute name="buttonReset" type="Boolean" default="false"/>
+  <aura:attribute name="buttonSendInbox" type="Boolean" default="false"/>
+  <aura:attribute name="bundleProductsInitialList" type="Object" default="[]"/>
+  <aura:attribute name="totalAnnualPriceBundleInitial" type="String"/>
+  <aura:attribute name="isBundlePreviewEdited" type="Boolean" default="false"/>
+  <aura:attribute name="operation" type="String" />
+</aura:event>

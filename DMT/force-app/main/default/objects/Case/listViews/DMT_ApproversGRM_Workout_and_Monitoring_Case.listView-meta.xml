@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_ApproversGRM_Workout_and_Monitoring_Case</fullName>
+    <filterScope>Queue</filterScope>
+    <label>GRM_Workout_and_Monitoring</label>
+    <queue>DMT_ApproversGRM_Workout_and_Monitoring</queue>
+    <sharedTo>
+        <allInternalUsers></allInternalUsers>
+    </sharedTo>
+</ListView>

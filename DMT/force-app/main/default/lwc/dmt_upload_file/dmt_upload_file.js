@@ -24,7 +24,7 @@ export default class DMT_upload_files extends LightningElement {
     MAX_FILE_SIZE_KB = 4;
     size;
     fields;
-    objectApiName;
+    objectApiName
     columns = [
         {
             label: 'Title',
@@ -133,7 +133,6 @@ export default class DMT_upload_files extends LightningElement {
     }
     
     async handleFileChange(event) {
-        console.log('HANDLE FILE CHANGE');
         this.filesToUpload = Array.from(event.target.files);
         if (this.filesToUpload.length > 0) {
             this.isLoading = true;
@@ -171,7 +170,6 @@ export default class DMT_upload_files extends LightningElement {
         }
     }
 
-    //function use to reset the file attachment input
     resetFileAttachmentInput(event){
         event.target.value = null;
     }

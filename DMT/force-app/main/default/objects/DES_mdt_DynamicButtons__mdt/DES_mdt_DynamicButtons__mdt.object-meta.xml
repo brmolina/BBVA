@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Metadata de configración de los botones a mostrar en el componente dES_lwc_DynamicButtons</description>
+    <label>Dynamic Buttons</label>
+    <pluralLabel>Dynamic Buttons</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

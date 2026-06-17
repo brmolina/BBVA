@@ -7,9 +7,15 @@ public with sharing class DMT_LimitVisualRenderer implements DMT_ViewRenderer {
         Id treasuryId = rtInfos.get('TreasurySettlement').getRecordTypeId();
         Id otherId = rtInfos.get('OtherProducts').getRecordTypeId();
         Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
+        Id sanctionId = rtInfos.get('Sanction').getRecordTypeId();
+
         recordTypeRenderers.put(treasuryId, new DMT_DefaultLimitVisualRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultLimitVisualRenderer());
-        recordTypeRenderers.put(dmtOpportunityId, new DMT_OppProfitabilityLimitVisualRenderer());
+        recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultLimitVisualRenderer());
+
+        //recordTypeRenderers.put(dmtOpportunityId, new DMT_OppProfitabilityLimitVisualRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_DefaultLimitVisualRenderer());
+
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {

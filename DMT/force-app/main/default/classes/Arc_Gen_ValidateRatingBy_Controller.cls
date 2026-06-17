@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : Global Desktop
  * @group             : 
- * @last modified on  : 08-05-2025
+ * @last modified on  : 04-23-2026
  * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 **/
 public without sharing  class Arc_Gen_ValidateRatingBy_Controller { 
@@ -98,7 +98,7 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
   * @return ValidatedByResponse
   **/
   @AuraEnabled
-  public static ValidatedByResponse fetchUsers(String selectedAmbit) {
+  public static ValidatedByResponse fetchUsers(String selectedAmbit, Id recordId) {
     ValidatedByResponse ret;
     Map<String,Object> data;
     Arc_Gen_Delegation_Wrapper wrapper;
@@ -106,7 +106,7 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
     if(String.isNotBlank(selectedAmbit)) {
       try {
         data = new Map<String,Object>();
-        wrapper = Arc_GBL_Workflow_Helper.fetchUsersByAmbit(selectedAmbit);
+        wrapper = Arc_GBL_Workflow_Helper.fetchUsersByAmbitValidate(selectedAmbit, recordId);
         data.put('userList', wrapper.lstUsers);
         ret = createResponseObj(data, true, null); //NOSONAR
       } catch (Exception e) {
@@ -221,14 +221,13 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
     Boolean lessThan = true;
     ValidatedByResponse ret;
     arce.Arc_Gen_RatingGlobal_data locator = new arce.Arc_Gen_RatingGlobal_data();
-    arce.Arc_Gen_AccHasAnalysis_Data ahaLocator = new arce.Arc_Gen_AccHasAnalysis_Data();
     if(String.isNotBlank(ahaId)){
       try {
         final arce__Account_has_Analysis__c aHa = locator.getAccountHasAnalysis(aHaId)[0];
         final Boolean avoidValidation = aHa.arce__IRP_Workflow__c == 'ARP' || aHa.arce__IRP_Workflow__c == 'CRP' || getAvoidByRarRatingTool(aHa.arce__RAR_rating_tool_id__c) ? true : false;
         if (!avoidValidation) {
           final String ffssDate = String.valueOf(aHa.arce__ffss_for_rating_id__r.arce__financial_statement_end_date__c);
-          final arce__Table_Content_per_Analysis__c tableContent = ahaLocator.getTableContentByCodeTerm(aHaId,new Set<String>{SEVENHUNDRED})[0];
+          final arce__Table_Content_per_Analysis__c tableContent = arce.Arc_Gen_TableContent_Data.getTableContentByCodeTerm(aHaId,new Set<String>{SEVENHUNDRED})[0];
           final String tcOriginalCurrency = tableContent.arce__original_currency__c;
           final Double tcOriginalAmount = tableContent.arce__original_amount__c;
           final String clientId = aHa.arce__Customer__c;
@@ -372,12 +371,12 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
   @AuraEnabled
   public static Map<String,String> isOverrideComplete(Id ahaId) {
     final Map<String,String> responseMap = new Map<String,String>{'status' => 'Success'};
+    final arce__Account_has_Analysis__c aha = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ ahaId })[0];
+    responseMap.put('isRTC', String.valueOf(aha.arce__Analysis__r.arce__is_RTC__c));
     // Se habilita o deshabilita la validacion con un metadata de configuracion.
     final List<arce__Arce_Config__mdt> config = arce.Arc_Gen_Arceconfigs_locator.getConfigurationInfo('Enable_Validate_Override_LBO');
     if (!config.isEmpty() && Boolean.ValueOf(config[0].arce__Value1__c)) {
-      final arce__Account_has_Analysis__c aha = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String> { ahaId })[0];
       final List<arce__rating_variables_detail__c> varsList = [SELECT Id, arce__adj_short_rating_value_type__c, arce__adj_long_rating_value_type__c , arce__adj_total_rating_score_number__c, arce__rating_override_comment__c FROM arce__rating_variables_detail__c WHERE arce__account_has_analysis_id__c = :ahaId AND arce__rating_modifier_adj_type__c = :OVERRIDE_VALUE WITH SYSTEM_MODE];
-      responseMap.put('isRTC', String.valueOf(aha.arce__Analysis__r.arce__is_RTC__c));
       if (aha.arce__ffss_for_rating_id__c != null && !varsList.isEmpty() && String.valueOf(aha.arce__RAR_rating_tool_id__c).equalsIgnoreCase('2021RTC_GEN') && String.valueOf(aha.arce__ffss_for_rating_id__r.arce__ffss_certification_type__c).equalsIgnoreCase(arce.Arc_Gen_ffssAutomaticCorporate.CERTIFICATION_LBO)) {
         if (String.isBlank(varsList[0].arce__rating_override_comment__c) || (String.isBlank(varsList[0].arce__adj_long_rating_value_type__c) && String.isBlank(varsList[0].arce__adj_short_rating_value_type__c))) {
           responseMap.put('status', 'Error');
@@ -470,7 +469,7 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
     **/
     @AuraEnabled
     public static String getArceConfigs() {
-        final List<String> configNames = new List<String>{ 'EnableRatingSystem','Enable_Validate_Override_LBO' };
+        final List<String> configNames = new List<String>{ 'RatingScoreAlert', 'PreRatingScoreAlert', 'Enable_Validate_Override_LBO' };
 
         final Map<String, String> arceConfMap = new Map<String, String>();
         for (String configName : configNames) {
@@ -527,18 +526,82 @@ public without sharing  class Arc_Gen_ValidateRatingBy_Controller {
     **/
     @AuraEnabled
     public static Arc_gen_Sales_Service.ResponseWrapper getSalesEngine(String ahaId) {
-      final List<arce__Account_has_Analysis__c> ahaList = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ahaId});
-      final Arc_gen_Sales_Service.ResponseWrapper response;
-      final Boolean avoidSales = ahaList[0].arce__IRP_Workflow__c == 'ARP' || ahaList[0].arce__IRP_Workflow__c == 'CRP' || ahaList[0].arce__RAR_rating_tool_id__c.contains('2021') ? true : false;      if(Arc_Gen_RatingAsIndepProcess_controller.isSalesEngineConfig() && !avoidSales) {
-        response = Arc_Gen_RatingAsIndepProcess_controller.getSalesEngine(ahaId, ahaList[0].arce__Analysis__r.arce__rating_prerating_type__c);
-      } else {
-        response = new Arc_gen_Sales_Service.ResponseWrapper(false, 'Config Deactive', ahaId, null);
-      }
-      System.debug(response);
+        Arc_gen_Sales_Service.ResponseWrapper response = new Arc_gen_Sales_Service.ResponseWrapper();
+        final List<arce__Account_has_Analysis__c> ahaList = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ ahaId });
+        final Boolean avoidSales = ahaList[0].arce__IRP_Workflow__c == 'ARP' ||
+            ahaList[0].arce__IRP_Workflow__c == 'CRP' ||
+            ahaList[0].arce__RAR_rating_tool_id__c.contains('2021')
+            ? true
+            : false;
+        if (Arc_Gen_RatingAsIndepProcess_controller.isSalesEngineConfig() && !avoidSales) {
+            response = Arc_Gen_RatingAsIndepProcess_controller.getSalesEngine(ahaId, ahaList[0].arce__Analysis__r.arce__rating_prerating_type__c);
+        } else {
+            response.calculationResult = false;
+            response.message = 'Config Deactive';
+            response.idAha = ahaId;
+            response.success = true;
+        }
 
-      return response;
+        return response;
     }
 
+    /**
+    * @description checkScoreAlert
+    * @author aleksandar.dinkov.contractor@bbva.com | 10-02-2024
+    * @param Id ahaId
+    * @return String
+    **/
+    @AuraEnabled
+    public static String checkScoreAlert(Id ahaId) {
+      String respId = '';
+      final List<arce__Account_has_Analysis__c> currentAhaList = arce.Arc_Gen_AccHasAnalysis_Data.getAccHasAnalysis(new List<String>{ ahaId });
+      if (!currentAhaList.isEmpty()) {
+        final arce__Account_has_Analysis__c currentAha = currentAhaList[0];
+        final Decimal maxDiffValue = Test.isRunningTest() ? 0.5 : getMaxDiffValue(getArceConfigs(), currentAha.arce__Analysis__r.arce__rating_prerating_type__c);
+        // If the configuration is 999 then the functionality is disabled
+        if (maxDiffValue != 999) {
+          final String clientId = arce.Arc_Gen_AccHasAnalysis_Data.getCorrectIdWAhas(currentAha);
+          final arce.Arc_Gen_Account_Wrapper accWrapper = arce.Arc_Gen_Account_Locator.getAccountInfoById(new List<Id>{ clientId }).get(clientId);
+          final Map<String, Object> params = new Map<String, Object>{
+              'accountNumberList' => new List<String> {accWrapper.accNumber},
+              'rating' => new Map<String, List<String>>{
+                'RARRatingTools' => new List<String>{'2012P1IRP','2012P1ARP','2012P1CRP'}
+              }
+          };
+          final Map<String, arce__Financial_Statements__c> fsMap = arce.Arc_Gen_Account_Locator.getRatingGCPByAccountNumber(params);
+          if (!fsMap.isEmpty()) {
+            final arce__Financial_Statements__c fs = fsMap.get(accWrapper.accNumber);
+            final Decimal scoreAbsDiff = Math.abs(currentAha.arce__total_rating_score_number__c - fs.arce__account_has_analysis_id__r.arce__total_rating_score_number__c);
+            respId = scoreAbsDiff > maxDiffValue ? String.valueOf(fs.arce__account_has_analysis_id__r.arce__Analysis__c) : '';
+          }
+        }
+      }
+      return respId;
+    }
+
+    /**
+    * @description Get the maximum difference value set in the metadata configuration, if 999 means the functionality is disabled.
+    * @author aleksandar.dinkov.contractor@bbva.com | 10-02-2024
+    * @return Decimal
+    **/
+    @AuraEnabled
+    public static Decimal getMaxDiffValue(String arceConfMap, String ratingType) {
+      try {
+        final Map<String, String> confMap = (Map<String, String>) JSON.deserialize(arceConfMap, Map<String, String>.class);
+        return Decimal.valueOf(confMap.get(ratingType == arce.Arc_Gen_Constants.RATING_TYPE ? 'RatingScoreAlert' : 'PreRatingScoreAlert'));
+      } catch (Exception ex) {
+        String errorMessage = '';
+        if (ex.getMessage().contains('Invalid decimal')) {
+          errorMessage = 'PreRatingScoreAlert metadata configuration value must be decimal between 0 and 10, please contact support!';
+        } else if (ex.getMessage().contains('Argument cannot be null')) {
+          errorMessage = 'PreRatingScoreAlert metadata configuration not found, please contact support!';
+        } else {
+          errorMessage = 'Unknown error has ocurred, please contact support!';
+        }
+        System.debug(LoggingLevel.ERROR, ex.getMessage() + ex.getStackTraceString());
+        throw new AuraHandledException(errorMessage);
+      }
+    }
     /**
     *----------------------------------------------------------------------------------------------------------------------------------------
     * @Description method that return flag if LA is needed

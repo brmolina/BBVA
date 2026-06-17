@@ -274,5 +274,235 @@ public with sharing class DMT_Opportunity_UtilsTest {
         
     }
 
+    @isTest
+    static void testGetComparisonAccount_FoundParentGroup() {
+        Account sourceAccount = new Account(
+            Name = 'Source Subsidiary',
+            DES_Structure_Type__c = 'Subsidiary'
+        );
+        insert sourceAccount;
 
+        Account groupAccount = new Account(
+            Name = 'Parent Group',
+            DES_Structure_Type__c = 'Group',
+            Geographical_Footprint_desc__c = 'Test footprint'
+        );
+        insert groupAccount;
+
+        insert new AMH_GBL_Account_Relationship__c(
+            AMH_Vision__c = 'Riesgos',
+            AMH_Parent_Account__c = groupAccount.Id,
+            AMH_Child_Account__c = sourceAccount.Id
+        );
+
+        Map<String, Object> inputMap = new Map<String, Object>{'oppAccountId' => sourceAccount.Id};
+        Map<String, Object> outMap = new Map<String, Object>();
+        Map<String, Object> options = new Map<String, Object>();
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
+        Test.stopTest();
+
+        System.assertEquals(true, result.get('foundComparisonAccount'), 'Debe encontrar cuenta de comparación');
+        System.assertEquals(groupAccount.Id, result.get('comparisonAccountId'), 'El Id de la cuenta de comparación no es correcto');
+        System.assertEquals('Group', result.get('comparisonAccountType'), 'El tipo de cuenta de comparación debería ser Group');
+        System.assertEquals(sourceAccount.Id, result.get('sourceAccountId'), 'El sourceAccountId no coincide');
+        System.assertEquals('Subsidiary', result.get('sourceAccountType'), 'El tipo de cuenta origen debería ser Subsidiary');
+    }
+
+    @isTest
+    static void testGetComparisonAccount_GroupUsesItself() {
+        Account groupAccount = new Account(
+            Name = 'Valid Group',
+            DES_Structure_Type__c = 'Group',
+            Industry_Overview_desc__c = 'Industry overview test'
+        );
+        insert groupAccount;
+
+        Map<String, Object> inputMap = new Map<String, Object>{'oppAccountId' => groupAccount.Id};
+        Map<String, Object> outMap = new Map<String, Object>();
+        Map<String, Object> options = new Map<String, Object>();
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
+        Test.stopTest();
+
+        System.assertEquals(true, result.get('foundComparisonAccount'), 'El grupo debería ser válido como cuenta de comparación');
+        System.assertEquals(groupAccount.Id, result.get('comparisonAccountId'), 'El grupo debería compararse consigo mismo');
+        System.assertEquals('Group', result.get('comparisonAccountType'), 'El tipo debería ser Group');
+        System.assertEquals(groupAccount.Id, result.get('sourceAccountId'), 'El sourceAccountId debería ser el mismo grupo');
+        System.assertEquals('Group', result.get('sourceAccountType'), 'El tipo origen debería ser Group');
+    }
+
+    @isTest
+    static void testGetComparisonAccount_NotFound() {
+        Account sourceAccount = new Account(
+            Name = 'Subsidiary Without Valid Parent',
+            DES_Structure_Type__c = 'Subsidiary'
+        );
+        insert sourceAccount;
+
+        Account parentAccount = new Account(
+            Name = 'Parent Without Data',
+            DES_Structure_Type__c = 'Group'
+        );
+        insert parentAccount;
+
+        insert new AMH_GBL_Account_Relationship__c(
+            AMH_Vision__c = 'Riesgos',
+            AMH_Parent_Account__c = parentAccount.Id,
+            AMH_Child_Account__c = sourceAccount.Id
+        );
+
+        Map<String, Object> inputMap = new Map<String, Object>{'oppAccountId' => sourceAccount.Id};
+        Map<String, Object> outMap = new Map<String, Object>();
+        Map<String, Object> options = new Map<String, Object>();
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
+        Test.stopTest();
+
+        System.assertEquals(false, result.get('foundComparisonAccount'), 'No debería encontrar cuenta de comparación');
+        System.assertEquals(null, result.get('comparisonAccountId'), 'No debería haber Id de comparación');
+        System.assertEquals(null, result.get('comparisonAccountType'), 'No debería haber tipo de comparación');
+    }
+
+    @isTest
+    static void testGetComparisonAccount_MissingOppAccountId() {
+        Map<String, Object> inputMap = new Map<String, Object>();
+        Map<String, Object> outMap = new Map<String, Object>();
+        Map<String, Object> options = new Map<String, Object>();
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
+        Test.stopTest();
+
+        System.assertEquals(true, result.get('error'), 'Debe devolver error cuando falta oppAccountId');
+        System.assert(result.containsKey('errorMessage'), 'Debe incluir errorMessage en la respuesta');
+    }
+
+    @isTest
+    static void testHandleOppXSellGeneration_GroupSuccess() {
+        TriggerBypass.setBypass();
+
+        // 1. Setup Taxonomy Values & Relationships (H006 -> H007)
+        DMT_Taxonomy_Values__c initialTax = new DMT_Taxonomy_Values__c(
+            DMT_Catalog__c = 'H006', DMT_Value__c = 'ES0182', DMT_Active__c = true
+        );
+        insert initialTax;
+
+        DMT_Taxonomy_Values__c finalTaxMatch = new DMT_Taxonomy_Values__c(
+            DMT_Catalog__c = 'H007', DMT_Value__c = 'ES', DMT_Active__c = true
+        );
+        insert finalTaxMatch;
+
+        // Use the factory and force the ID fields so the SOQL WHERE clause finds them
+        DMT_Taxonomy_Relationship__c rel = DMT_Test_DataFactory.generateTaxonomyRelationship(initialTax, finalTaxMatch);
+            rel.DMT_Id_Catalog_Initial__c = 'H006';
+            rel.DMT_Id_Catalog_Final__c = 'H007';
+            update rel;
+
+        // 2. Setup Base Account with Comparison Data
+        Account groupAccount = new Account(
+            Name = 'Test Group Acc',
+            DES_Structure_Type__c = 'Group',
+            Industry_Overview_desc__c = 'Valid Data Presence'
+        );
+        insert groupAccount;
+
+        // 3. Create Source X-Sell Records on Account (One matching Geo, one mismatching Geo)
+        List<DMT_X_Sell__c> sourceXSells = new List<DMT_X_Sell__c>{
+            new DMT_X_Sell__c(Account__c = groupAccount.Id, Booking_Geography__c = 'ES', XSELL_Value_CY__c = 500),
+            new DMT_X_Sell__c(Account__c = groupAccount.Id, Booking_Geography__c = 'US', XSELL_Value_CY__c = 900)
+        };
+        insert sourceXSells;
+
+        // 4. Create Opportunity linked to the Group Account
+        Id oppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        Opportunity opp = new Opportunity(
+            Name = 'Test Group XSell Opp',
+            AccountId = groupAccount.Id,
+            RecordTypeId = oppRtId,
+            StageName = 'Draft Opp',
+            CloseDate = Date.today().addDays(30),
+            DMT_Entity__c = 'ES0182',
+            DMT_CUR_Notional_Amount__c = 100,
+            DMT_CurrencyText__c = 'EUR',
+            DMT_DATE_Initial_Date__c = Date.today(),
+            DMT_DATE_Maturity_Date__c = Date.today().addDays(30)
+        );
+        insert opp;
+
+        // 5. Fire Async handler explicitly to isolate execution boundaries
+        DMT_OppXSellPayload payload = new DMT_OppXSellPayload(new Set<Id>{ opp.Id });
+        
+        Test.startTest();
+        // Route through the dispatcher to ensure the new payload branch gets coverage
+        DMT_AsyncDispatcher.dispatch(payload);
+        Test.stopTest();
+
+        // 6. Assertions
+        List<DMT_X_Sell__c> generatedXSells = [SELECT Booking_Geography__c, XSELL_Value_CY__c, Account__c FROM DMT_X_Sell__c WHERE Opportunity__c = :opp.Id];
+        System.assertEquals(1, generatedXSells.size(), 'Only the taxonomy-matched H007 record should be cloned');
+        System.assertEquals('ES', generatedXSells[0].Booking_Geography__c, 'Cloned geography must match valid mapping');
+        System.assertEquals(500, generatedXSells[0].XSELL_Value_CY__c, 'Financial metric values must map identically');
+        System.assertEquals(null, generatedXSells[0].Account__c, 'Account lookup on cloned opportunity x-sells must be null');
+    }
+
+    @isTest
+    static void testHandleOppXSellGeneration_SubsidiaryHierarchySuccess() {
+        TriggerBypass.setBypass();
+
+        // 1. Setup Taxonomy Records
+        DMT_Taxonomy_Values__c initialTax = new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'H006', DMT_Value__c = 'ES0182', DMT_Active__c = true);
+        insert initialTax;
+        DMT_Taxonomy_Values__c finalTax = new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'H007', DMT_Value__c = 'ES', DMT_Active__c = true);
+        insert finalTax;
+        
+        // Use the factory and force the ID fields so the SOQL WHERE clause finds them
+        DMT_Taxonomy_Relationship__c rel = DMT_Test_DataFactory.generateTaxonomyRelationship(initialTax, finalTax);
+            rel.DMT_Id_Catalog_Initial__c = 'H006';
+            rel.DMT_Id_Catalog_Final__c = 'H007';
+            update rel;
+
+        // 2. Setup Hierarchy Accounts (Group with data -> Subsidiary placeholder)
+        Account groupAccount = new Account(Name = 'Top Group', DES_Structure_Type__c = 'Group', Industry_Overview_desc__c = 'Valid Anchor Data');
+        insert groupAccount;
+        
+        Account subAccount = new Account(Name = 'Child Subsidiary', DES_Structure_Type__c = 'Subsidiary');
+        insert subAccount;
+
+        insert new AMH_GBL_Account_Relationship__c(AMH_Vision__c = 'Riesgos', AMH_Parent_Account__c = groupAccount.Id, AMH_Child_Account__c = subAccount.Id);
+
+        // 3. Seed parent X-Sell
+        insert new DMT_X_Sell__c(Account__c = groupAccount.Id, Booking_Geography__c = 'ES', XSELL_Value_CY__c = 750);
+
+        // 4. Target Opportunity explicitly linked to the Child Subsidiary
+        Id oppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        Opportunity opp = new Opportunity(
+            Name = 'Test Child XSell Opp',
+            AccountId = subAccount.Id,
+            RecordTypeId = oppRtId,
+            StageName = 'Draft Opp',
+            CloseDate = Date.today().addDays(30),
+            DMT_Entity__c = 'ES0182',
+            DMT_CUR_Notional_Amount__c = 100,
+            DMT_CurrencyText__c = 'EUR',
+            DMT_DATE_Initial_Date__c = Date.today(),
+            DMT_DATE_Maturity_Date__c = Date.today().addDays(30)
+        );
+        insert opp;
+
+        DMT_OppXSellPayload payload = new DMT_OppXSellPayload(new Set<Id>{ opp.Id });
+        
+        Test.startTest();
+        // Route through the dispatcher to ensure the new payload branch gets coverage
+        DMT_AsyncDispatcher.dispatch(payload);
+        Test.stopTest();
+
+        // 5. Assertions proving 4-level ascent resolved successfully
+        List<DMT_X_Sell__c> generatedXSells = [SELECT Booking_Geography__c, XSELL_Value_CY__c FROM DMT_X_Sell__c WHERE Opportunity__c = :opp.Id];
+        System.assertEquals(1, generatedXSells.size(), 'Handler must walk hierarchy tree to extract parent source x-sells when child has no data');
+        System.assertEquals(750, generatedXSells[0].XSELL_Value_CY__c, 'Financial tracking indicators must verify exactly');
+    }
 }

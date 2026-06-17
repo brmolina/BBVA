@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>When = True it hides the contact to the user by assigning it to a Global Contact Manager who will decide wether the contact should or should not be eliminated</description>
+    <fieldOverrides>
+        <field>SAL_Delete_Contact__c</field>
+        <formula>True</formula>
+    </fieldOverrides>
+    <icon>Trash</icon>
+    <label>Soft Delete</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>Name</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>SAL_Delete_Contact__c</field>
+                <uiBehavior>Readonly</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+    </quickActionLayout>
+    <successMessage>You have succesfully deleted the contact</successMessage>
+    <type>Update</type>
+</QuickAction>

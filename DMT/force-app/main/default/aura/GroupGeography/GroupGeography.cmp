@@ -1,0 +1,92 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" controller="GroupGeographyCnt" >
+
+    <aura:attribute name="recordId" type="String" default="false"/>
+    <aura:attribute name="mapMarkers" type="Object" access="public" />
+    <aura:attribute name="center" type="Object" access="public" />
+    <aura:attribute name="zoomLevel" type="Integer" default="7" access="public" />
+    <aura:attribute name="markersTitle" type="String" access="public" />
+    <aura:attribute name="showFooter" type="Boolean" access="public" />
+    <aura:attribute name="title" type="String" access="public" />
+    <aura:attribute name="showViewDetails" type="Boolean" access="public" default="true"/>
+	<aura:attribute name="country" type="String" />
+	<aura:attribute name="region" type="String" />
+	<aura:attribute name="bankerName" type="String" />
+	<aura:attribute name="bankerId" type="Integer" />
+	<aura:attribute name="lstCountries" type="Object" />
+	<aura:attribute name="mapCountriesInfo" type="Object" />
+
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:registerEvent
+                        name="countryPickedEvent"
+                        type="c:GoogleMapEvent"/>
+
+
+    <aura:if isTrue="{!v.mapMarkers.length > 0}" >
+    	<aura:if isTrue="{! v.showViewDetails == false}">
+
+    	<div class="customDiv">
+	    	<div id="wr_Contenido" class="slds slds-grid slds-wrap slds-grid_pull-padded-medium"  >
+		        <div id="wr_main" class=" slds-col slds-size_1-of-2 slds-small-size_1-of-1 slds-medium-size_9-of-12 slds-p-horizontal_medium slds-p-verticall_small container-map" >
+			        <lightning:map
+			                       mapMarkers="{!v.mapMarkers}"
+			                       center="{! v.center }"
+			                       zoomLevel="{! v.zoomLevel }"
+			                       markersTitle="{! v.markersTitle }"
+			                       showFooter="{ !v.showFooter }"
+			                       >
+			        </lightning:map>
+		        </div>
+		        <div id="wr_aside" class=" slds-col slds-size_1-of-2 slds-small-size_1-of-1 slds-medium-size_3-of-12 slds-p-horizontal_medium container-country" >
+		        	<div class="slds-grid slds-grid_vertical slds-navigation-list_vertical select-country">
+		        		<lightning:verticalNavigation class="slds-grid slds-grid_vertical slds-navigation-list_vertical ">
+		                	<lightning:verticalNavigationSection label="{!v.markersTitle}">
+		                		<aura:iteration indexVar="x" items="{!v.lstCountries}" var="item">
+		                			<div id="wr_lista" class="slds-grid slds-wrap slds-grid_pull-padded-medium slds-m-bottom_x-small" >
+						        		<lightning:icon iconName="action:map" size="medium" alternativeText="country"/>
+		                				<lightning:verticalNavigationItem label="{!item}"
+			                											name="{!item}"
+			                											aura:id="item"
+			                											onclick="{!c.handleCountryPicked}"
+							                       						data-index="{!item}"
+							                       						class="customLightning"/>
+									</div>
+								</aura:iteration>
+		                	</lightning:verticalNavigationSection>
+					    </lightning:verticalNavigation>
+				    </div>
+
+		            <lightning:button class="slds-m-top_medium" onclick="{!c.handleCountryPicked}" label="Clear selection" iconName="utility:world" iconPosition="left" variant="brand"/>
+		            <br/><br/>
+		            <div class="customDiv2">
+			            <c:GroupGeographyInformation recordId="{!v.recordId}"
+			            							country="{!v.country}"
+													aura:id="groupGeographyInfo"
+													region="{! v.region}"
+													nameUser="{! v.bankerName}"
+													nameId="{! v.bankerId}"
+		            					/>
+		            </div>
+		        </div>
+		    </div>
+
+		</div>
+
+        	<aura:set attribute="else">
+		        <lightning:map
+		                       mapMarkers="{!v.mapMarkers}"
+		                       center="{! v.center }"
+		                       zoomLevel="{! v.zoomLevel }"
+		                       markersTitle="{! v.markersTitle }"
+		                       showFooter="{ !v.showFooter }"
+		                       >
+		        </lightning:map>
+		        <div class="customDiv3">
+		            <a href="" class="slds-text-link customA" onclick="{!c.navigateToMyComponent}">View Details</a>
+			        <br/>
+		        </div>
+		    </aura:set>
+		</aura:if>
+    </aura:if>
+</aura:component>

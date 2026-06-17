@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SER_Inc_Rec_Close_case_Validation_GM</fullName>
+    <active>true</active>
+    <description>To close a case that is classified as &quot;Monetary claim&quot; or &quot;Reclamación&quot; must have the following fields completed: Classification, Reason, Client Name and Asset.</description>
+    <errorConditionFormula>AND(
+ !$Setup.CIB_Bypass__c.CIB_skip_validationrule__c,
+ !$Setup.CIB_User_Org__c.CIB_Is_Admin__c,
+ $Setup.CIB_User_Org__c.CIB_Is_Service__c,
+ ISPICKVAL(SER_Business_Case_Type__c, &quot;GM&quot;),
+ NOT(ISBLANK(SER_SLA_Service__c)),
+ SER_Pre_liquidacion__c = TRUE ,
+OR(
+ ISBLANK(TEXT( SER_Subtype_GM__c )),
+ ISBLANK(SER_Asset__c ),
+ OR(
+ ISBLANK(AccountId ) , AND(!ISBLANK(AccountId) ,  AccountId  = $Label.SER_InternalContactAccountID)
+ )
+),
+ISPICKVAL( SER_Classification__c, &quot;Monetary claim&quot;),
+ OR(
+  ISPICKVAL(Status,&quot;Closed&quot;),
+  SER_Close__c = True
+  )
+)</errorConditionFormula>
+    <errorMessage>To close a case that is classified as &quot;Monetary claim&quot;  must have the following fields completed: Classification, Reason, Client Name and Asset. Client Name can&apos;t be an Internal Contact Client.</errorMessage>
+</ValidationRule>

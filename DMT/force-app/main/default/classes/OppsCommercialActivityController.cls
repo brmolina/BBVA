@@ -1,28 +1,28 @@
 public with sharing class OppsCommercialActivityController {
 
-	/*
-	* @author Global Desktop
-	* @description Fucion para recuperar la informacion de las oportunidades relacionadas a la cuenta
-	*/
+  /*
+  * @author Global Desktop
+  * @description Fucion para recuperar la informacion de las oportunidades relacionadas a la cuenta
+  */
     @auraEnabled
     public static String getOppInfo(String accId, String country) {
-    	try {
-			//Label.DES_RT_Subsidiary;
-	        List<wrapperClass> listWrapperClass = new List<wrapperClass>();
-	        List<dwp_acmh__Denorm_Account_Opportunity__c> oppDenormList = new List<dwp_acmh__Denorm_Account_Opportunity__c>();
-	        if(country == null || string.isBlank(country) || string.isEmpty(country) || country == 'Todos') {
-				oppDenormList = [SELECT Id, convertCurrency(dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c), convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c),dwp_acmh__OpportunityId__r.StageName, dwp_acmh__AccountId__r.CurrencyIsoCode, dwp_acmh__AccountId__r.DES_Structure_Type__c
-		                           FROM dwp_acmh__Denorm_Account_Opportunity__c WHERE dwp_acmh__AccountId__c =: accId
-	                         		AND dwp_acmh__OpportunityId__r.CreatedDate = THIS_YEAR];
-	        } else {
-	            final List<Opp_Countries__mdt> lstCountryCodes = GroupGeographyCnt.mapCountryCodesSelector();
-	            final Map<String,String> mapContryCodes= GroupGeographyCnt.helperCreateMapCountryCodes('LABEL', lstCountryCodes);
-	  			final String countryDevName = mapContryCodes.get(country);
-	        	final set<Id> countryAccountIds = OpportunitiesInProgressByFamilyCont.getFieldLabels(accId, country);
-	        	oppDenormList = [SELECT Id, convertCurrency(dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c), convertCurrency(dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c),dwp_acmh__OpportunityId__r.StageName, dwp_acmh__AccountId__r.CurrencyIsoCode, dwp_acmh__AccountId__r.DES_Country_Client__c, dwp_acmh__AccountId__r.DES_Structure_Type__c
-	                         	   FROM dwp_acmh__Denorm_Account_Opportunity__c
-	                         	  WHERE dwp_acmh__OpportunityId__r.CreatedDate = THIS_YEAR AND dwp_acmh__AccountId__c IN :countryAccountIds
-	                             	AND dwp_acmh__AccountId__r.DES_Country_Client__c = :countryDevName];
+      try {
+      //Label.DES_RT_Subsidiary;
+          List<wrapperClass> listWrapperClass = new List<wrapperClass>();
+          List<AMH_Denorm_Account_Opportunity__c> oppDenormList = new List<AMH_Denorm_Account_Opportunity__c>();
+          if(country == null || string.isBlank(country) || string.isEmpty(country) || country == 'Todos') {
+        oppDenormList = [SELECT Id, convertCurrency(AMH_OpportunityId__r.DES_Expected_Revenues__c), convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c),AMH_OpportunityId__r.StageName, AMH_AccountId__r.CurrencyIsoCode, AMH_AccountId__r.DES_Structure_Type__c
+                               FROM AMH_Denorm_Account_Opportunity__c WHERE AMH_AccountId__c =: accId
+                               AND AMH_OpportunityId__r.CreatedDate = THIS_YEAR];
+          } else {
+              final List<Opp_Countries__mdt> lstCountryCodes = GroupGeographyCnt.mapCountryCodesSelector();
+              final Map<String,String> mapContryCodes= GroupGeographyCnt.helperCreateMapCountryCodes('LABEL', lstCountryCodes);
+          final String countryDevName = mapContryCodes.get(country);
+            final set<Id> countryAccountIds = OpportunitiesInProgressByFamilyCont.getFieldLabels(accId, country);
+            oppDenormList = [SELECT Id, convertCurrency(AMH_OpportunityId__r.DES_Expected_Revenues__c), convertCurrency(AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c),AMH_OpportunityId__r.StageName, AMH_AccountId__r.CurrencyIsoCode, AMH_AccountId__r.DES_Country_Client__c, AMH_AccountId__r.DES_Structure_Type__c
+                                FROM AMH_Denorm_Account_Opportunity__c
+                               WHERE AMH_OpportunityId__r.CreatedDate = THIS_YEAR AND AMH_AccountId__c IN :countryAccountIds
+                                 AND AMH_AccountId__r.DES_Country_Client__c = :countryDevName];
             }
 
 
@@ -30,20 +30,20 @@ public with sharing class OppsCommercialActivityController {
                 listWrapperClass = wrapperListToReturn(oppDenormList);
             }
 
-	        return JSON.serialize(listWrapperClass);
+          return JSON.serialize(listWrapperClass);
 
-    	} catch(Exception exc) {
-			throw new AuraHandledException(Label.DES_Error + exc);
-		}
+      } catch(Exception exc) {
+      throw new AuraHandledException(Label.DES_Error + exc);
+    }
     }
 
     /*
-	* @author Global Desktop
-	* @description Fucion auxiliar para formar la lista wrapper
-	*/
-    public static List<wrapperClass> wrapperListToReturn(List<dwp_acmh__Denorm_Account_Opportunity__c> oppDenormList) {
+  * @author Global Desktop
+  * @description Fucion auxiliar para formar la lista wrapper
+  */
+    public static List<wrapperClass> wrapperListToReturn(List<AMH_Denorm_Account_Opportunity__c> oppDenormList) {
 
-    	Decimal sumWon = 0;
+      Decimal sumWon = 0;
         Integer sizeWon = 0;
         Decimal sumLost = 0;
         Integer sizeLost = 0;
@@ -51,25 +51,25 @@ public with sharing class OppsCommercialActivityController {
         Integer sizeLive = 0;
         Integer numOpp = oppDenormList.size();
         String oppType = '';
-        for(dwp_acmh__Denorm_Account_Opportunity__c i : oppDenormList) {
-            if(i.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Won) {
-                sumWon = sumWon + i.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c;
+        for(AMH_Denorm_Account_Opportunity__c i : oppDenormList) {
+            if(i.AMH_OpportunityId__r.StageName == Label.DES_Closed_Won) {
+                sumWon = sumWon + i.AMH_OpportunityId__r.DES_Expected_Revenues__c;
                 sizeWon = sizeWon + 1;
-            } else if(i.dwp_acmh__OpportunityId__r.StageName == Label.DES_Closed_Lose) {
-                sumLost = sumLost + (i.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c == null ? 0 : i.dwp_acmh__OpportunityId__r.pre_oppy_revenue_next_12m_amount__c);
+            } else if(i.AMH_OpportunityId__r.StageName == Label.DES_Closed_Lose) {
+                sumLost = sumLost + (i.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c == null ? 0 : i.AMH_OpportunityId__r.pre_oppy_revenue_next_12m_amount__c);
                 sizeLost = sizeLost + 1;
             } else {
-                sumLive = sumLive + i.dwp_acmh__OpportunityId__r.DES_Expected_Revenues__c;
+                sumLive = sumLive + i.AMH_OpportunityId__r.DES_Expected_Revenues__c;
                 sizeLive = sizeLive + 1;
-			}
+      }
 
-			oppType = i.dwp_acmh__AccountId__r.DES_Structure_Type__c;
+      oppType = i.AMH_AccountId__r.DES_Structure_Type__c;
         }
 
-		//parsing values to X.XX M (Millions)
-		sumWon = sumWon!=0?sumWon / 1000000:sumWon;
-		sumLost = sumLost!=0?sumLost / 1000000:sumLost;
-		sumLive = sumLive!=0?sumLive / 1000000:sumLive;
+    //parsing values to X.XX M (Millions)
+    sumWon = sumWon!=0?sumWon / 1000000:sumWon;
+    sumLost = sumLost!=0?sumLost / 1000000:sumLost;
+    sumLive = sumLive!=0?sumLive / 1000000:sumLive;
 
 
         final List<wrapperClass> lWrapClassAux = new List<wrapperClass>();
@@ -78,87 +78,102 @@ public with sharing class OppsCommercialActivityController {
     }
 
 
-	/*
-	* @author Global Desktop
-	* @description Construye la clase wrapper que devolvera al componente
-	*/
+  /*
+  * @author Global Desktop
+  * @description Construye la clase wrapper que devolvera al componente
+  */
     public class wrapperClass {
-    	/**
-		* @author Global Desktop
-		* @description Declaracion de variables de la lista wrapper
-		*/
-		/*
-		* Attribute
-		*/
+      /**
+    * @author Global Desktop
+    * @description Declaracion de variables de la lista wrapper
+    */
+    /*
+    * Attribute
+    */
         private Integer returnTotalOpp; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String returnWon; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String returnLost; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String returnCurrencyCode; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private Integer oppWonNumber; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private Integer oppLostNumber; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String oppType; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String hitMiss; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private Integer oppLiveNumber; //NOSONAR
-		/*
-		* Attribute
-		*/
+    /*
+    * Attribute
+    */
         private String returnLive; //NOSONAR
 
-		/**
-		* @author Global Desktop
-		* @description Contruye la lista wrapper
-		*/
+    /**
+    * @author Global Desktop
+    * @description Contruye la lista wrapper
+    */
         public wrapperClass(Integer totalOpp, Decimal won, Decimal lost, Integer sizeOppWon, Integer sizeOppLost, String oppType, Integer sizeOppLive, Decimal live) {
             this.returnTotalOpp = totalOpp;
 
-			final List<String> args = new String[] {'0','number','###.###.##0,00'};
-			final Decimal wonFormat = won.setScale(2);
-			final String sWonFormat = String.format(wonFormat.format(), args);
-	        this.returnWon = sWonFormat;
+      final List<String> args = new String[] {'0','number','###.###.##0,00'};
+      final Decimal wonFormat = won.setScale(2);
+      final String sWonFormat = String.format(wonFormat.format(), args);
+          this.returnWon = sWonFormat;
 
-	        final Decimal lostFormat = lost.setScale(2);
-	        final String sLostFormat = String.format(lostFormat.format(), args);
-	        this.returnLost = sLostFormat;
+          final Decimal lostFormat = lost.setScale(2);
+          final String sLostFormat = String.format(lostFormat.format(), args);
+          this.returnLost = sLostFormat;
 
-	        final Decimal liveFormat = live.setScale(2);
-	        final String sLiveFormat = String.format(liveFormat.format(), args);
-	        this.returnLive = sLiveFormat;
+          final Decimal liveFormat = live.setScale(2);
+          final String sLiveFormat = String.format(liveFormat.format(), args);
+          this.returnLive = sLiveFormat;
 
-			this.returnCurrencyCode = UserInfo.getDefaultCurrency();
-	        this.oppWonNumber = sizeOppWon;
-	        this.oppLostNumber = sizeOppLost;
-	        this.oppLiveNumber = sizeOppLive;
-	        this.oppType = oppType;
+      this.returnCurrencyCode = UserInfo.getDefaultCurrency();
+          this.oppWonNumber = sizeOppWon;
+          this.oppLostNumber = sizeOppLost;
+          this.oppLiveNumber = sizeOppLive;
+          this.oppType = oppType;
 
 
-			final Decimal value = (oppWonNumber==0&&oppWonNumber+oppLostNumber==0)||oppWonNumber+oppLostNumber==0?0:(oppWonNumber*100.0)/(oppWonNumber+oppLostNumber);
+      final Decimal value = (oppWonNumber==0&&oppWonNumber+oppLostNumber==0)||oppWonNumber+oppLostNumber==0?0:(oppWonNumber*100.0)/(oppWonNumber+oppLostNumber);
             final Decimal hitMissFormat = value.setScale(2);
-	        final String sHitMissFormat = String.format(hitMissFormat.format(), args);
-	        this.hitMiss = sHitMissFormat;
+          final String sHitMissFormat = String.format(hitMissFormat.format(), args);
+          this.hitMiss = sHitMissFormat;
         }
     }
+
+	/**
+	 *@author diego.ostria@bbva.com
+	 *@description  Metodo que devuelve el Tier del Grupo
+	 */
+	@auraEnabled
+	public static String getTier(String accId) {
+		try {
+			Account acc = [SELECT toLabel(DES_Tier__c) FROM Account WHERE Id = :accId LIMIT 1];
+			return acc.DES_Tier__c;
+			
+		} catch(Exception exc) {
+			throw new AuraHandledException(Label.DES_Error + exc);
+		}
+	}
 }

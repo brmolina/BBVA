@@ -1,0 +1,63 @@
+.THIS lightning-icon.some-success > lightning-primitive-icon > svg > use {
+  fill: green;
+}
+
+.THIS lightning-icon.some-warning > lightning-primitive-icon > svg > use {
+  fill: red;
+}
+
+.THIS .slds-modal__content {
+  height: unset !important;
+  max-height: unset !important;
+}
+
+.THIS .slds-spinner_container {
+  background-color: rgb(255, 255, 255);
+  margin-top: 140px;
+  margin-bottom: 140px;
+}
+
+.THIS .paths::after {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.THIS .getingdata::after {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.THIS .listparticip::after {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.THIS .groups::after {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.THIS .listcustomer::after {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: calc(50% + 3em);
+  font-weight: bold;
+  font-size: 19px;
+}

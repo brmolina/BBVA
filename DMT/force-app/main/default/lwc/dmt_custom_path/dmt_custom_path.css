@@ -1,151 +1,57 @@
-/* ==========================================================================
-   DMT CUSTOM PATH CSS - FIXED HOVER & GEOMETRY
-   ========================================================================== */
-
-:host {
-    /* Colores oficiales */
-    --slds-c-path-item-active-bg: #014486;   /* Azul Oscuro */
-    --slds-c-path-item-lost-bg: #ea001e;     /* Rojo */
-    --slds-c-path-item-hover-bg: #ecebea;    /* Gris Hover Estándar */
-    --slds-c-path-link-text-color-hover: #014486; /* Texto azul al hacer hover */
+:host .action-button-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
 }
 
-/* 1. Z-INDEX: EL ORDEN DE CAPAS ES CRUCIAL */
-/* El activo siempre encima para que su flecha azul tape al siguiente gris */
-/* .slds-path__item.slds-is-active { z-index: 100 !important; } */
-/* .slds-path__item.slds-is-lost { z-index: 90 !important; } */
-.slds-path__item { z-index: 1; } /* El resto abajo */
 
-/* ==========================================================================
-   A. ACTIVE STATUS (BLUE)
-   ========================================================================== */
 
-.slds-path__item.slds-is-active .slds-path__link {
-    background-color: var(--slds-c-path-item-active-bg) !important;
-    border-color: var(--slds-c-path-item-active-bg) !important;
+:host .spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    z-index: 1;
+}
+
+/* Stages deshabilitados: gris y no interactivos */
+.slds-path__item.dmt-stage-disabled .slds-path__link {
+    background-color: #777777 !important;
+    background: #777777 !important;
     color: #ffffff !important;
-    text-decoration: none !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
 }
 
-/* Flecha Derecha (::after) - Punta Azul */
-.slds-path__item.slds-is-active .slds-path__link::after {
-    background-color: var(--slds-c-path-item-active-bg) !important;
-}
-
-/* Flecha Izquierda (::before) - Hueco Transparente (o blanco) */
-.slds-path__item.slds-is-active .slds-path__link::before {
-    background-color: transparent !important;
-}
-
-/* Texto e Iconos Blancos */
-.slds-path__item.slds-is-active .slds-path__title,
-.slds-path__item.slds-is-active lightning-icon {
-    color: #ffffff !important;
-    --slds-c-icon-color-foreground: #ffffff !important;
-}
-
-/* HOVER sobre el ACTIVO: Se queda azul (quizás un pelín más oscuro) */
-.slds-path__item.slds-is-active:hover .slds-path__link {
-    background-color: #00305e !important;
-    border-color: #00305e !important;
-}
-.slds-path__item.slds-is-active:hover .slds-path__link::after {
-    background-color: #00305e !important;
-}
-
-
-/* ==========================================================================
-   B. ESTADO LOST (ROJO)
-   ========================================================================== */
-
-.slds-path__item.slds-is-lost .slds-path__link {
-    background-color: var(--slds-c-path-item-lost-bg) !important;
-    border-color: var(--slds-c-path-item-lost-bg) !important;
+.slds-path__item.dmt-stage-disabled .slds-path__link:hover,
+.slds-path__item.dmt-stage-disabled .slds-path__link:focus {
+    background-color: #777777 !important;
+    background: #777777 !important;
     color: #ffffff !important;
 }
-.slds-path__item.slds-is-lost .slds-path__link::after {
-    background-color: var(--slds-c-path-item-lost-bg) !important;
+.slds-path__nav .dmt-stage-disabled{
+    background-color: #777777 !important;
+    background: #777777 !important;
+    color: #ffffff !important;
 }
-.slds-path__item.slds-is-lost .slds-path__title {
+/* Pisa el verde/azul de SLDS en stages disabled */
+.slds-path__nav .slds-is-complete.dmt-stage-disabled::before,
+.slds-path__nav .slds-is-complete.dmt-stage-disabled::after,
+.slds-path__nav .slds-is-current.dmt-stage-disabled::before,
+.slds-path__nav .slds-is-current.dmt-stage-disabled::after,
+.slds-path__nav .slds-is-active.dmt-stage-disabled::before,
+.slds-path__nav .slds-is-active.dmt-stage-disabled::after {
+    background: #777777 !important;
     color: #ffffff !important;
 }
 
-/* Hover sobre Lost: Se mantiene Rojo */
-.slds-path__item.slds-is-lost:hover .slds-path__link {
-    background-color: #ea001e !important;
-    border-color: #ea001e !important;
-}
-.slds-path__item.slds-is-lost:hover .slds-path__link::after {
-    background-color: #ea001e !important;
-}
-
-/* Caso Especial: Lost Y Activo a la vez */
-.slds-path__item.slds-is-lost.slds-is-active .slds-path__link,
-.slds-path__item.slds-is-lost.slds-is-active .slds-path__link::after {
-    background-color: #ea001e !important;
-    border-color: #ea001e !important;
-}
-
-
-/* ==========================================================================
-   C. ESTADO HOVER ESTÁNDAR (LA CORRECCIÓN)
-   ========================================================================== */
-/* Aplicamos esto a cualquier item que NO sea active y NO sea lost.
-   Esto soluciona el borde raro: pintamos todo (fondo, borde y flechas) del mismo gris. */
-
-.slds-path__item:not(.slds-is-active):not(.slds-is-lost):hover .slds-path__link {
-    background-color: var(--slds-c-path-item-hover-bg) !important; /* #ecebea */
-    border-color: var(--slds-c-path-item-hover-bg) !important;     /* Borde igual al fondo */
-    color: var(--slds-c-path-link-text-color-hover) !important;     /* Texto Azul Oscuro */
-    text-decoration: none !important;
-}
-
-/* CORRECCIÓN VISUAL DE LAS FLECHAS EN HOVER */
-/* Las flechas (::before y ::after) TAMBIÉN deben ser grises para unirse al cuerpo */
-.slds-path__item:not(.slds-is-active):not(.slds-is-lost):hover .slds-path__link::before,
-.slds-path__item:not(.slds-is-active):not(.slds-is-lost):hover .slds-path__link::after {
-    background-color: var(--slds-c-path-item-hover-bg) !important;
-}
-
-
-/* ==========================================================================
-   D. ESTADOS REPOSO (NO SELECCIONADOS)
-   ========================================================================== */
-
-/* Texto negro/gris oscuro para facilitar lectura */
-.slds-path__item.slds-is-incomplete .slds-path__link,
-.slds-path__item.slds-is-complete .slds-path__link {
-    color: #181818 !important;
-}
-
-/* Eliminar subrayados de enlaces */
-.slds-path__link { text-decoration: none !important; }
-.slds-path__link:hover { text-decoration: none !important; }
-
-/* ==========================================================================
-   E. CORRECCIÓN DEL ÚLTIMO ELEMENTO (LAST STEP)
-   ========================================================================== */
-
-/* 1. Forzar que el último ítem ocupe espacio (evita que se vea más corto) */
-.slds-path__item:last-child {
-    flex: 1 1 auto !important; /* Crece para ocupar el espacio sobrante */
-    min-width: 8rem; /* Opcional: Dale un ancho mínimo si el texto es muy corto */
-}
-
-/* 2. Ajustar el enlace interno del último ítem */
-.slds-path__item:last-child .slds-path__link {
-    width: 100%; /* Asegura que el área clicable llene todo el espacio */
-
-    /* Aquí controlas el "redondeado".
-       El estándar suele ser mucho (tipo píldora).
-       Si quieres que sea más "rectángulo", reduce estos valores (ej. 0.25rem).
-       Si lo quieres totalmente redondo al final, déjalo en 1.5rem o más.
-    */
-    border-top-right-radius: 1.5rem !important;
-    border-bottom-right-radius: 1.5rem !important;
-}
-
-/* 3. Asegurar que la "flecha" (que crea el pico) no estorbe en el último */
-.slds-path__item:last-child .slds-path__link::after {
-    display: none !important; /* El último no debe tener punta de flecha */
+/* Modo read-only: todo el path no es interactivo */
+.slds-path__item.dmt-readonly .slds-path__link {
+    cursor: default !important;
+    pointer-events: none;
 }

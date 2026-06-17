@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Virtual_Compact_Layout</fullName>
+    <fields>Decision__c</fields>
+    <fields>Name</fields>
+    <fields>NBC_Region_type__c</fields>
+    <fields>Committee_Start_Date__c</fields>
+    <fields>gf_oppy_virtual_cmtee_stt_name__c</fields>
+    <fields>CreatedById</fields>
+    <label>Virtual Compact Layout</label>
+</CompactLayout>

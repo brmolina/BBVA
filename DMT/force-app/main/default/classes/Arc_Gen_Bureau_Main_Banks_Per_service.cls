@@ -23,7 +23,7 @@
 *             Add checkChangesQualQuestion validation
 * -----------------------------------------------------------------------------------------------
 */
-@SuppressWarnings('sf:UseSingleton, sf:TooManyMethods')
+@SuppressWarnings('sf:UseSingleton, sf:TooManyMethods,PMD.AvoidGlobalModifier,PMD.StdCyclomaticComplexity,PMD.CognitiveComplexity,PDM.CyclomaticComplexity,PMD.ExcessiveParameterList,PMD.NcssMethodCount,PMD.CyclomaticComplexity,PMD.UnusedLocalVariable,sf:DUDataflowAnomalyAnalysis')
 global class Arc_Gen_Bureau_Main_Banks_Per_service implements dyfr.Save_Interface {
     /**
     * @Description: String with value "Group"
@@ -49,6 +49,10 @@ global class Arc_Gen_Bureau_Main_Banks_Per_service implements dyfr.Save_Interfac
     * @Description: String with value "description"
     */
     static final string S_DESCRIPTION = 'description';
+    /**
+    * @Description: String with value "participantType"
+    */
+    static final String S_PART_TYPE = 'participantType';
     /**
     * -----------------------------------------------------------------------------------------------
     * @Description - Method that is responsible for invoking the classes to save the banking relationship information
@@ -163,11 +167,17 @@ global class Arc_Gen_Bureau_Main_Banks_Per_service implements dyfr.Save_Interfac
         if(!listIdsRP.isEmpty()){
             mapAccRP = arce.Arc_Gen_Account_Locator.getAccountInfoById(listIdsRP);
         }
+
+        final String groupClient = arce.Arc_gen_Util.getFilialSubsidiaryByAha(new List<String>{(String) ahaData.Id});
         for(arce__risk_position_summary__c riskItem : Arc_Gen_Risk_Position_summary_Data.getPositionSummaryData(new List<Id>{ahaData.Id})) {
             if(prevAha.arce__Customer__c != riskItem.arce__account_Id__c) { //whether it is the total row
                 Map<String, Object> bankingEGPMap = new Map<String, Object>();
                 bankingEGPMap.put('id',(Object)arce.Arc_Gen_CallEncryptService.getEncryptedClient(mapAccRP.get(riskItem.arce__account_Id__c).accNumber));
-                bankingEGPMap.put('participantType',(Object)mapAccount.get(prevAha.arce__Customer__c).participantType);
+                if(groupClient == null) {
+                    bankingEGPMap.put(S_PART_TYPE,(Object)mapAccount.get(prevAha.arce__Customer__c).participantType);
+                } else {
+                    bankingEGPMap.put(S_PART_TYPE, groupClient);
+                }
                 bankingEGPMap.put('fullName',(Object)'999999');
                 if(arce.Arc_Gen_ValidateInfo_utils.isFilled(riskItem.arce__banrel_comments_desc__c)) {
                     bankingEGPMap.put(S_COMMENTS,(Object)riskItem.arce__banrel_comments_desc__c);
@@ -178,7 +188,11 @@ global class Arc_Gen_Bureau_Main_Banks_Per_service implements dyfr.Save_Interfac
             if(riskItem.arce__Product_id__c != null) {
                 Map<String, Object> bankingEGPMap = new Map<String, Object>();
                 bankingEGPMap.put('id',(Object)arce.Arc_Gen_CallEncryptService.getEncryptedClient(products.get(riskItem.arce__Product_id__c).externalId));
-                bankingEGPMap.put('participantType',(Object)mapAccount.get(prevAha.arce__Customer__c).participantType);
+                if(groupClient == null) {
+                    bankingEGPMap.put(S_PART_TYPE,(Object)mapAccount.get(prevAha.arce__Customer__c).participantType);
+                } else {
+                    bankingEGPMap.put(S_PART_TYPE, groupClient);
+                }
                 bankingEGPMap.put('fullName',(Object) products.get(riskItem.arce__Product_id__c).productName);
                 if(arce.Arc_Gen_ValidateInfo_utils.isFilled(riskItem.arce__banrel_comments_desc__c)) {
                     bankingEGPMap.put(S_COMMENTS,(Object)riskItem.arce__banrel_comments_desc__c);

@@ -5,6 +5,14 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     private static final String MSG_FIELD_RATING_ERROR = 'Max rating must be higher \n than min selected.';
     private static final String MSG_INVALID_DATE_FORMAT = 'Invalid date format for overridefield: ';
     private static final String MSG_INVALID_DECIMAL_FORMAT = 'Invalid decimal format for overridefield: ';
+    private static final String MSG_ERROR_PATTERN = 'Error validating input pattern for field ';
+    private static final String AXIS_EXTERNAL_ID_FEES_UPFRONT = '3';
+    private static final String AXIS_EXTERNAL_ID_SPREAD_DRAWN = '4';
+    private static final String AXIS_EXTERNAL_ID_FEES_PERIODIFICABLE = '7';
+    private static final String AXIS_EXTERNAL_ID_SPREAD_UNDRAWN = '8';
+    private static final String AXIS_EXTERNAL_ID_FEES = '3';
+    private static final String AXIS_EXTERNAL_ID_SPREAD = '4';
+    private static final Decimal AXIS_RANGE_MAX_THRESHOLD = 1000;
     protected Data data; 
 
     public class CustomException extends Exception {}
@@ -47,7 +55,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
 
     public class ProfitabilityIn {
         public OpportunityOverride opportunity;
-        public List<ProductOverride> products;
+        public List<ProductOverride> product;
     }
 
     public class OpportunityOverride {
@@ -56,6 +64,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
         public String counterpart;
         public String clientRating;
         public String externalClientRating;
+        public String scoring;
     }
 
     public class ProductOverride {
@@ -112,29 +121,37 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     * @param omniMap 
     * @return String 
     **/
-    public static void validateInputsRequest(Map<String, String> mapMaxMinValues) {
+    public static void validateInputsRequest(Map<String, Object> omniMap) {
 
-        boolean checkXInputCompleted = (!String.isBlank(mapMaxMinValues.get('xMINRating')) && String.isBlank(mapMaxMinValues.get('xMAXRating'))) || 
-                                        ( String.isBlank(mapMaxMinValues.get('xMINRating')) && !String.isBlank(mapMaxMinValues.get('xMAXRating'))) || 
-                                        ((!String.isBlank(mapMaxMinValues.get('xMIN')) && String.isBlank(mapMaxMinValues.get('xMAX'))) || 
-                                        (String.isBlank(mapMaxMinValues.get('xMIN')) && !String.isBlank(mapMaxMinValues.get('xMAX'))));
+        String xMIN = cleanNullString(omniMap.get('minX'));
+        String xMAX = cleanNullString(omniMap.get('maxX'));
+        String yMIN = cleanNullString(omniMap.get('minY'));
+        String yMAX = cleanNullString(omniMap.get('maxY'));
+        String ratingCatalog =JSON.serialize(omniMap.get('catalogRating'));
+        // check if one of min/max is provided without the other
+        Boolean checkXInputCompleted = ( !String.isBlank(xMIN) && String.isBlank(xMAX)) || ( String.isBlank(xMIN) && !String.isBlank(xMAX));
+        Boolean checkYInputCompleted = ( !String.isBlank(yMIN) && String.isBlank(yMAX)) || ( String.isBlank(yMIN) && !String.isBlank(yMAX));
 
-        boolean checkYInputCompleted =(!String.isBlank(mapMaxMinValues.get('yMINRating')) && String.isBlank(mapMaxMinValues.get('yMAXRating'))) ||
-                                    (String.isBlank(mapMaxMinValues.get('yMINRating')) && !String.isBlank(mapMaxMinValues.get('yMAXRating'))) ||
-                                    ((!String.isBlank(mapMaxMinValues.get('yMIN')) && String.isBlank(mapMaxMinValues.get('yMAX'))) || 
-                                    (String.isBlank(mapMaxMinValues.get('yMIN')) && !String.isBlank(mapMaxMinValues.get('yMAX'))));
-
-        //check if min values is informed  max field its required too
         if( checkXInputCompleted || checkYInputCompleted ){
-
             throw new CustomException(MSG_FIELD_INCOMPLETED);
         }
+        // X axis rating validation
+        if(!String.isBlank(xMIN) && !String.isBlank(xMAX) && (!isNumericString(xMIN) || !isNumericString(xMAX))) {
+            if(!String.isBlank(ratingCatalog)){
+                if(validateRatingMax(xMIN,xMAX,ratingCatalog)){
+                    throw new CustomException(MSG_FIELD_RATING_ERROR);
+                }
+            }
+        }
 
-
-        //check if the min rating value it's minor than max rating value
-        if( validateRatingMax(mapMaxMinValues.get('xMINRating'),mapMaxMinValues.get('xMAXRating'),mapMaxMinValues.get('ratingCatalog')) || validateRatingMax(mapMaxMinValues.get('yMINRating'),mapMaxMinValues.get('yMAXRating'),mapMaxMinValues.get('ratingCatalog'))){
-            throw new CustomException(MSG_FIELD_RATING_ERROR);
-        } 
+        // Y axis rating validation
+        if(!String.isBlank(yMIN) && !String.isBlank(yMAX) && (!isNumericString(yMIN) || !isNumericString(yMAX))) {
+            if(!String.isBlank(ratingCatalog)){
+                if(validateRatingMax(yMIN,yMAX,ratingCatalog)){
+                    throw new CustomException(MSG_FIELD_RATING_ERROR);
+                }
+            }
+        }
 
     }
 
@@ -171,21 +188,13 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     **/
     public static String createRequest(Map<String, Object> omniMap) {
 
-        String xMIN=cleanNullString(omniMap.get('minX'));
-        String xMAX=cleanNullString(omniMap.get('maxX'));
-        String yMIN=cleanNullString(omniMap.get('minY'));
-        String yMAX=cleanNullString(omniMap.get('maxY'));
+    String xMIN = cleanNullString(omniMap.get('minX'));
+    String xMAX = cleanNullString(omniMap.get('maxX'));
+    String yMIN = cleanNullString(omniMap.get('minY'));
+    String yMAX = cleanNullString(omniMap.get('maxY'));
 
-        String xMINRating=cleanNullString(omniMap.get('xminString'));
-        String xMAXRating=cleanNullString(omniMap.get('xmaxString'));
-        String yMINRating=cleanNullString(omniMap.get('yminString'));
-        String yMAXRating=cleanNullString(omniMap.get('ymaxString'));
-
-        Map<String,String> mapMaxMinValues = new Map<String,String>{'xMIN' => xMIN,'xMAX' => xMAX,'yMIN' => yMIN,'yMAX' => yMAX, 
-                                                                    'xMINRating' => xMINRating,'xMAXRating' => xMAXRating,'yMINRating' => yMINRating,'yMAXRating' => yMAXRating,
-                                                                    'ratingCatalog' => JSON.serialize(omniMap.get('catalogRating')) };
-
-        validateInputsRequest(mapMaxMinValues);
+    // validate unified inputs (they can be decimal or rating strings)
+    validateInputsRequest(omniMap);
 
         final User userLogin = DMT_User_Selector.getLoginUser();
         final String federationId = userLogin.federationIdentifier;
@@ -206,37 +215,34 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
         request.assumptionIn.assumption.axisCentral = (String) omniMap.get('axisCentral');
 
         
-        //Max & mins for decimals x
+        // Handle X: either decimals or rating strings
         if(!String.isBlank(xMIN) && !String.isBlank(xMAX)){
-            
-            request.assumptionIn.assumption.minX = xMIN;
-            Decimal maxXFromRage=((Decimal.valueOf(xMIN) + (Decimal.valueOf(xMAX))*9));
-            validateRangeMax(request.assumptionIn.assumption.axisX, maxXFromRage);
-            request.assumptionIn.assumption.maxX = maxXFromRage.toPlainString();
-
+            if(isNumericString(xMIN) && isNumericString(xMAX)){
+                Decimal minXDec = Decimal.valueOf(xMIN);
+                Decimal maxXDec = ((Decimal.valueOf(xMIN) + (Decimal.valueOf(xMAX))*9));
+                request.assumptionIn.assumption.minX = minXDec.toPlainString();
+                validateRangeMax(cleanNullString(omniMap.get('axisX_Id')), maxXDec);
+                request.assumptionIn.assumption.maxX = maxXDec.toPlainString();
+            } else {
+                // treat as rating strings
+                request.assumptionIn.assumption.minX = xMIN;
+                request.assumptionIn.assumption.maxX = xMAX;
+            }
         }
-       
 
-        //Max & mins for decimals Y
+        // Handle Y: either decimals or rating strings
         if(!String.isBlank(yMIN) && !String.isBlank(yMAX)){
-
-            request.assumptionIn.assumption.minY = yMIN;
-            Decimal maxYFromRage= ((Decimal.valueOf(yMIN) + (Decimal.valueOf(yMAX))*9));
-            validateRangeMax(request.assumptionIn.assumption.axisY, maxYFromRage);
-            request.assumptionIn.assumption.maxY = maxYFromRage.toPlainString();
-        }
-
-
-        //String max & mins
-        if(!String.isBlank(xMINRating) && !String.isBlank(xMAXRating)){
-            request.assumptionIn.assumption.minX = (String) omniMap.get('xminString');
-            request.assumptionIn.assumption.maxX = (String) omniMap.get('xmaxString');
-        
-        }
-
-        if(!String.isBlank(yMINRating) && !String.isBlank(yMAXRating)){
-            request.assumptionIn.assumption.minY = (String) omniMap.get('yminString');
-            request.assumptionIn.assumption.maxY = (String) omniMap.get('ymaxString');
+            if(isNumericString(yMIN) && isNumericString(yMAX)){
+                Decimal minYDec = Decimal.valueOf(yMIN);
+                Decimal maxYDec = ((Decimal.valueOf(yMIN) + (Decimal.valueOf(yMAX))*9));
+                request.assumptionIn.assumption.minY = minYDec.toPlainString();
+                validateRangeMax(cleanNullString(omniMap.get('axisY_Id')), maxYDec);
+                request.assumptionIn.assumption.maxY = maxYDec.toPlainString();
+            } else {
+                // treat as rating strings
+                request.assumptionIn.assumption.minY = yMIN;
+                request.assumptionIn.assumption.maxY = yMAX;
+            }
         }
 
         if (omniMap.containsKey('overrideFields') && 
@@ -265,7 +271,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
             request.assumptionIn.overrideField = new OverrideField();
             request.assumptionIn.overrideField.profitabilityIn = new ProfitabilityIn();
             request.assumptionIn.overrideField.profitabilityIn.opportunity = createOpportunityOverride(ofFromOmni);
-            request.assumptionIn.overrideField.profitabilityIn.products = createProductOverrides(ofFromOmni);
+            request.assumptionIn.overrideField.profitabilityIn.product = createProductOverrides(ofFromOmni);
 
         return request;
     }
@@ -284,6 +290,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
         opportunity.counterpart = cleanNullString(String.valueOf(ofFromOmni.get('clientTypeNew')));
         opportunity.clientRating = cleanNullString(String.valueOf(ofFromOmni.get('intClientRatingNew')));
         opportunity.externalClientRating = cleanNullString(String.valueOf(ofFromOmni.get('extClientRatingNew')));
+        opportunity.scoring = cleanNullString(String.valueOf(ofFromOmni.get('ScoringNew')));
         return opportunity;
     }
     
@@ -337,8 +344,8 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
         payment.nominalFb = parseDecimal(ofFromOmni, 'nominalFbNew');
         payment.spreadAmount = parseDecimal(ofFromOmni, 'spreadAmountNew');
         payment.spreadFbAmount = parseDecimal(ofFromOmni, 'spreadFbNew');
-        payment.feesUpfront = parseDecimal(ofFromOmni, 'feesNew');
-        payment.feesPeriodic = parseDecimal(ofFromOmni, 'feesPeriodicNew');
+        payment.feesUpfront = parseDecimal(ofFromOmni, 'nonaccrualfeeNew');
+        payment.feesPeriodic = parseDecimal(ofFromOmni, 'accrualfeeNew');
 
         payments.add(payment);
         return payments;
@@ -383,13 +390,42 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     * @return String 
     **/
     private static String cleanNullString(Object value) {
-        String strValue = String.valueOf(value);
-        return (strValue == null || strValue == 'null' || strValue == 'NULL' || String.isEmpty(strValue)) ? null : strValue;
+    if (value == null){ return null;}
+    String strValue = String.valueOf(value);
+    if (strValue == null){ return null;}
+    strValue = strValue.trim();
+    if (strValue.equalsIgnoreCase('null') || String.isEmpty(strValue)){
+        return null;
+    }
+    try {
+        Pattern p = Pattern.compile('^\\{\\s*[^\\}]+\\s*\\}$');
+        Matcher m = p.matcher(strValue);
+        if (m.matches()){
+            return null;
+        }
+    } catch (Exception e) {
+        throw new CustomException(MSG_ERROR_PATTERN);
+    }
+    return strValue;
+}
+
+    // Helper to check if a string can be parsed to Decimal
+    private static Boolean isNumericString(String s){
+        if(String.isBlank(s)) return false;
+        try{
+            Decimal.valueOf(s);
+            return true;
+        } catch(Exception e){
+            return false;
+        }
     }
 
-    public static Boolean validateRangeMax(String axixValueSelected, Decimal maxValue ) {
-        if(!String.isBlank(axixValueSelected) && (axixValueSelected=='Fees' || axixValueSelected=='Spread') && maxValue>=1000){
-            throw new CustomException('The values provided for '+axixValueSelected+' axis are outside the allowed range. Please verify the data.');
+    public static Boolean validateRangeMax(String axisExternalId, Decimal maxValue ) {
+        if(!String.isBlank(axisExternalId) && 
+        (axisExternalId == AXIS_EXTERNAL_ID_FEES || axisExternalId == AXIS_EXTERNAL_ID_SPREAD ||axisExternalId == AXIS_EXTERNAL_ID_FEES_UPFRONT || axisExternalId == AXIS_EXTERNAL_ID_SPREAD_DRAWN ||
+         axisExternalId == AXIS_EXTERNAL_ID_FEES_PERIODIFICABLE || axisExternalId == AXIS_EXTERNAL_ID_SPREAD_UNDRAWN) &&
+        maxValue >= AXIS_RANGE_MAX_THRESHOLD){
+            throw new CustomException('The values provided for the selected axis are outside the allowed range. Please verify the data.');
         }
         return true;
     }

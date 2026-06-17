@@ -1,0 +1,36 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-04" aria-modal="true"
+        aria-describedby="modal-content-id-4" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container cib-feedback">
+            <header class="slds-modal__header">
+                <h2>{label.feedback}</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4">
+                <div class="cib-options">
+                    <h3>{label.whatWentWrong}</h3>
+                    <lightning-checkbox-group data-id="feedbackReason" options={feedbackReasonOptions}
+                        value={selectedFeedbackReasons}
+                        onchange={handleFeedbackReasonChange}></lightning-checkbox-group>
+                    <template if:true={showText}>
+                        <textarea class="other-reason" name="other" data-id="feedbackOtherReasonDetail" maxlength="254"></textarea>
+                    </template>
+                    <p class="gray-txt optional">
+                        {label.moreDetails}
+                    </p>
+                    <textarea name="more-info" data-id="feedbackAdditionalComments" maxlength="3000"></textarea>
+                    <p class="gray-txt warning">
+                        <lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon>
+                        {label.noSensitiveData}
+                    </p>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning-button variant="brand-outline" label="Cancelar" title="Cancelar"
+                    onclick={handleCerrarPopUp}></lightning-button>
+                <lightning-button variant="brand" label="Enviar" title="Enviar" onclick={sendFeedbackKO}
+                    class="slds-m-left_x-small"></lightning-button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

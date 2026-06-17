@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Title_Role__c</fullName>
+    <label>Title/Role</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Assistant</fullName>
+                <default>false</default>
+                <label>Assistant</label>
+            </value>
+            <value>
+                <fullName>Analyst</fullName>
+                <default>false</default>
+                <label>Analyst</label>
+            </value>
+            <value>
+                <fullName>VP</fullName>
+                <default>false</default>
+                <label>VP</label>
+            </value>
+            <value>
+                <fullName>Director</fullName>
+                <default>false</default>
+                <label>Director</label>
+            </value>
+            <value>
+                <fullName>CEO</fullName>
+                <default>false</default>
+                <label>CEO</label>
+            </value>
+            <value>
+                <fullName>CFO</fullName>
+                <default>false</default>
+                <label>CFO</label>
+            </value>
+            <value>
+                <fullName>CIO</fullName>
+                <default>false</default>
+                <label>CIO</label>
+            </value>
+            <value>
+                <fullName>CRO</fullName>
+                <default>false</default>
+                <label>CRO</label>
+            </value>
+            <value>
+                <fullName>Partner</fullName>
+                <default>false</default>
+                <label>Partner</label>
+            </value>
+            <value>
+                <fullName>Group Treasurer</fullName>
+                <default>false</default>
+                <label>Group Treasurer</label>
+            </value>
+            <value>
+                <fullName>Deputy Treasurer</fullName>
+                <default>false</default>
+                <label>Deputy Treasurer</label>
+            </value>
+            <value>
+                <fullName>Regional Treasurer</fullName>
+                <default>false</default>
+                <label>Regional Treasurer</label>
+            </value>
+            <value>
+                <fullName>Treasury Analyst</fullName>
+                <default>false</default>
+                <label>Treasury Analyst</label>
+            </value>
+            <value>
+                <fullName>Chief X Officer (CxO)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Chief X Officer (CxO)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

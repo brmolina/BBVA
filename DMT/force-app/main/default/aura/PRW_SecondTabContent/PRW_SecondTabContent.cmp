@@ -1,0 +1,33 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+  <aura:attribute name="activeSections" type="List" default="['CASH']" />
+  <aura:attribute name="profSheetSFId" type="String" />
+  <aura:attribute name="profSheetId" type="String" />
+  <aura:attribute name="profSheetEnd" type="Date" />
+  <aura:attribute name="profSheetStart" type="Date" />
+  <!-- <aura:attribute name="acc" type="Account" />
+  <aura:attribute name="profSheetIdB" type="String" />
+  <aura:attribute name="accountId" type="String" /> 
+  <aura:attribute name="lAccountId" type="String" /> -->
+
+
+
+
+  <div class="slds-p-bottom_medium">
+    <gfsc:guidanceforSuccessWrapper guidanceName="Pricewise" fieldName="Information" minimised='true' nomenu="true"/>
+  </div>
+  <div class="slds-p-bottom_medium">
+    <lightning:tabset selectedTabId="volumes" variant="scoped">
+      <lightning:tab label="VOLUMES" id="volumes">
+
+        <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="{!v.activeSections}">
+          <lightning:accordionSection class="classAccordion" name="CASH" label="Cash Management">
+            <c:PRW_TableVolume profSheetSFId="{!v.profSheetSFId}" profSheetId="{!v.profSheetId}" profSheetStart="{!v.profSheetStart}" profSheetEnd="{!v.profSheetEnd}"/>
+          </lightning:accordionSection>
+        </lightning:accordion>
+      </lightning:tab>
+      <lightning:tab label="MARGIN" id="margin">
+            <c:PRW_TableBruteMargin profSheetSFId="{!v.profSheetSFId}" profSheetId="{!v.profSheetId}" profSheetStart="{!v.profSheetStart}" profSheetEnd="{!v.profSheetEnd}"/>
+      </lightning:tab>
+    </lightning:tabset>
+  </div>
+</aura:component>

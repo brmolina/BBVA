@@ -1,0 +1,9 @@
+<aura:event type="APPLICATION">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="record" type="SObject"/>
+    <aura:attribute name="primary" type="Boolean"/>
+    <aura:attribute name="secondary" type="Boolean"/>
+    <aura:attribute name="saveModeChild" type="Boolean"/>
+</aura:event>

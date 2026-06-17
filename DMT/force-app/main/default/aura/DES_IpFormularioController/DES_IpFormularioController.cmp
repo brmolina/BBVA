@@ -1,0 +1,1881 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,force:hasSObjectName,force:hasRecordId,lightning:availableForFlowScreens" access="global" controller="DES_IpFormController">
+
+    <aura:attribute name="userAccess" type="Object"/>
+    <aura:attribute name="form" type="Inside_information_form__c"/>
+    <aura:attribute name="ObjectType" type="Object"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="formId" type="String"/>
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="visitId" type="String"/>
+    <aura:attribute name="codUser" type="String"/>
+    <aura:attribute name="isVisible" type="boolean" default="false"/>
+    <aura:attribute name="isexpandedIP" type="boolean" default="true"/>
+    <aura:attribute name="isexpandedIP2" type="boolean" default="true"/>
+    <aura:attribute name="errorMessage" type="String" default=""/>
+    <aura:attribute name="endpoint" type="String"/>
+    <aura:attribute name="preguntas" type="Map"/>
+    <aura:attribute name="DisclaimerValue" type="Boolean" default="false"/>
+   	<aura:attribute name="formExt" type="Object"/>
+	<aura:attribute name="aListed" type="Object"/>
+    <aura:attribute name="isCompliance" type="boolean" default="false"/>
+    <aura:attribute name="formCountry" type="String"/>
+    <!-- aura:attribute name="data_form" type="Object"/ -->
+    <aura:attribute name="recordLoadError" type="String"/>
+    
+    <!-- force:recordData aura:id="recordLoader" 
+    recordId="{!v.recordId}"
+    fields="oper_afct_cust_bal_ind_type__c, oper_afct_cust_bal_desc__c, oper_manager_informed_ind_type__c, participant_name__c, prtcpt_stock_exch_ind_type__c,
+            participant1_name__c, prtcpt_stock_exch_ind1_type__c, participant2_name__c, prtcpt_stock_exch_ind2_type__c, participant3_name__c, prtcpt_stock_exch_ind3_type__c, participant4_name__c,
+            prtcpt_stock_exch_ind4_type__c, participant5_name__c, prtcpt_stock_exch_ind5_type__c, non_disclosure_agree_ind_type__c, non_disclosure_agree_desc__c, CurrencyIsoCode,
+            cust_low_profitabilliy_desc__c, cust_low_profitabilliy_ind_type__c, operation_privileged_start_date__c, user_name__c, oper_cnmv_cmun_ind_type__c, oper_cnmv_cmun_desc__c, Name, reserved_information_desc__c,
+            reserved_information_type__c, oper_info_stakeholders_desc__c, oper_info_stakeholders_ind_type__c, operation_materialized_desc__c, oper_materialized_ind_type__c, oper_prvlg_other_prtcpt_desc__c,
+            oper_prvlg_stk_mkt_afct_desc__c, oper_prvlg_stk_mkt_afct_ind_type__c, operation_privileged_name__c, operation_privileged_desc__c, operation_privileged_ind_type__c, operation_strategic_desc__c,
+            operation_strategic_ind_type__c, operation_viable_desc__c, operation_viable_ind_type__c, other_information_desc__c, country_id__c, operation_cmtee_apprv_ind_type__c, operation_cmtee_apprv_desc__c, oper_afct_cust_revenue_desc__c,
+            oper_afct_cust_revenue_ind_type__c, oper_stakeholder_invest_desc__c, oper_stakeholder_invest_ind_type__c, compliance_form_send_date__c, requester_info_complete_desc__c, requester_info_complete_ind_type__c"
+    targetFields="{!v.form}"
+    targetError="{!v.recordLoadError}"	
+    recordUpdated="{!c.doInit}"
+	/ -->    
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+
+    <aura:if isTrue="{!and(v.isVisible, v.form != null)}">
+
+
+        <div aura:id="viewFormIP">
+            <div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView' + (v.isexpandedIP ? ' slds-is-open' : '')}">
+                <h3 class="slds-section__title slds-theme_shade ">
+                    <button aria-controls="divContent" aria-expanded="{!v.isexpandedIP}" onclick="{!c.changeStateIP}" class="slds-button slds-section__title-action">
+                        <lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+                        <span class="slds-truncate cabecera-principal" title="Section Title">Inside Information/MNPI Projects Verification Checklist</span>
+                    </button>
+
+                </h3>
+
+                <div aria-hidden="{!!v.isexpandedIP}" class="slds-section__content" >
+                    <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria">
+                        <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_1}</span>
+                    </h2>
+
+                    <div class="slds-form slds-form_stacked ">
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q1_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_prvlg_stk_mkt_afct_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_prvlg_stk_mkt_afct_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_prvlg_stk_mkt_afct_ind_type__c }"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_prvlg_stk_mkt_afct_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_prvlg_stk_mkt_afct_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.listedComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_2}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q2_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.reserved_information_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.reserved_information_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.reserved_information_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.reserved_information_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.reserved_information_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.notPublicComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_3}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_revenue_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_revenue_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_afct_cust_revenue_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_revenue_desc__c.helpText!= null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_revenue_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.profitComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_2}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_bal_ind_type__c.helpText!= null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_bal_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_afct_cust_bal_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_bal_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_afct_cust_bal_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.balanceComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_3}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.cust_low_profitabilliy_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.cust_low_profitabilliy_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.cust_low_profitabilliy_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.cust_low_profitabilliy_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.cust_low_profitabilliy_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.lossComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                                <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                    <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                        <span class="slds-form-element__label">{!v.preguntas.Q3_4}</span>
+                                        <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_master_agreement_type__c.helpText != null}">
+                                            <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_master_agreement_type__c.helpText}"/>
+                                        </aura:if>
+                                        <div class="slds-form-element__control">
+                                            <lightning:layout class="slds-hint-parent">
+                                                <div class="slds-form-element__static">
+                                                    <lightning:formattedText value="{!v.form.gf_master_agreement_type__c}"/>
+                                                </div>
+                                                <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                            </lightning:layout>
+                                        </div>										
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                    <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                        <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                        <!-- 
+                                        <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_master_agreement_desc__c.helpText!= null}">
+                                            <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_master_agreement_desc__c.helpText}"/>
+                                        </aura:if>
+                                        <div class="slds-form-element__control">
+                                            <lightning:layout class="slds-hint-parent">
+                                                <div class="slds-form-element__static">
+                                                    <lightning:formattedText value="{!v.formExt.gf_master_agreement_desc__c}"/>
+                                                </div>
+                                                <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                            </lightning:layout>
+                                        </div>
+                                        -->
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_5}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_reason_funds_used_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_reason_funds_used_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.gf_reason_funds_used_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                        <!-- 
+                                        <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_reason_funds_used_desc__c.helpText!= null}">
+                                            <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_reason_funds_used_desc__c.helpText}"/>
+                                        </aura:if>
+                                        <div class="slds-form-element__control">
+                                            <lightning:layout class="slds-hint-parent">
+                                                <div class="slds-form-element__static">
+                                                    <lightning:formattedText value="{!v.formExt.gf_reason_funds_used_desc__c}"/>
+                                                </div>
+                                                <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                            </lightning:layout>
+                                        </div>
+                                        -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_6}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_agree_more_3_per_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_agree_more_3_per_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.gf_agree_more_3_per_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                        <!-- 
+                                        <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.gf_agree_more_3_per_desc__c.helpText!= null}">
+                                            <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.gf_agree_more_3_per_desc__c.helpText}"/>
+                                        </aura:if>
+                                        <div class="slds-form-element__control">
+                                            <lightning:layout class="slds-hint-parent">
+                                                <div class="slds-form-element__static">
+                                                    <lightning:formattedText value="{!v.formExt.gf_agree_more_3_per_desc__c}"/>
+                                                </div>
+                                                <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                            </lightning:layout>
+                                        </div>
+                                        -->
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_4}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q4_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_strategic_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_strategic_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.operation_strategic_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_strategic_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_strategic_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.strategicComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_5}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_viable_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_viable_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.operation_viable_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_viable_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_viable_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.analysisComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_2}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_cmtee_apprv_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_cmtee_apprv_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.operation_cmtee_apprv_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_cmtee_apprv_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_cmtee_apprv_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.comiteComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_3}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_info_stakeholders_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_info_stakeholders_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_info_stakeholders_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_info_stakeholders_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_info_stakeholders_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.thirPartyComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_4}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.non_disclosure_agree_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.non_disclosure_agree_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.non_disclosure_agree_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.non_disclosure_agree_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.non_disclosure_agree_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.confidentialComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_5}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.requester_info_complete_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.requester_info_complete_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.requester_info_complete_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.requester_info_complete_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.requester_info_complete_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.priceComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      	<div class="slds-grid slds-gutters_small slds-m-top_medium slds-m-bottom_medium full cols-1 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                            	<lightning:formattedText value="Bearing in mind your previous answers and considering the current status of the Deal:"/>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_6}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_materialized_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_materialized_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_materialized_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_materialized_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_materialized_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.achieveComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_7}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_stakeholder_invest_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_stakeholder_invest_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_stakeholder_invest_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_stakeholder_invest_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_stakeholder_invest_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.investmentComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_6}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q6_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_privileged_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_privileged_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.operation_privileged_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_privileged_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_privileged_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.insideComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">{!v.preguntas.Title_Section_7}</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q7_1}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_cnmv_cmun_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_cnmv_cmun_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.oper_cnmv_cmun_ind_type__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate   full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.oper_cnmv_cmun_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.oper_cnmv_cmun_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.publishComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+<!-- ****************** ****************** FIN CUESTIONARIO ****************** ******************  -->
+
+		<div aura:id="viewFormIP2">
+         <div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView' + (v.isexpandedIP2 ? ' slds-is-open' : '')}">
+                <h3 class="slds-section__title slds-theme_shade slds-m-top_large">
+                    <button aria-controls="divContent" aria-expanded="{!v.isexpandedIP2}" onclick="{!c.changeStateIP2}" class="slds-button slds-section__title-action">
+                        <lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+                        <span class="slds-truncate cabecera-principal " title="Section Title">Notification of Transaction With Inside Information</span>
+                    </button>
+
+                </h3>
+                <div aria-hidden="{!!v.isexpandedIP2}" class="slds-section__content" >
+
+                    <div class="slds-form slds-form_stacked ">
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Notification Date</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.compliance_form_send_date__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.compliance_form_send_date__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <ui:outputDateTime value="{!v.form.compliance_form_send_date__c}" />
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">From</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.user_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.user_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.user_name__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">To:</span>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value='Compliance – S&amp;D Compliance'/>
+                                            </div>
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Code Name</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_privileged_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_privileged_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.form.operation_privileged_name__c}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-1 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Brief description of the transaction</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_privileged_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_privileged_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.operationDescription}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Companies Affected:</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-12 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.aListed[0].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[0].listedCheck}" value="{!v.aListed[0].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant1_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant1_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static ">
+                                                <lightning:formattedText value="{!v.aListed[1].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind1_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind1_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[1].listedCheck}" value="{!v.aListed[1].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-12 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant2_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant2_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.aListed[2].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind2_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind2_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[2].listedCheck}" value="{!v.aListed[2].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant3_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant3_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.aListed[3].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind3_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind3_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[3].listedCheck}" value="{!v.aListed[3].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-gutters_small full cols-12 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant4_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant4_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.aListed[4].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind4_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind4_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[4].listedCheck}" value="{!v.aListed[4].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_5-of-12 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.participant5_name__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.participant5_name__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.aListed[5].companyName}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-size_1-of-12 slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind5_type__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.prtcpt_stock_exch_ind5_type__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static cbRemoveLabel">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[5].listedCheck}" value="{!v.aListed[5].listedCheck}" disabled="true"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Date and time when this inside information was identified</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Date and local time</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.operation_privileged_start_date__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.operation_privileged_start_date__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <ui:outputDateTime value="{!v.form.operation_privileged_start_date__c}" />
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Country</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.country_id__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.country_id__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formCountry}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                            <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Control of Inside Information procedure</span>
+                        </h2>
+                        <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow my-last-item">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    In accordance with the Control of Inside Information procedure, it is assumed that the direct hierarchical superiors of the Project Leader of this transaction, up to General Manager level, have knowledge about it.
+                                    <span class="slds-form-element__label"> In the event of NOT having been informed by the Area at the date of this communication, please mark the box:</span>
+                                    <lightning:layout class="slds-hint-parent">
+                                        <div class="slds-form-element__static cbRemoveLabel">
+                                            <lightning:input type="checkbox" checked="{!v.form.oper_manager_informed_ind_type__c}" value="{!v.form.oper_manager_informed_ind_type__c}" disabled="true"/>
+                                        </div>
+                                        <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                    </lightning:layout>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Notes</span>
+                            </h2>
+
+                        <div class="slds-grid slds-gutters_small full cols-1 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Notes</span>
+                                    <aura:if isTrue="{!v.ObjectType.Inside_information_form__c.other_information_desc__c.helpText != null}">
+                                        <lightning:helptext class="icono-ayuda" content="{!v.ObjectType.Inside_information_form__c.other_information_desc__c.helpText}"/>
+                                    </aura:if>
+                                    <div class="slds-form-element__control">
+                                        <lightning:layout class="slds-hint-parent">
+                                            <div class="slds-form-element__static">
+                                                <lightning:formattedText value="{!v.formExt.formComments}"/>
+                                            </div>
+                                            <lightning:buttonIcon iconName="utility:edit" class="slds-col_bump-left" iconClass="slds-button__icon_hint" variant="bare" alternativeText="Edit Record" onclick="{!c.editRecordIP}" />
+                                        </lightning:layout>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+
+        <div aura:id="editFormIP1" class="slds-hide ">
+            <div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView scrollable' + (v.isexpandedIP ? ' slds-is-open' : '')}">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <button aria-controls="divContent" aria-expanded="{!v.isexpandedIP}" onclick="{!c.changeStateIP}" class="slds-button slds-section__title-action">
+                        <lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+                        <span class="slds-truncate" title="Section Title">Inside Information/MNPI Projects Verification Checklist</span>
+                    </button>
+                </h3>
+
+                <div aria-hidden="{!!v.isexpandedIP}" class="slds-section__content" >
+                    <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria">
+                        <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Publicly Trade Security</span>
+                    </h2>
+                    <lightning:recordEditForm
+                     recordId="{!v.recordId}"
+                     objectApiName="Inside_information_form__c">
+                     <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q1_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                        						<lightning:inputField aura:id="ai_oper_prvlg_stk_mkt_afct_ind_type__c" fieldName="oper_prvlg_stk_mkt_afct_ind_type__c" value="{!v.form.oper_prvlg_stk_mkt_afct_ind_type__c}" onchange= "{! c.onchange}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+							<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                        						<lightning:textarea name="oper_prvlg_stk_mkt_afct_desc__c" value="{!v.formExt.listedComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+					</div>
+
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria">
+                            <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Material Non-Public Information</span>
+                        </h2>
+
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q2_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="reserved_information_type__c"  fieldName="reserved_information_type__c" value="{!v.form.reserved_information_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="reserved_information_desc__c" value="{!v.formExt.notPublicComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-m-top_small slds-box slds-box_xx-small cabecera-secundaria">
+                            <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Quantitative Criteria: Materiality of the Deal</span>
+                        </h2>
+
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element  slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_afct_cust_revenue_ind_type__c" fieldName="oper_afct_cust_revenue_ind_type__c" value="{!v.form.oper_afct_cust_revenue_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="oper_afct_cust_revenue_desc__c" value="{!v.formExt.profitComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_2}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_afct_cust_bal_ind_type__c" fieldName="oper_afct_cust_bal_ind_type__c" value="{!v.form.oper_afct_cust_bal_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="oper_afct_cust_bal_desc__c" value="{!v.formExt.balanceComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_3}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="cust_low_profitabilliy_ind_type__c" fieldName="cust_low_profitabilliy_ind_type__c" value="{!v.form.cust_low_profitabilliy_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="cust_low_profitabilliy_desc__c" value="{!v.formExt.lossComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_4}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="gf_master_agreement_type__c" fieldName="gf_master_agreement_type__c" value="{!v.form.gf_master_agreement_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                        <!--
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="gf_master_agreement_desc__c" value="{!v.formExt.gf_master_agreement_desc__c}"/>
+                                            </div>
+                                        -->
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_5}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="gf_reason_funds_used_ind_type__c" fieldName="gf_reason_funds_used_ind_type__c" value="{!v.form.gf_reason_funds_used_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                        <!--
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="gf_reason_funds_used_desc__c" value="{!v.formExt.gf_reason_funds_used_desc__c}"/>
+                                            </div>
+                                        -->
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q3_6}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="gf_agree_more_3_per_type__c" fieldName="gf_agree_more_3_per_type__c" value="{!v.form.gf_agree_more_3_per_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                        <!--
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="gf_agree_more_3_per_desc__c" value="{!v.formExt.gf_agree_more_3_per_desc__c}"/>
+                                            </div>
+                                        -->
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_small slds-m-top_medium slds-box slds-box_xx-small cabecera-secundaria">
+                            <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Qualitative Criteria: Strategic Character of the Deal</span>
+                        </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q4_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="operation_strategic_ind_type__c" fieldName="operation_strategic_ind_type__c" value="{!v.form.operation_strategic_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_strategic_desc__c" value="{!v.formExt.strategicComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Qualitative Criteria</span>
+                            </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="operation_viable_ind_type__c" fieldName="operation_viable_ind_type__c" value="{!v.form.operation_viable_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_viable_desc__c" value="{!v.formExt.analysisComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_2}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="operation_cmtee_apprv_ind_type__c" fieldName="operation_cmtee_apprv_ind_type__c" value="{!v.form.operation_cmtee_apprv_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_cmtee_apprv_desc__c" value="{!v.formExt.comiteComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_3}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_info_stakeholders_ind_type__c" fieldName="oper_info_stakeholders_ind_type__c" value="{!v.form.oper_info_stakeholders_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="oper_info_stakeholders_desc__c" value="{!v.formExt.thirPartyComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_4}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="non_disclosure_agree_ind_type__c" fieldName="non_disclosure_agree_ind_type__c" value="{!v.form.non_disclosure_agree_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="non_disclosure_agree_desc__c" value="{!v.formExt.confidentialComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_5}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="requester_info_complete_ind_type__c" fieldName="requester_info_complete_ind_type__c" value="{!v.form.requester_info_complete_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="requester_info_complete_desc__c" value="{!v.formExt.priceComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small slds-m-top_medium slds-m-bottom_medium full cols-1 forcePageBlockSectionRow">
+						<div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                          	<lightning:formattedText value="Bearing in mind your previous answers and considering the current status of the Deal:"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_6}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_materialized_ind_type__c" fieldName="oper_materialized_ind_type__c" value="{!v.form.oper_materialized_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_materialized_desc__c" value="{!v.formExt.achieveComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q5_7}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_stakeholder_invest_ind_type__c" fieldName="oper_stakeholder_invest_ind_type__c" value="{!v.form.oper_stakeholder_invest_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="oper_stakeholder_invest_desc__c" value="{!v.formExt.investmentComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Additional Questions: Third Parties</span>
+                            </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q6_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="operation_privileged_ind_type__c" fieldName="operation_privileged_ind_type__c" value="{!v.form.operation_privileged_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_privileged_desc__c" value="{!v.formExt.insideComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Additional Questions: Hechos Relevantes</span>
+                            </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Q7_1}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField aura:id="oper_cnmv_cmun_ind_type__c" fieldName="oper_cnmv_cmun_ind_type__c" value="{!v.form.oper_cnmv_cmun_ind_type__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">{!v.preguntas.Comments}</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="oper_cnmv_cmun_desc__c" value="{!v.formExt.publishComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                 </lightning:recordEditForm>
+
+                </div>
+            </div>
+        </div>
+
+        <div aura:id="editFormIP2" class="slds-hide slds-m-top_large">
+            <div class="{! 'slds-section full forcePageBlockSection forcePageBlockSectionView' + (v.isexpandedIP2 ? ' slds-is-open' : '')}">
+                <h3 class="slds-section__title slds-theme_shade ">
+                    <button aria-controls="divContent" aria-expanded="{!v.isexpandedIP2}" onclick="{!c.changeStateIP2}" class="slds-button slds-section__title-action">
+                        <lightning:icon class="section-icon slds-m-right_x-small slds-button__icon slds-icon-utility-chevrondown slds-icon_container forceIcon" aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch"/>
+                        <span class="slds-truncate" title="Section Title">Notification of Transaction With Inside Information</span>
+                    </button>
+                </h3>
+
+                <div aria-hidden="{!!v.isexpandedIP2}" class="slds-section__content" >
+                    <lightning:recordEditForm
+                     recordId="{!v.recordId}"
+                     objectApiName="Inside_information_form__c">
+                    <div class="slds-grid slds-gutters_small full cols forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label" >Notification Date</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="compliance_form_send_date__c" variant="label-hidden" type="datetime" value="{!v.form.compliance_form_send_date__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="slds-grid slds-gutters_small full cols forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">From</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField fieldName="user_name__c" value="{!v.form.user_name__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="slds-grid slds-gutters_small slds-m-top_medium full cols forcePageBlockSectionRow">
+                            <div class="slds-col slds-m-bottom_medium slds-grid slds-has-flexi-truncate slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Code Name</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:inputField fieldName="operation_privileged_name__c" value="{!v.form.operation_privileged_name__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="slds-grid slds-gutters_small full cols forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Brief description of the transaction</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="operation_privileged_desc__c" value="{!v.formExt.operationDescription}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Companies Affected</span>
+                            </h2>
+
+                    <div class="slds-grid slds-gutters_small full cols-5 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant_name__c" variant="label-hidden" value="{!v.aListed[0].companyName}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[0].listedCheck}" value="{!v.aListed[0].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant1_name__c" variant="label-hidden" value="{!v.aListed[1].companyName}" />
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" value="{!v.aListed[1].listedCheck}" checked="{!v.aListed[1].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-5 slds-m-top_medium forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant2_name__c" variant="label-hidden" value="{!v.aListed[2].companyName}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[2].listedCheck}" value="{!v.aListed[2].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant3_name__c" variant="label-hidden" value="{!v.aListed[3].companyName}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[3].listedCheck}" value="{!v.aListed[3].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="slds-grid slds-gutters_small full cols-5 slds-m-top_medium slds-m-bottom_medium forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant4_name__c" variant="label-hidden" value="{!v.aListed[4].companyName}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[4].listedCheck}" value="{!v.aListed[4].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate slds-size_2-of-5 full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Company</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="participant5_name__c" variant="label-hidden" value="{!v.aListed[5].companyName}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid padding-left-0 slds-has-flexi-truncate slds-m-right_xx-large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label padding-left-0">Listed</span>
+                                    <div class="slds-form-element__control slds-m-top_xx-small">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input type="checkbox" checked="{!v.aListed[5].listedCheck}" value="{!v.aListed[5].listedCheck}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                        <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria">
+                            <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Date and time when this inside information was identified</span>
+                        </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Date and local time</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:input name="operation_privileged_start_date__c" type="datetime" value="{!v.form.operation_privileged_start_date__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Country</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static ">
+                                                <lightning:inputField fieldName="country_id__c" value="{!v.form.country_id__c}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+
+                    <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                        <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Control of Inside Information procedure</span>
+                    </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow my-last-item">
+                        <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                            <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                In accordance with the Control of Inside Information procedure, it is assumed that the direct hierarchical superiors of the Project Leader of this transaction, up to General Manager level, have knowledge about it.
+                                <span class="slds-form-element__label"> In the event of NOT having been informed by the Area at the date of this communication, please mark the box:</span>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">
+                                        <lightning:input type="checkbox" checked="{!v.form.oper_manager_informed_ind_type__c}" value="{!v.form.oper_manager_informed_ind_type__c}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                            <h2 class="slds-section__title slds-m-left_small slds-m-bottom_medium slds-box slds-box_xx-small cabecera-secundaria slds-m-top_medium ">
+                                <span class="slds-truncate slds-text-body_small slds-text-color_inverse slds-text-align_center" title="Section Title">Notes</span>
+                            </h2>
+                    <div class="slds-grid slds-gutters_small full cols-2 forcePageBlockSectionRow my-last-item">
+                            <div class="slds-col slds-grid slds-has-flexi-truncate  slds-m-right_large full forcePageBlockItem forcePageBlockItemView" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_edit slds-grow slds-hint-parent override--slds-form-element">
+                                    <span class="slds-form-element__label">Notes</span>
+                                    <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                                <lightning:textarea name="other_information_desc__c" value="{!v.formExt.formComments}"/>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+
+                 </lightning:recordEditForm>
+
+
+                </div>
+            </div>
+            
+           <lightning:layout horizontalAlign="center" class="slds-m-top_large my-footer slds-box">
+               		 <lightning:button variant="neutral" label="Cancel" title="Cancel Inside information Update" onclick="{!c.handleCancelIP}"/>
+                	<lightning:button variant="brand" label="Save" title="Save Inside information" onclick="{!c.handleSaveIP}"/>
+                </lightning:layout>
+        </div>
+             
+        <aura:set attribute="else">
+            <h1>
+                <h2>
+                    <div class="errorIP">
+                        <div class="slds-text-color_inverse slds-align_absolute-center">
+                            <lightning:icon iconName="utility:lock" variant="inverse" />
+                            <aura:unescapedHtml value="{!v.errorMessage}" />
+                        </div>
+                    </div>
+                </h2>
+            </h1>
+        </aura:set>
+
+        
+        <aura:set attribute="else">
+			<h1>
+                <h2>
+                    <div class="errorIP">
+                        <div class="slds-text-color_inverse slds-align_absolute-center">
+                            <lightning:icon iconName="utility:lock" variant="inverse" />
+                            Please make sure you are connected to BBVA network or VPN to access the complete set of data of this Inside information form. 
+                            <!-- Only Opportunity team members can access the complete set of data of this opportunity with Inside information. -->
+                        </div>
+                    </div>
+                </h2>
+            </h1>
+		</aura:set>
+    </aura:if> 
+    
+</aura:component>

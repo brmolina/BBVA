@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>amortizationType_CO_OL</label>
+    <protected>false</protected>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">CO</value>
+    </values>
+    <values>
+        <field>Field_Edit_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Field_View_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FilterText__c</field>
+        <value xsi:type="xsd:string">g_amortization_type_c</value>
+    </values>
+    <values>
+        <field>LineType__c</field>
+        <value xsi:type="xsd:string">OL</value>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

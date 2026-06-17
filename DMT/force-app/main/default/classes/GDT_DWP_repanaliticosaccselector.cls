@@ -19,10 +19,10 @@ public with sharing class GDT_DWP_repanaliticosaccselector {//NOSONAR
         final Map<String,String> mapa = new Map<String,String>();
         final Account clientStarId;//NOSONAR
         if (Schema.sObjectType.Account.isAccessible()) {
-        clientStarId = [SELECT SER_CClient__c FROM Account WHERE id =:recordId];
+        clientStarId = [SELECT g_customer_id__c FROM Account WHERE id =:recordId];
         }
         
-         final List<GDT_Rep_Analiticos__c> repAn = retrieveReports(clientStarId.SER_CClient__c);
+         final List<GDT_Rep_Analiticos__c> repAn = retrieveReports(clientStarId.g_customer_id__c);
         
         
         

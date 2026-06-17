@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Category_Type__c</fullName>
+    <label>Annex Category</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Transactional RaR and Derivative (pdf from Amiweb&amp; COPOR)</fullName>
+                <default>false</default>
+                <label>Transactional RaR and Derivative (pdf from Amiweb&amp; COPOR)</label>
+            </value>
+            <value>
+                <fullName>Transactional RaR and Expected Global Annex (pdf from Amiweb)</fullName>
+                <default>false</default>
+                <label>Transactional RaR and Expected Global Annex (pdf from Amiweb)</label>
+            </value>
+            <value>
+                <fullName>Client Snapshot</fullName>
+                <default>false</default>
+                <label>Client Snapshot</label>
+            </value>
+            <value>
+                <fullName>Product Opinion: Syndication, DCM, ECM, Other</fullName>
+                <default>false</default>
+                <label>Product Opinion: Syndication, DCM, ECM, Other</label>
+            </value>
+            <value>
+                <fullName>Credit Risk Opinion and Confirmation of the rating&amp;calification</fullName>
+                <default>false</default>
+                <label>Credit Risk Opinion and Confirmation of the rating&amp;calification</label>
+            </value>
+            <value>
+                <fullName>Project Finance Risk Memo</fullName>
+                <default>false</default>
+                <label>Project Finance Risk Memo</label>
+            </value>
+            <value>
+                <fullName>NPC approval</fullName>
+                <default>false</default>
+                <label>NPC approval</label>
+            </value>
+            <value>
+                <fullName>Additional information of the structure of the deal</fullName>
+                <default>false</default>
+                <label>Additional information of the structure of the deal</label>
+            </value>
+            <value>
+                <fullName>Business Plan Figures (pdf from Amiweb)</fullName>
+                <default>false</default>
+                <label>Business Plan Figures (pdf from Amiweb)</label>
+            </value>
+            <value>
+                <fullName>Detailed description of prospect&apos;s activity and wallet share</fullName>
+                <default>false</default>
+                <label>Detailed description of prospect&apos;s activity and wallet share</label>
+            </value>
+            <value>
+                <fullName>GC Strategy &amp; Profitability Opinion</fullName>
+                <default>false</default>
+                <label>GC Strategy &amp; Profitability Opinion</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

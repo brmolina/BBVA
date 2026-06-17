@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Botón que envía minuta si tiene asignada</description>
+    <height>450</height>
+    <label>Send minute</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <page>MinuteSelector_nbc</page>
+    <type>VisualforcePage</type>
+    <width>-100</width>
+</QuickAction>

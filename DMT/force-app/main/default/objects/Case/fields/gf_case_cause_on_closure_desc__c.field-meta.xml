@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_case_cause_on_closure_desc__c</fullName>
+    <label>Close Category</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>gf_case_area_name__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Aplicativo</fullName>
+                <default>false</default>
+                <label>Aplicativo</label>
+            </value>
+            <value>
+                <fullName>Aplicativo (GMM/ePhoenix/código)</fullName>
+                <default>false</default>
+                <label>Aplicativo (GMM/ePhoenix/código/NOVA)</label>
+            </value>
+            <value>
+                <fullName>Captio</fullName>
+                <default>false</default>
+                <label>Captio</label>
+            </value>
+            <value>
+                <fullName>Certify</fullName>
+                <default>false</default>
+                <label>Certify</label>
+            </value>
+            <value>
+                <fullName>Cliente</fullName>
+                <default>false</default>
+                <label>Cliente</label>
+            </value>
+            <value>
+                <fullName>Concur</fullName>
+                <default>false</default>
+                <label>Concur</label>
+            </value>
+            <value>
+                <fullName>Demica</fullName>
+                <default>false</default>
+                <label>Demica</label>
+            </value>
+            <value>
+                <fullName>Desconocido</fullName>
+                <default>false</default>
+                <label>Desconocido</label>
+            </value>
+            <value>
+                <fullName>Expensify</fullName>
+                <default>false</default>
+                <label>Expensify</label>
+            </value>
+            <value>
+                <fullName>Expensya</fullName>
+                <default>false</default>
+                <label>Expensya</label>
+            </value>
+            <value>
+                <fullName>Funcional Global</fullName>
+                <default>false</default>
+                <label>Funcional Global</label>
+            </value>
+            <value>
+                <fullName>Funcional Local</fullName>
+                <default>false</default>
+                <label>Funcional Local</label>
+            </value>
+            <value>
+                <fullName>Implementación</fullName>
+                <default>false</default>
+                <label>Implementación</label>
+            </value>
+            <value>
+                <fullName>Infraestructura</fullName>
+                <default>false</default>
+                <label>Infraestructura</label>
+            </value>
+            <value>
+                <fullName>Intervención</fullName>
+                <default>false</default>
+                <label>Intervención</label>
+            </value>
+            <value>
+                <fullName>Intervención: errores derivados de una subida de código o intervenciones manuales no programadas en prod.</fullName>
+                <default>false</default>
+                <label>Intervención: errores derivados de una subida de código o intervenciones manuales no programadas en prod.</label>
+            </value>
+            <value>
+                <fullName>MobileXpense</fullName>
+                <default>false</default>
+                <label>MobileXpense</label>
+            </value>
+            <value>
+                <fullName>Oracle</fullName>
+                <default>false</default>
+                <label>Oracle</label>
+            </value>
+            <value>
+                <fullName>SAP</fullName>
+                <default>false</default>
+                <label>SAP</label>
+            </value>
+            <value>
+                <fullName>Técnico Global</fullName>
+                <default>false</default>
+                <label>Técnico Global</label>
+            </value>
+            <value>
+                <fullName>Técnico Local</fullName>
+                <default>false</default>
+                <label>Técnico Local</label>
+            </value>
+            <value>
+                <fullName>VISA</fullName>
+                <default>false</default>
+                <label>VISA</label>
+            </value>
+            <value>
+                <fullName>Otros</fullName>
+                <default>false</default>
+                <label>Otros</label>
+            </value>
+            <value>
+                <fullName>Conectividad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Conectividad</label>
+            </value>
+            <value>
+                <fullName>Formato</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Formato</label>
+            </value>
+            <value>
+                <fullName>GNC</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GNC</label>
+            </value>
+            <value>
+                <fullName>Implementación: errores derivados de una mala implementación del cliente</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Implementación: errores derivados de una mala implementación del cliente</label>
+            </value>
+            <value>
+                <fullName>Seguridad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Seguridad</label>
+            </value>
+            <value>
+                <fullName>Tipologia fichero</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Tipologia fichero</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Client</controllingFieldValue>
+            <valueName>Cliente</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <valueName>Aplicativo (GMM/ePhoenix/código)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Demica</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Funcional Global</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <valueName>Implementación</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Infraestructura</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <valueName>Intervención: errores derivados de una subida de código o intervenciones manuales no programadas en prod.</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Técnico Global</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Global</controllingFieldValue>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Otros</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Aplicativo</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Desconocido</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Funcional Local</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Intervención</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Local</controllingFieldValue>
+            <valueName>Técnico Local</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Captio</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Certify</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Concur</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Expensify</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>Expensya</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>MobileXpense</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>External Platforms</controllingFieldValue>
+            <valueName>VISA</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>ERP Client</controllingFieldValue>
+            <valueName>Oracle</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>ERP Client</controllingFieldValue>
+            <valueName>SAP</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

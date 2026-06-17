@@ -31,6 +31,7 @@ const PRODUCTS_ASSOCIATED= 'The products and the line were correctly associated.
 
 export default class dmt_CalloutOpportunity extends LightningElement {
     @track lines = [];
+    @track filteredLines = [];
     @track error;
     @track productOPP = [];
     @track currentStep = 1;
@@ -47,7 +48,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     _oppId;
     _customerId;
     _lineExternalId;
-    
+
     //oppId = '006KG000005XKHBYA4';
     //customerId = 'ES0182031712901';
     @api
@@ -73,7 +74,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
                 this.selectedRowIds = [];
             }
         }
-        
+
 
     }
 
@@ -84,7 +85,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     @api
     set lineName(value) {
         this.selectedLineName = value;
-        
+
     }
 
     get lineName() {
@@ -129,7 +130,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     get isStepTwo() {
         return this.currentStep == 2;
     }
-    
+
     get canSave() {
         return this.incompleteRows.length == 0;
     }
@@ -218,9 +219,9 @@ export default class dmt_CalloutOpportunity extends LightningElement {
         const data = event.detail.data;
         const rowId = data.context;
         const value = data.value;
-        console.log('VALUE PICKLIST CHANGE: ' + JSON.stringify(this.productOPP))
+
         this.productOPP = this.productOPP.map(row => {
-            if (row.id == rowId) {
+            if (row.oppItemId === rowId) {
                 return { ...row, lineName: value };
             }
             return row;
@@ -229,6 +230,8 @@ export default class dmt_CalloutOpportunity extends LightningElement {
         this.incompleteRows = this.productOPP.filter(
             row => !row.lineName || row.lineName.trim() === ''
         );
+
+        console.log('productOPP updated => ' + JSON.stringify(this.productOPP));
     }
 
     handleCellChange(event) {
@@ -245,11 +248,13 @@ export default class dmt_CalloutOpportunity extends LightningElement {
                             ...line,
                             recordType: line.recordTypeName
                         };
-                    
-                    
+
+
                 });
+                this.filteredLines = [...this.lines];
+
                 if (!this.lines || this.lines.length === 0) {
-                    this.showToast('No se han encontrado líneas', 'warning');
+                    this.showToast('No lines have been found', 'warning');
                     pubsub.fire(EVT_CLOSE_LWC, EVENT_STRG);
                     return; // Salimos para no continuar con la selección
                 }
@@ -290,15 +295,27 @@ export default class dmt_CalloutOpportunity extends LightningElement {
                 value: product.productName,
                 priorityId: product.priorityId
             }));
-            
+
             this.columnsStep2 = [
-                { label: this.opportunityName , fieldName: 'productNameOPP', hideDefaultActions:true }, 
-                { label: this.selectedLineName , fieldName: 'lineName', hideDefaultActions:true, type: 'picklist', 
-                    typeAttributes: { isDisabled : { fieldName: 'isDisabled' }, placeholder: 'Select...', 
-                    options: this.productLines, fieldName: 'productName' , 
-                    value: { fieldName: 'productName' } , 
-                    context: { fieldName: 'id' } },
-                    cellAttributes:{class: {fieldName:'deriVisible'}}
+                { 
+                    label: this.opportunityName,
+                    fieldName: 'productNameOPP',
+                    hideDefaultActions: true
+                }, 
+                { 
+                    label: this.selectedLineName,
+                    fieldName: 'lineName',
+                    hideDefaultActions: true,
+                    type: 'picklist',
+                    typeAttributes: {
+                        isDisabled: { fieldName: 'isDisabled' },
+                        placeholder: 'Select...',
+                        options: this.productLines,
+                        fieldName: 'lineName',
+                        value: { fieldName: 'lineName' },
+                        context: { fieldName: 'oppItemId' }
+                    },
+                    cellAttributes: { class: { fieldName: 'deriVisible' } }
                 }
             ];
         })
@@ -309,7 +326,8 @@ export default class dmt_CalloutOpportunity extends LightningElement {
 
     handleRowSelection(event) {
         const selectedRows = event.detail.selectedRows;
-        console.log('selectedRows2: ' + JSON.stringify(selectedRows))
+        console.log('selectedRows2: ' + JSON.stringify(selectedRows));
+
         if (selectedRows && selectedRows.length > 0) {
             this.selectedLineName = selectedRows[0].lineName;
             this.selectedLineId = selectedRows[0].lineId;
@@ -324,7 +342,6 @@ export default class dmt_CalloutOpportunity extends LightningElement {
 
         const selectionEvent = new CustomEvent('linechange', { detail: selectedRows });
         this.dispatchEvent(selectionEvent);
-        this.loadProducts(this.selectedLineId);
     }
 
     loadRiskLineTerms(lineExternalId) {
@@ -343,15 +360,20 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     loadOpportunityLineItems() {
         return getOpportunityLineItems({ oppId: this.oppId })
             .then(result => {
-
-
                 this.productOPP = result.map(prod => ({
                     oppItemId: prod.Id,
                     productNameOPP: prod.Product2?.Name,
-                    productName: this.productLines.find(
+                    lineName: this.productLines.find(
                         pl => pl.priorityId === prod.DMT_Associated_Line_Product__r?.gf_group_priority_line_id__c
-                    )?.label || '' 
+                    )?.label || ''
                 }));
+
+                this.incompleteRows = this.productOPP.filter(
+                    row => !row.lineName || row.lineName.trim() === ''
+                );
+
+                console.log('FIND PRODUCT 2: ' + JSON.stringify(this.productOPP));
+                console.log('FIND PRODUCT 3: ' + JSON.stringify(this.productLines));
 
                 return this.productOPP;
             })
@@ -363,8 +385,8 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     async handleSave() {
         const selectedValues = new Set();
         let hasDuplicates = false;
-        
-        this.productListFromOpp.forEach(row => {
+
+        this.productOPP.forEach(row => {
             const value = row.lineName?.trim();
             if (value) {
                 if (selectedValues.has(value)) {
@@ -398,24 +420,26 @@ export default class dmt_CalloutOpportunity extends LightningElement {
                 }));
             }
             // Paso 2️: construir las actualizaciones
-            const updates = this.productOPP.map((prodOPP, index) => {
+            const updates = this.productOPP.map(prodOPP => {
+            const selectedProduct = this.productLines.find(
+                pl => pl.value === prodOPP.lineName
+            );
 
-                const prodLine = this.productLines[index];
-                if (!prodLine) return null;
-                console.log('prodLine: ' + JSON.stringify(prodLine));
-                const matchedRiskTerm = this.riskLineTerms.find(
-                    rlt => rlt.priorityId === prodLine.priorityId
-                );
+            if (!selectedProduct) return null;
 
-                if (!matchedRiskTerm) return null;
+            const matchedRiskTerm = this.riskLineTerms.find(
+                rlt => rlt.priorityId === selectedProduct.priorityId
+            );
 
-                return {
-                    fields: {
-                        Id: prodOPP.oppItemId,
-                        [PRODUCTO_ASOCIADO_FIELD.fieldApiName]: matchedRiskTerm.riskLineTermId
-                    }
-                };
-            }).filter(u => u !== null);
+            if (!matchedRiskTerm) return null;
+
+            return {
+                fields: {
+                    Id: prodOPP.oppItemId,
+                    [PRODUCTO_ASOCIADO_FIELD.fieldApiName]: matchedRiskTerm.riskLineTermId
+                }
+            };
+        }).filter(Boolean);
 
             // Paso 3️: ejecutar las actualizaciones en Salesforce
             if (updates.length === 0) {
@@ -438,8 +462,11 @@ export default class dmt_CalloutOpportunity extends LightningElement {
             fields[SANCTION_OPP_FIELD.fieldApiName] = sflineId;
 
             const recordInput = { fields };
-            
+
             await updateRecord(recordInput);
+            await this.loadProducts(this.selectedLineId);
+            await this.loadRiskLineTerms(this.selectedLineId);
+            await this.loadOpportunityLineItems();
             
             this.dispatchEvent(
                 new ShowToastEvent({
@@ -509,9 +536,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
     handleCancer() {
         pubsub.fire(EVT_CLOSE_LWC, EVENT_STRG);
     }
-    async connectedCallback() {
-        this.loadOpportunityLineItems();
-    }
+
     showToast(message, variant = 'info') {
         const event = new ShowToastEvent({
             title: 'Aviso',
@@ -520,5 +545,26 @@ export default class dmt_CalloutOpportunity extends LightningElement {
         });
         this.dispatchEvent(event);
     }
+    handleSearch(event) {
+        const searchKey = event.target.value.toLowerCase();
 
+        if (!searchKey) {
+            this.filteredLines = [...this.lines];
+            return;
+        }
+
+        this.filteredLines = this.lines.filter(line => {
+            const lineName = line.lineName ? line.lineName.toLowerCase() : '';
+            const lineId = line.lineId ? line.lineId.toLowerCase() : '';
+
+            return (
+                lineName.includes(searchKey) ||
+                lineId.includes(searchKey)
+            );
+        });
+    }
+    handleCancel() {
+         pubsub.fire(EVT_CLOSE_LWC, EVENT_STRG);
+         return;
+    }
 }

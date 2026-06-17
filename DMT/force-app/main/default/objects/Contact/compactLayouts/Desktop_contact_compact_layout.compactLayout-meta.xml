@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Desktop_contact_compact_layout</fullName>
+    <fields>Name</fields>
+    <fields>AccountId</fields>
+    <fields>Email_ExternalID__c</fields>
+    <fields>phone_id__c</fields>
+    <fields>OwnerId</fields>
+    <fields>survey_nps_contact_type__c</fields>
+    <label>Desktop contact compact layout</label>
+</CompactLayout>

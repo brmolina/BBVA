@@ -1,0 +1,47 @@
+.THIS slds-box title {
+    background-color: #a2a2a2;
+}
+
+.THIS slds-card-custom {
+    --slds-c-card-color-border: grey !important;
+}
+
+.THIS lightning-icon.colorIconActivate > lightning-primitive-icon > svg >use{
+    fill: #43BBF7;
+}
+
+.THIS lightning-icon.colorIconNotActivate > lightning-primitive-icon > svg{
+    fill: #a2a2a2;
+}
+
+.THIS input.inputRadioColor{
+    fill: #43BBF7;
+}
+
+   .THIS input[type='radio']:after {
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color: white;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid white;
+    }
+
+  .THIS  input[type='radio']:checked:after {
+        width: 15px;
+        height: 15px;
+        border-radius: 15px;
+        top: -2px;
+        left: -1px;
+        position: relative;
+        background-color: #43BBF7;
+        content: '';
+        display: inline-block;
+        visibility: visible;
+        border: 2px solid white;
+    }

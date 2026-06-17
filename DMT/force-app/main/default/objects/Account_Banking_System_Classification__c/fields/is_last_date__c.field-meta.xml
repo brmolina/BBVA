@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>is_last_date__c</fullName>
+    <formula>IF( year_month_day_date__c &gt; ADDMONTHS( Local_Client_id__r.account_banking_syst_classif_last_date__c ,-12) ,true,false)</formula>
+    <label>Is last date?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

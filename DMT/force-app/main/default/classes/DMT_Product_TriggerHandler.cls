@@ -30,16 +30,24 @@ public with sharing class DMT_Product_TriggerHandler extends DMT_TriggerHandler 
         productHelper.completeFields(lstNew);
     }
 
-    public override void beforeUpdate()
-    {
+    public override void beforeUpdate(){
         DMT_Product_Helper productHelper = new DMT_Product_Helper();
         productHelper.completeFields(lstNew);
     }
 
-         public override void afterInsert() {
-         DMT_Product_Helper productHelper = new DMT_Product_Helper();
-         productHelper.createPriceBookEntry(lstNew);
-     }
 
-   
+    public override void afterInsert() {
+        DMT_Product_Helper productHelper = new DMT_Product_Helper();
+        productHelper.createPriceBookEntry(lstNew);
+    }
+
+    public override void afterUpdate() {
+        DMT_Product_Helper productHelper = new DMT_Product_Helper();
+        List<Product2> productswithoutPbe = productHelper.filterProductsWithoutPbe(lstNew); 
+        if (!productswithoutPbe.isEmpty()){
+            productHelper.createPriceBookEntry(productswithoutPbe);
+        }
+         
+    }
+
 }

@@ -24,9 +24,10 @@ private class SER_ReclamacionesPDFGeneratorTst {
     newCase.Description                     = 'TEST Description';
     newCase.Type                            = 'ACCESO';
     newCase.Subtype__c                      = 'ACCESO';
-    newCase.SER_Type_GM__c                  = 'Otros';
-    newCase.SER_Subtype_GM__c               = 'Otros';
-    newCase.SER_Classification__c           = 'Incidencia';
+    newCase.SER_Type_GM__c                  = 'TMPG';
+    newCase.SER_Subtype_GM__c               = 'Others';
+    newCase.SER_Source_of_the_error__c      = 'CIB operations';
+    newCase.SER_Classification__c           = 'Monetary claim';
     newCase.SuppliedEmail                   = 'testSuppliedEmailAddress@test.com';
     newCase.SER_Remedy_Department__c        = 'ANS sstt';
     newCase.Status                          = 'Transferred';

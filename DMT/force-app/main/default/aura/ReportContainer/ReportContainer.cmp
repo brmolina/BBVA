@@ -1,0 +1,80 @@
+<aura:component implements="flexipage:availableForAllPageTypes" controller="ReportComponentController" access="global">
+    <!-- on page load get the report -->
+    <aura:handler name="init" action="{!c.getReport}" value="{!this}"/>    
+
+    <aura:attribute name="groupingLevelToLabel" type="Object" description="Holds grouping hierarchy by level and label"/>
+    <aura:attribute name="reportData" type="Object" description="Holds reporting API JSON structure"/>
+    <aura:attribute name="factMap" type="Object" description="Holds row detail data for easier access in controller"/>
+    <aura:attribute name="reportDevAttribute" type="String" description="DevName for the report to display"/>
+    <aura:attribute name="columnLabels" type="String[]" description="Labels of columns, order is assumed"/>
+    <aura:attribute name="maxHeight" type="String" description="Max height in px (ie. 600px)"/>
+    <aura:html tag="style">
+        :root {
+        	--maxHeight: {!v.maxHeight};
+        }
+    </aura:html>
+    
+    <div class="slds-theme--default slds-is-relative">
+        <!-- Show spinner while loading data -->
+        <div aura:id="loading" class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner--small">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+        
+        <div aura:id="report-error" style="height: 4rem;">
+            <div class="slds-notify_container slds-is-relative">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">The data you’re trying to access is unavailable. Please notify your System Administrator</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- holds report data -->
+        <div aura:id="report" class="report-container slds-hide slds-p-around_small">
+            <!-- display title and button to refresh component -->
+            <h1 class="slds-section__title slds-theme_shade slds-p-around_small slds-grid">
+                <div class="slds-col slds-size_3-of-5">
+                    <lightning:icon iconName="standard:report" alternativeText="Report"/>
+                    &nbsp;&nbsp;&nbsp;<strong>{!v.reportData.reportMetadata.name}</strong>
+                </div>
+                <div class="slds-col slds-size_2-of-5">
+                    <div class="slds-float_right">
+                        <a href="{!'/'+v.reportData.reportMetadata.id}" target="_blank" class="slds-button slds-button_neutral">Open</a>
+                        <lightning:button label="Refresh" title="Refresh Report" onclick="{!c.getReport}"/>
+                    </div>
+                    <!--<lightning:buttonIcon iconName="utility:refresh" variant="bare" onclick="{!c.getReport}" alternativeText="Refresh Report" />-->
+                </div>
+            </h1>
+            <table class="slds-table slds-table--bordered slds-m-top_small">
+                
+                <!-- iterate through and display in header row -->
+                <thead>
+                    <tr class="slds-text-title--caps">
+                        <aura:iteration items="{!v.columnLabels}" var="l">
+                            <th style="text-align:right;">{!l}</th>
+                        </aura:iteration>
+                    </tr>
+                </thead>
+
+                <!-- recursively display grouping data -->
+                <tbody>
+                    <aura:if isTrue="{!v.reportData.groupingsDown.groupings != null}">
+                        <!-- if there are groupings, display first grouping -->
+                        <c:ReportGrouping numColumns="{!v.reportData.reportMetadata.detailColumns.length}" groupings="{!v.reportData.groupingsDown.groupings}" level="0" groupingLevelToLabel="{!v.groupingLevelToLabel}" factMap="{!v.factMap}"/>
+                        <!-- else if there are no groupings, just display row data -->
+                        <aura:set attribute="else">
+                            <c:GroupingDataCells groupingKey="T" factMap="{!v.factMap}"/>
+                        </aura:set>
+                    </aura:if>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</aura:component>

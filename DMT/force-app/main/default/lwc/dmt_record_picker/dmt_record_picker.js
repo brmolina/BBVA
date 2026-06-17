@@ -11,17 +11,21 @@ export default class Dmt_record_picker extends LightningElement {
     @api variant;
     @api displayinfo;
     @api matchinginfo;
+    @api filter;
     @api disabled;
-    
+
     @track selectedRecordId;
     dmtRole;
     contextval;
-    
+
+    // Flag to ensure we only fire the event once per component load
+    //_hasRendered = false;
+
     @api
     get context() {
         return this.contextval;
     }
-    
+
     set context(value) {
         this.contextval = value;
     }
@@ -39,22 +43,22 @@ export default class Dmt_record_picker extends LightningElement {
 
     handleChangerecord(event) {
         const selectedId = event.detail.recordId;
-        
-        // Si no hay ID seleccionado, limpiamos y disparamos evento
+
+        // If no ID is selected, clear it and fire event
         if (!selectedId) {
             this.selectedRecordId = null;
             this.dmtRole = null;
             this.fireRecordPickerChangeEvent();
             return;
         }
-        
-        // Solo actualizamos si realmente cambió el ID
+
+        // Only update if the ID actually changed
         if (selectedId !== this.selectedRecordId) {
             this.selectedRecordId = selectedId;
         }
     }
-    
-    // Método centralizado para disparar el evento
+
+    // Centralized method to fire the event back to the datatable
     fireRecordPickerChangeEvent() {
         this.dispatchEvent(new CustomEvent('recordpickerchange', {
             composed: true,

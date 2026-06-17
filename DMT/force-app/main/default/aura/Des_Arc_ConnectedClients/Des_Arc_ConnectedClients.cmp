@@ -1,0 +1,22 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 06-23-2023
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<aura:component controller = "Des_Arc_ConnectedClientsController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+	<aura:attribute name="recordId" type="String" />
+    <aura:attribute name="recordHasId" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:accordion aura:id="accordion" allowMultipleSectionsOpen="true">
+    	<lightning:accordionSection name="A" label="Connected Clients" class="slds-page-header slds-p-top_none slds-p-bottom_none slds-p-left_none">
+                    <aura:if isTrue = "{!not(empty(v.recordHasId))}">
+                    	<arce.Arc_Gen_ConnectedClients recordId="{!v.recordHasId}"/>
+                        <aura:set attribute="else">
+                            <div class="slds-align_absolute-center" style="height:5rem">No data exported.</div>
+                    	</aura:set>
+                    </aura:if>
+        </lightning:accordionSection>
+    </lightning:accordion>
+</aura:component>

@@ -3,6 +3,42 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getTaxonomyValues from '@salesforce/apex/DMT_Profitability_Helper.getTaxonomyValues';
 import calculateIsPercentageValue from '@salesforce/apex/DMT_Profitability_Helper.calculateIsPercentageValue';
 
+import scenariosText from '@salesforce/label/c.dmt_cl_Scenarios_Text';
+import minText from '@salesforce/label/c.DMT_MinText';
+import maxText from '@salesforce/label/c.DMT_MaxText';
+import exportToExcelText from '@salesforce/label/c.DMT_ExportToExcelText';
+import errorText from '@salesforce/label/c.DMT_ErrorText';
+import unknownErrorText from '@salesforce/label/c.DMT_UnknownErrorText';
+import errorFetchingTaxonomyValuesText from '@salesforce/label/c.DMT_ErrorFetchingTaxonomyValuesText';
+import invalidOrEmptyDataReceivedText from '@salesforce/label/c.DMT_InvalidOrEmptyDataReceivedText';
+import noDataToDisplayInTheMatrixText from '@salesforce/label/c.DMT_NoDataToDisplayInTheMatrixText';
+import matrixSizeBiggerThanTenText from '@salesforce/label/c.DMT_MatrixSizeBiggerThanTenText';
+import entityText from '@salesforce/label/c.DMT_EntityText';
+import entificText from '@salesforce/label/c.dmt_cl_Entific_Label';
+import bookingText from '@salesforce/label/c.DES_Booking';
+import acrualFeesText from '@salesforce/label/c.DMT_AcrualFeesText';
+import nonAcrualFeesText from '@salesforce/label/c.DMT_NonAcrualFeesText';
+import spreadUndrawnText from '@salesforce/label/c.DMT_SpreadUndrawnText';
+import spreadDrawnText from '@salesforce/label/c.DMT_SpreadDrawnText';
+import notionalAmountUnDrawnText from '@salesforce/label/c.DMT_NotionalAmountUndrawnText';
+import notionalAmountDrawnText from '@salesforce/label/c.DMT_NotionalAmountDrawnText';
+import paymentFrequencyText from '@salesforce/label/c.DMT_PaymentFrequencyText';
+import amortizationTypeText from '@salesforce/label/c.DMT_AmortizationTypeText';
+import countryRiskText from '@salesforce/label/c.DMT_CountryRiskText';
+import countryRatingText from '@salesforce/label/c.DMT_CountryRatingText';
+import currencyText from '@salesforce/label/c.dmt_cl_Currency';
+import externalClientRatingText from '@salesforce/label/c.DMT_ExternalClientRatingText';
+import internalClientRatingText from '@salesforce/label/c.DMT_InternalClientRatingText';
+import clientTypeText from '@salesforce/label/c.ONB_CLIENT_TYPE';
+import termMonthsText from '@salesforce/label/c.DMT_TermMonthsText';
+import scoringText from '@salesforce/label/c.DMT_ScoringText';
+
+
+
+
+
+
+
 
     const NA_STRG = 'N/A';
     const NAN_STRG = 'NaN';
@@ -12,6 +48,38 @@ import calculateIsPercentageValue from '@salesforce/apex/DMT_Profitability_Helpe
     const TXT_COPY_COLUMN_TITLE_ORIGINALVALUES = 'Values';
     const TXT_COPY_COLUMN_TITLE_OVERRIDEVALUES = 'Override values';
 export default class dmt_profitabilitymatrix extends LightningElement {
+
+    label = {
+       scenariosText,
+       minText,
+       maxText,
+       exportToExcelText,
+       errorText,
+       unknownErrorText, 
+       errorFetchingTaxonomyValuesText, 
+       invalidOrEmptyDataReceivedText, 
+       noDataToDisplayInTheMatrixText, 
+       matrixSizeBiggerThanTenText, 
+       entityText, 
+       entificText, 
+       bookingText, 
+       acrualFeesText, 
+       nonAcrualFeesText, 
+       spreadUndrawnText, 
+       spreadDrawnText, 
+       notionalAmountDrawnText, 
+       paymentFrequencyText, 
+       amortizationTypeText, 
+       countryRiskText, 
+       countryRatingText, 
+       currencyText, 
+       externalClientRatingText, 
+       internalClientRatingText, 
+       clientTypeText, 
+       termMonthsText,
+       notionalAmountUnDrawnText,
+       scoringText
+    };
      
     formattedData;
     @track receivedDataFormated = [];
@@ -22,37 +90,40 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     overrideTitle=[];
     overrideOriginalTitle=[];
     labelsOverrideFields = new Map([
-      ["entityNew" , "Entity "],["entificNew" , "Entific" ],["bookingNew" , "Booking" ],["feesNew" , "Acrual fees" ],["feesPeriodicNew" , "Non acrual fees" ],
-      ["spreadFbNew" , "Spread undrawn" ],["spreadAmountNew" , "Spread drawn" ],["nominalAmountNew" , "Notional amount drawn" ],["nominalFbNew" , "Notional amount undrawn" ],
-      ["paymentFrequencyNew" , "Payment frequency" ],["amortizationTypeNew" , "Amortization type" ],["countryRiskNew" , "Country risk" ],
-      ["countryRatingNew" , "Country rating" ],["currencyNew" , "Currency" ],
-      ["extClientRatingNew" , " External client rating" ],["intClientRatingNew" , "Internal client rating " ],["clientTypeNew" , "Client type " ],
-      ["termNew", "Term (months)"]
+      ["entityNew" , this.label.entityText],["entificNew" , this.label.entificText ],["bookingNew" , this.label.bookingText],["accrualfeeNew" , this.label.acrualFeesText ],["nonaccrualfeeNew" , this.label.nonAcrualFeesText ],
+      ["spreadFbNew" , this.label.spreadUndrawnText ],["spreadAmountNew" , this.label.spreadDrawnText],["nominalAmountNew" , this.label.notionalAmountDrawnText ],["nominalFbNew" , this.label.notionalAmountUnDrawnText],
+      ["paymentFrequencyNew" , this.label.paymentFrequencyText ],["amortizationTypeNew" , this.label.amortizationTypeText ],["countryRiskNew" , this.label.countryRiskText ],
+      ["countryRatingNew" , this.label.countryRatingText ],["currencyNew" , this.label.currencyText ],
+      ["extClientRatingNew" ,this.label.externalClientRatingText ],["intClientRatingNew" , this.label.internalClientRatingText],["clientTypeNew" , this.label.clientTypeText ],
+      ["termNew", this.label.termMonthsText],["ScoringNew", this.label.scoringText]
     ]);
     labelsOppDataFields =  new Map([
-      ["entity" , "Entity "],["entific" , "Entific" ],["booking" , "Booking" ],["feeUpfront" , "Acrual fees" ],["feePeriodic" , "Non acrual fees" ],
-      ["spreadFb" , "Spread undrawn" ],["spreadAmount" , "Spread drawn" ],["nominalAmount" , "Notional amount drawn" ],["nominalFb" , "Notional amount undrawn" ],
-      ["paymentFrequency" , "Payment frequency" ],["amortizationType" , "Amortization type" ],["countryRisk" , "Country risk" ],
-      ["countryRating" , "Country rating" ],["currency" , "Currency" ],
-      ["externalRating" , " External client rating" ],["internalRating" , "Internal client rating " ],["clientType" , "Client type " ],
-      ["oppTerm", "Term (months)"]
+      ["entity" , this.label.entityText],["entific" , this.label.entificText ],["booking" , this.label.bookingText ],["accrualfee" , this.label.acrualFeesText ],["nonaccrualfee" , this.label.nonAcrualFeesText ],
+      ["spreadFb" ,  this.label.spreadUndrawnText  ],["spreadAmount" , this.label.spreadDrawnText ],["nominalAmount" , this.label.notionalAmountDrawnText ],["nominalFb" , this.label.notionalAmountUnDrawnText ],
+      ["paymentFrequency" , this.label.paymentFrequencyText ],["amortizationType" ,this.label.amortizationTypeText  ],["countryRisk" , this.label.countryRiskText  ],
+      ["countryRating" , this.label.countryRatingText ],["currency" , this.label.currencyText ],
+      ["externalRating" , this.label.externalClientRatingText ],["internalRating" , this.label.internalClientRatingText],["clientType" , this.label.clientTypeText ],
+      ["oppTerm", this.label.termMonthsText],["scoring", this.label.scoringText]
     ]); 
     fieldOrder = [
-      "entific","entity","booking","internalRating","externalRating","clientType","oppTerm","countryRisk","countryRating","currency",
-      "amortizationType","paymentFrequency","nominalAmount","nominalFb","spreadAmount","spreadFb","feePeriodic","feeUpfront"
+      "entific","entity","booking","scoring","internalRating","externalRating","clientType","oppTerm","countryRisk","countryRating","currency",
+      "amortizationType","paymentFrequency","nominalAmount","nominalFb","spreadAmount","spreadFb","accrualfee","nonaccrualfee"
     ];
     showPercentageX = false;
     showPercentageY = false;
     showPercentageCentral = false;
     errorMatrix = false;
-    messageError='Unknown error';
+    messageError=this.label.unknownErrorText;
+    
+    
+    
 
     @wire(getTaxonomyValues)
     wiredTaxonomyValues({ error, data }) {
         if (data) {
             this.ratingScale = data;
         } else if (error) {
-            this.handleError('Error fetching taxonomy values:'+ error);
+            this.handleError(this.label.errorFetchingTaxonomyValuesText + error);
         }
     }
     
@@ -86,7 +157,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
 
     @api
     set oppDataOriginal(value) {
-      if (value && this.isValidOmniValue(value) && value != 'null') {
+      if (value && this.isValidOmniValue(value) && value !== 'null') {
         const allowedFields = this.fieldOrder.map(key => this.labelsOppDataFields.get(key));
         this.overrideOriginalTitle = Object.entries(value)
           .filter(([key, val]) => val !== undefined && val !== null && val !== '' &&
@@ -163,7 +234,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
       _processReceivedData(value) {
             const parsedValue = this.parseJson(value);
             if (!parsedValue || !parsedValue.data) {
-                this.handleError('Invalid or empty data received.');
+                this.handleError(this.label.invalidOrEmptyDataReceivedText);
                 return;
             }
 
@@ -178,7 +249,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
             this.matrixGeneralInfo = parsedValue.data.assumption || {};
 
             if (this.receivedDataFormated.length === 0) {
-                    this.handleError('No data to display in the matrix.');
+                    this.handleError(this.label.noDataToDisplayInTheMatrixText);
                     return;
                 }
             if (!this._validateMatrixSize()) {
@@ -223,7 +294,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
         const uniqueX = [...new Set(this.receivedDataFormated.map(item => item.valueAxisX))];
         const uniqueY = [...new Set(this.receivedDataFormated.map(item => item.valueAxisY))];
         if (uniqueX.length > 10 || uniqueY.length > 10) {
-            this.handleError('Matrix size it`s bigger than 10 x 10.');
+            this.handleError(this.label.matrixSizeBiggerThanTenText);
             return false;
         }
         return true;
@@ -239,7 +310,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     }
 
     handleError(error,showToast = false){
-      let message = "Unknown error";
+      let message = this.label.unknownErrorText;
 
       if (Array.isArray(error?.body)) {
         message = error.body.map((e) => e.message).join(", ");
@@ -367,7 +438,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
   buildTextTable() {
     if (!this.formattedData || this.formattedData.length === 0) return '';
     let result = '';
-    result += `\t${this.xAxisName} (Min: ${this.xAxisMin}, Max: ${this.xAxisMax})\n`;
+    result += `\t${this.xAxisName} (${this.label.minText}: ${this.xAxisMin}, ${this.label.maxText}: ${this.xAxisMax})\n`;
     
     result += '\t';
     this.xAxisLabels.forEach(label => {
@@ -384,7 +455,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     });
 
     
-    result += `${this.yAxisName} (Min: ${this.yAxisMin}, Max: ${this.yAxisMax})\n`;
+    result += `${this.yAxisName} (${this.label.minText}: ${this.yAxisMin}, ${this.label.maxText}: ${this.yAxisMax})\n`;
 
     result += '\n'; 
     result += `${TXT_COPY_COLUMN_TITLE_FIELDSNAMES}\t${TXT_COPY_COLUMN_TITLE_ORIGINALVALUES}\t${TXT_COPY_COLUMN_TITLE_OVERRIDEVALUES}\n`;

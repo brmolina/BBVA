@@ -1,0 +1,15 @@
+.THIS .customRequired {
+  font-weight: 400;
+}
+.THIS .customRequired:before {
+  content: "*";
+  margin: 0 0.125rem 0 0.125rem;
+  color: rgb(194, 57, 52);
+  float: left;
+}
+.THIS .slds-notify_toast{
+  min-width: 0rem !important;
+}
+.THIS.spinnerdiv{
+  height: 200px;
+}

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>departament_name__c</fullName>
+    <label>Remedy Department</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ANS SSTT</fullName>
+                <default>false</default>
+                <label>ANS SSTT</label>
+            </value>
+            <value>
+                <fullName>Mantener equipo resolutor</fullName>
+                <default>false</default>
+                <label>Mantener equipo resolutor</label>
+            </value>
+            <value>
+                <fullName>PARAMGLOBAL CIB</fullName>
+                <default>false</default>
+                <label>PARAMGLOBAL CIB</label>
+            </value>
+            <value>
+                <fullName>SALA OPERACION CIB</fullName>
+                <default>false</default>
+                <label>SALA OPERACION CIB</label>
+            </value>
+            <value>
+                <fullName>BASE DE DATOS CIB</fullName>
+                <default>false</default>
+                <label>BASE DE DATOS CIB</label>
+            </value>
+            <value>
+                <fullName>MIDDLEWARE CIB</fullName>
+                <default>false</default>
+                <label>MIDDLEWARE CIB</label>
+            </value>
+            <value>
+                <fullName>MIDDLEWARE</fullName>
+                <default>false</default>
+                <label>MIDDLEWARE</label>
+            </value>
+            <value>
+                <fullName>SOPORTE EXTENDIDO B2B</fullName>
+                <default>false</default>
+                <label>SOPORTE EXTENDIDO B2B</label>
+            </value>
+            <value>
+                <fullName>SOPORTE GLOBAL COMMERCIAL CARD</fullName>
+                <default>false</default>
+                <label>SOPORTE GLOBAL COMMERCIAL CARD</label>
+            </value>
+            <value>
+                <fullName>SOPORTE GNC</fullName>
+                <default>false</default>
+                <label>Soporte GNC</label>
+            </value>
+            <value>
+                <fullName>SOPORTE SWIFT HOST-TO-HOST</fullName>
+                <default>false</default>
+                <label>SOPORTE SWIFT HOST-TO-HOST</label>
+            </value>
+            <value>
+                <fullName>ANS PAGOS _TRANSFERENCIAS PRISMA ISSP SNCE_</fullName>
+                <default>false</default>
+                <label>ANS PAGOS _TRANSFERENCIAS PRISMA ISSP SNCE_</label>
+            </value>
+            <value>
+                <fullName>ANS EXTRANJERO Y COMEX</fullName>
+                <default>false</default>
+                <label>ANS EXTRANJERO Y COMEX</label>
+            </value>
+            <value>
+                <fullName>ANS IMPUESTOS Y SERVICIOS ESPECIALES</fullName>
+                <default>false</default>
+                <label>ANS IMPUESTOS Y SERVICIOS ESPECIALES</label>
+            </value>
+            <value>
+                <fullName>ANS ADEUDOS COMPENSACION CARTERA</fullName>
+                <default>false</default>
+                <label>ANS ADEUDOS COMPENSACION CARTERA</label>
+            </value>
+            <value>
+                <fullName>ANS FACTORING CONFIRMING</fullName>
+                <default>false</default>
+                <label>ANS FACTORING CONFIRMING</label>
+            </value>
+            <value>
+                <fullName>ANS INFRAESTRUCTURA BANCA ELECTRONICA</fullName>
+                <default>false</default>
+                <label>ANS INFRAESTRUCTURA BANCA ELECTRONICA</label>
+            </value>
+            <value>
+                <fullName>ANS PIEZAS ESTRUCT. NETCASH HOLDING</fullName>
+                <default>false</default>
+                <label>ANS PIEZAS ESTRUCT. NETCASH HOLDING</label>
+            </value>
+            <value>
+                <fullName>DYD ARQ. SEGURIDAD ESPAÑA</fullName>
+                <default>false</default>
+                <label>DYD ARQ. SEGURIDAD ESPAÑA</label>
+            </value>
+            <value>
+                <fullName>CRIPTOGRAFIA</fullName>
+                <default>false</default>
+                <label>CRIPTOGRAFIA</label>
+            </value>
+            <value>
+                <fullName>SERVICE SUPPORT CIB</fullName>
+                <default>false</default>
+                <label>SERVICE SUPPORT CIB</label>
+            </value>
+            <value>
+                <fullName>RA DISTRIBUIDOS</fullName>
+                <default>false</default>
+                <label>RA DISTRIBUIDOS</label>
+            </value>
+            <value>
+                <fullName>SALA OPERACION DISTRIBUIDOS</fullName>
+                <default>false</default>
+                <label>SALA OPERACION DISTRIBUIDOS</label>
+            </value>
+            <value>
+                <fullName>SOPORTE REG. ACTIVIDAD</fullName>
+                <default>false</default>
+                <label>SOPORTE REG. ACTIVIDAD</label>
+            </value>
+            <value>
+                <fullName>ORACLE</fullName>
+                <default>false</default>
+                <label>ORACLE</label>
+            </value>
+            <value>
+                <fullName>DC DISTRIBUIDOS</fullName>
+                <default>false</default>
+                <label>DC DISTRIBUIDOS</label>
+            </value>
+            <value>
+                <fullName>SEGURIDAD LOGICA</fullName>
+                <default>false</default>
+                <label>SEGURIDAD LOGICA</label>
+            </value>
+            <value>
+                <fullName>NETWORKING SPT</fullName>
+                <default>false</default>
+                <label>NETWORKING SPT</label>
+            </value>
+            <value>
+                <fullName>GLOBAL PAYMENTS SUPPORT</fullName>
+                <default>false</default>
+                <label>GLOBAL PAYMENTS SUPPORT</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

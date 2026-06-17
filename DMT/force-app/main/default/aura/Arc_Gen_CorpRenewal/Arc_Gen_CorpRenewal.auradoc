@@ -1,0 +1,6 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component to show Corporate renewal step</b></h5>
+        <p><code>c:Arc_Gen_CorpRenewal</code></p>
+    </aura:description>
+</aura:documentation>

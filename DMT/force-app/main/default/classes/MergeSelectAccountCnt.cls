@@ -34,6 +34,22 @@ public with sharing class MergeSelectAccountCnt {
   @AuraEnabled
   public static List <SObject> fetchLookUpValues(String searchKeyWord, String objectName, String fieldsToGet, String filter, String fieldToOrder) { //NOSONAR
     final List <sObject> returnList = new List <sObject> ();
+
+    // CWE-89: Validate objectName against Schema before using it in dynamic query
+    if (!isValidObjectName(objectName)) {
+      throw new AuraHandledException('Invalid object name: ' + objectName);
+    }
+
+    // CWE-89: Validate each field in fieldsToGet against Schema
+    if (!areValidFieldNames(objectName, fieldsToGet)) {
+      throw new AuraHandledException('One or more invalid field names for object: ' + objectName);
+    }
+
+    // CWE-89: Validate fieldToOrder against Schema
+    if (fieldToOrder != null && !isValidSingleField(objectName, fieldToOrder)) {
+      throw new AuraHandledException('Invalid order field: ' + fieldToOrder);
+    }
+
     final String fieldsRet = getQueryFields(objectName, fieldsToGet, filter, fieldToOrder);
 
     List<List<SObject> > searchList = new List<List<SObject> >();
@@ -51,6 +67,51 @@ public with sharing class MergeSelectAccountCnt {
     } catch (Exception e) {
       throw new AuraHandledException(e.getLineNumber() + ': ' + e.getMessage()); //NOSONAR
     }
+  }
+
+  /**
+   * CWE-89 mitigation: validates that the objectName exists in the org Schema
+   */
+  private static Boolean isValidObjectName(String objectName) {
+    if (String.isBlank(objectName)) {
+      return false;
+    }
+    return Schema.getGlobalDescribe().containsKey(objectName.toLowerCase());
+  }
+
+  /**
+   * CWE-89 mitigation: validates a comma-separated list of field names against the object Schema
+   */
+  private static Boolean areValidFieldNames(String objectName, String fieldsToGet) {
+    if (String.isBlank(fieldsToGet)) {
+      return false;
+    }
+    final Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe()
+      .get(objectName.toLowerCase())
+      .getDescribe()
+      .fields
+      .getMap();
+    for (String field : fieldsToGet.split(',')) {
+      if (!fieldMap.containsKey(field.trim().toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * CWE-89 mitigation: validates a single field name against the object Schema
+   */
+  private static Boolean isValidSingleField(String objectName, String fieldName) {
+    if (String.isBlank(fieldName)) {
+      return false;
+    }
+    final Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe()
+      .get(objectName.toLowerCase())
+      .getDescribe()
+      .fields
+      .getMap();
+    return fieldMap.containsKey(fieldName.trim().toLowerCase());
   }
 
   /*

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>DMT Configuration</label>
+    <protected>false</protected>
+    <values>
+        <field>CoreDoc_Endpoint__c</field>
+        <value xsi:type="xsd:string">https://coredocuments-files.work-01.platform.bbva.com/v1</value>
+    </values>
+    <values>
+        <field>Domain__c</field>
+        <value xsi:type="xsd:string">gl-finance-cib-ei</value>
+    </values>
+    <values>
+        <field>Expedient_Folders_JWT_Cache_Key__c</field>
+        <value xsi:type="xsd:string">DMTDownloadJWT</value>
+    </values>
+    <values>
+        <field>Expedient_Folders_Service_Name__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocumentsExpedientFolders</value>
+    </values>
+    <values>
+        <field>JWT_Cache_Key__c</field>
+        <value xsi:type="xsd:string">DMTUploadJWT</value>
+    </values>
+    <values>
+        <field>JWT_Service_Name__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocumentsJWT</value>
+    </values>
+    <values>
+        <field>Metadata_Service_Name__c</field>
+        <value xsi:type="xsd:string">DES_CoreDocuments</value>
+    </values>
+    <values>
+        <field>Namespace__c</field>
+        <value xsi:type="xsd:string">dmto.gl.int</value>
+    </values>
+    <values>
+        <field>Responsible__c</field>
+        <value xsi:type="xsd:string">BBVA-CIB</value>
+    </values>
+    <values>
+        <field>Service_Id__c</field>
+        <value xsi:type="xsd:string">SMGG20253303</value>
+    </values>
+</CustomMetadata>

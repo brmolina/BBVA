@@ -1,0 +1,43 @@
+<template>
+    <div class="floating-widget">
+        
+        <div class="widget-header" onclick={toggleWidget}>
+            <div class="slds-grid slds-grid_vertical-align-center">
+                <lightning-icon icon-name="utility:chat" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                <span class="slds-text-heading_small slds-truncate">Recent Chatter</span>
+            </div>
+            <lightning-icon icon-name={toggleIcon} size="x-small" variant="inverse"></lightning-icon>
+        </div>
+
+        <template if:true={isExpanded}>
+            <div class="widget-body slds-popover__body">
+                
+                <template if:true={latestMessage}>
+                    <div class="chatter-tile" onclick={handleOpenChatter} title="Click to open full Chatter">
+                        <div class="slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                            <span class="slds-text-title_bold author-name">{authorName}</span>
+                            <span class="slds-text-body_small slds-text-color_weak">
+                                <lightning-formatted-date-time value={latestMessage.CreatedDate} hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                            </span>
+                        </div>
+                        <p class="truncated-text">
+                            <lightning-formatted-rich-text value={latestMessage.Body}></lightning-formatted-rich-text>
+                        </p>
+                        <div class="slds-text-align_right slds-m-top_x-small slds-border_top slds-p-top_xx-small">
+                            <a href="javascript:void(0);" class="slds-text-body_small">View full history & reply</a>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:false={latestMessage}>
+                    <div class="slds-text-align_center empty-state">
+                        <p class="slds-text-color_weak slds-m-bottom_x-small">No posts found on this opportunity.</p>
+                        <lightning-button variant="brand" size="small" label="Share something..." icon-name="utility:add" onclick={handleOpenChatter}></lightning-button>
+                    </div>
+                </template>
+
+            </div>
+        </template>
+        
+    </div>
+</template>

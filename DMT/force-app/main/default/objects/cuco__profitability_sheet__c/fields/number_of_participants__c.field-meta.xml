@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>number_of_participants__c</fullName>
+    <label>Number of participants</label>
+    <summaryForeignKey>cuco__profitability_sheet_participant__c.cuco__gf_profitability_sheet_id__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

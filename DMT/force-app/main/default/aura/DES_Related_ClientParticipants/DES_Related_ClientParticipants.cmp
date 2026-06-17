@@ -1,0 +1,78 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="DES_IpVisitController" access="global">
+
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="members" type="List" default="[]" />
+    <aura:attribute name="sizeMembers" type="Integer" default="0" />
+    <aura:attribute name="isVisible" type="boolean" default="true"/>
+    <aura:attribute name="currentUser" type="String" access="global" />
+	<aura:attribute name="isClosed" type="boolean" default="false"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+	
+    <lightning:quickActionAPI aura:id="quickActionAPI" />
+
+    <ltng:require scripts="{!join(',', $Resource.DES_jQuery, $Resource.DES_cometd, $Resource.DES_jquery_cometd, $Resource.DES_json2, $Resource.ipUtils)}"
+                   afterScriptsLoaded="{!c.jsLoaded}"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:renderIf isTrue="{!v.isVisible}">
+        <article class="slds-card">
+            <div class="slds-grid slds-page-header forceRelatedListCardHeader">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure slds-icon-standard-account">
+                            <lightning:icon size="small" iconName="standard:contact" alternativeText="Clients Participants" title="Clients Participants"/>
+                        </div>
+                        <div class="slds-media__body slds-truncate">
+                            <p class="slds-card__header-link slds-truncate">
+                            <a href="javascript:void(0);" class="slds-text-link_reset">
+                                <span class="slds-text-heading_small text-bold">Clients Participants ({!v.sizeMembers})</span>
+                            </a>
+                            <aura:if isTrue="{!v.Spinner}">
+                                <lightning:spinner alternativeText="Loading" />
+                            </aura:if>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- <aura:if isTrue="{!!v.isClosed}">
+                        <div class="slds-no-flex">
+                            <lightning:button variant="neutral" label="New" onclick="{! c.runNewClientParticipant }" />
+                        </div>
+                    </aura:if>  -->
+                </header>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+                <aura:iteration items="{!v.members}" var="member">
+                    <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                        <div class="slds-media__body">
+                            <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                <p class="slds-tile__title slds-truncate" title="{!member.dwp_kitv__contact_id__r.Name}">
+                                    <a href="#" onclick="{!c.navigateRecord}" id="{!member.Id}">{!member.dwp_kitv__contact_id__r.Name}</a>
+                                </p>
+                                <aura:if isTrue="{!!v.isClosed}">
+                                    <lightning:buttonMenu aura:id="menu" onselect="{! c.deleteRecord }" alternativeText="View More" iconSize="x-small" class="slds-dropdown_actions">
+                                        <lightning:menuItem value="{!member.Id}" label="Delete" />
+                                    </lightning:buttonMenu>
+                                </aura:if>
+                            </div>
+                            <div class="slds-tile__detail">
+                                <dl class="slds-list_horizontal slds-wrap">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{!$Label.c.OppMembersCmp_Phone}:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{!member.dwp_kitv__contact_phone_desc__c}</dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{!$Label.c.OppMembersCmp_Email}:</dt>
+                                    <dd class="slds-item_detail slds-truncate"><p><lightning:formattedEmail hideIcon="true" value="{!member.dwp_kitv__contact_email_desc__c}" /></p></dd>
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{!$Label.c.VisitContactCmp_SendInvitation}:</dt>
+                                    <dd class="slds-item_detail slds-truncate">
+                                      <input type="checkbox" id="checkbox-id-01" name="label" disabled="true" checked="{!member.dwp_kitv__contact_called_type__c}" />
+                        <span class="slds-checkbox_faux"></span>
+                   </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </article>
+                </aura:iteration>
+            </div>
+        </article>
+    </aura:renderIf>
+</aura:component>

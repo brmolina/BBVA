@@ -1,21 +1,114 @@
-.combobox-custom-width {
-    --lwc-sizeXSmall: 8rem;
+:host {
+    display: block;
+    height: 32px; /* Fixed height for the component when closed */
+    overflow: visible !important; /* Allow the dropdown to overflow the cell */
+    padding: 0 0.2rem;
 }
 
-.combobox-container {
-    z-index: 9001;
-    margin-bottom: 6px;
-    margin-top: -14px;
-    margin-left: 8px;
-}
-
-
-
-.combobox-container-with-helptext {
+.slds-combobox_container {
+    /* Ensure the combobox container fills the available width but stays height-neutral */
+    width: 100%;
     display: flex;
-    z-index: 9001;
-    margin-bottom: 6px;
-    margin-top: -14px;
-    margin-left: 8px;
+    flex-direction: column;
+    justify-content: center;
+    /* Added min-height to match standard datatable row heights */
+    min-height: 32px; 
+}
+
+/* Ensure the form element itself controls the height, not the outer flexbox */
+.slds-combobox__form-element {
+    display: flex;
     align-items: center;
+    height: 32px; 
+    position: relative;
+}
+
+.slds-combobox {
+    width: 100%;
+}
+
+.slds-input-has-icon {
+    position: relative;
+    width: 100%;
+    height: 32px; 
+}
+
+/* INPUT STYLING */
+.picklist-trigger {
+    cursor: pointer;
+    background-color: white !important; 
+    border: 1px solid #727272 !important; 
+    border-radius: 0.25rem;
+    height: 32px;
+    line-height: 30px; 
+    padding-left: 12px;
+    padding-right: 32px; 
+    width: 100%;
+    color: #181818;
+    box-shadow: none !important;
+    transition: border 0.1s linear;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box; 
+}
+
+.picklist-trigger:focus {
+    border-color: #1b96ff !important;
+    box-shadow: 0 0 3px #0070d2 !important;
+    outline: 0;
+}
+
+.picklist-trigger:disabled {
+    background-color: #ecebea !important;
+    border-color: #dddbda !important;
+    cursor: not-allowed;
+    color: #313131;
+}
+
+/* ARROW ICON */
+.slds-input__icon_right {
+    position: absolute;
+    right: 8px;
+    top: 0 !important;   /* Force it to start at the top */
+    height: 32px !important; /* Force it to be the exact height of your input */
+    display: flex !important;
+    align-items: center !important; /* This is the vertical center */
+    justify-content: center !important;
+    pointer-events: none;
+    z-index: 2;
+    line-height: 1 !important; /* Prevents text-line pushing */
+    margin: 0 !important;
+}
+
+/* Ensure the lightning-icon inside doesn't have its own margin */
+.slds-input__icon_right lightning-icon {
+    display: flex;
+}
+
+/* DROPDOWN */
+.slds-dropdown {
+    /* Use fixed or absolute to take it out of the normal document flow */
+    position: fixed !important; 
+    margin: 0 !important;
+    padding: 0 !important;
+    /* Ensure it doesn't contribute to height */
+    height: auto !important; 
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 9999;
+}
+
+.slds-listbox__option:hover {
+    background-color: #f3f2f2;
+    cursor: pointer;
+}
+
+.field-warning {
+    margin-left: 0.25rem;
+}
+
+.slds-has-focus {
+    background-color: #f3f2f2; /* Light grey hover color */
+    outline: none;
 }

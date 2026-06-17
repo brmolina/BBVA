@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Equity OTC Bilat</label>
+    <protected>false</protected>
+    <values>
+        <field>Contratos_Permitidos__c</field>
+        <value xsi:type="xsd:string">ISDA, CMOF, FBF, DRV derivatives, NAFMII, EMA</value>
+    </values>
+    <values>
+        <field>Producto__c</field>
+        <value xsi:type="xsd:string">Equity OTC bilateral derivatives</value>
+    </values>
+</CustomMetadata>

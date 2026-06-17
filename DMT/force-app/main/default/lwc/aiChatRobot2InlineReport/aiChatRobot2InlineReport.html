@@ -1,0 +1,80 @@
+<template>
+    <div class={containerClass}>
+        <!-- Header bar: always visible -->
+        <div class={headerClass}>
+            <button class="header-toggle" onclick={handleToggle} type="button" aria-expanded={isExpanded}>
+                <!-- Animated icon -->
+                <span class="report-icon">
+                    <template if:true={isLoading}>
+                        <span class="pulse-dot"></span>
+                    </template>
+                    <template if:false={isLoading}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </template>
+                </span>
+                <span class="report-label">{statusLabel}</span>
+            </button>
+            <!-- Copy icon button (only when content ready) -->
+            <template if:true={hasContent}>
+                <button class={copyIconBtnClass} onclick={handleCopyContent} type="button" title={copyTooltip}>
+                    <template if:false={isCopied}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </template>
+                    <template if:true={isCopied}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </template>
+                </button>
+            </template>
+            <button class="header-chevron-btn" onclick={handleToggle} type="button" aria-expanded={isExpanded}>
+                <svg class={chevronClass} width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Expandable body -->
+        <template if:true={showBody}>
+            <div class="report-body">
+                <!-- Loading state -->
+                <template if:true={isLoading}>
+                    <div class="loading-state">
+                        <div class="loading-bar"></div>
+                        <div class="loading-bar short"></div>
+                        <div class="loading-bar"></div>
+                        <div class="loading-bar shorter"></div>
+                    </div>
+                </template>
+
+                <!-- Content -->
+                <template if:false={isLoading}>
+                    <template if:true={hasContent}>
+                        <div class="report-scroll">
+                            <template for:each={_messages} for:item="msg" for:index="idx">
+                                <div key={msg.messageId} class="report-content" data-idx={idx} lwc:dom="manual"></div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Footer: expand button only -->
+                    <template if:true={showExpandButton}>
+                        <div class="report-footer">
+                            <button class="open-modal-btn" onclick={handleOpenInModal} type="button">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Expand full report
+                            </button>
+                        </div>
+                    </template>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>

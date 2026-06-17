@@ -14,7 +14,7 @@ public with sharing class DMT_ItemController {
 
         insert contentVersion;
 
-        return [SELECT Id, ContentDocumentId, Title  FROM ContentVersion WHERE Id = :contentVersion.Id WITH SECURITY_ENFORCED];
+        return [SELECT Id, ContentDocumentId, Title  FROM ContentVersion WHERE Id = :contentVersion.Id WITH USER_MODE];
     }
 
     // Obtener las opciones del campo controlador (Type_Item__c)

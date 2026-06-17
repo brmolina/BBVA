@@ -1,0 +1,3 @@
+<design:component >
+  <design:attribute name="modelsShowToogle" label="Models toogle will be displayed" description="String containing the models to which the toogle will be displayed" />
+</design:component>

@@ -1,0 +1,16 @@
+<aura:documentation>
+    <aura:description>
+        <h5><b>Component modal that inicialize ARCE from a client</b></h5>
+        <p>Modal of type "wizard" that create an ARCE of a group customer if this hasn't another one</p>
+        <p>Before showing any screen we'll check if there is a valid ARCE and redirect to it if so</p>
+        <p>The modal show a checklist that the user must verify before continue</p>
+        <p>By clicking postpone the modal will be closed</p>
+        <p>The component creates one record of Account Has Analysis per client of the group</p>
+        <p>You can select the sector of the current analyzed client. There only two: Generic or Construction</p>
+        <p>By clicking Finish, the component redirect to the analysis</p>
+        <p><code>c:Arc_Gen_ContinueARCE_CMP</code></p>
+    </aura:description>
+    <aura:example name="Arc_Gen_ContinueARCE_CMP" ref="c:Arc_Gen_ContinueARCE_CMP" label="Continue New Analysis Modal">
+        <p>Component that inicialize the ARCE</p>
+    </aura:example>
+</aura:documentation>

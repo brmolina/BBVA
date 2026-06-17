@@ -1,0 +1,17 @@
+/* Uso */
+.fill-available-custom {
+  height: -moz-available;
+  height: -webkit-fill-available;
+  height: stretch;
+}
+.dmt-panel-responsive {
+  margin-top: 0;
+  width: calc(100% - 3rem);
+  transition: all 0.3s ease;
+}
+
+
+th.notLinkAccess * > lightning-formatted-url > a {
+    color: black !important;
+    pointer-events: none !important;
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>trigger_action_type__c</fullName>
+    <label>fireAction</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Send Notify D-3</fullName>
+                <default>false</default>
+                <label>Send Notify D-3</label>
+            </value>
+            <value>
+                <fullName>Send Notify D-10</fullName>
+                <default>false</default>
+                <label>Send Notify D-10</label>
+            </value>
+            <value>
+                <fullName>Schedule Notification</fullName>
+                <default>false</default>
+                <label>Schedule Notification</label>
+            </value>
+            <value>
+                <fullName>Close as Opportunity Expired</fullName>
+                <default>false</default>
+                <label>Close as Opportunity Expired</label>
+            </value>
+            <value>
+                <fullName>Schedule Node 1</fullName>
+                <default>true</default>
+                <label>Schedule Node 1</label>
+            </value>
+            <value>
+                <fullName>Schedule Node 2</fullName>
+                <default>false</default>
+                <label>Schedule Node 2</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

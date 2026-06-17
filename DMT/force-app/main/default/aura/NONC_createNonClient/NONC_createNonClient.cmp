@@ -1,0 +1,382 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:hasSObjectName,force:lightningQuickActionWithoutHeader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" controller="NONC_New_NonClient_ctlr">
+
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="clientName" type="String" default=""/>
+    <aura:attribute name="recordTypeId" type="String" default=""/>
+    <aura:attribute name="similarNames" type="List" default=""/>
+    <aura:attribute name="compararNames" type="String" default=""/>
+    <aura:attribute name="similarAccounts" type="List" default=""/>
+
+    <aura:attribute name="showError" type="Boolean" default="false"/>
+    <aura:attribute name="showValidation" type="Boolean" default="false"/>
+    <aura:attribute name="alertSimilar" type="Boolean" default="false"/>
+    <aura:attribute name="checkSimilarName" type="Boolean" default="false"/>
+    <aura:attribute name="checkNoDuplicate" type="Boolean" default="false"/>
+    <aura:attribute name="clickNoDuplicate" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="String" default=""/>
+    <aura:attribute name="showModal" type="boolean" default="true" />
+    <aura:attribute name="disableContinue" type="boolean" default="true" />
+    <aura:attribute name="headerText" type="String" default="{!$Label.c.NClient_lbl_NewProspect}" />
+    <aura:attribute name="msg" type="String" default=""/>
+
+    <aura:attribute name="isOnDesktop" type="String" default="{!$Browser.formFactor}"/>
+
+    <aura:attribute name="labelFieldValidation" type="String" default="Label"/>
+    <aura:attribute name="fieldValidation" type="String" default=""/>
+    <aura:attribute name="showFieldValidation" type="Boolean" default="false"/>
+    <aura:attribute name="showCountry" type="Boolean" default="false"/>
+    <aura:attribute name="isOnAccount" type="Boolean" default="false"/>
+    <aura:attribute name="isAdditionalRT" type="Boolean" default="false"/>
+    <aura:attribute name="labelFieldCountry" type="String" default="Label"/>
+    <aura:attribute name="showType" type="Boolean" default="false"/>
+    <aura:attribute name="labelFieldType" type="String" default="Label"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="messageFromEvent" type="String"/>
+    <aura:attribute name="numEvents" type="Integer" default="0"/>
+
+    <aura:attribute name="searchFields" type="Object"/>
+    <aura:attribute name="isFieldSetInformed" type="Boolean" default="false" />
+    <aura:attribute name="showInformation" type="Boolean" default="false"/>
+    <aura:attribute name="labelFieldInformation" type="String" default="Label"/>
+    <aura:attribute name="dataNewProspect" type="String" default=""/>
+    <aura:attribute name="isDisable" type="Boolean" default="false"/>
+    <aura:attribute name="closeDropdown" type="Boolean" default="true"/>
+    <aura:attribute name="stopCreation" type="Boolean" default="false"/>
+    <aura:attribute name="billingAddressRequired" type="Boolean" default="false"/>
+    <aura:attribute name="shippingAddressRequired" type="Boolean" default="false"/>
+
+    <aura:attribute name="heightCalculation" type="String" default="check-similar-form"/>
+
+    <aura:attribute name="addressPredictive" type="Boolean" default="false"/>
+    <!-- Only if we activate the field 'nonc__Address_Predictive__c' to true -->
+    <aura:attribute name="showGoogleMap" type="Boolean" default="true"/>
+
+    <aura:handler name="cmpEvent" event="c:NONC_ceEvent" action="{!c.handleComponentEvent}"/>
+    <aura:registerEvent name="cmpEvent" type="c:NONC_ceEvent"/>
+    <aura:handler name="cmpEventGoogle" event="c:NONC_googlePlacesEvent" action="{!c.handleComponentEventGoogle}"/>
+    <aura:html tag="style">
+        .cuf-content {
+            padding: 0 0rem !important;
+          }
+          .cuf-scroller-inside {
+            padding: 0 0rem !important;
+          }
+          .cuf-scroller-content{
+            background: white;
+          }
+          .slds-p-around--medium {
+            padding: 0rem !important;
+          }
+          .slds-modal__content {
+            overflow-y: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+          }
+    </aura:html>
+    <!-- {!$Browser.formFactor == 'DESKTOP'?'check-similar-form':'check-similar-form mobile'} {!v.disableContinue?'reset-height':''} -->
+    <div class="{!v.heightCalculation}" style="height: 600px;">
+        <aura:if isTrue="{!v.showModal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-modal_medium slds-fade-in-open">
+                <div class="{!$Browser.formFactor == 'DESKTOP'?'slds-modal__container':'slds-modal__container responsive_modal'}">
+                    <div class="opacityField" aura:id="opacityField"></div>
+                    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                        <!-- Modal Header -->
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon iconName="utility:close" class="slds-modal__close" size="large" variant="bare" alternativeText="Close" onclick="{! c.closeModal }"/>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.headerText}</h2>
+                        </header>
+
+                        <aura:set attribute="else">
+                            <!-- Mobile Header -->
+                            <header class="slds-modal__header modal-header-phone">
+                                    <aura:if isTrue="{!and(!v.checkSimilarName, !v.checkNoDuplicate)}">
+                                        <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Cancel}" title="Cancel" onclick="{! c.closeModal }" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!or(v.checkSimilarName, v.checkNoDuplicate)}">
+                                        <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Back}" title="Back" onclick="{! c.backModal }" />
+                                    </aura:if>
+                                    <h3 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!v.headerText}</h3>
+                                    <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Continue}" title="Save" onclick="{! c.handleSave }"  disabled="{!v.disableContinue}"/>
+                            </header>
+                        </aura:set>
+                    </aura:if>
+
+                    <!-- Main Body of Modal -->
+                    <div class="slds-modal__content slds-p-around_medium newProspectModalContent" aura:id="newProspectModalContent" id="modal-content-id-1">
+                            <aura:if isTrue="{!v.disableContinue &amp;&amp; !v.showError &amp;&amp; !v.checkSimilarName&amp;&amp; !v.showValidation}">
+                                    <p>{!$Label.c.Check_Similar_Name_Non_Client}</p><br/>
+                            </aura:if>
+                            <aura:if isTrue="{!!v.disableContinue &amp;&amp; !v.checkSimilarName &amp;&amp; !v.checkNoDuplicate}">
+                                <ui:message title="" severity="confirm" closable="false">
+                                    <lightning:icon iconName="action:approval" alternativeText="Event" />
+                                    {!$Label.c.NClient_lbl_No_accounts_under_name} "{!v.clientName}"
+                                </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!v.showValidation}">
+                                <!--<ui:message title="" severity="error" closable="false">
+                                    <lightning:icon iconName="action:close" alternativeText="Event" />
+                                    {!v.msg}
+                                </ui:message>-->
+                                <ui:message severity="warning" closable="false">
+                                    <lightning:icon style="padding:8px;" iconName="utility:warning" alternativeText="Warning" size="large"/>
+                                    {!$Label.c.NClient_lbl_Exists_accounts_under_name} "{!v.clientName}"
+                                </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!v.showError}">
+                                <ui:message title="" severity="error" closable="false">
+                                    <lightning:icon iconName="action:close" alternativeText="Event" />
+                                    {!$Label.c.NClient_lbl_Please_Follow_The_Requirements}
+                                </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!and(v.checkNoDuplicate,!v.alertSimilar)}">
+                                <!--ui:message title="" severity="info" closable="false">
+                                      <lightning:icon iconName="action:new_person_account" alternativeText="Event" />
+                                      <aura:unescapedHtml value="{!v.msg}" />
+
+                                </ui:message-->
+                                <ui:message severity="warning" closable="false">
+                                    <lightning:icon style="padding:8px;" iconName="utility:warning" alternativeText="Warning" size="large"/>
+                                    {!$Label.c.NClient_lbl_Exists_accounts_under_name} "{!v.clientName}"
+                                </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!v.checkSimilarName}">
+                                <!--ui:message title="" severity="error" closable="false">
+                                      <lightning:icon style="background-color:#c23934" class="cCreateNonClient" iconName="action:new_person_account" alternativeText="Event" />
+                                      <aura:unescapedHtml value="{!v.msg}" />
+
+                                </ui:message-->
+                                <ui:message severity="warning" closable="false">
+                                    <lightning:icon style="padding:8px;" iconName="utility:warning" alternativeText="Warning" size="large"/>
+                                    {!$Label.c.NClient_lbl_Exists_accounts_under_name} "{!v.clientName}"
+                                </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!v.alertSimilar}">
+                                    <ui:message title="" severity="warning" closable="false">
+                                            <center><br/><span style="color:black"> <p>{!$Label.c.NClient_lbl_WishContinue}</p></span><br/></center>
+                                    </ui:message>
+                            </aura:if>
+                            <aura:if isTrue="{!and(!v.checkSimilarName, !v.checkNoDuplicate)}">
+                                    <aura:if isTrue="{!v.showFieldValidation}">
+
+                                            <table width="100%" border="0" style="margin-left: -2px;">
+                                                <tr>
+                                                    <td width="53%" valign="top">
+                                                        <lightning:input name="inputSearchName" class="two-columns" style="width: 100%;"   label="{!$Label.c.NClient_lbl_Client_Name}" required="false"
+                                                        onchange="{! c.handleChange }" value="{! v.clientName }"/>
+                                                    </td>
+                                                    <td></td>
+                                                    <td width="40%"  valign="top">
+                                                        <lightning:input class="two-columns" style="width: 100%" name="inputSearchCode" label="{!v.labelFieldValidation}" required="false"
+                                                        onchange="{! c.handleChangeAditional }" value="{! v.fieldValidation }"/>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div class="two-columns-right">
+                                                <lightning:button variant="brand" label="{!$Label.c.NClient_lbl_Contrast}" title="Contrast" onclick="{! c.checkSimilar }"/>&nbsp;&nbsp;
+                                            </div>
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!v.isFieldSetInformed}">
+                                                <lightning:recordEditForm
+
+                                                    recordId="{!v.recordId}"
+                                                    objectApiName="Account"
+                                                    onsubmit="{!c.checkSimilar}" >
+
+                                                    <!-- the messages component is for error messages -->
+                                                    <lightning:messages />
+                                                    <div class="slds-grid slds-wrap customRequired">
+                                                        <aura:iteration items="{!v.searchFields.simpleFields}" var="field">
+                                                            <div class="{!field.required ? 'slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2 requiredFieldContent':'slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2'}">
+                                                                <abbr lightning-input_input="" title="required" class="slds-required requiredField">*</abbr>
+                                                                <aura:if isTrue="{!field.fieldPath == 'Name'}">
+                                                                    <div class="inputSearchName">
+                                                                        <!-- <lightning:input name="inputSearchName" label="{!$Label.c.NClient_lbl_Client_Name}" required="true" aura:id="{!field.fieldPath}"
+                                                                        onchange="{! c.handleChange }" value="{!field.value}"/> -->
+                                                                        <lightning:inputField  fieldName="{!field.fieldPath}" aura:id="{!field.fieldPath}"  onchange="{! c.handleChange }"/>
+                                                                        <aura:if isTrue="{!v.closeDropdown}">
+                                                                        <ul class="similar-names-ul" aura:id="searchesults">
+                                                                            <aura:iteration items="{!v.similarNames}" var="item">
+                                                                                <li class="similar-names-li">
+                                                                                    <lightning:icon iconName="action:new_account" alternativeText="Event"/>
+                                                                                    {!item}
+                                                                                </li>
+                                                                            </aura:iteration>
+                                                                        </ul>
+                                                                        </aura:if>
+                                                                    </div>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:inputField  fieldName="{!field.fieldPath}" aura:id="{!field.fieldPath}" onchange="{! c.closeDropdown}" required="{!field.required}"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                            </div>
+                                                        </aura:iteration>
+                                                        <aura:if isTrue="{!not(empty(v.searchFields.billingFields))}">
+                                                            <div class="slds-col slds-size_2-of-2 addressClass">
+                                                                <aura:if isTrue="{!v.addressPredictive}">
+                                                                    <c:NONC_googlePlacesPredictive showGoogleMap="{!v.showGoogleMap}" customClassMap="customClassMap" addressType="billing" inputLabel="{!$Label.c.NClient_lbl_Billing_Address}"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:input name="billing" aura:id="billingInput" disabled="true" label="{!$Label.c.NClient_lbl_Billing_Address}" placeholder="{!$Label.c.NClient_lbl_Click_Insert_Address}" onclick="{! c.onClickInputText }" required="{!v.billingAddressRequired}"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <div class="field-error hide" aura:id="billingInputError" >{!$Label.c.NClient_lbl_Complete_Field}</div>
+                                                            </div>
+                                                            <div class="slds-grid slds-wrap slds-size_2-of-2 billingModal addressModal" aura:id="billingModal" >
+                                                                <aura:iteration items="{!v.searchFields.billingFields}" var="fieldDirecction">
+                                                                    <div class="{!fieldDirecction.required ? 'slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2 custom-addres-required' : 'slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2 without-required'}">
+                                                                        <abbr title="required" class="slds-required">*</abbr>
+                                                                        <lightning:inputField fieldName="{!fieldDirecction.fieldPath}" aura:id="{!field.fieldPath}" value="{!fieldDirecction.value}"/>
+                                                                    </div>
+                                                                </aura:iteration>
+                                                                <div class="slds-m-top_medium slds-col slds-size_2-of-2">
+                                                                    <lightning:button variant="brand" name="billingFields" label="OK" onclick="{! c.onClickCloseAddressModal}"/>
+                                                                </div>
+                                                            </div>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!not(empty(v.searchFields.shippingFields))}">
+                                                            <div class="slds-col slds-size_2-of-2 addressClass">
+                                                                <aura:if isTrue="{!v.addressPredictive}">
+                                                                    <c:NONC_googlePlacesPredictive showGoogleMap="{!v.showGoogleMap}" customClassMap="customClassMap" addressType="shipping" inputLabel="{!$Label.c.NClient_lbl_Shipping_Address}"/>
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:input name="shipping" aura:id="shippingInput" disabled="true" label="{!$Label.c.NClient_lbl_Shipping_Address}" placeholder="{!$Label.c.NClient_lbl_Click_Insert_Address}" onclick="{! c.onClickInputText }" required="{!v.shippingAddressRequired}"/>
+                                                                    </aura:set>
+                                                                </aura:if>
+                                                                <div class="field-error hide" aura:id="shippingInputError">{!$Label.c.NClient_lbl_Complete_Field}</div>
+                                                            </div>
+                                                            <div class="slds-grid slds-wrap slds-size_2-of-2 shippingModal addressModal" aura:id="shippingModal">
+                                                                <aura:iteration items="{!v.searchFields.shippingFields}" var="fieldDirecction">
+                                                                    <aura:if isTrue="{!fieldDirecction.required}">
+                                                                        <abbr lightning-input_input="" title="required" class="slds-required">*</abbr>
+                                                                    </aura:if>
+                                                                    <lightning:inputField class="slds-col slds-size--1-of-1 slds-medium-size--1-of-2 slds-large-size--1-of-2" fieldName="{!fieldDirecction.fieldPath}" aura:id="{!field.fieldPath}"/>
+                                                                </aura:iteration>
+                                                                <div class="slds-m-top_medium slds-col slds-size_2-of-2">
+                                                                    <lightning:button variant="brand" name="shippingFields" label="OK" onclick="{! c.onClickCloseAddressModal}"/>
+                                                                </div>
+                                                            </div>
+                                                        </aura:if>
+                                                    </div>
+                                                    <div class="slds-m-top_medium">
+                                                        <lightning:button class="rigth-position" variant="brand" type="submit" name="save" label="Contrast"/>
+                                                    </div>
+                                                </lightning:recordEditForm>
+                                                <!-- <aura:set attribute="else">
+                                                    <lightning:input class="two-columns" name="inputSearchName" label="{!$Label.c.NClient_lbl_Client_Name}" required="true"
+                                                                onchange="{! c.handleChange }" value="{! v.clientName }"/>
+
+                                                    <div class="two-columns-right">
+                                                        <lightning:button variant="brand" label="{!$Label.c.NClient_lbl_Contrast}" title="Contrast" onclick="{! c.checkSimilar }"/>
+                                                    </div>
+                                                </aura:set> -->
+                                            </aura:if>
+                                        </aura:set>
+                                    </aura:if>
+                            </aura:if>
+
+                            <aura:if isTrue="{!and(or(v.checkSimilarName, v.checkNoDuplicate),!v.alertSimilar)}">
+                                <div class="table-account" style="width: 100%;height: 200px;">
+                                    <ui:scrollerWrapper class="{!$Browser.formFactor == 'DESKTOP'?'sWrapDesktop':'sWrap'}">
+                                        <div class="innerDivWrapper">
+                                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                <thead>
+                                                    <tr class="slds-line-height_reset">
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!$Label.c.NClient_lbl_Client_Name}</div>
+                                                        </th>
+                                                        <aura:if isTrue="{!v.showType}">
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!v.labelFieldType}</div>
+                                                        </th>
+                                                        </aura:if>
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!$Label.c.IndustryTitle}</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!$Label.c.ONB_LEI}</div>
+                                                        </th>
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!$Label.c.PRW_CIFTitle}</div>
+                                                        </th>
+                                                        <aura:if isTrue="{!v.showCountry}">
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!v.labelFieldCountry}</div>
+                                                        </th>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!v.showInformation}">
+                                                        <th class="" scope="col">
+                                                            <div class="slds-truncate">{!v.labelFieldInformation}</div>
+                                                        </th>
+                                                        </aura:if>
+                                                    </tr>
+                                                </thead>
+                                                <!--aura:iteration items="{!v.columns}" var="item">
+                                                    <th>{!item}</th>
+                                                </aura:iteration-->
+                                                <aura:iteration items="{!v.similarAccounts}" var="item">
+                                                    <tbody>
+                                                        <tr class="slds-hint-parent">
+                                                            <th data-label="{!$Label.c.NClient_lbl_Client_Name}" scope="row">
+                                                                <aura:if isTrue="{!v.compararNames == item.clientName}">
+                                                                    <div class="slds-truncate">
+                                                                        <a href="{!item.clientLink}">{!item.clientName}</a>
+                                                                    </div>
+                                                                <aura:set attribute="else">
+                                                                <a  href="{!item.clientLink}">{!item.clientName}</a>
+                                                                </aura:set>
+                                                                </aura:if>
+                                                            </th>
+                                                        <aura:if isTrue="{!v.showType}">
+                                                        <td data-label="Field Type">
+                                                            <div class="slds-truncate">{!item.clientType}</div>
+                                                            </td>
+                                                        </aura:if>
+                                                        <td data-label="Industry">
+                                                            <div class="slds-truncate">{!item.Industry}</div>
+                                                        </td>
+                                                        <td data-label="LEI">
+                                                            <div class="slds-truncate">{!item.lei}</div>
+                                                        </td>
+                                                        <td data-label="CIF Local">
+                                                            <div class="slds-truncate">{!item.cif}</div>
+                                                        </td>
+                                                        <aura:if isTrue="{!v.showCountry}">
+                                                        <td data-label="Field Country">
+                                                            <div class="slds-truncate">{!item.country}</div>
+                                                        </td>
+                                                        </aura:if>
+                                                        <aura:if isTrue="{!v.showInformation}">
+                                                            <td data-label="Information Field">
+                                                                <div class="slds-truncate">{!item.information}</div>
+                                                            </td>
+                                                        </aura:if>
+                                                    </tr>
+                                                    </tbody>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </ui:scrollerWrapper>
+                                </div>
+                            </aura:if>
+                    </div>
+                    <!-- Footer of Modal -->
+                    <aura:if isTrue="{!$Browser.formFactor == 'DESKTOP'}">
+                        <footer class="slds-modal__footer">
+                                <aura:if isTrue="{!and(!v.checkSimilarName, !v.checkNoDuplicate)}">
+                                    <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Cancel}" title="Cancel" onclick="{! c.closeModal }" />
+                                </aura:if>
+                                <aura:if isTrue="{!or(v.checkSimilarName, v.checkNoDuplicate)}">
+                                    <lightning:button class="left-position" label="{!$Label.c.NClient_lbl_Back}" title="Back" onclick="{! c.backModal }" />
+                                </aura:if>
+                                <lightning:button  class="rigth-position" variant="brand" label="{!$Label.c.NClient_lbl_Continue}" title="Save" onclick="{! c.handleSave }"  disabled="{!v.disableContinue}"/>
+                        </footer>
+                    </aura:if>
+                </div>
+            </section>
+        </aura:if>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <div aura:id="editFormController" ></div>
+
+</aura:component>

@@ -1,5 +1,5 @@
-@IsTest
-private class DMT_IntegrationEventProcessor_Test {
+@isTest
+private without sharing class DMT_IntegrationEventProcessor_Test {
 
      @TestSetup
     static void setupData() {

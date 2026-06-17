@@ -1,0 +1,99 @@
+<template>
+    <lightning-card>
+        <div class="slds-p-around_small">
+            <!-- ROW 1 -->
+            <div class="onb-row onb-row-two">
+                <div class="onb-card">
+                    <c-onb_onboarding-form
+                        all-required
+                        record-id={recordId}
+                        title={label.BUSSINESS_CASE_DETAILS}
+                        object-api-name={onboardingObjApiName}
+                        icon-name="standard:case"
+                        field-names={sections.businessCase.fields}
+                        field-custom-labels={sections.businessCase.labels}
+                        field-rules={rules.businessCase}>
+                    </c-onb_onboarding-form>
+                </div>
+
+                <div class="onb-card">
+                    <c-onb_onboarding-form
+                        all-required
+                        record-id={recordId}
+                        title={label.CLIENT_CONTACT}
+                        object-api-name={onboardingObjApiName}
+                        icon-name="standard:people"
+                        field-names={sections.clientContact.fields}
+                        field-custom-labels={sections.clientContact.labels}
+                        field-rules={rules.clientContact}>
+                    </c-onb_onboarding-form>
+                </div>
+            </div>
+
+            <!-- Entity Details ROW -->
+            <div class="onb-group slds-m-top_medium">
+                <div class="onb-row onb-row-two">
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            all-required
+                            onvaluechange={handleEntityTypeChange}
+                            record-id={recordId}
+                            title={label.ENTITY_DETAILS}
+                            object-api-name={onboardingObjApiName}
+                            icon-name="standard:contact_list"
+                            field-names={sections.entityLeft.fields}
+                            field-custom-labels={sections.entityLeft.labels}
+                            field-rules={rules.entityLeft}>
+                        </c-onb_onboarding-form>
+                    </div>
+
+                    <div class="onb-card onb-card-inside-group">
+                        <c-onb_onboarding-form
+                            all-required
+                            record-id={recordId}
+                            object-api-name={onboardingObjApiName}
+                            field-names={sections.entityRight.fields}
+                            field-custom-labels={sections.entityRight.labels}
+                            field-rules={rules.entityRight}>
+                        </c-onb_onboarding-form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HEAD OFFICE BRANCH SECTION -->
+            <template lwc:if={isBranchOpen}>
+                <div class={branchAnimClass}>
+                    <div class="onb-collapseInner">
+                        <div class="onb-group slds-m-top_medium">
+                            <div class="onb-row onb-row-two">
+                                <div class="onb-card onb-card-inside-group">
+                                    <c-onb_onboarding-form
+                                        all-required
+                                        record-id={recordId}
+                                        title={label.ONB_HEAD_OFFICE_BRANCH}
+                                        object-api-name={onboardingObjApiName}
+                                        icon-name="standard:account"
+                                        field-names={sections.branchLeft.fields}
+                                        field-custom-labels={sections.branchLeft.labels}
+                                        field-rules={rules.branchLeft}>
+                                    </c-onb_onboarding-form>
+                                </div>
+
+                                <div class="onb-card onb-card-inside-group">
+                                    <c-onb_onboarding-form
+                                        all-required
+                                        record-id={recordId}
+                                        object-api-name={onboardingObjApiName}
+                                        field-names={sections.branchRight.fields}
+                                        field-custom-labels={sections.branchRight.labels}
+                                        field-rules={rules.branchRight}>
+                                    </c-onb_onboarding-form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

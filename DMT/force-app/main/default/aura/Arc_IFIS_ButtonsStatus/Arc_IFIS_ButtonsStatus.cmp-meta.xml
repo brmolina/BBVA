@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuraDefinitionBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <description>Wrapper / selector component that loads a sub-component with the modal of the corresponding button that has been selected</description>
+</AuraDefinitionBundle>

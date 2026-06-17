@@ -1,0 +1,4 @@
+<design:component >
+  <design:attribute name="selectedRecord" label="Id Selected Opp"/>
+  <design:attribute name="recordIdCO" label="Commercial Offer Id"/>
+</design:component>

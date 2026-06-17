@@ -1,0 +1,35 @@
+<aura:component controller="CommOfferRelatedRevenuesCnt"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+
+    <aura:attribute name="recordId" type="String" description="Referencia al registro" />
+    <aura:attribute name="showViewDetails" type="Boolean" default="false"/>
+
+    <lightning:layout multipleRows="true">
+
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+             class="slds-text-body_regular slds-p-top_small slds-p-right_small">
+            <!-- slds-p-right_small -->
+            <div class="slds-box">
+	            <div class="slds-align_absolute-center">
+		            <div class="mainWrapper ">
+						<c:CommOfferRevenues recordId="{!v.recordId}" title="Total Expected Revenues" revenues="Expected" showViewDetails="{! v.showViewDetails}"/>
+		            </div>
+	            </div>
+            </div>
+        </lightning:layoutItem>
+
+        <lightning:layoutItem size="6" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" flexibility="auto"
+             class="slds-text-body_regular slds-p-top_small slds-p-right_small">
+             <div class="slds-box">
+	            <div class="slds-align_absolute-center">
+            		<div class="mainWrapper ">
+                		<c:CommOfferRevenues recordId="{!v.recordId}" title="Total Potential Revenues" revenues="Potential" showViewDetails="{! v.showViewDetails}"/>
+            		</div>
+           		</div>
+            </div>
+        </lightning:layoutItem>
+
+    </lightning:layout>
+
+</aura:component>

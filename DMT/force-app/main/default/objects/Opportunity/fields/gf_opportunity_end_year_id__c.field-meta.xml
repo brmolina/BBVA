@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>gf_opportunity_end_year_id__c</fullName>
+    <description>año de la fecha en que se cierra la oportunidad</description>
+    <externalId>false</externalId>
+    <formula>YEAR(DES_Date_Won_Lost__c)</formula>
+    <label>Underwriting Year</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

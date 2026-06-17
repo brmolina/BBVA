@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Local_Approver_Entific_Match</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT(ISBLANK(DMT_Booking_Unit_Risk_Analyst__c)),
+    TEXT(Entific__c) &lt;&gt; DMT_Booking_Unit_Risk_Analyst__r.DMT_Entific__c
+)</errorConditionFormula>
+    <errorDisplayField>DMT_Booking_Unit_Risk_Analyst__c</errorDisplayField>
+    <errorMessage>The selected Booking Unit Risk Analyst must have the same Entific as the Opportunity.</errorMessage>
+</ValidationRule>

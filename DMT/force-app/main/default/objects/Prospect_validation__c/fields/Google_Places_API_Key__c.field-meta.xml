@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Google_Places_API_Key__c</fullName>
+    <description>Field to enter the Google places API Key to use the predictive search.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <inlineHelpText>Field to enter the Google places API Key to use the predictive search. Field to enter the Google places API Key to use the predictive search. Remember to activate the &quot;Address Predictive&quot; check.</inlineHelpText>
+    <label>Google Places API Key</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

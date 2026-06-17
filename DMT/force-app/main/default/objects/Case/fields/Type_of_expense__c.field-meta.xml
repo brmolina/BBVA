@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type_of_expense__c</fullName>
+    <description>Type of expense that is being claimed</description>
+    <label>Type of expense</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Other</fullName>
+                <default>true</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Total Cancellation</fullName>
+                <default>false</default>
+                <label>Total Cancellation</label>
+            </value>
+            <value>
+                <fullName>Return for death of a family</fullName>
+                <default>false</default>
+                <label>Return for death of a family</label>
+            </value>
+            <value>
+                <fullName>Return for hospitalization of a family member</fullName>
+                <default>false</default>
+                <label>Return for hospitalization of a family member</label>
+            </value>
+            <value>
+                <fullName>Lost Connection</fullName>
+                <default>false</default>
+                <label>Lost Connection</label>
+            </value>
+            <value>
+                <fullName>Trip Interruption</fullName>
+                <default>false</default>
+                <label>Trip Interruption</label>
+            </value>
+            <value>
+                <fullName>Delay</fullName>
+                <default>false</default>
+                <label>Delay</label>
+            </value>
+            <value>
+                <fullName>Partial cancellation</fullName>
+                <default>false</default>
+                <label>Partial cancellation</label>
+            </value>
+            <value>
+                <fullName>Compensation for days in hospital</fullName>
+                <default>false</default>
+                <label>Compensation for days in hospital</label>
+            </value>
+            <value>
+                <fullName>Compensation for total disability</fullName>
+                <default>false</default>
+                <label>Compensation for total disability</label>
+            </value>
+            <value>
+                <fullName>Compensation for partial disability</fullName>
+                <default>false</default>
+                <label>Compensation for partial disability</label>
+            </value>
+            <value>
+                <fullName>Personal Hospital expenditure</fullName>
+                <default>false</default>
+                <label>Personal Hospital expenditure</label>
+            </value>
+            <value>
+                <fullName>Medicament</fullName>
+                <default>false</default>
+                <label>Medicament</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

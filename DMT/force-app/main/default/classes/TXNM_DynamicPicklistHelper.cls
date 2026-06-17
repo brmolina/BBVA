@@ -334,6 +334,22 @@ public with sharing class TXNM_DynamicPicklistHelper {
         return (idx == -1 ? qName : qName.substring(idx+1)) == local;
     }
 
+    // Helper: very small XML extractor for a single tag
+    public static String getCompactLayout(String rtMetadataXml) {
+        if (String.isBlank(rtMetadataXml)) return null;
+        String openTag = '<compactLayoutAssignment>';
+        String closeTag = '</compactLayoutAssignment>';
+
+        Integer start = rtMetadataXml.indexOf(openTag);
+        if (start < 0) return null;
+        start += openTag.length();
+
+        Integer ending = rtMetadataXml.indexOf(closeTag, start);
+        if (ending < 0 || ending <= start) return null;
+
+        return rtMetadataXml.substring(start, ending).trim();
+    }
+
     public static HttpResponse updateRecordTypePicklistValues(
         String nc,
         String apiVer,
@@ -342,10 +358,11 @@ public with sharing class TXNM_DynamicPicklistHelper {
         String picklistFieldApiName,
         List<TXNM_DynamicPicklistHandler.PickValue> values,
         String recordTypeLabel,
-        String description // NEW param
+        String description
     ){
         String fullName = objectApiName + '.' + recordTypeDeveloperName;
 
+        // --- Build values XML
         String valsXml = '';
         for (TXNM_DynamicPicklistHandler.PickValue v : values) {
             valsXml +=
@@ -355,28 +372,45 @@ public with sharing class TXNM_DynamicPicklistHelper {
             '    </met:values>';
         }
 
+        // --- Read existing RecordType (so we can preserve the current compact layout, etc.)
+        HttpRequest req1 = baseReq(nc, apiVer, 'readMetadata');
+        req1.setBody(envelope(
+            '<met:readMetadata>' +
+            '  <met:type>RecordType</met:type>' +
+            '  <met:fullNames>' + x(fullName) + '</met:fullNames>' +
+            '</met:readMetadata>'
+        ));
+        HttpResponse res1 = send(req1, 'readMetadata(RecordType)', nc);
+
+        // Try to extract <compactLayout>Current_Name</compactLayout> from the RecordType XML (if present)
+        // We search with and without the "met:" prefix to be tolerant of namespace prefixes.
+        String body = res1.getBody();
+        String compactLayoutName = getCompactLayout(body);
+
+        // --- Build metadata payload for update, reusing existing compact layout if we found one
         String metadataXml =
             '<met:metadata xsi:type="met:RecordType">' +
-            '    <met:fullName>' + x(fullName) + '</met:fullName>' +
-            '    <met:active>true</met:active>' +
-            '    <met:label>' + x(recordTypeLabel) + '</met:label>' +
-            '    <met:description>' + x(description) + '</met:description>';
+            '  <met:fullName>' + x(fullName) + '</met:fullName>' +
+            '  <met:active>true</met:active>' +
+            '  <met:label>' + x(recordTypeLabel) + '</met:label>' +
+            '  <met:description>' + x(description) + '</met:description>';
 
+        if (compactLayoutName != null) {
+            metadataXml += '  <met:compactLayoutAssignment>' + x(compactLayoutName) + '</met:compactLayoutAssignment>';
+        }
 
         metadataXml +=
-            '    <met:picklistValues>' +
-            '      <met:picklist>' + x(picklistFieldApiName) + '</met:picklist>' +
+            '  <met:picklistValues>' +
+            '    <met:picklist>' + x(picklistFieldApiName) + '</met:picklist>' +
                 valsXml +
-            '    </met:picklistValues>' +
+            '  </met:picklistValues>' +
             '</met:metadata>';
-
         HttpRequest req = baseReq(nc, apiVer, 'updateMetadata');
-        req.setBody(envelope(
-            '<met:updateMetadata>' + metadataXml + '</met:updateMetadata>'
-        ));
+        req.setBody(envelope('<met:updateMetadata>' + metadataXml + '</met:updateMetadata>'));
         HttpResponse res = send(req, 'updateMetadata(RecordType)', nc);
         assertSuccess(res);
         return res;
     }
+
     // Update ONE record type’s allowed values for ONE picklist field
 }

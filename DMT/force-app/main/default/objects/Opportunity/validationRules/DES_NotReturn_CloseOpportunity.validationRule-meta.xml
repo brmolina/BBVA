@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_NotReturn_CloseOpportunity</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+	AND(
+		NOT(DMT_RecordTypeName__c == &quot;DMT Opportunity&quot;),
+		NOT( $Setup.CIB_Bypass__c.CIB_DES_DataMigration__c ),
+		NOT( $Profile.Name = &quot;System Administrator&quot;),
+        NOT($Permission.Champions_Locales)
+	),
+	AND(
+		TEXT(StageName) &lt;&gt; $Label.DES_Closed_Won,
+		TEXT(StageName) &lt;&gt; $Label.DES_Closed_Lose
+	),
+	ISCHANGED(StageName),
+	gf_reactivation_oppy_date__c != TODAY(),
+	OR(
+		TEXT(PRIORVALUE(StageName)) == $Label.DES_Closed_Won,
+		TEXT(PRIORVALUE(StageName)) == $Label.DES_Closed_Lose
+	)
+)</errorConditionFormula>
+    <errorMessage>You cannot modify a closed opportunity.</errorMessage>
+</ValidationRule>

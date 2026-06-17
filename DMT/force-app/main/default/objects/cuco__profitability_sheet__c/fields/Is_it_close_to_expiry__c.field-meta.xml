@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_it_close_to_expiry__c</fullName>
+    <formula>IF ( (cuco__gf_prftbly_sheet_end_date__c - TODAY() ) &lt;=  $CustomMetadata.cuco__pa_general_configuration__mdt.CIB.Min_days_to_renew__c, true,false)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is it close to expiry?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

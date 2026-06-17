@@ -1,5 +1,5 @@
 @isTest
-public class DMT_OpportunityCodesTest {
+public with sharing class DMT_OpportunityCodesTest {
 
     @TestSetup
     static void makeData(){
@@ -9,7 +9,9 @@ public class DMT_OpportunityCodesTest {
         settingsToInsert.add(DMT_Test_DataFactory.setIasoCustomSetting('DMT_GrantingTicket','https://validation.ok', 'ServicesPartition', false));
 
         // Perform one single DML
-        insert settingsToInsert;
+        //insert settingsToInsert;
+        // Inserta respetando permisos del Systema actual
+        Database.insert(settingsToInsert, AccessLevel.SYSTEM_MODE);
     }
 
     @isTest

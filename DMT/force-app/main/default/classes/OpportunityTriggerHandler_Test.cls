@@ -14,6 +14,19 @@ public with sharing class OpportunityTriggerHandler_Test {
     */
     private final static DES_UtilTestClass UTIL_TEST_CLASS = new DES_UtilTestClass();
 
+    @TestSetup
+    static void makeData(){
+
+        List<iaso__GBL_Rest_Services_Url__c> settingsToInsert = new List<iaso__GBL_Rest_Services_Url__c>();
+
+        settingsToInsert.add(DMT_Test_DataFactory.setIasoCustomSetting('DMTO_Endpoint_INT','https://service.ok', 'ServicesPartition', false));
+        settingsToInsert.add(DMT_Test_DataFactory.setIasoCustomSetting('DMT_GrantingTicket','https://validation.ok', 'ServicesPartition', false));
+        settingsToInsert.add(DMT_Test_DataFactory.setIasoCustomSetting('DMT_HPGR_Endpoint','https://group-position.ok', 'ServicesPartition', false));
+
+        // Perform one single DML
+        insert settingsToInsert;
+    }
+
     // @isTest//NOSONAR
     /*
     *
@@ -244,6 +257,81 @@ public with sharing class OpportunityTriggerHandler_Test {
 
         system.assertEquals(4,listToVerify.size(),'No se han creado las Manual Sharing Rules necesarias');
 
+    }
+
+    @isTest
+    public static void testOppSnapshotQueueable_Success() {
+
+        // 2. Create Opportunity (Factory sets Stage to 'Draft Opp')
+        //Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        Account testAcc = DMT_Test_DataFactory.generateAccount();
+
+        Opportunity opp = new Opportunity();
+        opp.StageName = 'Draft Opp';
+        opp.CloseDate = Date.today();
+        opp.Name = 'Test Opp';
+        opp.AccountId = testAcc.Id;
+        opp.DMT_Opp_Id__c = '00001';
+        opp.RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        opp.DMT_CUR_Notional_Amount__c = 100;
+        opp.DMT_DATE_Initial_Date__c = Date.today();
+        opp.DMT_DATE_Maturity_Date__c = Date.today() + 1;
+
+        opp.Entific__c = 'ES';
+        opp.DMT_Entity__c = 'ES0182';
+        opp.DMT_CurrencyText__c = 'EUR';
+        opp.DMT_Product_Area__c = 'GTB';
+        opp.DMT_Threshold_Type__c = 'Local';
+
+
+
+        insert opp;
+
+        // 3. Setup the Mock Generator
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        Product2 product = DMT_Test_DataFactory.generateProduct2();
+        PricebookEntry pricebookEntry = DMT_Test_DataFactory.generatePricebookEntry(product);
+        DMT_Opportunity_Client__c oppCl = new DMT_Opportunity_Client__c();
+        oppCl.DMT_MDE_Opportunity__c = opp.Id;
+        oppCl.Past2_FY_Corp_Synd_Lending_amount__c = 14;
+        oppCl.Revenues_Last_Year_number__c = 14;
+        oppCl.g_upd_lmscl_internal_ratg_type__c = 'A-';
+        oppCl.DMT_Sector__c = 'Energy';
+        oppCl.Counterpart__c    = 'Corporates';
+        //oppCl.DMT_Threshold_Type__c = 'Local';
+
+        insert oppCl;
+        OpportunityLineItem opportunityLineItem = new OpportunityLineItem(
+            Product2Id = product.Id,
+            OpportunityId = opp.Id,
+            PricebookEntryId = pricebookEntry.Id,
+            Quantity = 1,
+            TotalPrice = 100.00,
+            g_currency_id__c='EUR',
+            g_branch_id__c='ES0182-US',
+            DMT_Risk_Type__c= '3000000',
+            gf_initial_date__c= System.today(),
+            gf_maturity_date__c= System.today().addDays(365),
+            gf_amortization_type__c='Bullet' ,
+            gf_payment_frequency__c= 'Quarterly',
+            DMT_Deal_Amount_Tenors__c= 20,
+            gf_accrual_fees_bp__c= 1,
+            DMT_Extension_Duration_Fees__c= 1,
+            Life_Funding_Type__c= 'Term'
+        );
+        insert opportunityLineItem;
+        // 4. Trigger the Logic
+        opp.StageName = 'Proposal';
+        update opp;
+
+        // Test.stopTest() executes the Queueable
+        Test.stopTest();
+
+        // 5. Verification
+        Opportunity updatedOpp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+        Assert.areEqual('Proposal', updatedOpp.StageName, 'Stage should update to Proposal');
     }
 
 }

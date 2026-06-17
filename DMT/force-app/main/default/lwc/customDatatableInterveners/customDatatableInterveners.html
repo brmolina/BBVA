@@ -2,7 +2,7 @@
     <template if:true={tableData}>
         <c-custom-data-table 
             key-field="Id" 
-            style="position:relative;z-index: 2"
+            style="position:relative;z-index: 3"
             data={tableData} 
             columns={columns} 
             oncomboboxchange={comboboxChange}
@@ -14,7 +14,8 @@
             onrowaction={handleRowAction}
             hide-checkbox-column
             suppress-bottom-bar
-            show-row-number-column>
+            show-row-number-column
+            overflow="true">
         </c-custom-data-table>
     </template>
 </template>

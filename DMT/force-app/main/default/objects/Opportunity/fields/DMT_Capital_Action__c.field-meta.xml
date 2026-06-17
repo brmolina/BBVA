@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Capital_Action__c</fullName>
+    <label>Capital Action</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Refinancing</fullName>
+                <default>false</default>
+                <label>Refinancing</label>
+            </value>
+            <value>
+                <fullName>A&amp;E (Amend &amp; Extend)</fullName>
+                <default>false</default>
+                <label>A&amp;E (Amend &amp; Extend)</label>
+            </value>
+            <value>
+                <fullName>Amendment</fullName>
+                <default>false</default>
+                <label>Amendment</label>
+            </value>
+            <value>
+                <fullName>New Facility</fullName>
+                <default>false</default>
+                <label>New Facility</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

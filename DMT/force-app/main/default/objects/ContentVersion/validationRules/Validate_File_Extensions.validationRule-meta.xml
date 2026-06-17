@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validate_File_Extensions</fullName>
+    <active>false</active>
+    <errorConditionFormula>IF(
+  $Setup.CIB_Bypass__c.skipFileExtensions__c,
+  FALSE,
+  NOT(
+    REGEX(
+      LOWER(PathOnClient),
+      &quot;.*\\.(?:&quot; &amp; LOWER($Setup.CIB_Bypass__c.ExtensionsAllowed__c) &amp; &quot;)$&quot;
+    )
+  )
+)</errorConditionFormula>
+    <errorMessage>Verificar Extension</errorMessage>
+</ValidationRule>

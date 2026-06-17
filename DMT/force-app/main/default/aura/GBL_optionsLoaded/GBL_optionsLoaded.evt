@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="Fired when options are loaded" >
+    <aura:attribute name="result" type="boolean" description="contains the values initially loaded in the component" access="global" />
+    <aura:attribute name="values" type="String[]" description="Selected values" access="global" />
+  </aura:event>

@@ -1,0 +1,4 @@
+<design:component>
+    <design:attribute name="tableId" label="Table Id" required="false" description="Unique identifier of the table instance"/>
+    <design:attribute name="configurationId" label="Configuration Id" required="true" description="Unique identifier of the table configuration object record"/>
+</design:component>

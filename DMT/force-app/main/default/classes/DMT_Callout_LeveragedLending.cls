@@ -1,4 +1,4 @@
-public with sharing class DMT_Callout_LeveragedLending implements Callable {
+global with sharing class DMT_Callout_LeveragedLending implements Callable {
 
     public Object call(String action, Map<String, Object> args) {
         final Map<String, Object> input = (Map<String, Object>) args.get('input');

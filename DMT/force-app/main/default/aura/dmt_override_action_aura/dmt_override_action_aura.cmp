@@ -1,0 +1,4 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,lightning:actionOverride,lightning:hasPageReference">
+    <!-- Este Aura solo envuelve el LWC -->
+    <c:dmt_no_access_message />
+</aura:component>
