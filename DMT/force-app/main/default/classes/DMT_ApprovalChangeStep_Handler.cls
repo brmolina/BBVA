@@ -6,6 +6,55 @@
  * @last modified by  : Aníbal Cortés
  **/
 global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
+
+    // Maps each Status_JSON_Wrapper property name (the JSON section keys used in
+    // DMT_ViewFieldStatusAtClose__c) to the SObject whose tracked fields
+    // (DMT_AllFieldsInStatus__c) describe it. Used by getComparableFieldKeys so the
+    // field-level diff walks the full configured field list instead of only the
+    // fields that happened to be non-null (and therefore present as JSON keys,
+    // since System.JSON.serialize(x, true) omits null fields entirely) at the time
+    // the snapshot being compared against was taken.
+    private static final Map<String, String> SNAPSHOT_SECTION_TO_OBJECT = new Map<String, String>{
+        'line' => 'DMT_Line__c',
+        'opportunity' => 'Opportunity',
+        'riskLineList' => 'DMT_Risk_Line_Term__c',
+        'customAssociationClientList' => 'Custom_Association_Client__c',
+        'lineProductItemList' => 'DMT_Line_Product_Item__c',
+        'warranties' => 'DMT_Warranty__c',
+        'currencyProvisions' => 'DMT_Currency_Provision__c',
+        'opportunityTenor' => 'DMT_Opportunity_Tenor__c',
+        'opportunityMitigant' => 'DMT_Opportunity_Mitigant__c',
+        'opportunityClient' => 'DMT_Opportunity_Client__c',
+        'opportunityLineItem' => 'OpportunityLineItem',
+        'opportunityXSell' => 'DMT_X_Sell__c'
+    };
+
+    /**
+     * @description Returns the complete set of top-level field keys that should be
+     * compared for a given snapshot section (e.g. 'line', 'lineProductItemList'),
+     * derived from the tracked field configuration (fieldMapFromObject, built from
+     * DMT_AllFieldsInStatus__c) rather than from whichever keys happen to be present
+     * in a previously-stored snapshot JSON. A field that was null when the old
+     * snapshot was taken has no key in that JSON, so relying on its keySet() alone
+     * silently skips comparing that field forever, even after it's populated.
+     * Relationship-traversal fields (e.g. "Client__r.Name") are reduced to their
+     * top-level key ("Client__r") to match how the JSON nests them.
+     * Falls back to fallbackKeys (the old snapshot's own keys) only if the section
+     * isn't recognized, to fail safe rather than skip comparison entirely.
+     * @author DMT_ApprovalChangeStep_Handler | CIBGLOBALD-4098
+     **/
+    private static Set<String> getComparableFieldKeys(String sectionName, Map<String, List<String>> fieldMapFromObject, Set<String> fallbackKeys) {
+        String objectName = SNAPSHOT_SECTION_TO_OBJECT.get(sectionName);
+        if (objectName == null || !fieldMapFromObject.containsKey(objectName)) {
+            return fallbackKeys;
+        }
+        Set<String> keys = new Set<String>();
+        for (String trackedField : fieldMapFromObject.get(objectName)) {
+            keys.add(trackedField.contains('.') ? trackedField.substringBefore('.') : trackedField);
+        }
+        return keys;
+    }
+
     /**
      * @description First method that calls the Integration Procedure
      * @author Aníbal Cortés | 10-31-2024
@@ -385,6 +434,47 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             casesIds.add(c.Id);
         }
 
+        // CIBGLOBALD-3233: already-approved ("green") features must not be reset even when
+        // tracked fields differ - restored after being found missing from the deployed org
+        // (still present in git history, commit 92e4a3ab63, never reverted there).
+        Set<Id> opportunityIds = new Set<Id>();
+        for (Case caseRecord : records){
+            if (caseRecord.DMT_LineOpportunity__c == 'O' && caseRecord.opportunity_id__c != null){
+                opportunityIds.add(caseRecord.opportunity_id__c);
+            }
+        }
+
+        Map<Id, Map<String, String>> featureStatesByOpportunityId = new Map<Id, Map<String, String>>();
+        if (!opportunityIds.isEmpty()){
+            List<Passport__c> passports = [
+                SELECT Id, Opportunity__c, DMT_Passport_Save__c, CreatedDate
+                FROM Passport__c
+                WHERE Opportunity__c IN :opportunityIds
+                ORDER BY CreatedDate DESC
+            ];
+
+            for (Passport__c passport : passports){
+                Map<String, String> featureStates = extractFeatureStatesFromPassport(passport.DMT_Passport_Save__c);
+                if (passport.Opportunity__c != null && !featureStatesByOpportunityId.containsKey(passport.Opportunity__c)){
+                    featureStatesByOpportunityId.put(passport.Opportunity__c, featureStates);
+                }
+            }
+        }
+
+        Map<Id, Boolean> caseFeatureIsGreenMap = new Map<Id, Boolean>();
+        for (Case caseRecord : records){
+            Boolean isGreen = false;
+            String relatedFeatureName = caseRecord.DMT_Related_feature_name__c;
+            if (caseRecord.DMT_LineOpportunity__c == 'O' && caseRecord.opportunity_id__c != null && !String.isBlank(relatedFeatureName)){
+                Map<String, String> featureStates = featureStatesByOpportunityId.get(caseRecord.opportunity_id__c);
+                if (featureStates != null){
+                    String featureState = featureStates.get(relatedFeatureName.toUpperCase());
+                    isGreen = featureState != null && featureState.equalsIgnoreCase('GREEN');
+                }
+            }
+            caseFeatureIsGreenMap.put(caseRecord.Id, isGreen);
+        }
+
         Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, Owner.Name, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
                                                     FROM Task
                                                     WHERE WhatId IN:casesIds AND Status != :DMT_Constants.CANCELLED AND DMT_Not_Restart__c = false]);
@@ -662,9 +752,11 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                                 System.debug( 'listFromTask.get(item) --> ' + listFromTask.get(item));
                                 Map<String, Object> itemFromTask = (Map<String, Object>)listFromTask.get(item);
                                 Map<String, Object> itemFull = (Map<String, Object>)listFromJson.get(item);
-                                for (String fieldFromItem : itemFromTask.keySet()){
+                                for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
                                     if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-
+                                        if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
+                                            continue;
+                                        }
                                         tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
                                         if (!isDifferent){
                                             tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
@@ -675,7 +767,9 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                                 }
                             }
                         } else{
-
+                            if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
+                                continue;
+                            }
                             tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
                             if (!isDifferent){
                                 tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
@@ -687,7 +781,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
                         Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
                         if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : itemFromTask.keySet()){
+                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
                                 if (fieldFromItem.equalsIgnoreCase('Client__r')){
                                     Map<String, Object> clientFromLine = (Map<String, Object>)itemFromTask.get(fieldFromItem);
                                     Map<String, Object> clientFromJSONFull = (Map<String, Object>)itemFull.get(fieldFromItem);
@@ -717,8 +811,11 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
                         Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
                         if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : itemFromTask.keySet()){
+                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
                                 if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
+                                    if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
+                                        continue;
+                                    }
                                     tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
                                     if (!isDifferent){
                                         tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
@@ -777,6 +874,47 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             updateTaskWithStatus(t.Id, false);
         }
         System.debug('Queries usadas after updateTaskWithStatus: ' + Limits.getQueries());
+    }
+
+    /**
+     * @description CIBGLOBALD-3233: parses the Passport JSON and returns each feature's
+     * current stateName keyed by uppercased feature name, used to identify already-approved
+     * ("green") features so their cases are skipped when resetting tasks.
+     * @author Alejandro Muñoz Lujan | 05-05-2026
+     **/
+    private static Map<String, String> extractFeatureStatesFromPassport(String passportJson){
+        Map<String, String> featureStates = new Map<String, String>();
+        if (String.isBlank(passportJson)){
+            return featureStates;
+        }
+
+        try {
+            Map<String, Object> rootMap = (Map<String, Object>)JSON.deserializeUntyped(passportJson);
+            if (rootMap == null){
+                return featureStates;
+            }
+
+            Map<String, Object> dataMap = (Map<String, Object>)rootMap.get('data');
+            Object featuresObj = dataMap != null ? dataMap.get('features') : rootMap.get('features');
+            if (featuresObj == null || !(featuresObj instanceof List<Object>)){
+                return featureStates;
+            }
+
+            for (Object featureObj : (List<Object>)featuresObj){
+                if (featureObj instanceof Map<String, Object>){
+                    Map<String, Object> featureMap = (Map<String, Object>)featureObj;
+                    String featureName = (String)featureMap.get('name');
+                    String stateName = (String)featureMap.get('stateName');
+                    if (!String.isBlank(featureName) && !String.isBlank(stateName)){
+                        featureStates.put(featureName.toUpperCase(), stateName);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            System.debug(LoggingLevel.WARN, 'Error parsing passport JSON in DMT_ApprovalChangeStep_Handler.extractFeatureStatesFromPassport: ' + ex.getMessage());
+        }
+
+        return featureStates;
     }
 
     /**
@@ -962,7 +1100,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                             for (String item : listFromTask.keySet()){
                                 Map<String, Object> itemFromTask = (Map<String, Object>)listFromTask.get(item);
                                 Map<String, Object> itemFull = (Map<String, Object>)listFromJson.get(item);
-                                for (String fieldFromItem : itemFromTask.keySet()){
+                                for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
                                     if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
                                         if (!isDifferent){
                                             String featureName = mapCasesFeatureName.get(caseId);
@@ -1011,7 +1149,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
                         Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
                         if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : itemFromTask.keySet()){
+                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
                                 if (fieldFromItem.equalsIgnoreCase('Client__r')){
                                     Map<String, Object> clientFromLine = (Map<String, Object>)itemFromTask.get(fieldFromItem);
                                     Map<String, Object> clientFromJSONFull = (Map<String, Object>)itemFull.get(fieldFromItem);

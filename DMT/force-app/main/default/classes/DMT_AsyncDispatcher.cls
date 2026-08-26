@@ -22,6 +22,9 @@ public with sharing class DMT_AsyncDispatcher {
             DMT_Opportunity_Utils.handleOppXSellGeneration((DMT_OppXSellPayload) payload);
         } else if (payload instanceof DMT_DynamicMapperPayload) {
             DMT_PAWIF_IntegrationHandler.handleClosingIntegration((DMT_DynamicMapperPayload) payload);
+        } else if (payload instanceof DMT_CoreDocumentsUploadPayload) {
+            DMT_CoreDocumentsUploadPayload p = (DMT_CoreDocumentsUploadPayload) payload;
+            DMT_CoreDocumentsUploadFile.upload(p.sfRecordId, p.fileBaseName, p.pdfBase64);
         } else {
             throw new IllegalArgumentException('Unsupported payload type');
         }
@@ -142,55 +145,63 @@ public with sharing class DMT_AsyncDispatcher {
         return EncodingUtil.convertToHex(hash);
     }
 
+    // Lets tests simulate a non-204 response without a real HttpCalloutMock for this method.
+    // Mirrors DMT_IntegrationEventProcessor's forceFailForTest/forceExceptionForTest convention.
+    @TestVisible private static Integer forceStatusCodeForTest = null;
+
+    // Any failure here must propagate (not be swallowed): this method always runs after an
+    // HTTP callout, and Big Object writes (Database.insertImmediate, used to persist
+    // DES_Exceptions__b) aren't allowed in the same transaction as a callout. The callers
+    // of DMT_AsyncDispatcher.dispatch() - DMT_AsyncQueueJob.execute() / DMT_AsyncBatchJob.execute() -
+    // already catch exceptions from dispatch() and defer the actual log write to a fresh,
+    // callout-free transaction (a new Batch/Queueable), exactly like every other payload
+    // type in this dispatcher.
     public static void handleConsumptionReassign(DMT_ConsumptionReassignPayload p) {
-        try {
-            // 1. Build the inner business payload directly from the input map
-            Map<String, Object> payload = new Map<String, Object>();
-            
-            Map<String, Object> clientMap = new Map<String, Object>();
-            clientMap.put('groupId', (String) p.inputMap.get('groupId'));
-            payload.put('client', clientMap);
-            
-            if (p.inputMap.containsKey('opportunityId')) {
-                payload.put('opportunityId', (String) p.inputMap.get('opportunityId'));
-            }
+        // 1. Build the inner business payload directly from the input map
+        Map<String, Object> payload = new Map<String, Object>();
 
-            // 2. Build the outer integration framework request wrapper
-            Map<String, Object> request = new Map<String, Object>();
-            request.put('jsonInput', JSON.serialize(payload));
-            
-            // 3. INJECT THE USER ID MANUALLY
-            if (String.isNotBlank(p.corporateUserId)) {
-                request.put('userId', p.corporateUserId);
-            } else {
-                request.put('userId', 'SystemAsync'); 
-            }
+        Map<String, Object> clientMap = new Map<String, Object>();
+        clientMap.put('groupId', (String) p.inputMap.get('groupId'));
+        payload.put('client', clientMap);
 
-            String requestStr = JSON.serialize(request);
-            String serviceName = 'DMT_consumptionsReassign';
-
-            System.debug('>>> Orchestrator: Executing Second Callout: ' + requestStr);
-
-            // 4. Invoke IASO directly
-            HttpResponse response;
-            if (Test.isRunningTest()) {
-                response = new HttpResponse();
-                response.setStatusCode(204);
-            } else {
-                response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
-            }
-
-            // 5. Evaluate response
-            if (response != null && response.getStatusCode() == 204) {
-                System.debug('>>> SUCCESS: Orchestrated Second Callout completed (204 No Content).');
-            } else {
-                System.debug('>>> ERROR: Orchestrated Second Callout HTTP ' + (response != null ? response.getStatusCode() : 0));
-                System.debug('>>> ERROR Body: ' + (response != null ? response.getBody() : 'null'));
-                
-                // Optional: You could enqueue a LogExceptionPayload here if it fails
-            }
-        } catch (Exception e) {
-            System.debug('>>> Orchestrated Second Callout Exception: ' + e.getMessage() + ' | Stack: ' + e.getStackTraceString());
+        if (p.inputMap.containsKey('opportunityId')) {
+            payload.put('opportunityId', (String) p.inputMap.get('opportunityId'));
         }
+
+        // 2. Build the outer integration framework request wrapper
+        Map<String, Object> request = new Map<String, Object>();
+        request.put('jsonInput', JSON.serialize(payload));
+
+        // 3. INJECT THE USER ID MANUALLY
+        if (String.isNotBlank(p.corporateUserId)) {
+            request.put('userId', p.corporateUserId);
+        } else {
+            request.put('userId', 'SystemAsync');
+        }
+
+        String requestStr = JSON.serialize(request);
+        String serviceName = 'DMT_consumptionsReassign';
+
+        System.debug('>>> Orchestrator: Executing handleConsumptionReassign: ' + requestStr);
+
+        // 4. Invoke IASO directly
+        HttpResponse response;
+        if (Test.isRunningTest()) {
+            response = new HttpResponse();
+            response.setStatusCode(forceStatusCodeForTest != null ? forceStatusCodeForTest : 204);
+        } else {
+            response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
+        }
+
+        // 5. Evaluate response
+        if (response != null && response.getStatusCode() == 204) {
+            System.debug('>>> SUCCESS: Orchestrated handleConsumptionReassign completed (204 No Content).');
+            return;
+        }
+        System.debug('>>> FAIL: Orchestrated handleConsumptionReassign failed with HTTP ' + (response != null ? response.getStatusCode() : null) + '.');
+
+        Integer statusCode = response != null ? response.getStatusCode() : null;
+        String body = response != null ? response.getBody() : null;
+        throw new CalloutException('Recalculate Approvals callout failed with HTTP ' + statusCode + (String.isNotBlank(body) ? ': ' + body : ''));
     }
 }

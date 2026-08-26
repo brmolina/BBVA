@@ -29,20 +29,4 @@ public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer {
             return '<div>Error: ' + e.getMessage() + '</div>';
         }
     }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null) {
-            return new Map<String, Object>();
-        }
-        try {
-            DMT_ViewRenderer renderer = recordTypeRenderers.get(data.recordTypeId);
-            if (renderer == null) {
-                throw new IllegalArgumentException('No Info renderer for record type Id: ' + data.recordTypeId);
-            }
-            return renderer.renderPdfJson(data);
-        } catch (Exception e){
-            System.debug(e.getMessage());
-            return new Map<String, Object>();
-        }
-    }
 }

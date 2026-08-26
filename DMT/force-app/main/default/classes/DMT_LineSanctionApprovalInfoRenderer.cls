@@ -51,7 +51,7 @@ public with sharing class DMT_LineSanctionApprovalInfoRenderer implements DMT_Vi
     // ==========================================
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {
         if (data == null || data.line.getPopulatedFieldsAsMap().isEmpty()) {
-            return '<div>Sanction Approval Info data not provided</div>';
+            return '<div>Approval Info data not provided</div>';
         }
 
         try {
@@ -70,37 +70,6 @@ public with sharing class DMT_LineSanctionApprovalInfoRenderer implements DMT_Vi
         } catch (Exception e){
             System.debug('Error in DMT_LineSanctionApprovalInfoRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
-        }
-    }
-
-    // ==========================================
-    // PDF RENDERING
-    // ==========================================
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || data.line.getPopulatedFieldsAsMap().isEmpty()) {
-            return new Map<String, Object>();
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>(); 
-            
-            // 1. Create Title
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('Approval Info'));
-            
-            // 2. Generate the Dynamic List using the shared helper
-            List<DMT_FormattingUtils.DisplayField> fieldsToRender = buildRenderFields(data);
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fieldsToRender));
-
-            component.put('content', contentList);
-            component.put('name', 'Sanction Approval Info');
-            
-            return component;
-
-        } catch (Exception e){
-            System.debug('Error in DMT_LineSanctionApprovalInfoRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_LineSanctionApprovalInfoRenderer', 'renderPdfJson', 'DMT', ''));
-            return new Map<String, Object>();
         }
     }
 }

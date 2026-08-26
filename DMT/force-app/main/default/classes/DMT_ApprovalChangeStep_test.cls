@@ -40,7 +40,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
         item.Name = 'Basic client';
         item.DMT_Component_Item__c = 'Opportunity Info';
         item.DMT_order_display__c = 1;
-        item.DMT_Text__c = 'Esto es un texto normal';
+        item.DMT_Text__c = 'This is normal text';
         item.Type_Item__c = 'Component';
         item.CurrencyIsoCode = 'EUR';
         item.DMT_View__c = approverView.Id;
@@ -49,7 +49,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
         item2.Name = 'Products Test';
         item2.DMT_Component_Item__c = 'Products';
         item2.DMT_order_display__c = 3;
-        item2.DMT_Text__c = 'Esto es un texto normal';
+        item2.DMT_Text__c = 'This is normal text';
         item2.Type_Item__c = 'Component';
         item2.CurrencyIsoCode = 'EUR';
         item2.DMT_View__c = approverView.Id;
@@ -99,7 +99,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
 
         Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
 
-        System.assertEquals(true, tasksModified.DMT_ViewStatusAtClose__c != null , 'Error creating taskStatus');
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
     }
 
     @isTest
@@ -118,7 +118,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
         Test.stopTest();
         Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
 
-        System.assertEquals(true, tasksModified.DMT_ViewStatusAtClose__c !=null, 'Error creating taskStatus');
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
     }
 
 
@@ -166,8 +166,8 @@ public with sharing class DMT_ApprovalChangeStep_test {
             DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(lineCase.DMT_Line__c);
         Test.stopTest();
 
-        System.assertNotEquals(null, previewResult, 'Preview result should not be null.');
-        System.assert(previewResult.size() > 0, 'Preview should return at least one feature.');
+        Assert.isNotNull(previewResult, 'Preview result should not be null.');
+        Assert.isTrue(previewResult.size() > 0, 'Preview should return at least one feature.');
 
         Boolean containsCaseFeature = false;
         for (DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper featureWrapper : previewResult) {
@@ -177,7 +177,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
             }
         }
 
-        System.assertEquals(true, containsCaseFeature, 'Preview should contain the related feature name from the case.');
+        Assert.isTrue(containsCaseFeature, 'Preview should contain the related feature name from the case.');
     }
 
     @isTest
@@ -194,7 +194,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
         DMT_ApprovalChangeStep_Helper.updateOwnerFromCase(requestList);
         Test.stopTest();
         List<Case> listCasesUpdated = [SELECT Id, OwnerId FROM Case ORDER BY LastModifiedDate DESC];
-        System.assertEquals(listCasesUpdated.get(0).OwnerId, UserInfo.getUserId(), 'It is not the same owner');
+        Assert.areEqual(listCasesUpdated.get(0).OwnerId, UserInfo.getUserId(), 'It is not the same owner');
     }
     @isTest
     private static void testUpdateTaskWithStatusWithPdfOpp()
@@ -216,7 +216,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
 
         Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
 
-        System.assertEquals(true, tasksModified.DMT_ViewStatusAtClose__c != null , 'Error creating taskStatus');
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
     }
     @isTest
     public static void testCompareTasksFromCaseOpp() {
@@ -280,7 +280,123 @@ public with sharing class DMT_ApprovalChangeStep_test {
 
         System.debug('JACG ' + statusRecord.DMT_AllFieldsInStatus__c);
 
-        System.assert(statusRecord.DMT_AllFieldsInStatus__c != null, 'Status field string should not be null');
-        System.assert(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Opportunity_Tenor__c'), 'The status record must contain the Opportunity keys.');
+        Assert.isNotNull(statusRecord.DMT_AllFieldsInStatus__c, 'Status field string should not be null');
+        Assert.isTrue(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Opportunity_Tenor__c'), 'The status record must contain the Opportunity keys.');
+    }
+
+    /**
+     * @description CIBGLOBALD-4098: a tracked field that is null when the task's
+     * snapshot is taken has no key in the stored JSON (System.JSON.serialize
+     * suppresses nulls). If the diff in compareTasksFromCase only ever walks the
+     * old snapshot's own keys, that field's later edit is never detected and the
+     * Business Approval task never restarts. This proves the fix: after the field
+     * goes from null to populated, the comparison must still detect the change and
+     * cancel/recreate the task.
+     *
+     * Note: this deliberately does NOT try to set DMT_Items__c.DMT_Campos_componente_Refact__c
+     * directly - the record-triggered flow UpdateComponentItemField (RecordAfterSave on
+     * DMT_Items__c, not covered by TriggerBypass) unconditionally overwrites that field back
+     * to a hardcoded constant whenever DMT_Component_Item__c = 'Opportunity Info' is saved,
+     * which is exactly what TestSetup's 'Basic client' item already is. So instead this test
+     * uses DMT_Capital_Action__c, a field that IS part of that flow's real constant list and
+     * is genuinely null in test data (generateOpportunity() never sets it) - same effect as
+     * the real-world repro (DES_Comments__c / DES_Description_rich__c), without fighting the flow.
+     **/
+    @isTest
+    private static void testCompareTasksFromCase_DetectsFieldChangedFromNullToPopulated() {
+        TriggerBypass.setBypass();
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+        Case caseOpp = [SELECT Id, DMT_Line__c, opportunity_id__c, DMT_LineOpportunity__c,
+                               opportunity_id__r.RecordType.DeveloperName, DMT_Line__r.RecordType.DeveloperName,
+                               DMT_Line__r.Custom_Association__c, DMT_Related_feature_name__c
+                        FROM Case
+                        WHERE DMT_Related_feature_name__c = 'Test1' AND opportunity_id__c =: opp.Id LIMIT 1];
+
+        Task taskOpp = [SELECT Id, Status, DMT_Not_Restart__c FROM Task WHERE WhatId = :caseOpp.Id LIMIT 1];
+
+        Assert.isNull([SELECT DMT_Capital_Action__c FROM Opportunity WHERE Id = :opp.Id].DMT_Capital_Action__c,
+            'Test precondition: DMT_Capital_Action__c must be null so the snapshot omits it as a key.');
+
+        Test.startTest();
+
+        // Snapshot the task while DMT_Capital_Action__c is still null.
+        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(taskOpp.Id, false);
+
+        taskOpp.Status = 'In Progress';
+        taskOpp.DMT_Not_Restart__c = false;
+        update taskOpp;
+
+        // Simulate the banker filling in a previously-blank tracked field while in Draft.
+        opp.DMT_Capital_Action__c = 'New Facility';
+        update opp;
+
+        DMT_ApprovalChangeStep_Handler.Request req = new DMT_ApprovalChangeStep_Handler.Request();
+        req.records = new List<Case>{ caseOpp };
+        DMT_ApprovalChangeStep_Handler.compareTasksFromCase(new List<DMT_ApprovalChangeStep_Handler.Request>{ req });
+
+        Test.stopTest();
+
+        Task originalTask = [SELECT Id, Status FROM Task WHERE Id = :taskOpp.Id];
+        Assert.areEqual('Cancelled', originalTask.Status,
+            'The original task must be cancelled once the previously-null tracked field is populated.');
+
+        List<Task> openTasksOnCase = [SELECT Id FROM Task WHERE WhatId = :caseOpp.Id AND Status != 'Cancelled'];
+        Assert.areEqual(1, openTasksOnCase.size(),
+            'A fresh task must be created to restart the approval for this feature.');
+    }
+
+    /**
+     * @description CIBGLOBALD-3233 (restored - see CIBGLOBALD-4098): a Case whose related
+     * feature is currently GREEN (already approved) in the Passport JSON must NOT be reset,
+     * even when a tracked field genuinely changes. Covers the interaction between Alejandro's
+     * green-feature-skip guard and the null-to-populated field detection fixed under
+     * CIBGLOBALD-4098 - the field difference must be correctly detected AND then suppressed
+     * by the green check, so the task stays untouched.
+     **/
+    @isTest
+    private static void testCompareTasksFromCase_SkipsResetForGreenFeature() {
+        TriggerBypass.setBypass();
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+        Case caseOpp = [SELECT Id, DMT_Line__c, opportunity_id__c, DMT_LineOpportunity__c,
+                               opportunity_id__r.RecordType.DeveloperName, DMT_Line__r.RecordType.DeveloperName,
+                               DMT_Line__r.Custom_Association__c, DMT_Related_feature_name__c
+                        FROM Case
+                        WHERE DMT_Related_feature_name__c = 'Test1' AND opportunity_id__c =: opp.Id LIMIT 1];
+
+        Task taskOpp = [SELECT Id, Status, DMT_Not_Restart__c FROM Task WHERE WhatId = :caseOpp.Id LIMIT 1];
+
+        // Mark this Case's feature as already-approved ("GREEN") in the Passport JSON.
+        Passport__c passport = new Passport__c(
+            Opportunity__c = opp.Id,
+            DMT_Passport_Save__c = '{"data":{"features":[{"name":"' + caseOpp.DMT_Related_feature_name__c + '","stateName":"GREEN"}]}}'
+        );
+        insert passport;
+
+        Test.startTest();
+
+        // Snapshot the task while DMT_Capital_Action__c is still null.
+        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(taskOpp.Id, false);
+
+        taskOpp.Status = 'In Progress';
+        taskOpp.DMT_Not_Restart__c = false;
+        update taskOpp;
+
+        // Same tracked-field edit that would normally trigger a restart.
+        opp.DMT_Capital_Action__c = 'New Facility';
+        update opp;
+
+        DMT_ApprovalChangeStep_Handler.Request req = new DMT_ApprovalChangeStep_Handler.Request();
+        req.records = new List<Case>{ caseOpp };
+        DMT_ApprovalChangeStep_Handler.compareTasksFromCase(new List<DMT_ApprovalChangeStep_Handler.Request>{ req });
+
+        Test.stopTest();
+
+        Task originalTask = [SELECT Id, Status FROM Task WHERE Id = :taskOpp.Id];
+        Assert.areEqual('In Progress', originalTask.Status,
+            'A task on an already-approved (GREEN) feature must not be cancelled, even when a tracked field changes.');
+
+        List<Task> allTasksOnCase = [SELECT Id FROM Task WHERE WhatId = :caseOpp.Id];
+        Assert.areEqual(1, allTasksOnCase.size(),
+            'No replacement task should be created for a GREEN feature.');
     }
 }

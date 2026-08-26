@@ -331,9 +331,6 @@ public class DMT_ViewController_Test {
         DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         DMT_TeamMember__c participants = new DMT_TeamMember__c(Opportunity__c = opp.Id, User__c = UserInfo.getUserId(), AccessLevel__c = 'Read');
         insert participants;
-        Local_Client__c localClient = new Local_Client__c(Name = 'test local client', RecordTypeId = Schema.SObjectType.Local_Client__c.getRecordTypeInfosByName().get('Client').getRecordTypeId(), Cib_Client__c = opp.AccountId);
-        insert localClient;
-
         Case testCaseOpp = new Case(Subject = 'Test Case Opp', OwnerId = testGroup.Id, opportunity_id__c = opp.Id);
         insert testCaseOpp;
 
@@ -457,7 +454,7 @@ public class DMT_ViewController_Test {
         String type = 'Line_Treasury';
         //String recordTypeDeveloperName = 'TreasurySettlement';
         String htmlContent = DMT_ViewController.loadComponentsForView(treasuryLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(treasuryLineId, type, items);
+        String versionSnapshot = DMT_ViewController.loadVersionSnapshot(treasuryLineId, type, items);
         DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id);
         DMT_ViewController.getFeaturesForJsonPdf(treasuryLineId, '');
         DMT_ViewController.getFeaturesForJsonPdf('', '');
@@ -469,6 +466,13 @@ public class DMT_ViewController_Test {
 
         // Validaciones
         Assert.isNotNull(htmlContent, 'El HTML generado no debe ser nulo.');
+
+        // CIBGLOBALD-3731: each rendered component must be wrapped in a tagged <section> so the
+        // version-compare HTML normalizer can reconstruct section boundaries.
+        Map<String, Object> htmlResultMap = (Map<String, Object>) JSON.deserializeUntyped(htmlContent);
+        String renderedHtml = (String) htmlResultMap.get('HTML');
+        Assert.isTrue(renderedHtml.contains('data-dmt-component="true"'), 'Rendered HTML should contain tagged component sections.');
+        Assert.isTrue(renderedHtml.contains('data-dmt-component-name="'), 'Rendered HTML should contain the component name attribute.');
 
         TriggerBypass.removeBypass();
     }
@@ -579,7 +583,7 @@ public class DMT_ViewController_Test {
         String type = 'Line_Treasury';
         //String recordTypeDeveloperName = 'TreasurySettlement';
         String htmlContent = DMT_ViewController.loadComponentsForView(treasuryLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(treasuryLineId, type, items);
+        String versionSnapshot = DMT_ViewController.loadVersionSnapshot(treasuryLineId, type, items);
         DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id );
         DMT_ViewController.getFeaturesForJsonPdf(treasuryLineId, '');
         DMT_ViewController.getFeaturesForJsonPdf('', '');
@@ -645,7 +649,7 @@ public class DMT_ViewController_Test {
         String type = 'Line_Treasury';
         //String recordTypeDeveloperName = 'TreasurySettlement';
         String htmlContent = DMT_ViewController.loadComponentsForView(treasuryLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(treasuryLineId, type, items);
+        String versionSnapshot = DMT_ViewController.loadVersionSnapshot(treasuryLineId, type, items);
         String jsonDataFeatureLine2 = DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id );
         String jsonDataFeatureLine = DMT_ViewController.getFeaturesForJsonPdf(treasuryLineId, '');
         String jsonDataFeatureLine3 = DMT_ViewController.getFeaturesForJsonPdf('', '');
@@ -711,7 +715,7 @@ public class DMT_ViewController_Test {
         //String recordTypeDeveloperName = 'OtherProducts';
 
         String htmlContent = DMT_ViewController.loadComponentsForView(otherLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(otherLineId, type, items);
+        String versionSnapshot = DMT_ViewController.loadVersionSnapshot(otherLineId, type, items);
         String jsonDataFeatureLine = DMT_ViewController.getFeaturesForJsonPdf(otherLineId, '');
         String jsonDataFeatureLine2 = DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id);
         Test.stopTest();
@@ -799,7 +803,7 @@ public class DMT_ViewController_Test {
         //String recordTypeDeveloperName = 'OtherProducts';
 
         String htmlContent = DMT_ViewController.loadComponentsForView(otherLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(otherLineId, type, items);
+        String versionSnapshot = DMT_ViewController.loadVersionSnapshot(otherLineId, type, items);
         String jsonDataFeatureLine = DMT_ViewController.getFeaturesForJsonPdf(otherLineId, '');
         String jsonDataFeatureLine2 = DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id);
         Test.stopTest();
@@ -934,12 +938,9 @@ public class DMT_ViewController_Test {
     static void testNullDataToDelegatorsDMTApprovalProcessDataRenderer(){
         DMT_ApprovalProcessDataRenderer renderer = new DMT_ApprovalProcessDataRenderer();
         String resultHtml;
-        Map<String, Object> resultPdfJson;
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -953,27 +954,14 @@ public class DMT_ViewController_Test {
         Test.stopTest();
         Assert.isTrue(result.contains('Error'), 'response should contain Error.');
     }
-    @isTest
-    static void testInvalidRecordIdDMTApprovalProcessDataRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_ApprovalProcessDataRenderer renderer = new DMT_ApprovalProcessDataRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
 
     @isTest
     static void testNullDataToDelegatorsDMTClientRenderer(){
         DMT_ClientRenderer renderer = new DMT_ClientRenderer();
         String resultHtml;
-        Map<String, Object> resultPdfJson;
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -987,17 +975,6 @@ public class DMT_ViewController_Test {
         Test.stopTest();
         Assert.isTrue(result.contains('Error'), 'response should contain Error.');
     }
-
-    @isTest
-    static void testInvalidRecordIdDMTClientRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_ClientRenderer renderer = new DMT_ClientRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
     //Activity related component test
     @isTest
     static void testDMTActiveRelatedLinesRendererDelegatorGuards(){
@@ -1007,15 +984,11 @@ public class DMT_ViewController_Test {
 
         Test.startTest();
         String nullHtml = renderer.renderHtml(null);
-        Map<String, Object> nullPdf = renderer.renderPdfJson(null);
         String invalidHtml = renderer.renderHtml(invalidData);
-        Map<String, Object> invalidPdf = renderer.renderPdfJson(invalidData);
         Test.stopTest();
 
         Assert.isTrue(nullHtml.contains('Error'), 'Null data should return Error in HTML renderer.');
-        Assert.isTrue(nullPdf.isEmpty(), 'Null data should return empty PDF map.');
         Assert.isTrue(invalidHtml.contains('Error'), 'Invalid record type should return Error in HTML renderer.');
-        Assert.isTrue(invalidPdf.isEmpty(), 'Invalid record type should return empty PDF map.');
     }
 
     @isTest
@@ -1026,11 +999,9 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_DefaultActiveRelatedLinesRenderer renderer = new DMT_DefaultActiveRelatedLinesRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isTrue(htmlResult.contains('Line data not provided'), 'Missing client should return line data not provided.');
-        Assert.isTrue(pdfResult.isEmpty(), 'Missing client should return an empty PDF map.');
     }
 
     @isTest
@@ -1070,7 +1041,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_DefaultActiveRelatedLinesRenderer renderer = new DMT_DefaultActiveRelatedLinesRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isTrue(htmlResult.contains('Related InMemory 1'), 'HTML should render first related line.');
@@ -1078,13 +1048,6 @@ public class DMT_ViewController_Test {
         Assert.isTrue(htmlResult.contains('Client 1'), 'HTML should render first client name.');
         Assert.isTrue(htmlResult.contains('Client 2'), 'HTML should render second client name.');
 
-        Assert.isFalse(pdfResult.isEmpty(), 'PDF map should not be empty with related lines.');
-        List<Object> content = (List<Object>)pdfResult.get('content');
-        Map<String, Object> tableObj = (Map<String, Object>)content[4];
-        List<List<String>> body = (List<List<String>>)tableObj.get('body');
-        Assert.areEqual(2, body.size(), 'PDF body should include one row per related line.');
-        Assert.areEqual('Related InMemory 1', body[0][0], 'First PDF row should come from first related line.');
-        Assert.areEqual('Related InMemory 2', body[1][0], 'Second PDF row should come from second related line.');
     }
 
     @isTest
@@ -1143,10 +1106,6 @@ public class DMT_ViewController_Test {
         String type = 'Line_Treasury';
         //String recordTypeDeveloperName = 'TreasurySettlement';
         String htmlContent = DMT_ViewController.loadComponentsForView(treasuryLineId, type, items, '', itemsImg);
-        String pdfJsonContentApex = DMT_ViewController.loadJSONFromSelectedItems(treasuryLineId, type, items);
-        String jsonDataFeatureLine2 = DMT_ViewController.getFeaturesForJsonPdf('', testCase.Id );
-        String jsonDataFeatureLine = DMT_ViewController.getFeaturesForJsonPdf(treasuryLineId, '');
-        String jsonDataFeatureLine3 = DMT_ViewController.getFeaturesForJsonPdf('', '');
         Test.stopTest();
 
         // Validaciones
@@ -1163,8 +1122,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1180,17 +1137,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTParticipantRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_ParticipantRenderer renderer = new DMT_ParticipantRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testNullDataToDelegatorsDMTPassportRenderer(){
         DMT_PassportRenderer renderer = new DMT_PassportRenderer();
         String resultHtml;
@@ -1198,8 +1144,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1215,17 +1159,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTPassportRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_PassportRenderer renderer = new DMT_PassportRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testNullDataToDelegatorsDMTLimitVisualRenderer(){
         DMT_LimitVisualRenderer renderer = new DMT_LimitVisualRenderer();
         String resultHtml;
@@ -1233,8 +1166,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1250,17 +1181,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTLimitVisualRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_LimitVisualRenderer renderer = new DMT_LimitVisualRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testNullDataToDelegatorsDMTInfoRenderer(){
         DMT_InfoRenderer renderer = new DMT_InfoRenderer();
         String resultHtml;
@@ -1268,8 +1188,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1285,17 +1203,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTInfoRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_InfoRenderer renderer = new DMT_InfoRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testNullDataToDelegatorsDMTLimitRenderer(){
         DMT_LimitRenderer renderer = new DMT_LimitRenderer();
         String resultHtml;
@@ -1303,8 +1210,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1320,17 +1225,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTLimitRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_LimitRenderer renderer = new DMT_LimitRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testNullDataToDelegatorsDMTCommercialProcessDataRenderer(){
         DMT_CommercialProcessDataRenderer renderer = new DMT_CommercialProcessDataRenderer();
         String resultHtml;
@@ -1338,8 +1232,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         resultHtml = renderer.renderHtml(null);
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        resultPdfJson = renderer.renderPdfJson(null);
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
         Test.stopTest();
     }
 
@@ -1355,17 +1247,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTCommercialProcessDataRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_CommercialProcessDataRenderer renderer = new DMT_CommercialProcessDataRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testInvalidRecordIdDMTPassportProcessFlowRendererRenderHtml(){
         DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
         data.recordTypeId = null;
@@ -1377,17 +1258,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testInvalidRecordIdDMTPassportProcessFlowRendereRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_PassportProcessFlowRenderer renderer = new DMT_PassportProcessFlowRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
     static void testInvalidRecordIdDMTApprovalProcessFlowRendereRenderHtml(){
         DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
         data.recordTypeId = null;
@@ -1396,17 +1266,6 @@ public class DMT_ViewController_Test {
         String result = renderer.renderHtml(data);
         Test.stopTest();
         Assert.isTrue(result.contains('Error'), 'response should contain Error.');
-    }
-
-    @isTest
-    static void testInvalidRecordIdDMTApprovalProcessFlowRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_ApprovalProcessFlowRenderer renderer = new DMT_ApprovalProcessFlowRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
     }
 
     @isTest
@@ -1422,12 +1281,10 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_ApprovalProcessFlowRenderer renderer = new DMT_ApprovalProcessFlowRenderer();
         String html = renderer.renderHtml(data);
-        Map<String, Object> pdf = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isFalse(html.contains('Error'), 'Sanction record type should resolve to a renderer, not error out.');
         Assert.isTrue(html.containsIgnoreCase('Credit Approval'), 'HTML should be built from the child Opportunity steps (sanctionOppAllsteps).');
-        Assert.isFalse(pdf.isEmpty(), 'PDF Map should be built from the child Opportunity steps (sanctionOppAllsteps).');
     }
     public static List<DMT_ViewController.ItemWrapper> prepareItemWrapper(){
 
@@ -1454,44 +1311,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testCreateTable() {
-        // Prepare simple head and body data
-        List<List<String>> head = new List<List<String>>{ new List<String>{'Col1','Col2'} };
-        List<List<String>> body = new List<List<String>>{
-            new List<String>{'A1','B1'},
-            new List<String>{'A2','B2'}
-        };
-
-        Test.startTest();
-        Map<String, Object> table = DMT_Create_Pdf_Controller.createTable(head, body);
-        Test.stopTest();
-
-        // Basic assertion to cover createTable
-        Assert.isNotNull(table, 'Table map should not be null');
-    }
-
-    @isTest
-    static void testCreateStyledTableObj() {
-        // Prepare head and body where body rows correspond to `values` entries
-        List<List<Object>> head = new List<List<Object>>{ new List<Object>{'Header1','Header2'} };
-        List<List<Object>> body = new List<List<Object>>{
-            new List<Object>{'r1c1','r1c2'},
-            new List<Object>{'r2c1','r2c2'}
-        };
-
-        // values map to each body row; mark the second row as a total
-        List<String> values = new List<String>{'api_row_1','api_row_2'};
-        List<String> totals = new List<String>{'api_row_2'};
-        List<String> totalsDarker = new List<String>();
-
-        Test.startTest();
-        Map<String, Object> table = DMT_Create_Pdf_Controller.createStyledTableObj(head, body, values, totals, totalsDarker);
-        Test.stopTest();
-
-        Assert.isNotNull(table, 'Table should not be null');
-    }
-
-    @isTest
     static void testSaveNativeSnapshots() {
         TriggerBypass.setBypass();
         Task testTask = [SELECT Id FROM Task WHERE Subject = 'Test Task 1' LIMIT 1];
@@ -1509,8 +1328,6 @@ public class DMT_ViewController_Test {
         // 2. Verify they were linked to the Task
         List<ContentDocumentLink> cdls = [SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = :testTask.Id];
         Assert.isTrue(cdls.size() >= 3, 'ContentDocumentLinks should have been created for the Task.');
-
-        TriggerBypass.removeBypass();
     }
 
     @isTest
@@ -1529,7 +1346,6 @@ public class DMT_ViewController_Test {
         List<ContentDocumentLink> cdls = [SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :testTask.Id];
         Assert.areEqual(1, cdls.size(), 'Only one ContentDocumentLink should have been created.');
 
-        TriggerBypass.removeBypass();
     }
 
     @isTest
@@ -1545,7 +1361,6 @@ public class DMT_ViewController_Test {
         List<ContentDocumentLink> cdls = [SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :testTask.Id];
         Assert.areEqual(0, cdls.size(), 'No ContentDocumentLinks should exist when all inputs are blank.');
 
-        TriggerBypass.removeBypass();
     }
 
     @isTest
@@ -1570,7 +1385,6 @@ public class DMT_ViewController_Test {
         Assert.isNotNull(populatedResult.get('htmlData'), 'htmlData should not be null after files are saved.');
         Assert.isNotNull(populatedResult.get('jsonData'), 'jsonData should not be null after files are saved.');
 
-        TriggerBypass.removeBypass();
     }
 
     @isTest
@@ -1681,7 +1495,6 @@ public class DMT_ViewController_Test {
             DMT_Comments__c = 'Test Comment'
         );
         data.line.Client__r = new Account(Name = 'Test Client Name');
-        data.line.DMT_LocalClient__r = new Local_Client__c(Name = 'Test Local Client');
 
         data.riskLineList = new List<DMT_Risk_Line_Term__c>{
             new DMT_Risk_Line_Term__c(Name = 'Test Risk Product', DMT_Amount__c = 10000, CurrencyIsoCode = 'EUR')
@@ -1789,10 +1602,8 @@ public class DMT_ViewController_Test {
             data.itemImgBase64 = new List<DMT_ViewController.ItemImgB64>();
             
             String html = renderer.renderHtml(data);
-            Map<String, Object> pdf = renderer.renderPdfJson(data);
 
             Assert.isNotNull(html, 'HTML output should not be null for component: ' + compName);
-            Assert.isNotNull(pdf, 'PDF Map should not be null for component: ' + compName);
             Assert.isFalse(html.contains('Error:'), 'HTML should not contain an exception error for ' + compName);
 
             // PASS 2: With Images (Covers the "if" block that renders base64 images)
@@ -1804,10 +1615,8 @@ public class DMT_ViewController_Test {
             data.itemImgBase64 = new List<DMT_ViewController.ItemImgB64>{ mockImg, mockImg };
             
             String htmlWithImg = renderer.renderHtml(data);
-            Map<String, Object> pdfWithImg = renderer.renderPdfJson(data);
 
             Assert.isNotNull(htmlWithImg, 'HTML output with images should not be null for component: ' + compName);
-            Assert.isNotNull(pdfWithImg, 'PDF Map with images should not be null for component: ' + compName);
         }
         Test.stopTest();
     }
@@ -1832,10 +1641,8 @@ public class DMT_ViewController_Test {
             DMT_ViewRenderer renderer = DMT_RendererFactory.getRenderer(compName);
 
             String html = renderer.renderHtml(null);
-            Map<String, Object> pdf = renderer.renderPdfJson(null);
 
             Assert.isTrue(html.contains('not provided') || html.contains('Error'), 'HTML should gracefully handle null data for ' + compName);
-            Assert.isTrue(pdf.isEmpty(), 'PDF Map should return empty for null data on ' + compName);
         }
         Test.stopTest();
     }
@@ -1866,10 +1673,8 @@ public class DMT_ViewController_Test {
             DMT_ViewRenderer renderer = DMT_RendererFactory.getRenderer(compName);
 
             String html = renderer.renderHtml(data);
-            Map<String, Object> pdf = renderer.renderPdfJson(data);
 
             Assert.isTrue(html.contains('Error'), 'HTML should catch missing recordType error for ' + compName);
-            Assert.isTrue(pdf.isEmpty(), 'PDF Map should catch error and return empty for ' + compName);
         }
         Test.stopTest();
     }
@@ -1883,16 +1688,6 @@ public class DMT_ViewController_Test {
         String result = renderer.renderHtml(data);
         Test.stopTest();
         Assert.isTrue(result.contains('Error'), 'response should contain Error.');
-    }
-    @isTest
-    static void testInvalidRecordIdDMT_ApprovalModificationsRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_ApprovalModificationsRenderer renderer = new DMT_ApprovalModificationsRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'response should be an empty Map.');
     }
 
     @isTest
@@ -1911,7 +1706,6 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_DefaultApprovalModificationsRenderer renderer = new DMT_DefaultApprovalModificationsRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         // 2. Assert HTML Loop Execution
@@ -1919,10 +1713,6 @@ public class DMT_ViewController_Test {
         Assert.isTrue(htmlResult.contains('Change Audit Trail'), 'HTML should contain Change Audit Trail table');
         Assert.isTrue(htmlResult.contains('Test Post-Approval Modification'), 'HTML should render the description data loop');
 
-        // 3. Assert PDF Loop Execution
-        Assert.isNotNull(pdfResult);
-        Assert.isFalse(pdfResult.isEmpty(), 'PDF Map should not be empty');
-        Assert.areEqual('Post-Approval Management', (String) pdfResult.get('name'), 'PDF should set correct component name');
     }
 
     @isTest
@@ -1934,11 +1724,9 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_DefaultApprovalModificationsRenderer renderer = new DMT_DefaultApprovalModificationsRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isTrue(htmlResult.contains('There are no versions with post-approval modifications.'), 'HTML should display empty message');
-        Assert.isTrue(pdfResult.isEmpty(), 'PDF Map should be empty for no versions');
     }
 
         private static DMT_Line__c createTreasuryLine(
@@ -2034,10 +1822,8 @@ public class DMT_ViewController_Test {
         DMT_SanctionParticipantsRenderer renderer = new DMT_SanctionParticipantsRenderer();
         Test.startTest();
         String resultHtml = renderer.renderHtml(null);
-        Map<String, Object> resultPdfJson = renderer.renderPdfJson(null);
         Test.stopTest();
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
     }
 
     @isTest
@@ -2047,10 +1833,8 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_SanctionParticipantsRenderer renderer = new DMT_SanctionParticipantsRenderer();
         String resultHtml = renderer.renderHtml(data);
-        Map<String, Object> resultPdf = renderer.renderPdfJson(data);
         Test.stopTest();
         Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        Assert.isTrue(resultPdf.isEmpty(), 'response should be an empty Map.');
     }
 
     @isTest
@@ -2067,22 +1851,6 @@ public class DMT_ViewController_Test {
         Test.stopTest();
 
         Assert.isTrue(result.contains('Error:'), 'Debe entrar en el catch y devolver Error');
-    }
-
-    @isTest
-    static void testDMTOpportunityClientRendererRenderPdfJson_CatchBlock() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.oppClient = new DMT_Opportunity_Client__c(
-            Counterpart__c = 'Fin Inst'
-        );
-        data.forceException = true;
-
-        Test.startTest();
-        DMT_OpportunityClientRenderer renderer = new DMT_OpportunityClientRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        Assert.isTrue(result.isEmpty(), 'Debe entrar en el catch y devolver mapa vacío');
     }
 
     @isTest
@@ -2123,43 +1891,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testDMTOpportunityInfoRendererRenderPdfJson() {
-        Id oppRtId = Schema.SObjectType.Opportunity
-            .getRecordTypeInfosByDeveloperName()
-            .get('DMT_Opportunity')
-            .getRecordTypeId();
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = oppRtId;
-        data.currencyIsoCode = 'EUR';
-        data.oppEntific = 'Spain';
-        data.oppEntity = 'BBVA Entity';
-        data.xSellOpp = new List<DMT_X_Sell__c>();
-
-        data.opportunity = new Opportunity(
-            Name = 'Opp Test',
-            RecordTypeId = oppRtId,
-            DMT_Opp_Id__c = 'OPP-001',
-            Entific__c = 'ES',
-            DMT_Entity__c = '001',
-            DMT_CUR_Notional_Amount__c = 1000,
-            DMT_CurrencyText__c = 'EUR',
-            DMT_Capital_Action__c = 'No',
-            DMT_Product_Area__c = 'IB&F',
-            DMT_ContingentCommitments__c = 'Yes'
-        );
-
-        Test.startTest();
-        DMT_InfoRenderer renderer = new DMT_InfoRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        Assert.isNotNull(result);
-        Assert.isFalse(result.isEmpty());
-        Assert.areEqual('Opportunity Info', (String) result.get('name'));
-    }
-
-    @isTest
     static void testDMTOppSustainableFinanceRendererRenderHtmlIBF() {
         DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
         data.opportunity = new Opportunity(
@@ -2180,25 +1911,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testDMTOppSustainableFinanceRendererRenderPdfJsonGTB() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.opportunity = new Opportunity(
-            Name = 'Sustainable Finance Test',
-            DMT_Product_Area__c = 'GTB'
-        );
-        data.oppClient = new DMT_Opportunity_Client__c();
-
-        Test.startTest();
-        DMT_OppSustainableFinanceRenderer renderer = new DMT_OppSustainableFinanceRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        Assert.isNotNull(result);
-        Assert.isFalse(result.isEmpty());
-        Assert.areEqual('Sustainable Finance', (String) result.get('name'));
-    }
-
-    @isTest
     static void testDMTOppSustainableFinanceRendererUnsupportedProductArea() {
         DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
         data.opportunity = new Opportunity(
@@ -2210,11 +1922,9 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_OppSustainableFinanceRenderer renderer = new DMT_OppSustainableFinanceRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.areEqual('', htmlResult);
-        Assert.isTrue(pdfResult.isEmpty());
     }
 
     @isTest
@@ -2238,35 +1948,13 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testDMTOppClientTierRendererRenderPdfJson() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.opportunity = new Opportunity(Name = 'Opp Test');
-        data.oppClient = new DMT_Opportunity_Client__c(
-            DMT_Tiering_Action__c = 'Uptier',
-            DMT_Current__c = 10,
-            DMT_Target__c = 11
-        );
-
-        Test.startTest();
-        DMT_OppClientTierRenderer renderer = new DMT_OppClientTierRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        Assert.isNotNull(result);
-        Assert.isFalse(result.isEmpty());
-        Assert.areEqual('Client Tier', (String) result.get('name'));
-    }
-
-    @isTest
     static void testDMTOppClientTierRendererNullData() {
         Test.startTest();
         DMT_OppClientTierRenderer renderer = new DMT_OppClientTierRenderer();
         String htmlResult = renderer.renderHtml(null);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(null);
         Test.stopTest();
 
         Assert.areEqual('<div>Opportunity data not provided</div>', htmlResult);
-        Assert.isTrue(pdfResult.isEmpty());
     }
 
     @isTest
@@ -2314,52 +2002,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testDMTOppBasicRequirementRendererRenderPdfJson() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.opportunity = new Opportunity(Name = 'Basic Requirement Opportunity');
-        data.oppClient = new DMT_Opportunity_Client__c(
-            DMT_Clients_Global_RORC_CIB_Past_FY__c = 0.17,
-            DMT_CDD_Clients_Global_Rorc_Last_FY__c = 0.28,
-            DMT_Exception_Pool__c = 'YES',
-            DMT_Other_Relevant_Issues__c = 'Other issues BR Test'
-        );
-        data.featuresList = new List<Map<String, Object>>{
-            new Map<String, Object>{
-                'profitability' => new Map<String, Object>{
-                    'audit' => new Map<String, Object>{
-                        'rorcThreshold' => 0.20,
-                        'raroecThreshold' => 0.15
-                    },
-                    'results' => new List<Object>{
-                        new Map<String, Object>{
-                            'rorc' => 0.1234,
-                            'raroec' => 0.2345,
-                            'rorcProspected' => 0.3456,
-                            'raroecProspected' => 0.4567,
-                            'clientRorc' => 0.5678,
-                            'incomes12months' => 1234.56
-                        }
-                    }
-                }
-            }
-        };
-
-        Test.startTest();
-        DMT_OppBasicRequirementRenderer renderer = new DMT_OppBasicRequirementRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        String pdfJson = JSON.serialize(result);
-
-        Assert.isNotNull(result);
-        Assert.isFalse(result.isEmpty());
-        Assert.areEqual('Basic Profitability Metrics', (String) result.get('name'));
-        Assert.isTrue(pdfJson.contains('1234,56'));
-        Assert.isTrue(pdfJson.contains('YES'));
-        Assert.isTrue(pdfJson.contains('Other issues BR Test'));
-    }
-
-    @isTest
     static void testDMTOpportunitySustainabilityRendererRenderHtml() {
         Id oppRtId = Schema.SObjectType.Opportunity
             .getRecordTypeInfosByDeveloperName()
@@ -2399,41 +2041,6 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
-    static void testDMTOpportunitySustainabilityRendererRenderPdfJson() {
-        Id oppRtId = Schema.SObjectType.Opportunity
-            .getRecordTypeInfosByDeveloperName()
-            .get('DMT_Opportunity')
-            .getRecordTypeId();
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = oppRtId;
-
-        DMT_ViewController.OpportunityProduct oppProduct = new DMT_ViewController.OpportunityProduct();
-        oppProduct.name = 'Test Sustainable Product';
-        oppProduct.sustainableDealAssessment = '6';
-        oppProduct.sustainableDealSubtype = 'Social';
-        oppProduct.greenActivityFilter = 'other';
-        oppProduct.sustainableDealLabel = 'Test Label';
-        oppProduct.sustainablePercentage = '1.12';
-        oppProduct.sustainabilityBonusEligible = 'true';
-
-        data.oppProducts.add(oppProduct);
-
-        Test.startTest();
-        DMT_OpportunitySustainabilityRenderer renderer = new DMT_OpportunitySustainabilityRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        Assert.isNotNull(result, 'El mapa PDF no debe ser null.');
-        Assert.isFalse(result.isEmpty(), 'El mapa PDF no debe venir vacío.');
-        Assert.areEqual('Sustainability', (String) result.get('name'), 'El nombre del componente debe ser Sustainability.');
-        Assert.isTrue(result.containsKey('content'), 'Debe contener la clave content.');
-
-        List<Object> content = (List<Object>) result.get('content');
-        Assert.isTrue(content.size() > 0, 'La lista de content debe tener elementos.');
-    }
-
-    @isTest
     static void testDMTOpportunitySustainabilityRendererNoData() {
         DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
 
@@ -2445,18 +2052,12 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_OpportunitySustainabilityRenderer renderer = new DMT_OpportunitySustainabilityRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.areEqual(
             '<div>Sustainability data not provided</div>',
             htmlResult,
             'Si no hay datos de sostenibilidad, debe devolver mensaje de no proporcionado.'
-        );
-
-        Assert.isTrue(
-            pdfResult.isEmpty(),
-            'Si no hay datos de sostenibilidad, el PDF JSON debe venir vacío.'
         );
     }
 
@@ -2484,16 +2085,12 @@ public class DMT_ViewController_Test {
         Test.startTest();
         DMT_SustainabilityRenderer renderer = new DMT_SustainabilityRenderer();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isNotNull(htmlResult, 'El HTML no debe ser null.');
         Assert.isTrue(htmlResult.contains('Sustainability'), 'Debe pintar Sustainability.');
         Assert.isTrue(htmlResult.contains('Delegated Sustainable Product'), 'Debe pintar el producto delegado.');
 
-        Assert.isNotNull(pdfResult, 'El PDF JSON no debe ser null.');
-        Assert.isFalse(pdfResult.isEmpty(), 'El PDF JSON no debe venir vacío.');
-        Assert.areEqual('Sustainability', (String) pdfResult.get('name'));
     }
 
     @isTest
@@ -2502,18 +2099,12 @@ public class DMT_ViewController_Test {
 
         Test.startTest();
         String htmlResult = renderer.renderHtml(null);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(null);
         Test.stopTest();
 
         Assert.areEqual(
             '<div>Error: Data not provided</div>',
             htmlResult,
             'HTML debe devolver error cuando data es null.'
-        );
-
-        Assert.isTrue(
-            pdfResult.isEmpty(),
-            'PDF debe devolver mapa vacío cuando data es null.'
         );
     }
 
@@ -2526,17 +2117,11 @@ public class DMT_ViewController_Test {
 
         Test.startTest();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
         Assert.isTrue(
             htmlResult.contains('No Sustainability renderer for record type Id'),
             'HTML debe devolver error cuando no existe renderer para el recordType.'
-        );
-
-        Assert.isTrue(
-            pdfResult.isEmpty(),
-            'PDF debe devolver mapa vacío cuando no existe renderer para el recordType.'
         );
     }
 
@@ -2549,15 +2134,11 @@ public class DMT_ViewController_Test {
 
         Test.startTest();
         String htmlNull = renderer.renderHtml(null);
-        Map<String, Object> pdfNull = renderer.renderPdfJson(null);
         String htmlEmptyOpp = renderer.renderHtml(emptyData);
-        Map<String, Object> pdfEmptyOpp = renderer.renderPdfJson(emptyData);
         Test.stopTest();
 
         Assert.areEqual('<div>Error: Opportunity data not provided</div>', htmlNull);
-        Assert.isTrue(pdfNull.isEmpty(), 'Con data null debe devolver mapa vacío.');
         Assert.areEqual('<div>Error: Opportunity data not provided</div>', htmlEmptyOpp);
-        Assert.isTrue(pdfEmptyOpp.isEmpty(), 'Con opportunity sin campos poblados debe devolver mapa vacío.');
     }
 
     @isTest
@@ -2569,11 +2150,9 @@ public class DMT_ViewController_Test {
 
         Test.startTest();
         String htmlResult = renderer.renderHtml(data);
-        Map<String, Object> pdfResult = renderer.renderPdfJson(data);
         Test.stopTest();
 
-        Assert.areEqual('', htmlResult, 'Para opportunity válida, el HTML esperado actual es string vacío.');
-        Assert.isTrue(pdfResult.isEmpty(), 'Para opportunity válida, el JSON esperado actual es mapa vacío.');
+        Assert.areEqual('<div>Error: Opportunity Close Date not provided</div>', htmlResult, 'Nothing should render if close date is not provided.');
     }
 
     @isTest
@@ -2591,26 +2170,6 @@ public class DMT_ViewController_Test {
         Assert.isTrue(htmlResult.contains('Error:'), 'Debe entrar en catch y devolver Error en HTML.');
     }
 
-    @isTest
-    static void testDMTOppCommercialProcessDataRendererRenderPdfJsonCatchBlock() {
-        DMT_OppCommercialProcessDataRenderer renderer = new DMT_OppCommercialProcessDataRenderer();
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.opportunity = new Opportunity(Name = 'Opp Commercial Process Catch PDF');
-        data.forceException = true;
-
-        Integer queueableJobs;
-        Map<String, Object> pdfResult;
-
-        Test.startTest();
-        pdfResult = renderer.renderPdfJson(data);
-        queueableJobs = Limits.getQueueableJobs();
-        Test.stopTest();
-
-        Assert.isTrue(pdfResult.isEmpty(), 'Debe entrar en catch y devolver mapa vacío en PDF.');
-        Assert.areEqual(1, queueableJobs, 'Debe encolar un queueable al entrar en catch de PDF.');
-    }
-
     // ==========================================
     // PROFITABILITY DELEGATOR TESTS
     // ==========================================
@@ -2621,15 +2180,12 @@ public class DMT_ViewController_Test {
         
         DMT_ProfitabilityRenderer baseRenderer = new DMT_ProfitabilityRenderer();
         Assert.isTrue(baseRenderer.renderHtml(null).contains('Error'), 'Profitability HTML should return Error.');
-        Assert.isTrue(baseRenderer.renderPdfJson(null).isEmpty(), 'Profitability PDF should be empty.');
 
         DMT_ProfitabilitySummariesRenderer sumRenderer = new DMT_ProfitabilitySummariesRenderer();
         Assert.isTrue(sumRenderer.renderHtml(null).contains('Error'), 'Summaries HTML should return Error.');
-        Assert.isTrue(sumRenderer.renderPdfJson(null).isEmpty(), 'Summaries PDF should be empty.');
 
         DMT_ProfitabilityVisualRenderer visRenderer = new DMT_ProfitabilityVisualRenderer();
         Assert.isTrue(visRenderer.renderHtml(null).contains('Error'), 'Visual HTML should return Error.');
-        Assert.isTrue(visRenderer.renderPdfJson(null).isEmpty(), 'Visual PDF should be empty.');
         
         Test.stopTest();
     }
@@ -2643,15 +2199,12 @@ public class DMT_ViewController_Test {
         
         DMT_ProfitabilityRenderer baseRenderer = new DMT_ProfitabilityRenderer();
         Assert.isTrue(baseRenderer.renderHtml(data).contains('Error'), 'Profitability HTML should catch invalid recordType.');
-        Assert.isTrue(baseRenderer.renderPdfJson(data).isEmpty(), 'Profitability PDF should catch invalid recordType.');
 
         DMT_ProfitabilitySummariesRenderer sumRenderer = new DMT_ProfitabilitySummariesRenderer();
         Assert.isTrue(sumRenderer.renderHtml(data).contains('Error'), 'Summaries HTML should catch invalid recordType.');
-        Assert.isTrue(sumRenderer.renderPdfJson(data).isEmpty(), 'Summaries PDF should catch invalid recordType.');
 
         DMT_ProfitabilityVisualRenderer visRenderer = new DMT_ProfitabilityVisualRenderer();
         Assert.isTrue(visRenderer.renderHtml(data).contains('Error'), 'Visual HTML should catch invalid recordType.');
-        Assert.isTrue(visRenderer.renderPdfJson(data).isEmpty(), 'Visual PDF should catch invalid recordType.');
         
         Test.stopTest();
     }
@@ -2666,18 +2219,14 @@ public class DMT_ViewController_Test {
         // 1. Guard: Features data not provided (null/empty)
         // Call static method via Class name, instance method via Instance
         String html1 = DMT_OppProfitabilityLimitVisualRenderer.renderHtml(data);
-        Map<String, Object> pdf1 = renderer.renderPdfJson(data);
         Assert.isTrue(html1.contains('Features data not provided'), 'Guard 1 HTML failed.');
-        Assert.isTrue(pdf1.isEmpty(), 'Guard 1 PDF failed.');
 
         // 2. Guard: Opportunity or OpportunityLineItems data not provided
         data.featuresList = new List<Map<String, Object>>{ new Map<String, Object>{ 'dummy' => 'value' } };
         data.opportunity = new Opportunity(); // Empty Opp
         
         String html2 = DMT_OppProfitabilityLimitVisualRenderer.renderHtml(data);
-        Map<String, Object> pdf2 = renderer.renderPdfJson(data);
         Assert.isTrue(html2.contains('Opportunity or OpportunityLineItems data not provided'), 'Guard 2 HTML failed.');
-        Assert.isTrue(pdf2.isEmpty(), 'Guard 2 PDF failed.');
 
         // 3. Guard: Profitability data not provided
         data.opportunity = (Opportunity)JSON.deserialize(
@@ -2686,9 +2235,7 @@ public class DMT_ViewController_Test {
         );
         
         String html3 = DMT_OppProfitabilityLimitVisualRenderer.renderHtml(data);
-        Map<String, Object> pdf3 = renderer.renderPdfJson(data);
         Assert.isTrue(html3.contains('Profitability data not provided'), 'Guard 3 HTML failed.');
-        Assert.isTrue(pdf3.isEmpty(), 'Guard 3 PDF failed.');
 
         // 4. Guard: No Profitability results found
         data.featuresList = new List<Map<String, Object>>{
@@ -2700,9 +2247,7 @@ public class DMT_ViewController_Test {
         };
         
         String html4 = DMT_OppProfitabilityLimitVisualRenderer.renderHtml(data);
-        Map<String, Object> pdf4 = renderer.renderPdfJson(data);
         Assert.isTrue(html4.contains('no Profitability results found'), 'Guard 4 HTML failed.');
-        Assert.isTrue(pdf4.isEmpty(), 'Guard 4 PDF failed.');
 
         // 5. Exception Catch Blocks
         data.featuresList = new List<Map<String, Object>>{
@@ -2715,10 +2260,8 @@ public class DMT_ViewController_Test {
         data.forceException = true;
         
         String htmlCatch = DMT_OppProfitabilityLimitVisualRenderer.renderHtml(data);
-        Map<String, Object> pdfCatch = renderer.renderPdfJson(data);
         
         Assert.isTrue(htmlCatch.contains('Error:'), 'HTML Catch block failed.');
-        Assert.isTrue(pdfCatch.isEmpty() || !pdfCatch.containsKey('content'), 'PDF Catch block failed.');
 
         Test.stopTest();
     }
@@ -2727,29 +2270,6 @@ public class DMT_ViewController_Test {
     // STATUS DELEGATOR AND DEFAULT RENDERER TESTS
     // ==========================================
 
-    @isTest
-    static void testNullDataToDelegatorsDMTStatusOnlyRenderer(){
-        DMT_StatusOnlyRenderer renderer = new DMT_StatusOnlyRenderer();
-        Test.startTest();
-        String resultHtml = renderer.renderHtml(null);
-        Map<String, Object> resultPdfJson = renderer.renderPdfJson(null);
-        Test.stopTest();
-        Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        Assert.isTrue(resultPdfJson.isEmpty(), 'response should be an empty Map.');
-    }
-
-    @isTest
-    static void testInvalidRecordIdDMTStatusOnlyRenderer(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-        Test.startTest();
-        DMT_StatusOnlyRenderer renderer = new DMT_StatusOnlyRenderer();
-        String resultHtml = renderer.renderHtml(data);
-        Map<String, Object> resultPdf = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isTrue(resultHtml.contains('Error'), 'response should contain Error.');
-        Assert.isTrue(resultPdf.isEmpty(), 'response should be an empty Map.');
-    }
 
     @isTest
     static void testDefaultStatusOnlyRendererRenderHtml(){
@@ -2765,18 +2285,6 @@ public class DMT_ViewController_Test {
         Assert.isFalse(result.contains('Error'), 'HTML should not contain an error.');
     }
 
-    @isTest
-    static void testDefaultStatusOnlyRendererRenderPdfJson(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.statusLineOrOpp = 'Active';
-        Test.startTest();
-        DMT_DefaultStatusOnlyRenderer renderer = new DMT_DefaultStatusOnlyRenderer();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-        Assert.isNotNull(result);
-        Assert.isFalse(result.isEmpty(), 'PDF Map should not be empty.');
-        Assert.areEqual('STATUS', (String) result.get('name'), 'PDF should have STATUS as component name.');
-    }
 
     @isTest
     static void testDefaultStatusOnlyRendererRenderHtml_CatchBlock(){
@@ -2789,18 +2297,437 @@ public class DMT_ViewController_Test {
         Assert.isTrue(result.contains('Error:'), 'Should enter catch block and return Error in HTML.');
     }
 
+    // =========================================================
+    // DMT_OpportunityProductsRenderer – HELPER FACTORIES
+    // =========================================================
+
+    private static DMT_ViewController.LineDataWrapper oppProductWrapOf(List<DMT_ViewController.OpportunityProduct> products) {
+        DMT_ViewController.LineDataWrapper w = new DMT_ViewController.LineDataWrapper();
+        if (products != null) {
+            w.oppProducts.addAll(products);
+        }
+        return w;
+    }
+
+    private static DMT_ViewController.OpportunityProduct makeLineOppProduct() {
+        DMT_ViewController.OpportunityProduct p = new DMT_ViewController.OpportunityProduct();
+        p.lineOneOffDeal        = 'Line';
+        p.name                  = 'Test Line Product';
+        p.lineType              = 'Commited';
+        p.lineTenor             = 366;
+        p.riskType              = 'Credit Risk';
+        p.useOfProceeds         = 'Capex';
+        p.comments              = 'Test comment';
+        p.lineAmount            = 10000000;
+        p.commitmentLineAmount  = 5000000;
+        p.newMoney              = 2000000;
+        p.oldMoney              = 3000000;
+        p.expectedFinalTakeBBVA = 4000000;
+        p.expectedDrawn         = 50;
+        p.liquidityFee          = 25;
+        p.commitmentFees        = 30;
+        p.extensionDurationFees = 15;
+        p.otherFees             = 10;
+        p.referenceUpfrontFees  = 20;
+        p.lineCurrency          = 'EUR';
+        p.fundingCurve          = 'Standard';
+        p.fundingTerm           = '5Y';
+        p.TenorsCurrency        = 'EUR';
+        p.greenActivityFilter   = 'delegated';
+        p.sustainableDealAssessment   = null;
+        p.sustainableDealSubtype      = null;
+        p.sustainableDealLabel        = 'GreenLabel';
+        p.sustainablePercentage       = '50';
+        p.sustainabilityBonusEligible = 'Yes';
+        p.country               = 'Spain';
+        return p;
+    }
+
+    private static DMT_ViewController.OpportunityProduct makeOneOffOppProduct() {
+        DMT_ViewController.OpportunityProduct p = new DMT_ViewController.OpportunityProduct();
+        p.lineOneOffDeal        = 'One Off Deal';
+        p.name                  = 'Test OOD Product';
+        p.riskType              = 'Credit Risk';
+        p.useOfProceeds         = 'Refinancing';
+        p.comments              = 'OOD comment';
+        p.initialDate           = Date.today();
+        p.maturityDate          = Date.today().addYears(5);
+        p.dealAmount            = 20000000;
+        p.bbvaPrtcpTrancheAmount = 10000000;
+        p.newMoney              = 5000000;
+        p.oldMoney              = 5000000;
+        p.expectedFinalTakeBBVA = 8000000;
+        p.expectedDrawn         = 70;
+        p.liquidityFee          = 20;
+        p.commitmentFees        = 25;
+        p.extensionDurationFees = 10;
+        p.otherFees             = 5;
+        p.amortizationType      = 'Bullet';
+        p.paymentFrequency      = 'Semi-Annual';
+        p.rateType              = 'Floating';
+        p.TenorsCurrency        = 'USD';
+        p.pricingGrid           = 'Grid details';
+        p.fundingCurve          = 'Manual';
+        p.fundingDrawnBPS       = 100.0;
+        p.fundingUndrawnBPS     = 50.0;
+        p.greenActivityFilter   = 'other';
+        p.sustainableDealAssessment   = null;
+        p.sustainableDealSubtype      = null;
+        p.sustainableDealLabel        = null;
+        p.sustainablePercentage       = '30';
+        p.sustainabilityBonusEligible = 'No';
+        p.country               = 'USA';
+        return p;
+    }
+
+    private static DMT_Underlying__c makeRestrictionUnd() {
+        DMT_Underlying__c u = new DMT_Underlying__c();
+        u.Name                      = 'Restriction1';
+        u.DMT_Underlying_Type__c    = 'Restriction';
+        u.DMT_Max_Amount__c         = 1000000;
+        u.DMT_Max_Term__c           = '365';
+        u.DMT_Other_restrictions__c = 'No real estate';
+        return u;
+    }
+
+    private static DMT_Underlying__c makeProfitabilityUnd() {
+        DMT_Underlying__c u = new DMT_Underlying__c();
+        u.Name                              = 'Profitability1';
+        u.DMT_Underlying_Type__c            = 'Profitability';
+        u.DMT_Drawn_Reference_Amount__c     = 500000;
+        u.DMT_Undrawn_Reference_Amount__c   = 300000;
+        u.DMT_Term__c                       = '365';
+        u.DMT_Drawn_Speed__c                = 150;
+        u.DMT_Undrawn_Spread__c             = 75;
+        u.DMT_Upfront_Fees__c               = 50;
+        u.DMT_Upfront_Fees_amount__c        = 25000;
+        u.DMT_Amortization_Type__c          = 'Bullet';
+        u.DMT_Interest_Payment_Frequency__c = 'Quarterly';
+        u.DMT_Currency__c                   = 'EUR';
+        return u;
+    }
+
+    private static DMT_Opportunity_Tenor__c makeSampleTenor() {
+        DMT_Opportunity_Tenor__c t = new DMT_Opportunity_Tenor__c();
+        t.gf_tenor_date__c          = Date.today().addYears(1);
+        t.gj_nominal_amount_db__c   = 1000000;
+        t.gf_nominal_amount_fb__c   = 500000;
+        t.gf_spread_db__c           = 200;
+        t.gf_spread_fb__c           = 100;
+        t.gf_accrual_fees_bp__c     = 10;
+        t.gf_non_accrual_fees_bp__c = 5;
+        return t;
+    }
+
+    private static DMT_Opportunity_Mitigant__c makeCollateralMitigant() {
+        DMT_Opportunity_Mitigant__c m = new DMT_Opportunity_Mitigant__c();
+        m.Mitigant_Type__c         = 'Real > Cash';
+        m.Commercial_Percentage__c = 80;
+        m.Political_Percentage__c  = 20;
+        m.Internal_Rating__c       = 'BBB';
+        m.External_Rating__c       = 'BBB+';
+        m.DMT_Currency__c          = 'EUR';
+        m.DMT_Country_Guarantor__c = 'ES';
+        m.Liquidation_Period__c    = '30 days';
+        return m;
+    }
+
+    private static DMT_Opportunity_Mitigant__c makeGuarantorMitigant() {
+        DMT_Opportunity_Mitigant__c m = new DMT_Opportunity_Mitigant__c();
+        m.Mitigant_Type__c         = 'Personal > Corporate';
+        m.Commercial_Percentage__c = 60;
+        m.Political_Percentage__c  = 40;
+        m.Internal_Rating__c       = 'A';
+        m.External_Rating__c       = 'A+';
+        m.DMT_Currency__c          = 'USD';
+        m.DMT_Scoring__c           = 5;
+        return m;
+    }
+
+    // =========================================================
+    // DMT_OpportunityProductsRenderer – renderHtml NULL / EMPTY
+    // =========================================================
+
     @isTest
-    static void testDefaultStatusOnlyRendererRenderPdfJson_CatchBlock(){
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.forceException = true;
-        Integer queueableJobs;
-        Map<String, Object> result;
+    static void testOppProductsRenderer_renderHtml_null_returnsPlaceholder() {
+        String result = new DMT_OpportunityProductsRenderer().renderHtml(null);
+        Assert.areEqual('<div>Product data not provided</div>', result,
+            'Null data should return placeholder');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_emptyProducts_returnsPlaceholder() {
+        String result = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>())
+        );
+        Assert.areEqual('<div>Product data not provided</div>', result,
+            'Empty oppProducts should return placeholder');
+    }
+
+    // =========================================================
+    // DMT_OpportunityProductsRenderer – renderHtml LINE LAYOUT
+    // =========================================================
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_line_knownTenor_allSections() {
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+        p.oppUnderlyingsRestriction.add(makeRestrictionUnd());
+        p.oppUnderlyingsProfitability.add(makeProfitabilityUnd());
+        p.oppMitigants.add(makeCollateralMitigant());
+        p.oppMitigants.add(makeGuarantorMitigant());
+        // blank mitigant type → tests skip branch
+        DMT_Opportunity_Mitigant__c blank = new DMT_Opportunity_Mitigant__c();
+        blank.Mitigant_Type__c = '';
+        p.oppMitigants.add(blank);
+
         Test.startTest();
-        DMT_DefaultStatusOnlyRenderer renderer = new DMT_DefaultStatusOnlyRenderer();
-        result = renderer.renderPdfJson(data);
-        queueableJobs = Limits.getQueueableJobs();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
         Test.stopTest();
-        Assert.isTrue(result.isEmpty(), 'Should enter catch block and return empty Map.');
-        Assert.areEqual(1, queueableJobs, 'Should enqueue a queueable on catch.');
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isTrue(html.contains('General Info'),     'Missing General Info');
+        Assert.isTrue(html.contains('Line Description'), 'Missing Line Description');
+        Assert.isTrue(html.contains('UnderLyings'),      'Missing UnderLyings');
+        Assert.isTrue(html.contains('Cost of Funding'),  'Missing Cost of Funding');
+        Assert.isTrue(html.contains('Sustainability'),   'Missing Sustainability');
+        Assert.isTrue(html.contains('Country Risk'),     'Missing Country Risk');
+        Assert.isTrue(html.contains('Mitigants'),        'Missing Mitigants');
+        Assert.isTrue(html.contains('1 year'),           'Tenor 366 must resolve to "1 year"');
+        Assert.isTrue(html.contains('Delegated Label'),  'Green delegated must show "Delegated Label"');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_line_nullTenor_otherGreen() {
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+        p.lineTenor = null;
+        p.greenActivityFilter = 'other';
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('Line Description'),     'Should render Line Description');
+        Assert.isTrue(html.contains('Other Green Activity'), '"other" filter should show "Other Green Activity"');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_line_unknownTenor_defaultGreen() {
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+        p.lineTenor = 99999;
+        p.greenActivityFilter = 'customValue';
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('99999'),       'Unknown tenor should fall back to raw value');
+        Assert.isTrue(html.contains('customValue'), 'Default green branch should output raw value');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_line_manualFunding() {
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+        p.fundingCurve    = 'Manual';
+        p.fundingDrawnBPS   = 120.0;
+        p.fundingUndrawnBPS = 60.0;
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('CoF Drawn'),   'Manual CoF must contain CoF Drawn field');
+        Assert.isTrue(html.contains('CoF Undrawn'), 'Manual CoF must contain CoF Undrawn field');
+    }
+
+    // =========================================================
+    // DMT_OpportunityProductsRenderer – renderHtml ONE-OFF LAYOUT
+    // =========================================================
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_manualFunding_collateral() {
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+        p.oppTenors.add(makeSampleTenor());
+        p.oppMitigants.add(makeCollateralMitigant());
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('Deal description'),    'Missing Deal description');
+        Assert.isTrue(html.contains('Schedule'),            'Missing Schedule');
+        Assert.isTrue(html.contains('CoF Drawn'),           'Manual CoF should show CoF Drawn');
+        Assert.isTrue(html.contains('Other Green Activity'),'Green "other" should show "Other Green Activity"');
+        Assert.isTrue(html.contains('Mitigants'),           'Missing Mitigants');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_standardFunding_guarantor() {
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+        p.fundingCurve    = 'Standard';
+        p.fundingTerm     = '3Y';
+        p.greenActivityFilter = 'standard';
+        p.oppMitigants.add(makeGuarantorMitigant());
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('Time of Cost of Funding'), 'Non-manual CoF should show Time of Cost of Funding');
+        Assert.isTrue(html.contains('standard'), 'Default green filter outputs raw value');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_nullLineOneOffDeal() {
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+        p.lineOneOffDeal = null;
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('Deal description'), 'Null lineOneOffDeal should use one-off layout');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_emptyTenorsAndMitigants() {
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('Deal description'), 'One-off layout should render Deal description');
+        Assert.isTrue(html.contains('Schedule'),         'One-off layout should render Schedule section');
+    }
+
+    @isTest
+    static void testLoadToolkitDataFromNBC() {
+        TriggerBypass.setBypass();
+        Opportunity testOpp = [SELECT Id FROM Opportunity LIMIT 1];
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        DMT_ViewController.LineDataWrapper result = DMT_ViewController.loadRelatedData(testOpp.Id, 'Opportunity');
+        Test.stopTest();
+
+        Assert.isNotNull(result, 'loadRelatedData should return a non-null wrapper for an Opportunity');
+        Assert.isNotNull(result.toolkitData, 'toolkitData should be initialized even when no toolkit record exists');
+
+        TriggerBypass.removeBypass();
+    }
+
+    @isTest
+    static void testLoadRelatedDataSanctionLine() {
+        TriggerBypass.setBypass();
+
+        Account testAccount = [SELECT Id FROM Account LIMIT 1];
+
+        // 1. Create Sanction DMT_Line__c
+        Id sanctionRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('Sanction').getRecordTypeId();
+        DMT_Line__c sanctionLine = new DMT_Line__c(
+            Name = 'Test Sanction Line',
+            RecordTypeId = sanctionRtId,
+            Client__c = testAccount.Id,
+            Line_Id__c = 'SANC-TEST-001',
+            Start_Date__c = Date.today(),
+            End_Date__c = Date.today().addMonths(12),
+            Booking_Geography__c = 'ES',
+            CurrencyIsoCode = 'EUR'
+        );
+        insert sanctionLine;
+
+        // 2. Link existing Opportunity to the Sanction line via DMT_Sanction__c
+        Opportunity opp = [SELECT Id, AccountId, DMT_Opp_Id__c FROM Opportunity LIMIT 1];
+        opp.DMT_Sanction__c = sanctionLine.Id;
+        update opp;
+
+        // 3. Create Passport for the Opportunity so getFeatures(childOpp.Id) returns non-empty features
+        delete [SELECT Id FROM Passport__c WHERE Opportunity__c = :opp.Id];
+        insert new Passport__c(
+            Opportunity__c = opp.Id,
+            DMT_Passport_Save__c = '{"data":{"features":[{"id":"200","name":"General Validations","stateName":"GREEN"}]}}'
+        );
+
+        // 4. DMT_Taxonomy_Values__c for sustainability catalog codes referenced in lines 597-612
+        insert new List<DMT_Taxonomy_Values__c>{
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'RBGR', DMT_Value__c = 'G1', DMT_Name_EN__c = 'Green 1'),
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'RBSO', DMT_Value__c = 'S1', DMT_Name_EN__c = 'Social 1'),
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'RBES', DMT_Value__c = 'E1', DMT_Name_EN__c = 'ESG 1')
+        };
+
+        List<DMT_ViewController.ItemWrapper> selectedItems = prepareItemWrapper();
+        StaticResource sr = [SELECT Body FROM StaticResource WHERE Name = 'img64Mock' LIMIT 1];
+        String img64 = sr.Body.toString();
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        String htmlContent = DMT_ViewController.loadComponentsForView(sanctionLine.Id, 'Line_Sanction', JSON.serialize(selectedItems), '', img64);
+        String pdfJsonContent = DMT_ViewController.loadVersionSnapshot(sanctionLine.Id, 'Line_Sanction', JSON.serialize(selectedItems));
+        Test.stopTest();
+
+        Assert.isNotNull(htmlContent, 'HTML content should not be null for a Sanction line.');
+        Assert.isNotNull(pdfJsonContent, 'PDF JSON content should not be null for a Sanction line.');
+
+        TriggerBypass.removeBypass();
+    }
+
+    @isTest
+    static void testLoadRelatedDataSanctionLineNoChildOpp() {
+        TriggerBypass.setBypass();
+
+        Account testAccount = [SELECT Id FROM Account LIMIT 1];
+
+        // Sanction line with no child Opportunity → Opportunities__r is empty → skips lines 556-612
+        Id sanctionRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('Sanction').getRecordTypeId();
+        DMT_Line__c sanctionLine = new DMT_Line__c(
+            Name = 'Test Sanction Line No Opp',
+            RecordTypeId = sanctionRtId,
+            Client__c = testAccount.Id,
+            Line_Id__c = 'SANC-TEST-002',
+            Start_Date__c = Date.today(),
+            End_Date__c = Date.today().addMonths(12),
+            Booking_Geography__c = 'ES',
+            CurrencyIsoCode = 'EUR'
+        );
+        insert sanctionLine;
+
+        List<DMT_ViewController.ItemWrapper> selectedItems = prepareItemWrapper();
+        StaticResource sr = [SELECT Body FROM StaticResource WHERE Name = 'img64Mock' LIMIT 1];
+        String img64 = sr.Body.toString();
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        String htmlContent = DMT_ViewController.loadComponentsForView(sanctionLine.Id, 'Line_Sanction', JSON.serialize(selectedItems), '', img64);
+        Test.stopTest();
+
+        Assert.isNotNull(htmlContent, 'HTML should not be null when Sanction line has no child Opportunity.');
+
+        TriggerBypass.removeBypass();
     }
 }

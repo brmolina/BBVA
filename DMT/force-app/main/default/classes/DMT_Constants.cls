@@ -210,7 +210,6 @@ public with sharing class DMT_Constants {
 
     //Prospects
     public static final String DMT_PROSPECT_PREFIX = '[P]';
-    public static final String DMT_PROSPECT_ENTIFIC_PREFIX_NOT_SELECTED = 'ZZ';
 
     //HPG anonymization constants
     public static final List<String> ANON_ANY = new List<String>{'XX'};
@@ -222,6 +221,8 @@ public with sharing class DMT_Constants {
     public static final String DMT_SUSTAINABLE_GREEN = 'Green';
     public static final String DMT_SUSTAINABLE_SOCIAL = 'Social';
     public static final String DMT_SUSTAINABLE_GREEN_AND_SOCIAL = 'Green and social';
+    public static final String DMT_SUSTAINABLE_USE_OF_PROCEEDS_SUBTYPE = 'Use of proceeds';  
+    public static final String DMT_SUSTAINABLE_SSL_SUBTYPE = 'Sustainability Linked Loan';
 
     //Opportunity product Sustainable Deal Assessment
     public static final String DMT_SUSTAINABILITY_SSL = '4';
@@ -229,11 +230,13 @@ public with sharing class DMT_Constants {
     public static final String DMT_SUSTAINABILITY_USE_OF_PROCEEDS = '6';
     public static final String DMT_SUSTAINABILITY_SUSTAINABLE_LOAN = '5';
     public static final String DMT_SUSTAINABILITY_CHAIN_FINANCE = '2';
+    public static final String DMT_SUSTAINABILITY_TRANSITION_FINANCE = '7';
 
     //Catalogos sostenibilidad
     public static final String DMT_TAXO_CATALOG_RBGR = 'RBGR';
     public static final String DMT_TAXO_CATALOG_RBSO = 'RBSO';
     public static final String DMT_TAXO_CATALOG_RBES = 'RBES';
+    public static final String DMT_TAXO_CATALOG_RBST = 'RBST';
 
     public static final String RT_OPP_DMT_NAME = 'DMT_Opportunity';
 

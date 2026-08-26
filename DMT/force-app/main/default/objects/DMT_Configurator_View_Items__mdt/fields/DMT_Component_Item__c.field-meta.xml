@@ -221,14 +221,9 @@
                 <label>Active Related Lines</label>
             </value>
             <value>
-                <fullName>Approval Modifications</fullName>
+                <fullName>Sanction Modifications</fullName>
                 <default>false</default>
-                <label>Approval Modifications</label>
-            </value>
-            <value>
-                <fullName>Sanction Approval Info</fullName>
-                <default>false</default>
-                <label>Sanction Approval Info</label>
+                <label>Sanction Modifications</label>
             </value>
             <value>
                 <fullName>Sanction Client</fullName>
@@ -244,11 +239,6 @@
                 <fullName>Sanction Participants</fullName>
                 <default>false</default>
                 <label>Sanction Participants</label>
-            </value>
-            <value>
-                <fullName>Sanction Approval Process Data</fullName>
-                <default>false</default>
-                <label>Sanction Approval Process Data</label>
             </value>
             <value>
                 <fullName>Sanction Passport</fullName>
@@ -304,6 +294,162 @@
                 <fullName>Status</fullName>
                 <default>false</default>
                 <label>Status</label>
+            </value>
+            <value>
+                <fullName>NBC Opportunity Info</fullName>
+                <default>false</default>
+                <label>NBC Opportunity Info</label>
+            </value>
+            <value>
+                <fullName>NBC Client</fullName>
+                <default>false</default>
+                <label>NBC Client</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Client</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Client</label>
+            </value>
+            <value>
+                <fullName>NBC Main Characteristics of the Deal</fullName>
+                <default>false</default>
+                <label>NBC Main Characteristics of the Deal</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Main Characteristics of the Deal</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Main Characteristics of the Deal</label>
+            </value>
+            <value>
+                <fullName>NBC Basic Requeriment</fullName>
+                <default>false</default>
+                <label>NBC Basic Requeriment</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Basic Requeriment</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Basic Requeriment</label>
+            </value>
+            <value>
+                <fullName>NBC Deal</fullName>
+                <default>false</default>
+                <label>NBC Deal</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Deal</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Deal</label>
+            </value>
+            <value>
+                <fullName>NBC Transaction Overview</fullName>
+                <default>false</default>
+                <label>NBC Transaction Overview</label>
+            </value>
+            <value>
+                <fullName>NBC Economics</fullName>
+                <default>false</default>
+                <label>NBC Economics</label>
+            </value>
+            <value>
+                <fullName>NBC Basic Financials</fullName>
+                <default>false</default>
+                <label>NBC Basic Financials</label>
+            </value>
+            <value>
+                <fullName>NBC Business Plan Data</fullName>
+                <default>false</default>
+                <label>NBC Business Plan Data</label>
+            </value>
+            <value>
+                <fullName>NBC Client Information</fullName>
+                <default>false</default>
+                <label>NBC Client Information</label>
+            </value>
+            <value>
+                <fullName>NBC Risk</fullName>
+                <default>false</default>
+                <label>NBC Risk</label>
+            </value>
+            <value>
+                <fullName>NBC Other Aspects</fullName>
+                <default>false</default>
+                <label>NBC Other Aspects</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Other Aspects</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Other Aspects</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Info</fullName>
+                <default>false</default>
+                <label>Sanction Approval Info</label>
+            </value>
+            <value>
+                <fullName>Sanction Approval Process Data</fullName>
+                <default>false</default>
+                <label>Sanction Approval Process Data</label>
+            </value>
+            <value>
+                <fullName>NBC Requirements</fullName>
+                <default>false</default>
+                <label>NBC Requirements</label>
+            </value>
+            <value>
+                <fullName>NBC Sustainability Indicators</fullName>
+                <default>false</default>
+                <label>NBC Sustainability Indicators</label>
+            </value>
+            <value>
+                <fullName>NBC Sustainability Labels</fullName>
+                <default>false</default>
+                <label>NBC Sustainability Labels</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Sustainability Labels</fullName>
+                <default>false</default>
+                <label>GTB Local NBC Sustainability Labels</label>
+            </value>
+            <value>
+                <fullName>NBC Sppi Test</fullName>
+                <default>false</default>
+                <label>NBC Sppi Test</label>
+            </value>
+            <value>
+                <fullName>NBC Assessment</fullName>
+                <default>false</default>
+                <label>NBC Assessment</label>
+            </value>
+            <value>
+                <fullName>NBC Validation Process</fullName>
+                <default>false</default>
+                <label>NBC Validation Process</label>
+            </value>
+            <value>
+                <fullName>NBC Approval Process</fullName>
+                <default>false</default>
+                <label>NBC Approval Process</label>
+            </value>
+            <value>
+                <fullName>NBC XSell Geographies</fullName>
+                <default>false</default>
+                <label>NBC XSell Geographies</label>
+            </value>
+            <value>
+                <fullName>Has Prospect</fullName>
+                <default>false</default>
+                <label>Has Prospect</label>
+            </value>
+            <value>
+                <fullName>Sanction Validation Process</fullName>
+                <default>false</default>
+                <label>Sanction Validation Process</label>
+            </value>
+            <value>
+                <fullName>GTB Local NBC Assessment</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>GTB Local NBC Assessment</label>
             </value>
         </valueSetDefinition>
     </valueSet>

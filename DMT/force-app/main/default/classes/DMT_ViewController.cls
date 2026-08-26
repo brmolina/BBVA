@@ -37,6 +37,7 @@ public without sharing class DMT_ViewController {
         public String currencyIsoCode;
         public String amortizationScheduleCurrency;
         public List<DMT_Opportunity_Tenor__c> oppTenors = new List<DMT_Opportunity_Tenor__c>();
+        public List<DMT_Opportunity_Money__c> oppMoneys = new List<DMT_Opportunity_Money__c>();
 
         // --- NEW: Amortization Fields ---
         public Boolean bullet;
@@ -44,7 +45,7 @@ public without sharing class DMT_ViewController {
         public String TenorsCurrency;
         public Decimal dealAmountTenors;
         public Decimal gf_accrual_fees_bp;
-        public Decimal extensionDurationFees;
+        public Decimal extensionDurationFees; 
         public Decimal newMoney;
         public Decimal oldMoney;
         public Decimal expectedFinalTake;
@@ -81,8 +82,57 @@ public without sharing class DMT_ViewController {
         public String countryRating;
         public List<DMT_Opportunity_Mitigant__c> oppMitigants = new List<DMT_Opportunity_Mitigant__c>();
         public String currencyMitigant;
+
+        // --- NEW: Line / One-Off Deal discriminator & Line-specific fields ---
+        public String productId; // OLI record Id (used for underlyings lookup)
+        public String lineOneOffDeal;         // DMT_Line_Oneoffdeal__c
+        public String lineType;               // DMT_Line_Type__c
+        public Decimal lineTenor;             // DMT_Line_Tenor__c
+        public Decimal lineAmount;            // DMT_Line_Amount__c
+        public Decimal commitmentLineAmount;  // DMT_Commitment_Line_Amount__c
+        public Decimal referenceUpfrontFees;  // DMT_Reference_Upfront_Fees__c
+        public String lineCurrency;           // DMT_Line_Currency__c
+        public String roleType;               // entity_role_type__c
+        public String subLimit;              // DMT_Sub_Limit__c
+
+        // --- NEW: Underlyings (populated via bulk query after main loop) ---
+        public List<DMT_Underlying__c> oppUnderlyingsRestriction = new List<DMT_Underlying__c>();
+        public List<DMT_Underlying__c> oppUnderlyingsProfitability = new List<DMT_Underlying__c>();
+    }
+    public class ToolkitDataWrapper {
+        public String parisAlignment;
+        public String esgScore;
+        public String tcfdSupporter;
+        public String sustainableStrategy;
+        public String triEngagementPlan;
+        public String positioning;
+        public String groupAlignmentDegree;
+        public String sectorAlignmentDegree;
+        public String emissionIntensityMetric;
+        public String triAssessment;
+        public String scope;
+        public String sectorAffected;
+        public String reputationalRisk;
+        public String groupEngagementPlan;
+        public String planLink;
+        public String exposureThermalCoal;
+        public String exposureIndicatorSource;
+        public String coalPhaseOutPlan;
+        public Decimal revenuesThermalCoalActivity;
+        public Decimal capacityWeight;
+        public Decimal tri;
+        public Decimal cca;
+        public Decimal cta;
+        public Decimal triAuto;
+        public Decimal triAutoparts;
+        public Decimal triCement;
+        public Decimal triEnergy;
+        public Decimal triGeneric;
+        public Decimal triSteel;
+        public Decimal triUtilities;
     }
     public class LineDataWrapper {
+        public Boolean hasProspect;
         public String objectApiName;
         public String recordTypeId;
 
@@ -128,6 +178,7 @@ public without sharing class DMT_ViewController {
         public Map<Id, String> riskLineToTaxonomyH007Map = new Map<Id, String>();
         public Map<Id, String> riskLineToTaxonomyALATMap = new Map<Id, String>();
         public Map<String, String> taxonomyH007Map = new Map<String, String>(); // NEW: Exposes H007 to Renderers
+        public Map<String, String> taxonomyH007BPMap = new Map<String, String>(); // Business Plan geography H007 map
         public Boolean isImg64;
         public List<ItemImgB64> itemImgBase64 = new List<ItemImgB64>();
         public List<Map<String, Object>> closedWonVersions = new List<Map<String, Object>>();
@@ -135,11 +186,13 @@ public without sharing class DMT_ViewController {
         public String oppEntity;
         public String oppEntific;
         public String oppBookingGeography;
+        public String oppBookingEFAN;
 
         public String mainHolderCustomerId;
         public String ratingMonoHolder;
         public Boolean isSubsidiary = false;
         public Date currentRatingToolDate;
+        public Date  lastVisitClient;
 
         // Key is constructed like LineId_groupPriorityId (string), so use String as key
         public Map<String, List<MainHolderProductsWrapper>> mainHolderProductsWrapperMap= new Map<String, List<MainHolderProductsWrapper>>();
@@ -148,11 +201,15 @@ public without sharing class DMT_ViewController {
 
         public String oppAccountParentName;
 
+        // Business Plan records from DMT_Opportunity_Business_Plan__c (year + geography model)
+        public List<DMT_Opportunity_Business_Plan__c> businessPlanRecords = new List<DMT_Opportunity_Business_Plan__c>();
+
         // Pre-loaded profitability data (populated in loadRelatedData for Opportunity type)
         public List<Map<String, Object>> profitabilityProductDetailsList = new List<Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsMap = new Map<String, Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsConvertedMap = new Map<String, Map<String, Object>>();
         public String clientGroupName = null;
+        public ToolkitDataWrapper toolkitData = new ToolkitDataWrapper();
     }
 
     public class MainHolderProductsWrapper {
@@ -282,6 +339,80 @@ public without sharing class DMT_ViewController {
             }
         }
         return result;
+    }
+
+    private static ToolkitDataWrapper loadToolkitDataFromNBC(Opportunity opp) {
+        ToolkitDataWrapper wrapper = new ToolkitDataWrapper();
+        try {
+            DES_Template__c temp = new DES_Template__c();
+            ComponentNBC_Controller.preloadToolkitInfo(opp, temp);
+            wrapper.parisAlignment              = temp.gf_paris_agreement_ind_type__c;
+            wrapper.esgScore                    = temp.gf_esg_score_close_ope_name__c;
+            wrapper.tcfdSupporter               = temp.gf_co_list_tcfd_ind_type__c;
+            wrapper.sustainableStrategy         = temp.gf_customer_sustnbl_strg_desc__c;
+            wrapper.triEngagementPlan           = temp.cstk_tri_engagement_plan__c;
+            wrapper.positioning                 = temp.cstk_positioning__c;
+            wrapper.groupAlignmentDegree        = temp.cstk_group_alignment_degree__c;
+            wrapper.sectorAlignmentDegree       = temp.cstk_sector_alignment_degree__c;
+            wrapper.emissionIntensityMetric     = temp.cstk_emissions_intensity_units__c;
+            wrapper.triAssessment               = temp.cstk_sust_indicators_comments__c;
+            wrapper.scope                       = temp.cstk_sector_affected__c;
+            wrapper.sectorAffected              = temp.Sectorial_Norms_type__c;
+            wrapper.reputationalRisk            = temp.Reputational_Risk_type__c;
+            wrapper.groupEngagementPlan         = temp.cstk_gf_cust_esg_profile_aspects_improve__c;
+            wrapper.planLink                    = temp.cstk_portfolio_alignment_engagement_link__c;
+            wrapper.exposureThermalCoal         = temp.cstk_g_thermal_coal_exps_ind_type__c;
+            wrapper.exposureIndicatorSource     = temp.cstk_g_thermal_coal_exps_i_src_type__c;
+            wrapper.coalPhaseOutPlan            = temp.cstk_g_coal_prgrsv_red_pl_ind_type__c;
+            wrapper.revenuesThermalCoalActivity = temp.cstk_gf_thermal_coal_rev_wg_per__c;
+            wrapper.capacityWeight              = temp.cstk_gf_thermal_coal_prod_wg_per__c;
+            wrapper.tri                         = temp.cstk_tri__c;
+            wrapper.cca                         = temp.cstk_cca__c;
+            wrapper.cta                         = temp.cstk_cta__c;
+            wrapper.triAuto                     = temp.cstk_tri_auto__c;
+            wrapper.triAutoparts                = temp.cstk_tri_autoparts__c;
+            wrapper.triCement                   = temp.cstk_tri_cement__c;
+            wrapper.triEnergy                   = temp.cstk_tri_energy__c;
+            wrapper.triGeneric                  = temp.cstk_tri_generic__c;
+            wrapper.triSteel                    = temp.cstk_tri_steel__c;
+            wrapper.triUtilities                = temp.cstk_tri_utilities__c;
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'Error loading toolkit data for NBC view: ' + e.getMessage());
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_ViewController', 'loadToolkitDataFromNBC', 'DMT', ''));
+        }
+        System.debug('=== CIBGLOBALD-3798 ToolkitDataWrapper START ===');
+        System.debug('>>> parisAlignment:              ' + wrapper.parisAlignment);
+        System.debug('>>> esgScore:                    ' + wrapper.esgScore);
+        System.debug('>>> tcfdSupporter:               ' + wrapper.tcfdSupporter);
+        System.debug('>>> sustainableStrategy:         ' + wrapper.sustainableStrategy);
+        System.debug('>>> triEngagementPlan:           ' + wrapper.triEngagementPlan);
+        System.debug('>>> positioning:                 ' + wrapper.positioning);
+        System.debug('>>> groupAlignmentDegree:        ' + wrapper.groupAlignmentDegree);
+        System.debug('>>> sectorAlignmentDegree:       ' + wrapper.sectorAlignmentDegree);
+        System.debug('>>> emissionIntensityMetric:     ' + wrapper.emissionIntensityMetric);
+        System.debug('>>> triAssessment:               ' + wrapper.triAssessment);
+        System.debug('>>> scope:                       ' + wrapper.scope);
+        System.debug('>>> sectorAffected:              ' + wrapper.sectorAffected);
+        System.debug('>>> reputationalRisk:            ' + wrapper.reputationalRisk);
+        System.debug('>>> groupEngagementPlan:         ' + wrapper.groupEngagementPlan);
+        System.debug('>>> planLink:                    ' + wrapper.planLink);
+        System.debug('>>> exposureThermalCoal:         ' + wrapper.exposureThermalCoal);
+        System.debug('>>> exposureIndicatorSource:     ' + wrapper.exposureIndicatorSource);
+        System.debug('>>> coalPhaseOutPlan:            ' + wrapper.coalPhaseOutPlan);
+        System.debug('>>> revenuesThermalCoalActivity: ' + wrapper.revenuesThermalCoalActivity);
+        System.debug('>>> capacityWeight:              ' + wrapper.capacityWeight);
+        System.debug('>>> tri:                         ' + wrapper.tri);
+        System.debug('>>> cca:                         ' + wrapper.cca);
+        System.debug('>>> cta:                         ' + wrapper.cta);
+        System.debug('>>> triAuto:                     ' + wrapper.triAuto);
+        System.debug('>>> triAutoparts:                ' + wrapper.triAutoparts);
+        System.debug('>>> triCement:                   ' + wrapper.triCement);
+        System.debug('>>> triEnergy:                   ' + wrapper.triEnergy);
+        System.debug('>>> triGeneric:                  ' + wrapper.triGeneric);
+        System.debug('>>> triSteel:                    ' + wrapper.triSteel);
+        System.debug('>>> triUtilities:                ' + wrapper.triUtilities);
+        System.debug('=== CIBGLOBALD-3798 ToolkitDataWrapper END ===');
+        return wrapper;
     }
 
     public static List<Custom_Association_Client__c> getUpdatedCustomAssociationClientList(Id clientId, Id customAssociationId){
@@ -422,6 +553,38 @@ public without sharing class DMT_ViewController {
 
             }
 
+            // Verificar si tiene Prospect
+            Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+            Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+            Boolean hasProspectInClient = false;
+            Boolean hasProspectInMultiholder = false;
+
+            // 1. Verificar cliente directo
+            if (data.line?.Client__r?.RecordTypeId == prospectGroupRtId || data.line?.Client__r?.RecordTypeId == prospectSubsidiaryRtId) {
+                hasProspectInClient = true;
+            }
+
+            // 2. Verificar multiholder (solo si no es prospect directo)
+            if (!hasProspectInClient && data.line?.Custom_Associations__r != null) {
+                Set<String> alphaCodes = new Set<String>();
+                for (Custom_Association__c ca : data.line.Custom_Associations__r) {
+                    if (ca.Custom_Associations_Clients__r != null) {
+                        for (Custom_Association_Client__c cac : ca.Custom_Associations_Clients__r) {
+                            if (String.isNotBlank(cac.Alpha_Code_Client__c)) {
+                                alphaCodes.add(cac.Alpha_Code_Client__c);
+                            }
+                        }
+                    }
+                }
+                
+                // Buscar si alguno de esos alpha codes pertenece a un Prospect
+                if (!alphaCodes.isEmpty()) {
+                    List<Account> prospectAccounts = [SELECT Id FROM Account WHERE g_customer_id__c IN :alphaCodes AND RecordTypeId = :prospectSubsidiaryRtId LIMIT 1];
+                    hasProspectInMultiholder = !prospectAccounts.isEmpty();
+                }
+            }
+            data.hasProspect = hasProspectInClient || hasProspectInMultiholder;
+
             // Sanction Line: load Approval Process features/steps from its child Opportunity (Opportunity.DMT_Sanction__c)
             if (data.line != null && !data.line.Opportunities__r.isEmpty()) {
                 Opportunity childOpp = data.line.Opportunities__r[0];
@@ -442,11 +605,58 @@ public without sharing class DMT_ViewController {
                     }
                     data.sanctionOppSteps = DMT_Case_Steps_Controller.getCurrentStepFromFeaturesOpp(oppFeatureIds, childOpp.DMT_Opp_Id__c);
                 }
+
+                // Load child Opportunity's full data to expose the Opportunity Client component in Sanction version views
+                try {
+                    data.opportunity = DMT_View_Selector.getOpportunityWithRelatedData(childOpp.Id, 'DMT_Opportunity');
+                    if (data.opportunity != null && !data.opportunity.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
+                        data.oppClient = data.opportunity.DMT_MDE_Opportunities_Clients__r[0];
+                    }
+                    if (data.opportunity != null && data.opportunity.AccountId != null) {
+                        try {
+                            Map<String, Object> groupData = DMT_HPG_Utils.getGroupFromClientAccount(data.opportunity.AccountId);
+                            String groupName = groupData.get('groupName') != null ? (String)groupData.get('groupName') : '';
+                            String accountName = data.opportunity.Account.Name != null ? data.opportunity.Account.Name : '';
+                            data.clientGroupName = groupName + ' - ' + accountName;
+                        } catch (Exception e) {
+                            System.debug('Error pre-fetching client group name for Sanction version view: ' + e.getMessage());
+                            data.clientGroupName = '';
+                        }
+                    }
+                    // Populate oppProducts with sustainability data from the child Opportunity's line items
+                    if (data.opportunity != null && !data.opportunity.OpportunityLineItems.isEmpty()) {
+                        Map<String, String> taxSustainMap = new Map<String, String>();
+                        for (DMT_Taxonomy_Values__c tax : [SELECT DMT_Value__c, DMT_Name_EN__c FROM DMT_Taxonomy_Values__c
+                                                            WHERE DMT_Catalog__c IN ('RBGR', 'RBSO', 'RBES')]) {
+                            taxSustainMap.put(tax.DMT_Value__c, tax.DMT_Name_EN__c);
+                        }
+                        for (OpportunityLineItem oppItem : data.opportunity.OpportunityLineItems) {
+                            OpportunityProduct oppProduct = new OpportunityProduct();
+                            oppProduct.name = String.isNotBlank(oppItem.DMT_TXT_ProductNameOLI__c) ? oppItem.DMT_TXT_ProductNameOLI__c : oppItem.DES_Product_Name__c;
+                            oppProduct.sustainableDealAssessment = oppItem.DMT_sustainable_deal_assessment__c;
+                            oppProduct.sustainableDealSubtype = oppItem.DMT_Sustainable_Deal_Subtype__c;
+                            oppProduct.sustainableDealValue = oppItem.DMT_sustainable_deal_value__c;
+                            oppProduct.sustainableDealLabel = taxSustainMap.containsKey(oppItem.DMT_sustainable_deal_value__c) ? taxSustainMap.get(oppItem.DMT_sustainable_deal_value__c) : oppItem.DMT_sustainable_deal_value__c;
+                            oppProduct.greenActivityFilter = oppItem.DMT_Sustainability_deal_value_criteria__c;
+                            oppProduct.sustainablePercentage = oppItem.DMT_PER_Sustainability_Percentage__c != null ? String.valueOf(oppItem.DMT_PER_Sustainability_Percentage__c) : '';
+                            oppProduct.sustainabilityBonusEligible = oppItem.DMT_Sustainability_bonus_eligible__c;
+                            data.oppProducts.add(oppProduct);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.debug('Error loading child Opportunity data for Sanction Client component: ' + e.getMessage());
+                }
             }
 
                 if (data.line?.Status__c == 'Closed' && data.line?.Closed__c == 'Won'){
                 data.closedWonVersions = getCloseWonVersions(data.line.Line_Id__c);
                 }
+
+            if (recordTypeDeveloperName == 'OtherProducts') {
+                DMT_ProductMetadataRenderService.enrichLineOnWrapper(data, 'OL');
+            } else if (recordTypeDeveloperName == 'Sanction') {
+                DMT_ProductMetadataRenderService.enrichLineOnWrapper(data, 'OP');
+            }
 
         } else if (type == 'Opportunity') {
             System.debug('recordTypeDeveloperName  '+ recordTypeDeveloperName);
@@ -521,13 +731,34 @@ public without sharing class DMT_ViewController {
                     //CLIENT AND APPROVAL PROCESS DATA
                     data.oppClient = (data.opportunity.DMT_MDE_Opportunities_Clients__r[0]);
                 }
+                // Business Plan records come from the Opportunity_Business_Plans__r child subquery (new year+geography model)
+                // Null-safe: an un-queried child relationship returns null, so coalesce to an empty list.
+                data.businessPlanRecords = data.opportunity.Opportunity_Business_Plans__r ?? new List<DMT_Opportunity_Business_Plan__c>();
+                // Collect BP booking geographies (H007). Labels are resolved by the consolidated taxonomy query below.
+                Set<String> bpGeoCodes = new Set<String>();
+                for (DMT_Opportunity_Business_Plan__c bp : data.businessPlanRecords) {
+                    if (String.isNotBlank(bp.DMT_Booking_Geography__c)) {
+                        bpGeoCodes.add(bp.DMT_Booking_Geography__c);
+                    }
+                }
                 if(data.opportunity.AccountId != null && data.opportunity.Account.g_customer_id__c != null){
                     System.debug('Fetching MonoHolderData for AccountId: ' + data.opportunity.AccountId + ' and CustomerId: ' + data.opportunity.Account.g_customer_id__c);
                     MonoHolderDataWrapper monoHolderData = getMonoHolderDataFromService(data.opportunity.AccountId, data.opportunity.Account.g_customer_id__c);
                     System.debug('MonoHolderData retrieved: CurrentRatingToolDate - ' + monoHolderData.currentRatingToolDate);
                     data.currentRatingToolDate = monoHolderData.currentRatingToolDate;
                 }
-                if(!data.opportunity.OpportunityLineItems.isEmpty()){
+                if (data.opportunity.AccountId != null) {
+                    data.toolkitData = loadToolkitDataFromNBC(data.opportunity);
+
+                    List<DES_Denorm_AccountVisits__c> listVisit = new List<DES_Denorm_AccountVisits__c>();
+                    listVisit = DMT_View_Selector.getAccountVisitsByAccountId(data.opportunity.AccountId);
+                    Date lastDateVisit;
+                    if ( listVisit != null && !listVisit.isEmpty() ) {
+                    lastDateVisit = Date.valueOf(listVisit[0].DES_Start_Date__c);
+                    }
+                    data.lastVisitClient = lastDateVisit;
+                }
+                if(!data.opportunity.OpportunityLineItems.isEmpty() || !data.businessPlanRecords.isEmpty()){
                     Set<String> oppLinesBranchIds = new Set<String>();
                     Set<String> oppLinesRiskTypes = new Set<String>();
                     Set<String> oppLinesCountryRisk = new Set<String>();
@@ -559,6 +790,7 @@ public without sharing class DMT_ViewController {
                                                                             OR DMT_Value__c IN : oppLinesCountryRisk
                                                                             OR DMT_Value__c IN : oppLinesSustainValues
                                                                             OR DMT_Value__c IN : xsellGeographies
+                                                                            OR DMT_Value__c IN : bpGeoCodes
                                                                             OR DMT_Value__c = : data.opportunity.Entific__c
                                                                             OR DMT_Value__c = : data.opportunity.DMT_Entity__c
                                                                         ) ORDER BY DMT_Catalog__c,DMT_Name_EN__c];
@@ -571,6 +803,9 @@ public without sharing class DMT_ViewController {
                     for (DMT_Taxonomy_Values__c tax : taxonomyValuesList) {
                         if (tax.DMT_Value__c != null && tax.DMT_Catalog__c == 'H007') {
                             taxH007Map.put(tax.DMT_Value__c, tax.DMT_Name_EN__c);
+                            if (bpGeoCodes.contains(tax.DMT_Value__c)) {
+                                data.taxonomyH007BPMap.put(tax.DMT_Value__c, tax.DMT_Name_EN__c);
+                            }
                         }
                         if (tax.DMT_Value__c != null && tax.DMT_Catalog__c == 'B444') {
                             taxB444Map.put(tax.DMT_Value__c, tax.DMT_Name_EN__c);
@@ -589,6 +824,7 @@ public without sharing class DMT_ViewController {
                         }
                     }
                     data.taxonomyH007Map = taxH007Map; // NEW: Store map for renderers
+
                     data.oppEntific = taxCD07Map.containsKey(data.opportunity.Entific__c) ? taxCD07Map.get(data.opportunity.Entific__c) : '';
                     data.oppEntity = taxH006Map.containsKey(data.opportunity.DMT_Entity__c) ? taxH006Map.get(data.opportunity.DMT_Entity__c) : '';
                     String bookingGeo = data.opportunity.DMT_Entity__c +'-'+ data.opportunity.Entific__c;
@@ -599,6 +835,21 @@ public without sharing class DMT_ViewController {
                         data.oppBookingGeography = taxH007Map.get(bookingGeo);
                     } else {
                         data.oppBookingGeography = '';
+                    }
+
+                    String efanVal = data.opportunity.DMT_Booking_EFAN__c;
+                    if (!String.isBlank(efanVal)) {
+                        if (taxH007Map.containsKey(efanVal)) {
+                            data.oppBookingEFAN = taxH007Map.get(efanVal);
+                        } else if (efanVal == 'ES0182-IT-MENA') {
+                            data.oppBookingEFAN = 'BBVA SA - Italy (MENA)';
+                        } else if (efanVal == 'ES0182-US-Latam') {
+                            data.oppBookingEFAN = 'BBVA SA - US (Latam)';
+                        } else {
+                            data.oppBookingEFAN = efanVal;
+                        }
+                    } else {
+                        data.oppBookingEFAN = '';
                     }
 
                     for(OpportunityLineItem oppItem : data.opportunity.OpportunityLineItems){
@@ -628,6 +879,7 @@ public without sharing class DMT_ViewController {
                         oppProduct.expectedFinalTake = oppItem.syndicated_loan_drawn_amount__c;
                         oppProduct.expectedDrawn = oppItem.DMT_Expected_Drawn__c;
                         oppProduct.oppTenors.addAll(oppItem.Opportunity_Tenors__r);
+                        oppProduct.oppMoneys.addAll(oppItem.Opportunity_Money__r);
                         oppProduct.pricingGrid = oppItem.DMT_PricingGrid_OR_StepUps__c;
                         oppProduct.dealAmount = oppItem.DMT_Deal_amount__c;
                         oppProduct.bbvaPrtcpTrancheAmount = oppItem.bbva_prtcp_tranche_amount__c;
@@ -672,7 +924,46 @@ public without sharing class DMT_ViewController {
                             // }
                         }
 
+                        // Line / One-Off Deal fields
+                        oppProduct.productId = oppItem.Id;
+                        oppProduct.lineOneOffDeal = oppItem.DMT_Line_Oneoffdeal__c;
+                        oppProduct.lineType = oppItem.DMT_Line_Type__c;
+                        oppProduct.lineTenor = oppItem.DMT_Line_Tenor__c;
+                        oppProduct.lineAmount = oppItem.DMT_Deal_amount__c;
+                        oppProduct.commitmentLineAmount = oppItem.bbva_prtcp_tranche_amount__c;
+                        oppProduct.referenceUpfrontFees = oppItem.DMT_Reference_Upfront_Fees__c;
+                        oppProduct.lineCurrency = oppItem.g_currency_id__c;
+                        oppProduct.roleType = oppItem.entity_role_type__c;
+                        oppProduct.subLimit = oppItem.DMT_Sub_Limit__c;
+
                         data.oppProducts.add(oppProduct);
+                    }
+
+                    // Populate underlyings via selector (bulk query, no SOQL in controller)
+                    if (!data.oppProducts.isEmpty()) {
+                        Set<Id> oliIds = new Set<Id>();
+                        for (OpportunityProduct op : data.oppProducts) {
+                            if (op.productId != null) oliIds.add((Id) op.productId);
+                        }
+                        if (!oliIds.isEmpty()) {
+                            Map<Id, List<DMT_Underlying__c>> restrictionMap = new Map<Id, List<DMT_Underlying__c>>();
+                            Map<Id, List<DMT_Underlying__c>> profitabilityMap = new Map<Id, List<DMT_Underlying__c>>();
+                            for (DMT_Underlying__c und : DMT_View_Selector.getUnderlyingsByOliIds(oliIds)) {
+                                Id parentId = und.DMT_Opportunity_Product__c;
+                                if (und.DMT_Underlying_Type__c == 'Restriction') {
+                                    if (!restrictionMap.containsKey(parentId)) restrictionMap.put(parentId, new List<DMT_Underlying__c>());
+                                    restrictionMap.get(parentId).add(und);
+                                } else if (und.DMT_Underlying_Type__c == 'Profitability') {
+                                    if (!profitabilityMap.containsKey(parentId)) profitabilityMap.put(parentId, new List<DMT_Underlying__c>());
+                                    profitabilityMap.get(parentId).add(und);
+                                }
+                            }
+                            for (OpportunityProduct op : data.oppProducts) {
+                                Id opId = (Id) op.productId;
+                                if (restrictionMap.containsKey(opId)) op.oppUnderlyingsRestriction.addAll(restrictionMap.get(opId));
+                                if (profitabilityMap.containsKey(opId)) op.oppUnderlyingsProfitability.addAll(profitabilityMap.get(opId));
+                            }
+                        }
                     }
                 }
 
@@ -717,6 +1008,34 @@ public without sharing class DMT_ViewController {
                     }
                 }
             }
+            // Verificar si tiene Prospect
+            Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+            Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+            Boolean hasProspectInClient = false;
+            Boolean hasProspectInMultiholder = false;
+
+            // 1. Verificar cliente directo (Account)
+            if (data.opportunity?.Account?.RecordTypeId == prospectGroupRtId || data.opportunity?.Account?.RecordTypeId == prospectSubsidiaryRtId) {
+                hasProspectInClient = true;
+            }
+
+            // 2. Verificar multiholder (solo si no es prospect directo)
+            if (!hasProspectInClient && !data.opportunity.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
+                // Recopilar Alpha Codes del multiholder
+                Set<String> alphaCodes = new Set<String>();
+                for (DMT_Opportunity_Client__c oc : data.opportunity.DMT_MDE_Opportunities_Clients__r) {
+                    if (String.isNotBlank(oc.Alpha_Code_Client__c)) {
+                        alphaCodes.add(oc.Alpha_Code_Client__c);
+                    }
+                }
+                
+                // Buscar si alguno de esos alpha codes pertenece a un Prospect_Subsidiary
+                if (!alphaCodes.isEmpty()) {
+                    List<Account> prospectAccounts = [SELECT Id FROM Account WHERE g_customer_id__c IN :alphaCodes AND RecordTypeId = :prospectSubsidiaryRtId LIMIT 1];
+                    hasProspectInMultiholder = !prospectAccounts.isEmpty();
+                }
+            }
+            data.hasProspect = hasProspectInClient || hasProspectInMultiholder;
         }
         return data;
     }
@@ -940,7 +1259,7 @@ public without sharing class DMT_ViewController {
         return JSON.serialize(resultMap);
     }
 
-    public static String loadJSONFromSelectedItems(String lineId, String type, String items) {
+    public static String loadVersionSnapshot(String lineId, String type, String items) {
             String rawResult = loadComponentsForView(lineId, type, items, '', null);
         return rawResult;
     }
@@ -1050,7 +1369,6 @@ public without sharing class DMT_ViewController {
         try{
             List<ItemWrapper> itemsList =(List<ItemWrapper>) JSON.deserialize(selectedItems, List<ItemWrapper>.class);
             String renderedHtmlData = '';
-            String renderedPdfData = '';
             LineDataWrapper data = loadRelatedData(recordOrLineId, viewType);
             if(itemsImg != null && !String.isEmpty(itemsImg)){
                 List<ItemImgB64> b64Img = (List<ItemImgB64> ) JSON.deserialize(itemsImg, List<ItemImgB64>.class);
@@ -1068,14 +1386,13 @@ public without sharing class DMT_ViewController {
             }
             for (ItemWrapper item : itemsList) {
                 System.debug('Rendering html component: ' + item.component);
-                renderedHtmlData += generateHtmlForComponent(item.component, item.textValue, data);
+                String componentHtml = generateHtmlForComponent(item.component, item.textValue, data);
+                renderedHtmlData += '<section data-dmt-component="true" data-dmt-component-name="'
+                    + item.component.escapeHtml4() + '">' + componentHtml + '</section>';
             }
-
-            renderedPdfData = generatePdfJsonForComponent(itemsList, data);
 
             Map<String, String> resultMap = new Map<String, String>();
             resultMap.put('HTML', renderedHtmlData);
-            resultMap.put('PDF', renderedPdfData);
             resultMap.put('StatusLine', data.statusLineOrOpp);
             resultMap.put('CloseLine', data.closeLine);
             resultMap.put('RecordTypeName', data.recordTypeName);
@@ -1095,118 +1412,12 @@ public without sharing class DMT_ViewController {
 
             Map<String, String> resultMap = new Map<String, String>();
             resultMap.put('HTML', '');
-            resultMap.put('PDF', '');
             resultMap.put('error', '<div class="error-message">An unexpected error has occurred. ' + e.getMessage() + '</div>');
             return JSON.serialize(resultMap);
-            //   return '<div>An unexpected error has occurred. '+e.getMessage()+'</div>';
         }
     }
 
-    private static String generatePdfJsonForComponent(List<ItemWrapper> itemsList, LineDataWrapper data){
-
-        Map<String, Object> componentsCreate = new Map<String, Object>();
-        Map<String, Object> component = new Map<String, Object>();
-        List<Map<String, Object>> componentsList = new List<Map<String, Object>>();
-        for (ItemWrapper item : itemsList) {
-            System.debug('Generating PDF component: ' + item.component);
-            
-            // 1. If it's a registered component, route to the Factory
-            if (DMT_RendererFactory.hasRenderer(item.component)) {
-                component = DMT_RendererFactory.getRenderer(item.component).renderPdfJson(data);
-                if (component != null && !component.isEmpty()){
-                    componentsList.add(component);
-                }
-                continue; // Skip the switch statement below
-            }
-
-            // 2. Otherwise, handle static formatting utilities
-            switch on item.component {
-                when 'Page Break' {
-                    Map<String, Object> pageBreakComponent = new Map<String, Object>{
-                        'content' => new List<Object>{
-                            new Map<String, Object>{
-                                'type' => 'pageBreak',
-                                'threshold' => 0
-                            }
-                        }
-                    };
-                    componentsList.add(pageBreakComponent);
-                }
-                when 'Line Break' {
-                    Map<String, Object> lineBreakComponent = new Map<String, Object>{
-                        'content' => new List<Object>{
-                            new Map<String, Object>{
-                                'type' => 'lineBreak'
-                            }
-                        }
-                    };
-                    componentsList.add(lineBreakComponent);
-                }
-                when 'Text 12px' {
-                    List<Object> contentList = new List<Object>();
-                    Map<String, Object> detailTitle = DMT_Create_Pdf_Controller.createTitle(item.textValue);
-                    detailTitle.put('type', 'text');
-                    Map<String, Object> style = (Map<String, Object>) detailTitle.get('style');
-                    style.put('fontSize', 12);
-                    style.put('textColor', '#004481');
-                    contentList.add(detailTitle);
-                    Map<String, Object> textComponent = new Map<String, Object>{
-                        'content' => contentList
-                    };
-                    componentsList.add(textComponent);
-                }
-                when 'Text 18px' {
-                    List<Object> contentList = new List<Object>();
-                    Map<String, Object> detailTitle = DMT_Create_Pdf_Controller.createTitle(item.textValue);
-                    detailTitle.put('type', 'text');
-                    Map<String, Object> style = (Map<String, Object>) detailTitle.get('style');
-                    style.put('fontSize', 18);
-                    style.put('textColor', '#004481');
-                    contentList.add(detailTitle);
-                    Map<String, Object> textComponent = new Map<String, Object>{
-                        'content' => contentList
-                    };
-                    componentsList.add(textComponent);
-                }
-                when 'Text 14px' {
-                    List<Object> contentList = new List<Object>();
-                    Map<String, Object> detailTitle = DMT_Create_Pdf_Controller.createTitle(item.textValue);
-                    detailTitle.put('type', 'text');
-                    Map<String, Object> style = (Map<String, Object>) detailTitle.get('style');
-                    style.put('fontSize', 14);
-                    style.put('textColor', '#004481');
-                    contentList.add(detailTitle);
-                    Map<String, Object> textComponent = new Map<String, Object>{
-                        'content' => contentList
-                    };
-                    componentsList.add(textComponent);
-                }
-            }
-        }
-        // CONFIGURATION OF THE COMPONENT CUSTOM
-        Map<String, Object> pdfStructure = new Map<String, Object>{
-            'components' => componentsList,
-            'styles' => new Map<String, Object>{
-                'text' => new Map<String, Object>{'fontSize' => 12},
-                'pageNumber' => new Map<String, Object>{'fontSize' => 8, 'fontStyle' => 'italic'},
-                'date' => new Map<String, Object>{'fontSize' => 8, 'fontStyle' => 'italic'},
-                'footer' => new Map<String, Object>{'fontSize' => 8},
-                'subtitle' => new Map<String, Object>{'fontSize' => 12},
-                'title' => new Map<String, Object>{'fontSize' => 12}
-            },
-            'showPageNumber' => true,
-            'showLogo' => true,
-            'showFooter' => true,
-            'showHeader' => true,
-            'margin' => new Map<String, Object>{'left' => 15, 'bottom' => 25, 'right' => 15, 'top' => 35},
-            'format' => 'a4',
-            'filename' => 'DMT VIEW.pdf'
-        };
-        return JSON.serialize(pdfStructure);
-    }
-
-    // Parametro para saber desde donde venimos y mostrar la linea solo en el html de la vista
-    // Método para generar el HTML de cada componente
+    // Generates the HTML output for a single component based on its type
     @TestVisible
     private static String generateHtmlForComponent(String componentItem, String text, LineDataWrapper data) {
 
@@ -1218,24 +1429,24 @@ public without sharing class DMT_ViewController {
         // 2. Otherwise, handle static formatting utilities
         switch on componentItem {
             when 'Page Break' {
-                return '<div style="border-top: 2px dashed #004481; margin: 20px 0; page-break-after: always;"></div>';
+                return '<div data-dmt="page-break" style="border-top: 2px dashed #004481; margin: 20px 0; page-break-after: always;"></div>';
             }
             when 'Line Break' {
                 return '&nbsp;</br>';
             }
             when 'Text 12px' {
-                return '<div style="font-size: 12px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
+                return '<div data-dmt-row="title" style="font-size: 12px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
             }
             when 'Text 18px' {
-                return '<div style="font-size: 18px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
+                return '<div data-dmt-row="title" style="font-size: 18px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
             }
             when 'Text 14px' {
-                return '<div style="font-size: 14px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
+                return '<div data-dmt-row="title" style="font-size: 14px; color: #004481; margin-bottom: 10px;">'+DMT_FormattingUtils.checkNull(text)+'</div>';
             }
             when else {
                 return '<div>'
-                    + '<h1 style="color: #004481;">Contenido por defecto</h1>'
-                    + '<p>Este es el contenido por defecto cuando no se encuentra una opción específica.</p>'
+                    + '<h1 style="color: #004481;">Default content</h1>'
+                    + '<p>No specific rendering found for this component type.</p>'
                     + '</div>';
             }
         }
@@ -1331,30 +1542,6 @@ public without sharing class DMT_ViewController {
     // =========================================================================
     // === NEW CORE DOCUMENTS & SNAPSHOT ORCHESTRATION METHODS               ===
     // =========================================================================
-
-    /**
-     * @description Fallback generator if the LWC cache is empty.
-     * Returns the HTML and JSON payloads WITHOUT inserting anything into the database.
-     */
-    /* @AuraEnabled
-    public static Map<String, String> getSnapshotPayloads(String caseId, String taskId, String itemsB64) {
-        try {
-            Map<String, Object> itemsToDisplay = (Map<String, Object>) JSON.deserializeUntyped(getItemsToDisplayExtended(caseId, 'Case', taskId));
-            List<ItemWrapper> itemsList = (List<ItemWrapper>) JSON.deserialize((String) itemsToDisplay.get('items'), List<ItemWrapper>.class);
-            String viewType = (String) itemsToDisplay.get('viewType');
-            String recordId = (String) itemsToDisplay.get('recordId');
-
-            Map<String, Object> rawResult = (Map<String, Object>) JSON.deserializeUntyped(loadComponentsForView(recordId, viewType, JSON.serialize(itemsList), '', itemsB64));
-
-            Map<String, String> response = new Map<String, String>();
-            response.put('HTML', (String) rawResult.get('HTML'));
-            response.put('JSON', (String) rawResult.get('PDF'));
-            return response;
-        } catch (Exception e) {
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_ViewController','getSnapshotPayloads','DMT',''));
-            throw new AuraHandledException('Error fetching snapshot payloads: ' + e.getMessage());
-        }
-    } */
 
     /**
      * @description Universal method to save the native ContentVersions (HTML and/or JSON).

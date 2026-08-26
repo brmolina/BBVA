@@ -24,35 +24,26 @@ public with sharing  class DMT_View_Selector {
     }
     public static Opportunity getOpportunityWithRelatedData(String recordId, String recordTypeDeveloperName){
         return [SELECT Id, Name, Entific__c, DMT_Entity__c, DMT_DATE_Initial_Date__c, DMT_DATE_Maturity_Date__c, DMT_CUR_Notional_Amount__c, DMT_Opp_Id__c,DMT_ContingentCommitments__c,
-                    CurrencyIsoCode, RecordTypeId,RecordType.DeveloperName, Amount, DMT_requested_passport__c, Deal_total_amount__c, Des_product_name__c, Owner.Name, DMT_branch_id_c__c,
+                    CurrencyIsoCode, RecordTypeId,RecordType.DeveloperName, Amount, DMT_requested_passport__c, Deal_total_amount__c, Des_product_name__c, Owner.Name, DMT_branch_id_c__c,DMT_GlobalBanker__c,
                     DMT_Capital_Action__c, DMT_Tenor__c, DMT_Threshold_Type__c,DMT_Product_Area__c, DMT_Sanction__c, DMT_CurrencyText__c, CloseDate,StageName,IsWon,IsClosed,DMT_Opportunity_amount__c,
+                    bbva_prtcp_tranche_amount__c,
+                    DMT_Booking_EFAN__c, DMT_SPPI_File_Uploaded__c, DMT_SPPI_Status__c, DMT_SPPI_User__c,
+                    DMT_Financial_Sponsors__c, DMT_Structured_GTB__c, DMT_Credentials__c,
                     // parent Account fields
-                        AccountId, Account.DES_Structure_Type__c, Account.g_customer_id__c,
-                        Account.Past2_FY_Corp_Synd_Lending_amount__c, Account.Past_FY_Corp_Synd_Lending_amount__c, Account.Current_FY_Corp_Synd_Lending_amount__c,
-                        Account.Next_FY_Corp_Synd_Lending_amount__c, Account.Past2_FY_Structured_Finance_amount__c, Account.Past_FY_Structured_Finance_amount__c,
-                        Account.Current_FY_Structured_Finance_amount__c, Account.Next_FY_Structured_Finance_amount__c, Account.Past2_FY_Str_Trade_Finance_amount__c,
-                        Account.Past_FY_Str_Trade_Finance_amount__c, Account.Current_FY_Str_Trade_Finance_amount__c, Account.Next_FY_Str_Trade_Finance_amount__c,
-                        Account.Past2_FY_Rates_amount__c, Account.Past_FY_Rates_amount__c, Account.Current_FY_Rates_amount__c, Account.Next_FY_Rates_amount__c,
-                        Account.Past2_FY_GTF_amount__c, Account.Past_FY_GTF_amount__c, Account.Current_FY_GTF_amount__c, Account.Name,
-                        Account.Next_FY_GTF_amount__c, Account.Past2_FY_Working_Capital_amount__c, Account.Past_FY_Working_Capital_amount__c,
-                        Account.Current_FY_Working_Capital_amount__c, Account.Next_FY_Working_Capital_amount__c, Account.Past2_FY_Total_Non_X_Sell_amount__c,
-                        Account.Past_FY_Total_Non_X_Sell_amount__c, Account.Current_FY_Total_Non_X_Sell_amount__c,Account.Next_FY_Total_Non_X_Sell_amount__c,
-                        Account.Past2_FY_ECM_M_A_Amount__c, Account.Past_FY_ECM_M_A_Amount__c, Account.Current_FY_ECM_M_A_Amount__c,
-                        Account.Next_FY_ECM_M_A_amount__c, Account.Past2_FY_DCM_amount__c, Account.Past_FY_DCM_amount__c,Account.DES_Client_Type__c,
-                        Account.Current_FY_DCM_amount__c, Account.Next_FY_DCM_amount__c, Account.Past2_FY_Credit_Equity_amount__c,
-                        Account.Past_FY_Credit_Equity_amount__c, Account.Current_FY_Credit_Equity_amount__c, Account.Next_FY_Credit_Equity_amount__c,
-                        Account.Past2_FY_FX_CCS_amount__c, Account.Past_FY_FX_CCS_amount__c,Account.Current_FY_FX_CCS_amount__c,
-                        Account.Next_FY_FX_CCS_amount__c, Account.Past2_FY_Cash_Management_amount__c, Account.Past_FY_Cash_Management_amount__c,
-                        Account.Current_FY_Cash_Management_amount__c, Account.Next_FY_Cash_Management_amount__c, Account.Past2_FY_Client_Resources_amount__c,
-                        Account.Past_FY_Client_Resources_amount__c, Account.Current_FY_Client_Resources_amount__c, Account.Next_FY_Client_Resources_amount__c,
-                        Account.Past2_FY_Securities_Services_amount__c, Account.Past_FY_Securities_Services_amount__c, Account.Current_FY_Securities_Services_amount__c,
-                        Account.Next_FY_Securities_Services_amount__c, Account.Past2_FY_Total_X_Sell_amount__c, Account.Past_FY_Total_X_Sell_amount__c,
-                        Account.Current_FY_Total_X_Sell_amount__c, Account.Next_FY_Total_X_Sell_amount__c,
-                        Account.Past2_FY_Total_Revenues_amount__c, Account.Past_FY_Total_Revenues_amount__c,Account.Current_FY_Total_Revenues_amount__c,
-                        Account.Next_FY_Total_Revenues_amount__c, Account.gf_xb_cust_ope_revenue_2ya_per__c, Account.gf_xb_cust_ope_revenue_ly_per__c,
-                        Account.gf_xb_cust_ope_revenue_cyr_per__c, Account.gf_xb_cust_ope_revenue_nxy_per__c, Account.gf_kpi_trans_fees_2ya_amount__c,
-                        Account.gf_kpi_trans_fees_ly_amount__c, Account.gf_kpi_trans_fees_cyr_amount__c, Account.gf_kpi_trans_fees_nxy_amount__c,
-                        Account.Revenues_Last_Year_number__c,  Account.Revenues_Current_Year_number__c, Account.Revenues_Next_Year_number__c,
+                        AccountId, Account.DES_Structure_Type__c, Account.g_customer_id__c, Account.Name, Account.DES_Client_Type__c, Account.DES_Main_Parent__c,
+                        Account.Current_FY_Corp_Synd_Lending_amount__c, Account.Current_FY_Structured_Finance_amount__c,
+                        Account.Current_FY_Str_Trade_Finance_amount__c, Account.Current_FY_Rates_amount__c,
+                        Account.Current_FY_GTF_amount__c, Account.Current_FY_Working_Capital_amount__c,
+                        Account.Current_FY_Total_Non_X_Sell_amount__c, Account.Current_FY_ECM_M_A_Amount__c,
+                        Account.Current_FY_DCM_amount__c, Account.Current_FY_Credit_Equity_amount__c,
+                        Account.Current_FY_FX_CCS_amount__c, Account.Current_FY_Cash_Management_amount__c,
+                        Account.Current_FY_Client_Resources_amount__c, Account.Current_FY_Securities_Services_amount__c,
+                        Account.Current_FY_Total_X_Sell_amount__c, Account.Current_FY_Total_Revenues_amount__c,
+                        Account.gf_xb_cust_ope_revenue_2ya_per__c, Account.gf_xb_cust_ope_revenue_ly_per__c,
+                        Account.gf_xb_cust_ope_revenue_cyr_per__c, Account.gf_xb_cust_ope_revenue_nxy_per__c,
+                        Account.gf_kpi_trans_fees_2ya_amount__c, Account.gf_kpi_trans_fees_ly_amount__c,
+                        Account.gf_kpi_trans_fees_cyr_amount__c, Account.gf_kpi_trans_fees_nxy_amount__c,
+                        Account.Revenues_Last_Year_number__c, Account.Revenues_Current_Year_number__c, Account.Revenues_Next_Year_number__c,
                         Account.Revenues_Next_Year_1_number__c, Account.Revenues_Next_Year_2_number__c, Account.EBITDA_Last_Year_number__c,
                         Account.EBITDA_Current_Year_number__c, Account.EBITDA_Next_Year_number__c, Account.EBITDA_Next_Year_1_number__c,
                         Account.EBITDA_Next_Year_2_number__c, Account.EBIT_Last_Year_number__c, Account.EBIT_Current_Year_number__c,
@@ -64,7 +55,7 @@ public with sharing  class DMT_View_Selector {
                         Account.Debt_EBITDA_Next_Year_number__c, Account.Debt_EBITDA_Next_Year_1_number__c,
                         Account.Debt_EBITDA_Next_Year_2_number__c, Account.Net_Debt_EBITDA_Last_Year_number__c, Account.Net_Debt_EBITDA_Current_Year_number__c,
                         Account.Net_Debt_EBITDA_Next_Year_number__c, Account.Net_Debt_EBITDA_Next_Year_1_number__c, Account.Net_Debt_EBITDA_Next_Year_2_number__c,
-                        Account.DES_ID_Fiscal__c,  Account.DES_Group_Code__c, 
+                        Account.DES_ID_Fiscal__c, Account.DES_Group_Code__c, Account.DES_Prospect_Client__c, Account.RecordTypeId,
                     // child X_sell__r
                     (
                         SELECT Id, Booking_Geography__c, XSELL_Value_PY__c, XSELL_Value_CY__c, XSELL_Value_NY__c, XSELL_Value_NY1__c FROM X_sell__r
@@ -88,11 +79,16 @@ public with sharing  class DMT_View_Selector {
                         Product2.DMT_Code_Level__c, Product2.dmt_global_product_id__c, Product2.Family, Product2.DMT_Product_family__c,
                         Product2.DMT_Classification_Level__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c,
                         DMT_Extension_Duration_Fees__c, DMT_PricingGrid_OR_StepUps__c, DES_Tenor_years__c,g_line_commitment_level_type__c, gf_group_priority_opportunity_id__c,
-                        DMT_Deal_amount__c, bbva_prtcp_tranche_amount__c,DMT_Liquidity_Fee__c,DES_Commitment_Fees__c,DES_Other_Fees__c,
+                        DMT_Deal_amount__c, bbva_prtcp_tranche_amount__c,DMT_Liquidity_Fee__c,DES_Commitment_Fees__c,DES_Other_Fees__c,entity_role_type__c,DMT_Sub_Limit__c,underwriting_agreement_type__c,
                         /* --- NEW FIELDS --- */
                         loan_purpose_desc__c, DMT_bullet_amortization_indicator__c, DMT_balloon_amortization_indicator__c,
                         DMT_sustainable_deal_assessment__c, DMT_Sustainable_Deal_Subtype__c, DMT_sustainable_deal_value__c, DMT_PER_Sustainability_Percentage__c,
                         DMT_Sustainability_deal_value_criteria__c, DMT_RateType__c, syndicated_loan_drawn_amount__c,
+                        /* --- LINE / ONE-OFF DEAL FIELDS --- */
+                        DMT_Line_Oneoffdeal__c, DMT_Line_Type__c, DMT_Line_Tenor__c, DMT_Line_Amount__c,
+                        DMT_Commitment_Line_Amount__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, DMT_Use_of_Proceeds__c,
+                        /* New Fields  type String  with populate field Number or Percent */
+                        DMT_TXT_Commitment_Fees__c, DMT_Utilisation_Fee__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c,
 
                         // child Opportunity_Mitigants__r
                         (
@@ -108,12 +104,19 @@ public with sharing  class DMT_View_Selector {
                             SELECT Id, CurrencyIsoCode, gf_tenor_date__c, gj_nominal_amount_db__c, gf_nominal_amount_fb__c, gf_spread_db__c, gf_spread_fb__c,
                             gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c
                             FROM Opportunity_Tenors__r ORDER BY CreatedDate ASC
+                        ),
+                        // child DMT_Opportunity_Money__r
+                        (
+                            SELECT Id, Name, DMT_All_in_Drawn__c, DMT_All_in_Undrawn__c, DMT_Applicable_Margin__c, DMT_Commitment_Fee__c, DMT_Expected_Drawn__c, DMT_Extension_Duration_Fee__c,
+                            DMT_Funding_Cost__c, DMT_Interest_Rate_Period__c, DMT_Liquidity_Fee__c, DMT_Other_Fees_Accrual__c, DMT_Other_Fees_Non_Accrual__c, DMT_Other_Fees__c, 
+                            DMT_Pricing_Grid_or_Step_ups__c, DMT_Up_Front_Fee_Accrual__c, DMT_Up_Front_Fee_Non_Accrual__c, DMT_Utilisation_Fee__c, DMT_Opportunity_Product__c 
+                            FROM Opportunity_Money__r
                         )
                         FROM OpportunityLineItems ORDER BY LastModifiedDate DESC
                     ),
                     // child DMT_MDE_Opportunities_Clients__r
                     (
-                        SELECT Id, External_Rating__c, Counterpart__c, Group_Sales_Check__c, g_upd_lmscl_internal_ratg_type__c, g_upd_smscl_internal_ratg_type__c, European_Bank_Check__c, SCRA__c, AVC_Check__c,
+                        SELECT Id, Alpha_Code_Client__c, External_Rating__c, Counterpart__c, Group_Sales_Check__c, g_upd_lmscl_internal_ratg_type__c, g_upd_smscl_internal_ratg_type__c, European_Bank_Check__c, SCRA__c, AVC_Check__c,
                         Revenues_Last_Year_number__c, Revenues_Current_Year_number__c, Revenues_Next_Year_number__c, Revenues_Next_Year_1_number__c, Revenues_Next_Year_2_number__c,
                         EBITDA_Last_Year_number__c, EBITDA_Current_Year_number__c, EBITDA_Next_Year_number__c, EBITDA_Next_Year_1_number__c, EBITDA_Next_Year_2_number__c,
                         EBIT_Next_Year_number__c, EBIT_Last_Year_number__c, EBIT_Current_Year_number__c, EBIT_Next_Year_1_number__c, EBIT_Next_Year_2_number__c,
@@ -146,15 +149,16 @@ public with sharing  class DMT_View_Selector {
                         gf_xb_cust_ope_revenue_2ya_per__c, gf_xb_cust_ope_revenue_ly_per__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_xb_cust_ope_revenue_nxy_per__c,
                         gf_kpi_trans_fees_2ya_amount__c, gf_kpi_trans_fees_ly_amount__c, gf_kpi_trans_fees_cyr_amount__c, gf_kpi_trans_fees_nxy_amount__c,
 
-                        DMT_Opp_Threats_Related_Deal__c, DMT_Purpose__c, DMT_Description_Issues__c, DMT_Exception_Pool__c, DMT_Target__c, DMT_Current__c, DMT_Tiering_Action__c, DMT_Commitment_Deadline__c,
+                        DMT_Opp_Threats_Related_Deal__c, DMT_Purpose__c, DMT_Description_Issues__c, TOLABEL(DMT_Exception_Pool__c), DMT_Target__c, DMT_Current__c, DMT_Tiering_Action__c, DMT_Commitment_Deadline__c,
                         DMT_External_Rating__c, DMT_Sector__c, DMT_Subsector__c, DMT_Activity__c, DMT_History_Deal__c, DMT_Applicable_Jurisdiction__c, DMT_Security_Package__c, DMT_Rating_Scenarios__c,
-                        DMT_Other_Relevant_Issues__c, DMT_Competition_Deal__c, DMT_AA_Industry__c, DMT_Asset_Allocation_limit__c, DMT_Financial_Program_limit__c, DMT_Country_Risk__c, DMT_Economic_LGD__c,
+                        DMT_Other_Relevant_Issues__c, DMT_Competition_Deal__c, DMT_AA_Industry__c, DMT_Asset_Allocation_limit__c, DMT_Financial_Program_limit__c, DMT_Top_3_Active_Facilities__c, DMT_Country_Risk__c, DMT_Economic_LGD__c,
                         DMT_Regulatory_LGD__c, DMT_Leveraged_Lending__c, DMT_Credit_Risk_Opinion_By__c, DMT_tri__c, DMT_positioning__c, DMT_cca__c, DMT_cta__c, DMT_tri_Engagement_Plan__c,
                         DMT_scope__c, DMT_comments__c, DMT_reputational_risk__c, DMT_equator_Principles__c, DMT_cleanTech__c, DMT_portfolio_Alignment__c, DMT_kpiLink_Margin_Adjustment__c,
                         DMT_Scoring__c, DMT_External_Rating_Fitch__c, DMT_External_Rating_Moodys__c, DMT_External_Rating_SP__c, DMT_CAMN__c, DMT_Industry__c,
                         DMT_Enviromental_Social_Framework__c, DMT_Group_Have_Exposure_To_Thermal_Coal__c, DMT_Capacity_Weight__c, DMT_Company_Have_A_Coal_Phase_Out_Plan__c, DMT_Group_Engagement_Plan__c,
                         DMT_KPI_Margin_Adjustment__c, DMT_Clients_Global_RORC_CIB_Past_FY__c, DMT_CDD_Clients_Global_Rorc_Last_FY__c,
-                        DMT_Client_Net_Incomes__c, DMT_Client_RWA__c, DMT_Currency__c, DMT_Xsell_Cost_to_Income__c, DMT_Client_RORC_YTD__c,DMT_Sector_Head__c
+                        DMT_Client_Net_Incomes__c, DMT_Client_RWA__c, DMT_Currency__c, DMT_Xsell_Cost_to_Income__c, DMT_Client_RORC_YTD__c, DMT_Sector_Head__c, DMT_Guarantor_Name_Fiscal_ID__c,
+                        DMT_Equator_Principles_Category__c, DMT_Infrastructure_Supporting_Factor__c, DMT_SourceAndUses__c, DMT_Sustainable_Deal__c
                     FROM DMT_MDE_Opportunities_Clients__r
                     LIMIT 1
                     ),
@@ -167,6 +171,19 @@ public with sharing  class DMT_View_Selector {
                         SELECT Id, Name, DMT_Ticket__c, DMT_Fees__c, DMT_Margin__c, DMT_N_Banks__c
                         FROM Banking_Pool_Structures__r
                         ORDER BY CreatedDate ASC
+                    ),
+                    // child Opportunity_Business_Plans__r (year + geography model)
+                    (
+                        SELECT
+                            Current_FY_Corp_Synd_Lending_amount__c, Current_FY_Structured_Finance_amount__c, Current_FY_Str_Trade_Finance_amount__c,
+                            Current_FY_Rates_amount__c, Current_FY_GTF_amount__c, Current_FY_Working_Capital_amount__c, Current_FY_Total_Non_X_Sell_amount__c,
+                            Current_FY_ECM_M_A_Amount__c, Current_FY_M_A_amount__c, Current_FY_DCM_amount__c, Current_FY_Credit_Equity_amount__c,
+                            Current_FY_FX_CCS_amount__c, Current_FY_Cash_Management_amount__c, Current_FY_Client_Resources_amount__c,
+                            Current_FY_Securities_Services_amount__c, Current_FY_Total_X_Sell_amount__c, Current_FY_Child_X_Sell_amount__c,
+                            Current_FY_Total_Revenues_amount__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_kpi_trans_fees_cyr_amount__c,
+                            DMT_Booking_Geography__c, DMT_Year__c, DMT_QAOTER__c, DMT_Currency__c, DMT_Active__c,DMT_Xsell_Cost_to_Income__c
+                        FROM Opportunity_Business_Plans__r
+                        ORDER BY DMT_Booking_Geography__c, DMT_Year__c
                     )
                 FROM Opportunity
                 WHERE Id = :recordId OR (DMT_Opp_Id__c =:recordId AND RecordType.DeveloperName = :recordTypeDeveloperName)
@@ -350,7 +367,7 @@ public with sharing  class DMT_View_Selector {
     public static DMT_Line__c getLineWithRelatedData(String recordId, String recordTypeDeveloperName) {
         return [
             SELECT Id, Name, Booking_Geography__c, DMT_Oficina__c, g_limit_last_level_type__c, Start_Date__c, End_Date__c, Line_Term__c, CurrencyIsoCode, DvP_Amount__c, FD_Amount__c, Line_Id__c, DMT_RecordTypeName__c,
-                DMT_LastLevelId__c, Amount__c, Client__c, Client__r.Name, Client__r.g_customer_id__c, Custom_Association__c, Custom_Association__r.g_customer_id__c, Client_Type__c, Repos_Limit__c, Repos_Limit_6M__c, First_Breakclause__c,
+                DMT_LastLevelId__c, Amount__c, Client__c, Client__r.Name, Client__r.g_customer_id__c, Client__r.RecordTypeId, Custom_Association__c, Custom_Association__r.g_customer_id__c, Client_Type__c, Repos_Limit__c, Repos_Limit_6M__c, First_Breakclause__c,
                 First_Breakclause_Date__c,RecordType.Name, RecordType.DeveloperName, RecordTypeId, DMT_GlobalBanker__c, Breakclause_Frequency__c, Waiver__c, DMT_Operation__c,
                 DMT_RAROEC_RORC_Proposal__c, DMT_Nominal__c, DMT_Comments__c, DMT_Franchise_L12M__c, DMT_Client_Rating_Date__c, DMT_ClientStarCode__c, DMT_Approver__c,
                 DMT_Approver__r.Name, DMT_Client_Use__c, DMT_ApproverGlobalBanker__c, DMT_Booking_Unit_Risk_Analyst__c, DMT_Booking_Unit_Risk_Analyst__r.Name, DMT_LocalClient__r.Name,
@@ -389,7 +406,7 @@ public with sharing  class DMT_View_Selector {
                     SELECT Id, g_customer_id__c, Name, gf_customer_group_id__c, Group__r.RecordTypeId, Group__r.RecordType.DeveloperName, // ESCD25LIN00006408ES_01 (if ends with _xx (number)) means its related to a product (risk line term) that has DMT_Line__r.Line_Id__c concatenated (_) gf_group_priority_line_id__c
                     // child Custom_Associations_Clients__r
                     (
-                        SELECT Name, Alpha_Code_Client__c, DMT_ClientStarCode__c, DMT_ClientContracts__c, DMT_ClientRating__c, DMT_Client_Rating_Date__c, Local_Client_Child__r.RecordTypeId, Local_Client_Child__r.RecordType.DeveloperName
+                        SELECT Name, Alpha_Code_Client__c, DMT_ClientStarCode__c, DMT_ClientContracts__c, DMT_ClientRating__c, DMT_Client_Rating_Date__c, Local_Client_Child__r.RecordTypeId
                         FROM Custom_Associations_Clients__r
                     )
                     FROM Custom_Associations__r
@@ -410,5 +427,22 @@ public with sharing  class DMT_View_Selector {
             )
             ORDER BY CreatedDate DESC LIMIT 1
         ];
+    }
+
+    public static List<DMT_Underlying__c> getUnderlyingsByOliIds(Set<Id> oliIds) {
+        return [
+            SELECT Id, Name, DMT_Underlying_Type__c,
+                   DMT_Max_Amount__c, DMT_Max_Term__c, DMT_Other_restrictions__c,
+                   DMT_Drawn_Reference_Amount__c, DMT_Undrawn_Reference_Amount__c, DMT_Term__c,
+                   DMT_Drawn_Speed__c, DMT_Undrawn_Spread__c, DMT_Upfront_Fees__c,
+                   DMT_Upfront_Fees_amount__c, DMT_Amortization_Type__c,
+                   DMT_Interest_Payment_Frequency__c, DMT_Currency__c, DMT_Opportunity_Product__c
+            FROM DMT_Underlying__c
+            WHERE DMT_Opportunity_Product__c IN :oliIds
+            ORDER BY CreatedDate ASC
+        ];
+    }
+    public static List<DES_Denorm_AccountVisits__c> getAccountVisitsByAccountId(Id accountId) {
+        return [SELECT id, DES_Start_Date__c FROM DES_Denorm_AccountVisits__c WHERE DES_Client__c = :accountId AND DES_Start_Date__c != null AND DES_Start_Date__c <= TODAY ORDER BY DES_Start_Date__c DESC]; //NOSONAR
     }
 }

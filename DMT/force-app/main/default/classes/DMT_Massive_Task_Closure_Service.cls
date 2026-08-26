@@ -293,18 +293,12 @@ public without sharing class DMT_Massive_Task_Closure_Service {
 
             if (!statusToUpdate.isEmpty()) {
                 statusToUpdate = filterRecordsWithId(statusToUpdate);
-                DMT_DmlService.ensureSuccess(
-                    DMT_DmlService.updateMany(statusToUpdate, AccessLevel.SYSTEM_MODE),
-                    'DMT_Massive_Task_Closure_Service', 'updateTaskStatus'
-                );
+                dmlUpdateMany(statusToUpdate, 'updateTaskStatus');
             }
 
             Map<Id, Id> newStatusIdByTaskId = new Map<Id, Id>();
             if (!statusToInsert.isEmpty()) {
-                DMT_DmlService.ensureSuccess(
-                    DMT_DmlService.insertMany(statusToInsert, AccessLevel.SYSTEM_MODE),
-                    'DMT_Massive_Task_Closure_Service', 'insertTaskStatus'
-                );
+                dmlInsertMany(statusToInsert, 'insertTaskStatus');
                 // Associate each inserted status record to the corresponding task
                 for (Integer i = 0; i < taskIdsNeedingLink.size() && i < statusToInsert.size(); i++) {
                     newStatusIdByTaskId.put(taskIdsNeedingLink[i], statusToInsert[i].Id);
@@ -326,10 +320,7 @@ public without sharing class DMT_Massive_Task_Closure_Service {
                 }
                 tasksToUpdate.add(upd);
             }
-            DMT_DmlService.ensureSuccess(
-                DMT_DmlService.updateMany(filterRecordsWithId(tasksToUpdate), AccessLevel.SYSTEM_MODE),
-                'DMT_Massive_Task_Closure_Service', 'updateTasks'
-            );
+            dmlUpdateMany(filterRecordsWithId(tasksToUpdate), 'updateTasks');
 
                         // ── 11. Finish all open tasks on the same cases ────────────────
             // Mirrors FinishAllRelatedTasks (DmtDpUpdateApproverTask) inside
@@ -350,10 +341,7 @@ public without sharing class DMT_Massive_Task_Closure_Service {
                         Status = DMT_Constants.FINISHED
                     ));
                 }
-                DMT_DmlService.ensureSuccess(
-                    DMT_DmlService.updateMany(filterRecordsWithId(relatedToClose), AccessLevel.SYSTEM_MODE),
-                    'DMT_Massive_Task_Closure_Service', 'finishRelatedTasks'
-                );
+                dmlUpdateMany(filterRecordsWithId(relatedToClose), 'finishRelatedTasks');
             }
 
             // ── 12. Close cases ───────────────────────────────────────────
@@ -361,10 +349,7 @@ public without sharing class DMT_Massive_Task_Closure_Service {
             for (Id cId : caseIds) {
                 casesToClose.add(new Case(Id = cId, Status = DMT_Constants.FINISHED));
             }
-            DMT_DmlService.ensureSuccess(
-                DMT_DmlService.updateMany(filterRecordsWithId(casesToClose), AccessLevel.SYSTEM_MODE),
-                'DMT_Massive_Task_Closure_Service', 'closeCases'
-            );
+            dmlUpdateMany(filterRecordsWithId(casesToClose), 'closeCases');
 
             // ── 13. Update line / opportunity to Draft (IP parity) ────────
             // Execute only for flows equivalent to updateToDraft=true
@@ -713,17 +698,11 @@ public without sharing class DMT_Massive_Task_Closure_Service {
             }
         }
         if (!newLinks.isEmpty()) {
-            DMT_DmlService.ensureSuccess(
-                DMT_DmlService.insertMany(newLinks, AccessLevel.SYSTEM_MODE),
-                'DMT_Massive_Task_Closure_Service', 'insertContentDocumentLinks'
-            );
+            dmlInsertMany(newLinks, 'insertContentDocumentLinks');
         }
 
         if (!linksToDelete.isEmpty()) {
-            DMT_DmlService.ensureSuccess(
-                DMT_DmlService.deleteMany(linksToDelete, AccessLevel.SYSTEM_MODE),
-                'DMT_Massive_Task_Closure_Service', 'deleteCaseContentDocumentLinks'
-            );
+            dmlDeleteMany(linksToDelete, 'deleteCaseContentDocumentLinks');
         }
     }
 
@@ -816,11 +795,7 @@ public without sharing class DMT_Massive_Task_Closure_Service {
             return;
         }
 
-        DMT_DmlService.ensureSuccess(
-            DMT_DmlService.updateMany(toUpdate, AccessLevel.SYSTEM_MODE),
-            'DMT_Massive_Task_Closure_Service',
-            'updateLineOppToDraft_' + String.valueOf(cancelValue)
-        );
+        dmlUpdateMany(toUpdate, 'updateLineOppToDraft_' + String.valueOf(cancelValue));
     }
 
     /**
@@ -864,11 +839,71 @@ public without sharing class DMT_Massive_Task_Closure_Service {
         }
 
         if (!oppsToUpdate.isEmpty()) {
-            DMT_DmlService.ensureSuccess(
-                DMT_DmlService.updateMany(oppsToUpdate, AccessLevel.SYSTEM_MODE),
-                'DMT_Massive_Task_Closure_Service', 'updateBusinessApproverDates'
-            );
+            dmlUpdateMany(oppsToUpdate, 'updateBusinessApproverDates');
         }
+    }
+
+    /**
+     * Internal DML wrappers for this class.
+     * Keep all operations in SYSTEM_MODE and throw a contextual exception
+     * when any row fails (parity with ensureSuccess semantics).
+     */
+    private static void dmlInsertMany(List<SObject> recordsToInsert, String operation) {
+        if (recordsToInsert == null || recordsToInsert.isEmpty()) {
+            return;
+        }
+        ensureDmlSuccess(
+            Database.insert(recordsToInsert, AccessLevel.SYSTEM_MODE),
+            operation
+        );
+    }
+
+    private static void dmlUpdateMany(List<SObject> recordsToUpdate, String operation) {
+        if (recordsToUpdate == null || recordsToUpdate.isEmpty()) {
+            return;
+        }
+        ensureDmlSuccess(
+            Database.update(recordsToUpdate, AccessLevel.SYSTEM_MODE),
+            operation
+        );
+    }
+
+    private static void dmlDeleteMany(List<SObject> recordsToDelete, String operation) {
+        if (recordsToDelete == null || recordsToDelete.isEmpty()) {
+            return;
+        }
+        ensureDmlDeleteSuccess(
+            Database.delete(recordsToDelete, AccessLevel.SYSTEM_MODE),
+            operation
+        );
+    }
+
+    private static void ensureDmlSuccess(List<Database.SaveResult> results, String operation) {
+        for (Integer index = 0; index < results.size(); index++) {
+            Database.SaveResult result = results[index];
+            if (result.isSuccess()) {
+                continue;
+            }
+            throw new AuraHandledException(buildDmlErrorMessage(result.getErrors(), operation, index));
+        }
+    }
+
+    private static void ensureDmlDeleteSuccess(List<Database.DeleteResult> results, String operation) {
+        for (Integer index = 0; index < results.size(); index++) {
+            Database.DeleteResult result = results[index];
+            if (result.isSuccess()) {
+                continue;
+            }
+            throw new AuraHandledException(buildDmlErrorMessage(result.getErrors(), operation, index));
+        }
+    }
+
+    private static String buildDmlErrorMessage(Database.Error[] errors, String operation, Integer index) {
+        String message = 'DMT_Massive_Task_Closure_Service ' + operation + ' failed [idx=' + index + ']: ';
+        for (Database.Error errorItem : errors) {
+            message += String.valueOf(errorItem.getStatusCode()) + ' - ' + errorItem.getMessage() + ' ';
+        }
+        return message;
     }
 
     /**

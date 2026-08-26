@@ -117,11 +117,10 @@ public with sharing class DMT_Massive_Task_Closure_Controller {
             Boolean returnToProposalDisabled = true;
             if (relatedCase != null && t.DMT_Task_Type__r != null) {
                 Boolean isTaskIndividualType = t.DMT_Task_Type__r.gf_task_ind_type__c == true;
-                Boolean isApprovalPassport = relatedCase.DMT_Passport_Sanction__c == 'approval';
                 String lineOppType = relatedCase.DMT_LineOpportunity__c;
 
                 if (lineOppType == 'L') {
-                    returnToProposalDisabled = !(isApprovalPassport && isTaskIndividualType);
+                    returnToProposalDisabled = !isTaskIndividualType;
                 } else {
                     String approverTypeName;
                     Group ownerGroup = groupsById.get(t.OwnerId);
@@ -132,7 +131,7 @@ public with sharing class DMT_Massive_Task_Closure_Controller {
                         }
                     }
                     Boolean isBusinessApprover = approverTypeName == 'Business';
-                    returnToProposalDisabled = !(isApprovalPassport && isBusinessApprover && isTaskIndividualType);
+                    returnToProposalDisabled = !(isBusinessApprover && isTaskIndividualType);
                 }
             }
 
