@@ -1,80 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <actionCalls>
-        <name>Compare_Task_From_Case_For_Opportunity</name>
-        <label>Compare Task From Case For Opportunity</label>
-        <locationX>314</locationX>
-        <locationY>2063</locationY>
-        <actionName>DMT_ApprovalChangeStep_Handler</actionName>
-        <actionType>apex</actionType>
-        <connector>
-            <targetReference>Save_Date_Proposal</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Custom_Error_Compare_Fields_on_Tasks_DrafToProposal</targetReference>
-        </faultConnector>
-        <flowTransactionModel>Automatic</flowTransactionModel>
-        <inputParameters>
-            <name>passportSanctionFilter</name>
-            <value>
-                <stringValue>passport</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>records</name>
-            <value>
-                <elementReference>Cases_not_Finished</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>DMT_ApprovalChangeStep_Handler</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
-        <name>Compare_Task_From_Case_For_Opportunity_approval</name>
-        <label>Compare Task From Case For Opportunity in approval</label>
-        <locationX>1282</locationX>
-        <locationY>1955</locationY>
-        <actionName>DMT_ApprovalChangeStep_Handler</actionName>
-        <actionType>apex</actionType>
-        <faultConnector>
-            <targetReference>CustomErrorCompareFieldsonTasksApproval</targetReference>
-        </faultConnector>
-        <flowTransactionModel>Automatic</flowTransactionModel>
-        <inputParameters>
-            <name>passportSanctionFilter</name>
-            <value>
-                <stringValue>approval</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>records</name>
-            <value>
-                <elementReference>Cases_not_Finished</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>DMT_ApprovalChangeStep_Handler</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
-    <actionCalls>
-        <name>Compare_Task_From_Case_In_Ready_to_Close</name>
-        <label>Compare Task From Case In Ready to Close</label>
-        <locationX>1810</locationX>
-        <locationY>2171</locationY>
-        <actionName>DMT_ApprovalChangeStep_Handler</actionName>
-        <actionType>apex</actionType>
-        <faultConnector>
-            <targetReference>Custom_Error_Compare_Fields_on_Tasks</targetReference>
-        </faultConnector>
-        <flowTransactionModel>Automatic</flowTransactionModel>
-        <inputParameters>
-            <name>records</name>
-            <value>
-                <elementReference>Passport_Sanction_Ready_to_clos</elementReference>
-            </value>
-        </inputParameters>
-        <nameSegment>DMT_ApprovalChangeStep_Handler</nameSegment>
-        <offset>0</offset>
-    </actionCalls>
     <apiVersion>63.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -443,7 +368,7 @@
         <name>Cases_not_Finished</name>
         <elementSubtype>FilterCollectionProcessor</elementSubtype>
         <label>Cases not Finished</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>1739</locationY>
         <assignNextValueToReference>currentItem_Cases_not_Finished</assignNextValueToReference>
         <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
@@ -460,51 +385,10 @@
             <targetReference>Status_Change</targetReference>
         </connector>
     </collectionProcessors>
-    <collectionProcessors>
-        <name>Passport_Sanction_Ready_to_clos</name>
-        <elementSubtype>FilterCollectionProcessor</elementSubtype>
-        <label>Passport Sanction Ready to clos</label>
-        <locationX>1810</locationX>
-        <locationY>2063</locationY>
-        <assignNextValueToReference>currentItem_Passport_Sanction_Ready_to_clos</assignNextValueToReference>
-        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
-        <collectionReference>Cases_not_Finished</collectionReference>
-        <conditionLogic>and</conditionLogic>
-        <conditions>
-            <leftValueReference>currentItem_Passport_Sanction_Ready_to_clos.DMT_Passport_Sanction__c</leftValueReference>
-            <operator>EqualTo</operator>
-            <rightValue>
-                <stringValue>readytoclose</stringValue>
-            </rightValue>
-        </conditions>
-        <connector>
-            <targetReference>Compare_Task_From_Case_In_Ready_to_Close</targetReference>
-        </connector>
-    </collectionProcessors>
-    <customErrors>
-        <name>Custom_Error_Compare_Fields_on_Tasks</name>
-        <label>Custom Error Compare Fields on Tasks</label>
-        <locationX>2074</locationX>
-        <locationY>2279</locationY>
-        <customErrorMessages>
-            <errorMessage>An error occurred while trying to update the task with the current status of the records from the view.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
-    <customErrors>
-        <name>Custom_Error_Compare_Fields_on_Tasks_DrafToProposal</name>
-        <label>Custom Error Compare Fields on Tasks</label>
-        <locationX>578</locationX>
-        <locationY>2171</locationY>
-        <customErrorMessages>
-            <errorMessage>An error occurred while trying to update the task with the current status of the records from the view.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
     <customErrors>
         <name>Custom_Error_Get_Related_Cases</name>
         <label>Custom Error Get Related Cases</label>
-        <locationX>3394</locationX>
+        <locationX>1128</locationX>
         <locationY>1739</locationY>
         <customErrorMessages>
             <errorMessage>An error occurred while trying to access the related Cases to the Opportunity.</errorMessage>
@@ -512,39 +396,19 @@
         </customErrorMessages>
     </customErrors>
     <customErrors>
-        <name>Custom_Error_Save_Date_of_Proposal</name>
-        <label>Custom Error Save Date of Proposal</label>
-        <locationX>1018</locationX>
-        <locationY>2603</locationY>
-        <customErrorMessages>
-            <errorMessage>An error occurred while trying to update the Date to Proposal field of the Opportunity.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
-    <customErrors>
         <name>Custom_Error_Update_Related_cases</name>
         <label>Custom Error Update Related cases</label>
-        <locationX>2866</locationX>
+        <locationX>600</locationX>
         <locationY>2063</locationY>
         <customErrorMessages>
             <errorMessage>An error occurred while trying to update the Cases related to the Opportunity record.</errorMessage>
             <isFieldError>false</isFieldError>
         </customErrorMessages>
     </customErrors>
-    <customErrors>
-        <name>CustomErrorCompareFieldsonTasksApproval</name>
-        <label>Custom Error Compare Fields on Tasks</label>
-        <locationX>1546</locationX>
-        <locationY>2063</locationY>
-        <customErrorMessages>
-            <errorMessage>An error occurred while trying to update the task with the current status of the records from the view.</errorMessage>
-            <isFieldError>false</isFieldError>
-        </customErrorMessages>
-    </customErrors>
     <decisions>
         <name>Approver_Fields_Changed</name>
         <label>Approver Fields Changed?</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>1031</locationY>
         <defaultConnector>
             <targetReference>Get_Case_Relates</targetReference>
@@ -581,41 +445,9 @@
         </rules>
     </decisions>
     <decisions>
-        <name>From_Draft_to_Proposal</name>
-        <label>From Draft to Proposal</label>
-        <locationX>578</locationX>
-        <locationY>1955</locationY>
-        <defaultConnector>
-            <targetReference>Save_Date_Proposal</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Draft_to_Proposal</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record__Prior.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Draft</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.DMT_DateToProposal__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Compare_Task_From_Case_For_Opportunity</targetReference>
-            </connector>
-            <label>Draft to Proposal</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Holder_Found</name>
         <label>Holder Found?</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>539</locationY>
         <defaultConnector>
             <targetReference>Approver_Fields_Changed</targetReference>
@@ -638,45 +470,9 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Is_Change_In_to_Ready_o_close</name>
-        <label>Is Change In to Ready o close</label>
-        <locationX>2074</locationX>
-        <locationY>1955</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>YES_IS_Change</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Ready to close</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record__Prior.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Ready to close</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.DMT_Is_Change_in_Ready_to_close__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Passport_Sanction_Ready_to_clos</targetReference>
-            </connector>
-            <label>YES</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>IS_NEW</name>
         <label>IS NEW</label>
-        <locationX>952</locationX>
+        <locationX>325</locationX>
         <locationY>323</locationY>
         <defaultConnector>
             <targetReference>Get_OLI_Holder</targetReference>
@@ -726,7 +522,7 @@
     <decisions>
         <name>Passport_Exists_And_Calculated</name>
         <label>Passport Exists And Calculated?</label>
-        <locationX>1700</locationX>
+        <locationX>446</locationX>
         <locationY>1247</locationY>
         <defaultConnector>
             <targetReference>Get_Case_Relates</targetReference>
@@ -765,7 +561,7 @@
     <decisions>
         <name>Should_Update_Underwriting_Form_Fields</name>
         <label>Should Update Underwriting Form Fields?</label>
-        <locationX>1700</locationX>
+        <locationX>446</locationX>
         <locationY>647</locationY>
         <defaultConnector>
             <targetReference>Approver_Fields_Changed</targetReference>
@@ -790,68 +586,9 @@
     <decisions>
         <name>Status_Change</name>
         <label>Status Change</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>1847</locationY>
         <defaultConnectorLabel>Status no Change</defaultConnectorLabel>
-        <rules>
-            <name>Change_Status</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record__Prior.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Draft</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Proposal</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>From_Draft_to_Proposal</targetReference>
-            </connector>
-            <label>Draft to Proposal</label>
-        </rules>
-        <rules>
-            <name>Proposal_to_Approval</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record__Prior.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Proposal</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Approval</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Compare_Task_From_Case_For_Opportunity_approval</targetReference>
-            </connector>
-            <label>Proposal to Approval</label>
-        </rules>
-        <rules>
-            <name>Step_Ready_to_close</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.StageName</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Ready to close</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Is_Change_In_to_Ready_o_close</targetReference>
-            </connector>
-            <label>Step Ready to close</label>
-        </rules>
         <rules>
             <name>From_Proposal_to_Draft</name>
             <conditionLogic>and</conditionLogic>
@@ -875,7 +612,9 @@
             <label>From Proposal to Draft</label>
         </rules>
     </decisions>
-    <description>add logic in proposal to approval</description>
+    <description>add logic in proposal to approval
+
+Removed the Draft-exit, Proposal→Approval, and Ready-to-close task-comparison/restart logic (Compare_Task_From_Case_For_Opportunity, _approval, and _In_Ready_to_Close, plus their supporting decisions and the Passport Sanction Ready to Close filter). This logic is fully superseded by DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission, which reads its tracked-field list from DMT_RendererFactory instead of a hardcoded field list here, so it never needs a flow update again when tracked fields change. Save Date Proposal still runs unconditionally on every Draft→Proposal transition, unchanged.</description>
     <environments>Default</environments>
     <formulas>
         <name>iSNew</name>
@@ -1042,7 +781,7 @@
     <recordLookups>
         <name>Get_Case_Relates</name>
         <label>Get Case Relates</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>1631</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1087,7 +826,7 @@
     <recordLookups>
         <name>Get_OLI_Holder</name>
         <label>Get OLI Holder</label>
-        <locationX>1854</locationX>
+        <locationX>600</locationX>
         <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1117,7 +856,7 @@
     <recordLookups>
         <name>Get_Opportunity_Passport</name>
         <label>Get Opportunity Passport</label>
-        <locationX>1700</locationX>
+        <locationX>446</locationX>
         <locationY>1139</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1245,7 +984,7 @@
     <recordUpdates>
         <name>Mark_Passport_As_Obsolete</name>
         <label>Mark Passport As Obsolete</label>
-        <locationX>1568</locationX>
+        <locationX>314</locationX>
         <locationY>1355</locationY>
         <connector>
             <targetReference>Get_Case_Relates</targetReference>
@@ -1267,25 +1006,9 @@
         <object>Passport__c</object>
     </recordUpdates>
     <recordUpdates>
-        <name>Save_Date_Proposal</name>
-        <label>Save Date Proposal</label>
-        <locationX>578</locationX>
-        <locationY>2495</locationY>
-        <faultConnector>
-            <targetReference>Custom_Error_Save_Date_of_Proposal</targetReference>
-        </faultConnector>
-        <inputAssignments>
-            <field>DMT_DateToProposal__c</field>
-            <value>
-                <elementReference>$Flow.CurrentDateTime</elementReference>
-            </value>
-        </inputAssignments>
-        <inputReference>$Record</inputReference>
-    </recordUpdates>
-    <recordUpdates>
         <name>Update_OLI_Set_Underwriting_And_Other_Fields</name>
         <label>Update OLI - Set Underwriting And Other Fields</label>
-        <locationX>1568</locationX>
+        <locationX>314</locationX>
         <locationY>755</locationY>
         <connector>
             <targetReference>Approver_Fields_Changed</targetReference>
@@ -1417,7 +1140,7 @@
     <recordUpdates>
         <name>Update_Relate_Case</name>
         <label>Update Relate Case</label>
-        <locationX>2602</locationX>
+        <locationX>336</locationX>
         <locationY>1955</locationY>
         <faultConnector>
             <targetReference>Custom_Error_Update_Related_cases</targetReference>
@@ -1431,7 +1154,7 @@
         <inputReference>$Record.Cases__r</inputReference>
     </recordUpdates>
     <start>
-        <locationX>826</locationX>
+        <locationX>199</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>IS_NEW</targetReference>

@@ -1310,6 +1310,69 @@ public class DMT_ViewController_Test {
         };
     }
 
+    // ==================================================
+    // filterActiveComponents (CMDT-driven orphan filtering)
+    // ==================================================
+    // Once a DMT_Configurator_View_Items__mdt entry is deactivated (or never existed for a
+    // given view type), the matching 'Component' item must stop rendering everywhere it's
+    // already used — not just stop being offered in the admin picker. See DMT_ViewController's
+    // filterActiveComponents doc comment for the full rationale.
+
+    @isTest
+    static void testFilterActiveComponentsDropsComponentMissingFromCatalog() {
+        List<DMT_ViewController.ItemWrapper> items = new List<DMT_ViewController.ItemWrapper>{
+            new DMT_ViewController.ItemWrapper('Component', 'Line Info', 1, ''),
+            new DMT_ViewController.ItemWrapper('Component', 'Totally Fake Component Zzz', 2, '')
+        };
+
+        List<DMT_ViewController.ItemWrapper> result = DMT_ViewController.filterActiveComponents(items, 'Line_Treasury');
+
+        Assert.areEqual(1, result.size(), 'The component with no active catalog entry must be dropped.');
+        Assert.areEqual('Line Info', result[0].component, 'Line Info is active in the Line_Treasury catalog and must be kept.');
+    }
+
+    @isTest
+    static void testFilterActiveComponentsKeepsBreakAndTextRegardlessOfCatalog() {
+        // Break/Text items are never sourced from DMT_Configurator_View_Items__mdt at all
+        // (see dmt_item_selector.js filterComponentOptions) — a made-up viewType with no
+        // catalog entries at all must not affect them.
+        List<DMT_ViewController.ItemWrapper> items = new List<DMT_ViewController.ItemWrapper>{
+            new DMT_ViewController.ItemWrapper('Break', 'Page Break', 1, ''),
+            new DMT_ViewController.ItemWrapper('Break', 'Line Break', 2, ''),
+            new DMT_ViewController.ItemWrapper('Text', 'Text 12px', 3, 'hello')
+        };
+
+        List<DMT_ViewController.ItemWrapper> result = DMT_ViewController.filterActiveComponents(items, 'Totally_Fake_View_Type');
+
+        Assert.areEqual(3, result.size(), 'Break and Text items must always be kept, independent of any catalog.');
+    }
+
+    @isTest
+    static void testFilterActiveComponentsKeepsActiveCatalogEntryEvenWithoutARenderer() {
+        // 'Deal' has an active DMT_Configurator_View_Items__mdt entry for 'Opportunity' but no
+        // matching DMT_RendererFactory key (verified via DMT_TCM_DEV org data as of this fix) —
+        // exactly the mid-development case: the catalog says it's active, the factory hasn't
+        // caught up yet. It must still reach rendering so the resulting "Default content"
+        // placeholder tells the developer their component isn't wired up yet — a different
+        // signal from "this was retired", and only the catalog lets filterActiveComponents
+        // tell the two apart.
+        Assert.isFalse(DMT_RendererFactory.hasRenderer('Deal'), 'Precondition: Deal must have no DMT_RendererFactory entry for this test to be meaningful.');
+
+        List<DMT_ViewController.ItemWrapper> items = new List<DMT_ViewController.ItemWrapper>{
+            new DMT_ViewController.ItemWrapper('Component', 'Deal', 1, '')
+        };
+
+        List<DMT_ViewController.ItemWrapper> result = DMT_ViewController.filterActiveComponents(items, 'Opportunity');
+
+        Assert.areEqual(1, result.size(), 'An active-but-unwired catalog component must be kept, not silently dropped.');
+    }
+
+    @isTest
+    static void testFilterActiveComponentsEmptyListReturnsEmptyList() {
+        List<DMT_ViewController.ItemWrapper> result = DMT_ViewController.filterActiveComponents(new List<DMT_ViewController.ItemWrapper>(), 'Line_Treasury');
+        Assert.isTrue(result.isEmpty(), 'An empty input list must return an empty result.');
+    }
+
     @isTest
     static void testSaveNativeSnapshots() {
         TriggerBypass.setBypass();
@@ -2280,7 +2343,7 @@ public class DMT_ViewController_Test {
         String result = renderer.renderHtml(data);
         Test.stopTest();
         Assert.isNotNull(result);
-        Assert.isTrue(result.contains('STATUS'), 'HTML should contain the STATUS title.');
+        Assert.isTrue(result.contains('Status'), 'HTML should contain the Status title.');
         Assert.isTrue(result.contains('Active'), 'HTML should contain the status value.');
         Assert.isFalse(result.contains('Error'), 'HTML should not contain an error.');
     }
@@ -2356,6 +2419,7 @@ public class DMT_ViewController_Test {
         p.bbvaPrtcpTrancheAmount = 10000000;
         p.newMoney              = 5000000;
         p.oldMoney              = 5000000;
+        p.oldMoneyCalculated    = 5000000; // bbvaPrtcpTrancheAmount - newMoney
         p.expectedFinalTakeBBVA = 8000000;
         p.expectedDrawn         = 70;
         p.liquidityFee          = 20;
@@ -2624,6 +2688,25 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_oldMoneyUsesCalculatedValue() {
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+        p.bbvaPrtcpTrancheAmount = 10000000;
+        p.newMoney               = 4000000;
+        p.oldMoney               = 999999; // stale/unmaintained legacy field, must be ignored
+        p.oldMoneyCalculated     = 6000000; // bbvaPrtcpTrancheAmount - newMoney
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
+        Assert.isTrue(html.contains('6000000'), 'Deal description Old Money should use the calculated value.');
+        Assert.isFalse(html.contains('999999'), 'Deal description Old Money should not use the stale DMT_OldMoney_BBVA__c value.');
+    }
+
+    @isTest
     static void testLoadToolkitDataFromNBC() {
         TriggerBypass.setBypass();
         Opportunity testOpp = [SELECT Id FROM Opportunity LIMIT 1];
@@ -2729,5 +2812,84 @@ public class DMT_ViewController_Test {
         Assert.isNotNull(htmlContent, 'HTML should not be null when Sanction line has no child Opportunity.');
 
         TriggerBypass.removeBypass();
+    }
+
+    // ==========================================================================
+    // Field tracking for the approval-restart watch mechanism
+    // ==========================================================================
+
+    @isTest
+    static void testGetTrackedFieldsLineInfoTreasury() {
+        Id treasuryRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId();
+
+        Test.startTest();
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', treasuryRtId);
+        Test.stopTest();
+
+        Set<String> trackedFieldsSet = new Set<String>(trackedFields);
+        Assert.isTrue(trackedFieldsSet.contains('Line_Id__c'), 'Line_Id__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('Name'), 'Name should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('Booking_Geography__c'), 'Booking_Geography__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Oficina__c'), 'DMT_Oficina__c should be tracked for Treasury Line Info');
+    }
+
+    @isTest
+    static void testGetTrackedFieldsLineInfoOther() {
+        Id otherRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId();
+
+        Test.startTest();
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', otherRtId);
+        Test.stopTest();
+
+        Set<String> trackedFieldsSet = new Set<String>(trackedFields);
+        Assert.isTrue(trackedFieldsSet.contains('g_line_commitment_level_type__c'), 'g_line_commitment_level_type__c should be tracked for Other Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Individual_Disposal_Approval__c'), 'DMT_Individual_Disposal_Approval__c should be tracked for Other Line Info');
+    }
+
+    @isTest
+    static void testGetTrackedFieldsOpportunityInfo() {
+        Id oppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+
+        Test.startTest();
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Opportunity Info', oppRtId);
+        Test.stopTest();
+
+        Set<String> trackedFieldsSet = new Set<String>(trackedFields);
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Capital_Action__c'), 'DMT_Capital_Action__c should be tracked for Opportunity Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_branch_id_c__c'), 'DMT_branch_id_c__c should be tracked for Opportunity Info');
+    }
+
+    @isTest
+    static void testGetTrackedFieldsForComponentsList() {
+        Id treasuryRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId();
+
+        Test.startTest();
+        // The List<String> overload unions fields across multiple components - here 'Line Info'
+        // (tracked) and 'Limit' (not migrated, contributes nothing) - proving the union doesn't
+        // silently drop a migrated component's fields just because another component in the same
+        // call has none.
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields(new List<String>{'Line Info', 'Limit'}, treasuryRtId);
+        Test.stopTest();
+
+        Set<String> trackedFieldsSet = new Set<String>(trackedFields);
+        Assert.isTrue(trackedFieldsSet.contains('Line_Id__c'), 'Line_Id__c from Line Info should be present in the unioned list');
+        Assert.areEqual(
+            new Set<String>(DMT_RendererFactory.getTrackedFields('Line Info', treasuryRtId)),
+            trackedFieldsSet,
+            'Unioning with an unmigrated component should not add or remove anything beyond what Line Info alone returns'
+        );
+    }
+
+    @isTest
+    static void testGetTrackedFieldsUnmappedComponentReturnsEmptyList() {
+        Id treasuryRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId();
+
+        Test.startTest();
+        // 'Limit' maps to DMT_LimitRenderer, which does not implement DMT_FieldTrackableRenderer yet -
+        // must return an empty list, not throw, so unmigrated renderers stay untouched.
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Limit', treasuryRtId);
+        Test.stopTest();
+
+        Assert.isTrue(trackedFields.isEmpty(), 'A renderer that does not implement DMT_FieldTrackableRenderer should return an empty list.');
     }
 }

@@ -29,20 +29,24 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         'opportunityXSell' => 'DMT_X_Sell__c'
     };
 
+    // MIGRATION IN PROGRESS. Watched fields come from the renderers via DMT_RendererFactory
+    // whenever one returns something for this (component, record type); otherwise the loop below
+    // falls back to the legacy DMT_Campos_componente_Refact__c field. A renderer that implements
+    // neither tracking interface returns nothing, which is itself the "not migrated" signal - there
+    // is no separate list of migrated components anywhere.
+    // Once every component is migrated, the legacy field becomes dead and can be deprecated.
+
     /**
-     * @description Returns the complete set of top-level field keys that should be
-     * compared for a given snapshot section (e.g. 'line', 'lineProductItemList'),
-     * derived from the tracked field configuration (fieldMapFromObject, built from
-     * DMT_AllFieldsInStatus__c) rather than from whichever keys happen to be present
-     * in a previously-stored snapshot JSON. A field that was null when the old
-     * snapshot was taken has no key in that JSON, so relying on its keySet() alone
-     * silently skips comparing that field forever, even after it's populated.
-     * Relationship-traversal fields (e.g. "Client__r.Name") are reduced to their
-     * top-level key ("Client__r") to match how the JSON nests them.
-     * Falls back to fallbackKeys (the old snapshot's own keys) only if the section
-     * isn't recognized, to fail safe rather than skip comparison entirely.
-     * @author DMT_ApprovalChangeStep_Handler | CIBGLOBALD-4098
-     **/
+     * The field keys to compare for a snapshot section, taken from the tracked-field config rather
+     * than from the stored snapshot's own keys.
+     *
+     * That matters because a field that was null when the snapshot was taken has no key in the
+     * JSON at all - iterating the snapshot's keySet() would skip it forever, even once populated
+     * (CIBGLOBALD-4098).
+     *
+     * Relationship fields ("Client__r.Name") reduce to their top-level key ("Client__r") to match
+     * how the JSON nests them. Falls back to the snapshot's own keys for an unrecognised section.
+     */
     private static Set<String> getComparableFieldKeys(String sectionName, Map<String, List<String>> fieldMapFromObject, Set<String> fallbackKeys) {
         String objectName = SNAPSHOT_SECTION_TO_OBJECT.get(sectionName);
         if (objectName == null || !fieldMapFromObject.containsKey(objectName)) {
@@ -107,6 +111,10 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         Task task = DMT_ApprovalChangeStep_Selector.getTaskById(recordId);
         Case relatedCase = DMT_ApprovalChangeStep_Selector.getCaseById(task.WhatId);
 
+        // Record type of the Case's own Line or Opportunity, resolved once and reused by every
+        // component's lookup below.
+        Id recordTypeId = relatedCase.DMT_LineOpportunity__c == 'L' ? relatedCase.DMT_Line__r.RecordTypeId : relatedCase.opportunity_id__r.RecordTypeId;
+        String sObjectApiName = relatedCase.DMT_LineOpportunity__c == 'L' ? 'DMT_Line__c' : 'Opportunity';
 
         Id approverViewId = getApproverViewId(task.OwnerId, relatedCase);
         List<DMT_Items__c> itemsList = DMT_ApprovalChangeStep_Selector.getItemsByDmtView(approverViewId);
@@ -115,16 +123,31 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
         String allFields = '';
 
-        // We loop through each item to obtain the fields of every Object
+        // Collect every watched Object.Field for this approver view, per component.
         for (DMT_Items__c item : itemsList){
-            // We get a list of each Object.Field
-            //List<String> fields = item?.DMT_Campos_componente_Refact__c.split(';', 0);
-
             List<String> fields = new List<String>();
-            // Comprueba que 'item' exista Y que el campo tenga valor.
-            if (item != null && String.isNotBlank(item.DMT_Campos_componente_Refact__c)) {
-
-                fields = item.DMT_Campos_componente_Refact__c.split(';', 0);
+            if (item != null) {
+                Map<String, List<String>> fieldsByObject = DMT_RendererFactory.getTrackedFieldsByObject(item.DMT_Component_Item__c, recordTypeId);
+                if (!fieldsByObject.isEmpty()) {
+                    // Multi-object renderer already says which object each field belongs to, so
+                    // don't prefix with sObjectApiName like the single-object branch below.
+                    for (String objectName : fieldsByObject.keySet()) {
+                        for (String fieldName : fieldsByObject.get(objectName)) {
+                            fields.add(objectName + '.' + fieldName);
+                        }
+                    }
+                } else {
+                    List<String> trackedFields = DMT_RendererFactory.getTrackedFields(item.DMT_Component_Item__c, recordTypeId);
+                    if (!trackedFields.isEmpty()) {
+                        for (String fieldName : trackedFields) {
+                            fields.add(sObjectApiName + '.' + fieldName);
+                        }
+                    }
+                    // Legacy fallback for components not yet migrated to a renderer.
+                    else if (String.isNotBlank(item.DMT_Campos_componente_Refact__c)) {
+                        fields = item.DMT_Campos_componente_Refact__c.split(';', 0);
+                    }
+                }
             }
             //We obtain the Object Name and Field Name for each and store it in the Map
             for (String field : fields){
@@ -156,14 +179,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 List<DMT_Line__c> linesRetrieved = Database.query(String.escapeSingleQuotes(query));
                 jsonFinal.line = linesRetrieved.get(0);
             }
-
-            // Makes the query for the DMT_TeamMember__c object and stores on the jsonFinal var
-            // if (fieldMapFromObject.containsKey('DMT_TeamMember__c')) {
-            //     Id lineId = relatedCase.DMT_Line__c;
-            //     String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_TeamMember__c'),',') + ' FROM DMT_TeamMember__c WHERE Line__c = :lineId ORDER BY Name ASC';
-            //     Map<Id, DMT_TeamMember__c> membersRetrieved = new Map<Id, DMT_TeamMember__c>((List<DMT_TeamMember__c>) Database.query(String.escapeSingleQuotes(query)));
-            //     jsonFinal.participantList = membersRetrieved;
-            // }
 
             // Makes the query for the DMT_Risk_Line_Term__c object and stores on the jsonFinal var
             if (fieldMapFromObject.containsKey('DMT_Risk_Line_Term__c')){
@@ -396,7 +411,16 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
      * @description Method that updates the task with the current status of the records from the view
      * @author Aníbal Cortés | 10-31-2024
      * @param recordId
-     **/
+     *
+     * KNOWN DUPLICATION - deliberate, not an oversight. This method still has its own inline
+     * createResetTask/createResetCase pairs and its own copy of the row-matching rule that now
+     * lives in DMT_ApprovalChangeStep_Helper. The trigger-side gates were unified onto that helper;
+     * this path was not, because switching it would change behaviour, not just move code:
+     *   - it bypasses restartTasksForRecord, so it has no Savepoint and never publishes the
+     *     DMT_Task__e CASE_UPDATE event the passport LWCs listen to;
+     *   - the green-feature skip (CIBGLOBALD-3233) is interleaved through the loop.
+     * Worth doing, but needs its own pass with its own regression testing.
+     */
     @InvocableMethod(label = 'Compare tasks from case' description = 'Compares tasks from a list of cases')
     public static void compareTasksFromCase(List<Request> request){
         List<Case> records = request.get(0).records;

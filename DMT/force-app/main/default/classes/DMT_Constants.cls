@@ -240,4 +240,15 @@ public with sharing class DMT_Constants {
 
     public static final String RT_OPP_DMT_NAME = 'DMT_Opportunity';
 
+    // Components whose watched fields come from their renderer. Add a component here once its
+    // renderer implements DMT_FieldTrackableRenderer (or DMT_MultiObjectFieldTrackableRenderer).
+    //
+    // It does not need to be migrated for every record type first: for one it isn't migrated for,
+    // the renderer returns nothing and contributes nothing to the comparison. Client is listed
+    // here while Sanction still has no tracking, and that is fine.
+    //
+    // Read by the two trigger handlers. DMT_ApprovalChangeStep_Handler does NOT read this - it
+    // decides per DMT_Items__c row. Do not duplicate this list anywhere.
+    public static final List<String> RENDERER_TRACKED_COMPONENTS = new List<String>{'Line Info', 'Opportunity Info', 'Client'};
+
 }

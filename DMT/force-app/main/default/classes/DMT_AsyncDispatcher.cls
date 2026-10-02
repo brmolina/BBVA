@@ -25,6 +25,9 @@ public with sharing class DMT_AsyncDispatcher {
         } else if (payload instanceof DMT_CoreDocumentsUploadPayload) {
             DMT_CoreDocumentsUploadPayload p = (DMT_CoreDocumentsUploadPayload) payload;
             DMT_CoreDocumentsUploadFile.upload(p.sfRecordId, p.fileBaseName, p.pdfBase64);
+        } else if (payload instanceof DMT_RestartApprovalTasksPayload) {
+            DMT_RestartApprovalTasksPayload p = (DMT_RestartApprovalTasksPayload) payload;
+            DMT_ApprovalChangeStep_Helper.restartTasksForRecord(p.recordId, p.tasksToRestart);
         } else {
             throw new IllegalArgumentException('Unsupported payload type');
         }

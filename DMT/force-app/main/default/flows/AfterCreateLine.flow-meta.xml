@@ -892,18 +892,6 @@
             </conditions>
             <label>AMIWEB</label>
         </rules>
-        <rules>
-            <name>BulkImportOrigin</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.DMT_Origin__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>BulkImport</stringValue>
-                </rightValue>
-            </conditions>
-            <label>BulkImport</label>
-        </rules>
     </decisions>
     <decisions>
         <name>ObsoletePasspport</name>

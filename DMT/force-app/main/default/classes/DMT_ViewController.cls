@@ -48,6 +48,10 @@ public without sharing class DMT_ViewController {
         public Decimal extensionDurationFees; 
         public Decimal newMoney;
         public Decimal oldMoney;
+        // Old Money for the one-off Deal description section: BBVA commitment minus New Money,
+        // matching dmt_opp_product_details_deal_description.js. DMT_OldMoney_BBVA__c itself is
+        // legacy/unmaintained for this layout; Line products still use it as-is (see oldMoney).
+        public Decimal oldMoneyCalculated;
         public Decimal expectedFinalTake;
         public Decimal expectedDrawn;
         public Decimal dealAmount;
@@ -883,6 +887,10 @@ public without sharing class DMT_ViewController {
                         oppProduct.pricingGrid = oppItem.DMT_PricingGrid_OR_StepUps__c;
                         oppProduct.dealAmount = oppItem.DMT_Deal_amount__c;
                         oppProduct.bbvaPrtcpTrancheAmount = oppItem.bbva_prtcp_tranche_amount__c;
+                        Decimal newMoneyForOldMoneyCalc = oppProduct.newMoney != null ? oppProduct.newMoney : oppProduct.bbvaPrtcpTrancheAmount;
+                        oppProduct.oldMoneyCalculated = (oppProduct.bbvaPrtcpTrancheAmount == null || newMoneyForOldMoneyCalc == null)
+                            ? null
+                            : (oppProduct.bbvaPrtcpTrancheAmount - newMoneyForOldMoneyCalc);
                         oppProduct.liquidityFee = oppItem.DMT_Liquidity_Fee__c;
                         oppProduct.commitmentFees = oppItem.DES_Commitment_Fees__c;
                         oppProduct.otherFees = oppItem.DES_Other_Fees__c;
@@ -927,7 +935,7 @@ public without sharing class DMT_ViewController {
                         // Line / One-Off Deal fields
                         oppProduct.productId = oppItem.Id;
                         oppProduct.lineOneOffDeal = oppItem.DMT_Line_Oneoffdeal__c;
-                        oppProduct.lineType = oppItem.DMT_Line_Type__c;
+                        oppProduct.lineType = oppItem.g_line_commitment_level_type__c;
                         oppProduct.lineTenor = oppItem.DMT_Line_Tenor__c;
                         oppProduct.lineAmount = oppItem.DMT_Deal_amount__c;
                         oppProduct.commitmentLineAmount = oppItem.bbva_prtcp_tranche_amount__c;
@@ -1020,22 +1028,28 @@ public without sharing class DMT_ViewController {
             }
 
             // 2. Verificar multiholder (solo si no es prospect directo)
-            if (!hasProspectInClient && !data.opportunity.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
-                // Recopilar Alpha Codes del multiholder
+            if (!hasProspectInClient && !data.opportunity.Custom_Associations__r.isEmpty()) {
                 Set<String> alphaCodes = new Set<String>();
-                for (DMT_Opportunity_Client__c oc : data.opportunity.DMT_MDE_Opportunities_Clients__r) {
-                    if (String.isNotBlank(oc.Alpha_Code_Client__c)) {
-                        alphaCodes.add(oc.Alpha_Code_Client__c);
+                for (Custom_Association_Opportunity__c assoc : data.opportunity.Custom_Associations__r) {
+                    if (assoc.DMT_Client_Associations_Opportunities__r != null) {
+                        for (DMT_Custom_Association_ClientOpportunity__c cac : assoc.DMT_Client_Associations_Opportunities__r) {
+                            if (String.isNotBlank(cac.DMT_g_customer_id__c)) {
+                                alphaCodes.add(cac.DMT_g_customer_id__c);
+                            }
+                        }
                     }
                 }
                 
                 // Buscar si alguno de esos alpha codes pertenece a un Prospect_Subsidiary
                 if (!alphaCodes.isEmpty()) {
                     List<Account> prospectAccounts = [SELECT Id FROM Account WHERE g_customer_id__c IN :alphaCodes AND RecordTypeId = :prospectSubsidiaryRtId LIMIT 1];
+
                     hasProspectInMultiholder = !prospectAccounts.isEmpty();
+
                 }
             }
             data.hasProspect = hasProspectInClient || hasProspectInMultiholder;
+
         }
         return data;
     }
@@ -1368,6 +1382,7 @@ public without sharing class DMT_ViewController {
         System.debug('loadComponentsForView selectedItems: '+selectedItems);
         try{
             List<ItemWrapper> itemsList =(List<ItemWrapper>) JSON.deserialize(selectedItems, List<ItemWrapper>.class);
+            itemsList = filterActiveComponents(itemsList, viewType);
             String renderedHtmlData = '';
             LineDataWrapper data = loadRelatedData(recordOrLineId, viewType);
             if(itemsImg != null && !String.isEmpty(itemsImg)){
@@ -1415,6 +1430,41 @@ public without sharing class DMT_ViewController {
             resultMap.put('error', '<div class="error-message">An unexpected error has occurred. ' + e.getMessage() + '</div>');
             return JSON.serialize(resultMap);
         }
+    }
+
+    /**
+     * Drops 'Component'-type items whose DMT_Configurator_View_Items__mdt entry for this
+     * viewType is inactive or missing entirely, so a retired/orphaned component stops
+     * rendering the moment its CMDT record is deactivated — in every future call to
+     * loadComponentsForView, including loadVersionSnapshot (a thin wrapper around it used to
+     * take a new point-in-time snapshot). This is forward-looking only: it governs renders
+     * that happen after this fix is deployed, not anything already generated. It cannot and
+     * does not alter a PDF/HTML snapshot that was already generated and stored in the past —
+     * that's a static file, frozen at the moment it was rendered.
+     * Without this, generateHtmlForComponent falls through to a generic "Default content"
+     * placeholder for any component with no DMT_RendererFactory entry, regardless of CMDT state.
+     * 'Break' and 'Text' items (Page Break, Line Break, Text 12/14/18px) are never CMDT-driven
+     * (see DMT_ItemController.getFilteredComponentItemOptions / dmt_item_selector.js) and are
+     * always kept. A 'Component' item whose CMDT record IS active but has no renderer wired up
+     * yet is also kept — the resulting "Default content" placeholder is the intended signal
+     * that a developer is still mid-build on that component.
+     */
+    @TestVisible
+    private static List<ItemWrapper> filterActiveComponents(List<ItemWrapper> itemsList, String viewType) {
+        Set<String> activeComponents = new Set<String>();
+        for (DMT_Configurator_View_Items__mdt mapping : DMT_CustomMetadata_Selector.getConfiguratorViewItemsByViewType(viewType)) {
+            activeComponents.add(mapping.DMT_Component_Item__c);
+        }
+
+        List<ItemWrapper> filtered = new List<ItemWrapper>();
+        for (ItemWrapper item : itemsList) {
+            if (item.type == 'Component' && !activeComponents.contains(item.component)) {
+                System.debug('Skipping inactive/orphaned component: ' + item.component + ' for viewType: ' + viewType);
+                continue;
+            }
+            filtered.add(item);
+        }
+        return filtered;
     }
 
     // Generates the HTML output for a single component based on its type

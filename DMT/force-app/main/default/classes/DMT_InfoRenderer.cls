@@ -1,4 +1,34 @@
-public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer {
+/**
+ * Routes the "Line Info" / "Opportunity Info" / "Approval Info" components to the renderer for the
+ * record type being viewed.
+ *
+ *   TreasurySettlement -> DMT_TreasuryLineInfoRenderer
+ *   OtherProducts      -> DMT_OtherLineInfoRenderer
+ *   DMT_Opportunity    -> DMT_OpportunityInfoRenderer
+ *   Sanction           -> DMT_LineSanctionApprovalInfoRenderer
+ *
+ * ─────────────────────────────────────────────────────────────────────────────────────────
+ * ADDING OR REMOVING A FIELD IN ANY INFO RENDERER - READ THIS FIRST
+ * ─────────────────────────────────────────────────────────────────────────────────────────
+ * The fields these renderers DISPLAY are the fields the approval-restart mechanism WATCHES. When
+ * a watched field changes while a Line/Opportunity is resubmitted, its open approval tasks are
+ * cancelled and recreated so the approver reviews the new value.
+ *
+ * So the watched list must move with the displayed field. Every Info renderer is DisplayField-based,
+ * so pass the field API name as the THIRD argument when building it:
+ *     new DMT_FormattingUtils.DisplayField('Name:', value, new List<String>{'Name'})
+ * Omit it and the field renders but is never watched.
+ *
+ * A field watched but NOT displayed is added explicitly in getTrackedFields() with a comment
+ * saying why - see DMT_TreasuryLineInfoRenderer.
+ *
+ * A renderer implementing neither tracking interface is simply not watched. That is intentional;
+ * there is no list anywhere of which record types are migrated.
+ *
+ * (The Client renderers do the same job a second way, via a column constant - see
+ * DMT_ClientRenderer.)
+ */
+public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -28,5 +58,17 @@ public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer {
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';
         }
+    }
+
+    public List<String> getTrackedFields(Id recordTypeId) {
+        DMT_ViewRenderer renderer = recordTypeRenderers.get(recordTypeId);
+        if (renderer == null) {
+            System.debug(LoggingLevel.WARN, '[DMT_InfoRenderer.getTrackedFields] No Info renderer registered for record type Id: ' + recordTypeId);
+            return new List<String>();
+        }
+        if (renderer instanceof DMT_FieldTrackableRenderer) {
+            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(recordTypeId);
+        }
+        return new List<String>();
     }
 }

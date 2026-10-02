@@ -216,4 +216,52 @@ public with sharing class DMT_RendererFactory {
     public static Boolean hasRenderer(String componentType) {
         return rendererMap.containsKey(componentType);
     }
+
+    public static List<String> getTrackedFields(String componentType, Id recordTypeId) {
+        Type rendererType = rendererMap.get(componentType);
+        if (rendererType == null) {
+            return new List<String>();
+        }
+        DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
+        if (renderer instanceof DMT_FieldTrackableRenderer) {
+            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(recordTypeId);
+        }
+        return new List<String>();
+    }
+
+    public static List<String> getTrackedFields(List<String> componentTypes, Id recordTypeId) {
+        Set<String> fields = new Set<String>();
+        for (String componentType : componentTypes) {
+            fields.addAll(getTrackedFields(componentType, recordTypeId));
+        }
+        return new List<String>(fields);
+    }
+
+    // Tracked fields grouped by SObject, for a renderer whose fields span more than one object.
+    // Empty for a single-object renderer - use getTrackedFields() for those.
+    public static Map<String, List<String>> getTrackedFieldsByObject(String componentType, Id recordTypeId) {
+        Type rendererType = rendererMap.get(componentType);
+        if (rendererType == null) {
+            return new Map<String, List<String>>();
+        }
+        DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
+        if (renderer instanceof DMT_MultiObjectFieldTrackableRenderer) {
+            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getTrackedFieldsByObject(recordTypeId);
+        }
+        return new Map<String, List<String>>();
+    }
+
+    // Child-record sections this component reads for the given record type, as declared by the
+    // renderer. Empty when it reads none, or when that record type's renderer isn't tracked.
+    public static List<DMT_ApprovalChangeStep_Helper.ChildSection> getChildSections(String componentType, Id recordTypeId) {
+        Type rendererType = rendererMap.get(componentType);
+        if (rendererType == null) {
+            return new List<DMT_ApprovalChangeStep_Helper.ChildSection>();
+        }
+        DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
+        if (renderer instanceof DMT_MultiObjectFieldTrackableRenderer) {
+            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getChildSections(recordTypeId);
+        }
+        return new List<DMT_ApprovalChangeStep_Helper.ChildSection>();
+    }
 }

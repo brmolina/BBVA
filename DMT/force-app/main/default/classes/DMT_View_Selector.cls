@@ -109,7 +109,8 @@ public with sharing  class DMT_View_Selector {
                         (
                             SELECT Id, Name, DMT_All_in_Drawn__c, DMT_All_in_Undrawn__c, DMT_Applicable_Margin__c, DMT_Commitment_Fee__c, DMT_Expected_Drawn__c, DMT_Extension_Duration_Fee__c,
                             DMT_Funding_Cost__c, DMT_Interest_Rate_Period__c, DMT_Liquidity_Fee__c, DMT_Other_Fees_Accrual__c, DMT_Other_Fees_Non_Accrual__c, DMT_Other_Fees__c, 
-                            DMT_Pricing_Grid_or_Step_ups__c, DMT_Up_Front_Fee_Accrual__c, DMT_Up_Front_Fee_Non_Accrual__c, DMT_Utilisation_Fee__c, DMT_Opportunity_Product__c 
+                            DMT_Pricing_Grid_or_Step_ups__c, DMT_Up_Front_Fee_Accrual__c, DMT_Up_Front_Fee_Non_Accrual__c, DMT_Utilisation_Fee__c, DMT_Opportunity_Product__c,
+                            DMT_Is_Old_Money__c
                             FROM Opportunity_Money__r
                         )
                         FROM OpportunityLineItems ORDER BY LastModifiedDate DESC
@@ -181,9 +182,21 @@ public with sharing  class DMT_View_Selector {
                             Current_FY_FX_CCS_amount__c, Current_FY_Cash_Management_amount__c, Current_FY_Client_Resources_amount__c,
                             Current_FY_Securities_Services_amount__c, Current_FY_Total_X_Sell_amount__c, Current_FY_Child_X_Sell_amount__c,
                             Current_FY_Total_Revenues_amount__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_kpi_trans_fees_cyr_amount__c,
-                            DMT_Booking_Geography__c, DMT_Year__c, DMT_QAOTER__c, DMT_Currency__c, DMT_Active__c,DMT_Xsell_Cost_to_Income__c
+                            DMT_Booking_Geography__c, DMT_Year__c, DMT_QAOTER__c, DMT_Currency__c, DMT_Active__c,DMT_Xsell_Cost_to_Income__c,
+                            DMT_Revenues_number__c, DMT_EBITDA_number__c, DMT_EBIT_number__c, DMT_Net_Income_number__c,
+                            DMT_Free_Cash_Flow_number__c, DMT_Debt_EBITDA_number__c, DMT_Net_Debt_EBITDA_number__c
                         FROM Opportunity_Business_Plans__r
                         ORDER BY DMT_Booking_Geography__c, DMT_Year__c
+                    ),
+                    // child Custom_Associations__r (DMT_Custom_Association_Opportunity__c) + nested multiholder participants
+                    (
+                        SELECT Id, Group__c, g_group_id__c,
+                               gf_cutoff_date__c, gf_origin_application_type__c,
+                            (
+                                SELECT Id, DMT_g_customer_id__c, DMT_gf_customer_group_id__c, DMT_g_entific_id__c
+                                FROM DMT_Client_Associations_Opportunities__r
+                            )
+                        FROM Custom_Associations__r
                     )
                 FROM Opportunity
                 WHERE Id = :recordId OR (DMT_Opp_Id__c =:recordId AND RecordType.DeveloperName = :recordTypeDeveloperName)
@@ -370,7 +383,7 @@ public with sharing  class DMT_View_Selector {
                 DMT_LastLevelId__c, Amount__c, Client__c, Client__r.Name, Client__r.g_customer_id__c, Client__r.RecordTypeId, Custom_Association__c, Custom_Association__r.g_customer_id__c, Client_Type__c, Repos_Limit__c, Repos_Limit_6M__c, First_Breakclause__c,
                 First_Breakclause_Date__c,RecordType.Name, RecordType.DeveloperName, RecordTypeId, DMT_GlobalBanker__c, Breakclause_Frequency__c, Waiver__c, DMT_Operation__c,
                 DMT_RAROEC_RORC_Proposal__c, DMT_Nominal__c, DMT_Comments__c, DMT_Franchise_L12M__c, DMT_Client_Rating_Date__c, DMT_ClientStarCode__c, DMT_Approver__c,
-                DMT_Approver__r.Name, DMT_Client_Use__c, DMT_ApproverGlobalBanker__c, DMT_Booking_Unit_Risk_Analyst__c, DMT_Booking_Unit_Risk_Analyst__r.Name, DMT_LocalClient__r.Name,
+                DMT_Approver__r.Name, DMT_Client_Use__c, DMT_ApproverGlobalBanker__c, DMT_Booking_Unit_Risk_Analyst__c, DMT_Booking_Unit_Risk_Analyst__r.Name,
                 DMT_ApproverGlobalBanker__r.Name, DMT_Additional_Restrictions__c, DMT_Client_Entific__c,g_line_commitment_level_type__c,Closed__c,Status__c, gf_min_rorc_wo_fcg_per__c, gf_min_raroec_wo_fcg_per__c, DMT_Individual_Disposal_Approval__c , DMT_Bussiness_Approved_Date__c, DMT_Bussiness_Approved_End_Date__c, DMT_Business_Approval_Term__c, 
                 // CHILD LINE TEAM MEMBER
                 (
@@ -406,7 +419,7 @@ public with sharing  class DMT_View_Selector {
                     SELECT Id, g_customer_id__c, Name, gf_customer_group_id__c, Group__r.RecordTypeId, Group__r.RecordType.DeveloperName, // ESCD25LIN00006408ES_01 (if ends with _xx (number)) means its related to a product (risk line term) that has DMT_Line__r.Line_Id__c concatenated (_) gf_group_priority_line_id__c
                     // child Custom_Associations_Clients__r
                     (
-                        SELECT Name, Alpha_Code_Client__c, DMT_ClientStarCode__c, DMT_ClientContracts__c, DMT_ClientRating__c, DMT_Client_Rating_Date__c, Local_Client_Child__r.RecordTypeId
+                        SELECT Name, Alpha_Code_Client__c, DMT_ClientStarCode__c, DMT_ClientContracts__c, DMT_ClientRating__c, DMT_Client_Rating_Date__c
                         FROM Custom_Associations_Clients__r
                     )
                     FROM Custom_Associations__r

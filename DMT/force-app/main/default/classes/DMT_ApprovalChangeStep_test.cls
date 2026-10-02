@@ -399,4 +399,34 @@ public with sharing class DMT_ApprovalChangeStep_test {
         Assert.areEqual(1, allTasksOnCase.size(),
             'No replacement task should be created for a GREEN feature.');
     }
+
+    /**
+     * @description "Client" is the first renderer-tracked component whose
+     * fields span more than one object (DMT_Line__c and Custom_Association_Client__c). Proves
+     * updateTaskWithStatus's field-collection loop correctly prefixes each field with the object
+     * it actually belongs to (sourced from DMT_RendererFactory.getTrackedFieldsByObject) instead
+     * of blindly prefixing every renderer-returned field with the Line's own object name, which
+     * would have produced an incorrect key like DMT_Line__c.Alpha_Code_Client__c. TestSetup's
+     * DMT_PruebaLinea approver view already has a 'Client' DMT_Items__c row (Treasury RT), with
+     * no DMT_Campos_componente_Refact__c value at all - before this fix, Client tracking for
+     * this view was silently a no-op.
+     **/
+    @isTest
+    private static void testUpdateTaskWithStatusPrefixesClientFieldsByTheirOwnObject() {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        List<Task> tasks = [SELECT Id FROM Task WHERE OwnerId =: queueId.Id LIMIT 1];
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(tasks[0].Id, false);
+        Test.stopTest();
+
+        Task taskModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id = :tasks[0].Id];
+        DMT_TaskStatusWhenCompleted__c statusRecord = [SELECT Id, DMT_AllFieldsInStatus__c FROM DMT_TaskStatusWhenCompleted__c WHERE Id = :taskModified.DMT_ViewStatusAtClose__c];
+
+        Assert.isNotNull(statusRecord.DMT_AllFieldsInStatus__c, 'Status field string should not be null');
+        Assert.isTrue(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Line__c.Client_Type__c'), 'DMT_Line__c-native Client field must be prefixed with DMT_Line__c.');
+        Assert.isTrue(statusRecord.DMT_AllFieldsInStatus__c.contains('Custom_Association_Client__c.Alpha_Code_Client__c'), 'Custom_Association_Client__c field must be prefixed with its own object, not DMT_Line__c.');
+        Assert.isFalse(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Line__c.Alpha_Code_Client__c'), 'A Custom_Association_Client__c field must never be mis-prefixed with DMT_Line__c.');
+    }
 }
