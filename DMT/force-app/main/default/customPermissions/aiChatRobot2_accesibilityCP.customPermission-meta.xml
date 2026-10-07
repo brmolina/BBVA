@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Permiso personalizado para el control de la visibilidad y accesibilidad al aplicativo AI Banker</description>
+    <isLicensed>false</isLicensed>
+    <label>AI Banker Accesibility Permission</label>
+</CustomPermission>

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>DMT_Read_Only</members>
-        <name>CustomPermission</name>
-    </types>
-    <types>
-        <members>ConsultationIT</members>
+        <members>DMT_Access</members>
+        <members>DMT_Integration_Analytics</members>
         <members>DMT_ReadOnly</members>
         <name>PermissionSet</name>
     </types>

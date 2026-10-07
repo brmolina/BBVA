@@ -1120,10 +1120,6 @@
         <enabled>true</enabled>
         <name>DMT_Access</name>
     </customPermissions>
-    <customPermissions>
-        <enabled>true</enabled>
-        <name>DMT_Read_Only</name>
-    </customPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>AMH_GBL_Account_Relationship__c.AMH_ChildName__c</field>

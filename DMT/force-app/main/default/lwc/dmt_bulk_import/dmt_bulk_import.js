@@ -9,8 +9,6 @@ import getExistingTermsForLinesApex from '@salesforce/apex/DMT_BulkImportControl
 import queryCreatedLinesApex    from '@salesforce/apex/DMT_BulkImportController.queryCreatedLines';
 import updateLineStatusApex     from '@salesforce/apex/DMT_BulkImportController.updateLineStatus';
 import hasDMTLineGod    from '@salesforce/customPermission/DMT_Line_God';
-import hasConsultationIT from '@salesforce/customPermission/ConsultationIT';
-import hasDMTReadOnly    from '@salesforce/customPermission/DMT_Read_Only';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // ─── Fixed column schemas ────────────────────────────────────────────────────
@@ -138,7 +136,7 @@ export default class DmtBulkImport extends LightningElement {
 
     // ── Constant exposed to template ─────────────────────────────────────────
     get previewRowLimit() { return PREVIEW_ROW_LIMIT; }
-    get hasAccess()       { return hasDMTLineGod && !hasConsultationIT && !hasDMTReadOnly; }
+    get hasAccess()       { return hasDMTLineGod; }
 
     get linesPreviewLabel() {
         return this.linesRowCount <= PREVIEW_ROW_LIMIT
